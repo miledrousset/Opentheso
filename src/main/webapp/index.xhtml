@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:panelGroup id="indexTitle" >
+            <title>
+                <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexical_value != ''}"
+                              value="#{conceptView.nodeConcept.term.lexical_value}"/>
+                <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexical_value == ''}"
+                              value="Opentheso"/>
+            </title>  
+        </h:panelGroup>            
+        <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/menu.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/search.css" media="screen" />  
+        <link rel="stylesheet" type="text/css" href="css/tree.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/rightBody.css" media="screen" />    
+        <link rel="stylesheet" type="text/css" href="css/leftBody.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/dialog.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/autocomplete.css" media="screen" />        
+
+        <script type="text/javascript" src="javascript/scrollToSelectedScript.js"></script>
+
+        <script>
+            $.blockUI.defaults.css.width = '20%';
+            $.blockUI.defaults.css.left = '40%';
+            $.blockUI.defaults.css.height = '5em';
+            $.blockUI.defaults.css.borderRadius = '10px';
+            $.blockUI.defaults.overlayCSS.opacity = 0.5;
+            $.blockUI.defaults.message = '<div style="padding-top:1em"><b:spinner name="circle-o-notch" size="2x" /> Please wait ... </div>';
+        </script>
+
+    </h:head>
+
+    <h:body>
+
+        <!--- pour garder la session ouverte en permanence il faut voir pour la déconnexion automatique ? -->
+        <p:idleMonitor timeout="#{session.maxInactiveInterval * 1000 - 60000}">
+            <p:ajax event="idle" listener="#{sessionControl.onIdle}" />
+            <p:ajax event="active" listener="#{sessionControl.onActive}" />
+        </p:idleMonitor>
+
+
+
+        <f:metadata>
+            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:event listener="#{selectedTheso.preRenderView}" type="preRenderView"/>
+        </f:metadata>
+
+        <b:growl id="messageIndex"
+                 globalOnly="true"
+                 showDetail="true"
+                 placementFrom="bottom"/>
+
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+
+
+
+        <h:outputStylesheet library="primefaces" name="fa/font-awesome.css" />        
+
+        <h:outputStylesheet library="webjars" name="font-awesome/5.12.0/css/all.min-jsf.css" /> 
+        <h:outputStylesheet library="webjars" name="font-awesome/5.12.0/css/v4-shims.min-jsf.css" />        
+
+        <b:container id="containerIndex">
+            <ui:include src="menu.xhtml" />
+
+            <h:panelGroup  rendered="#{indexSetting.isThesoActive and indexSetting.isSelectedTheso}">
+                <ui:include src="search.xhtml" />                
+            </h:panelGroup>
+
+            <h:panelGroup  rendered="#{indexSetting.isThesoActive and indexSetting.isSelectedTheso}">
+                <ui:include  src="body.xhtml" />
+            </h:panelGroup>
+
+            <h:panelGroup  rendered="#{(indexSetting.isThesoActive) and (!indexSetting.isSelectedTheso)}">
+                <ui:include src="home.xhtml" />
+            </h:panelGroup>
+
+            <h:panelGroup  rendered="#{indexSetting.isProfileActive}">
+                <ui:include src="/profile/profile.xhtml" />
+            </h:panelGroup>            
+
+            <h:panelGroup  rendered="#{indexSetting.isSettingActive}">
+                <ui:include src="/setting/setting.xhtml" />
+            </h:panelGroup> 
+
+            <h:panelGroup  rendered="#{indexSetting.isToolBoxActive}">
+                <ui:include src="/toolbox/toolBox.xhtml" />
+            </h:panelGroup>            
+
+
+
+        </b:container>
+
+    </h:body>
+</html>
+

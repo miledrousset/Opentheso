@@ -1,0 +1,111 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+        <b:row style="margin-left: 30px; margin-right: 30px; ">
+            <b:column span="6" offset="3">
+                <h:outputText value="Modifier le thésaurus " style="font-size: 14px;"/>
+                <h:outputText value="#{editThesoBean.nodeIdValueOfTheso.value} (#{editThesoBean.nodeIdValueOfTheso.id})" style="font-size: 14px; color: #C63632"/>
+            </b:column>
+        </b:row>    
+        <p:spacer height="40px;"/>
+
+        <!-- choix de la langue par defaut -->
+        <b:row >
+            <b:column span="2" offset="1">
+                <h:outputText value="langue par defaut: " style="font-size: 12px;" />
+            </b:column>
+            <b:column span="2" >
+                <p:selectOneMenu id="langOfTheso" value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                 style="width: 100%; background: none;  box-shadow: none; "
+                                 panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                    <f:selectItems  value="#{editThesoBean.languagesOfTheso}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/> 
+                    <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}"  update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"/>
+                </p:selectOneMenu>
+            </b:column> 
+
+            <!-- Changement de status Public/Privé -->
+            <b:column id="columnStatus" span="2" tooltip="Pour changer le status du thésaurus Public/Privé" tooltip-delay-show="1000">
+                <p:toggleSwitch  label="Public/Privé" id="toggleThesoStatus" value="#{editThesoBean.isPrivateTheso}" style="font-size: 12px">
+                    <p:ajax listener="#{editThesoBean.changeStatus()}" update="columnStatus toolBoxForm toolBoxForm:listThesoForm" />
+                </p:toggleSwitch>
+            </b:column>            
+            
+            <!-- Ajout d'une nouvelle langue au thésaurus -->
+            <b:column span="1"  >
+                <b:navCommandLink iconAwesome="fa-plus-circle" icon-size="lg" 
+                                update="idAddLangToTheso addLangToThesoForm"
+                                oncomplete="PF('addLangToTheso').show();"                                  
+                                tooltip="Ajouter une langue au thésaurus" tooltip-delay-show="1000"
+                                  style="color: #f47b2a; ">
+                </b:navCommandLink>  
+                <ui:include src="/toolbox/edition/addLangToTheso.xhtml" />                 
+            </b:column>             
+        </b:row>
+        <b:row >
+            <b:column span="7" offset="1">
+                <p:separator style="color: #f47b2a; margin-top: 5px;"/>
+            </b:column>
+        </b:row>
+        
+        <!-- Liste des langues à modifier -->
+        <b:row id="idLangToModify">
+            <b:column span="7" offset="1" >
+                <ui:repeat var="langOfTheso" value="#{editThesoBean.languagesOfTheso}" >
+                    <b:row>
+                        <b:column span="1" style="background: #FAFAFA">
+                            <b:navCommandLink icon-awesome="fas fa-trash-alt" iconSize="l" style="color: #FF7979;"
+                                              tooltip="Supprimer la langue du thésaurus" tooltip-delay-show="1000"
+                                              action="#{editThesoBean.deleteLangFromTheso(
+                                                        langOfTheso.code)}"
+                                              update="toolBoxForm toolBoxForm:listThesoForm"/>
+                        </b:column>                         
+                        <b:column span="8" style="background: #FAFAFA">
+                            <b:inputText
+                                value="#{langOfTheso.labelTheso}"
+                                style="color: #43B572; font-size: 12px;height: 25px;"/>                    
+                        </b:column>
+                        <b:column span="2" style="background: #FAFAFA">
+                            <b:inputText value="#{langOfTheso.code}" disabled="true"
+                                          style="color: #43B572;font-size: 12px; height: 25px;"/>
+                        </b:column>
+                        <b:column span="1" style="background: #FAFAFA">
+                            <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
+                                              tooltip="valider la modification sur cette langue" tooltip-delay-show="1000"
+                                              action="#{editThesoBean.updateLang(
+                                                        langOfTheso)}"
+                                              update="toolBoxForm toolBoxForm:listThesoForm"/>
+                        </b:column>
+                       
+                    </b:row>                            
+                </ui:repeat>
+            </b:column>        
+        </b:row>
+        
+        
+        <p:spacer/>    
+        <b:row >
+            <b:column span="2" offset="3"> 
+                <b:commandButton id="cancel" iconAwesome="fas fa-undo"  
+                                 value="Retour" style="width: 100%; font-size: 12px;"
+                                 tooltip="Retour"  tooltip-delay-show="1000"
+                                 actionListener="#{viewEditionBean.init()}"
+                                 action="#{newThesoBean.init()}"
+                                 update="toolBoxForm toolBoxForm:listThesoForm">
+                </b:commandButton>
+            </b:column>
+       
+
+        </b:row>
+        <p:spacer/>
+        <b:row>
+            <b:column span="8" offset="2" style="font-size: 12px;"> 
+                <b:messages autoUpdate="true" />
+            </b:column> 
+        </b:row>                
+
+</ui:fragment>

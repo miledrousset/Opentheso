@@ -1,0 +1,110 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idNewUser" header="Nouvel utilisateur" widgetVar="newUser" 
+              modal="true" resizable="true" position="top" width="500" style="margin-top: 50px" >        
+        <h:form id="newUserForm"
+                rendered="#{(currentUser.nodeUser != null)}">
+            <b:row style="margin-left: 30px; margin-right: 30px;"> 
+                <!-- Nom Pseudo -->
+                <b:column span="5" >
+                    <h:outputText value="Pseudo : " style="font-size: 12px;"/>  
+                </b:column>
+                <b:column span="7">
+                    <b:inputText value="#{newUSerBean.nodeUser.name}"
+                                  style="height: 25px;font-size: 12px;"/>
+                </b:column>                    
+            </b:row>
+
+            <!-- Email -->
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                <b:column span="5">
+                    <h:outputText value="Email : "  style="font-size: 12px;"/>
+                </b:column>
+                <b:column span="7">
+                    <b:inputText value="#{newUSerBean.nodeUser.mail}"
+                                  style="height: 25px;font-size: 12px;">
+                        <f:validator validatorId="custom.emailValidator" />
+                    </b:inputText>
+                </b:column>   
+            </b:row>
+            
+            <!-- passe de l'utilisateur -->
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                <b:column span="5">
+                    <h:outputText value="Mot de passe : "  style="font-size: 12px;"/>
+                </b:column>
+                <b:column span="7">
+                    <b:inputSecret  value="#{newUSerBean.passWord1}" style="height: 25px;font-size: 12px;"/>
+                </b:column>
+            </b:row>
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                <b:column span="5">
+                    <h:outputText value="Confirmation passe : "  style="font-size: 12px;"/>
+                </b:column>
+                <b:column span="7">
+                    <b:inputSecret  value="#{newUSerBean.passWord2}"  style="height: 25px;font-size: 12px;" />
+                </b:column>
+            </b:row>            
+
+            <!-- Pour activer / désactiver le compte -->
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                <b:column span="6">
+                    <h:outputText value="Alerte par mail : "  style="font-size: 12px;"/>
+                </b:column>
+                <b:column span="1" offset="4">
+                    <p:toggleSwitch value="#{newUSerBean.nodeUser.isAlertMail}" style="font-size: 12px;" /> 
+                </b:column>
+            </b:row>
+
+            <p:separator/>
+            
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                <b:column span="5">
+                    <h:outputText value="Projet en cours : "  style="font-size: 12px;"/>
+                </b:column>
+                <b:column span="7">
+                    <h:outputText value="#{myProjectBean.selectedProjectName}"  style="height: 25px;font-size: 12px;" />
+                </b:column>
+            </b:row> 
+            
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                <b:column span="5">
+                    <h:outputText value="Rôle : " style="font-size: 12px;"/> 
+                </b:column>
+                <b:column span="7">                       
+                    <p:selectOneMenu id="selectAutorizedRoles" value="#{newUSerBean.selectedRole}"
+                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                     style="width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="border: none; box-shadow: none; max-width: 300px">
+                        <f:selectItems value="#{myProjectBean.myAuthorizedRoles}" var="myRoles" itemLabel="#{myRoles.value}" itemValue="#{myRoles.id}"/>
+                    </p:selectOneMenu>
+                </b:column> 
+            </b:row>
+             <p:spacer/>
+            <b:row style="margin-bottom: 10px;">
+                <b:column span="4" offset="7" >
+                    <b:commandButton ajax="true"
+                        id="buttonSubmit" value="Valider"   
+                                     tooltip="Valider les changements de l'utilisateur" tooltip-delay-show="1000"
+                                     style="width:100%; font-size: 13px; 
+                                     font-weight: normal;
+                                     color: white; background: #43B572; border: none; box-shadow: none;"
+                                     class="btn btn-primary"
+                                     action="#{newUSerBean.addUser()}"/>
+                </b:column>                    
+            </b:row>
+            <p:separator/>
+            
+            <b:row>
+                <b:column span="12">
+                    <b:messages autoUpdate="true"/>
+                </b:column>
+            </b:row>
+        </h:form>
+    </p:dialog>   
+</ui:fragment>

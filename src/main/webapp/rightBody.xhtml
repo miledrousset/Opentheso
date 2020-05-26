@@ -1,0 +1,36 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:f="http://java.sun.com/jsf/core">
+
+
+    <b:form id="formRightTab"> 
+        <b:row rendered="#{indexSetting.isValueSelected}">
+            <b:column span="12">
+                <b:tabView activeIndex="#{rightBodySetting.index}"  >
+                    <b:tab  id="viewTabConcept" title="Concept" style="color: #43B572; padding-top: 1px; padding-bottom: 1px; " >
+                        <f:facet name="anchor"><b:iconAwesome name="file-alt" style="color: #f47b2a" size="s"/></f:facet>
+                        <ui:include rendered="#{rightBodySetting.showConcept}"  src="rightBodyView/concept.xhtml"/>
+                    </b:tab>      
+                    <b:tab  id="viewTabGroup" title="Group" style="color: #43B572; padding-top: 1px; padding-bottom: 1px; " >
+                        <f:facet name="anchor"><b:iconAwesome name="fa-object-group" style="color: #f47b2a" size="s"/></f:facet>
+                        <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
+                    </b:tab>                       
+
+                    <b:tab id="viewTabSearch" title="Liste de résultat" style="color: #43B572; padding-top: 1px; padding-bottom: 1px;" >
+                        <f:facet name="anchor"><b:iconAwesome name="search-location" style="color: #f47b2a" size="s"/></f:facet>
+                        <ui:include  src="rightBodyView/resultSearch.xhtml"/>
+                    </b:tab>
+                </b:tabView>
+            </b:column>
+        </b:row>
+        
+        
+        <b:row rendered="#{!indexSetting.isValueSelected}">
+            <ui:include  src="/rightBodyView/thesoHome.xhtml" />
+        </b:row>
+        
+    </b:form>
+
+
+</ui:fragment>

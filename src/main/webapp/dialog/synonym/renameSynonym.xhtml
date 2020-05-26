@@ -1,0 +1,75 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <!--    <b:modal id="idRenameConcept"  class="renameConcept" title="Renommer le concept" close-on-escape="false" backdrop="false"
+                 style="font-size: 12px;">
+    -->
+
+    <p:dialog id="idRenameSynonym" header="modifier synonyme" widgetVar="renameSynonym" 
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px; max-height: 500px;overflow-y:scroll " >         
+
+        <h:form id="renameSynonymForm">   
+
+            <b:row >
+                <b:column span="11" offset="1" >
+                    <h:outputText id="currentPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
+                                  style="font-size: 13px; color: black;">
+                    </h:outputText >
+                    <p:spacer height="30"/>
+                </b:column>
+            </b:row>      
+
+            <b:row >
+                <b:column span="7" >
+                    <ui:repeat var="synonymToEdit" value="#{synonymBean.nodeEMsForEdit}" >
+                        <b:row>
+                            <b:column span="8" style="background: #FAFAFA">
+                                <b:inputText
+                                    value="#{synonymToEdit.lexical_value}"
+                                    style="color: #43B572; font-size: 12px;"/>                    
+                            </b:column>
+                            <b:column span="2" style="background: #FAFAFA">
+                                <h:outputText value="#{synonymToEdit.lang}"
+                                              style="color: #43B572; font-size: 14px;"/>
+                            </b:column>
+                            <b:column span="2" style="background: #FAFAFA">
+                                <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
+                                                  action="#{synonymBean.updateSynonym(
+                                                            synonymToEdit,
+                                                            currentUser.nodeUser.idUser)}"
+                                                  update="formRightTab:viewTabConcept:renameSynonymForm"/>
+                            </b:column>
+                        </b:row>                            
+                    </ui:repeat>
+                </b:column>
+                <b:column span="5" >
+                    <b:messages autoUpdate="true"/>
+                    <b:row >
+                        <b:column span="5" offset="1" >
+                            <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonRenameForced" value="Frocer"
+                                             update="formRightTab:viewTabConcept:renameSynonymForm"
+                                             class="btn btn-primary"
+                                             action="#{synonymBean.updateSynonymForced(
+                                                       currentUser.nodeUser.idUser)}" 
+                                             style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
+                        </b:column>                        
+                        <b:column span="5" >
+                            <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonCancel" value="Annuler"
+                                             update="formRightTab:viewTabConcept:renameSynonymForm"
+                                             class="btn btn-primary"
+                                             action="#{synonymBean.cancel()}" 
+                                             icon-awesome="fas fa-undo" 
+                                             style="color: white; background: #FF7979; width:100%; font-size: 12px;"/>
+                        </b:column>                        
+                    </b:row>                    
+                </b:column>                
+
+            </b:row>
+
+        </h:form>
+    </p:dialog> 
+    <!--  </b:modal> -->    
+</ui:fragment>

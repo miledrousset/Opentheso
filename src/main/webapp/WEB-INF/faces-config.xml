@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config
+    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd"
+    version="2.3">
+
+     <application>
+        <resource-bundle>
+            <base-name>hikari</base-name>
+            <var>conHikari</var>
+        </resource-bundle>
+        <message-bundle>hikari</message-bundle>
+    </application>
+     <application>
+        <resource-bundle>
+            <base-name>preferences</base-name>
+            <var>pref</var>
+        </resource-bundle>
+        <message-bundle>preferences</message-bundle>
+    </application>
+    <application>
+        <resource-bundle>
+            <base-name>language/site</base-name>
+            <var>langue_fr</var>
+        </resource-bundle>
+        <message-bundle>language/site</message-bundle>
+    </application>
+    <application>
+        <resource-bundle>
+            <base-name>language/site_en</base-name>
+            <var>langue_en</var>
+        </resource-bundle>
+        <message-bundle>language/site_en</message-bundle>
+    </application>
+    <application>
+        <resource-bundle>
+            <base-name>language/site_de</base-name>
+            <var>langue_de</var>
+        </resource-bundle>
+        <message-bundle>language/site_de</message-bundle>
+    </application>
+    <application>
+        <resource-bundle>
+            <base-name>language/site_es</base-name>
+            <var>langue_es</var>
+        </resource-bundle>
+        <message-bundle>language/site_es</message-bundle>
+    </application>
+    <application>
+        <resource-bundle>
+            <base-name>language/site_it</base-name>
+            <var>langue_it</var>
+        </resource-bundle>
+        <message-bundle>language/site_it</message-bundle>
+    </application>
+
+    <filter>
+        <filter-name>PrimeFaces FileUpload Filter</filter-name>
+        <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>PrimeFaces FileUpload Filter</filter-name>
+        <servler-name>Faces Servlet</servler-name>
+    </filter-mapping>
+</faces-config>
+

@@ -1,0 +1,47 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="idDeleteTraductionGroup" header="Supprimer une traduction groupe" widgetVar="deleteTraductionGroup" 
+              modal="true" resizable="true" position="top" width="320" style="margin-top: 150px" >         
+
+        <h:form id="deleteTraductionGroupForm">   
+            
+            <b:row >
+                <b:column span="11" offset="1" >
+                    <h:outputText id="currentPrefLabel" value="#{groupView.nodeGroup.lexicalValue}"
+                                  style="font-size: 13px; color: black;">
+                    </h:outputText >
+                    <p:spacer height="30"/>
+                </b:column>
+            </b:row>              
+                                  
+            <b:row style="font-size: 12px;">
+                <ui:repeat var="traductions" value="#{traductionGroupBean.nodeGroupTraductionses}" >
+                    <b:column span="8" offset="1" style="background: #FAFAFA">
+                        <h:outputText value="#{traductions.title} (#{traductions.idLang})"
+                                      style="color: #43B572"/> 
+                    </b:column>
+                    <b:column span="2" style="background: #FAFAFA">
+                        <b:navCommandLink icon-awesome="fas fa-trash-alt" style="color: #FF7979"
+                                         action="#{traductionGroupBean.deleteTraduction(
+                                                   traductions,
+                                                   currentUser.nodeUser.idUser)}"
+                                         update="formRightTab:viewTabGroup:deleteTraductionGroupForm"/>
+                    </b:column>
+
+                    <p:spacer height="20" />
+                </ui:repeat>
+            </b:row>
+            <p:spacer height="30" />
+            <b:row>
+                <b:column span="12">
+                    <b:messages autoUpdate="true"/>
+                </b:column>
+            </b:row>              
+        </h:form>
+    </p:dialog> 
+    <!--  </b:modal> -->    
+</ui:fragment>

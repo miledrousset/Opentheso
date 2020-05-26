@@ -1,0 +1,64 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui">
+        <b:row >
+            <b:column span="4" col-xs="0">
+                <h:outputText value="Exporter le concept"/>
+            </b:column>
+            <b:column span="1" col-xs="2" offset-xs="1">
+                <b:commandButton  value="Skos" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none" 
+                                  onclick="PrimeFaces.monitorDownload(start, stop);">
+                    <p:fileDownload  value="#{exportFileBean.conceptToFile(
+                                              conceptView.nodeConcept.concept.idConcept,
+                                              conceptView.nodeConcept.concept.idThesaurus,'skos')}" />
+                    <b:iconAwesome value="fas fa-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>
+                </b:commandButton>
+            </b:column>     
+            <b:column span="1" col-xs="2">
+                <b:commandButton  value="Json" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none" 
+                                  onclick="PrimeFaces.monitorDownload(start, stop);">
+                    <p:fileDownload  value="#{exportFileBean.conceptToFile(
+                                              conceptView.nodeConcept.concept.idConcept,
+                                              conceptView.nodeConcept.concept.idThesaurus,'json')}" />
+                    <b:iconAwesome value="fas fa-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>
+                </b:commandButton>
+            </b:column>
+            <b:column span="1" col-xs="2">
+                <b:commandButton value="JsonLd" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none" 
+                                 onclick="PrimeFaces.monitorDownload(start, stop);">
+                    <p:fileDownload  value="#{exportFileBean.conceptToFile(
+                                              conceptView.nodeConcept.concept.idConcept,
+                                              conceptView.nodeConcept.concept.idThesaurus,'jsonld')}" />
+                    <b:iconAwesome value="fas fa-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>
+                </b:commandButton>
+            </b:column>  
+            <b:column span="1" col-xs="2">
+
+                <b:commandButton  value="Turtle" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none; margin-left: 10px;" 
+                                  onclick="PrimeFaces.monitorDownload(start, stop);">
+                    <p:fileDownload  value="#{exportFileBean.conceptToFile(
+                                              conceptView.nodeConcept.concept.idConcept,
+                                              conceptView.nodeConcept.concept.idThesaurus,'turtle')}" />
+                    <b:iconAwesome value="fas fa-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>
+                </b:commandButton>
+            </b:column>
+        </b:row > 
+   
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function start() {
+                PF('statusDialog').show();
+            }
+
+            function stop() {
+                PF('statusDialog').hide();
+            }
+            //]]>
+        </script>    
+        <p:dialog modal="true" widgetVar="statusDialog"  draggable="false" closable="false" resizable="false">
+            <b:image value="/images/wait.gif" name="/images/wait.gif" style="width: 150px;"/>
+        </p:dialog>
+</ui:fragment>

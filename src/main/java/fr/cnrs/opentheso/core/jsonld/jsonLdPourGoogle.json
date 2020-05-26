@@ -1,0 +1,54 @@
+   {
+   	  "@context": "http://schema.org",
+   	  "@type": "Thing",
+   	  
+   	  "@context": "http://purl.org/dc/terms",
+   	  
+      "url": "http://ark.frantiq.fr/ark:/26678/pcrttq9gp2ZMuc",
+      "dc:date": "2014-04-11",
+      
+      "description": [
+        {
+        	"@language": "fr",
+        	"@value": "Ensemble des oeuvres artistiques d'un pays, d'une époque (Lar.)"
+        }
+      ],
+      
+      "name": [
+        {
+          "@language": "de",
+          "@value": "Kunst"
+        },
+        {
+          "@language": "en",
+          "@value": "art"
+        },
+        {
+          "@language": "fr",
+          "@value": "art"
+        },
+        {
+          "@language": "es",
+          "@value": "arte"
+        },
+        {
+          "@language": "it",
+          "@value": "arte"
+        },
+        {
+          "@language": "nl",
+          "@value": "kunst"
+        },
+        {
+          "@language": "ar",
+          "@value": "فن"
+        }
+      ],
+      "alternateName": [
+          {
+        	"@language": "fr",
+        	"@value": "Arts"
+          }
+        ],
+      "image": "http://ark.frantiq.fr/ark:/26678/pcrtWSbu1fKhxG"
+    }

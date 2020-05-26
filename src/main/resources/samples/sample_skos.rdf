@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcterms="http://purl.org/dc/terms/"
+	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+	xmlns:iso-thes="http://purl.org/iso25964/skos-thes#"
+	xmlns:opentheso="http://purl.org/umu/uneskos#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:about="http://mondomaine.fr/17">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+	<skos:prefLabel xml:lang="en">theso_17</skos:prefLabel>
+	<skos:prefLabel xml:lang="es">theso_17</skos:prefLabel>
+	<skos:prefLabel xml:lang="fr">theso_17</skos:prefLabel>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/MT_18"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-09-04</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-09-04</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/kvygbeahbs">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">groupDefault</skos:prefLabel>
+	<iso-thes:microThesaurusOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<skos:member rdf:resource="http://mondomaine.fr/MT_18"/>
+	<skos:member rdf:resource="http://mondomaine.fr/2"/>
+	<skos:member rdf:resource="http://mondomaine.fr/3"/>
+	<skos:member rdf:resource="http://mondomaine.fr/10"/>
+	<skos:member rdf:resource="http://mondomaine.fr/11"/>
+	<skos:member rdf:resource="http://mondomaine.fr/12"/>
+	<skos:member rdf:resource="http://mondomaine.fr/4"/>
+	<skos:member rdf:resource="http://mondomaine.fr/13"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14"/>
+	<skos:member rdf:resource="http://mondomaine.fr/5"/>
+	<skos:member rdf:resource="http://mondomaine.fr/6"/>
+	<skos:member rdf:resource="http://mondomaine.fr/7"/>
+	<skos:member rdf:resource="http://mondomaine.fr/8"/>
+	<skos:member rdf:resource="http://mondomaine.fr/9"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26975"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26976"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26977"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26978"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26979"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26980"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26981"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26982"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26983"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26984"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26985"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26986"/>
+	<skos:member rdf:resource="http://mondomaine.fr/C_26987"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-09-04</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-09-04</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/MT_18">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">france</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">french</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/17"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/2"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/3"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26975"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>MT_18</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/2">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">ile de france</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/MT_18"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>2</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/3">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">rhone alpes</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/10"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/11"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/12"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/4"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/8"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/MT_18"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>3</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/10">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Vienne</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">vienne_eng</skos:prefLabel>
+	<skos:altLabel xml:lang="fr">38200</skos:altLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/3"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>10</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/11">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Saint clair du rhone</skos:prefLabel>
+	<skos:altLabel xml:lang="fr">38370</skos:altLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/3"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>11</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/12">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Grenoble</skos:prefLabel>
+	<skos:related rdf:resource="http://mondomaine.fr/13"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/3"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>12</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/4">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">rhone</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/13"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/5"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/3"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>4</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/13">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">salaise</skos:prefLabel>
+	<skos:altLabel xml:lang="fr">sys</skos:altLabel>
+	<skos:related rdf:resource="http://mondomaine.fr/12"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/14"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/4"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>13</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">spec</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/13"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>14</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/5">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Lyon</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">Lyon_eng</skos:prefLabel>
+	<skos:altLabel xml:lang="fr">lugdunum</skos:altLabel>
+	<skos:altLabel xml:lang="en">lugdunum_eng</skos:altLabel>
+	<skos:related rdf:resource="http://mondomaine.fr/9"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/6"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/7"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/4"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>5</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/6">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">1er arrondissement</skos:prefLabel>
+	<skos:altLabel xml:lang="fr">69001</skos:altLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/5"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>6</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/7">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">2eme arrondissement</skos:prefLabel>
+	<skos:altLabel xml:lang="fr">69002</skos:altLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/5"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>7</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/8">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Ain</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">Ain_eng</skos:prefLabel>
+	<skos:prefLabel xml:lang="es">Ain_esp</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/9"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/3"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>8</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/9">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">miribel</skos:prefLabel>
+	<skos:related rdf:resource="http://mondomaine.fr/5"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/8"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-03-27</dcterms:modified>
+	<dcterms:identifier>9</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26975">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">agriculture industruelle</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26976"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26981"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26984"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/MT_18"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26975</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26976">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">produits laitières</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26977"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26978"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26979"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26980"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26975"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26976</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26977">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">beurre</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26976"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26977</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26978">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Fromage</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26976"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26978</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26979">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">crème</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26976"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26979</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26980">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">lait</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26976"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26980</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26981">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">catégories de produits</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26982"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26983"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26975"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26981</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26982">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">lait entier</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26981"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26982</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26983">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">lait demi écrémé</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26981"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26983</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26984">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">productions</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26985"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26986"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/C_26987"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26975"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26984</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26985">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">lait de buffle</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26984"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26985</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26986">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">lait de vache</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26984"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26986</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/C_26987">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">lait de chèvre</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/C_26984"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/17"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/kvygbeahbs"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-07-21</dcterms:modified>
+	<dcterms:identifier>C_26987</dcterms:identifier>
+</rdf:Description>
+
+</rdf:RDF>

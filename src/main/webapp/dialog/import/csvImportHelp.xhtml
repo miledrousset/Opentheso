@@ -1,0 +1,79 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:b="http://bootsfaces.net/ui">
+
+    <p:dialog id="idCsvImportHelp"  header="#{langueBean.getMsg('edit.importcsv')}" widgetVar="csvImportHelp" modal="true" resizable="false"
+              position="top" width="600" style="margin-top: 150px">
+
+            <fieldset>
+
+                <p:panelGrid>
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="1">URI</p:column>
+                            <p:column colspan="1">skos:prefLabel@fr</p:column>
+                            <p:column colspan="1">skos:prefLabel@en</p:column>
+                            <p:column colspan="1">skos:altLabel@fr</p:column>
+                            <p:column colspan="1">skos:definition@fr</p:column>                         
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column>100</p:column>
+                        <p:column>France</p:column>
+                        <p:column>France_en</p:column>
+                        <p:column>l'Hexagone</p:column>
+                        <p:column>Pays de la liberté</p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>101</p:column>
+                        <p:column>Lyon</p:column>
+                        <p:column>Lyon_en</p:column>
+                        <p:column>Lugdunum</p:column>
+                        <p:column>Ville de la gastronomie</p:column>                    
+                    </p:row>                    
+                </p:panelGrid>
+
+                <br/>
+                <p:outputPanel deferred="true">
+                    <p>
+                        Les termes doivent être séparés par des virgules dans le fichier à uploader.<br/>
+                        Pour les champs qui autorisent les valeurs multiples, il faut les séparer par (##) ex : (deux##2).
+                    </p>
+                </p:outputPanel>
+                <br/>
+                <b:row>
+                    <b:column span="5" offset="1">
+                        <p:commandButton value="Exemple avec collections" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+                                         icon="fas fa-download" style="background: #42a068; font-size: 12px; " >
+                            <p:fileDownload value="#{helpfileDownload.downloadCSVSample()}" />
+                        </p:commandButton>                          
+                    </b:column>
+                    <b:column span="5">
+                        <p:commandButton value="Exemple sans collections" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+                                        icon="fas fa-download" style="background: #42a068; font-size: 12px; " >
+                           <p:fileDownload value="#{helpfileDownload.downloadCSVSampleWithoutCollections()}" />
+                       </p:commandButton> 
+                    </b:column>                    
+                </b:row>
+                <p:spacer/>
+                 
+
+            </fieldset>  
+
+    </p:dialog>
+    <script type="text/javascript">
+        //<![CDATA[
+        function start() {
+            PF('statusDialog').show();
+        }
+
+        function stop() {
+            PF('statusDialog').hide();
+        }
+        //]]>
+    </script>
+</ui:composition>

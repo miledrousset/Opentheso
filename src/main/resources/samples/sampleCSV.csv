@@ -1,0 +1,11 @@
+URI,rdf:type,skos:prefLabel@fr,skos:prefLabel@en,skos:altLabel@fr,skos:altLabel@en,skos:hiddenLabel@fr,skos:definition@fr,skos:definition@en,skos:scopeNote@fr,skos:notation,skos:narrower,skos:broader,skos:related,skos:exactMatch,skos:closeMatch,geo:lat,geo:long,skos:member,dct:created,dct:modified
+http://mondomaine.fr/G768,skos:Collection,collection1,,,,,,,,I,,,,,,,,,2019-06-14,2019-06-14
+http://mondomaine.fr/G770,skos:Collection,collection2,,,,,,,,II,,,,,,,,,2019-06-14,2019-06-14
+http://mondomaine.fr/14316,skos:Concept,topTerm1,,,,,,,,1,http://mondomaine.fr/14320,,http://mondomaine.fr/14321,,,,,http://mondomaine.fr/G768,2019-06-14,2019-06-14
+http://mondomaine.fr/14320,skos:Concept,Lyon,Lyon,syn_concept1,,,commune française de la métropole de Lyon (chef-lieu) (wikidata),"commune in the metropolis of Lyon, France (wikidata)",,11,,http://mondomaine.fr/14316,,https://www.idref.fr/032012004##http://www.geonames.org/2996944##http://www.wikidata.org/entity/Q456,,45.74846,4.84671,http://mondomaine.fr/G768,2019-06-14,2019-06-14
+http://mondomaine.fr/14317,skos:Concept,topTerm2,,,,,,,,2,http://mondomaine.fr/14321,,,,,,,http://mondomaine.fr/G768,2019-06-14,2019-06-14
+http://mondomaine.fr/14321,skos:Concept,concept2,concept2_en,,,,,,,21,,http://mondomaine.fr/14317,http://mondomaine.fr/14320,,,,,http://mondomaine.fr/G768,2019-06-14,2019-06-14
+http://mondomaine.fr/14318,skos:Concept,topTermA,,,,,,,,A,http://mondomaine.fr/14322,,,,,,,http://mondomaine.fr/G770,2019-06-14,2019-06-14
+http://mondomaine.fr/14322,skos:Concept,conceptA,,,,,,,,A1,,http://mondomaine.fr/14318,,,,,,http://mondomaine.fr/G770,2019-06-14,2019-06-14
+http://mondomaine.fr/14319,skos:Concept,topTermB,,,,,,,,B,http://mondomaine.fr/14323,,,,,,,http://mondomaine.fr/G770,2019-06-14,2019-06-14
+http://mondomaine.fr/14323,skos:Concept,conceptB,conceptB_en,,,,,,,B1,,http://mondomaine.fr/14319,,,,,,http://mondomaine.fr/G770,2019-06-14,2019-06-14

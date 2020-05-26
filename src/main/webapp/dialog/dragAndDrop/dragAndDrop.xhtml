@@ -1,0 +1,90 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="idDragAndDrop" header="Drag and Drop control" widgetVar="dragAndDrop" 
+              modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 150px" >        
+        <h:form id="dragAndDropForm"
+                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+
+            <b:row>
+                <b:column span="12" style="margin-left: 5px;font-size: 12px;">
+                    <b:dataTable value="#{dragAndDrop.cuttedConcept}" paginated="false" 
+                                 var="cuttedConcept"
+                                 caption="Déplacer le concept/branche: "
+                                 searching="false" info="false" rowStyleClass="textOpenthesoColorOrange">
+                        <b:dataTableColumn value="#{cuttedConcept.concept.idConcept}" label="id"/>
+                        <b:dataTableColumn value="#{cuttedConcept.term.lexical_value}" label="label" />
+                        <b:dataTableColumn value="#{dragAndDrop.getLabelOfGroupes()}"  label="collections"/>
+                  
+                    </b:dataTable>
+                </b:column>            
+            </b:row>
+
+            <b:row rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}">
+                <b:column span="12" style="margin-left: 5px; font-size: 12px;">
+                    <b:dataTable value="#{dragAndDrop.nodeBTsToCut}" paginated="false" 
+                                 var="broader"
+                                 caption="Supprimer des parents: "
+                                 searching="false" info="false" rowStyleClass="textOpenthesoColorOrange"  >
+                        <b:dataTableColumn value="#{broader.idConcept}" label="id"/>
+                        <b:dataTableColumn value="#{broader.title}" label="label" />
+                        <b:dataTableColumn label="à couper" >
+                            <b:selectBooleanCheckbox value="#{broader.isSelected}" fieldSize="xs" style="margin-top: -10px; "/>
+                        </b:dataTableColumn>
+                        
+                    </b:dataTable>
+                </b:column>            
+            </b:row>            
+
+            <b:row style="margin-top: 30px; font-size: 14px;">
+                <b:column span="1" >
+                    
+                </b:column>
+                <b:column span="3" >
+                    <b:iconAwesome value="fas fa-cut" style="color: red"/>
+                    <h:outputText value=" #{dragAndDrop.cuttedConcept.term.lexical_value}" title="terme à couper"/>
+                </b:column>  
+
+                <b:column span="4">
+                    <b:iconAwesome value="fas fa-arrow-right" style="color: green"/>
+                    <h:outputText value=" #{dragAndDrop.dropppedConcept.term.lexical_value}" title="Vers ce concept"/>
+                </b:column>                
+            </b:row>
+            
+            <b:row >
+                <b:column span="11" offset="1" >
+                    <b:messages autoUpdate="true"/>
+                </b:column>
+            </b:row>
+
+
+            <b:row style="margin-bottom: 10px; margin-top: 30px">
+                <b:column span="4" offset="4" >
+                    <b:commandButton 
+                        id="buttonSubmitCut" value="Valider" 
+                        style="width:100%; font-size: 13px; 
+                        font-weight: normal;
+                        color: white; background: #43B572; border: none; box-shadow: none;"
+                        class="btn btn-primary"
+                        action="#{dragAndDrop.paste()}"
+                        update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex dragAndDropForm"/>
+                </b:column>
+             
+                <b:column span="4"  >
+                    <b:commandButton 
+                        id="buttonCancel1" value="Annuler" 
+                        style="width:100%; font-size: 13px; 
+                        font-weight: normal;
+                        color: white; background: #FF7979; border: none; box-shadow: none;"
+                        class="btn btn-primary"
+                        action="#{dragAndDrop.rollBackAfterErrorOrCancelDragDrop()}"
+                        update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex dragAndDropForm"/>
+                </b:column>                 
+            </b:row>
+            
+        </h:form>
+    </p:dialog>   
+</ui:fragment>

@@ -1,0 +1,88 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="idHistoricalView" header="Affiche l'historique du concept" widgetVar="historicalView" 
+              modal="true" resizable="true" position="top" width="600"  height="600" style="margin-top: 150px" >        
+        <h:form id="historicalViewForm"
+                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+            <b:row >
+                <b:column span="12" style="margin-left: 5px;">
+                    <b:dataTable value="#{historyBean.historyLabels}" paginated="false" 
+                                 var="label"
+                                 caption="Historique de changement des termes"
+                                 scrollSize="200px"
+                                 scrollCollapse="true"
+                                 searching="false"
+                                 >
+                        <b:dataTableColumn value="#{label.value}"/>
+                        <b:dataTableColumn value="#{label.lang}" />
+                        <b:dataTableColumn value="#{label.action}"  />
+                        <b:dataTableColumn value="#{label.date}" order="desc"/>
+                        <b:dataTableColumn value="#{label.user}"/>                      
+                    </b:dataTable>
+                </b:column>
+            </b:row>
+            <b:row >
+                <b:column span="12" style="margin-left: 5px;">
+                    <b:dataTable value="#{historyBean.historySynonyms}" paginated="false" 
+                                 var="synonym"
+                                 caption="Historique de changement des synonymes"
+                                 scrollSize="200px"
+                                 scrollCollapse="true"
+                                 fixedHeader="true"
+                                 searching="false"
+                                 >
+                        <b:dataTableColumn value="#{synonym.value}"/>
+                        <b:dataTableColumn value="#{synonym.lang}" />
+                        <b:dataTableColumn value="#{synonym.action}"  />
+                        <b:dataTableColumn value="#{synonym.date}" order="desc"/>
+                        <b:dataTableColumn value="#{synonym.user}"/>                      
+                    </b:dataTable>
+                </b:column>
+            </b:row>
+            <b:row >
+                <b:column span="12" style="margin-left: 5px;">
+                    <b:dataTable value="#{historyBean.historyNotes}" paginated="false" 
+                                 var="note"
+                                 caption="Historique de changement des notes" 
+                                 scrollSize="200px"
+                                 scrollCollapse="true"
+                                 fixedHeader="true"
+                                 searching="false"
+                                 >
+                        <b:dataTableColumn value="#{note.value}"/>
+                        <b:dataTableColumn value="#{note.noteType}" />
+                        <b:dataTableColumn value="#{note.lang}"/>                        
+                        <b:dataTableColumn value="#{note.action}"  />
+                        <b:dataTableColumn value="#{note.date}" order="desc"/>
+                        <b:dataTableColumn value="#{note.user}"/>                      
+                    </b:dataTable>
+                </b:column>
+            </b:row>              
+            <b:row >
+                <b:column span="12" style="margin-left: 5px;">
+                    <b:dataTable value="#{historyBean.historyRelations}" paginated="false" 
+                                 var="relations"
+                                 caption="Historique de changement des relations" 
+                                 scrollSize="200px"
+                                 scrollCollapse="true"
+                                 fixedHeader="true"
+                                 searching="false"
+                                 >
+                        <b:dataTableColumn value="#{relations.id_concept1}"/>
+                        <b:dataTableColumn value="#{relations.role}" />
+                        <b:dataTableColumn value="#{relations.id_concept2}"/>                        
+                        <b:dataTableColumn value="#{relations.action}"  />
+                        <b:dataTableColumn value="#{relations.date}" order="desc"/>
+                        <b:dataTableColumn value="#{relations.user}"/>                      
+                    </b:dataTable>
+                </b:column>
+            </b:row>     
+         
+        </h:form>
+
+    </p:dialog>   
+</ui:fragment>

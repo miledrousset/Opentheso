@@ -1,0 +1,98 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="homePageForm">
+
+
+        <b:row rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin) and !(viewEditorHomeBean.isInEditing)}">
+            <b:column span="2" offset="10">
+                <b:commandButton 
+                    value="Modifier" 
+                    update="homePageForm"
+                    class="btn btn-primary"
+                    action="#{viewEditorHomeBean.initText()}"
+                    style="width:100%; font-size: 12px;
+                    color: white; background: #43B572;"/>
+            </b:column>
+        </b:row>
+        
+        
+        <!-- vue pulic non connectée -->
+        <b:panel rendered="#{!(viewEditorHomeBean.isInEditing)}"
+                 style="font-size: 12px; border-color: #43B572;">
+            <b:row >
+                <b:column span="2" offset="10">
+                    <h:outputText  value="Opentheso version : #{ManagerGroupsUsers.getOpenthesoVersionFromWar()}"/>
+                </b:column>                
+            </b:row> 
+            <b:row >
+                <b:column span="12">
+                    <h:outputText  value="#{viewEditorHomeBean.getHomePage(connect.workLanguage)}"  escape="false"/>
+                </b:column>                
+            </b:row>
+            
+        </b:panel>
+
+        
+        
+        
+        <!-- vue connectée pour édition -->
+        <h:panelGroup id="homePageEdition" rendered="#{(viewEditorHomeBean.isInEditing)}" >
+            <b:row>
+                <b:column span="2" offset="8">
+                    <b:commandButton 
+                        value="Vue Html" 
+                        update="homePageForm"
+                        class="btn btn-primary"
+                        action="#{viewEditorHomeBean.setViewPlainTextTo(false)}"
+                        style="width:100%; font-size: 12px; background: #{viewEditorHomeBean.colorOfHtmlButton}"/>
+                </b:column>
+                <b:column span="2" >
+                    <b:commandButton 
+                        value="Vue plain texte" 
+                        class="btn btn-primary"
+                        update="homePageForm"
+                        action="#{viewEditorHomeBean.setViewPlainTextTo(true)}"
+                        style="width:100%; font-size: 12px; background: #{viewEditorHomeBean.colorOfTextButton}"/>
+                </b:column>
+            </b:row>
+
+            <b:row id="viewEditor" rendered="#{!viewEditorHomeBean.isViewPlainText}">
+                <b:column span="12" style="margin-left: 20px;">
+                    <p:textEditor widgetVar="editor1" value="#{viewEditorHomeBean.text}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
+                </b:column>
+            </b:row>
+            <b:row id="viewPlainText" rendered="#{viewEditorHomeBean.isViewPlainText}">
+                <b:column span="12" style="margin-left: 20px;">
+                    <b:inputTextarea value="#{viewEditorHomeBean.text}"/>
+                </b:column>
+            </b:row>
+
+            <b:row>
+                <b:column span="2" offset="8" >
+                    <b:commandButton id="buttonCancel" value="cancel"
+                                    update="homePageForm"
+                                     style="width: 100%; background: #8C8C8C; font-size: 12px;"
+                                     class="btn btn-primary"
+                                     action="#{viewEditorHomeBean.reset()}"/>
+                </b:column>                 
+                <b:column span="2">
+                    <b:commandButton 
+                        look="danger"
+                        value="Enregistrer" 
+                        update="homePageForm"
+                        class="btn btn-primary"
+                        style="width: 100%;font-size: 12px;"
+                        action="#{viewEditorHomeBean.updateHomePage()}"
+                        />
+                </b:column>
+            </b:row>
+            <b:column span="6" >
+                <b:messages autoUpdate="true"/>
+            </b:column>
+        </h:panelGroup>    
+    </h:form>        
+</ui:fragment>

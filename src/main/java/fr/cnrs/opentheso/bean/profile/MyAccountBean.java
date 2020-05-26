@@ -1,0 +1,173 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package fr.cnrs.opentheso.bean.profile;
+
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.bdd.tools.MD5Password;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
+import java.io.Serializable;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+
+/**
+ *
+ * @author miledrousset
+ */
+@Named(value = "myAccountBean")
+@SessionScoped
+public class MyAccountBean implements Serializable {
+
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+
+    @Inject private CurrentUser currentUser;
+
+    private NodeUser nodeUser; 
+    private String passWord1;
+    private String passWord2;
+    
+    public MyAccountBean() {
+    }
+
+    public void reset() {
+        nodeUser = currentUser.getNodeUser();
+        passWord1 = null;
+        passWord2 = null;
+    }
+
+    public void updatePseudo(){
+        FacesMessage msg;
+        
+        if(nodeUser.getName() == null || nodeUser.getName().isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le pseudo est obligatoire !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }        
+        
+        UserHelper userHelper = new UserHelper();
+        if(!userHelper.updatePseudo(
+                connect.getPoolConnexion(),
+                nodeUser.getIdUser(),
+                nodeUser.getName())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de pseudo !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;             
+        }
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Pseudo changé avec succès !!!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        reset();
+    }
+    
+    public void updateAlertEmail(){
+        FacesMessage msg;
+        
+         
+        UserHelper userHelper = new UserHelper();
+        if(!userHelper.setAlertMailForUser(
+                connect.getPoolConnexion(),
+                nodeUser.getIdUser(),
+                nodeUser.isIsAlertMail())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant le changement d'alertes !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;             
+        }
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Alerte changée avec succès !!!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        reset();
+    }    
+    
+    public void updateEmail(){
+        FacesMessage msg;
+        
+        if(nodeUser.getMail()== null || nodeUser.getMail().isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un Email est obligatoire !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }           
+        UserHelper userHelper = new UserHelper();
+        if(!userHelper.updateMail(
+                connect.getPoolConnexion(),
+                nodeUser.getIdUser(),
+                nodeUser.getMail())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement d'Email !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;             
+        }
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Email changé avec succès !!!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        reset();
+    }    
+    
+    public void updatePassword(){
+        FacesMessage msg;
+        UserHelper userHelper = new UserHelper();
+        if(passWord1 == null || passWord1.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }
+        if(passWord2 == null || passWord2.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }   
+        if(!passWord1.equals(passWord2)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Mot de passe non identique !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }
+
+        if(!userHelper.updatePwd(
+                connect.getPoolConnexion(),
+                nodeUser.getIdUser(),
+                MD5Password.getEncodedPassword(passWord2))){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de passe !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;             
+        }
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Mot de passe changé avec succès !!!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        reset();        
+    }
+
+    public NodeUser getNodeUser() {
+        return nodeUser;
+    }
+
+    public void setNodeUser(NodeUser nodeUser) {
+        this.nodeUser = nodeUser;
+    }
+
+    public String getPassWord1() {
+        return passWord1;
+    }
+
+    public void setPassWord1(String passWord1) {
+        this.passWord1 = passWord1;
+    }
+
+    public String getPassWord2() {
+        return passWord2;
+    }
+
+    public void setPassWord2(String passWord2) {
+        this.passWord2 = passWord2;
+    }
+
+
+    
+    
+}

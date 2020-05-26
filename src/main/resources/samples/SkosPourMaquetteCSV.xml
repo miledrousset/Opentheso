@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcterms="http://purl.org/dc/terms/"
+	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+	xmlns:iso-thes="http://purl.org/iso25964/skos-thes#"
+	xmlns:opentheso="http://purl.org/umu/uneskos#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:about="http://mondomaine.fr/31">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+	<skos:prefLabel xml:lang="en">pourCSV</skos:prefLabel>
+	<skos:prefLabel xml:lang="fr">pourCSV</skos:prefLabel>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/14316"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/14317"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/14318"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/14319"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/G768">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">collection1</skos:prefLabel>
+	<iso-thes:microThesaurusOf rdf:resource="http://mondomaine.fr/G768"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14316"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14320"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14317"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14321"/>
+	<skos:notation>I</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/G770">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">collection2</skos:prefLabel>
+	<iso-thes:microThesaurusOf rdf:resource="http://mondomaine.fr/G770"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14318"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14322"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14319"/>
+	<skos:member rdf:resource="http://mondomaine.fr/14323"/>
+	<skos:notation>II</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14316">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">topTerm1</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/31"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/14320"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/31"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/G768"/>
+	<skos:notation>1</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+	<dcterms:identifier>14316</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14320">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="en">Lyon</skos:prefLabel>
+	<skos:prefLabel xml:lang="fr">Lyon</skos:prefLabel>
+	<skos:altLabel xml:lang="fr">syn_concept1</skos:altLabel>
+	<skos:related rdf:resource="http://mondomaine.fr/14321"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/14316"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/31"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/G768"/>
+	<skos:exactMatch rdf:resource="https://www.idref.fr/032012004"/>
+	<skos:exactMatch rdf:resource="http://www.geonames.org/2996944"/>
+	<skos:exactMatch rdf:resource="http://www.wikidata.org/entity/Q456"/>
+	<skos:notation>11</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+	<dcterms:identifier>14320</dcterms:identifier>
+	<skos:definition xml:lang="en">commune in the metropolis of Lyon, France (wikidata)</skos:definition>
+	<skos:definition xml:lang="fr">commune française de la métropole de Lyon (chef-lieu) (wikidata)</skos:definition>
+	<geo:lat rdf:datatype="http://www.w3.org/2001/XMLSchema#double">45.74846</geo:lat>
+	<geo:long rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4.84671</geo:long>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14317">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">topTerm2</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/31"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/14321"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/31"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/G768"/>
+	<skos:notation>2</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+	<dcterms:identifier>14317</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14321">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">concept2</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">concept2_en</skos:prefLabel>
+	<skos:related rdf:resource="http://mondomaine.fr/14320"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/14317"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/31"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/G768"/>
+	<skos:notation>21</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+	<dcterms:identifier>14321</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14318">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">topTermA</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/31"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/14322"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/31"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/G770"/>
+	<skos:notation>A</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+	<dcterms:identifier>14318</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14322">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">conceptA</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/14318"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/31"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/G770"/>
+	<skos:notation>A1</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+	<dcterms:identifier>14322</dcterms:identifier>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14319">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">topTermB</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/31"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/14323"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/31"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/G770"/>
+	<skos:notation>B</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+	<dcterms:identifier>14319</dcterms:identifier>
+	<skos:definition xml:lang="fr">def pour topTermB</skos:definition>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/14323">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">conceptB</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">conceptB_en</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/14319"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/31"/>
+	<opentheso:memberOf rdf:resource="http://mondomaine.fr/G770"/>
+	<skos:notation>B1</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-06-14</dcterms:modified>
+	<dcterms:identifier>14323</dcterms:identifier>
+</rdf:Description>
+
+</rdf:RDF>

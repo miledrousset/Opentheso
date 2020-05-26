@@ -1,0 +1,43 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:b="http://bootsfaces.net/ui">
+
+    <h:panelGroup id="formList">
+        <b:row style="margin-top: 5px;">
+            <b:column span="10" offset="1" >
+                <b:inputText id="inputList" placeholder="Type one or more character..." value="#{listIndex.searchValue}"
+                             onkeyup="ajax:listIndex.onChange()" update="formList" delay="1000"
+                             style="font-size: 12px; height: 25px;">
+                </b:inputText>
+
+            </b:column>
+        </b:row>
+        <b:row >
+            <b:column span="2" offset="3" style="font-size: 12px; height: 25px;margin-top: -20px;margin-bottom: 8px; color: #43B572">
+                <b:selectBooleanCheckbox value="#{listIndex.permuted}" caption="permuté" tooltip="mode permuté" tooltip-delay="500"
+                                         style="margin-top: 2px;"
+                                         onclick="ajax:listIndex.onChange()"
+                                         update="formList"/>
+            </b:column>
+            <b:column span="2" offset="1" style="font-size: 12px; height: 25px;margin-top: -20px; margin-bottom: 8px; color: #43B572">
+                <b:selectBooleanCheckbox value="#{listIndex.withAltLabel}" caption="synonyme" tooltip="uniquement les synonymes" tooltip-delay="500"
+                                         style="margin-top: 2px;"
+                                         onclick="ajax:listIndex.onChange()"
+                                         update="formList"
+                                         />
+            </b:column>
+        </b:row>        
+ 
+        <p:dataTable id="singleDT" var="list" value="#{listIndex.nodeIdValues}" selectionMode="single" styleClass="borderless"
+                     selection="#{listIndex.selectedNode}" rowKey="#{list.id}" 
+                     style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll">
+            <p:ajax event="rowSelect" listener="#{listIndex.onRowSelect}" update=":formRightTab" />
+            <p:column >
+                <h:outputText value="#{list.value}" title="#{list.id}" style="font-size: 12px;"/>
+            </p:column>
+        </p:dataTable>        
+
+    </h:panelGroup>
+</ui:fragment>

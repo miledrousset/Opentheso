@@ -1,0 +1,31 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui">
+
+
+    <h:panelGroup id="idGlobalActionsGroup" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}" >
+        <b:row rendered="#{(currentUser.nodeUser != null) and 
+                                    (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
+               style="font-size: 12px; " >
+            <b:column span="2" offset="10">
+
+                <!-- ajout de TopTermes et des collections -->
+                <!-- ajout de TopTermes et des collections -->
+                <b:dropMenu icon-awesome="fa-plus-circle" icon-size="l"  value=""
+                            style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px; "
+                            class="dropdown-submenu pull-left">
+
+                    <b:navCommandLink  value="Add group/collection"
+                                       action="#{addGroupBean.init()}"
+                                       oncomplete="PF('addGroup').show();"
+                                       update="idAddGroup addGroupForm"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px; ">
+                    </b:navCommandLink>     
+                </b:dropMenu>        
+                <ui:include src="/dialog/group/addGroup.xhtml" />
+            </b:column>
+        </b:row> 
+    </h:panelGroup>        
+</ui:fragment>

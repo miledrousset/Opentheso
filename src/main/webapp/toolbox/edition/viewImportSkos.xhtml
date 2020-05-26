@@ -1,0 +1,216 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:panelGroup id="viewImportSkosForm">
+
+        <b:row style="margin-left: 30px; margin-right: 30px; ">
+            <b:column span="4" offset="4">
+                <h:outputText value="Import en Skos" style="font-size: 14px; color: #C63632"/>
+            </b:column>
+        </b:row>        
+
+        <!-- format de date -->
+        <b:row style="margin-left: 30px; margin-right: 30px; ">
+            <b:column span="5">
+                <b:inputText placeholder="yyyy-MM-dd" label="Format de la date" value="#{importFileBean.formatDate}" style="color: #C63632; font-size: 12px;"/>
+            </b:column>
+        </b:row>
+
+        <!-- Options des identifiants à récupérer  -->        
+        <b:row style="margin-left: 30px; margin-right: 30px; ">
+            <b:column span="12">
+                <p:panelGrid styleClass="ui-noborder" style="font-size: 12px;">
+                    <f:facet name="header" >
+                        <h:outputText value="Récupération de l'identifiant pérenne (ARK ou Handle)" style="font-size: 12px;" />
+                    </f:facet>
+                    <p:row>
+                        <p:selectOneRadio id="customRadio" value="#{importFileBean.selectedIdentifier}" layout="custom" styleClass="selected_one_radio_custom" > 
+                            <f:selectItem itemLabel="Sans" itemValue="sans" />
+                            <f:selectItem itemLabel="Ark" itemValue="ark" />
+                            <f:selectItem itemLabel="Handle" itemValue="handle" />
+                        </p:selectOneRadio>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:radioButton id="opt1" for="customRadio" itemIndex="0" />
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel for="opt1" value="Sans" />
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:radioButton id="opt2" for="customRadio" itemIndex="1" />
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel for="opt2" value="Ark" />
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:radioButton id="opt3" for="customRadio" itemIndex="2" />
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel for="opt3" value="Handle -> Préfixe :" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{importFileBean.prefixHandle}"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </b:column>
+        </b:row>
+
+        <p:spacer/>
+        
+        <!-- Choix du fichier -->   
+        <b:row style="margin-left: 30px; margin-right: 30px; ">
+            <b:column span="12" > 
+                <p:fileUpload listener="#{importFileBean.loadFileSkos}" 
+                          label="parcourir" 
+                          mode="advanced" auto="true"
+                          allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
+                          update="toolBoxForm viewImportSkosForm" disabled="#{importFileBean.loadDone}"
+                          style="font-size: 12px;" />  
+            </b:column>
+        </b:row> 
+        
+        <b:row rendered="#{importFileBean.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+            <b:column span="5">
+                <h:outputText value="URI: " />
+                <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+            </b:column>
+        </b:row>
+        <b:row rendered="#{importFileBean.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+            <b:column span="5">
+                <h:outputText value="Total des concepts: " />
+                <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+            </b:column>
+        </b:row>
+        <p:spacer/>
+        
+        <!-- choix du format de sortie Skos, Json, JsonLd, Turtle -->
+        <b:row>
+            <b:column span="1" offset="8">
+                <h:outputText value="Format: " />
+            </b:column>
+            <b:column span="2">
+                <p:selectOneMenu id="idTypeImportSingle" value="#{importFileBean.typeImport}"
+                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                    <f:selectItem itemLabel="Skos" itemValue="0" />
+                    <f:selectItem itemLabel="Json-ld" itemValue="1" />
+                    <f:selectItem itemLabel="Turtle" itemValue="2" />
+                    <f:selectItem itemLabel="Json" itemValue="2" />
+                </p:selectOneMenu> 
+            </b:column>
+        </b:row>
+
+        <!-- dans quel projet ajouter le thesaurus -->
+        <b:row style="margin-top: 5px;">
+            <b:column span="1" offset="8">
+                <h:outputText value="Projet:" title="A quel projet ajouter le thésaurus à importer"/>
+            </b:column>
+            <b:column rendered="#{currentUser.nodeUser.isSuperAdmin}" span="2">
+                <p:selectOneMenu id="idGroupSelected11" 
+                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;"
+                                 value="#{importFileBean.selectedUserProject}" >
+                    <f:selectItem  itemLabel="..." itemValue="" />
+                    <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
+                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                </p:selectOneMenu>
+            </b:column>
+            <b:column rendered="#{!currentUser.nodeUser.isSuperAdmin}" span="2">
+                <p:selectOneMenu id="idGroupSelected12"
+                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;"
+                                 value="#{importFileBean.selectedUserProject}" >
+                    <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
+                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                </p:selectOneMenu>
+            </b:column>            
+        </b:row>           
+        <p:spacer/>    
+
+          
+        <b:row >
+            <b:column span="2" offset="3"> 
+                <p:commandButton id="cancelSkos" icon="fas fa-undo"  
+                                 value="Retour"
+                                 class="btn btn-success"
+                                 style="width: 100%; background-color: #FFC107; color: black; border: none;"
+                                 actionListener="#{viewEditionBean.init()}"
+                                 action="#{importFileBean.init()}"
+                                 update="toolBoxForm toolBoxForm:listThesoForm">
+                </p:commandButton>
+            </b:column>
+            <b:column span="2" offset="2" > 
+                <p:commandButton id="buttonImportSkos" class="btn btn-success" widgetVar="buttonImportSkos"
+                                 icon="fas fa-check-circle fas 2x"
+                                 update="toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm"
+                                 onclick="PF('pbAjax').start(); PF('buttonImportSkos').disable();"
+                                 style="width: 100%; background-color: #5CB85C; border: none;"
+                                 actionListener="#{importFileBean.addSkosThesoToBDD()}"
+                                 ajax="true"
+                                 value="Importer"
+                                 disabled="#{!importFileBean.loadDone}">
+                </p:commandButton>                       
+            </b:column> 
+        </b:row>           
+
+        <p:spacer/>
+        <b:row >
+            <b:column span="10" offset="1">
+                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" labelTemplate="{value}%" styleClass="animated" global="false" style="font-size: 12px; height: 20px;"
+                               >
+                </p:progressBar> 
+            </b:column>                
+        </b:row>
+        
+        <p:spacer/>
+        <!-- infos -->
+        <b:row rendered="#{importFileBean.loadDone or importFileBean.importDone}" style="margin-left: 30px; margin-right: 30px;">
+            <b:column span="12" >
+                <p:accordionPanel activeIndex="-1">
+                    <p:tab title="Info" titleStyleClass="infoAcordionPanel" >
+                        <p:scrollPanel mode="native" style="height:200px">
+                            <pre><h:outputText value="#{importFileBean.info}" styleClass="infoAcordionPanel" /></pre>
+                            <hr/>
+                            <pre><h:outputText rendered="#{!importFileBean.warningIsEmpty()}" value="Warning : #{importFileBean.warning}" styleClass="warningAcordionPanel" /></pre>
+                        </p:scrollPanel>
+                    </p:tab>
+                    <p:tab title="Error" titleStyleClass="errorAcordionPanel">
+                        <p:scrollPanel mode="native" style="height:200px">
+                            <pre><h:outputText value="#{importFileBean.error}" styleClass="errorAcordionPanel" /></pre>
+                        </p:scrollPanel>
+                    </p:tab>
+                </p:accordionPanel> 
+            </b:column>
+        </b:row>
+        
+
+        <b:row>
+            <b:column span="8" offset="2" style="font-size: 12px;"> 
+                <b:messages autoUpdate="true" />
+            </b:column> 
+        </b:row>                
+        
+    </h:panelGroup>
+    
+    
+    
+    
+
+</ui:fragment>

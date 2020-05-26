@@ -1,0 +1,22 @@
+Version 1.0
+
+Installation d'OpenTheso :
+
+- paramétrage de Tomcat 7, il faut ajouter la ligne suivante dans /etc/init.d/tomcat7 :
+    export CATALINA_OPTS="-Xms256M -Xmx1024M"
+    sinon, le serveur tomcat produit une erreur de type (Out Of Memory)
+
+- gestion de preferences.properties :
+    - langueSource : langue de base du site dans laquelle les thésaurus seront 
+        générés (par défaut).
+    - pathImage : Chemin vers le dossier contenant les images en taille réel 
+        (doit être créé avant utilisation).
+    - dossierResize : Chemin vers le dossier contenant les images au format 
+        réduit (doit être créé avant utilisation et se trouver à l'interieur 
+        du dossier pathImage).
+    - cheminSite : Adresse web du site (pour la création automatique de lien 
+        vers les concepts).
+
+
+
+

@@ -1,0 +1,188 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <h:panelGroup id="groupView" rendered="#{groupView.nodeGroup != null}" styleClass="textOpentheso">
+        
+        <p:spacer height="20" />
+        
+        <!-- ligne Label du groupe -->           
+        <b:row id="idGroupLable">
+            <b:column span="3">
+                <h:outputText value="Label" />
+            </b:column>
+            
+            <b:column span="1">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Modifier" 
+                                      action="#{modifyGroupBean.init()}"
+                                      oncomplete="PF('modifyGroup').show();"
+                                      update="idModifyGroup modifyGroupForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu>
+            </b:column>            
+            <b:column span="8">
+                <h:outputText value="#{groupView.nodeGroup.lexicalValue}" style="font-weight: bold"/>
+                <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
+            </b:column>
+        </b:row>
+        
+        
+        <!-- ligne Type de groupe -->         
+        <b:row id="idGroupType">
+            <b:column span="4">
+                <h:outputText value="Type" />
+            </b:column>
+            <b:column span="8">
+                <h:outputText value="#{groupView.nodeGroupType.skosLabel}" title="#{groupView.nodeGroupType.label}"/>
+                <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
+            </b:column>
+        </b:row>        
+
+        
+        <!-- ligne Membres -->        
+        <b:row >
+            <b:column span="4">
+                <h:outputText value="Membres" />
+            </b:column>
+            <b:column span="8">
+                <h:outputText value="#{groupView.count}" title="Nombre de concepts inclus dans la collection/groupe"/>
+                <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
+            </b:column>
+        </b:row>
+        
+        
+        
+        <!-- ligne Notation -->        
+        <b:row id="idGroupNotation">
+            <b:column span="4">
+                <h:outputText value="Notation" />
+            </b:column>
+            <b:column span="8" rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
+                                           or (groupView.nodeGroup.conceptGroup.notation== '')}">
+                <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />   
+                <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
+            </b:column>            
+            <b:column span="8" rendered="#{(groupView.nodeGroup.conceptGroup.notation != null) 
+                                           and (groupView.nodeGroup.conceptGroup.notation != '')}">
+                <h:outputText value="#{groupView.nodeGroup.conceptGroup.notation}"/>
+                <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
+            </b:column>
+        </b:row>          
+        
+        
+        
+        <!-- ligne Traductions -->
+        <b:row rendered="#{(currentUser.nodeUser != null) or (groupView.nodeGroupTraductions.size() !=0)}">
+            <b:column span="3">
+                <h:outputText value="Traduction" />
+            </b:column>
+            <b:column span="1">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les traductions" tooltip-delay-show="1000"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter une traduction" 
+                                      actionListener="#{traductionGroupBean.reset()}"
+                                      action = "#{traductionGroupBean.setLangWithNoTraduction()}"
+                                      oncomplete="PF('addTraductionGroup').show();"
+                                      update="idAddTraductionGroup addTraductionGroupForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="modifier une traduction" 
+                                      actionListener="#{traductionGroupBean.reset()}"
+                                      oncomplete="PF('renameTraductionGroup').show();"
+                                      update="idRenameTraductionGroup renameTraductionGroupForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="supprimer une traduction" 
+                                      actionListener="#{traductionGroupBean.reset()}"
+                                      oncomplete="PF('deleteTraductionGroup').show();"
+                                      update="idDeleteTraductionGroup deleteTraductionGroupForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu> 
+            </b:column>
+            <h:panelGroup id="idGroupTraductions">
+                <b:column span="8" rendered="#{groupView.nodeGroupTraductions.size() == 0}">
+                    <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+
+                <b:column span="8" rendered="#{groupView.nodeGroupTraductions.size() != 0}">
+                    <ui:repeat var="trad" value="#{groupView.nodeGroupTraductions}" >
+                        <b:row>
+                            <b:column >
+                                <h:outputText value="#{trad.title} (#{trad.idLang})"/>                                
+                            </b:column> 
+                        </b:row> 
+                    </ui:repeat> 
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+            </h:panelGroup>
+        </b:row> 
+
+      
+        <!-- ligne URI -->
+        <b:row >
+            <b:column span="12">
+                <h:outputText value="Identifiant / Lien permament" />
+            </b:column>
+        </b:row > 
+
+        <b:row >
+            <b:column span="4">
+                <h:outputText value="Id interne" style="margin-left: 5px;"/>
+            </b:column>
+            <b:column span="8">
+                <b:link href="#{request.contextPath}/?idg=#{groupView.nodeGroup.conceptGroup.idgroup}&amp;idt=#{groupView.nodeGroup.conceptGroup.idthesaurus}"
+                        value="#{groupView.nodeGroup.conceptGroup.idgroup}" icon="link" icon-size="sm" style="color: #43B572;"></b:link>
+            </b:column>
+        </b:row >
+        <b:row rendered="#{groupView.nodeGroup.conceptGroup.idARk != ''}">
+            <b:column span="4">
+                <h:outputText value="IdArk" style="margin-left: 5px;"/>
+            </b:column>
+            <b:column span="8">
+                <b:link href="#{roleOnTheso.nodePreference.serveurArk}#{groupView.nodeGroup.conceptGroup.idARk}"
+                        value="#{roleOnTheso.nodePreference.serveurArk}#{groupView.nodeGroup.conceptGroup.idARk}"
+                        target="_blank"
+                        icon="link" icon-size="sm" style="color: #43B572;"></b:link>
+            </b:column>
+        </b:row >
+        <b:row rendered="#{groupView.nodeGroup.conceptGroup.idHandle != ''}">
+            <b:column span="4">
+                <h:outputText value="IdHandle" style="margin-left: 5px;"/>
+            </b:column>
+            <b:column span="8">
+                <b:link href="#{roleOnTheso.nodePreference.urlApiHandle}#{groupView.nodeGroup.conceptGroup.idHandle}"
+                        value="#{roleOnTheso.nodePreference.urlApiHandle}#{groupView.nodeGroup.conceptGroup.idHandle}"
+                        target="_blank"
+                        icon="link" icon-size="sm" style="color: #43B572;"></b:link>
+            </b:column>
+        </b:row > 
+        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 5px; "/>        
+
+        
+        <p:spacer height="20" />
+        
+        
+        <!-- ligne dates -->        
+        <b:row>    
+            <b:column span="8" style="font-size: 12px; color: grey; font-style: italic ">
+                <h:outputText value="Created: " />
+                <h:outputText value="#{groupView.nodeGroup.created}" style="color: #666666"/>
+                <h:outputText value="  last modified: "/>
+                <h:outputText value="#{groupView.nodeGroup.modified}" style="color: #666666"/>
+            </b:column>
+        </b:row>        
+        
+        <!-- Dialogues -->        
+        <ui:include src="/dialog/group/modifyGroup.xhtml" />         
+        <ui:include src="/dialog/group/addTraductionGroup.xhtml" />  
+        <ui:include src="/dialog/group/deleteTraductionGroup.xhtml" />  
+        <ui:include src="/dialog/group/renameTraductionGroup.xhtml" />  
+        
+    </h:panelGroup>
+</ui:fragment>

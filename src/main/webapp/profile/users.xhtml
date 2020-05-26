@@ -1,0 +1,51 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:form id="usersForm">
+        <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+            <b:row style="margin-left: 30px; margin-right: 30px;">
+                <b:column span="3">
+                    <h:outputText value="Liste de tous les utilisateurs " style="font-size: 12px;" />
+                </b:column>
+            </b:row >
+
+            <p:spacer />
+
+
+            <b:row style="margin-left: 30px; margin-right: 30px;">
+                <b:column span="12">
+                    <!-- Vue liste de tous les utilisateurs -->
+
+                    <b:row>
+                        <b:column span="12">                                
+                            <p:dataTable id="tabUser" rendered="#{superAdminBean.allUsers != null}"
+                                         value="#{superAdminBean.allUsers}" var="listUser" scrollable="true" resizableColumns="true" scrollHeight="450"
+                                         style="font-size: 12px;">
+
+                                <p:column width="50" headerText="Pseudo" rendered="#{!listUser.isActive}">
+                                    <h:outputText title="user désactivé" value="#{listUser.name}" style="color: red; font-style: oblique" />
+                                </p:column>
+                                <p:column width="50" headerText="Pseudo" rendered="#{listUser.isActive}">
+                                    <h:outputText value="#{listUser.name}"/>
+                                </p:column>
+
+                                <p:column width="20" >
+
+                                </p:column>
+                            </p:dataTable>
+                        </b:column>
+                    </b:row>                                          
+                </b:column>
+
+            </b:row>
+        </b:panel>
+    
+    </h:form>   
+
+
+
+</ui:fragment>

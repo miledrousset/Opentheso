@@ -1,0 +1,123 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:f="http://java.sun.com/jsf/core">
+
+
+    <b:form id="formMenu">
+        <b:row>
+            <b:column span="12">
+                <!-- gestion du menu -->
+                <b:navBar brandImg="images/logo_Opentheso.png" brand-img-style="marginheight:34px;width: 139px;margin-top: -8px;"
+                          brandHref="index.xhtml" fluid="true">
+
+                    
+                    <b:navbarLinks pull="left">
+                        <b:navCommandLink 
+                            value="Thésaurus" 
+                            action="#{indexSetting.setIsThesoActive(true)}"
+                            update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm" 
+                            style="color: #{indexSetting.thesoColor}">
+                        </b:navCommandLink>
+
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
+                                   value="Candidat"  
+                                   action="#{indexSetting.setIsCandidateActive(true)}"
+                                   style="color: #{indexSetting.candidateColor}"
+                                   update="containerIndex formMenu">                                   
+                        </b:navCommandLink>
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}"
+                                   value="Profil" 
+                                   action="#{indexSetting.setIsProfileActive(true)}"
+                                   actionListener="#{profileBean.reset()}"
+                                    update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
+                                    profileForm"                                    
+                                   style="color: #{indexSetting.profileColor}">                                   
+                        </b:navCommandLink>
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" 
+                                   value="Paramètres" 
+                                   action="#{indexSetting.setIsSettingActive(true)}"
+                                   actionListener="#{settingAndToolsBean.reset()}"
+                                    update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
+                                    settingForm"                                    
+                                   style="color: #{indexSetting.settingColor}">                                   
+                        </b:navCommandLink>
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
+                                          action="#{indexSetting.setIsToolBoxActive(true)}"
+                                          actionListener="#{toolBoxBean.reset()}"
+                                          update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
+                                          toolBoxForm" 
+                                          value="Boite à outils" icon-align="right" 
+                                          style="color: #{indexSetting.toolBoxColor}">
+                        </b:navCommandLink>                  
+                    </b:navbarLinks>                     
+                    
+                    
+                    
+                    <b:navbarLinks pull="right" >
+                        <!--Not connected-->
+                        <b:navCommandLink rendered="#{currentUser.nodeUser == null}" value="Connexion" icon-awesome="key"
+                                          oncomplete="PF('login').show();"
+                                          styleClass="buttonIconOrange"
+                                          update="idLogin loginForm"/>
+
+                        <!--is connected-->
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{currentUser.nodeUser.name} !! cliquer pour se déconnecter"
+                                          icon-awesome="sign-out-alt" icon-size="lg" style="color: #C63632"
+                                          ajax="true" action="#{currentUser.disconnect()}"/>              
+
+
+                        <!-- liste des thésaurus -->                
+                        <b:navLink style="height: 30px; margin-top: -3px; margin-right: -10px;">
+                            <b:selectOneMenu value="#{selectedTheso.selectedIdTheso}" 
+                                             onselect="#{selectedTheso.setSelectedTheso()} #{searchBean.reset()} #{viewEditorThesoHomeBean.reset()} #{viewEditorHomeBean.reset()}"
+                                             update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab
+                                             containerIndex homePageForm"                                 
+                                             style="font-size: 12px; max-width: 180px;  background: white">
+                                <f:selectItem itemLabel="(select thesaurus)" itemValue=""/>
+                                <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
+                            </b:selectOneMenu>
+                        </b:navLink> 
+
+
+                        <!-- Langues -->
+                        <b:dropMenu value="#{langueBean.idLangue}"  style="font-size: 12px; margin-right: -10px;" >
+                            <b:navCommandLink iconAwesome="flag fas_custom_flag" value="fr" action="#{langueBean.changeLangue('fr')}" ajax="false"
+                                              style="font-size: 12px; background: none; border: none; color: #43B572;margin-left: -5px;"
+                                              update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab containerIndex homePageForm">
+                            </b:navCommandLink>
+                            <b:navCommandLink iconAwesome="flag fas_custom_flag" value="en" action="#{langueBean.changeLangue('en')}" ajax="false"
+                                              style="font-size: 12px; background: none; border: none; color: #43B572; margin-left: -5px;"
+                                              update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab containerIndex homePageForm">
+                            </b:navCommandLink> 
+                            <b:navCommandLink iconAwesome="flag fas_custom_flag" value="es" action="#{langueBean.changeLangue('es')}" ajax="false"
+                                              style="font-size: 12px; background: none; border: none; color: #43B572; margin-left: -5px;"
+                                              update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab containerIndex homePageForm">
+                            </b:navCommandLink> 
+                            <b:navCommandLink iconAwesome="flag fas_custom_flag" value="it" action="#{langueBean.changeLangue('it')}" ajax="false"
+                                              style="font-size: 12px; background: none; border: none; color: #43B572; margin-left: -5px;"
+                                              update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab containerIndex homePageForm">
+                            </b:navCommandLink>                         
+                            <b:navCommandLink  iconAwesome="flag fas_custom_flag" value="de" action="#{langueBean.changeLangue('de')}" ajax="false"
+                                               style="font-size: 12px; background: none; border: none; color: #43B572; margin-left: -5px;"
+                                               update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab containerIndex homePageForm">                                          
+                            </b:navCommandLink>   
+                        </b:dropMenu> 
+                    </b:navbarLinks>
+
+
+           
+                </b:navBar>                
+            </b:column>
+        </b:row>
+        
+
+        
+        
+    </b:form>
+
+    <ui:include src="dialog/login/login.xhtml" />    
+    <ui:include src="dialog/help.xhtml" />
+    <ui:include src="dialog/helpAlignment.xhtml" />
+
+</ui:fragment>

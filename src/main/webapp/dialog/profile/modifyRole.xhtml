@@ -1,0 +1,99 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idModifyRole" header="Modifier les rôles" widgetVar="modifyRole" 
+              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >        
+        <h:form id="modifyRoleForm"
+                rendered="#{(currentUser.nodeUser != null)}">
+            <b:row style="margin-left: 10px; "> 
+                <!-- Nom Pseudo -->
+                <b:column span="3" >
+                    <h:outputText value="Utilisateur : " style="font-size: 12px;"/>  
+                </b:column>
+                <b:column span="5">
+                    <h:outputText value="#{modifyRoleBean.nodeUser.name}"
+                                  style="font-size: 13px; color: #43B572;"/>
+                </b:column>                    
+            </b:row>
+            <!-- Projets -->
+            <b:row style="margin-left: 10px; "> 
+                <b:column span="3">
+                    <h:outputText value="Projet : " style="font-size: 12px;"/> 
+                </b:column>
+                <b:column span="5">
+                    <h:outputText value="#{myProjectBean.selectedProjectName}"
+                                  style="font-size: 13px; color: #43B572;"/>
+                </b:column> 
+            </b:row>             
+
+            <p:spacer/>
+            
+            <!-- Roles -->
+            <b:row style="margin-left: 10px; "> 
+                <b:column span="3">
+                    <h:outputText value="Rôle : " style="font-size: 12px;"/> 
+                </b:column>
+                <b:column span="8">                       
+                    <p:selectOneMenu id="selectAutorizedRoles" value="#{modifyRoleBean.roleOfSelectedUser}"
+                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                     style="width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="border: none; box-shadow: none; max-width: 300px">
+                        <f:selectItems value="#{myProjectBean.myAuthorizedRoles}" var="myRoles" itemLabel="#{myRoles.value}" itemValue="#{myRoles.id}"/>
+                    </p:selectOneMenu>
+                </b:column> 
+            </b:row>            
+
+            <p:spacer/>
+
+            <b:row style="margin-left: 10px; "> 
+                <b:column span="5" offset="6" >
+                    <b:commandButton id="buttonSubmit" value="Modifier le rôle"  update="profileForm:myProjectForm modifyRoleForm profileForm:myProjectForm:idModifyRole
+                                     modifyRoleForm:tabUserProjectForm messageIndex" 
+                                     tooltip="Modifier le rôle de l'utilisateur sur ce projet" tooltip-delay-show="1000"
+                                     style="width:100%; font-size: 13px; 
+                                     font-weight: normal;
+                                     color: white; background: #43B572; border: none; box-shadow: none;"
+                                     class="btn btn-primary"
+                                     action="#{modifyRoleBean.updateRoleForSelectedUser()}"
+                                     oncomplete="PF('modifyRole').hide();"/>
+                </b:column>                    
+            </b:row>                    
+            
+            <p:separator/>
+            
+            <!-- Les rôles existants de l'utilisateur --> 
+            <b:row style="margin-left: 10px; "> 
+                <b:column span="11">
+                    <h:outputText value="Liste des rôles de l'utilisateur" style="font-size: 12px;" />
+                </b:column>
+            </b:row>
+            
+            <b:row style="margin-left: 10px; "> 
+                <b:column span="11">
+                    <b:panel>
+                        <p:dataTable id="tabUser" 
+                             value="#{modifyRoleBean.allMyRoleProject}" var="allRoleProject"  scrollable="true" resizableColumns="true" scrollHeight="450"
+                             style="font-size: 12px;">
+                            <p:column width="30%" headerText="Rôle">
+                                <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
+                            </p:column>
+                            <p:column width="70%" headerText="Projet" >
+                                <h:outputText value="#{allRoleProject.groupName}" style="font-size: 12px;" />
+                            </p:column>                              
+                        </p:dataTable>                            
+                    </b:panel>
+                </b:column>                
+            </b:row>
+
+            <b:row style="margin-left: 10px; "> 
+                <b:column span="12">
+                    <b:messages autoUpdate="true"/>
+                </b:column>
+            </b:row>           
+        </h:form>
+    </p:dialog>   
+</ui:fragment>

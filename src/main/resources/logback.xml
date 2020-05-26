@@ -1,0 +1,5 @@
+ <configuration>
+    <logger name="com.zaxxer.hikari.pool.PoolBase" level="ERROR"/>
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="ERROR"/>
+    <logger name="com.zaxxer.hikari.HikariDataSource" level="ERROR"/>
+</configuration>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/">
+    <skos:ConceptScheme rdf:about="http://opentheso.frantiq.fr/">
+        <skos:hasTopConcept>
+            <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#1"/>
+        </skos:hasTopConcept>
+        <skos:hasTopConcept>
+            <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#MT_18"/>
+        </skos:hasTopConcept>
+    </skos:ConceptScheme>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#1">
+        <skos:prefLabel xml:lang="fr">france</skos:prefLabel>
+        <skos:prefLabel xml:lang="en">french</skos:prefLabel>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#2"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#3"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#MT_18">
+        <skos:prefLabel xml:lang="fr">Industries</skos:prefLabel>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26975"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#2">
+        <skos:prefLabel xml:lang="fr">ile de france</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#3">
+        <skos:prefLabel xml:lang="fr">rhone alpes</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#10"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#11"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#12"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#4"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#8"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#10">
+        <skos:prefLabel xml:lang="fr">Vienne</skos:prefLabel>
+        <skos:prefLabel xml:lang="en">vienne_eng</skos:prefLabel>
+        <skos:altLabel xml:lang="fr">38200</skos:altLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#3"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#11">
+        <skos:prefLabel xml:lang="fr">Saint clair du rhone</skos:prefLabel>
+        <skos:altLabel xml:lang="fr">38370</skos:altLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#3"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#12">
+        <skos:prefLabel xml:lang="fr">Grenoble</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#3"/>
+        <skos:related rdf:resource="http://opentheso.frantiq.fr/concept#13"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#4">
+        <skos:prefLabel xml:lang="fr">rhone</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#3"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#13"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#5"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#13">
+        <skos:prefLabel xml:lang="fr">salaise</skos:prefLabel>
+        <skos:altLabel xml:lang="fr">sys</skos:altLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#4"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#14"/>
+        <skos:related rdf:resource="http://opentheso.frantiq.fr/concept#12"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#14">
+        <skos:prefLabel xml:lang="fr">spec</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#13"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#5">
+        <skos:prefLabel xml:lang="fr">Lyon</skos:prefLabel>
+        <skos:prefLabel xml:lang="en">Lyon_eng</skos:prefLabel>
+        <skos:prefLabel xml:lang="xx">Lyon_xx</skos:prefLabel>
+        <skos:altLabel xml:lang="fr">lugdunum</skos:altLabel>
+        <skos:altLabel xml:lang="en">lugdunum_eng</skos:altLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#4"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#6"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#7"/>
+        <skos:related rdf:resource="http://opentheso.frantiq.fr/concept#9"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#6">
+        <skos:prefLabel xml:lang="fr">1er arrondissement</skos:prefLabel>
+        <skos:altLabel xml:lang="fr">69001</skos:altLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#5"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#7">
+        <skos:prefLabel xml:lang="fr">2eme arrondissement</skos:prefLabel>
+        <skos:altLabel xml:lang="fr">69002</skos:altLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#5"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#8">
+        <skos:prefLabel xml:lang="fr">Ain</skos:prefLabel>
+        <skos:prefLabel xml:lang="en">Ain_eng</skos:prefLabel>
+        <skos:prefLabel xml:lang="es">Ain_esp</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#3"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#9"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#9">
+        <skos:prefLabel xml:lang="fr">miribel</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#1"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#8"/>
+        <skos:related rdf:resource="http://opentheso.frantiq.fr/concept#5"/>
+        <dcterms:created>2014-03-27</dcterms:created>
+        <dcterms:modified>2014-03-27</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26975">
+        <skos:prefLabel xml:lang="fr">agriculture industruelle</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26976"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26981"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26984"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26976">
+        <skos:prefLabel xml:lang="fr">produits laitières</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26975"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26977"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26978"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26979"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26980"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26977">
+        <skos:prefLabel xml:lang="fr">beurre</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26976"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26978">
+        <skos:prefLabel xml:lang="fr">Fromage</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26976"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26979">
+        <skos:prefLabel xml:lang="fr">crème</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26976"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26980">
+        <skos:prefLabel xml:lang="fr">lait</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26976"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26981">
+        <skos:prefLabel xml:lang="fr">catégories de produits</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26975"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26982"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26983"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26982">
+        <skos:prefLabel xml:lang="fr">lait entier</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26981"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26983">
+        <skos:prefLabel xml:lang="fr">lait demi écrémé</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26981"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26984">
+        <skos:prefLabel xml:lang="fr">productions</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26975"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26985"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26986"/>
+        <skos:narrower rdf:resource="http://opentheso.frantiq.fr/concept#C_26987"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26985">
+        <skos:prefLabel xml:lang="fr">lait de buffle</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26984"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26986">
+        <skos:prefLabel xml:lang="fr">lait de vache</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26984"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://opentheso.frantiq.fr/concept#C_26987">
+        <skos:prefLabel xml:lang="fr">lait de chèvre</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://opentheso.frantiq.fr/concept#MT_18"/>
+        <skos:broader rdf:resource="http://opentheso.frantiq.fr/concept#C_26984"/>
+        <dcterms:created>2014-07-21</dcterms:created>
+        <dcterms:modified>2014-07-21</dcterms:modified>
+    </skos:Concept>
+</rdf:RDF>                    
+
+	

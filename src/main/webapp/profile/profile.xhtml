@@ -1,0 +1,59 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui">
+    <h:form id="profileForm" rendered="#{(currentUser.nodeUser != null)}" >
+        <b:row>
+        <!-- left panel -->
+            <b:column span="3">
+                <b:panel style="margin-top: -20px; height: 700px; background-color: #43B572; border: none;">
+                    <b:row>
+                        <b:column span="11" offset="1">
+                            <b:navCommandLink value="Mon compte" style="color: #{profileBean.myAccountColor}"
+                                              action="#{profileBean.setIsMyAccountActive(true)}"
+                                              actionListener="#{myAccountBean.reset()}"
+                                              update="profileForm profileForm:myAccountForm"/>
+                        </b:column>
+                    </b:row>
+                    <p:spacer/>
+                    <b:row >
+                        <b:column span="11" offset="1">
+                            <b:navCommandLink value="Projets" style="color: #{profileBean.myProjectColor}"
+                                              tooltip="Projets et utilisateurs + les rôles"
+                                              action="#{profileBean.setIsMyProjectActive(true)}"
+                                              actionListener="#{myProjectBean.init()}"
+                                              update="profileForm profileForm:myProjectForm"/>
+                        </b:column>
+                    </b:row>                    
+                    <p:spacer/>
+                    
+                    <b:row  rendered="#{currentUser.nodeUser.isSuperAdmin}">
+                        <b:column span="11" offset="1">
+                            <b:navCommandLink value="Utilisateurs" style="color: #{profileBean.usersColor}"
+                                              tooltip="Tous les utilisateurs"
+                                              action="#{profileBean.setIsUsersActive(true)}"
+                                              actionListener="#{superAdminBean.init()}"
+                                              update="profileForm profileForm:usersForm"/>
+                        </b:column>
+                    </b:row>                    
+                    <p:spacer/>                    
+                    
+                </b:panel>
+            </b:column>
+
+            <!-- right panel -->
+            <b:column span="9" rendered="#{profileBean.isMyAccountActive}">
+                <ui:include src="/profile/myAccount.xhtml" />
+            </b:column>
+            <b:column span="9" rendered="#{profileBean.isMyProjectActive}">
+                <ui:include src="/profile/myProject.xhtml" />
+            </b:column>
+            <b:column span="9" rendered="#{profileBean.isUsersActive and currentUser.nodeUser.isSuperAdmin}">
+                <ui:include src="/profile/users.xhtml" />
+            </b:column>              
+            
+        </b:row>
+       
+    </h:form>        
+</ui:fragment>

@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <title>OpenTheso - Erreur 500</title>
+    </h:head>
+    <h:body>
+        <b:container>
+            <b:row >
+                <b:column span="9" offset="3">
+                    <img src="#{request.contextPath}/images/500.png" style=" margin-top: 50px; max-height: 300px"/><br/>
+                </b:column>
+            </b:row >
+            <b:row >
+                <b:column span="12">
+                    <b:jumbotron>
+                        <a href="#{request.contextPath}/index.xhtml">
+                            <div >
+                                <div align="center" id="menuHeadTop">
+                                    <img src="#{request.contextPath}/images/logo_Opentheso.png" style="width: 160px; margin-top: 0px; margin-right: -20px; margin-bottom: -25px;"/><br/>
+                                </div>
+                            </div>
+                        </a>
+                        <br/><br/>
+                        <div align="center">
+                            <h2>Une erreur est survenue</h2>
+                            Une erreur vient de se produire, ceci peut venir d'une page non disponible ou d'une erreur inattendue. <br/><br/>
+                            Veuillez vider le cache de votre navigateur ou essayez de nouveau l'opération plus tard.
+                            <br/><br/>
+                            Cliquez sur l'image ci-dessus pour revenir à l'accueil
+                        </div>
+
+                    </b:jumbotron>
+                </b:column>
+            </b:row >            
+        </b:container>
+    </h:body>
+</html>
+

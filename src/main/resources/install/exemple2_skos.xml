@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcterms="http://purl.org/dc/terms/"
+	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+	xmlns:iso-thes="http://purl.org/iso25964/skos-thes#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:about="http://mondomaine.fr/1">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+	<skos:prefLabel xml:lang="fr">test1</skos:prefLabel>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/156016"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/156017"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/156018"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/156047"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/156033"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/156034"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/156035"/>
+	<skos:hasTopConcept rdf:resource="http://mondomaine.fr/156049"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+	<dcterms:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">opentheso</dcterms:creator>
+	<dcterms:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">opentheso</dcterms:contributor>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/G8">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">G1</skos:prefLabel>
+	<iso-thes:microThesaurusOf rdf:resource="http://mondomaine.fr/1"/>
+	<iso-thes:subGroup rdf:resource="http://mondomaine.fr/G108"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/G108">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">sG1</skos:prefLabel>
+	<skos:member rdf:resource="http://mondomaine.fr/156016"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156019"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156020"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156021"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156022"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156025"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156026"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156027"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156023"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156024"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156017"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156018"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156028"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156029"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156030"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156031"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156032"/>
+	<iso-thes:superGroup rdf:resource="http://mondomaine.fr/G8"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/G105">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">G2</skos:prefLabel>
+	<iso-thes:microThesaurusOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156047"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156048"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/G106">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">G3</skos:prefLabel>
+	<iso-thes:microThesaurusOf rdf:resource="http://mondomaine.fr/1"/>
+	<iso-thes:subGroup rdf:resource="http://mondomaine.fr/G109"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/G109">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">sG3</skos:prefLabel>
+	<skos:member rdf:resource="http://mondomaine.fr/156033"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156034"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156036"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156037"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156038"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156039"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156022"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156025"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156026"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156027"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156035"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156040"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156041"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156043"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156044"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156045"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156046"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156042"/>
+	<iso-thes:superGroup rdf:resource="http://mondomaine.fr/G106"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/G107">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">G4</skos:prefLabel>
+	<iso-thes:microThesaurusOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156049"/>
+	<skos:member rdf:resource="http://mondomaine.fr/156050"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156016">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">TT1</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156019"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156020"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156021"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156019">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C1</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156016"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156020">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C2</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156016"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156021">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C3</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156022"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156023"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156024"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156016"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156022">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C4</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156025"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156026"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156027"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156021"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156029"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156039"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156025">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C41</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156022"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156026">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C42</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156022"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156027">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C43</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156022"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156023">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C5</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156021"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156024">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C6</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156021"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156017">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">TT2</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156018">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">TT3</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156028"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156029"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156028">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C8</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156018"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156029">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C9</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156022"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156030"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156031"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156032"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156018"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156030">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C10</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156029"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156031">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C11</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156029"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156032">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">C12</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156029"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156047">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">TT20</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156048"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156048">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">CC20</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156047"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156033">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">TT4</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156034">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">TT5</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156036"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156036">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D1</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156037"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156038"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156039"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156034"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156037">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D2</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156036"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156038">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D3</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156036"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156039">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D6</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156022"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156036"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156035">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">TT6</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156040"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156041"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156042"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156040">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D7</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156035"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156041">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D8</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156043"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156044"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156035"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156043">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D9</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156041"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156044">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D10</skos:prefLabel>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156045"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156046"/>
+	<skos:broader rdf:resource="http://mondomaine.fr/156041"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156045">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D11</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156044"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156046">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D12</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156044"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156042">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">D13</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156035"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156049">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">TT40</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://mondomaine.fr/1"/>
+	<skos:narrower rdf:resource="http://mondomaine.fr/156050"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://mondomaine.fr/156050">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">CC40</skos:prefLabel>
+	<skos:broader rdf:resource="http://mondomaine.fr/156049"/>
+	<skos:inScheme rdf:resource="http://mondomaine.fr/1"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2018-01-11</dcterms:modified>
+</rdf:Description>
+
+</rdf:RDF>

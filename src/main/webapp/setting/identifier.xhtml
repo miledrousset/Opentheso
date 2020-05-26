@@ -1,0 +1,224 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:form id="identifierForm">
+        <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+
+            <!-- Ark -->
+            <b:row>
+                <b:column span="8" offset="1">
+                    <b:panel contentStyle="font-size: 12px" collapsed="true" >  
+                        <f:facet name="heading">
+                            <h:outputText value="Serveur Ark " style="font-size: 12px; color: #666666" />
+                            <b:badge rendered="#{preferenceBean.nodePreference.useArk}" 
+                                     style="margin-left:10px; background-color:#5cb85c;" value="On"  />
+                            <b:badge rendered="#{!preferenceBean.nodePreference.useArk}"
+                                     style="margin-left:10px; background-color:#666666; font-size: 12px; width: 40px;" value="Off"  />                
+                        </f:facet>                
+
+                        <!-- Activer / désactiver Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="5">
+                                <h:outputText value="Désactiver/Activer le serveur Ark" />
+                            </b:column>
+                            <b:column span="1" offset="4">
+                                <p:toggleSwitch value="#{preferenceBean.nodePreference.useArk}" style="font-size: 12px;" />                    
+                            </b:column>
+                        </b:row>              
+                        <p:spacer/>    
+
+                        <!-- Serveur Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Serveur Ark" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>
+
+                        <!-- Naan Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="votre Naan" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.idNaan}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>  
+
+                        <!-- Prefixe Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Préfixe Ark" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.prefixArk}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>   
+
+                        <!-- User Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="User Ark" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.userArk}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>   
+
+                        <!-- pass Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Passe Ark" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputSecret value="#{preferenceBean.nodePreference.passArk}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>
+                        <p:spacer/>
+
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3" offset="8"> 
+                                <b:commandButton iconAwesome="fas fa-save"  class="btn btn-success"
+                                                 value="Enregistrer" style="width: 100%; font-size: 12px;"
+                                                 tooltip="Enregistrer les modifications"  tooltip-delay-show="1000"
+                                                 action="#{preferenceBean.savePreference()}"
+                                                 update="settingForm identifierForm messageIndex">
+                                </b:commandButton>
+                            </b:column>
+                        </b:row>
+
+                        <b:row>
+                            <b:column span="8" offset="2" style="font-size: 12px;"> 
+                                <b:messages autoUpdate="true" />
+                            </b:column> 
+                        </b:row>  
+                    </b:panel>                     
+                </b:column>
+            </b:row>
+
+            
+            <!-- Handle -->
+            <b:row>
+                <b:column span="8" offset="1">
+                    <b:panel contentStyle="font-size: 12px" collapsed="true" >  
+                        <f:facet name="heading">
+                            <h:outputText value="Serveur Handle " style="font-size: 12px; color: #666666" />
+                            <b:badge rendered="#{preferenceBean.nodePreference.useHandle}" 
+                                     style="margin-left:10px; background-color:#5cb85c;" value="On"  />
+                            <b:badge rendered="#{!preferenceBean.nodePreference.useHandle}"
+                                     style="margin-left:10px; background-color:#666666; font-size: 12px; width: 40px;" value="Off"  />                
+                        </f:facet>                
+
+                        <!-- Activer / désactiver Handle -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="6">
+                                <h:outputText value="Désactiver/Activer le serveur Handle" />
+                            </b:column>
+                            <b:column span="1" offset="3">
+                                <p:toggleSwitch value="#{preferenceBean.nodePreference.useHandle}" style="font-size: 12px;" />                    
+                            </b:column>
+                        </b:row>              
+                        <p:spacer/>    
+
+                        <!-- Serveur Handle -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Serveur Handle" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.urlApiHandle}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>
+
+                        <!-- Prefixe Handle -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Préfixe Handle" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.prefixIdHandle}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>  
+
+                        <!-- Prefixe privé -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Préfixe privé" title="Le préfixe à ajouter avant chaque identifiant"/>
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.privatePrefixHandle}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>   
+
+                        <!-- User Handle -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="User Handle" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.userHandle}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>   
+
+                        <!-- pass Handle -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Passe Handle" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputSecret value="#{preferenceBean.nodePreference.passHandle}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>
+                        
+                        <!-- Path Clé Handle -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Chemin clé Handle" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.pathKeyHandle}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>   
+
+                        <!-- Path certificat Handle -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Chemin certificat Handle" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.pathCertHandle}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>                        
+                        <p:spacer/>
+
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3" offset="8"> 
+                                <b:commandButton iconAwesome="fas fa-save"  class="btn btn-success"
+                                                 value="Enregistrer" style="width: 100%; font-size: 12px;"
+                                                 tooltip="Enregistrer les modifications"  tooltip-delay-show="1000"
+                                                 action="#{preferenceBean.savePreference()}"
+                                                 update="settingForm identifierForm messageIndex">
+                                </b:commandButton>
+                            </b:column>
+                        </b:row>
+
+                        <b:row>
+                            <b:column span="8" offset="2" style="font-size: 12px;"> 
+                                <b:messages autoUpdate="true" />
+                            </b:column> 
+                        </b:row>  
+                    </b:panel>                     
+                </b:column>
+            </b:row>            
+
+
+
+        </b:panel>
+    </h:form>        
+</ui:fragment>

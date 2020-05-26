@@ -1,0 +1,52 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="idAddImage" header="Ajouter un synonyme" widgetVar="addImage" 
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
+        <h:form id="addImageForm"
+                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+            <b:row>
+                <b:column span="6" style="margin-left: 5px;">
+                    <b:row>
+                        <b:column span="12" style=" margin-bottom: 10px; ">
+                            <h:outputText value="Terme : "
+                                          style="font-size: 12px;"/>  
+                            <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                                          style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
+                        </b:column>
+
+                        <!-- Valeur -->
+                        <b:column span="12" >
+                            <b:inputText id="idImage" label="URI de l'image" placeholder="tapez une URL ..."  
+                                         value="#{imageBean.uri}" style="font-size: 12px;"/>
+                        </b:column>
+                        <!-- Copyright -->
+                        <b:column span="12" >
+                            <b:inputText id="idCopyright" label="Copyright" placeholder="copyright ..."  
+                                         value="#{imageBean.copyright}" style="font-size: 12px;"/>
+                        </b:column>  
+                    </b:row>
+                </b:column>
+
+                <b:column span="5" >
+                    <b:messages autoUpdate="true"/>
+                </b:column>                
+            </b:row>
+
+            <b:row style="margin-bottom: 10px;" >
+                <b:column span="4" offset="8" >
+                    <b:commandButton 
+                                     id="buttonSubmit" value="Valider"  update="addImageForm" 
+                                     style="width:100%; font-size: 13px; 
+                                     font-weight: normal;
+                                     color: white; background: #43B572; border: none; box-shadow: none;"
+                                     class="btn btn-primary"
+                                     action="#{imageBean.addNewImage(currentUser.nodeUser.idUser)}"/>
+                </b:column>                    
+            </b:row>            
+        </h:form>
+    </p:dialog>   
+</ui:fragment>

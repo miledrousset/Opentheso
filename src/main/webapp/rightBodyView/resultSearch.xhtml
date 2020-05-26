@@ -1,0 +1,73 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui">
+    <h:panelGroup rendered="#{searchBean.nodeConceptSearchs != null}" style="font-size: 12px;">
+        <b:row rendered="#{!searchBean.isSelectedItem}">
+            <b:column span="12">
+                <h:outputText value="#{searchBean.nodeConceptSearchs.size()} résultat(s) pour '#{searchBean.searchValue}'"
+                              style="color: #8C8C8C; font-style: italic; border-bottom: 10px"/>
+            </b:column>
+            <p:separator styleClass="separator" />            
+        </b:row>
+
+
+        <ui:repeat var="result" value="#{searchBean.nodeConceptSearchs}" >
+            <b:row >
+                <b:column span="12">
+                    <b:commandLink value="#{result.prefLabel}" tooltip="#{result.idConcept}" tooltip-delay-show="500"
+                                   actionListener="#{searchBean.onSelectConcept(result.idConcept)}"
+                                   update="formRightTab"
+                                   style="color: #43B572; font-size: 14px"/>
+                </b:column>
+                
+                <b:column span="1" rendered="#{result.nodeBT.size() != 0}">
+                    <h:outputText value="SYN : " title="Synonyme" style="color: #8C8C8C; font-size: 12px"/>
+                </b:column>                
+                <b:column span="11" rendered="#{result.nodeEM.size() != 0}">
+                    <ui:repeat var="em" value="#{result.nodeEM}" >
+                        <h:outputText value="#{em.lexical_value}, " style="color: #8C8C8C; font-size: 12px"/>
+                    </ui:repeat>
+                </b:column>  
+                
+                <b:column span="1" rendered="#{result.nodeBT.size() != 0}">
+                    <h:outputText value="BT : " title="Terme générique" style="color: #8C8C8C; font-size: 12px"/>
+                </b:column>                
+                <b:column span="11" rendered="#{result.nodeBT.size() != 0}">
+                    <ui:repeat var="bt" value="#{result.nodeBT}" >
+                        <h:outputText value="#{bt.title}, " style="color: #8C8C8C; font-size: 12px"/>
+                    </ui:repeat>
+                </b:column>                
+
+                <b:column span="1" rendered="#{result.nodeNT.size() != 0}">
+                    <h:outputText value="NT : " title="Terme spécifique" style="color: #8C8C8C; font-size: 12px"/>
+                </b:column>
+                <b:column span="11" rendered="#{result.nodeNT.size() != 0}">
+                    <ui:repeat var="nt" value="#{result.nodeNT}" >
+                        <h:outputText value="#{nt.title}, " style="color: #8C8C8C; font-size: 12px"/>
+                    </ui:repeat>
+                </b:column>
+
+                <b:column span="1" rendered="#{result.nodeRT.size() != 0}">
+                    <h:outputText value="RT : " title="Terme associé" style="color: #8C8C8C; font-size: 12px"/>
+                </b:column>
+                <b:column span="11" rendered="#{result.nodeRT.size() != 0}">
+                    <ui:repeat var="rt" value="#{result.nodeRT}" >
+                        <h:outputText value="#{rt.title}, " style="color: #8C8C8C; font-size: 12px"/>
+                    </ui:repeat>
+                </b:column>
+
+                <b:column span="1" rendered="#{result.nodeTermTraductions.size() != 0}">
+                    <h:outputText value="Langs: " title="Traductions" style="color: #8C8C8C; font-size: 12px"/>
+                </b:column>                
+                <b:column span="11" rendered="#{result.nodeTermTraductions.size() != 0}">
+                    <ui:repeat var="langs" value="#{result.nodeTermTraductions}" >
+                        <h:outputText value="#{langs.lexicalValue}(#{langs.lang}), " style="color: #8C8C8C; font-size: 12px"/>
+                    </ui:repeat>
+                </b:column>                  
+            </b:row>
+            <p:separator styleClass="separator" style="margin-top: 4px;"/>
+        </ui:repeat>
+    </h:panelGroup>
+</ui:fragment>

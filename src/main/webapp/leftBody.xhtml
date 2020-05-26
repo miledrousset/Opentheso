@@ -1,0 +1,36 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:f="http://java.sun.com/jsf/core">
+
+
+    <b:form id="formLeftTab">
+        <b:row>
+            <b:column span="12" col-xs="0">
+                <b:tabView activeIndex="#{leftBodySetting.index}" content-style="margin-left:-14px; margin-right:-14px;font-size: 12px;">
+                    <b:tab id="tabTree" title="Tree" style="color: #43B572; padding-top: 1px; padding-bottom: 1px; " >
+                        <f:facet name="anchor"><b:iconAwesome name="sitemap" style="color: #f47b2a" size="xs"/></f:facet>
+                        <ui:include src="leftBodyView/tree.xhtml"/>
+                    </b:tab>            
+
+                    <b:tab id="tabList" title="Index" style="color: #43B572; padding-top: 1px; padding-bottom: 1px; " >
+                        <f:facet name="anchor"><b:iconAwesome name="list-ul" style="color: #f47b2a" size="xs"/></f:facet>
+                        <ui:include src="leftBodyView/list.xhtml"/>
+                    </b:tab>
+
+                    <b:tab id="tabGroups" title="Groupe" style="color: #43B572; padding-top: 1px; padding-bottom: 1px; ">
+                        <f:facet name="anchor"><b:iconAwesome name="object-group" style="color: #f47b2a" size="xs"/></f:facet>
+                        <ui:include src="leftBodyView/groups.xhtml"/>
+                    </b:tab>
+
+                    <b:tab id="tabFilter" title="Filtre" style="color: #43B572; padding-top: 1px; padding-bottom: 1px; ">
+                        <f:facet name="anchor"><b:iconAwesome name="filter" style="color: #f47b2a" size="xs"/></f:facet>
+                        <ui:include src="leftBodyView/searchFilter.xhtml"/>
+                    </b:tab>
+
+                </b:tabView>
+            </b:column>
+        </b:row>
+    </b:form>
+
+</ui:fragment>

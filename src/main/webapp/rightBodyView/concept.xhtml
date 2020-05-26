@@ -1,0 +1,1146 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:panelGroup id="conceptView" rendered="#{conceptView.nodeConcept != null}" styleClass="textOpentheso">    
+        <!-- Actions sur le concept -->
+        <b:row id="idConceptViewActions" rendered="#{(currentUser.nodeUser != null)}" >           
+            <b:column span="1" offset="11">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and 
+                                        (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fa-plus-circle" icon-size="l"  value=""
+                            style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px; "
+                            class="dropdown-submenu pull-left"
+                            tooltip="Actions globales sur le concept/branche en cours" tooltip-delay-show="1000">
+                    <b:navCommandLink  value="Couper/déplacer" tooltip="déplacer le concept ou la branche" tooltip-delay-show="1000"
+                                       action="#{cutAndPaste.onStartCut(conceptView.nodeConcept)}"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px;"
+                                       update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
+                    </b:navCommandLink>
+                    <b:navCommandLink  rendered="#{(cutAndPaste.isCopyOn) and
+                                                   (cutAndPaste.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
+                                       value="Coller #{cutAndPaste.nodeConceptDrag.term.lexical_value} commme terme spécifique" 
+                                       tooltip="déplacer le concept ou la branche sous ce concept" tooltip-delay-show="1000"
+                                       actionListener="#{cutAndPaste.setDropppedConcept(conceptView.nodeConcept)}"
+                                       action="#{cutAndPaste.validatePaste()}"
+                                       oncomplete="PF('cutAndPaste').show();"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px;"
+                                       update="idCutAndPaste cutAndPasteForm">
+                    </b:navCommandLink>
+                    <b:navCommandLink  rendered="#{(cutAndPaste.isCopyOn) and (!cutAndPaste.cuttedConcept.concept.topConcept)}"
+                                       value="Coller #{cutAndPaste.nodeConceptDrag.term.lexical_value} à la racine" 
+                                       tooltip="déplacer le concept ou la branche à la racine comme TopTerm" tooltip-delay-show="1000"
+                                       actionListener="#{cutAndPaste.setIsDropToRoot(true)}"
+                                       action="#{cutAndPaste.paste()}"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px;"
+                                       update="idCutAndPaste cutAndPasteForm">
+                    </b:navCommandLink>                    
+                    <b:navLink/>
+                    <b:navCommandLink value="Supprimer le concept" 
+                                      actionListener="#{editConcept.infosDelete()}"
+                                      update="idDeleteConcept deleteConceptForm"
+                                      action="#{editConcept.reset()}"
+                                      oncomplete="PF('deleteConcept').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>   
+                </b:dropMenu>        
+            </b:column>
+
+        </b:row> 
+        <ui:include src="/dialog/dragAndDrop/dragAndDrop.xhtml" />
+        <ui:include src="/dialog/dragAndDrop/cutAndPaste.xhtml" />
+        <ui:include src="/dialog/concept/deleteConcept.xhtml" />        
+
+
+        <!-- Fil d'ariane -->
+        <b:row style=" margin-bottom: 10px;">
+            <b:column span="12">
+                <ui:repeat var="path" value="#{conceptView.pathLabel}" >
+                    <b:iconAwesome rendered="#{path.isStartOfPath}" value="fas fa-home" size="xs" style="color: #f47b2a;"/>
+                    <b:navCommandLink rendered="#{path.isStartOfPath}" style="color:#43B572; background: none; border: none; box-shadow: none; font-size: 12px"
+                                      value=" #{path.title}" tooltip="#{path.idConcept}" tooltip-delay-show="1000"
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                path.idConcept, selectedTheso.currentLang)}"
+                                      update="formRightTab:viewTabConcept:conceptView"/> 
+                    <b:navCommandLink rendered="#{!path.isStartOfPath}" style="color:#43B572; background: none; border: none; box-shadow: none; font-size: 12px"
+                                      value="#{path.title}" tooltip="#{path.idConcept}" tooltip-delay-show="1000"
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                path.idConcept, selectedTheso.currentLang)}"
+                                      update="formRightTab:viewTabConcept:conceptView"/>                     
+                    <h:outputText value=" > " style="font-size: 12px; font-weight: bold"/>
+                </ui:repeat>
+
+                <b:iconAwesome rendered="#{conceptView.nodeConcept.concept.topConcept}" value="fas fa-home" size="xs" style="color: #f47b2a;"/>
+                <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value != ''}" value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 12px;"/>
+                <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value == ''}" value=" (#{conceptView.nodeConcept.concept.idConcept})" style="font-size: 12px;"/>                
+                <h:outputText value=" > " style="font-size: 12px; font-weight: bold"/>
+
+                <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                 icon="fas fa-plus-circle fa-s"
+                                 actionListener="#{newConcept.reset()}"                    
+                                 update="idAddNT"
+                                 oncomplete="PF('addNT').show();"
+                                 value="add concept" title="ajouter un concept spécifique"
+                                 style="margin-left: -5px;"
+                                 styleClass="buttonIconOrange"/>                
+            </b:column>
+        </b:row>
+
+
+        <!-- ligne PrefLabel -->
+        <b:row id="idPrefLabelRow">
+            <b:column span="3" colXs="4">
+                <h:outputText value="Terme préféré" title="Preferred Term"/>
+            </b:column>
+            <b:column span="1" >
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navLink value="Renommer le concept"  update="idRenameConcept" 
+                               actionListener="#{editConcept.reset()}"
+                               onclick="PF('renameConcept').show();"
+                               style="font-size: 12px;"></b:navLink>
+                </b:dropMenu>
+            </b:column>            
+            <b:column span="6" colXs="6">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
+                              title="#{conceptView.nodeConcept.concept.idConcept}" style="font-weight: bold"/>
+                <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/> 
+            </b:column>
+            <b:column span="2" colXs="0">
+                <b:commandButton icon-awesome="fa-sitemap" icon-size="s" 
+                                 action="#{tree.expandTreeToPath(
+                                           conceptView.nodeConcept.concept.idConcept,
+                                           conceptView.nodeConcept.concept.idThesaurus,
+                                           conceptView.nodeConcept.term.lang)}"
+                                 actionListener="#{selectedTheso.actionFromConceptToOn()}"
+                                 update="formLeftTab formSearch:languageSelect"
+                                 oncomplete="srollToSelected()"
+                                 style="color:#f47b2a; background: none; border: none; box-shadow: none" 
+                                 styleClass="buttonIconOrange" tooltip="replacer dans l'arbre" tooltip-delay-show="1000" />
+            </b:column>            
+        </b:row>
+
+        <!-- ligne Collection -->
+        <b:row id="idConceptGroupRow" >
+            <b:column span="3" colXs="4">
+                <h:outputText value="Groupe" title="Group"/>
+            </b:column>
+            <b:column span="1">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter à un groupe" 
+                                      action="#{addConceptToGroupBean.init()}"
+                                      oncomplete="PF('addConceptToGroup').show();"
+                                      update="idAddConceptToGroup addConceptToGroupForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="Supprimer d'un groupe" 
+                                      action="#{removeFromGroupBean.init()}"
+                                      oncomplete="PF('removeConceptFromGroup').show();"
+                                      update="idRemoveConceptFromGroup removeFromGroupForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navLink/>
+                    <b:navCommandLink value="Ajouter le concept et ses fils à un groupe" 
+                                      action="#{removeConceptAndChildFromGroupBean.init()}"
+                                      oncomplete="PF('addConceptAndChildToGroup').show();"
+                                      update="idAddConceptAndChildToGroup addConceptAndChildToGroupForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="Supprimer le concept et ses fils d'un groupe" 
+                                      action="#{removeConceptAndChildFromGroupBean.init()}"
+                                      oncomplete="PF('removeConceptAndChildFromGroup').show();"
+                                      update="idRemoveConceptAndChildFromGroup removeConceptAndChildFromGroupForm"
+                                      style="font-size: 12px;"></b:navCommandLink>                    
+                </b:dropMenu>
+            </b:column>
+
+            <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}">
+                <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+            </b:column>
+
+
+            <b:column id="idConceptGroupColumn" span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() != 0}">
+                <ui:repeat   var="domaine" value="#{conceptView.nodeConcept.nodeConceptGroup}" varStatus="status">
+                    <h:outputText rendered="#{domaine.lexicalValue != ''}"
+                                  value="#{domaine.lexicalValue}" title="#{domaine.conceptGroup.idgroup}"
+                                  style="color: #666666"/>                    
+                    <h:outputText rendered="#{domaine.lexicalValue == ''}" 
+                                  value="(#{domaine.conceptGroup.idgroup})" 
+                                  title="pas de traduction dans cette langue" style="color: #FF7979"/>
+
+                    <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
+                </ui:repeat>
+            </b:column>            
+        </b:row>
+
+        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
+
+
+
+
+        <!--                               -->        
+        <!--                               -->        
+        <!-- Navigation entre les concepts -->
+        <!--                               -->
+        <!--                               -->
+        <!--                               -->        
+
+
+        <!-- ligne BT -->
+        <b:row >
+            <b:column span="3" colXs="3">
+                <h:outputText value="Concept générique" title="BROADER CONCEPT" />
+            </b:column>
+
+            <b:column span="1" rendered="#{(currentUser.nodeUser != null)}">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter une relation générique"
+                                      tooltip="Ajouter une relation vers un concept ou une branche existante"
+                                      actionListener="#{broaderBean.reset()}"
+                                      oncomplete="PF('addBroaderLink').show();"
+                                      update="idAddBroaderLink addBroaderLinkForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="Supprimer une relation générique" 
+                                      tooltip="pour supprimer une relation générique au concept en cours"
+                                      actionListener="#{broaderBean.reset()}"
+                                      oncomplete="PF('deleteBroaderLink').show();"
+                                      update="idDeleteBroaderLink deleteBroaderLinkForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu>                  
+            </b:column>
+            <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
+                <b:iconAwesome value="level-up-alt" size="m" style="color:#143a1e; "/>
+            </b:column>            
+
+            <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeBT.size() == 0}">
+                <h:outputText  value="....." title="pas de générique" style="font-size: 12px; color: grey; font-style: italic " />
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                 
+            </b:column>
+
+            <h:panelGroup id="idConceptBroader">
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeBT.size() != 0}">
+                    <ui:repeat var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
+                        <b:navCommandLink rendered="#{value.title != ''}" 
+                                          value="#{value.title}" tooltip="#{value.idConcept}" tooltip-delay-show="1000"
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #43B572;"
+                                          styleClass="textOpentheso"/>
+                        <b:navCommandLink rendered="#{value.title == ''}" 
+                                          value="(#{value.idConcept})" tooltip="pas de traduction dans cette langue" tooltip-delay-show="1000"
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #FF7979;"
+                                          styleClass="textOpentheso"/>   
+                        <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/> 
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
+                </b:column>    
+            </h:panelGroup>
+        </b:row>      
+
+
+
+
+        <!-- ligne NT -->
+        <b:row >
+            <b:column span="3" colXs="3">
+                <h:outputText value="Concept spécifique" title="NARROWER CONCEPTS"/>
+            </b:column>
+
+            <b:column span="1" rendered="#{(currentUser.nodeUser != null)}">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter une relation spécifique"
+                                      tooltip="Ajouter une relation vers un concept ou une branche existante"
+                                      actionListener="#{narrowerBean.reset()}"
+                                      oncomplete="PF('addNarrowerLink').show();"
+                                      update="idAddNarrowerLink addNarrowerLinkForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="Supprimer une relation spécifique" 
+                                      tooltip="pour supprimer une relation spécifique au concept en cours"
+                                      actionListener="#{narrowerBean.reset()}"
+                                      oncomplete="PF('deleteNarrowerLink').show();"
+                                      update="idDeleteNarrowerLink deleteNarrowerLinkForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="changer les relations" 
+                                      tooltip="pour changer le type de relations entre le concept et ses spécifiques"
+                                      actionListener="#{narrowerBean.initForChangeRelations()}"
+                                      oncomplete="PF('changeRelation').show();"
+                                      update="idChangeRelation changeRelationForm"
+                                      style="font-size: 12px;"></b:navCommandLink>                                      
+                </b:dropMenu>                  
+            </b:column>
+            <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
+                <b:iconAwesome value="level-down-alt" size="m" style="color:#143a1e;"/>                 
+            </b:column>            
+
+            <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}">
+                <h:outputText  value="....." title="pas de spécifiques" style="font-size: 12px; color: grey; font-style: italic " />
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
+            </b:column>            
+
+
+
+            <h:panelGroup id="idConceptNarrower" >
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeNT.size() != 0}">
+                    <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() lt 21}" var="value"
+                               varStatus="status1" 
+                               value="#{conceptView.nodeConcept.nodeNT}">
+                        <b:navCommandLink rendered="#{value.title != ''}"  
+                                          value="#{value.title}" tooltip="#{value.idConcept}" tooltip-delay-show="1000"
+
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #43B572;"
+                                          styleClass="textOpentheso"/>
+                        <b:navCommandLink rendered="#{value.title == ''}"
+                                          value="(#{value.idConcept})" tooltip="pas de traduction dans cette langue" tooltip-delay-show="1000"
+
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #FF7979;"
+                                          styleClass="textOpentheso"/> 
+                        <h:outputText rendered="#{!status1.last}" value=", " style="color: #FF7979"/>    
+                    </ui:repeat>
+
+                    <!-- plus de 20 NT -->
+                    <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() gt 20}" var="value" varStatus="status2" 
+                               value="#{conceptView.nodeConcept.nodeNT}" size="#{conceptView.sizeToShowNT}">
+                        <b:navCommandLink rendered="#{value.title != ''}"  
+                                          value="#{value.title}" tooltip="#{value.idConcept}" tooltip-delay-show="1000"
+
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #43B572;"
+                                          styleClass="textOpentheso"/>
+                        <b:navCommandLink rendered="#{value.title == ''}"
+                                          value="(#{value.idConcept})" tooltip="pas de traduction dans cette langue" tooltip-delay-show="1000"
+
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #FF7979;"
+                                          styleClass="textOpentheso"/>  
+                        <h:outputText  value=", " style="color: #FF7979"/>
+                    </ui:repeat>
+
+                    <b:navCommandLink rendered="#{conceptView.nodeConcept.nodeNT.size() gt (conceptView.sizeToShowNT)}"
+                                      icon-awesome="fas fa-angle-double-right"
+                                      tooltip="Cliquez pour afficher plus" tooltip-delay-show="1000"
+                                      action="#{conceptView.incrementSizeToShowNT()}" update="formRightTab:viewTabConcept:conceptView:idConceptNarrower"
+                                      style="color:  #FF7979"
+                                      styleClass="textOpentheso"/>
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
+                </b:column>
+            </h:panelGroup>                
+        </b:row>  
+
+
+
+
+
+
+
+
+
+
+        <!-- ligne RT -->
+        <b:row >
+            <b:column span="3" colXs="3">
+                <h:outputText value="Concept associé" title="RELATED CONCEPTS"/>
+            </b:column>            
+            <b:column span="1" rendered="#{(currentUser.nodeUser != null)}">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter une relation" 
+                                      actionListener="#{relatedBean.reset()}"
+                                      oncomplete="PF('addRelatedLink').show();"
+                                      update="idAddRelatedLink addRelatedLinkForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="Supprimer une relation" 
+                                      actionListener="#{relatedBean.reset()}"
+                                      oncomplete="PF('deleteRelatedLink').show();"
+                                      update="idDeleteRelatedLink deleteRelatedLinkForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu>                  
+            </b:column>
+            <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
+                <b:iconAwesome value="exchange-alt" size="m" style="color:#143a1e"/>                
+            </b:column>            
+
+            <h:panelGroup id="idConceptRelated" >
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeRT.size() == 0}">
+                    <h:outputText  value="....." title="pas d'associés" style="font-size: 12px; color: grey; font-style: italic " />
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
+                </b:column>            
+
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeRT.size() != 0}">
+                    <ui:repeat var="rt" value="#{conceptView.nodeConcept.nodeRT}" varStatus="status">
+                        <b:navCommandLink rendered="#{rt.title != ''}" 
+                                          value="#{rt.title}" tooltip="#{rt.idConcept}" tooltip-delay-show="1000"
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    rt.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #43B572;background: none; box-shadow: none; border: none;"
+                                          styleClass="textOpentheso"/>
+                        <b:navCommandLink rendered="#{rt.title == ''}"
+                                          value="(#{rt.idConcept})" tooltip="pas de traduction dans cette langue" tooltip-delay-show="1000"
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    rt.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #FF7979; background: none; box-shadow: none; border: none;"
+                                          styleClass="textOpentheso"/>   
+                        <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
+                </b:column>  
+            </h:panelGroup>                
+        </b:row>
+
+
+        <!-- ligne EM USE -->
+        <b:row>
+            <b:column span="3" colXs="3">
+                <h:outputText value="Synonyme" title="ALTERNATIVE"/>
+            </b:column>
+            <b:column span="1" rendered="#{(currentUser.nodeUser != null)}">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter un synonyme" 
+                                      actionListener="#{synonymBean.reset()}"
+                                      oncomplete="PF('addSynonym').show();"
+                                      update="idAddSynonym addSynonymForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="Modifier un synonyme" 
+                                      actionListener="#{synonymBean.reset()}"
+                                      action="#{synonymBean.prepareNodeEMForEdit()}"
+                                      oncomplete="PF('renameSynonym').show();"
+                                      update="idRenameSynonym renameSynonymForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="Supprimer un synonyme" 
+                                      actionListener="#{synonymBean.reset()}"
+                                      oncomplete="PF('deleteSynonym').show();"
+                                      update="idDeleteSynonym deleteSynonymForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu>                  
+            </b:column>
+
+            <h:panelGroup id="idConceptSynonyms" >
+                <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
+                    <b:iconAwesome value="fa-equals" size="m" style="color:#143a1e"/>                
+                </b:column> 
+
+                <b:column span="8" colXs="8" rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}">
+                    <h:outputText  value="....." title="pas de synonymes" style="font-size: 12px; color: grey; font-style: italic " />
+                </b:column>  
+
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
+                    <b:row>
+                        <b:column span="12">
+                            <ui:repeat var="em" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
+                                <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
+                                <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=", " style="color: #FF7979"/>
+                            </ui:repeat>
+                        </b:column>
+                    </b:row>
+                    <b:row rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                        <b:column span="12" >
+                            <h:outputText  value="Synonymes cachés: " title="Hidden" style="font-size: 12px; color: #FF7979; font-style: italic " />
+                            <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
+                                <h:outputText rendered="#{em2.hiden}" value="#{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
+                                <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=", " style="color: #FF7979"/>
+                            </ui:repeat>
+                        </b:column>
+                    </b:row>                    
+                </b:column>
+            </h:panelGroup>                
+        </b:row>         
+        <p:separator styleClass="separator" style="margin-top: 20px; margin-bottom: 20px;"/>         
+
+
+
+        <!--                               -->        
+        <!--              Fin              -->        
+        <!-- Navigation entre les concepts -->
+        <!--                               -->
+        <!--                               -->
+        <!--                               -->  
+
+
+
+
+
+
+        <!-- ligne Notes -->
+        <b:row  rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+            <b:column span="3" colXs="3">
+                <h:outputText value="Notes" style="font-size: 12px; color: grey; font-style: italic "/>
+                <p:commandButton
+                    icon="fas fa-plus-circle fa-s" 
+                    actionListener="#{noteBean.reset()}"                    
+                    update="idAddNote"
+                    oncomplete="PF('addNote').show();"
+                    title="ajouter une note"
+                    style="margin-left: -5px; font-size: 12px"
+                    styleClass="buttonIconOrange"/>                    
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px;"/> 
+            </b:column>
+        </b:row >         
+
+        <h:panelGroup id="idConceptNotes">
+            <b:row rendered="#{conceptView.notes.size() != 0}">
+                <b:column span="3" colXs="3">
+                    <h:outputText value="Note" title="note"/>
+                </b:column>
+                <b:column span="1">
+                    <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                        <b:navCommandLink value="Supprimer une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('note')}"
+                                          oncomplete="PF('deleteNote').show();"
+                                          update="idDeleteNote deleteNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                        <b:navCommandLink value="Modifier une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('note')}"                                          
+                                          oncomplete="PF('editNote').show();"
+                                          update="idEditNote editNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                    </b:dropMenu>                     
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <ui:repeat var="note" value="#{conceptView.notes}" >
+                        <h:outputText value="#{note.lexicalvalue}"  style="font-size: 12px;color: #666666" /> 
+                        <br/>
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>            
+            </b:row> 
+
+            <b:row rendered="#{conceptView.changeNotes.size() != 0}">
+                <b:column span="3" colXs="3">
+                    <h:outputText value="Change note" title="Note de changement"/>
+                </b:column>
+                <b:column span="1">
+                    <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                        <b:navCommandLink value="Supprimer une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('changeNote')}"
+                                          oncomplete="PF('deleteNote').show();"
+                                          update="idDeleteNote deleteNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                        <b:navCommandLink value="Modifier une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('changeNote')}"                                          
+                                          oncomplete="PF('editNote').show();"
+                                          update="idEditNote editNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                    </b:dropMenu> 
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <ui:repeat var="changeNote" value="#{conceptView.changeNotes}" >
+                        <h:outputText value="#{changeNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <br/>
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+            </b:row> 
+
+            <b:row rendered="#{conceptView.definitions.size() != 0}">
+                <b:column span="3" colXs="3">
+                    <h:outputText value="Definition" title="Définition"/>
+                </b:column>
+                <b:column span="1">
+                    <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                        <b:navCommandLink value="Supprimer une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('definition')}"
+                                          oncomplete="PF('deleteNote').show();"
+                                          update="idDeleteNote deleteNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                        <b:navCommandLink value="Modifier une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
+                                          oncomplete="PF('editNote').show();"
+                                          update="idEditNote editNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                    </b:dropMenu> 
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <ui:repeat var="def" value="#{conceptView.definitions}" >
+                        <h:outputText value="#{def.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <br/>
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+            </b:row> 
+
+            <b:row rendered="#{conceptView.editorialNotes.size() != 0}">
+                <b:column span="3" colXs="3">
+                    <h:outputText value="Editorial note" title="Note éditoriale"/>
+                </b:column>
+                <b:column span="1">
+                    <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                        <b:navCommandLink value="Supprimer une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
+                                          oncomplete="PF('deleteNote').show();"
+                                          update="idDeleteNote deleteNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                        <b:navCommandLink value="Modifier une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
+                                          oncomplete="PF('editNote').show();"
+                                          update="idEditNote editNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                    </b:dropMenu> 
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <ui:repeat var="editorialNote" value="#{conceptView.editorialNotes}" >
+                        <h:outputText value="#{editorialNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <br/>
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+            </b:row>
+
+            <b:row rendered="#{conceptView.examples.size() != 0}">
+                <b:column span="3" colXs="3">
+                    <h:outputText value="Example" title="Exemple" />
+                </b:column>
+                <b:column span="1">
+                    <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                        <b:navCommandLink value="Supprimer une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('example')}"
+                                          oncomplete="PF('deleteNote').show();"
+                                          update="idDeleteNote deleteNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                        <b:navCommandLink value="Modifier une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('example')}"                                          
+                                          oncomplete="PF('editNote').show();"
+                                          update="idEditNote editNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                    </b:dropMenu> 
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <ui:repeat var="example" value="#{conceptView.examples}" >
+                        <h:outputText value="#{example.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <br/>
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+            </b:row>
+
+            <b:row rendered="#{conceptView.historyNotes.size() != 0}">
+                <b:column span="3" colXs="3">
+                    <h:outputText value="History note" title="Note historique"/>
+                </b:column>
+                <b:column span="1">
+                    <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                        <b:navCommandLink value="Supprimer une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('historyNote')}"
+                                          oncomplete="PF('deleteNote').show();"
+                                          update="idDeleteNote deleteNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                        <b:navCommandLink value="Modifier une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
+                                          oncomplete="PF('editNote').show();"
+                                          update="idEditNote editNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                    </b:dropMenu> 
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <ui:repeat var="historyNote" value="#{conceptView.historyNotes}" >
+                        <h:outputText value="#{historyNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <br/>
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+            </b:row>
+
+            <b:row rendered="#{conceptView.scopeNotes.size() != 0}">
+                <b:column span="3" colXs="3">
+                    <h:outputText value="Scope note" title="Note d'application"/>
+                </b:column>
+                <b:column span="1">
+                    <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                        <b:navCommandLink value="Supprimer une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('scopeNote')}"
+                                          oncomplete="PF('deleteNote').show();"
+                                          update="idDeleteNote deleteNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                        <b:navCommandLink value="Modifier une note" 
+                                          actionListener="#{noteBean.reset()}"
+                                          action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          
+                                          oncomplete="PF('editNote').show();"
+                                          update="idEditNote editNoteForm"
+                                          style="font-size: 12px;"></b:navCommandLink>
+                    </b:dropMenu> 
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <ui:repeat var="scopeNote" value="#{conceptView.scopeNotes}" >
+                        <h:outputText value="#{scopeNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <br/>
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+            </b:row>              
+
+        </h:panelGroup>
+
+
+
+        <!-- ligne images -->        
+        <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0)}">
+            <b:column span="3" colXs="3">
+                <h:outputText value="Image" />
+            </b:column>
+            <b:column span="1">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les images" tooltip-delay-show="1000"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter une image (URI)" 
+                                      actionListener="#{imageBean.reset()}"
+                                      oncomplete="PF('addImage').show();"
+                                      update="idAddImage addImageForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="modifier les images (URIs)" 
+                                      actionListener="#{imageBean.reset()}"
+                                      action="#{imageBean.prepareImageForEdit()}"                                      
+                                      oncomplete="PF('updateImage').show();"
+                                      update="idUpdateImage updateImageForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="supprimer des images (URIs)" 
+                                      actionListener="#{imageBean.reset()}"
+                                      oncomplete="PF('deleteImage').show();"
+                                      update="idDeleteImage deleteImageForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu> 
+            </b:column>
+            <h:panelGroup id="idConceptImages">
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
+                    <h:outputText  value="....." title="pas d'images" style="font-size: 12px; color: grey; font-style: italic " />
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column> 
+                <b:column span="6" colXs="6" offset="2" offset-xs="2" rendered="#{conceptView.nodeConcept.nodeimages.size() !=0}">
+
+                    <p:imageSwitch effect="fade" id="fadeEffect">
+                        <ui:repeat var="images" value="#{conceptView.nodeConcept.nodeimages}" >
+                            <p:graphicImage value="#{images.uri}" 
+                                            title="#{images.copyRight}"
+                                            alt="#{images.uri}"
+                                            height="130px"
+                                            style="cursor: pointer;"/>
+                        </ui:repeat>
+                    </p:imageSwitch>
+
+                    <p:separator styleClass="separator" style="margin-top: 5px"/>
+                </b:column>
+            </h:panelGroup>
+        </b:row>
+
+
+        <!-- ligne Traductions -->
+        <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
+            <b:column span="3" colXs="3">
+                <h:outputText value="Traduction" />
+            </b:column>
+            <b:column span="1">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les traductions" tooltip-delay-show="1000"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter une traduction" 
+                                      actionListener="#{traductionBean.reset()}"
+                                      action = "#{traductionBean.setLangWithNoTraduction()}"
+                                      oncomplete="PF('addTraduction').show();"
+                                      update="idAddTraduction addTraductionForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="modifier une traduction" 
+                                      actionListener="#{traductionBean.reset()}"
+                                      oncomplete="PF('renameTraduction').show();"
+                                      update="idRenameTraduction renameTraductionForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="supprimer une traduction" 
+                                      actionListener="#{traductionBean.reset()}"
+                                      oncomplete="PF('deleteTraduction').show();"
+                                      update="idDeleteTraduction deleteTraductionForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu> 
+            </b:column>
+            <h:panelGroup id="idConceptTraductions">
+
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}">
+                    <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                    <p:separator styleClass="separator" style="margin-top: 2px;"/> 
+                </b:column>
+
+
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}">
+                    <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" >
+                        <b:row>
+                            <b:column >
+                                <b:navCommandLink value="#{trad.lexicalValue} (#{trad.lang})"
+                                                  tooltip="#{conceptView.nodeConcept.concept.idConcept}" tooltip-delay-show="1000"
+                                                  action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                            conceptView.nodeConcept.concept.idConcept,
+                                                            trad.lang)}"
+                                                  update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                  style="color: #43B572;"
+                                                  styleClass="textOpentheso"/>                        
+                            </b:column> 
+                        </b:row> 
+                    </ui:repeat> 
+                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
+                </b:column>
+            </h:panelGroup>
+        </b:row>    
+
+
+        <!-- ligne GPS -->
+        <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
+            <b:column span="3" colXs="3">
+                <h:outputText value="Corrdonnées GPS" />
+            </b:column>
+            <b:column span="1">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les traductions" tooltip-delay-show="1000"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter/modifier les coordonnées GPS" 
+                                      actionListener="#{gpsBean.reset()}"
+                                      oncomplete="PF('setGps').show();"
+                                      update="idSetGps setGpsForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="supprimer les coordonnées" 
+                                      actionListener="#{traductionBean.reset()}"
+                                      oncomplete="PF('deleteGps').show();"
+                                      update="idDeleteGps deleteGpsForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu> 
+            </b:column> 
+
+            <h:panelGroup id="idConceptGps">
+
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeGps == null}">
+                    <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                    <p:separator styleClass="separator" style="margin-top: 2px;"/> 
+                </b:column>            
+
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeGps != null}">
+                    <b:row>
+                        <b:column >
+                            <h:outputText value="lat: " style="font-size: 12px;"/>
+                            <h:outputText value="#{conceptView.nodeConcept.nodeGps.latitude}" style="font-size: 12px; color: #666666"/>
+                        </b:column> 
+                    </b:row> 
+                    <b:row>
+                        <b:column>
+                            <h:outputText value="long: " style="font-size: 12px;"/>                            
+                            <h:outputText value="#{conceptView.nodeConcept.nodeGps.longitude}" style="font-size: 12px; color: #666666"/>
+                        </b:column>
+                    </b:row>
+
+                    <p:separator styleClass="separator" style="margin-top: 2px"/>
+                </b:column>
+            </h:panelGroup>
+        </b:row>
+
+
+
+
+        <!-- ligne Corpus liés -->        
+        <b:row >
+            <b:column span="3" colXs="3">
+                <h:outputText value="Corpus lié" />
+            </b:column>
+            <b:column span="1">
+                <p:commandButton rendered="#{user.nodeUser != null}" icon="fas fa-cog fa-xs"  style="color:#F7A269; background: none; border: none; box-shadow: none" />
+            </b:column>            
+            <b:column span="8" colXs="8">
+                <b:row>
+                    <b:column >
+                        <h:outputText value="en cours ......" style="font-size: 12px; color: #666666"/>
+                    </b:column> 
+                </b:row> 
+                <b:row>
+                    <b:column>
+                        <h:outputText value="en cours ......" style="font-size: 12px; color: #666666"/>
+                    </b:column>
+                </b:row>
+                <p:separator styleClass="separator" style="margin-top: 2px"/>                
+            </b:column>
+        </b:row>
+
+
+
+
+        <!-- ligne Alignements -->
+        <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeAlignments.size() != 0)}">
+            <b:column span="3" colXs="3">
+                <h:outputText value="Alignement" />
+            </b:column>
+            <b:column span="1">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter alignement auto" 
+                                      actionListener="#{alignmentBean.initAlignementByStep(
+                                                        selectedTheso.currentIdTheso, 
+                                                        conceptView.nodeConcept.concept.idConcept,
+                                                        conceptView.selectedLang)}"
+                                      action="#{alignmentBean.nextTen(conceptView.selectedLang, selectedTheso.currentIdTheso)}"                                      
+                                      oncomplete="PF('addAlignment').show();"
+                                      update="idAddAlignment addAlignmentForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+
+                    <b:navCommandLink value="Ajouter alignement manuel" 
+                                      actionListener="#{alignmentManualBean.reset()}"
+                                      oncomplete="PF('addManualAlignment').show();"
+                                      update="idAddManualAlignment addManualAlignmentForm"
+                                      style="font-size: 12px;"></b:navCommandLink>                                      
+
+                    <b:navCommandLink value="Modifier l'alignement" 
+                                      action="#{alignmentManualBean.reset()}"                                      
+                                      oncomplete="PF('updateAlignment').show();"
+                                      update="idUpdateAlignment updateAlignmentForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+
+                    <b:navCommandLink value="supprimer alignement" 
+                                      actionListener="#{alignmentBean.initAlignementByStep(
+                                                        selectedTheso.currentIdTheso, 
+                                                        conceptView.nodeConcept.concept.idConcept,
+                                                        conceptView.selectedLang)}"
+                                      action="#{alignmentManualBean.reset()}"                                      
+                                      oncomplete="PF('deleteAlignment').show();"
+                                      update="idDeleteAlignment deleteAlignmentForm"
+                                      style="font-size: 12px;"></b:navCommandLink>                                        
+                </b:dropMenu>                  
+            </b:column>
+            <h:panelGroup id="idConceptAlignment" >
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeAlignments.size() == 0}">
+                    <h:outputText  value="....." title="pas d'alignements" style="font-size: 12px; color: grey; font-style: italic " />
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
+                </b:column>                 
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeAlignments.size() != 0}">
+                    <ui:repeat var="align" value="#{conceptView.nodeConcept.nodeAlignments}" >
+                        <b:row>
+                            <b:column span="2">
+                                <h:outputText value="#{align.alignmentLabelType}:" />
+                            </b:column> 
+                            <b:column span="10">
+                                <b:link href="#{align.uri_target}"
+                                        value="#{align.uri_target}"
+                                        tooltip="#{align.thesaurus_target}" tooltip-delay-show="1000"
+                                        target="_blank"
+                                        icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>                            
+                            </b:column> 
+                        </b:row> 
+                    </ui:repeat>
+                    <p:separator styleClass="separator" style="margin-top: 2px"/>                
+                </b:column>
+            </h:panelGroup>                
+        </b:row>
+
+
+
+
+        <!-- ligne Identifiants -->        
+        <b:row >
+            <b:column span="12" colXs="12">
+                <h:outputText value="Identifiant / Lien permament" />
+            </b:column>
+        </b:row > 
+
+        <!-- Notation -->
+        <b:row id="idConceptNotationRow" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.concept.notation != '')}">
+            <b:column span="3" colXs="3">
+                <h:outputText value="Notation" style="margin-left: 5px;"/>
+            </b:column>
+            <b:column span="1">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Ajouter / modifier" 
+                                      action="#{notationBean.reset()}"
+                                      oncomplete="PF('setNotation').show();"
+                                      update="idSetNotation setNotationForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu>                
+            </b:column>            
+            <b:column span="8" colXs="8" rendered="#{(conceptView.nodeConcept.concept.notation == null) or (conceptView.nodeConcept.concept.notation == '') }">
+                <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />                
+            </b:column>
+            <b:column  span="8" colXs="8" id="idConceptNotationColumn" rendered="#{(conceptView.nodeConcept.concept.notation != null) and (conceptView.nodeConcept.concept.notation != '') }">
+                <h:outputText value="#{conceptView.nodeConcept.concept.notation}" style="font-size: 12px; color: #666666"/>
+            </b:column>            
+        </b:row >
+
+
+
+
+
+
+        <b:row >
+            <b:column span="4" colXs="4">
+                <h:outputText value="Id interne" style="margin-left: 5px;"/>
+            </b:column>
+            <b:column span="8" colXs="8">
+                <b:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
+                        value="#{conceptView.nodeConcept.concept.idConcept}" icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+            </b:column>
+        </b:row >
+        <b:row >
+            <b:column span="4" colXs="4">
+                <h:outputText value="Uri d'origine" style="margin-left: 5px;"/>
+            </b:column>
+            
+            <!-- Cas d'uri de type Ark -->
+            <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
+                <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
+                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" icon="link" 
+                        target="_blank"
+                        icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+            </b:column>            
+            
+            <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
+                <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
+                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}" icon="link" 
+                        target="_blank"
+                        icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+            </b:column>
+            <b:column span="8" colXs="8" rendered="#{!roleOnTheso.nodePreference.originalUriIsHandle and !roleOnTheso.nodePreference.originalUriIsArk}">
+                <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idConcept}"
+                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idConcept}" icon="link" 
+                        target="_blank"
+                        icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+            </b:column>            
+        </b:row >        
+        
+        <b:row rendered="#{conceptView.nodeConcept.concept.idArk != ''}">
+            <b:column span="4" colXs="4">
+                <h:outputText value="IdArk" style="margin-left: 5px;"/>
+            </b:column>
+            <b:column span="8" colXs="8">
+                <b:link href="#{roleOnTheso.nodePreference.serveurArk}#{conceptView.nodeConcept.concept.idArk}"
+                        value="#{roleOnTheso.nodePreference.serveurArk}#{conceptView.nodeConcept.concept.idArk}"
+                        target="_blank"
+                        icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+            </b:column>
+        </b:row >
+        <b:row rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
+            <b:column span="4" colXs="4">
+                <h:outputText value="IdHandle" style="margin-left: 5px;"/>
+            </b:column>
+            <b:column span="8" colXs="8">
+                <b:link href="#{roleOnTheso.nodePreference.urlApiHandle}#{conceptView.nodeConcept.concept.idHandle}"
+                        value="#{roleOnTheso.nodePreference.urlApiHandle}#{conceptView.nodeConcept.concept.idHandle}"
+                        target="_blank"
+                        icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
+            </b:column>
+        </b:row >         
+
+        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 5px; "/>
+
+        <!-- ligne téléchargement -->        
+        <ui:include src="download.xhtml" />
+
+
+        <p:spacer height="20" />
+        <!-- ligne dates -->        
+        <b:row>    
+            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
+                <h:outputText value="Created: " />
+                <h:outputText value="#{conceptView.nodeConcept.concept.created}" style="color: #666666"/>
+                <h:outputText value="  last modified: "/>
+                <h:outputText value="#{conceptView.nodeConcept.concept.modified}" style="color: #666666"/>
+
+                <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                 icon="fas fa-history" 
+                                 actionListener="#{historyBean.reset()}"                    
+                                 update="idHistoricalView"
+                                 oncomplete="PF('historicalView').show();"
+                                 title="Afficher l'historique des modifications"
+                                 style=" font-size: 14px"
+                                 styleClass="buttonIconOrange"/>
+            </b:column>
+        </b:row>
+
+        <!-- Dialogues -->        
+        <ui:include src="/dialog/concept/addNT.xhtml" /> 
+        <ui:include src="/dialog/concept/renameConcept.xhtml" /> 
+
+
+        <ui:include src="/dialog/synonym/addSynonym.xhtml" />        
+        <ui:include src="/dialog/synonym/deleteSynonym.xhtml" /> 
+        <ui:include src="/dialog/synonym/renameSynonym.xhtml" /> 
+
+        <ui:include src="/dialog/image/addImage.xhtml" />        
+        <ui:include src="/dialog/image/deleteImage.xhtml" /> 
+        <ui:include src="/dialog/image/updateImage.xhtml" />         
+
+        <ui:include src="/dialog/broader/addBroaderLink.xhtml" /> 
+        <ui:include src="/dialog/broader/deleteBroaderLink.xhtml" />         
+
+        <ui:include src="/dialog/narrower/addNarrowerLink.xhtml" /> 
+        <ui:include src="/dialog/narrower/deleteNarrowerLink.xhtml" /> 
+        <ui:include src="/dialog/narrower/changeRelation.xhtml" />         
+
+        <ui:include src="/dialog/related/addRelatedLink.xhtml" /> 
+        <ui:include src="/dialog/related/deleteRelatedLink.xhtml" />         
+
+        <ui:include src="/dialog/concept/setNotation.xhtml" />
+
+        <ui:include src="/dialog/traduction/addTraduction.xhtml" />
+        <ui:include src="/dialog/traduction/deleteTraduction.xhtml" />
+        <ui:include src="/dialog/traduction/renameTraduction.xhtml" />
+
+        <ui:include src="/dialog/group/removeConceptFromGroup.xhtml" />
+        <ui:include src="/dialog/group/addConceptToGroup.xhtml" />
+        <ui:include src="/dialog/group/removeConceptAndChildFromGroup.xhtml" />
+        <ui:include src="/dialog/group/addConceptAndChildToGroup.xhtml" />
+
+        <ui:include src="/dialog/note/addNote.xhtml" /> 
+        <ui:include src="/dialog/note/deleteNote.xhtml" /> 
+        <ui:include src="/dialog/note/editNote.xhtml" />  
+
+        <ui:include src="/dialog/history/historicalView.xhtml" />
+
+        <ui:include src="/dialog/alignment/addAlignment.xhtml" />
+        <ui:include src="/dialog/alignment/deleteAlignment.xhtml" />     
+        <ui:include src="/dialog/alignment/updateAlignment.xhtml" />         
+        <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />  
+
+        <ui:include src="/dialog/gps/setGps.xhtml" />      
+        <ui:include src="/dialog/gps/deleteGps.xhtml" />      
+        
+    </h:panelGroup>
+
+
+</ui:fragment>
