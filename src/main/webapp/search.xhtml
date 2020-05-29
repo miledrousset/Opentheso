@@ -6,13 +6,14 @@
         <b:row >
             <!-- <b:column span="6" contentDisabled="false" offset-md="3">-->
             <b:column span="2" offset-lg="3" offset-md="3" offset-sm="0" colXs="4">
-                <b:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}" 
-                                 style="font-size: 12px; background: white; border-color: #43B572" tooltip="Changer la langue du thésaurus"
-                                 tooltipDelayShow="500" 
-                                 onselect="#{selectedTheso.SelectedLang()}"
-                                 update="@parent formLeftTab formRightTab">
+                
+                <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}" 
+                                 style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
+                                 title="Changer la langue du thésaurus">
+                                <p:ajax event="valueChange" update="formSearch formLeftTab formRightTab" 
+                                             listener="#{selectedTheso.changeLang()}" />                    
                     <f:selectItems  value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                </b:selectOneMenu>
+                </p:selectOneMenu>                
             </b:column>
 
             <b:column span="4" colXs="6">
@@ -21,7 +22,7 @@
 
                                 completeMethod="#{searchBean.completTermFullText}"                                  
                                 minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
-                                scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 34px;box-shadow: none;border-color: #43B572"
+                                scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 27px;box-shadow: none;border-color: #43B572"
                                 style="font-size: 12px; width: 100%">
                     <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
                         <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
@@ -40,7 +41,7 @@
                 <b:commandButton id="buttonSearch" action="#{searchBean.applySearch()}" 
                                  
                                  update="formSearch formRightTab"
-                                 iconAwesome="search" style="color: #FAFAFA; background: #F7A269; border: none; height: 34px;"/>
+                                 iconAwesome="search" icon-size="l" style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; font-size: 12px"/>
             </b:column>
 
         </b:row>
@@ -48,7 +49,7 @@
         <b:row >
             <!-- <b:column span="6" contentDisabled="false" offset-md="3">-->
             <b:column span="1" offset="5" offset-lg="5" offset-md="4" offset-xs="4" colXs="2"
-                      style="margin-top: -15px;margin-right: -20px; font-size: 12px; color: #43B572">
+                      style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
                 <b:selectBooleanCheckbox caption="Exact" value="#{searchBean.exactMatch}" tooltip="rechercher par mot exact" 
                                          onclick="ajax:searchBean.activateExactMatch()"
                                          update="formSearch"
@@ -57,14 +58,14 @@
                 </b:selectBooleanCheckbox>
             </b:column>
             <b:column span="1" colXs="2"
-                      style="margin-top: -15px;margin-right: -20px; font-size: 12px; color: #43B572">
+                      style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
                 <b:selectBooleanCheckbox caption="Note" value="#{searchBean.withNote}" tooltip="rechercher dans les notes" 
                                          onclick="ajax:searchBean.activateWithNote()"
                                          update="formSearch"
                                          style="margin-top: 2px;"/>
             </b:column>
             <b:column span="1" colXs="2"
-                      style="margin-top: -15px;margin-right: -20px; font-size: 12px; color: #43B572">
+                      style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
                 <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}" tooltip="rechercher dans les identifiants"
                                          onclick="ajax:searchBean.activateWithId()"
                                          update="formSearch"

@@ -569,7 +569,7 @@ public class ImportFileBean implements Serializable {
                     connect.getWorkLanguage());
             
             // pour récupérer les identifiants pérennes type Ark ou Handle
-            importRdf4jHelper.setIdentifierType(selectedIdentifier);
+            importRdf4jHelper.setSelectedIdentifier(selectedIdentifier);
             
             importRdf4jHelper.setPrefixHandle(prefixHandle);
 

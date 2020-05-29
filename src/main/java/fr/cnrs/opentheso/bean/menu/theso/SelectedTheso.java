@@ -8,6 +8,8 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.PrimeFaces;
 
 @Named(value = "selectedTheso")
 @SessionScoped
@@ -39,7 +42,8 @@ public class SelectedTheso implements Serializable {
     private SearchBean searchBean;
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
-
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private ViewEditorHomeBean viewEditorHomeBean;
 
     private static final long serialVersionUID = 1L;
 
@@ -64,6 +68,7 @@ public class SelectedTheso implements Serializable {
 
     @PostConstruct
     public void initializing() {
+        roleOnThesoBean.showListTheso();
     }
 
     public void init() {
@@ -92,6 +97,12 @@ public class SelectedTheso implements Serializable {
      * l'application
      */
     public void setSelectedTheso() {
+        searchBean.reset();
+        viewEditorThesoHomeBean.reset();
+        viewEditorHomeBean.reset();
+        
+        
+        
         if (isUriRequest) {
             isUriRequest = false;
             return;
@@ -104,6 +115,22 @@ public class SelectedTheso implements Serializable {
             conceptBean.init();
             init();
             indexSetting.setIsSelectedTheso(false);
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("formMenu");
+                pf.ajax().update("formLeftTab");
+                
+                pf.ajax().update("formSearch:languageSelect");
+                pf.ajax().update("formSearch");   
+                pf.ajax().update("formRightTab"); 
+
+                pf.ajax().update("containerIndex");   
+                pf.ajax().update("homePageForm"); 
+            }              
+            
+            
+                
+                                              
             return;
         }
 
@@ -124,7 +151,7 @@ public class SelectedTheso implements Serializable {
     /**
      * permet de changer la langue du thésaurus et recharger les données
      */
-    public void SelectedLang() {
+    public void changeLang() {
         if (isUriRequest) {
             isUriRequest = false;
             return;
