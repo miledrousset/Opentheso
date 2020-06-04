@@ -35,7 +35,7 @@ public class ViewEditionBean implements Serializable {
     private boolean isImportStarted;
     
     public ViewEditionBean() {
-        alternateColor = "#FFFFFF";
+        alternateColor = "#C8EAD6";
         isViewListTheso = true;
         isViewExportSkos = false;
         isViewImportSkos = false;
@@ -46,7 +46,7 @@ public class ViewEditionBean implements Serializable {
     }
     
     public void init(){
-        alternateColor = "#FFFFFF";
+        alternateColor = "#C8EAD6";
         isViewListTheso = true;
         isViewExportSkos = false;
         isExportStarted = false;
@@ -58,12 +58,16 @@ public class ViewEditionBean implements Serializable {
     }
     
     public String getNewAlternateColor(){
-        if(alternateColor.equalsIgnoreCase("#C8EAD6")) {
-            alternateColor = "#FFFFFF";
-        } else {
+        if(alternateColor.equalsIgnoreCase("#FFFFFF")) {
             alternateColor = "#C8EAD6";
+        } else {
+            alternateColor = "#FFFFFF";
         }
         return alternateColor;
+    }
+    
+    public String getAlternateColor(Boolean isNewLine){
+        return (isNewLine) ? getNewAlternateColor() : alternateColor;
     }
 
     public boolean isIsViewListTheso() {

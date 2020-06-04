@@ -24,8 +24,8 @@
                                    value="Candidat"  
                                    action="#{indexSetting.setIsCandidateActive(true)}"
                                    style="color: #{indexSetting.candidateColor}"
-                                   update="containerIndex formMenu">                                   
-                        </b:navCommandLink>
+                                   update="containerIndex"  />
+                       
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}"
                                    value="Profil" 
                                    action="#{indexSetting.setIsProfileActive(true)}"

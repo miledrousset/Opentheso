@@ -1,0 +1,19 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui">
+
+    <b:container id="candidatsModule">
+        
+        <h:panelGroup  rendered="#{condidatBean.isListCandidatsActivate}">
+            <ui:include src="/condidat/listCandidats.xhtml" />
+        </h:panelGroup> 
+        
+        <h:panelGroup  rendered="#{condidatBean.isNewCandidatActive}">
+            <ui:include src="/condidat/newCandidat.xhtml" />
+        </h:panelGroup> 
+        
+    </b:container>
+           
+</ui:fragment>

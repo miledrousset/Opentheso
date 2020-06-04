@@ -1,0 +1,62 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:form id="listCandidatsForm" rendered="#{(currentUser.nodeUser != null)}">
+
+        <b:panel style="margin-top: -20px; margin-left: -15px; margin-right: 15px;  
+                 height: 700px; background-color: #FAFAFA; border: 20px; padding: 40px">
+
+            <b:row>
+                <p:commandButton value="Ajouter un condidat"  
+                                 class="btn btn-success"
+                                 style="width:200px; font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none; "
+                                 action="#{condidatBean.setIsNewCandidatActive(true)}"
+                                 update="candidatsModule"/>
+            </b:row>
+
+            <b:row>
+                <b:column span="4" >
+                    <b:selectBooleanCheckbox caption="Afficher mes condidats"/>
+                </b:column>
+                <b:column span="8" style="align-content: right">
+
+                    <h:outputText class="col-md-6 control-label" 
+                                  style="height: 34px; margin-top: 7px; text-align: right; vertical-align: middle;" 
+                                  value="Rechercher par terme ou auteur "/>
+                    
+                    <b:inputText class="mybid-example" col-xs="4" col-md="5">
+                        <f:facet name="append">
+                            <b:commandButton look="success" ajax="true" iconAwesome="search" icon-align="right"/>
+                        </f:facet>
+                    </b:inputText>
+                </b:column>
+            </b:row>
+
+            <b:row>
+                <b:dataTable 
+                    fixedHeader="true" selectionMode="single"
+                    value="#{carPool.carPool}" var="car" 
+                    fixed-header="true"
+                    paginated="false" searching="false" info="false" 
+                    rowStyleClass="textOpenthesoColorOrange"
+                    style="font-size: 12px; padding-top: 5px"
+                    onselect="console.log(#{car.brand});" 
+                    select="#{carPool.carSelect}">
+                    <b:dataTableColumn value="#{car.brand}" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(true)}; padding-top: 5px"/>
+                    <b:dataTableColumn value="#{car.type}" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px"/>
+                    <b:dataTableColumn value="#{car.color}" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px"/>
+                    <b:dataTableColumn value="#{car.year}"  style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px"/>
+                    <b:dataTableColumn value="#{car.price}" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px"/>
+                    <b:dataTableColumn value="#{car.enginePower}" label="Engine Power (hp)" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px" />
+                </b:dataTable>
+
+            </b:row>
+
+        </b:panel>
+
+    </h:form>        
+</ui:fragment>

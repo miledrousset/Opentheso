@@ -197,13 +197,14 @@
             <version>3.3.0</version>
             <type>jar</type>
         </dependency>
+        <!-- TODO Dependency to delate
         <dependency>
             <groupId>virt_jena3</groupId>
             <artifactId>virt_jena</artifactId>
             <version>3.0</version>
             <type>jar</type>
         </dependency>
-
+-->
         <dependency>
             <artifactId>junit</artifactId>
             <groupId>junit</groupId>
