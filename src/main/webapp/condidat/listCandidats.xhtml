@@ -15,19 +15,17 @@
                                  class="btn btn-success"
                                  style="width:200px; font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none; "
                                  action="#{condidatBean.setIsNewCandidatActive(true)}"
-                                 update="candidatsModule"/>
+                                 update="containerIndex candidatsModule"/>
             </b:row>
 
             <b:row>
-                <b:column span="4" >
-                    <b:selectBooleanCheckbox caption="Afficher mes condidats"/>
+                <b:column span="4">
+                    <b:selectBooleanCheckbox caption="Afficher mes condidats" />
                 </b:column>
-                <b:column span="8" style="align-content: right">
-
+                <b:column span="8">
                     <h:outputText class="col-md-6 control-label" 
-                                  style="height: 34px; margin-top: 7px; text-align: right; vertical-align: middle;" 
+                                  style="height: 34px; margin-top: 7px; text-align: right; vertical-align: central" 
                                   value="Rechercher par terme ou auteur "/>
-                    
                     <b:inputText class="mybid-example" col-xs="4" col-md="5">
                         <f:facet name="append">
                             <b:commandButton look="success" ajax="true" iconAwesome="search" icon-align="right"/>
@@ -37,22 +35,28 @@
             </b:row>
 
             <b:row>
-                <b:dataTable 
-                    fixedHeader="true" selectionMode="single"
-                    value="#{carPool.carPool}" var="car" 
-                    fixed-header="true"
-                    paginated="false" searching="false" info="false" 
+                <p:dataTable
+                    value="#{candidatPool.candidatPool}" var="candidat"
                     rowStyleClass="textOpenthesoColorOrange"
-                    style="font-size: 12px; padding-top: 5px"
-                    onselect="console.log(#{car.brand});" 
-                    select="#{carPool.carSelect}">
-                    <b:dataTableColumn value="#{car.brand}" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(true)}; padding-top: 5px"/>
-                    <b:dataTableColumn value="#{car.type}" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px"/>
-                    <b:dataTableColumn value="#{car.color}" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px"/>
-                    <b:dataTableColumn value="#{car.year}"  style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px"/>
-                    <b:dataTableColumn value="#{car.price}" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px"/>
-                    <b:dataTableColumn value="#{car.enginePower}" label="Engine Power (hp)" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(false)}; padding-top: 5px" />
-                </b:dataTable>
+                    scrollable="true" scrollHeight="500"
+                    style="font-size: 12px; vertical-align: central; padding-top: 5px; text-align: center">
+
+                    <p:column headerText="Candidat" style="width: 45%; background-color: #{viewEditionBean.getAlternateColor(true)}; text-align: left">
+                        <h:outputText style="color: #43B572; font-weight: bold;" value="#{candidat.candidat}"/>
+                    </p:column>
+                    <p:column headerText="Date de création" style="width: 15%; background-color: #{viewEditionBean.getAlternateColor(false)}">
+                        <h:outputText value="#{candidat.dateNaissance}" />
+                    </p:column>
+                    <p:column headerText="Etat" style="width: 20%; background-color: #{viewEditionBean.getAlternateColor(false)}">
+                        <h:outputText value="#{candidat.etat}" />
+                    </p:column>
+                    <p:column headerText="Demande" style="width: 10%; background-color: #{viewEditionBean.getAlternateColor(false)}">
+                        <h:outputText value="#{candidat.demande}" />
+                    </p:column>
+                    <p:column headerText="Participant" style="width: 10%; background-color: #{viewEditionBean.getAlternateColor(false)}">
+                        <h:outputText value="#{candidat.participant}" />
+                    </p:column>
+                </p:dataTable>
 
             </b:row>
 
