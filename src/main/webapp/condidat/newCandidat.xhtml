@@ -7,139 +7,27 @@
 
     <h:form id="newCandidatsForm" rendered="#{(currentUser.nodeUser != null)}">
 
-        <b:panel style="margin-top: -20px; margin-left: -15px; margin-right: 15px;  
-                 height: 700px; background-color: #FAFAFA; border: 20px; padding: 40px">
+        <b:panel style="margin-top: -20px; margin-left: -15px; margin-right: 15px; 
+                 background-color: #FAFAFA; padding: 40px">
 
             <p:link value="⬅ Retour à la liste des candidats" 
                     style="color: #43B572" onclick="#{condidatBean.setIsListCandidatsActivate(true)}" />
 
-            <b:row style="margin-top: 20px">
-                <b:column span="6">
-
-                    <h:outputText style="font-weight: bold;" value="Fiche candidat"/>
-
-                    <b:panel style="margin-top: 10px; margin-left: -10px; background-color: #FAFAFA; border: none;">
-
-                        <b:form>
-
-                            <h:outputText value="Intitulé"/>
-                            <b:inputText id="intitule" style="width: 250px; margin-top: 4px" placeholder="ex: Aliment" />
-
-                            
-                            <h:outputText value="Domaine"/>
-                            <b:inputText id="domaine" style="width: 250px; margin-top: 4px" placeholder="ex: Sujet" />
-
-                            
-                            <h:outputText value="Terme générique"/>
-                            <b:inputText id="termeGenerique" style="width: 250px; margin-top: 4px" placeholder="ex: Nourriture, etc..." />
-                          
-                            
-                            <h:outputText value="Termes associés"/>
-                            <b:row>
-                                <b:column span="6">
-                                    <b:inputText id="termesAssocies"  style="width: 250px; margin-top: 4px" placeholder="ex: ..." />
-                                </b:column>
-                                <b:column span="1">
-                                    <b:button icon="remove" style="margin-top: 4px; background: #43B572; color: white;" />   
-                                </b:column>
-                                <b:column span="1"> 
-                                    <b:button icon="save" style="margin-top: 4px; background: #43B572; color: white;" />  
-                                </b:column>
-                            </b:row>
-
-                            
-                            <h:outputText value="Employé pour (EP)"/>
-                            <b:row>
-                                <b:column span="6">
-                                    <b:inputText id="employePour"  style="width: 250px; margin-top: 4px" placeholder="ex: ..." />
-                                </b:column>
-                                <b:column span="1">
-                                    <b:button icon="remove" style="margin-top: 4px; background: #43B572; color: white;" />   
-                                </b:column>
-                                <b:column span="1"> 
-                                    <b:button icon="save" style="margin-top: 4px; background: #43B572; color: white;" />  
-                                </b:column>
-                            </b:row>
-
-                            <h:outputText value="Définition"/>
-                            <b:inputTextarea id="definition"/>
-
-                            <b:inputTextarea label="Note d'application" />
-
-                            Traduction
-                            <b:row>
-                                <b:column span="4">
-                                    <b:inputText placeholder="Langue" />
-                                </b:column>
-                                <b:column span="4">
-                                    <b:inputText placeholder="ex: Food, etc..."/>
-                                </b:column>
-                                <b:column span="1">
-                                    <b:button icon="remove" style="background: #43B572; color: white;" />   
-                                </b:column>
-                                <b:column span="1"> 
-                                    <b:button icon="save" style="background: #43B572; color: white;" />  
-                                </b:column>
-                            </b:row>
-                            <b:row>
-                                <b:column span="4">
-                                    <b:inputText placeholder="Langue" />
-                                </b:column>
-                                <b:column span="4">
-                                    <b:inputText placeholder="ex: Food, etc..."/>
-                                </b:column>
-                                <b:column span="1">
-                                    <b:button icon="remove" style="background: #43B572; color: white;" />   
-                                </b:column>
-                                <b:column span="1"> 
-                                    <b:button icon="save" style="background: #43B572; color: white;" />  
-                                </b:column>
-                            </b:row>
-
-                            Corpus lié
-                            <b:row>
-                                <b:column span="4">
-                                    <b:inputText placeholder="ex: UNESCO" />
-                                </b:column>
-                                <b:column span="4">
-                                    <b:inputText placeholder="URL"/>
-                                </b:column>
-                                <b:column span="1">
-                                    <b:button icon="remove" style="background: #43B572; color: white;" />   
-                                </b:column>
-                                <b:column span="1"> 
-                                    <b:button icon="save" style="background: #43B572; color: white;" />  
-                                </b:column>
-                            </b:row>
-                            <b:row>
-                                <b:column span="4">
-                                    <b:inputText placeholder="ex: UNESCO" />
-                                </b:column>
-                                <b:column span="4">
-                                    <b:inputText placeholder="URL"/>
-                                </b:column>
-                                <b:column span="1">
-                                    <b:button icon="remove" style="background: #43B572; color: white;" />   
-                                </b:column>
-                                <b:column span="1"> 
-                                    <b:button icon="save" style="background: #43B572; color: white;" />  
-                                </b:column>
-                            </b:row>
-
-
-                        </b:form>
-                    </b:panel>
-                </b:column>
-                <b:column span="6">
-                    <b:panel style="margin-top: 10px; margin-right: 10px; background-color: #43B572; border: none;">
-                        
-                        <h:outputText style="font-weight: bold;" value="Discussion"/>
-                        
-                    </b:panel>
-                </b:column>
-            </b:row>
-
+            <p:panelGrid style="width: 100%;">
+                <p:row style="width: 100%; background-color: #FAFAFA; border: #FAFAFA">
+                    <p:column style="width: 50%; background-color: #FAFAFA;">
+                        <ui:include src="/condidat/candidatForm.xhtml" />
+                    </p:column>
+                    <p:column style="width: 50%; height: 100%; vertical-align: top">
+                        <ui:include src="/condidat/discussion.xhtml" />
+                    </p:column>
+                </p:row>
+                <p:row style="background-color: #FAFAFA; border: #FAFAFA">
+                    <p:column colspan="2" style="text-align: center;">
+                        <b:button value="Soumettre la fiche à un admin" style="background: #F47B2A; border-color: #F47B2A; color: white" look="primary" size="lg" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
         </b:panel>
-
-    </h:form>        
+    </h:form>       
 </ui:fragment>

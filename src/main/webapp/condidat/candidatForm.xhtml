@@ -1,0 +1,213 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:outputLabel style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Fiche candidat"/>
+
+    <b:panel style="margin-top: 10px; margin-left: -10px; background-color: #FAFAFA; border: none;">
+
+        <b:form style="width: 100%; margin-top: -10px;">
+
+            <p:outputLabel value="Intitulé"/>
+            <b:row>
+                <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center; margin-top: -10px;">
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column>
+                            <p:inputText id="intitule" style="width: 230px; margin-top: 4px" placeholder="ex: Aliment" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </b:row>
+
+            
+            <p:outputLabel value="Domaine" style="margin-top: 15px;"/>
+            <b:row>
+                <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center; margin-top: -10px;">
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column>
+                            <p:inputText id="domaine" style="width: 230px; margin-top: 4px" placeholder="ex: Sujet" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </b:row>
+
+            
+            <p:outputLabel value="Terme générique" style="margin-top: 15px;"/>
+            <b:row>
+                <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center; margin-top: -10px;">
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column>
+                            <p:inputText id="termeGenerique" style="width: 230px" placeholder="ex: Nourriture, etc..."/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </b:row>
+
+            <p:outputLabel value="Termes associés" style="margin-top: 15px;"/>
+            <b:row>
+                <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center; margin-top: -10px;">
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column style="width: 50%;">
+                            <p:inputText id="termesAssocies" placeholder="ex: ..." style="width: 100%; margin-top: 4px"/>
+                        </p:column>
+                        <p:column rowspan="2" style="width: 50%;">
+                            <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" /> 
+                            <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </b:row>
+
+            
+            <p:outputLabel value="Employé pour (EP)" style="margin-top: 15px;"/>
+            <b:row>
+                <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center; margin-top: -10px;">
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column style="width: 50%;">
+                            <p:inputText id="employePour" placeholder="ex: ..." style="width: 100%; margin-top: 4px"/>
+                        </p:column>
+                        <p:column rowspan="2" style="width: 50%;">
+                            <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" /> 
+                            <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </b:row>
+
+
+            <p:outputLabel value="Définition" style="margin-top: 15px;"/>
+            <b:inputTextarea id="definition" style="width: 100%; resize: none;"/>
+
+
+            <p:outputLabel value="Note d'application" style="margin-top: 15px;"/>
+            <b:inputTextarea id="noteApplication" style="width: 100%; resize: none;"/>
+
+
+            <p:outputLabel value="Traduction" style="margin-top: 15px;" />
+            <b:row style="width: 100%; margin-top: -5px;">
+                <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center;">
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="Langue" style="width: 100%"/>
+                        </p:column>
+
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="ex: Food, etc..." style="width: 100%" />
+                        </p:column>
+
+                        <p:column style="width: 20%;">
+                            <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" /> 
+                            <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                        </p:column>
+                    </p:row>
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="Langue" style="width: 100%"/>
+                        </p:column>
+
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="ex: Food, etc..." style="width: 100%" />
+                        </p:column>
+
+                        <p:column style="width: 20%;">
+                            <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" /> 
+                            <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </b:row>
+
+
+            <p:outputLabel value="Corpus lié" style="margin-top: 15px;" />
+            <b:row style="width: 100%; margin-top: -5px;">
+                <p:panelGrid style="width: 100%;">
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="ex: UNESCO" style="width: 100%"/>
+                        </p:column>
+
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="URL" style="width: 100%" />
+                        </p:column>
+
+                        <p:column style="width: 20%;">
+                            <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" /> 
+                            <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                        </p:column>
+                    </p:row>
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="ex: UNESCO" style="width: 100%"/>
+                        </p:column>
+
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="URL" style="width: 100%" />
+                        </p:column>
+
+                        <p:column style="width: 20%;">
+                            <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" /> 
+                            <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </b:row>
+
+
+            <p:outputLabel value="Alignerment" style="margin-top: 15px;" />
+            <b:row style="width: 100%; margin-top: -5px;">
+                <p:panelGrid style="width: 100%;">
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="ex: Nourriture" style="width: 100%"/>
+                        </p:column>
+
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="Source" style="width: 100%" />
+                        </p:column>
+
+                        <p:column rowspan="2" style="width: 20%;">
+                            <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" /> 
+                            <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                        </p:column>
+                    </p:row>
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA">
+                        <p:column colspan="2">
+                            <p:inputText placeholder="URL" style="width: 100%;"  /> 
+                        </p:column>
+                    </p:row>
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="ex: Nourriture" style="width: 100%"/>
+                        </p:column>
+
+                        <p:column style="width: 40%;">
+                            <p:inputText placeholder="Source" style="width: 100%" />
+                        </p:column>
+
+                        <p:column rowspan="2" style="width: 20%;">
+                            <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" /> 
+                            <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                        </p:column>
+                    </p:row>
+                    <p:row style="background-color: #FAFAFA; border: #FAFAFA">
+                        <p:column colspan="2">
+                            <p:inputText placeholder="URL" style="width: 100%;"  /> 
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+                <b:row style="margin-top: 20px; margin-left: 10px; width: 100%;">
+                    <b:button value="Enregistrer" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+                </b:row>
+
+            </b:row>
+
+        </b:form>
+
+    </b:panel>    
+
+</ui:fragment>
