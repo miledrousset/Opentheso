@@ -12,7 +12,10 @@ import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import javax.inject.Named;
@@ -21,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -30,16 +34,13 @@ import javax.inject.Inject;
 @SessionScoped
 public class ConceptView implements Serializable {
 
-    @Inject
-    private Connect connect;
-    
-    @Inject
-    private IndexSetting indexSetting;   
-    @Inject
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject
-    private ViewEditorHomeBean viewEditorHomeBean;    
-    
+    @Inject private Connect connect;
+    @Inject private IndexSetting indexSetting;   
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private ViewEditorHomeBean viewEditorHomeBean;    
+    @Inject private Tree tree;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private SelectedTheso selectedTheso;
 
     private NodeConcept nodeConcept;
     private String selectedLang;
@@ -91,6 +92,7 @@ public class ConceptView implements Serializable {
 
     /**
      * récuparation des informations pour le concept sélectionné
+     * c'est pour la navigation entre les concepts dans la vue de droite avec deployement de l'arbre
      *
      * @param idTheso
      * @param idConcept
@@ -99,14 +101,58 @@ public class ConceptView implements Serializable {
     public void getConcept(String idTheso, String idConcept, String idLang) {
         ConceptHelper conceptHelper = new ConceptHelper();
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
-        pathOfConcept(idTheso, idConcept, idLang);
+        if(nodeConcept == null) return;
+        
+//        if(nodeConcept != null) {
+            pathOfConcept(idTheso, idConcept, idLang);
+            setNotes();
+            setSizeToShowNT();            
+  //      }
         selectedLang = idLang;
-        setNotes();
-        setSizeToShowNT();
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
+        
+        // deployement de l'arbre si l'option est true
+        if(roleOnThesoBean.getNodePreference() != null) {
+            if(roleOnThesoBean.getNodePreference().isAuto_expand_tree()){
+                tree.expandTreeToPath(
+                    idConcept,
+                    idTheso,
+                    idLang);
+                PrimeFaces pf = PrimeFaces.current();;
+                if (pf.isAjaxRequest()) {
+//                    pf.ajax().update("formLeftTab");
+                    pf.ajax().update("formLeftTab:tabTree:tree");
+                    pf.ajax().update("formSearch:languageSelect");
+                    pf.executeScript("srollToSelected()");
+                }   
+                selectedTheso.actionFromConceptToOn();
+            }
+        }
     }
+    
+    /**
+     * récuparation des informations pour le concept sélectionné
+     * après une sélection dans l'arbre
+     *
+     * @param idTheso
+     * @param idConcept
+     * @param idLang
+     */
+    public void getConceptForTree(String idTheso, String idConcept, String idLang) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        if(nodeConcept != null) {
+            pathOfConcept(idTheso, idConcept, idLang);
+            setNotes();
+            setSizeToShowNT();            
+        }
+        selectedLang = idLang;
+        indexSetting.setIsValueSelected(true);
+        viewEditorHomeBean.reset();
+        viewEditorThesoHomeBean.reset();
+    }    
     
     private void setSizeToShowNT() {
         // Max 20

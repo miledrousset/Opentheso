@@ -755,7 +755,7 @@ public class UserHelper {
 
     /**
      * cette fonction permet de retourner la liste des thésaurus et les groupes
-     * correspondants
+     * correspondants (uniquement les thésaurus qui font partie d'un groupe
      *
      * @param ds
      * @param idLangSource

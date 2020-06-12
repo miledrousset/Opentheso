@@ -3,21 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Tree;
+package tree;
 
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import javax.inject.Inject;
 import org.junit.Test;
 
 /**
  *
  * @author miledrousset
  */
-public class ExpandTreeTest {
+public class ExpandTreeTest1 {
     
 
     
-    public ExpandTreeTest() {
+    public ExpandTreeTest1() {
     }
 
     // TODO add test methods here.

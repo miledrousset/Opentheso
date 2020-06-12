@@ -40,6 +40,16 @@
                                 <b:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="height: 25px;font-size: 12px;"/>
                             </b:column>                
                         </b:row>
+                        
+                        <!-- Uri Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Uri Ark" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.uriArk}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>                        
 
                         <!-- Naan Ark -->
                         <b:row style="margin-left: 30px; font-size: 12px;">
@@ -81,6 +91,17 @@
                             </b:column>                
                         </b:row>
                         <p:spacer/>
+                        
+                        <!-- use generateHAndle -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="5">
+                                <h:outputText value="Générer handle avec Ark" />
+                            </b:column>
+                            <b:column span="1" offset="4">
+                                <p:toggleSwitch value="#{preferenceBean.nodePreference.generateHandle}" style="font-size: 12px;" />                    
+                            </b:column>                            
+                        </b:row>
+                        <p:spacer/>                        
 
                         <b:row style="margin-left: 30px; font-size: 12px;">
                             <b:column span="3" offset="8"> 

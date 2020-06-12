@@ -11,11 +11,11 @@
         
         <!-- ligne Label du groupe -->           
         <b:row id="idGroupLable">
-            <b:column span="3">
+            <b:column span="3" colXs="3">
                 <h:outputText value="Label" />
             </b:column>
             
-            <b:column span="1">
+            <b:column span="1" colXs="1">
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
@@ -26,7 +26,7 @@
                                       style="font-size: 12px;"></b:navCommandLink>
                 </b:dropMenu>
             </b:column>            
-            <b:column span="8">
+            <b:column span="8" colXs="8">
                 <h:outputText value="#{groupView.nodeGroup.lexicalValue}" style="font-weight: bold"/>
                 <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
             </b:column>
@@ -35,10 +35,10 @@
         
         <!-- ligne Type de groupe -->         
         <b:row id="idGroupType">
-            <b:column span="4">
+            <b:column span="4" colXs="4">
                 <h:outputText value="Type" />
             </b:column>
-            <b:column span="8">
+            <b:column span="8" colXs="8">
                 <h:outputText value="#{groupView.nodeGroupType.skosLabel}" title="#{groupView.nodeGroupType.label}"/>
                 <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
             </b:column>
@@ -47,10 +47,10 @@
         
         <!-- ligne Membres -->        
         <b:row >
-            <b:column span="4">
+            <b:column span="4" colXs="4">
                 <h:outputText value="Membres" />
             </b:column>
-            <b:column span="8">
+            <b:column span="8" colXs="8">
                 <h:outputText value="#{groupView.count}" title="Nombre de concepts inclus dans la collection/groupe"/>
                 <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
             </b:column>
@@ -60,15 +60,16 @@
         
         <!-- ligne Notation -->        
         <b:row id="idGroupNotation">
-            <b:column span="4">
+            <b:column span="4" colXs="4">
                 <h:outputText value="Notation" />
             </b:column>
-            <b:column span="8" rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
+            
+            <b:column span="8" colXs="8" rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
                                            or (groupView.nodeGroup.conceptGroup.notation== '')}">
                 <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />   
                 <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
             </b:column>            
-            <b:column span="8" rendered="#{(groupView.nodeGroup.conceptGroup.notation != null) 
+            <b:column span="8" colXs="8" rendered="#{(groupView.nodeGroup.conceptGroup.notation != null) 
                                            and (groupView.nodeGroup.conceptGroup.notation != '')}">
                 <h:outputText value="#{groupView.nodeGroup.conceptGroup.notation}"/>
                 <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>
@@ -79,10 +80,10 @@
         
         <!-- ligne Traductions -->
         <b:row rendered="#{(currentUser.nodeUser != null) or (groupView.nodeGroupTraductions.size() !=0)}">
-            <b:column span="3">
+            <b:column span="3" colXs="3">
                 <h:outputText value="Traduction" />
             </b:column>
-            <b:column span="1">
+            <b:column span="1" colXs="1">
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les traductions" tooltip-delay-show="1000"
                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
@@ -105,12 +106,12 @@
                 </b:dropMenu> 
             </b:column>
             <h:panelGroup id="idGroupTraductions">
-                <b:column span="8" rendered="#{groupView.nodeGroupTraductions.size() == 0}">
+                <b:column span="8" colXs="8" rendered="#{groupView.nodeGroupTraductions.size() == 0}">
                     <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
                 </b:column>
 
-                <b:column span="8" rendered="#{groupView.nodeGroupTraductions.size() != 0}">
+                <b:column span="8" colXs="8" rendered="#{groupView.nodeGroupTraductions.size() != 0}">
                     <ui:repeat var="trad" value="#{groupView.nodeGroupTraductions}" >
                         <b:row>
                             <b:column >
@@ -126,25 +127,25 @@
       
         <!-- ligne URI -->
         <b:row >
-            <b:column span="12">
+            <b:column span="12" colXs="12">
                 <h:outputText value="Identifiant / Lien permament" />
             </b:column>
         </b:row > 
 
         <b:row >
-            <b:column span="4">
+            <b:column span="4" colXs="3">
                 <h:outputText value="Id interne" style="margin-left: 5px;"/>
             </b:column>
-            <b:column span="8">
+            <b:column span="8" colXs="9">
                 <b:link href="#{request.contextPath}/?idg=#{groupView.nodeGroup.conceptGroup.idgroup}&amp;idt=#{groupView.nodeGroup.conceptGroup.idthesaurus}"
                         value="#{groupView.nodeGroup.conceptGroup.idgroup}" icon="link" icon-size="sm" style="color: #43B572;"></b:link>
             </b:column>
         </b:row >
         <b:row rendered="#{groupView.nodeGroup.conceptGroup.idARk != ''}">
-            <b:column span="4">
+            <b:column span="4" colXs="3">
                 <h:outputText value="IdArk" style="margin-left: 5px;"/>
             </b:column>
-            <b:column span="8">
+            <b:column span="8" colXs="9">
                 <b:link href="#{roleOnTheso.nodePreference.serveurArk}#{groupView.nodeGroup.conceptGroup.idARk}"
                         value="#{roleOnTheso.nodePreference.serveurArk}#{groupView.nodeGroup.conceptGroup.idARk}"
                         target="_blank"
@@ -152,10 +153,10 @@
             </b:column>
         </b:row >
         <b:row rendered="#{groupView.nodeGroup.conceptGroup.idHandle != ''}">
-            <b:column span="4">
+            <b:column span="4" colXs="3">
                 <h:outputText value="IdHandle" style="margin-left: 5px;"/>
             </b:column>
-            <b:column span="8">
+            <b:column span="8" colXs="9">
                 <b:link href="#{roleOnTheso.nodePreference.urlApiHandle}#{groupView.nodeGroup.conceptGroup.idHandle}"
                         value="#{roleOnTheso.nodePreference.urlApiHandle}#{groupView.nodeGroup.conceptGroup.idHandle}"
                         target="_blank"
@@ -170,7 +171,7 @@
         
         <!-- ligne dates -->        
         <b:row>    
-            <b:column span="8" style="font-size: 12px; color: grey; font-style: italic ">
+            <b:column span="8" colXs="8" style="font-size: 12px; color: grey; font-style: italic ">
                 <h:outputText value="Created: " />
                 <h:outputText value="#{groupView.nodeGroup.created}" style="color: #666666"/>
                 <h:outputText value="  last modified: "/>

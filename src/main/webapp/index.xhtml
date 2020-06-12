@@ -50,7 +50,9 @@
         <f:metadata>
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
             <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
-            <f:event listener="#{selectedTheso.preRenderView}" type="preRenderView"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+         <!--   <f:event listener="{selectedTheso.preRenderView}" type="preRenderView"/> -->
+
         </f:metadata>
 
         <b:growl id="messageIndex"

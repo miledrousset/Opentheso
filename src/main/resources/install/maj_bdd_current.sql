@@ -2409,7 +2409,10 @@ create or replace function update_table_preferences_original_uri() returns void 
         IF NOT EXISTS (SELECT * FROM information_schema.columns WHERE table_name='preferences' AND column_name='original_uri' ) THEN
             execute 'Alter TABLE preferences ADD COLUMN original_uri character varying COLLATE pg_catalog."default";
                      Alter TABLE preferences ADD COLUMN original_uri_is_ark boolean DEFAULT false;
-                     Alter TABLE preferences ADD COLUMN original_uri_is_handle boolean DEFAULT false;';
+                     Alter TABLE preferences ADD COLUMN original_uri_is_handle boolean DEFAULT false;
+                     Alter TABLE preferences ADD COLUMN uri_ark character varying DEFAULT ''https://ark.mom.fr/ark:/''::character varying;
+                     Alter TABLE preferences ADD COLUMN generate_handle boolean DEFAULT true;
+                     Alter TABLE preferences ADD COLUMN auto_expand_tree boolean DEFAULT true;';
         end if;
     end;
 $$language plpgsql;

@@ -5,14 +5,17 @@ public class NodePreference {
     private String sourceLang;
     private int identifierType;
     private String preferredName;
+    private boolean auto_expand_tree;
     
     // paramètres Ark
     private boolean useArk;
     private String serveurArk;
+    private String uriArk;
     private String idNaan;
     private String prefixArk;
     private String userArk;
     private String passArk;
+    private boolean generateHandle;
     
     
     // paramètres Handle
@@ -64,6 +67,14 @@ public class NodePreference {
         this.identifierType = identifierType;
     }
 
+    public String getPreferredName() {
+        return preferredName;
+    }
+
+    public void setPreferredName(String preferredName) {
+        this.preferredName = preferredName;
+    }
+
     public boolean isUseArk() {
         return useArk;
     }
@@ -78,6 +89,14 @@ public class NodePreference {
 
     public void setServeurArk(String serveurArk) {
         this.serveurArk = serveurArk;
+    }
+
+    public String getUriArk() {
+        return uriArk;
+    }
+
+    public void setUriArk(String uriArk) {
+        this.uriArk = uriArk;
     }
 
     public String getIdNaan() {
@@ -175,8 +194,6 @@ public class NodePreference {
     public void setPrivatePrefixHandle(String privatePrefixHandle) {
         this.privatePrefixHandle = privatePrefixHandle;
     }
-
-
 
     public String getPathImage() {
         return pathImage;
@@ -290,14 +307,6 @@ public class NodePreference {
         this.webservices = webservices;
     }
 
-    public String getPreferredName() {
-        return preferredName;
-    }
-
-    public void setPreferredName(String preferredName) {
-        this.preferredName = preferredName;
-    }
-
     public String getOriginalUri() {
         return originalUri;
     }
@@ -321,6 +330,24 @@ public class NodePreference {
     public void setOriginalUriIsHandle(boolean originalUriIsHandle) {
         this.originalUriIsHandle = originalUriIsHandle;
     }
+
+    public boolean isGenerateHandle() {
+        return generateHandle;
+    }
+
+    public void setGenerateHandle(boolean generateHandle) {
+        this.generateHandle = generateHandle;
+    }
+
+    public boolean isAuto_expand_tree() {
+        return auto_expand_tree;
+    }
+
+    public void setAuto_expand_tree(boolean auto_expand_tree) {
+        this.auto_expand_tree = auto_expand_tree;
+    }
+
+
     
     
 }

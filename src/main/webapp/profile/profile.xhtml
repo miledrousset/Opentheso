@@ -19,25 +19,47 @@
                     <p:spacer/>
                     <b:row >
                         <b:column span="11" offset="1">
-                            <b:navCommandLink value="Projets" style="color: #{profileBean.myProjectColor}"
+                            <b:navCommandLink value="Mes projets/utilisateurs" style="color: #{profileBean.myProjectColor}"
                                               tooltip="Projets et utilisateurs + les rôles"
                                               action="#{profileBean.setIsMyProjectActive(true)}"
                                               actionListener="#{myProjectBean.init()}"
                                               update="profileForm profileForm:myProjectForm"/>
                         </b:column>
                     </b:row>                    
-                    <p:spacer/>
+
+                    
+                    <p:separator/>
                     
                     <b:row  rendered="#{currentUser.nodeUser.isSuperAdmin}">
                         <b:column span="11" offset="1">
-                            <b:navCommandLink value="Utilisateurs" style="color: #{profileBean.usersColor}"
+                            <b:navCommandLink value="Tous les utilisateurs" style="color: #{profileBean.usersColor}"
                                               tooltip="Tous les utilisateurs"
                                               action="#{profileBean.setIsUsersActive(true)}"
                                               actionListener="#{superAdminBean.init()}"
                                               update="profileForm profileForm:usersForm"/>
                         </b:column>
                     </b:row>                    
-                    <p:spacer/>                    
+                    <p:spacer/>
+                    <b:row  rendered="#{currentUser.nodeUser.isSuperAdmin}">
+                        <b:column span="11" offset="1">
+                            <b:navCommandLink value="Tous les projets" style="color: #{profileBean.projectsColor}"
+                                              tooltip="Tous les projets"
+                                              action="#{profileBean.setIsProjectsActive(true)}"
+                                              actionListener="#{superAdminBean.init()}"
+                                              update="profileForm profileForm:projectsForm"/>
+                        </b:column>
+                    </b:row>                    
+                    <p:spacer/>
+                    <b:row  rendered="#{currentUser.nodeUser.isSuperAdmin}">
+                        <b:column span="11" offset="1">
+                            <b:navCommandLink value="Tous les thésaurus" style="color: #{profileBean.thesaurusColor}"
+                                              tooltip="Tous les thésaurus"
+                                              action="#{profileBean.setIsThesaurusActive(true)}"
+                                              actionListener="#{superAdminBean.init()}"
+                                              update="profileForm profileForm:thesaurusForm"/>
+                        </b:column>
+                    </b:row>                    
+                    <p:spacer/>                      
                     
                 </b:panel>
             </b:column>
@@ -51,9 +73,16 @@
             </b:column>
             <b:column span="9" rendered="#{profileBean.isUsersActive and currentUser.nodeUser.isSuperAdmin}">
                 <ui:include src="/profile/users.xhtml" />
+            </b:column>
+            <b:column span="9" rendered="#{profileBean.isProjectsActive and currentUser.nodeUser.isSuperAdmin}">
+                <ui:include src="/profile/projects.xhtml" />
             </b:column>              
-            
+            <b:column span="9" rendered="#{profileBean.isThesaurusActive and currentUser.nodeUser.isSuperAdmin}">
+                <ui:include src="/profile/thesaurus.xhtml" />
+            </b:column>   
+
+            <ui:include src="/dialog/profile/moveThesoToAnotherProjectSA.xhtml" />
         </b:row>
-       
+
     </h:form>        
 </ui:fragment>

@@ -167,12 +167,16 @@
 
             <b:column id="idConceptGroupColumn" span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() != 0}">
                 <ui:repeat   var="domaine" value="#{conceptView.nodeConcept.nodeConceptGroup}" varStatus="status">
-                    <h:outputText rendered="#{domaine.lexicalValue != ''}"
-                                  value="#{domaine.lexicalValue}" title="#{domaine.conceptGroup.idgroup}"
-                                  style="color: #666666"/>                    
-                    <h:outputText rendered="#{domaine.lexicalValue == ''}" 
-                                  value="(#{domaine.conceptGroup.idgroup})" 
-                                  title="pas de traduction dans cette langue" style="color: #FF7979"/>
+                    <b:navCommandLink rendered="#{domaine.lexicalValue != ''}"
+                                      value="#{domaine.lexicalValue}"
+                                      action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
+                                      update="formLeftTab formRightTab indexTitle"
+                                      style="color: #43B572;"></b:navCommandLink>  
+                    <b:navCommandLink rendered="#{domaine.lexicalValue == ''}"
+                                      value="#{domaine.lexicalValue}"
+                                      action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
+                                      update="formLeftTab formRightTab indexTitle"
+                                      style="color: #43B572;"></b:navCommandLink>                                        
 
                     <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
                 </ui:repeat>

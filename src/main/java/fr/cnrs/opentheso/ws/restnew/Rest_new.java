@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
 
 /**
  * REST Web Service
@@ -77,7 +79,20 @@ public class Rest_new {
      */
 ///////////////////////////////////////////////////// 
 /////////////////////////////////////////////////////    
-
+/*
+    //Pour tester
+    @Path("/add")
+    @PUT
+    @Consumes("application/json;charset=UTF-8")
+    @Produces("application/json;charset=UTF-8")
+    public String testPut(String content) {
+        return content;
+    }     
+    
+    */
+    
+    
+    
     /**
      *  pour produire du RDF-SKOS
      * @param naan

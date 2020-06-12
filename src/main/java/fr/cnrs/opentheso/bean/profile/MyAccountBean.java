@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -14,6 +15,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.util.ArrayList;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -34,6 +36,8 @@ public class MyAccountBean implements Serializable {
     private NodeUser nodeUser; 
     private String passWord1;
     private String passWord2;
+    // liste des (rôle -> projet) qui existent déjà pour l'utilisateur     
+    ArrayList<NodeUserRoleGroup> allMyRoleProject;    
     
     public MyAccountBean() {
     }
@@ -42,7 +46,13 @@ public class MyAccountBean implements Serializable {
         nodeUser = currentUser.getNodeUser();
         passWord1 = null;
         passWord2 = null;
+        initAllMyRoleProject();
     }
+    
+    private void initAllMyRoleProject(){
+        UserHelper userHelper = new UserHelper();
+        allMyRoleProject = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
+    }    
 
     public void updatePseudo(){
         FacesMessage msg;
@@ -165,6 +175,14 @@ public class MyAccountBean implements Serializable {
 
     public void setPassWord2(String passWord2) {
         this.passWord2 = passWord2;
+    }
+
+    public ArrayList<NodeUserRoleGroup> getAllMyRoleProject() {
+        return allMyRoleProject;
+    }
+
+    public void setAllMyRoleProject(ArrayList<NodeUserRoleGroup> allMyRoleProject) {
+        this.allMyRoleProject = allMyRoleProject;
     }
 
 

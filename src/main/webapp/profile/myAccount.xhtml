@@ -94,7 +94,37 @@
                 <b:column span="9">
                     <p:separator /> 
                 </b:column>
-            </b:row>               
+            </b:row>    
+            
+            <!-- Les rôles existants de l'utilisateur --> 
+            <b:row style="margin-left: 10px; "> 
+                <b:column span="11">
+                    <h:outputText value="Liste des rôles de l'utilisateur" style="font-size: 12px;" />
+                </b:column>
+            </b:row>
+            
+            <b:row style="margin-left: 10px; "> 
+                <b:column span="11" rendered="#{!myAccountBean.nodeUser.isSuperAdmin}">
+                    <b:panel>
+                        <p:dataTable id="tabUser" 
+                                     value="#{myAccountBean.allMyRoleProject}" var="allRoleProject"  scrollable="true" resizableColumns="true" scrollHeight="450"
+                             style="font-size: 12px;">
+                            <p:column width="30%" headerText="Rôle">
+                                <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
+                            </p:column>
+                            <p:column width="70%" headerText="Projet" >
+                                <h:outputText value="#{allRoleProject.groupName}" style="font-size: 12px;" />
+                            </p:column>                              
+                        </p:dataTable>                            
+                    </b:panel>
+                </b:column>
+                <b:column span="11" rendered="#{myAccountBean.nodeUser.isSuperAdmin}">
+                    <b:panel>
+                        <h:outputText value="SuperAdmin" style="font-size: 12px; color: #C63632" />
+                    </b:panel>
+                </b:column>                 
+            </b:row>            
+            
             
             <b:row>
                 <b:column span="8" offset="2" style="font-size: 12px;"> 

@@ -10,7 +10,10 @@ import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGroupType;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -27,6 +30,12 @@ public class GroupView implements Serializable {
 
     @Inject
     private Connect connect;
+    @Inject
+    private IndexSetting indexSetting;     
+    @Inject
+    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject
+    private ViewEditorHomeBean viewEditorHomeBean;       
 
     private NodeGroup nodeGroup;
     private ArrayList<NodeGroupTraductions> nodeGroupTraductions;
@@ -67,6 +76,9 @@ public class GroupView implements Serializable {
         
         ConceptHelper conceptHelper = new ConceptHelper();
         count = conceptHelper.getCountOfConceptsOfGroup(connect.getPoolConnexion(), idTheso, idGroup);
+        indexSetting.setIsValueSelected(true);
+        viewEditorHomeBean.reset();
+        viewEditorThesoHomeBean.reset();
     }
 
     public NodeGroup getNodeGroup() {

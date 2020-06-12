@@ -8,12 +8,13 @@ package fr.cnrs.opentheso.ws.ark;
 import java.util.Properties;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeMetaData;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import java.util.ArrayList;
 
 /**
  *
  * @author miled.rousset
  */
-public class ArkHelper {
+public class ArkHelper2 {
     
     private NodePreference nodePreference;
     private String message;
@@ -22,7 +23,7 @@ public class ArkHelper {
     private String idHandle;
     private ArkClientRest arkClientRest;
     
-    public ArkHelper(NodePreference nodePreference) {
+    public ArkHelper2(NodePreference nodePreference) {
         this.nodePreference = nodePreference;
     }
     
@@ -31,7 +32,7 @@ public class ArkHelper {
         arkClientRest = new ArkClientRest();
 
         Properties propertiesArk = new Properties();
-        propertiesArk.setProperty("serverHost", "https://ark.mom.fr/Arkeo");//nodePreference.getServeurArk());
+        propertiesArk.setProperty("serverHost", nodePreference.getServeurArk());//"http://localhost:8082/Arkeo");//"https://ark.mom.fr/Arkeo");
         propertiesArk.setProperty("idNaan", nodePreference.getIdNaan());
         propertiesArk.setProperty("user", nodePreference.getUserArk());
         propertiesArk.setProperty("password", nodePreference.getPassArk());
@@ -47,49 +48,6 @@ public class ArkHelper {
     public boolean isHandleExistOnServer(String idHandle) {
         return arkClientRest.isHandleExist(idHandle);
     }
-    
-    /**
-     * Permet de supprimer un Handle en local et sur handle.net
-     * @param idHandle
-     * @param privateUri
-     * @param nodeMetaData
-     * @return
-     */
-    public boolean deleteHandle(
-            String idHandle,
-            String privateUri,
-            NodeMetaData nodeMetaData) {
-        if (nodePreference == null) {
-            return false;
-        }
-        if (!nodePreference.isUseArk()) {
-            return false;
-        }
-        
-        NodeJson nodeJson = new NodeJson();
-        nodeJson.setArk("");
-        
-        /// c'est le seul argument qui compte pour la suppression 
-        nodeJson.setHandle(idHandle);
-        
-        
-        nodeJson.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
-        nodeJson.setTitle(nodeMetaData.getTitle());
-        nodeJson.setCreator(nodeMetaData.getCreator());
-        nodeJson.setDcElements(nodeMetaData.getDcElementsList()); // n'est pas encore exploité
-        nodeJson.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection
-        nodeJson.setLanguage(nodePreference.getSourceLang());
-        nodeJson.setNaan(nodePreference.getIdNaan());
-        nodeJson.setHandle_prefix("20.500.11859");
-       
-        // création de l'identifiant Ark et Handle 
-        if(!arkClientRest.deleteHandle(nodeJson.getJsonString())) {
-            message = arkClientRest.getMessage();
-            return false;
-        }
-        message = arkClientRest.getMessage();
-        return true;
-    }        
     
     /**
      * Permet de créer d'ajouter un identifiant ARK sur le serveur 
@@ -109,24 +67,21 @@ public class ArkHelper {
         if (!nodePreference.isUseArk()) {
             return false;
         }
-
         idHandle = null;
         
-
-        
-        NodeJson nodeJson = new NodeJson();
-        nodeJson.setArk(idArkProvided);
-        nodeJson.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
-        nodeJson.setTitle(nodeMetaData.getTitle());
-        nodeJson.setCreator(nodeMetaData.getCreator());
-        nodeJson.setDcElements(nodeMetaData.getDcElementsList()); // n'est pas encore exploité
-        nodeJson.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection
-        nodeJson.setLanguage(nodePreference.getSourceLang());
-        nodeJson.setNaan(nodePreference.getIdNaan());
-        nodeJson.setHandle_prefix("20.500.11859");
+        NodeJson2 nodeJson2 = new NodeJson2();
+        nodeJson2.setArk(idArkProvided);
+        nodeJson2.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
+        nodeJson2.setTitle(nodeMetaData.getTitle());
+        nodeJson2.setCreator(nodeMetaData.getCreator());
+        nodeJson2.setDcElements(nodeMetaData.getDcElementsList()); 
+        nodeJson2.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection
+        nodeJson2.setQualifiers(new ArrayList<>()); 
+        nodeJson2.setNaan(nodePreference.getIdNaan());
+//        nodeJson2.setHandle_prefix("20.500.11859");
        
         // création de l'identifiant Ark et Handle 
-        if(!arkClientRest.addArk(nodeJson.getJsonString())) return false;
+        if(!arkClientRest.addArk(nodeJson2.getJsonString())) return false;
 
         idArk = arkClientRest.getIdArk();
         idHandle = arkClientRest.getIdHandle();
@@ -182,25 +137,29 @@ public class ArkHelper {
         if (!nodePreference.isUseArk()) {
             return false;
         }
-        idArk = null;
-        idHandle = null;
+        idArk = "";
+        idHandle = "";
         
 
         
-        NodeJson nodeJson = new NodeJson();
-        nodeJson.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
-        nodeJson.setTitle(nodeMetaData.getTitle());
-        nodeJson.setCreator(nodeMetaData.getCreator());
-        nodeJson.setDcElements(nodeMetaData.getDcElementsList()); // n'est pas encore exploité
-        nodeJson.setType(nodePreference.getPrefixArk());  //pcrt : préfixe pour sous distinguer une sous entité:  p= pactols, crt= code DCMI pour collection
-        nodeJson.setLanguage(nodePreference.getSourceLang());
-        nodeJson.setNaan(nodePreference.getIdNaan());
-        nodeJson.setHandle_prefix("20.500.11859");
-       
+        NodeJson2 nodeJson2 = new NodeJson2();
+        nodeJson2.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
+        nodeJson2.setTitle(nodeMetaData.getTitle());
+        nodeJson2.setCreator(nodeMetaData.getCreator());
+        nodeJson2.setDcElements(nodeMetaData.getDcElementsList()); 
+        nodeJson2.setType(nodePreference.getPrefixArk());  //pcrt : préfixe pour sous distinguer une sous entité:  p= pactols, crt= code DCMI pour collection
+        nodeJson2.setNaan(nodePreference.getIdNaan());
+        nodeJson2.setArk(idArk);
+        
+        // récupération du Token
+        if(arkClientRest.getLoginJson() == null) return false;
+        String token = arkClientRest.getLoginJson().getString("token");
+        nodeJson2.setToken(token);
+     //   nodeJson2.setToken(arkClientRest.loginJson.);
         // création de l'identifiant Ark et Handle 
-        String jsonDatas = nodeJson.getJsonString();
+        String jsonDatas = nodeJson2.getJsonString();
         if(jsonDatas == null) return false;
-  //      if(!arkClientRest.addArk(jsonDatas)) return false;
+        if(!arkClientRest.addArk2(jsonDatas)) return false;
 
         idArk = arkClientRest.getIdArk();
         idHandle = arkClientRest.getIdHandle();
@@ -208,9 +167,11 @@ public class ArkHelper {
             message = "La connexion Ark a échouée";
             return false;
         }
-        if (idHandle == null) {
-            message = "La connexion Handle a échouée";
-            return false;
+        if(nodePreference.isGenerateHandle()) {
+            if (idHandle == null) {
+                message = "La connexion Handle a échouée";
+                return false;
+            }
         }
         return true;
     }
@@ -257,6 +218,70 @@ public class ArkHelper {
         }
         return true;
     }    
+    
+    
+    
+    
+    
+    
+    
+    
+ ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////// à modifier //////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////    
+    
+    
+    
+    
+    /**
+     * à basculer vers la nouvelle version du Webservices Ark
+     * Permet de supprimer un Handle en local et sur handle.net
+     * 
+     * @param idHandle
+     * @param privateUri
+     * @param nodeMetaData
+     * @return
+     */
+    public boolean deleteHandle(
+            String idHandle,
+            String privateUri,
+            NodeMetaData nodeMetaData) {
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseArk()) {
+            return false;
+        }
+        
+        NodeJson nodeJson = new NodeJson();
+        nodeJson.setArk("");
+        
+        /// c'est le seul argument qui compte pour la suppression 
+        nodeJson.setHandle(idHandle);
+        
+        
+        nodeJson.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
+        nodeJson.setTitle(nodeMetaData.getTitle());
+        nodeJson.setCreator(nodeMetaData.getCreator());
+        nodeJson.setDcElements(nodeMetaData.getDcElementsList()); // n'est pas encore exploité
+        nodeJson.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection
+        nodeJson.setLanguage(nodePreference.getSourceLang());
+        nodeJson.setNaan(nodePreference.getIdNaan());
+        nodeJson.setHandle_prefix("20.500.11859");
+       
+        // création de l'identifiant Ark et Handle 
+        if(!arkClientRest.deleteHandle(nodeJson.getJsonString())) {
+            message = arkClientRest.getMessage();
+            return false;
+        }
+        message = arkClientRest.getMessage();
+        return true;
+    }        
+    
+    
     
     public String getMessage() {
         return message;
