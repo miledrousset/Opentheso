@@ -59,7 +59,6 @@ public class TraductionService implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, message);
         
         candidatPool.getTraductionList().add(new TraductionDto(newLangage, newTraduction));
-
         candidatPool.setIsNewCandidatActivate(true);
     }
 

@@ -82,7 +82,6 @@
 
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
 
-                <!-- la boucle pour les thésaurus autorisés -->
                 <ui:repeat id="listTraduction" var="traduction" value="#{candidatPool.traductionList}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                         <b:column span="4" >
@@ -126,41 +125,72 @@
             </h:form>
         </b:column>
     </b:row>  
+    
 
-    <p:outputLabel value="Corpus lié" style="margin-top: 15px;" />
-    <b:row style="width: 100%; margin-top: -5px;">
-        <p:panelGrid style="width: 100%;">
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
-                <p:column style="width: 40%;">
-                    <p:inputText placeholder="ex: UNESCO" style="width: 100%"/>
-                </p:column>
+    <b:row>
+        <h:outputLabel value="Corpus lié" />
+        <b:column span="12" style="margin-top: 5px">
+            <h:form id="listCorpusForm">
+                <b:row style="font-size: 12px;  color: #666666">
+                    <b:column span="4">
+                        <h:outputText value="Value"/>
+                    </b:column>
+                    <b:column span="4">
+                        <h:outputText value="URL"/>
+                    </b:column>
+                    <b:column span="2">
+                        <h:outputText value="Modifier"/>
+                    </b:column> 
+                    <b:column span="2">
+                        <h:outputText value="Supprimer"/>
+                    </b:column>                         
+                </b:row>
 
-                <p:column style="width: 40%;">
-                    <p:inputText placeholder="URL" style="width: 100%" />
-                </p:column>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
 
-                <p:column style="width: 20%;">
-                    <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" />
-                    <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
-                </p:column>
-            </p:row>
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
-                <p:column style="width: 40%;">
-                    <p:inputText placeholder="ex: UNESCO" style="width: 100%"/>
-                </p:column>
+                <ui:repeat id="listCorpus" var="carpus" value="#{candidatPool.corpusList}">
+                    <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
+                        <b:column span="4" >
+                            <h:outputText value="#{carpus.value}"/>
+                        </b:column>
+                        <b:column span="4" >
+                            <h:outputText value="#{carpus.url}"/>
+                        </b:column>
+                        <b:column span="2">
+                            <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
+                                              oncomplete="PF('editCorpus').show();" 
+                                              actionListener="#{corpusService.init(carpus)}"
+                                              styleClass="buttonIconOrange" ajax="false"
+                                              update="idEditCorpus editCorpusForm"/>     
+                        </b:column>
 
-                <p:column style="width: 40%;">
-                    <p:inputText placeholder="URL" style="width: 100%" />
-                </p:column>
+                        <b:column span="2">
+                            <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
+                                              styleClass="buttonIconOrange" style="color: #f47b2a;"
+                                              actionListener="#{corpusService.init(carpus)}"
+                                              oncomplete="PF('confirmDeleteCorpus').show();" 
+                                              update="idCorpusDelete corpusDeleteForm"/>
+                        </b:column>                         
+                    </b:row>   
+                </ui:repeat>
 
-                <p:column style="width: 20%;">
-                    <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" />
-                    <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
-                </p:column>
-            </p:row>
-        </p:panelGrid>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+
+                <b:row>
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+
+                            <b:navCommandLink value="Ajouter une nouvelle corpus" icon-awesome="key"
+                                              oncomplete="PF('newCorpus').show();" ajax="false"
+                                              styleClass="buttonIconOrange"
+                                              actionListener="#{corpusService.init()}"
+                                              update="idNewCorpus newCorpusForm"/>
+                        </div>
+                    </div>
+                </b:row>
+            </h:form>
+        </b:column>
     </b:row>
-
 
     <p:outputLabel value="Alignement" style="margin-top: 15px;" />
     <b:row style="width: 100%; margin-top: -5px;">

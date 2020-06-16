@@ -21,21 +21,16 @@ public class CandidatPool implements Serializable {
     private boolean isNewCandidatActivate;
 
     private List<CandidatDto> candidatPool;
-
     private List<TraductionDto> traductionList;
+    private List<CorpusDto> corpusList;
     
 
     public CandidatPool() {
-
         isListCandidatsActivate = true;
         isNewCandidatActivate = false;
 
+        corpusList = new ArrayList<>();
         traductionList = new ArrayList<>();
-        TraductionDto dto = new TraductionDto();
-        dto.setLangue("Lan");
-        dto.setTraduction("Trad");
-        traductionList.add(dto);  
-
     }
 
     public List<TraductionDto> getTraductionList() {
@@ -71,5 +66,13 @@ public class CandidatPool implements Serializable {
         this.isNewCandidatActivate = isNewCandidatActivate;
         isListCandidatsActivate = false;
     }
- 
+
+    public List<CorpusDto> getCorpusList() {
+        return corpusList;
+    }
+
+    public void setCorpusList(List<CorpusDto> corpusList) {
+        this.corpusList = corpusList;
+    }
+
 }

@@ -1,0 +1,45 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="idNewCorpus" header="Ajouter une nouvelle corpus" widgetVar="newCorpus" 
+              modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" >  
+
+        <h:form id="newCorpusForm">
+
+            <p:panelGrid style="width: 100%;">
+                <p:row >
+                    <p:column width="30%">
+                        <h:outputText value="Valeur : " style="font-size: 12px;"/> 
+                    </p:column>
+                    <p:column width="70%">
+                        <b:inputText value="#{corpusService.newValue}" style="font-size: 12px; height: 25px;"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column width="30%">
+                        <h:outputText value="URL : " style="font-size: 12px;"/> 
+                    </p:column>
+                    <p:column width="70%">
+                        <b:inputText value="#{corpusService.newURL}" style="font-size: 12px; height: 25px;"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        <p:commandButton value="Ajouter" update="idNewCorpus newCorpusForm newCandidatsForm"
+                                         styleClass="ui-priority-primary" ajax="false"
+                                         style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                         class="btn btn-primary"
+                                         action="#{corpusService.addCorpus()}" 
+                                         oncomplete="PF('newCorpus').hide();"/>
+                    </p:column>
+                </p:row>
+
+            </p:panelGrid>
+
+        </h:form>
+
+    </p:dialog>   
+</ui:fragment>
