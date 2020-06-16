@@ -5,29 +5,23 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:form id="newCandidatsForm" rendered="#{(currentUser.nodeUser != null)}">
+    <p:link value="⬅ Retour à la liste des candidats" 
+            style="color: #43B572" onclick="#{candidatPool.setIsListCandidatsActivate(true)}" />
+    
+    <p:panelGrid style="width: 100%;">
+        <p:row style="width: 100%; background-color: #FAFAFA; border: #FAFAFA">
+            <p:column style="width: 50%; background-color: #FAFAFA;">
+                <ui:include src="/condidat/candidatForm.xhtml" />
+            </p:column>
+            <p:column style="width: 50%; height: 100%; vertical-align: top">
+                <ui:include src="/condidat/discussion.xhtml" />
+            </p:column>
+        </p:row>
+        <p:row style="background-color: #FAFAFA; border: #FAFAFA">
+            <p:column colspan="2" style="text-align: center;">
+                <b:button value="Soumettre la fiche à un admin" style="background: #F47B2A; border-color: #F47B2A; color: white" look="primary" size="lg" />
+            </p:column>
+        </p:row>
+    </p:panelGrid>
 
-        <b:panel style="margin-top: -20px; margin-left: -15px; margin-right: 15px; 
-                 background-color: #FAFAFA; padding: 40px">
-
-            <p:link value="⬅ Retour à la liste des candidats" 
-                    style="color: #43B572" onclick="#{condidatBean.setIsListCandidatsActivate(true)}" />
-
-            <p:panelGrid style="width: 100%;">
-                <p:row style="width: 100%; background-color: #FAFAFA; border: #FAFAFA">
-                    <p:column style="width: 50%; background-color: #FAFAFA;">
-                        <ui:include src="/condidat/candidatForm.xhtml" />
-                    </p:column>
-                    <p:column style="width: 50%; height: 100%; vertical-align: top">
-                        <ui:include src="/condidat/discussion.xhtml" />
-                    </p:column>
-                </p:row>
-                <p:row style="background-color: #FAFAFA; border: #FAFAFA">
-                    <p:column colspan="2" style="text-align: center;">
-                        <b:button value="Soumettre la fiche à un admin" style="background: #F47B2A; border-color: #F47B2A; color: white" look="primary" size="lg" />
-                    </p:column>
-                </p:row>
-            </p:panelGrid>
-        </b:panel>
-    </h:form>       
 </ui:fragment>

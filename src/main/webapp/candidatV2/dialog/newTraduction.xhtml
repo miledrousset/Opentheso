@@ -1,0 +1,46 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="idNewTraduction" header="Ajouter une nouvelle traduction" widgetVar="newTraduction" 
+              modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" >  
+
+        <h:form id="newTraductionForm">
+
+            <p:panelGrid style="width: 100%;">
+                <p:row >
+                    <p:column width="30%">
+                        <h:outputText value="Langage : " style="font-size: 12px;"/> 
+                    </p:column>
+                    <p:column width="70%">
+                        <b:inputText value="#{traductionService.newLangage}" style="font-size: 12px; height: 25px;"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column width="30%">
+                        <h:outputText value="Traduction : " style="font-size: 12px;"/> 
+                    </p:column>
+                    <p:column width="70%">
+                        <b:inputText value="#{traductionService.newTraduction}" style="font-size: 12px; height: 25px;"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        <p:commandButton id="ajouterTraductionBtn" value="Ajouter" 
+                                         update="idNewTraduction newTraductionForm newCandidatsForm"
+                                         styleClass="ui-priority-primary" ajax="false"
+                                         style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                         class="btn btn-primary"
+                                         action="#{traductionService.addTraductionCandidat()}" 
+                                         oncomplete="PF('newTraduction').hide();"/>
+                    </p:column>
+                </p:row>
+
+            </p:panelGrid>
+
+        </h:form>
+
+    </p:dialog>   
+</ui:fragment>

@@ -198,13 +198,13 @@
             <type>jar</type>
         </dependency>
         <!-- TODO Dependency to delate
-        <dependency>
-            <groupId>virt_jena3</groupId>
-            <artifactId>virt_jena</artifactId>
-            <version>3.0</version>
-            <type>jar</type>
-        </dependency>
--->
+                <dependency>
+                    <groupId>virt_jena3</groupId>
+                    <artifactId>virt_jena</artifactId>
+                    <version>3.0</version>
+                    <type>jar</type>
+                </dependency>
+        -->
         <dependency>
             <artifactId>junit</artifactId>
             <groupId>junit</groupId>
@@ -222,7 +222,13 @@
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-shaded</artifactId>
             <version>3.1.2.Final</version>
-        </dependency>        
+        </dependency>    
+        
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>    
     </dependencies>
     
 

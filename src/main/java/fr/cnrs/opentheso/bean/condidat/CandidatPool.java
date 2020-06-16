@@ -1,66 +1,75 @@
-
 package fr.cnrs.opentheso.bean.condidat;
 
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.SessionScoped;
 
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-@ManagedBean
+
+@Named(value = "candidatPool")
 @SessionScoped
 public class CandidatPool implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    @Inject
+    private Connect connect;
 
-    private final static int SIZE_OF_INITIAL_CAR_POOL = 15;
+    private boolean isListCandidatsActivate;
+    private boolean isNewCandidatActivate;
+
+    private List<CandidatDto> candidatPool;
+
+    private List<TraductionDto> traductionList;
     
-    private Candidat candidatSelect;
 
-    private List<Candidat> candidatPool;
+    public CandidatPool() {
 
-    @PostConstruct
-    public void initRandomCarPool() {
-        candidatPool = new ArrayList<Candidat>();
-        for (int i = 0; i < SIZE_OF_INITIAL_CAR_POOL; i++) {
-            candidatPool.add(getRandomCar(i));
-        }
+        isListCandidatsActivate = true;
+        isNewCandidatActivate = false;
+
+        traductionList = new ArrayList<>();
+        TraductionDto dto = new TraductionDto();
+        dto.setLangue("Lan");
+        dto.setTraduction("Trad");
+        traductionList.add(dto);  
+
     }
 
-    public void setCarPool(List<Candidat> carpool) {
-        this.candidatPool = carpool;
+    public List<TraductionDto> getTraductionList() {
+        return traductionList;
     }
 
-    private Candidat getRandomCar(int i) {
-        Candidat car = new Candidat();
-        car.setCandidat("Terme " + i);
-        car.setDateNaissance("22/11/1986");
-        car.setDemande(1+i + "");
-        car.setEtat("En attente");
-        car.setParticipant(2+i + "");
-        return car;
+    public void setTraductionList(List<TraductionDto> traductionList) {
+        this.traductionList = traductionList;
     }
 
-    public void onSelect(Candidat car) {
-        System.out.println("OnSelect:" + car);
-    }
-
-    public Candidat getCandidatSelect() {
-        return candidatSelect;
-    }
-
-    public void setCandidatSelect(Candidat candidatSelect) {
-        this.candidatSelect = candidatSelect;
-    }
-
-    public List<Candidat> getCandidatPool() {
+    public List<CandidatDto> getCandidatPool() {
         return candidatPool;
     }
 
-    public void setCandidatPool(List<Candidat> candidatPool) {
+    public void setCandidatPool(List<CandidatDto> candidatPool) {
         this.candidatPool = candidatPool;
     }
-    
+
+    public boolean isIsListCandidatsActivate() {
+        return isListCandidatsActivate;
+    }
+
+    public void setIsListCandidatsActivate(boolean isListCandidatsActivate) {
+        this.isListCandidatsActivate = isListCandidatsActivate;
+        isNewCandidatActivate = false;
+    }
+
+    public boolean isIsNewCandidatActivate() {
+        return isNewCandidatActivate;
+    }
+
+    public void setIsNewCandidatActivate(boolean isNewCandidatActivate) {
+        this.isNewCandidatActivate = isNewCandidatActivate;
+        isListCandidatsActivate = false;
+    }
+ 
 }

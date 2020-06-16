@@ -5,65 +5,65 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:outputLabel style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Fiche candidat"/>
-
-    <p:outputLabel value="Intitulé"/>
     <b:row>
-        <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center; margin-top: -10px;">
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
-                <p:column>
-                    <p:inputText id="intitule" style="width: 230px; margin-top: 4px" placeholder="ex: Aliment" />
-                </p:column>
-            </p:row>
-        </p:panelGrid>
+        <h:outputLabel style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Fiche candidat"/>
+    </b:row>
+
+    <b:row style="margin-top: 10px">  
+        <b:column>
+            <h:outputLabel value="Intitulé"/>
+        </b:column>
+        <b:column>
+            <b:inputText style="width: 230px" placeholder="ex: Aliment" />
+        </b:column>
+
+        <b:column>
+            <h:outputLabel value="Domaine"/>
+        </b:column>
+        <b:column>
+            <b:inputText style="width: 230px" placeholder="ex: Sujet" />
+        </b:column>
+
+        <b:column>
+            <h:outputLabel value="Terme générique"/>
+        </b:column>
+        <b:column>
+            <b:inputText style="width: 230px" placeholder="ex: Nourriture, etc..."/>
+        </b:column>
+
+        <b:column>
+            <h:outputLabel value="Termes associés"/>
+        </b:column>
+        <b:column>
+            <p:chips placeholder="ex: ..." style="width: 100%; margin-top: 4px" />
+        </b:column>
+
+        <b:column>
+            <h:outputLabel value="Employé pour (EP)"/>
+        </b:column>
+        <b:column>
+            <p:chips placeholder="ex: ..." style="width: 100%; margin-top: 4px" />
+        </b:column>
+
+        <b:column>
+            <h:outputLabel value="Définition" style="margin-top: 15px;"/>
+        </b:column>
+        <b:column>
+            <b:inputTextarea style="width: 100%; resize: none;"/>
+        </b:column>
+
+        <b:column>
+            <h:outputLabel value="Note d'application" style="margin-top: 15px;"/>
+        </b:column>
+        <b:column>
+            <b:inputTextarea id="noteApplication" style="width: 100%; resize: none;"/>
+        </b:column>
     </b:row>
 
 
-    <p:outputLabel value="Domaine" style="margin-top: 15px;"/>
     <b:row>
-        <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center; margin-top: -10px;">
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
-                <p:column>
-                    <p:inputText id="domaine" style="width: 230px; margin-top: 4px" placeholder="ex: Sujet" />
-                </p:column>
-            </p:row>
-        </p:panelGrid>
-    </b:row>
-
-
-    <p:outputLabel value="Terme générique" style="margin-top: 15px;"/>
-    <b:row>
-        <p:panelGrid style="width: 100%; vertical-align: middle; align-content: center; margin-top: -10px;">
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
-                <p:column>
-                    <p:inputText id="termeGenerique" style="width: 230px" placeholder="ex: Nourriture, etc..."/>
-                </p:column>
-            </p:row>
-        </p:panelGrid>
-    </b:row>
-
-    <p:outputLabel value="Termes associés" style="margin-top: 15px;"/>
-    <b:row>
-        <p:chips id="termesAssocies" placeholder="ex: ..." style="width: 100%; margin-top: 4px" />
-    </b:row>
-
-
-    <p:outputLabel value="Employé pour (EP)" style="margin-top: 15px;"/>
-    <b:row>
-        <p:chips id="employePour" placeholder="ex: ..." style="width: 100%; margin-top: 4px" />
-    </b:row>
-
-
-    <p:outputLabel value="Définition" style="margin-top: 15px;"/>
-    <b:inputTextarea id="definition2" style="width: 100%; resize: none;"/>
-
-
-    <p:outputLabel value="Note d'application" style="margin-top: 15px;"/>
-    <b:inputTextarea id="noteApplication" style="width: 100%; resize: none;"/>
-
-
-    <b:row id="test" style="margin-left: 30px; margin-right: 30px;">
-        <b:column span="12">
+        <h:outputText value="Langages"/>
+        <b:column span="12" style="margin-top: 5px">
             <h:form id="listTraductionForm">
                 <b:row style="font-size: 12px;  color: #666666">
                     <b:column span="4">
@@ -79,8 +79,8 @@
                         <h:outputText value="Supprimer"/>
                     </b:column>                         
                 </b:row>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
 
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
 
                 <!-- la boucle pour les thésaurus autorisés -->
                 <ui:repeat id="listTraduction" var="traduction" value="#{candidatPool.traductionList}">
@@ -110,6 +110,7 @@
                 </ui:repeat>
 
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+
                 <b:row>
                     <div class="ui-g">
                         <div class="ui-g-12">
@@ -125,44 +126,6 @@
             </h:form>
         </b:column>
     </b:row>  
-
-
-    <!--b:row style="width: 100%;">
-        <p:panelGrid style="width: 100%;">
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA">
-                <p:column>
-                    <p:outputLabel value="Traduction" style="margin-top: 15px;" />
-                </p:column>
-                <p:column>
-                    <b:navCommandLink
-                        iconAwesome="fa-plus-circle" icon-size="l" style="color: #226B40; float: right"
-                        tooltip="Créer une nouvelle traduction" tooltip-delay-show="1000"
-                        oncomplete="PF('newTraduction').show();"/>
-                </p:column>
-            </p:row>
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
-                <p:column colspan="2">
-                    <p:dataTable
-                        id="traductionList"
-                        value="#{candidatPool.traductionList}" var="traduction"
-                        rowStyleClass="textOpenthesoColorOrange"
-                        scrollable="true" scrollHeight="200">
-
-                        <p:column headerText="Langue" width="25%">
-                            <h:outputText value="#{traduction.langue}" style="background-color: #{viewEditionBean.getAlternateColor(true)}" />
-                        </p:column>
-                        <p:column headerText="Value" width="45%">
-                            <h:outputText value="#{traduction.traduction}" style="background-color: #{viewEditionBean.getAlternateColor(false)}" />
-                        </p:column>
-                        <p:column headerText="Action" width="30%" style="background-color: #{viewEditionBean.getAlternateColor(false)}">
-
-                        </p:column>
-                    </p:dataTable>
-                </p:column>
-            </p:row>
-        </p:panelGrid>
-    </b:row>-->
-
 
     <p:outputLabel value="Corpus lié" style="margin-top: 15px;" />
     <b:row style="width: 100%; margin-top: -5px;">
@@ -247,6 +210,6 @@
             <b:button value="Enregistrer" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
         </b:row>
 
-    </b:row>  
+    </b:row> 
 
 </ui:fragment>
