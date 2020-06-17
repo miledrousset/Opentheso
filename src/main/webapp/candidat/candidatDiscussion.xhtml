@@ -1,0 +1,59 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <b:row>
+        <h:outputLabel style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Discussion"/>
+    </b:row>
+
+    <b:panel style="width: 100%; height: 100%; background-color: #FFFFFF;">
+
+        <p:scrollPanel style="width: 100%; height: 100%; max-height: 940px; border: none; background-color: #FFFFFF">
+            <ui:repeat id="chatBox" var="msg" value="#{candidatPool.messagesList}">
+                <b:row style="float: #{msg.getMessagePossition()}; font-size: 15px; width: 90%; background-color: #{msg.getMessageColor()}; margin-top: 5px; font-weight: bold; margin-left: 5px; margin-right: 5px">
+                    <b:column style="width: 25%; ">
+                        <h:outputText value="#{msg.nom}"/>
+                    </b:column>
+                    <b:column style="width: 75%; font-size: 12px; text-align: right; font-style: italic; color: #8C8C8C">
+                        <h:outputText value="#{msg.date}"/>
+                    </b:column>                      
+                </b:row>  
+                <b:row style="float: #{msg.getMessagePossition()}; font-size: 12px; width: 90%; background-color: #{msg.getMessageColor()}; margin-bottom: 5px; text-align: justify; text-justify: inter-word ; margin-left: 5px; margin-right: 5px">
+                    <b:column style="width: 90%;">
+                        <h:outputText value="#{msg.msg}"/>
+                    </b:column>
+                </b:row>
+            </ui:repeat>
+        </p:scrollPanel>
+
+        <p:panelGrid style="width: 100%; margin-top: 5px; margin-bottom: -10px;">
+            <p:row style="background-color: #FFFFFF; height: 80px; border: #FAFAFA; margin-left: -10px; margin-right: -10px">
+                <p:column colspan="2" width="100%">
+                    <b:inputTextarea value="#{candidatPool.message}" placeholder="Ecrire ici..." style="width: 100%; height: 100%; border: #FFFFFF; resize: none; padding: 5px"/>
+                </p:column>
+            </p:row>
+            <p:row style="background-color: #FFFFFF; border: #FFFFFF; margin-top: -10px;">
+                <p:column colspan="2">
+                    <b:commandButton value="Envoyer" style="background: #FFFFFF; color: #43B572; border-color: #43B572; float: right;" ajax="true"
+                                     look="primary" size="sm" actionListener="#{discussionService.sendMessage()}" update="candidatForm messageIndex " />
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </b:panel>
+
+    <b:row style="background-color: #FAFAFA; border: #FAFAFA ">
+        <b:column style="width: 50%;">
+            <b:commandButton value="Voir les participants" style="background: #43B572; border: #43B572; color: white; width: 170px" 
+                             oncomplete="PF('participantsList').show();" ajax="true" />    
+        </b:column>
+        <b:column style="width: 50%;">
+            <b:commandButton value="Demande des contributeurs" style="background: #43B572; float: right; border: #43B572; color: white; width: 200px" 
+                             oncomplete="PF('sendChatInvitation').show();" ajax="true" />
+        </b:column>
+    </b:row>
+
+</ui:fragment>

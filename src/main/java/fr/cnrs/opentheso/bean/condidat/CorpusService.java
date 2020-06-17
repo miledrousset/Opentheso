@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.condidat;
 
+import fr.cnrs.opentheso.bean.condidat.dto.CorpusDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
 import java.util.List;

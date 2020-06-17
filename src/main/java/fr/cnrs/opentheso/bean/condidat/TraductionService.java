@@ -5,6 +5,7 @@
  */
 package fr.cnrs.opentheso.bean.condidat;
 
+import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;

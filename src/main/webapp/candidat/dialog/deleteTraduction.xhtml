@@ -29,9 +29,8 @@
                 <b:column span="8" offset="2" >
 
                     <p:commandButton id="deleteTraductionBtn" value="Supprimer" 
-                                     update="idConfirmDelete confirmDeleteForm candidatForm"
-                                     ajax="false"
-                                     styleClass="ui-priority-primary"
+                                     update="idConfirmDelete confirmDeleteForm :candidatForm:listTraductionForm"
+                                     styleClass="ui-priority-primary" ajax="false"
                                      style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
                                      class="btn btn-primary"
                                      action="#{traductionService.deleteTraduction()}" 

@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.condidat;
+package fr.cnrs.opentheso.bean.condidat.dto;
 
 import java.io.Serializable;
 

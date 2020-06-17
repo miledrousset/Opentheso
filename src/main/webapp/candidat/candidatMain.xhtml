@@ -2,8 +2,7 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:p="http://primefaces.org/ui">
 
     <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
             style="margin-top: -20px; background-color: #FAFAFA; 
@@ -11,7 +10,7 @@
 
         <b:row style="margin-left: 10px; margin-right: 10px">
             <b:column rendered="#{candidatPool.isIsListCandidatsActivate()}">
-                <ui:include src="/candidatV2/candidatsList.xhtml" />
+                <ui:include src="/candidat/candidatsList.xhtml" />
             </b:column>
 
             <b:column rendered="#{candidatPool.isIsNewCandidatActivate()}">
@@ -24,10 +23,10 @@
                     </p:row>
                     <p:row style="width: 100%; background-color: #FAFAFA; border: #FAFAFA">
                         <p:column style="width: 50%; background-color: #FAFAFA;">
-                            <ui:include src="/candidatV2/candidatDetails.xhtml" />
+                            <ui:include src="/candidat/candidatDetails.xhtml" />
                         </p:column>
                         <p:column style="width: 50%; height: 100%; vertical-align: top">
-                            <ui:include src="/candidatV2/candidatDiscussion.xhtml" />
+                            <ui:include src="/candidat/candidatDiscussion.xhtml" />
                         </p:column>
                     </p:row>
                     <p:row style="background-color: #FAFAFA; border: #FAFAFA">
@@ -40,12 +39,15 @@
         </b:row>
     </h:form>   
 
-    <ui:include src="/candidatV2/dialog/newTraduction.xhtml" />
-    <ui:include src="/candidatV2/dialog/editTraduction.xhtml" />
-    <ui:include src="/candidatV2/dialog/deleteTraduction.xhtml" />  
+    <ui:include src="/candidat/dialog/newTraduction.xhtml" />
+    <ui:include src="/candidat/dialog/editTraduction.xhtml" />
+    <ui:include src="/candidat/dialog/deleteTraduction.xhtml" />  
     
-    <ui:include src="/candidatV2/dialog/newCorpus.xhtml" />
-    <ui:include src="/candidatV2/dialog/editCorpus.xhtml" /> 
-    <ui:include src="/candidatV2/dialog/deleteCorpus.xhtml" /> 
+    <ui:include src="/candidat/dialog/newCorpus.xhtml" />
+    <ui:include src="/candidat/dialog/editCorpus.xhtml" /> 
+    <ui:include src="/candidat/dialog/deleteCorpus.xhtml" /> 
+    
+    <ui:include src="/candidat/dialog/participantsList.xhtml" /> 
+    <ui:include src="/candidat/dialog/envoyerInvitation.xhtml" /> 
 
 </ui:fragment>

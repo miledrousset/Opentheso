@@ -2,8 +2,7 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:p="http://primefaces.org/ui">
 
     <b:row>
         <h:outputLabel style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Fiche candidat"/>
@@ -60,7 +59,6 @@
         </b:column>
     </b:row>
 
-
     <b:row>
         <h:outputText value="Langages"/>
         <b:column span="12" style="margin-top: 5px">
@@ -79,9 +77,7 @@
                         <h:outputText value="Supprimer"/>
                     </b:column>                         
                 </b:row>
-
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-
                 <ui:repeat id="listTraduction" var="traduction" value="#{candidatPool.traductionList}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                         <b:column span="4" >
@@ -107,25 +103,17 @@
                         </b:column>                         
                     </b:row>   
                 </ui:repeat>
-
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-
                 <b:row>
-                    <div class="ui-g">
-                        <div class="ui-g-12">
-
-                            <b:navCommandLink value="Ajouter une nouvelle traduction" icon-awesome="key"
-                                              oncomplete="PF('newTraduction').show();" ajax="false"
-                                              styleClass="buttonIconOrange"
-                                              actionListener="#{traductionService.init()}"
-                                              update="idNewTraduction newTraductionForm"/>
-                        </div>
-                    </div>
+                    <b:navCommandLink value="Ajouter une nouvelle traduction" icon-awesome="key"
+                                      oncomplete="PF('newTraduction').show();" ajax="true"
+                                      styleClass="buttonIconOrange"
+                                      actionListener="#{traductionService.init()}"
+                                      update="idNewTraduction newTraductionForm"/>
                 </b:row>
             </h:form>
         </b:column>
     </b:row>  
-    
 
     <b:row>
         <h:outputLabel value="Corpus lié" />
@@ -145,9 +133,7 @@
                         <h:outputText value="Supprimer"/>
                     </b:column>                         
                 </b:row>
-
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-
                 <ui:repeat id="listCorpus" var="carpus" value="#{candidatPool.corpusList}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                         <b:column span="4" >
@@ -163,7 +149,6 @@
                                               styleClass="buttonIconOrange" ajax="false"
                                               update="idEditCorpus editCorpusForm"/>     
                         </b:column>
-
                         <b:column span="2">
                             <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
                                               styleClass="buttonIconOrange" style="color: #f47b2a;"
@@ -173,20 +158,13 @@
                         </b:column>                         
                     </b:row>   
                 </ui:repeat>
-
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-
                 <b:row>
-                    <div class="ui-g">
-                        <div class="ui-g-12">
-
-                            <b:navCommandLink value="Ajouter une nouvelle corpus" icon-awesome="key"
-                                              oncomplete="PF('newCorpus').show();" ajax="false"
-                                              styleClass="buttonIconOrange"
-                                              actionListener="#{corpusService.init()}"
-                                              update="idNewCorpus newCorpusForm"/>
-                        </div>
-                    </div>
+                    <b:navCommandLink value="Ajouter une nouvelle corpus" icon-awesome="key"
+                                      oncomplete="PF('newCorpus').show();" ajax="true"
+                                      styleClass="buttonIconOrange"
+                                      actionListener="#{corpusService.init()}"
+                                      update="idNewCorpus newCorpusForm"/>
                 </b:row>
             </h:form>
         </b:column>

@@ -1,5 +1,9 @@
 package fr.cnrs.opentheso.bean.condidat;
 
+import fr.cnrs.opentheso.bean.condidat.dto.CorpusDto;
+import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
+import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,6 +27,9 @@ public class CandidatPool implements Serializable {
     private List<CandidatDto> candidatPool;
     private List<TraductionDto> traductionList;
     private List<CorpusDto> corpusList;
+    private List<MessageDto> messagesList;
+    
+    private String message;
     
 
     public CandidatPool() {
@@ -31,6 +38,11 @@ public class CandidatPool implements Serializable {
 
         corpusList = new ArrayList<>();
         traductionList = new ArrayList<>();
+        messagesList = new ArrayList<>();
+        
+        messagesList.add(new MessageDto("Toto", "DATE DU JOUR", "Coucou from me", false));
+        messagesList.add(new MessageDto("Toto", "DATE DU JOUR", "Coucou from me", false));
+        messagesList.add(new MessageDto("Firas", "DATE DU JOUR", "Coucou from me", true));
     }
 
     public List<TraductionDto> getTraductionList() {
@@ -73,6 +85,22 @@ public class CandidatPool implements Serializable {
 
     public void setCorpusList(List<CorpusDto> corpusList) {
         this.corpusList = corpusList;
+    }
+
+    public List<MessageDto> getMessagesList() {
+        return messagesList;
+    }
+
+    public void setMessagesList(List<MessageDto> messagesList) {
+        this.messagesList = messagesList;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }
