@@ -5,7 +5,9 @@
              xmlns:p="http://primefaces.org/ui">
 
     <b:row>
-        <h:outputLabel style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Fiche candidat"/>
+        <b:column>
+            <h:outputLabel style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Fiche candidat"/>
+        </b:column>
     </b:row>
 
     <b:row style="margin-top: 10px">  
@@ -13,49 +15,56 @@
             <h:outputLabel value="Intitulé"/>
         </b:column>
         <b:column>
-            <b:inputText style="width: 230px" placeholder="ex: Aliment" />
+            <b:inputText value="#{candidatPool.candidatSelected.intitule}" 
+                         style="width: 230px" placeholder="ex: Aliment" />
         </b:column>
 
         <b:column>
             <h:outputLabel value="Domaine"/>
         </b:column>
         <b:column>
-            <b:inputText style="width: 230px" placeholder="ex: Sujet" />
+            <b:inputText value="#{candidatPool.candidatSelected.domaine}" 
+                         style="width: 230px" placeholder="ex: Sujet" />
         </b:column>
 
         <b:column>
             <h:outputLabel value="Terme générique"/>
         </b:column>
         <b:column>
-            <b:inputText style="width: 230px" placeholder="ex: Nourriture, etc..."/>
+            <b:inputText value="#{candidatPool.candidatSelected.termeGenerique}" 
+                         style="width: 230px" placeholder="ex: Nourriture, etc..."/>
         </b:column>
 
         <b:column>
             <h:outputLabel value="Termes associés"/>
         </b:column>
         <b:column>
-            <p:chips placeholder="ex: ..." style="width: 100%; margin-top: 4px" />
+            <p:chips placeholder="ex: ..." value="#{candidatPool.candidatSelected.termesAssocies}"
+                     style="width: 100%; margin-top: 4px" />
         </b:column>
 
         <b:column>
             <h:outputLabel value="Employé pour (EP)"/>
         </b:column>
         <b:column>
-            <p:chips placeholder="ex: ..." style="width: 100%; margin-top: 4px" />
+            <p:chips value="#{candidatPool.candidatSelected.employePour}" 
+                     placeholder="ex: ..." style="width: 100%; margin-top: 4px;" />
         </b:column>
 
         <b:column>
             <h:outputLabel value="Définition" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
-            <b:inputTextarea style="width: 100%; resize: none;"/>
+            <b:inputTextarea value="#{candidatPool.candidatSelected.defenition}" 
+                             style="width: 100%; resize: none;"/>
         </b:column>
 
         <b:column>
             <h:outputLabel value="Note d'application" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
-            <b:inputTextarea id="noteApplication" style="width: 100%; resize: none;"/>
+            <b:inputTextarea value="#{candidatPool.candidatSelected.noteApplication}"
+                             style="width: 100%; resize: none;"/>
         </b:column>
     </b:row>
 
@@ -78,7 +87,7 @@
                     </b:column>                         
                 </b:row>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-                <ui:repeat id="listTraduction" var="traduction" value="#{candidatPool.traductionList}">
+                <ui:repeat id="listTraduction" var="traduction" value="#{candidatPool.candidatSelected.traductions}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                         <b:column span="4" >
                             <h:outputText value="#{traduction.langue}"/>
@@ -106,10 +115,10 @@
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
                 <b:row>
                     <b:navCommandLink value="Ajouter une nouvelle traduction" icon-awesome="key"
-                                      oncomplete="PF('newTraduction').show();" ajax="true"
+                                      oncomplete="PF('newTraduction').show();" ajax="false"
                                       styleClass="buttonIconOrange"
                                       actionListener="#{traductionService.init()}"
-                                      update="idNewTraduction newTraductionForm"/>
+                                      update="idNewTraduction newTraductionForm messageIndex"/>
                 </b:row>
             </h:form>
         </b:column>
@@ -134,7 +143,7 @@
                     </b:column>                         
                 </b:row>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-                <ui:repeat id="listCorpus" var="carpus" value="#{candidatPool.corpusList}">
+                <ui:repeat id="listCorpus" var="carpus" value="#{candidatPool.candidatSelected.corpus}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                         <b:column span="4" >
                             <h:outputText value="#{carpus.value}"/>

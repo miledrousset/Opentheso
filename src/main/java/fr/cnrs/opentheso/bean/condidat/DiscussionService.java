@@ -6,16 +6,13 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.primefaces.PrimeFaces;
 
 
 @Named(value = "discussionService")
@@ -46,7 +43,7 @@ public class DiscussionService implements Serializable {
         messageDto.setNom("Firas");
         messageDto.setMsg(candidatPool.getMessage());
         
-        candidatPool.getMessagesList().add(messageDto);
+        candidatPool.getCandidatSelected().getMessages().add(messageDto);
         candidatPool.setMessage("");
         
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Message envoyé !", null);

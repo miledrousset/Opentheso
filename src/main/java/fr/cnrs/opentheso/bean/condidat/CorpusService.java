@@ -2,13 +2,16 @@ package fr.cnrs.opentheso.bean.condidat;
 
 import fr.cnrs.opentheso.bean.condidat.dto.CorpusDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import java.io.Serializable;
 import java.util.List;
+
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 
 @Named(value = "corpusService")
 @SessionScoped
@@ -57,7 +60,7 @@ public class CorpusService implements Serializable {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Corpus ajoutée avec sucée", null);
             FacesContext.getCurrentInstance().addMessage(null, message);
 
-            candidatPool.getCorpusList().add(new CorpusDto(newValue, newURL));
+            candidatPool.getCandidatSelected().getCorpus().add(new CorpusDto(newValue, newURL));
             candidatPool.setIsNewCandidatActivate(true);
 
             readyToSave = false;
@@ -67,7 +70,7 @@ public class CorpusService implements Serializable {
 
     public void deleteCorpus() {
         if (readyToSave) {
-            List<CorpusDto> temps = candidatPool.getCorpusList();
+            List<CorpusDto> temps = candidatPool.getCandidatSelected().getCorpus();
 
             for (int i = 0; i < temps.size(); i++) {
                 if (value != null && value.equals(temps.get(i).getValue())) {
@@ -75,11 +78,11 @@ public class CorpusService implements Serializable {
                 }
             }
 
-            if (candidatPool.getCorpusList().size() != temps.size()) {
+            if (candidatPool.getCandidatSelected().getCorpus().size() != temps.size()) {
                 FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Corpus supprimée avec succée !", null);
                 FacesContext.getCurrentInstance().addMessage(null, message);
 
-                candidatPool.setCorpusList(temps);
+                candidatPool.getCandidatSelected().setCorpus(temps);
                 candidatPool.setIsNewCandidatActivate(true);
             }
             readyToSave = false;
@@ -88,7 +91,7 @@ public class CorpusService implements Serializable {
 
     public void updateCorpus() {
         if (readyToSave) {
-            List<CorpusDto> temps = candidatPool.getCorpusList();
+            List<CorpusDto> temps = candidatPool.getCandidatSelected().getCorpus();
 
             for (CorpusDto corpusDto : temps) {
                 if (valueOld != null && valueOld.equals(corpusDto.getValue())
@@ -101,7 +104,7 @@ public class CorpusService implements Serializable {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Corpus mise à jour avec succée !", null);
             FacesContext.getCurrentInstance().addMessage(null, message);
 
-            candidatPool.setCorpusList(temps);
+            candidatPool.getCandidatSelected().setCorpus(temps);
             candidatPool.setIsNewCandidatActivate(true);
 
             readyToSave = false;

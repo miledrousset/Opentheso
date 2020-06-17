@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.condidat;
 
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
@@ -59,12 +54,12 @@ public class TraductionService implements Serializable {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec sucée", null);
         FacesContext.getCurrentInstance().addMessage(null, message);
         
-        candidatPool.getTraductionList().add(new TraductionDto(newLangage, newTraduction));
+        candidatPool.getCandidatSelected().getTraductions().add(new TraductionDto(newLangage, newTraduction));
         candidatPool.setIsNewCandidatActivate(true);
     }
 
     public void deleteTraduction() {
-        List<TraductionDto> temps = candidatPool.getTraductionList();
+        List<TraductionDto> temps = candidatPool.getCandidatSelected().getTraductions();
 
         for (int i = 0; i < temps.size(); i++) {
             if (traduction != null && traduction.equals(temps.get(i).getTraduction())) {
@@ -72,18 +67,18 @@ public class TraductionService implements Serializable {
             }
         }
 
-        if (candidatPool.getTraductionList().size() != temps.size()) {
+        if (candidatPool.getCandidatSelected().getTraductions().size() != temps.size()) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction supprimée avec succée !", null);
             FacesContext.getCurrentInstance().addMessage(null, message);
 
-            candidatPool.setTraductionList(temps);
+            candidatPool.getCandidatSelected().setTraductions(temps);
             candidatPool.setIsNewCandidatActivate(true);
         }
     }
 
     public void updateTraduction() {
 
-        List<TraductionDto> temps = candidatPool.getTraductionList();
+        List<TraductionDto> temps = candidatPool.getCandidatSelected().getTraductions();
 
         for (TraductionDto traductionDto : temps) {
             if (traductionOld != null && traductionOld.equals(traductionDto.getTraduction())
@@ -96,7 +91,7 @@ public class TraductionService implements Serializable {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction mise à jour avec succée !", null);
         FacesContext.getCurrentInstance().addMessage(null, message);
 
-        candidatPool.setTraductionList(temps);
+        candidatPool.getCandidatSelected().setTraductions(temps);
         candidatPool.setIsNewCandidatActivate(true);
     }
 

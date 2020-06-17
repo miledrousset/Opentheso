@@ -1,52 +1,46 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:b="http://bootsfaces.net/ui">
 
     <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
-            style="margin-top: -20px; background-color: #FAFAFA; 
-            border: 20px; padding: 20px">
+            style="margin-top: -20px; border-left: 20px; border-right: 20px;  background-color: #FAFAFA; padding: 50px">
 
-        <b:row style="margin-left: 10px; margin-right: 10px">
-            <b:column rendered="#{candidatPool.isIsListCandidatsActivate()}">
-                <ui:include src="/candidat/candidatsList.xhtml" />
-            </b:column>
+        <b:row rendered="#{candidatPool.isIsListCandidatsActivate()}">
+            <ui:include src="/candidat/candidatsList.xhtml" />
+        </b:row>
 
-            <b:column rendered="#{candidatPool.isIsNewCandidatActivate()}">
-                <p:panelGrid style="width: 100%;">
-                    <p:row style="background-color: #FAFAFA; border: #FAFAFA"> 
-                        <p:column colspan="2">
-                            <b:navCommandLink value="⬅ Retour à la liste des candidats" update="candidatForm" ajax="false"
-                                    style="color: #43B572" actionListener="#{candidatPool.setIsListCandidatsActivate(true)}" />
-                        </p:column>
-                    </p:row>
-                    <p:row style="width: 100%; background-color: #FAFAFA; border: #FAFAFA">
-                        <p:column style="width: 50%; background-color: #FAFAFA;">
-                            <ui:include src="/candidat/candidatDetails.xhtml" />
-                        </p:column>
-                        <p:column style="width: 50%; height: 100%; vertical-align: top">
-                            <ui:include src="/candidat/candidatDiscussion.xhtml" />
-                        </p:column>
-                    </p:row>
-                    <p:row style="background-color: #FAFAFA; border: #FAFAFA">
-                        <p:column colspan="2" style="text-align: center;">
-                            <b:button value="Soumettre la fiche à un admin" style="background: #F47B2A; border-color: #F47B2A; color: white" look="primary" size="lg" />
-                        </p:column>
-                    </p:row>
-                </p:panelGrid>
-            </b:column>
+        <b:row rendered="#{candidatPool.isIsNewCandidatActivate()}" style="padding-left: 25px; padding-right: 25px">
+            <b:row>
+                <b:column span="12">
+                    <b:navCommandLink value="⬅ Retour à la liste des candidats" update="candidatForm" ajax="false"
+                                      style="color: #43B572" actionListener="#{candidatPool.setIsListCandidatsActivate(true)}" />
+                </b:column>
+            </b:row>
+            <b:row style="background-color: #FAFAFA; border: #FAFAFA">
+                <b:column medium-screen="6">
+                    <ui:include src="/candidat/candidatDetails.xhtml" />
+                </b:column>
+                <b:column medium-screen="6" style="vertical-align: top;">
+                    <ui:include src="/candidat/candidatDiscussion.xhtml" />
+                </b:column>
+            </b:row>
+            <b:row>
+                <b:column span="12" style="align-content: center">
+                    <b:button value="Soumettre la fiche à un admin" style="background: #F47B2A; border-color: #F47B2A; color: white" look="primary" size="lg" />
+                </b:column>
+            </b:row>
         </b:row>
     </h:form>   
 
     <ui:include src="/candidat/dialog/newTraduction.xhtml" />
     <ui:include src="/candidat/dialog/editTraduction.xhtml" />
     <ui:include src="/candidat/dialog/deleteTraduction.xhtml" />  
-    
+
     <ui:include src="/candidat/dialog/newCorpus.xhtml" />
     <ui:include src="/candidat/dialog/editCorpus.xhtml" /> 
     <ui:include src="/candidat/dialog/deleteCorpus.xhtml" /> 
-    
+
     <ui:include src="/candidat/dialog/participantsList.xhtml" /> 
     <ui:include src="/candidat/dialog/envoyerInvitation.xhtml" /> 
 

@@ -1,13 +1,18 @@
 package fr.cnrs.opentheso.bean.condidat;
 
+import fr.cnrs.opentheso.bean.condidat.dto.CandidatDetailsDto;
 import fr.cnrs.opentheso.bean.condidat.dto.CorpusDto;
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import java.io.Serializable;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
 import javax.enterprise.context.SessionScoped;
 
 import javax.inject.Inject;
@@ -24,41 +29,52 @@ public class CandidatPool implements Serializable {
     private boolean isListCandidatsActivate;
     private boolean isNewCandidatActivate;
 
-    private List<CandidatDto> candidatPool;
-    private List<TraductionDto> traductionList;
-    private List<CorpusDto> corpusList;
-    private List<MessageDto> messagesList;
+    private List<CandidatDto> candidatList;
     
     private String message;
     
+    private CandidatDetailsDto candidatSelected;
+    
 
     public CandidatPool() {
+        
+        candidatSelected = new CandidatDetailsDto();
+        
         isListCandidatsActivate = true;
         isNewCandidatActivate = false;
 
-        corpusList = new ArrayList<>();
-        traductionList = new ArrayList<>();
-        messagesList = new ArrayList<>();
+        candidatList = new ArrayList<>();
         
-        messagesList.add(new MessageDto("Toto", "DATE DU JOUR", "Coucou from me", false));
-        messagesList.add(new MessageDto("Toto", "DATE DU JOUR", "Coucou from me", false));
-        messagesList.add(new MessageDto("Firas", "DATE DU JOUR", "Coucou from me", true));
+        candidatList = getAllCandidats();
+        
+    }
+    
+    public List<CandidatDto> getAllCandidats() {
+        
+        List<CandidatDto> temps = new ArrayList<>();
+        CandidatDto candidatDto = new CandidatDto();
+        candidatDto.setCreationDate(new Date());
+        candidatDto.setNbrDemande(4);
+        candidatDto.setStatut("En cours");
+        candidatDto.setNbrParticipant(66);
+        candidatDto.setNomPref("Firas GABSI");
+        temps.add(candidatDto);
+        
+        candidatDto.setNomPref("BOB TODO");
+        temps.add(candidatDto);
+        
+        candidatDto.setNomPref("Julien");
+        temps.add(candidatDto);
+        
+        return temps;
     }
 
-    public List<TraductionDto> getTraductionList() {
-        return traductionList;
+    public List<CandidatDto> getCandidatList() {
+        return candidatList;
     }
 
-    public void setTraductionList(List<TraductionDto> traductionList) {
-        this.traductionList = traductionList;
-    }
-
-    public List<CandidatDto> getCandidatPool() {
-        return candidatPool;
-    }
-
-    public void setCandidatPool(List<CandidatDto> candidatPool) {
-        this.candidatPool = candidatPool;
+    public void setCandidatList(List<CandidatDto> candidatList) {
+        this.candidatList = candidatList;
     }
 
     public boolean isIsListCandidatsActivate() {
@@ -79,22 +95,6 @@ public class CandidatPool implements Serializable {
         isListCandidatsActivate = false;
     }
 
-    public List<CorpusDto> getCorpusList() {
-        return corpusList;
-    }
-
-    public void setCorpusList(List<CorpusDto> corpusList) {
-        this.corpusList = corpusList;
-    }
-
-    public List<MessageDto> getMessagesList() {
-        return messagesList;
-    }
-
-    public void setMessagesList(List<MessageDto> messagesList) {
-        this.messagesList = messagesList;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -103,4 +103,12 @@ public class CandidatPool implements Serializable {
         this.message = message;
     }
 
+    public CandidatDetailsDto getCandidatSelected() {
+        return candidatSelected;
+    }
+
+    public void setCandidatSelected(CandidatDetailsDto candidatSelected) {
+        this.candidatSelected = candidatSelected;
+    }
+    
 }
