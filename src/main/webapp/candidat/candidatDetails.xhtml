@@ -6,13 +6,13 @@
 
     <b:row>
         <b:column>
-            <h:outputLabel style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Fiche candidat"/>
+            <h:outputText style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" value="Fiche candidat"/>
         </b:column>
     </b:row>
 
     <b:row style="margin-top: 10px">  
         <b:column>
-            <h:outputLabel value="Intitulé"/>
+            <h:outputText value="Intitulé"/>
         </b:column>
         <b:column>
             <b:inputText value="#{candidatPool.candidatSelected.intitule}" 
@@ -20,7 +20,7 @@
         </b:column>
 
         <b:column>
-            <h:outputLabel value="Domaine"/>
+            <h:outputText value="Domaine"/>
         </b:column>
         <b:column>
             <b:inputText value="#{candidatPool.candidatSelected.domaine}" 
@@ -28,7 +28,7 @@
         </b:column>
 
         <b:column>
-            <h:outputLabel value="Terme générique"/>
+            <h:outputText value="Terme générique"/>
         </b:column>
         <b:column>
             <b:inputText value="#{candidatPool.candidatSelected.termeGenerique}" 
@@ -36,7 +36,7 @@
         </b:column>
 
         <b:column>
-            <h:outputLabel value="Termes associés"/>
+            <h:outputText value="Termes associés"/>
         </b:column>
         <b:column>
             <p:chips placeholder="ex: ..." value="#{candidatPool.candidatSelected.termesAssocies}"
@@ -44,7 +44,7 @@
         </b:column>
 
         <b:column>
-            <h:outputLabel value="Employé pour (EP)"/>
+            <h:outputText value="Employé pour (EP)"/>
         </b:column>
         <b:column>
             <p:chips value="#{candidatPool.candidatSelected.employePour}" 
@@ -52,7 +52,7 @@
         </b:column>
 
         <b:column>
-            <h:outputLabel value="Définition" style="margin-top: 15px;"/>
+            <h:outputText value="Définition" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
             <b:inputTextarea value="#{candidatPool.candidatSelected.defenition}" 
@@ -60,7 +60,7 @@
         </b:column>
 
         <b:column>
-            <h:outputLabel value="Note d'application" style="margin-top: 15px;"/>
+            <h:outputText value="Note d'application" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
             <b:inputTextarea value="#{candidatPool.candidatSelected.noteApplication}"
@@ -69,7 +69,9 @@
     </b:row>
 
     <b:row>
-        <h:outputText value="Langages"/>
+        <b:column>
+            <h:outputText value="Langages" style="margin-top: 15px;"/>
+        </b:column>
         <b:column span="12" style="margin-top: 5px">
             <h:form id="listTraductionForm">
                 <b:row style="font-size: 12px;  color: #666666">
@@ -97,7 +99,7 @@
                         </b:column>
                         <b:column span="2">
                             <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
-                                              oncomplete="PF('editTraduction').show();" 
+                                              oncomplete="PF('editTraduction').show();" style="color: #f47b2a;"
                                               actionListener="#{traductionService.init(traduction)}"
                                               styleClass="buttonIconOrange" ajax="false"
                                               update="idEditTraduction editTraductionForm"/>     
@@ -114,18 +116,22 @@
                 </ui:repeat>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
                 <b:row>
-                    <b:navCommandLink value="Ajouter une nouvelle traduction" icon-awesome="key"
-                                      oncomplete="PF('newTraduction').show();" ajax="false"
-                                      styleClass="buttonIconOrange"
-                                      actionListener="#{traductionService.init()}"
-                                      update="idNewTraduction newTraductionForm messageIndex"/>
+                    <b:column>
+                        <b:navCommandLink value="Ajouter une nouvelle traduction"
+                                          oncomplete="PF('newTraduction').show();" ajax="false"
+                                          styleClass="buttonIconOrange" style="color: #43B572"
+                                          actionListener="#{traductionService.init()}"
+                                          update="idNewTraduction newTraductionForm messageIndex"/>
+                    </b:column>
                 </b:row>
             </h:form>
         </b:column>
     </b:row>  
 
-    <b:row>
-        <h:outputLabel value="Corpus lié" />
+    <b:row style="margin-top: 15px;">
+        <b:column>
+            <h:outputText value="Corpus lié"/>
+        </b:column>
         <b:column span="12" style="margin-top: 5px">
             <h:form id="listCorpusForm">
                 <b:row style="font-size: 12px;  color: #666666">
@@ -153,7 +159,7 @@
                         </b:column>
                         <b:column span="2">
                             <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
-                                              oncomplete="PF('editCorpus').show();" 
+                                              oncomplete="PF('editCorpus').show();" style="color: #f47b2a;"
                                               actionListener="#{corpusService.init(carpus)}"
                                               styleClass="buttonIconOrange" ajax="false"
                                               update="idEditCorpus editCorpusForm"/>     
@@ -169,11 +175,13 @@
                 </ui:repeat>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
                 <b:row>
-                    <b:navCommandLink value="Ajouter une nouvelle corpus" icon-awesome="key"
-                                      oncomplete="PF('newCorpus').show();" ajax="true"
-                                      styleClass="buttonIconOrange"
-                                      actionListener="#{corpusService.init()}"
-                                      update="idNewCorpus newCorpusForm"/>
+                    <b:column>
+                        <b:navCommandLink value="Ajouter une nouvelle corpus"
+                                          oncomplete="PF('newCorpus').show();" ajax="false"
+                                          styleClass="buttonIconOrange" style="color: #43B572"
+                                          actionListener="#{corpusService.init()}"
+                                          update="idNewCorpus newCorpusForm"/>
+                    </b:column>
                 </b:row>
             </h:form>
         </b:column>
@@ -223,7 +231,7 @@
 
         </p:panelGrid>
 
-        <b:row style="margin-top: 20px; margin-left: 10px; width: 100%;">
+        <b:row style="margin-top: 20px; margin-left: 10px;">
             <b:button value="Enregistrer" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
         </b:row>
 

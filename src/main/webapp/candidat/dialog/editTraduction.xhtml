@@ -9,36 +9,29 @@
 
         <h:form id="editTraductionForm">
 
-            <p:panelGrid style="width: 100%;">
-                <p:row >
-                    <p:column width="30%">
-                        <h:outputText value="Langage : " style="font-size: 12px;"/> 
-                    </p:column>
-                    <p:column width="70%">
-                        <b:inputText value="#{traductionService.langage}" style="font-size: 12px; height: 25px;"/>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column width="30%">
-                        <h:outputText value="Traduction : " style="font-size: 12px;"/> 
-                    </p:column>
-                    <p:column width="70%">
-                        <b:inputText value="#{traductionService.traduction}" style="font-size: 12px; height: 25px;"/>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column colspan="2">
-                        <p:commandButton id="ajouterTraductionBtn" value="Modifier" 
-                                         update="idEditTraduction editTraductionForm :candidatForm:listTraductionForm"
-                                         styleClass="ui-priority-primary" ajax="false"
-                                         style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
-                                         class="btn btn-primary"
-                                         action="#{traductionService.updateTraduction()}" 
-                                         oncomplete="PF('newTraduction').hide();"/>
-                    </p:column>
-                </p:row>
+            <b:inputText value="#{traductionService.langage}" required="true" 
+                         label="Langage : " style="font-size: 12px;" />
 
-            </p:panelGrid>
+            <b:inputText value="#{traductionService.traduction}" required="true" 
+                         label="Traduction : " style="font-size: 12px;" />
+
+            <b:row>
+                <b:column span="6">
+                    <p:commandButton value="Modifier" class="btn btn-primary"
+                                     update="idEditTraduction editTraductionForm :candidatForm:listTraductionForm"
+                                     styleClass="ui-priority-primary" ajax="false"
+                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                     action="#{traductionService.updateTraduction()}" 
+                                     oncomplete="PF('editTraduction').hide();"/>
+                </b:column>
+                <b:column span="6">
+                    <p:commandButton value="Fermer"  styleClass="ui-priority-primary" ajax="false"
+                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; 
+                                     border: none; box-shadow: none; float: right" class="btn btn-primary"
+                                     oncomplete="PF('editTraduction').hide();"/>
+
+                </b:column>
+            </b:row>
 
         </h:form>
 

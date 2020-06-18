@@ -5,41 +5,32 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idNewCorpus" header="Ajouter une nouvelle corpus" widgetVar="newCorpus" 
-              modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" >  
+              modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" > 
+        
+        <h:form id="newCorpusForm" style="width: 320px; display: block; margin-left: auto; margin-right: auto;">
 
-        <h:form id="newCorpusForm">
+            <b:inputText value="#{corpusService.newValue}" required="true" 
+                         label="Valeur : " style="font-size: 12px;" />
 
-            <p:panelGrid style="width: 100%;">
-                <p:row >
-                    <p:column width="30%">
-                        <h:outputText value="Valeur : " style="font-size: 12px;"/> 
-                    </p:column>
-                    <p:column width="70%">
-                        <b:inputText value="#{corpusService.newValue}" style="font-size: 12px; height: 25px;"/>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column width="30%">
-                        <h:outputText value="URL : " style="font-size: 12px;"/> 
-                    </p:column>
-                    <p:column width="70%">
-                        <b:inputText value="#{corpusService.newURL}" style="font-size: 12px; height: 25px;"/>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column colspan="2">
-                        <p:commandButton value="Ajouter" update="idNewCorpus newCorpusForm :candidatForm:listCorpusForm"
+            <b:inputText value="#{corpusService.newURL}" required="true" 
+                         label="URL : " style="font-size: 12px;" />
+
+            <b:row>
+                <b:column span="6">
+                    <p:commandButton value="Ajouter" update="idNewCorpus newCorpusForm :candidatForm:listCorpusForm"
                                          styleClass="ui-priority-primary" ajax="true"
                                          style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
                                          class="btn btn-primary"
                                          action="#{corpusService.addCorpus()}" 
                                          oncomplete="PF('newCorpus').hide();"/>
-                    </p:column>
-                </p:row>
-
-            </p:panelGrid>
-
+                </b:column>
+                <b:column span="6">
+                    <p:commandButton value="Fermer"  styleClass="ui-priority-primary" ajax="false"
+                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; 
+                                     border: none; box-shadow: none; float: right" class="btn btn-primary"
+                                     oncomplete="PF('newCorpus').hide();"/>
+                </b:column>
+            </b:row>
         </h:form>
-
     </p:dialog>   
 </ui:fragment>

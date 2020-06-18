@@ -17,7 +17,7 @@
                 <ui:repeat id="chatBox" var="msg" value="#{candidatPool.candidatSelected.messages}">
 
                     <b:row style="float: #{msg.getMessagePossition()}; 
-                           font-size: 15px; width: 90%; 
+                           font-size: 15px; width: 80%; 
                            background-color: #{msg.getMessageColor()}; 
                            margin-top: 5px; font-weight: bold; margin-left: 5px; 
                            margin-right: 5px">
@@ -34,7 +34,7 @@
                     </b:row>  
 
                     <b:row style="float: #{msg.getMessagePossition()}; 
-                           font-size: 12px; width: 90%; background-color: #{msg.getMessageColor()}; 
+                           font-size: 12px; width: 80%; background-color: #{msg.getMessageColor()}; 
                            margin-bottom: 5px; text-align: justify; 
                            text-justify: inter-word ; margin-left: 5px; 
                            margin-right: 5px">
@@ -70,11 +70,11 @@
 
     <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px; 
            margin-left: 10px; margin-right: 10px ">
-        <b:column style="width: 50%;">
+        <b:column span="6">
             <b:commandButton value="Voir les participants" style="background: #43B572; border: #43B572; color: white;" 
                              oncomplete="PF('participantsList').show();" ajax="true" />    
         </b:column>
-        <b:column style="width: 50%;">
+        <b:column span="6">
             <b:commandButton value="Demande des contributeurs" style="background: #43B572; float: right; border: #43B572; color: white" 
                              oncomplete="PF('sendChatInvitation').show();" ajax="true" />
         </b:column>

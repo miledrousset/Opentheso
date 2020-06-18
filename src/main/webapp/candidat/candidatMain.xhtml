@@ -13,11 +13,12 @@
         <b:row rendered="#{candidatPool.isIsNewCandidatActivate()}" style="padding-left: 25px; padding-right: 25px">
             <b:row>
                 <b:column span="12">
-                    <b:navCommandLink value="⬅ Retour à la liste des candidats" update="candidatForm" ajax="false"
-                                      style="color: #43B572" actionListener="#{candidatPool.setIsListCandidatsActivate(true)}" />
+                    <b:navCommandLink value="⬅ Retour à la liste des candidats" 
+                                      update="candidatForm" ajax="false" style="color: #43B572" 
+                                      actionListener="#{candidatPool.setIsListCandidatsActivate(true)}" />
                 </b:column>
             </b:row>
-            <b:row style="background-color: #FAFAFA; border: #FAFAFA">
+            <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px">
                 <b:column medium-screen="6">
                     <ui:include src="/candidat/candidatDetails.xhtml" />
                 </b:column>
@@ -27,7 +28,10 @@
             </b:row>
             <b:row>
                 <b:column span="12" style="align-content: center">
-                    <b:button value="Soumettre la fiche à un admin" style="background: #F47B2A; border-color: #F47B2A; color: white" look="primary" size="lg" />
+                    <b:commandButton value="Soumettre la fiche à un admin" 
+                              style="background: #F47B2A; border-color: #F47B2A; display: block; 
+                              margin-left: auto; margin-right: auto; margin-top: 10px; color: white" 
+                              look="primary" size="lg" />
                 </b:column>
             </b:row>
         </b:row>

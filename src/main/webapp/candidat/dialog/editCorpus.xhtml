@@ -6,40 +6,27 @@
 
     <p:dialog id="idEditCorpus" header="Modifier une corpus" widgetVar="editCorpus" 
               modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" >  
-
         <h:form id="editCorpusForm">
-
-            <p:panelGrid style="width: 100%;">
-                <p:row >
-                    <p:column width="30%">
-                        <h:outputText value="Value : " style="font-size: 12px;"/> 
-                    </p:column>
-                    <p:column width="70%">
-                        <b:inputText value="#{corpusService.value}" style="font-size: 12px; height: 25px;"/>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column width="30%">
-                        <h:outputText value="URL : " style="font-size: 12px;"/> 
-                    </p:column>
-                    <p:column width="70%">
-                        <b:inputText value="#{corpusService.url}" style="font-size: 12px; height: 25px;"/>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column colspan="2">
-                        <p:commandButton value="Modifier" update="idEditCorpus editCorpusForm :candidatForm:listCorpusForm"
-                                         styleClass="ui-priority-primary" ajax="true"
-                                         style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
-                                         class="btn btn-primary"
-                                         action="#{corpusService.updateCorpus()}" 
-                                         oncomplete="PF('editCorpus').hide();"/>
-                    </p:column>
-                </p:row>
-
-            </p:panelGrid>
-
+            <b:inputText value="#{corpusService.value}" required="true" 
+                         label="Langage : " style="font-size: 12px;" />
+            <b:inputText value="#{corpusService.url}" required="true" 
+                         label="Traduction : " style="font-size: 12px;" />
+            <b:row>
+                <b:column span="6">
+                    <p:commandButton value="Modifier" update="idEditCorpus editCorpusForm :candidatForm:listCorpusForm"
+                                     styleClass="ui-priority-primary" ajax="true"
+                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                     class="btn btn-primary"
+                                     action="#{corpusService.updateCorpus()}" 
+                                     oncomplete="PF('editCorpus').hide();"/>
+                </b:column>
+                <b:column span="6">
+                    <p:commandButton value="Fermer"  styleClass="ui-priority-primary" ajax="false"
+                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; 
+                                     border: none; box-shadow: none; float: right" class="btn btn-primary"
+                                     oncomplete="PF('editTraduction').hide();"/>
+                </b:column>
+            </b:row>
         </h:form>
-
     </p:dialog>   
 </ui:fragment>
