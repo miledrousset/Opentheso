@@ -15,7 +15,7 @@
             <h:outputText value="Intitulé"/>
         </b:column>
         <b:column>
-            <b:inputText value="#{candidatPool.candidatSelected.intitule}" 
+            <b:inputText value="#{candidatBean.candidatSelected.nomPref}"
                          style="width: 230px" placeholder="ex: Aliment" />
         </b:column>
 
@@ -23,7 +23,7 @@
             <h:outputText value="Domaine"/>
         </b:column>
         <b:column>
-            <b:inputText value="#{candidatPool.candidatSelected.domaine}" 
+            <b:inputText value="#{candidatBean.candidatSelected.domaine}"
                          style="width: 230px" placeholder="ex: Sujet" />
         </b:column>
 
@@ -31,7 +31,7 @@
             <h:outputText value="Terme générique"/>
         </b:column>
         <b:column>
-            <b:inputText value="#{candidatPool.candidatSelected.termeGenerique}" 
+            <b:inputText value="#{candidatBean.candidatSelected.termeGenerique}"
                          style="width: 230px" placeholder="ex: Nourriture, etc..."/>
         </b:column>
 
@@ -39,15 +39,15 @@
             <h:outputText value="Termes associés"/>
         </b:column>
         <b:column>
-            <p:chips placeholder="ex: ..." value="#{candidatPool.candidatSelected.termesAssocies}"
+            <p:chips placeholder="ex: ..." value="#{candidatBean.candidatSelected.termesAssocies}"
                      style="width: 100%; margin-top: 4px" />
         </b:column>
 
         <b:column>
-            <h:outputText value="Employé pour (EP)"/>
+            <h:outputText value="Employé pour (EP)" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
-            <p:chips value="#{candidatPool.candidatSelected.employePour}" 
+            <p:chips value="#{candidatBean.candidatSelected.employePour}"
                      placeholder="ex: ..." style="width: 100%; margin-top: 4px;" />
         </b:column>
 
@@ -55,7 +55,7 @@
             <h:outputText value="Définition" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
-            <b:inputTextarea value="#{candidatPool.candidatSelected.defenition}" 
+            <b:inputTextarea value="#{candidatBean.candidatSelected.defenition}"
                              style="width: 100%; resize: none;"/>
         </b:column>
 
@@ -63,7 +63,7 @@
             <h:outputText value="Note d'application" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
-            <b:inputTextarea value="#{candidatPool.candidatSelected.noteApplication}"
+            <b:inputTextarea value="#{candidatBean.candidatSelected.noteApplication}"
                              style="width: 100%; resize: none;"/>
         </b:column>
     </b:row>
@@ -89,7 +89,7 @@
                     </b:column>                         
                 </b:row>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-                <ui:repeat id="listTraduction" var="traduction" value="#{candidatPool.candidatSelected.traductions}">
+                <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                         <b:column span="4" >
                             <h:outputText value="#{traduction.langue}"/>
@@ -149,7 +149,7 @@
                     </b:column>                         
                 </b:row>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-                <ui:repeat id="listCorpus" var="carpus" value="#{candidatPool.candidatSelected.corpus}">
+                <ui:repeat id="listCorpus" var="carpus" value="#{candidatBean.candidatSelected.corpus}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                         <b:column span="4" >
                             <h:outputText value="#{carpus.value}"/>
@@ -232,7 +232,8 @@
         </p:panelGrid>
 
         <b:row style="margin-top: 20px; margin-left: 10px;">
-            <b:button value="Enregistrer" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
+            <b:commandButton value="Enregistrer" style="background: #43B572; color: white; margin-left: 5px"
+                      look="primary" size="sm" action="#{candidatBean.saveConcept()}" />
         </b:row>
 
     </b:row> 

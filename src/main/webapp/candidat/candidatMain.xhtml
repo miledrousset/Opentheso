@@ -6,16 +6,16 @@
     <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
             style="margin-top: -20px; border-left: 20px; border-right: 20px;  background-color: #FAFAFA; padding: 50px">
 
-        <b:row rendered="#{candidatPool.isIsListCandidatsActivate()}">
+        <b:row rendered="#{candidatBean.isIsListCandidatsActivate()}">
             <ui:include src="/candidat/candidatsList.xhtml" />
         </b:row>
 
-        <b:row rendered="#{candidatPool.isIsNewCandidatActivate()}" style="padding-left: 25px; padding-right: 25px">
+        <b:row rendered="#{candidatBean.isIsNewCandidatActivate()}" style="padding-left: 25px; padding-right: 25px">
             <b:row>
                 <b:column span="12">
                     <b:navCommandLink value="⬅ Retour à la liste des candidats" 
                                       update="candidatForm" ajax="false" style="color: #43B572" 
-                                      actionListener="#{candidatPool.setIsListCandidatsActivate(true)}" />
+                                      actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
                 </b:column>
             </b:row>
             <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px">

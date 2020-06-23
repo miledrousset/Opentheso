@@ -7,31 +7,28 @@
 
     <b:row>
         <b:column>
-            <b:commandButton value="Ajouter un condidat" size="sm"
-                             class="btn btn-success"
-                             style="font-size: 12px; color: white; background: #43B572; border: #43B572; padding-left: 20px; padding-right: 20px"
-                             action="#{candidatPool.setIsNewCandidatActivate(true)}"
+            <b:commandButton value="Ajouter un condidat" size="sm" class="btn btn-success"
+                             style="font-size: 12px; color: white; background: #43B572; 
+                             border: #43B572; padding-left: 20px; padding-right: 20px"
+                             action="#{candidatBean.initialNewCandidat()}"
                              update="candidatForm"/>
         </b:column>
     </b:row>
 
     <b:row>
         <b:column medium-screen="6">
-            <b:selectBooleanCheckbox value="#{candidatService.myCandidatsSelected}" 
-                                     style="font-size: 12px;" update="candidtatsList"
-                                     caption="Afficher mes candidats" ajax="true"
-                                     onclick="#{candidatService.selectMyCandidats()}"  />
         </b:column>
         <b:column medium-screen="6">
             <h:outputText class="col-md-6 control-label" 
-                          style="font-size: 12px; height: 34px; margin-top: 7px; text-align: right; vertical-align: central" 
+                          style="font-size: 12px; height: 34px; margin-top: 7px; 
+                          text-align: right; vertical-align: central" 
                           value="Rechercher par terme ou auteur "/>
 
             <b:inputText>
                 <f:facet name="append">
-                    <b:commandButton value="#{candidatService.searchValue}" look="success" ajax="true" 
+                    <b:commandButton value="#{candidatBean.searchValue}" look="success" ajax="true" 
                                      iconAwesome="search" icon-align="right" update="candidtatsList"
-                                     onclick="#{candidatService.searchByTermeAndAuteur()}"/>
+                                     onclick="#{candidatBean.searchByTermeAndAuteur()}"/>
                 </f:facet>
             </b:inputText>
         </b:column>
@@ -40,13 +37,14 @@
     <b:row>
         <b:column>
             <p:dataTable id="candidtatsList"
-                         value="#{candidatPool.candidatList}" var="candidat"
+                         value="#{candidatBean.candidatList}" var="candidat"
                          rowStyleClass="textOpenthesoColorOrange"
                          scrollable="true" scrollHeight="500"
                          style="font-size: 12px; vertical-align: central; padding-top: 5px; text-align: center">
 
                 <p:column headerText="Candidat" style="width: 45%; background-color: #{viewEditionBean.getAlternateColor(true)}; text-align: left">
-                    <h:outputText style="color: #43B572; font-weight: bold;" value="#{candidat.nomPref}"/>
+                    <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572" 
+                                      action="#{candidatBean.showCandidatSelected(candidat)}" />
                 </p:column>
                 <p:column headerText="Date de création" style="width: 15%; background-color: #{viewEditionBean.getAlternateColor(false)}">
                     <h:outputText value="#{candidat.creationDate}" />

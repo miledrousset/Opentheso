@@ -18,7 +18,7 @@ public class TraductionService implements Serializable {
     private Connect connect;
 
     @Inject
-    private CandidatPool candidatPool;
+    private CandidatBean candidatBean;
 
     private String langage;
     private String traduction;
@@ -54,12 +54,12 @@ public class TraductionService implements Serializable {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec sucée", null);
         FacesContext.getCurrentInstance().addMessage(null, message);
         
-        candidatPool.getCandidatSelected().getTraductions().add(new TraductionDto(newLangage, newTraduction));
-        candidatPool.setIsNewCandidatActivate(true);
+        candidatBean.getCandidatSelected().getTraductions().add(new TraductionDto(newLangage, newTraduction));
+        candidatBean.setIsNewCandidatActivate(true);
     }
 
     public void deleteTraduction() {
-        List<TraductionDto> temps = candidatPool.getCandidatSelected().getTraductions();
+        List<TraductionDto> temps = candidatBean.getCandidatSelected().getTraductions();
 
         for (int i = 0; i < temps.size(); i++) {
             if (traduction != null && traduction.equals(temps.get(i).getTraduction())) {
@@ -67,18 +67,18 @@ public class TraductionService implements Serializable {
             }
         }
 
-        if (candidatPool.getCandidatSelected().getTraductions().size() != temps.size()) {
+        if (candidatBean.getCandidatSelected().getTraductions().size() != temps.size()) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction supprimée avec succée !", null);
             FacesContext.getCurrentInstance().addMessage(null, message);
 
-            candidatPool.getCandidatSelected().setTraductions(temps);
-            candidatPool.setIsNewCandidatActivate(true);
+            candidatBean.getCandidatSelected().setTraductions(temps);
+            candidatBean.setIsNewCandidatActivate(true);
         }
     }
 
     public void updateTraduction() {
 
-        List<TraductionDto> temps = candidatPool.getCandidatSelected().getTraductions();
+        List<TraductionDto> temps = candidatBean.getCandidatSelected().getTraductions();
 
         for (TraductionDto traductionDto : temps) {
             if (traductionOld != null && traductionOld.equals(traductionDto.getTraduction())
@@ -91,8 +91,8 @@ public class TraductionService implements Serializable {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction mise à jour avec succée !", null);
         FacesContext.getCurrentInstance().addMessage(null, message);
 
-        candidatPool.getCandidatSelected().setTraductions(temps);
-        candidatPool.setIsNewCandidatActivate(true);
+        candidatBean.getCandidatSelected().setTraductions(temps);
+        candidatBean.setIsNewCandidatActivate(true);
     }
 
     public String getLangage() {
