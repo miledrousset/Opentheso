@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.bean.condidat;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
-import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bean.condidat.dao.CondidatDao;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -110,7 +111,7 @@ public class CandidatBean implements Serializable {
         isListCandidatsActivate = false;
     }
 
-    public void saveConcept() {
+    public void saveConcept() throws SQLException {
 
         if (StringUtils.isEmpty(candidatSelected.getNomPref())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "le label est obligatoire !");
@@ -149,58 +150,61 @@ public class CandidatBean implements Serializable {
             Concept concept = new Concept();
 
             concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-            concept.setStatus("D");
             concept.setTopConcept(true);
-
-            Term terme = new Term();
-            terme.setId_thesaurus(selectedTheso.getCurrentIdTheso());
-            terme.setLang(selectedTheso.getSelectedLang());
-            terme.setLexical_value(candidatSelected.getNomPref().trim());
-            terme.setStatus("D");
-            concept.setTopConcept(false);
-
-            String idNewConcept = conceptHelper.addConcept(connect.getPoolConnexion(),
-                    null, null, concept, terme, currentUser.getNodeUser().getIdUser());
-
+            concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+            concept.setUserName(currentUser.getUsername());
+            
+            //String idNewConcept = conceptHelper.addConcept(connect.getPoolConnexion(), null, null, concept, terme, currentUser.getNodeUser().getIdUser());conn = ds.getConnection();
+            String idNewConcept = conceptHelper.addConceptInTable(
+                    connect.getPoolConnexion().getConnection(), 
+                    concept, currentUser.getNodeUser().getIdUser());
+            
             if (idNewConcept == null) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
+            
+            new CondidatDao().setStatutForCandidat(connect, 
+                    connect.getPoolConnexion().getConnection().createStatement(), 0, idNewConcept, 
+                    selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser()+"");
 
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), idNewConcept, selectedTheso.getSelectedLang());
+            
+            candidatService.saveIntitule(connect, candidatSelected.getNomPref(), selectedTheso.getCurrentIdTheso(), 
+                    selectedTheso.getSelectedLang(), idNewConcept);
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
-                // update nomPRef
+                candidatService.updateIntitule(connect, candidatSelected.getNomPref(), selectedTheso.getCurrentIdTheso(),
+                        selectedTheso.getSelectedLang(), candidatSelected.getIdConcepte()+"");
             }
         }
         
         //update domaine
-        
         //update terme générique
-        
         //update terme associés
-        
         //update employé pour 
         
         //update défénition
+        candidatService.saveNote(connect, initialCandidat == null ? "" : initialCandidat.getDefenition(), 
+                candidatSelected.getDefenition(), candidatSelected, 
+                selectedTheso.getSelectedLang(), "definition");
         
         //update note
-        
+        candidatService.saveNote(connect, initialCandidat == null ? "" : initialCandidat.getNoteApplication(), 
+                candidatSelected.getNoteApplication(), candidatSelected, 
+                selectedTheso.getSelectedLang(), "note");
         //update traduction
-        
         //corpus lié
-
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le candidat a bien été ajouté");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", 
+                "Le candidat a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        
+
         setIsListCandidatsActivate(true);
 
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("candidatForm");
-        }
+        pf.ajax().update("messageIndex");
+        pf.ajax().update("candidatForm");
 
     }
 
@@ -259,7 +263,7 @@ public class CandidatBean implements Serializable {
     public void setCurrentUser(CurrentUser currentUser) {
         this.currentUser = currentUser;
     }
-    
+
     public void initialNewCandidat() {
         setIsNewCandidatActivate(true);
         candidatSelected = new CandidatDto();

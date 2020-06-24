@@ -44,7 +44,7 @@ public class DiscussionService implements Serializable {
         messageDto.setMsg(candidatBean.getMessage());
         
         new CandidatService().addNewMessage(connect, candidatBean.getMessage(), 
-                candidatBean.getCurrentUser().getNodeUser().getIdUser(), 
+                candidatBean.getCurrentUser().getNodeUser().getIdUser()+"", 
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());
         

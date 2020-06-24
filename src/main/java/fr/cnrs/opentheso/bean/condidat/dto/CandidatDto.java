@@ -11,9 +11,8 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class CandidatDto implements Serializable {
     
-    private Integer idTerm;
-
-    private Integer idConcepte;
+    private String idTerm;
+    private String idConcepte;
     private String idThesaurus;
     
     private String nomPref;
@@ -155,19 +154,19 @@ public class CandidatDto implements Serializable {
         this.nbrParticipant = nbrParticipant;
     }
 
-    public Integer getIdTerm() {
+    public String getIdTerm() {
         return idTerm;
     }
 
-    public void setIdTerm(Integer idTerm) {
+    public void setIdTerm(String idTerm) {
         this.idTerm = idTerm;
     }
 
-    public Integer getIdConcepte() {
+    public String getIdConcepte() {
         return idConcepte;
     }
 
-    public void setIdConcepte(Integer idConcepte) {
+    public void setIdConcepte(String idConcepte) {
         this.idConcepte = idConcepte;
     }
 
