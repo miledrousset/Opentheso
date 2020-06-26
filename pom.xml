@@ -34,26 +34,53 @@
       
         
         
-        <!-- pour le webservices-->
-        <dependency>
+        <!-- pour le webservices  -->
+<!--        <dependency>
             <groupId>org.glassfish.jersey.bundles</groupId>
             <artifactId>jaxrs-ri</artifactId>
             <version>2.29.1</version>
         </dependency> 
+  -->      
+        
+        
+        <!-- ne marche pas au delà de cette version 2.25 pour java 8, pour java11, il faut utiliser les verisons plus récentes-->
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.25.1</version>
+        </dependency>
+        
         
         <!-- Pour le webservices de ARK de la MOM-->
+        <!-- dépendance à supprimer, car incompatible avec la vesrion officielle de glassfish.jersey -->
+        <!--
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>1.19.4</version>
             <type>jar</type>
         </dependency>
+        -->
+       <!--
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>1.19.4</version>
-            <type>jar</type>
+            <groupId>org.glassfish.jersey.bundles</groupId>
+            <artifactId>jaxrs-ri</artifactId>
+            <version>2.25.1</version>
+            <scope>provided</scope>
         </dependency>
+        -->
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         <!-- BDD postgresql -->
@@ -208,6 +235,24 @@
             <artifactId>junit</artifactId>
             <groupId>junit</groupId>
             <version>4.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <scope>test</scope>
+            <version>2.44.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opera</groupId>
+            <artifactId>operadriver</artifactId>
+            <scope>test</scope>
+            <version>1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-remote-driver</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

@@ -8,7 +8,7 @@
     <h:panelGroup id="conceptView" rendered="#{conceptView.nodeConcept != null}" styleClass="textOpentheso">    
         <!-- Actions sur le concept -->
         <b:row id="idConceptViewActions" rendered="#{(currentUser.nodeUser != null)}" >           
-            <b:column span="1" offset="11">
+            <b:column span="1" offset="11" colXs="2" offset-xs="10">
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and 
                                         (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             icon-awesome="fa-plus-circle" icon-size="l"  value=""
@@ -49,13 +49,23 @@
                                       oncomplete="PF('deleteConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>   
+                    <b:navLink/>
+                    <b:navCommandLink value="Importer une liste des concepts"
+                                      tooltip="Importer une liste de concepts spécifiques au format tabulé sous #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
+                                      actionListener="#{editConcept.infosDelete()}"
+                                      update="idListImportCsv listImportCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('listImportCsv').show();"
+                                      style="font-size: 12px; ">
+                    </b:navCommandLink>                     
                 </b:dropMenu>        
             </b:column>
 
         </b:row> 
         <ui:include src="/dialog/dragAndDrop/dragAndDrop.xhtml" />
         <ui:include src="/dialog/dragAndDrop/cutAndPaste.xhtml" />
-        <ui:include src="/dialog/concept/deleteConcept.xhtml" />        
+        <ui:include src="/dialog/concept/deleteConcept.xhtml" />   
+        <ui:include src="/dialog/import/listImportCsv.xhtml" />        
 
 
         <!-- Fil d'ariane -->

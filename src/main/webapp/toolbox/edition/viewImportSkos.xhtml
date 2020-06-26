@@ -75,6 +75,50 @@
         <p:spacer/>
         
         <h:panelGroup id="skosLoad">
+            <!-- choix du format de sortie Skos, Json, JsonLd, Turtle -->
+            <b:row style="margin-left: 30px; margin-right: 30px; ">
+                <b:column span="1" >
+                    <h:outputText value="Format: " />
+                </b:column>
+                <b:column span="2">
+                    <p:selectOneMenu id="idTypeImportSingle" value="#{importFileBean.typeImport}"
+                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                        <f:selectItem itemLabel="Skos" itemValue="0" />
+                        <f:selectItem itemLabel="Json-ld" itemValue="1" />
+                        <f:selectItem itemLabel="Turtle" itemValue="2" />
+                        <f:selectItem itemLabel="Json" itemValue="2" />
+                        <p:ajax event="change" listener="#{importFileBean.stateChangeListener}" />
+                    </p:selectOneMenu> 
+                </b:column>
+            </b:row>            
+            
+            <!-- dans quel projet ajouter le thesaurus -->
+            <b:row style="margin-left: 30px; margin-right: 30px; ">
+                <b:column span="1">
+                    <h:outputText value="Projet:" title="A quel projet ajouter le thésaurus à importer"/>
+                </b:column>
+                <b:column rendered="#{currentUser.nodeUser.isSuperAdmin}" span="2">
+                    <p:selectOneMenu id="idGroupSelected11" 
+                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;"
+                                     value="#{importFileBean.selectedUserProject}" >
+                        <f:selectItem  itemLabel="..." itemValue="" />
+                        <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
+                                       itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                    </p:selectOneMenu>
+                </b:column>
+                <b:column rendered="#{!currentUser.nodeUser.isSuperAdmin}" span="2">
+                    <p:selectOneMenu id="idGroupSelected12"
+                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;"
+                                     value="#{importFileBean.selectedUserProject}" >
+                        <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
+                                       itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                    </p:selectOneMenu>
+                </b:column>            
+            </b:row>                     
+            
             <!-- Choix du fichier -->   
             <b:row style="margin-left: 30px; margin-right: 30px; ">
                 <b:column span="12" > 
@@ -103,49 +147,9 @@
         
         <p:spacer/>
         
-        <!-- choix du format de sortie Skos, Json, JsonLd, Turtle -->
-        <b:row>
-            <b:column span="1" offset="8">
-                <h:outputText value="Format: " />
-            </b:column>
-            <b:column span="2">
-                <p:selectOneMenu id="idTypeImportSingle" value="#{importFileBean.typeImport}"
-                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;">
-                    <f:selectItem itemLabel="Skos" itemValue="0" />
-                    <f:selectItem itemLabel="Json-ld" itemValue="1" />
-                    <f:selectItem itemLabel="Turtle" itemValue="2" />
-                    <f:selectItem itemLabel="Json" itemValue="2" />
-                </p:selectOneMenu> 
-            </b:column>
-        </b:row>
 
-        <!-- dans quel projet ajouter le thesaurus -->
-        <b:row style="margin-top: 5px;">
-            <b:column span="1" offset="8">
-                <h:outputText value="Projet:" title="A quel projet ajouter le thésaurus à importer"/>
-            </b:column>
-            <b:column rendered="#{currentUser.nodeUser.isSuperAdmin}" span="2">
-                <p:selectOneMenu id="idGroupSelected11" 
-                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;"
-                                 value="#{importFileBean.selectedUserProject}" >
-                    <f:selectItem  itemLabel="..." itemValue="" />
-                    <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
-                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
-                </p:selectOneMenu>
-            </b:column>
-            <b:column rendered="#{!currentUser.nodeUser.isSuperAdmin}" span="2">
-                <p:selectOneMenu id="idGroupSelected12"
-                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;"
-                                 value="#{importFileBean.selectedUserProject}" >
-                    <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
-                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
-                </p:selectOneMenu>
-            </b:column>            
-        </b:row>           
-        <p:spacer/>    
+
+  
 
         <h:panelGroup id="importButton">  
             <b:row >

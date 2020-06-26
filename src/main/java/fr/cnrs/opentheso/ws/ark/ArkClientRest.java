@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.ws.ark;
 
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
+//import com.sun.jersey.api.client.WebResource;
+//import com.sun.jersey.api.client.Client;
+//import com.sun.jersey.api.client.ClientResponse;
 
 
 import java.io.StringReader;
@@ -12,12 +12,17 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.primefaces.shaded.json.JSONObject;
 
 
 public final class ArkClientRest {
     private Properties propertiesArk;  
-    private Client client;
+//    private Client client;
     
     private String idArk;
     private String idHandle;
@@ -55,7 +60,50 @@ public final class ArkClientRest {
      * #MR
      */
     public boolean login() {
-        client = Client.create();
+        return true;
+        /*
+        Client client= ClientBuilder.newClient();
+        
+        WebTarget target = client
+                .target(propertiesArk.getProperty("serverHost"))
+                .path("rest/login/username=" +
+                        propertiesArk.getProperty("user") + 
+                        "&password=" +
+                        propertiesArk.getProperty("password") +
+                        "&naan=" + 
+                        propertiesArk.getProperty("idNaan"));     
+
+        Response response = target.request().get(String.class);        
+        //String response = target.request().get(String.class);
+        
+        
+        String user = "demo";
+        String pass = "demo2";
+        String naan = "66666";
+        String urlArk = "http://localhost:8082/Arkeo/";        
+        
+        String url = urlArk +
+                        "rest/login/username=" +
+                        user + 
+                        "&password=" +
+                        pass +
+                        "&naan=" + 
+                        naan;
+        
+        String url2 =  "rest/login/username=" +
+                        user + 
+                        "&password=" +
+                        pass +
+                        "&naan=" + 
+                        naan;
+        
+        WebTarget target = client.target(urlArk).path(url2);
+        
+        String response = target.request().get(String.class);
+        return response;    
+        
+        
+/*        client = Client.create();
         WebResource webResource = client
                 .resource(
                         propertiesArk.getProperty("serverHost") +
@@ -72,13 +120,13 @@ public final class ArkClientRest {
         if (response.getStatus() != 200) {
            /* throw new RuntimeException("Failed : HTTP error code : "
                     + response.getStatus());*/
-            message = "Erreur de login";
+/*            message = "Erreur de login";
             return false;
         }
   //      String tokenString = response.getEntity(String.class);
         loginJson = new JSONObject(response.getEntity(String.class));
 //        getTokenFromString(tokenString);
-        return true;
+        return true;*/
     }       
     
     
@@ -106,6 +154,9 @@ public final class ArkClientRest {
      * @return 
      */
     public boolean addArk2(String arkString) {
+        return true;
+        /*
+        
         jsonArk = null;
         
         // il faut se connecter avant 
@@ -124,7 +175,7 @@ public final class ArkClientRest {
             return true;
         }
         message = "Erreur lors de l'ajout d'un Ark";
-        return false;
+        return false;*/
     }     
     
  ////////////////////////////////////////////////////////////////////
@@ -169,6 +220,7 @@ public final class ArkClientRest {
      * @return 
      */
     public boolean isHandleExist(String idHandle) {
+        return true;
 
     //    String prefixe = "20.500.11859"; // prefixe MOM
     //    String idHandle = "66666.crt0eTJm32hksG";
@@ -186,7 +238,7 @@ public final class ArkClientRest {
 
     //    String internalId = "66666.crt2hbt7fWNBn";
     //    Client client = Client.create();
-
+/*
         String output;
         client = Client.create();        
         WebResource webResource = client
@@ -206,7 +258,7 @@ public final class ArkClientRest {
             return true;
             //System.err.println("existe");
         }
-        return false;
+        return false;*/
     }    
     
     /**
@@ -215,6 +267,8 @@ public final class ArkClientRest {
      * @return 
      */
     public boolean isArkExist(String ark) {
+        return true;
+        /*
         client = Client.create();
         String idArk1 = ark.substring(ark.indexOf("/")+1);
         String naan = ark.substring(0, ark.indexOf("/"));
@@ -233,7 +287,7 @@ public final class ArkClientRest {
         }
         String retour = response.getEntity(String.class);
 //        System.out.println(jsonArk);
-        return isExist(retour);
+        return isExist(retour);*/
     }
     
     /**
@@ -242,6 +296,8 @@ public final class ArkClientRest {
      * @return 
      */
     public boolean getArk(String ark) {
+       return true;
+       /*
         client = Client.create();
         String idArk1 = ark.substring(ark.indexOf("/")+1);
         String naan = ark.substring(0, ark.indexOf("/"));
@@ -259,7 +315,7 @@ public final class ArkClientRest {
         }
         jsonArk = response.getEntity(String.class);
         setForGet();
-        return true;
+        return true;*/
     }     
     
     private boolean isExist(String jsonResponse){
@@ -283,6 +339,8 @@ public final class ArkClientRest {
      * @return 
      */
     public boolean addArk(String arkString) {
+     return true;
+     /*
         jsonArk = null;
         
         // il faut se connecter avant 
@@ -301,7 +359,7 @@ public final class ArkClientRest {
             return true;
         }
         message = "Erreur lors de l'ajout d'un Ark";
-        return false;
+        return false;*/
     } 
     
     /**
@@ -310,6 +368,8 @@ public final class ArkClientRest {
      * @return 
      */
     public boolean deleteHandle(String arkString) {
+        return true;
+        /*
         jsonArk = null;
         
         // il faut se connecter avant 
@@ -328,7 +388,7 @@ public final class ArkClientRest {
             return true;
         }
         message = "Erreur lors de de la suppression de l'id Handle";
-        return false;
+        return false;*/
     }     
     
     /**
@@ -337,6 +397,8 @@ public final class ArkClientRest {
      * @return 
      */
     public boolean updateArk(String arkString) {
+        return true;
+        /*
         jsonArk = null;
         
         // il faut se connecter avant
@@ -354,7 +416,7 @@ public final class ArkClientRest {
             return false;
         }
         jsonArk = response.getEntity(String.class);
-        return setForUpdate();
+        return setForUpdate();*/
     }    
     
     

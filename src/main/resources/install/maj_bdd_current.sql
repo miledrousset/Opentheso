@@ -8,8 +8,8 @@
 --
 --  !!!!!!! Attention !!!!!!!!! 
 
--- version=20.4
--- date : 14/04/2020
+-- version=20.06
+-- date : 22/06/2020
 --
 -- n'oubliez pas de définir le role suivant votre installation 
 --

@@ -6,10 +6,10 @@ package ark;
  * and open the template in the editor.
  */
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.Client;
+//import com.sun.jersey.api.client.Client;
+//import com.sun.jersey.api.client.ClientResponse;
+//import com.sun.jersey.api.client.WebResource;
+//import com.sun.jersey.api.client.Client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +27,13 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -161,7 +168,7 @@ public class ArkRestTest {
     
     private String getTokenFromString(String tokenString){
         String token;
-        try (JsonReader jsonReader = Json.createReader(new StringReader(tokenString))) {
+        try (javax.json.JsonReader jsonReader = javax.json.Json.createReader(new StringReader(tokenString))) {
             JsonObject jo = jsonReader.readObject();
             token = jo.getString("token").trim();
         } catch (Exception e) {
@@ -177,13 +184,40 @@ public class ArkRestTest {
      * #MR
      */
     public String login() {
-        Client client= Client.create();
+        Client client= ClientBuilder.newClient();
         String user = "demo";
         String pass = "demo2";
         String naan = "66666";
-        String urlArk = "http://localhost:8082/Arkeo/";        
+        String url = "http://localhost:8082/Arkeo/rest/login/";        
+        
+      
+        String path =  "username=" +
+                        user + 
+                        "&password=" +
+                        pass +
+                        "&naan=" + 
+                        naan;
+        
+        WebTarget webTarget = client.target(url).path(path);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);        
+        Response response = invocationBuilder.get();        
+        if(response.getStatus() != 200) {
+             return null;
+        }
+        String value = response.readEntity(String.class);
+        
+    //    String response = target.request().get(String.class);
+        return value;
+           /* throw new RuntimeException("Failed : HTTP error code : "
+                    + response.getStatus());*/
 
-        WebResource webResource = client
+     //       return null;
+    //    }        
+        
+ //       Response response = target.request().put(Entity.json(url2));        
+  //      String entity = response.getEntity(String.class);
+   //     return entity;
+  /*      WebResource webResource = client
                 .resource(
                         urlArk +
                         "rest/login/username=" +
@@ -200,9 +234,9 @@ public class ArkRestTest {
            /* throw new RuntimeException("Failed : HTTP error code : "
                     + response.getStatus());*/
 
-            return null;
-        }
-        return response.getEntity(String.class);
+     //       return null;
+    //    }
+  //      return response.getEntity(String.class);
 //        loginJson = new JSONObject(response.getEntity(String.class));
 //        return true;
     } 
@@ -213,7 +247,7 @@ public class ArkRestTest {
         String token = getTokenFromString(tokenString);
         if(token == null) return;
       
-        
+  /*      
         
         String output;
         String xmlRecord = "";
@@ -236,7 +270,7 @@ public class ArkRestTest {
            // setIdArkHandle();
            // return true;
         }
-   
+   */
     }    
     
 }

@@ -177,16 +177,16 @@ public class SearchBean implements Serializable {
         }
         
         if(!withId && !withNote && !exactMatch) {
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchExactMatch(
+            ArrayList<String> nodeSearchMinis = searchHelper.searchFullTextId(
                     connect.getPoolConnexion(),
                     searchValue, selectedTheso.getCurrentLang(),
                     selectedTheso.getCurrentIdTheso()
                     );            
-            for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
+            for (String nodeSearchMini : nodeSearchMinis) {
                 nodeConceptSearchs.add(
                         conceptHelper.getConceptForSearch(
                         connect.getPoolConnexion(),
-                        nodeSearchMini.getIdConcept(),
+                        nodeSearchMini,
                         selectedTheso.getCurrentIdTheso(),
                         selectedTheso.getCurrentLang())
                 );

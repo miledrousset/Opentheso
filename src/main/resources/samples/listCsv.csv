@@ -1,0 +1,5 @@
+URI,skos:prefLabel@fr,skos:prefLabel@en,skos:altLabel@fr,skos:altLabel@en,skos:definition@fr,skos:broader
+100,France,France_en,l'Hexagone##partie de l'Europe,Pays de la liberté,,
+101,Lyon,Lyon_en,Lugdunum,,Ville de la gastronomie,100
+102,Vaise,Vaise_en,9 ème,Quartier du 69009,,101
+103,Paris,Paris_en,,La plus belle ville au monde,,100
