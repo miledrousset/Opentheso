@@ -1,19 +1,22 @@
 package fr.cnrs.opentheso.bean.condidat;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bean.condidat.dao.CondidatDao;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -40,9 +43,6 @@ public class CandidatBean implements Serializable {
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
 
-    @Inject
-    private ConceptView conceptBean;
-
     private CandidatService candidatService;
 
     private boolean isListCandidatsActivate;
@@ -54,6 +54,8 @@ public class CandidatBean implements Serializable {
 
     private CandidatDto candidatSelected, initialCandidat;
     private List<CandidatDto> candidatList;
+    
+    private List<DomaineDto> domaines;
 
     @PostConstruct
     public void init() {
@@ -63,7 +65,10 @@ public class CandidatBean implements Serializable {
         isNewCandidatActivate = false;
 
         selectedTheso.getSelectedIdTheso();
-        candidatList = candidatService.getAllCandidats(connect);
+        candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso());
+        domaines = new ArrayList<>();
+        domaines.add(new DomaineDto(0, "Selectionnez un domaine"));
+        domaines.addAll(candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso()));
     }
 
     public void selectMyCandidats() {
@@ -72,7 +77,7 @@ public class CandidatBean implements Serializable {
                     .filter(candidat -> candidat.getNomPref().equalsIgnoreCase("Firas GABSI"))
                     .collect(Collectors.toList());
         } else {
-            candidatList = candidatService.getAllCandidats(connect);
+            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso());
         }
     }
 
@@ -82,14 +87,14 @@ public class CandidatBean implements Serializable {
                     .filter(candidat -> candidat.getNomPref().contains(searchValue))
                     .collect(Collectors.toList());
         } else {
-            candidatList = candidatService.getAllCandidats(connect);
+            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso());
         }
     }
 
     public void showCandidatSelected(CandidatDto candidatDto) {
         candidatSelected = candidatDto;
         candidatService.getCandidatDetails(connect, candidatSelected, currentUser.getUsername());
-        initialCandidat = candidatSelected;
+        initialCandidat = new CandidatDto(candidatSelected);
         setIsNewCandidatActivate(true);
     }
 
@@ -119,18 +124,20 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        if (roleOnThesoBean.getNodePreference() == null) {
+        if (roleOnThesoBean.getNodePreference()
+                == null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-
-        TermHelper termHelper = new TermHelper();
-
         if (initialCandidat == null) {
+
+            ConceptHelper conceptHelper = new ConceptHelper();
+            TermHelper termHelper = new TermHelper();
+
+            conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+
             // en cas d'un nouveau candidat
             // verification dans les prefLabels
             if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
@@ -148,44 +155,66 @@ public class CandidatBean implements Serializable {
             }
 
             Concept concept = new Concept();
-
             concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
             concept.setTopConcept(true);
-            concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+            concept.setLang(selectedTheso.getSelectedLang());
+            concept.setIdUser(currentUser.getNodeUser().getIdUser());
             concept.setUserName(currentUser.getUsername());
-            
-            //String idNewConcept = conceptHelper.addConcept(connect.getPoolConnexion(), null, null, concept, terme, currentUser.getNodeUser().getIdUser());conn = ds.getConnection();
-            String idNewConcept = conceptHelper.addConceptInTable(
-                    connect.getPoolConnexion().getConnection(), 
-                    concept, currentUser.getNodeUser().getIdUser());
-            
+            concept.setStatus("D");
+
+            Term terme = new Term();
+            terme.setId_thesaurus(selectedTheso.getCurrentIdTheso());
+            terme.setLang(selectedTheso.getSelectedLang());
+            terme.setLexical_value(candidatSelected.getNomPref().trim());
+            terme.setStatus("D");
+
+            String idNewConcept = candidatService.saveNewCondidat(connect, concept,
+                    terme, candidatSelected, conceptHelper);
+
             if (idNewConcept == null) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
-            
-            new CondidatDao().setStatutForCandidat(connect, 
-                    connect.getPoolConnexion().getConnection().createStatement(), 0, idNewConcept, 
-                    selectedTheso.getCurrentIdTheso(), currentUser.getNodeUser().getIdUser()+"");
 
-            conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), idNewConcept, selectedTheso.getSelectedLang());
-            
-            candidatService.saveIntitule(connect, candidatSelected.getNomPref(), selectedTheso.getCurrentIdTheso(), 
-                    selectedTheso.getSelectedLang(), idNewConcept);
+            if (conceptHelper.getNodePreference() != null) {
+                ArrayList<String> idConcepts = new ArrayList<>();
+                // création de l'identifiant Handle
+                if (conceptHelper.getNodePreference().isUseHandle()) {
+                    if (!conceptHelper.addIdHandle(connect.getPoolConnexion().getConnection(), idNewConcept, concept.getIdThesaurus())) {
+                        connect.getPoolConnexion().getConnection().rollback();
+                        connect.getPoolConnexion().close();
+                        Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Handle a échouée");
+                        return;
+                    }
+                }
+
+                if (conceptHelper.getNodePreference().isUseArk()) {
+                    idConcepts.add(idNewConcept);
+                    if (!conceptHelper.generateArkId(connect.getPoolConnexion(), concept.getIdThesaurus(), idConcepts)) {
+                        connect.getPoolConnexion().getConnection().rollback();
+                        connect.getPoolConnexion().close();
+                        message = message + "La création Ark a échouée";
+                        Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Ark a échouée");
+                    }
+                }
+            }
+
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
                 candidatService.updateIntitule(connect, candidatSelected.getNomPref(), selectedTheso.getCurrentIdTheso(),
-                        selectedTheso.getSelectedLang(), candidatSelected.getIdConcepte()+"");
+                        selectedTheso.getSelectedLang(), candidatSelected.getIdConcepte() + "", candidatSelected.getIdTerm());
             }
         }
+
+        candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat);
+
         
-        //update domaine
         //update terme générique
         //update terme associés
         //update employé pour 
-        
         //update défénition
+        /*
         candidatService.saveNote(connect, initialCandidat == null ? "" : initialCandidat.getDefenition(), 
                 candidatSelected.getDefenition(), candidatSelected, 
                 selectedTheso.getSelectedLang(), "definition");
@@ -196,12 +225,16 @@ public class CandidatBean implements Serializable {
                 selectedTheso.getSelectedLang(), "note");
         //update traduction
         //corpus lié
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", 
+
+         */
+
+        candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso());
+
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info",
                 "Le candidat a bien été ajouté");
+
         FacesContext.getCurrentInstance().addMessage(null, msg);
-
         setIsListCandidatsActivate(true);
-
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
         pf.ajax().update("candidatForm");
@@ -270,4 +303,8 @@ public class CandidatBean implements Serializable {
         initialCandidat = null;
     }
 
+    public List<DomaineDto> getDomaines() {
+        return domaines;
+    }
+    
 }

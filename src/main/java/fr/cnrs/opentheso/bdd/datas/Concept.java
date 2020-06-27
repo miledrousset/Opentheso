@@ -15,6 +15,8 @@ public class Concept {
     private boolean topConcept;
     private String idGroup;
     private String userName;
+    private int idUser;
+    private String lang;
 
     public Concept(String idConcept, String status, String notation, String idThesaurus, String idGroup,
             boolean topConcept) {
@@ -120,4 +122,19 @@ public class Concept {
         this.idHandle = idHandle;
     }
 
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
 }

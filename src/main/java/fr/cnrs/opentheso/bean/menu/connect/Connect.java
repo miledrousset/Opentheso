@@ -97,6 +97,9 @@ public class Connect {
     }
     
     public HikariDataSource getPoolConnexion() {
+        if (poolConnexion.isClosed()) {
+            openConnexionPool();
+        }
         return poolConnexion;
     }    
    

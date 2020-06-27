@@ -2,30 +2,31 @@ package fr.cnrs.opentheso.bean.condidat.dao;
 
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import java.sql.ResultSet;
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-public class CondidatDao {
 
-    private final Log LOG = LogFactory.getLog(CondidatDao.class);
-    
-    private ResultSet resultSet;
+public class CondidatDao extends BasicDao {
     
 
-    public List<CandidatDto> searchAllCondidats(Statement stmt) throws SQLException {
+    public List<CandidatDto> searchAllCondidats(Statement stmt, String idThesaurus) throws SQLException {
 
         List<CandidatDto> temps = new ArrayList<>();
 
-        stmt.executeQuery("SELECT nomPreTer.id_term, nomPreTer.lexical_value, con.id_concept, con.id_thesaurus, con.created "
+        String request = "SELECT nomPreTer.id_term, nomPreTer.lexical_value, con.id_concept, con.id_thesaurus, con.created "
                 + "FROM non_preferred_term nomPreTer, preferred_term preTer, concept con "
                 + "WHERE nomPreTer.id_term = preTer.id_term "
-                + "AND con.id_concept = preTer.id_concept "
-                + "ORDER BY nomPreTer.lexical_value ASC");
+                + "AND con.id_concept = preTer.id_concept ";
+
+        if (!StringUtils.isEmpty(idThesaurus)) {
+            request +=  "AND con.id_thesaurus = '"+idThesaurus+"'";
+        }
+
+        stmt.executeQuery(request + "ORDER BY nomPreTer.lexical_value ASC");
 
         resultSet = stmt.getResultSet();
         while (resultSet.next()) {
@@ -37,7 +38,7 @@ public class CondidatDao {
             candidatDto.setCreationDate(resultSet.getDate("created"));
             temps.add(candidatDto);
         }
-        resultSet.close();;
+        resultSet.close();
         return temps;
     }
 
@@ -67,19 +68,26 @@ public class CondidatDao {
         resultSet.close();
         return nbrParticipant;
     }
-
-    public void setStatutForCandidat(Connect connect, Statement stmt, int status, String idConcepte, 
-            String idThesaurus, String idUser) {
-        try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeUpdate("INSERT INTO candidat_status(id_concept, id_status, "
-                    + "date, id_user, id_thesaurus) VALUES ("+idConcepte+", "
-                    +status+", new(), "+idUser+", "+idThesaurus+")");
-            stmt.close();
-            connect.getPoolConnexion().getConnection().close();
-        } catch (SQLException e) {
-            LOG.error(e);
+    
+    public int searchDemandeCount(Statement stmt, String idCouncepte, String idThesaurus) throws SQLException {
+        int nbrDemande = 0;
+        stmt.executeQuery("SELECT count(*) FROM proposition WHERE id_concept = '"+idCouncepte
+                +"' AND id_thesaurus = '"+idThesaurus+"';");
+        resultSet = stmt.getResultSet();
+        while (resultSet.next()) {
+            nbrDemande = resultSet.getInt("count");
         }
+        resultSet.close();
+        return nbrDemande;
     }
 
+    public void setStatutForCandidat(Connect connect, int status, String idConcepte,
+            String idThesaurus, String idUser) throws SQLException {
+        
+        stmt = connect.getPoolConnexion().getConnection().createStatement();
+        executInsertRequest(stmt,
+                "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus) " +
+                        "VALUES ("+idConcepte+", "+status+", now(), "+idUser+", '"+idThesaurus+"')");
+        stmt.close();
+    }
 }

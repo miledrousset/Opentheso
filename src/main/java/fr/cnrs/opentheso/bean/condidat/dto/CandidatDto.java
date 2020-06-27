@@ -10,42 +10,56 @@ import javax.faces.bean.SessionScoped;
 @ManagedBean
 @SessionScoped
 public class CandidatDto implements Serializable {
-    
+
     private String idTerm;
     private String idConcepte;
     private String idThesaurus;
-    
+
     private String nomPref;
     private Date creationDate;
     private String statut;
     private int nbrDemande;
     private int nbrParticipant;
- 
-    private String domaine;
+
+    private int domaine_id;
     private String termeGenerique;
     private String defenition;
     private String noteApplication;
-    
+
     private List<String> termesAssocies;
     private List<String> employePour;
-    
+
     private List<TraductionDto> traductions;
     private List<CorpusDto> corpus;
     private List<MessageDto> messages;
-    
-    
+
     public CandidatDto() {
         corpus = new ArrayList<>();
         messages = new ArrayList<>();
         traductions = new ArrayList<>();
     }
 
-    public String getDomaine() {
-        return domaine;
+    public CandidatDto(CandidatDto source) {
+        this.idTerm = source.getIdTerm();
+        this.idConcepte = source.getIdConcepte();
+        this.idThesaurus = source.getIdThesaurus();
+        this.nomPref = source.getNomPref();
+        this.domaine_id = source.getDomaine_id();
+        this.termeGenerique = source.getTermeGenerique();
+        this.defenition = source.getDefenition();
+        this.noteApplication = source.getNoteApplication();
+        this.termesAssocies = source.getTermesAssocies();
+        this.corpus = source.getCorpus();
+        this.messages = source.getMessages();
+        this.traductions = source.getTraductions();
     }
 
-    public void setDomaine(String domaine) {
-        this.domaine = domaine;
+    public int getDomaine_id() {
+        return domaine_id;
+    }
+
+    public void setDomaine_id(int domaine_id) {
+        this.domaine_id = domaine_id;
     }
 
     public String getTermeGenerique() {
@@ -111,8 +125,6 @@ public class CandidatDto implements Serializable {
     public void setMessages(List<MessageDto> messages) {
         this.messages = messages;
     }
-    
-    
 
     public String getNomPref() {
         return nomPref;
@@ -177,5 +189,5 @@ public class CandidatDto implements Serializable {
     public void setIdThesaurus(String idThesaurus) {
         this.idThesaurus = idThesaurus;
     }
-   
+
 }

@@ -2,7 +2,8 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <b:row>
         <b:column>
@@ -16,15 +17,18 @@
         </b:column>
         <b:column>
             <b:inputText value="#{candidatBean.candidatSelected.nomPref}"
-                         style="width: 230px" placeholder="ex: Aliment" />
+                         style="width: 230px; font-size: 12px; background: white; border-color: #43B572" placeholder="ex: Aliment" />
         </b:column>
 
         <b:column>
             <h:outputText value="Domaine"/>
         </b:column>
         <b:column>
-            <b:inputText value="#{candidatBean.candidatSelected.domaine}"
-                         style="width: 230px" placeholder="ex: Sujet" />
+            <b:selectOneMenu id="domaine" value="#{candidatBean.candidatSelected.domaine_id}"
+                             style="width: 230px; font-size: 12px; background: white; border-color: #43B572">
+                <f:selectItems value="#{candidatBean.domaines}" var="domaine"
+                               itemLabel="#{domaine.name}" itemValue="#{domaine.id}"/>
+            </b:selectOneMenu>
         </b:column>
 
         <b:column>
@@ -233,7 +237,7 @@
 
         <b:row style="margin-top: 20px; margin-left: 10px;">
             <b:commandButton value="Enregistrer" style="background: #43B572; color: white; margin-left: 5px"
-                      look="primary" size="sm" action="#{candidatBean.saveConcept()}" />
+                             look="primary" size="sm" actionListener="#{candidatBean.saveConcept()}" />
         </b:row>
 
     </b:row> 

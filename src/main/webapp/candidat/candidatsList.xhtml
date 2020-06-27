@@ -8,57 +8,70 @@
     <b:row>
         <b:column>
             <b:commandButton value="Ajouter un condidat" size="sm" class="btn btn-success"
-                             style="font-size: 12px; color: white; background: #43B572; 
-                             border: #43B572; padding-left: 20px; padding-right: 20px"
-                             action="#{candidatBean.initialNewCandidat()}"
-                             update="candidatForm"/>
+                             style="font-size: 13px; color: white; background: #43B572;
+                             border: #43B572; padding-left: 20px; padding-right: 20px" ajax="true"
+                             action="#{candidatBean.initialNewCandidat()}" update="candidatForm"/>
         </b:column>
     </b:row>
 
-    <b:row>
+    <b:row style="margin-top: 20px">
         <b:column medium-screen="6">
+            <b:selectBooleanCheckbox caption="Afficher mes candidats" value="#{candidatBean.myCandidatsSelected}"
+                                     onclick="ajax:candidatBean.selectMyCandidats()"
+                                     update="candidatForm" style="font-size: 11px;"/>
         </b:column>
         <b:column medium-screen="6">
-            <h:outputText class="col-md-6 control-label" 
-                          style="font-size: 12px; height: 34px; margin-top: 7px; 
-                          text-align: right; vertical-align: central" 
-                          value="Rechercher par terme ou auteur "/>
-
-            <b:inputText>
+            <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
+                          text-align: right; vertical-align: central" value="Rechercher par terme ou auteur "/>
+            <b:inputText value="#{candidatBean.searchValue}">
                 <f:facet name="append">
-                    <b:commandButton value="#{candidatBean.searchValue}" look="success" ajax="true" 
-                                     iconAwesome="search" icon-align="right" update="candidtatsList"
-                                     onclick="#{candidatBean.searchByTermeAndAuteur()}"/>
+                    <b:commandButton look="success" iconAwesome="search" icon-align="right" 
+                                     update="candidatForm" actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
                 </f:facet>
             </b:inputText>
         </b:column>
     </b:row>
 
-    <b:row>
+    <b:row style="margin-top: 20px">
         <b:column>
-            <p:dataTable id="candidtatsList"
-                         value="#{candidatBean.candidatList}" var="candidat"
-                         rowStyleClass="textOpenthesoColorOrange"
-                         scrollable="true" scrollHeight="500"
-                         style="font-size: 12px; vertical-align: central; padding-top: 5px; text-align: center">
-
-                <p:column headerText="Candidat" style="width: 45%; background-color: #{viewEditionBean.getAlternateColor(true)}; text-align: left">
-                    <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572" 
-                                      action="#{candidatBean.showCandidatSelected(candidat)}" />
-                </p:column>
-                <p:column headerText="Date de création" style="width: 15%; background-color: #{viewEditionBean.getAlternateColor(false)}">
-                    <h:outputText value="#{candidat.creationDate}" />
-                </p:column>
-                <p:column headerText="Etat" style="width: 20%; background-color: #{viewEditionBean.getAlternateColor(false)}">
-                    <h:outputText value="#{candidat.statut}" />
-                </p:column>
-                <p:column headerText="Demande" style="width: 10%; background-color: #{viewEditionBean.getAlternateColor(false)}">
-                    <h:outputText value="#{candidat.nbrDemande}" />
-                </p:column>
-                <p:column headerText="Participant" style="width: 10%; background-color: #{viewEditionBean.getAlternateColor(false)}">
-                    <h:outputText value="#{candidat.nbrParticipant}" />
-                </p:column>
-            </p:dataTable>
+            <b:row style="font-size: 12px; color: #666666">
+                <b:column span="4">
+                    <h:outputText value="Candidat"/>
+                </b:column>
+                <b:column span="2">
+                    <h:outputText value="Date de création"/>
+                </b:column>
+                <b:column span="2">
+                    <h:outputText value="Etat"/>
+                </b:column> 
+                <b:column span="2">
+                    <h:outputText value="Demande"/>
+                </b:column>  
+                <b:column span="2">
+                    <h:outputText value="Participant"/>
+                </b:column>                          
+            </b:row>
+            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+            <ui:repeat id="candidtatsList" var="candidat" value="#{candidatBean.candidatList}">
+                <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
+                    <b:column span="4" >
+                        <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572" 
+                                          actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
+                    </b:column>
+                    <b:column span="2" >
+                        <h:outputText value="#{candidat.creationDate}" />
+                    </b:column>
+                    <b:column span="2">
+                        <h:outputText value="#{candidat.statut}" />  
+                    </b:column>
+                    <b:column span="2">
+                        <h:outputText value="#{candidat.nbrDemande}" />
+                    </b:column> 
+                    <b:column span="2">
+                        <h:outputText value="#{candidat.nbrParticipant}" />
+                    </b:column>                         
+                </b:row>   
+            </ui:repeat>
         </b:column>
     </b:row>
 

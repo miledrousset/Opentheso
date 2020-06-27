@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +37,7 @@ public class DiscussionService implements Serializable {
         participants.add("Firas GABSI");
     }
     
-    public void sendMessage () {
+    public void sendMessage () throws SQLException {
         
         MessageDto messageDto = new MessageDto();
         messageDto.setDate(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));

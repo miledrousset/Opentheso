@@ -3257,7 +3257,7 @@ public class ConceptHelper {
      * @param urlSite
      * @return
      */
-    private boolean addIdHandle(Connection conn,
+    public boolean addIdHandle(Connection conn,
             String idConcept,
             String idThesaurus) {
         if (nodePreference == null) {
