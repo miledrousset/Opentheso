@@ -21,7 +21,7 @@
                         </b:navCommandLink>
 
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
-                                   value="Candidat"  
+                                   value="#{langueBean.getMsg('candidat.titre')}"  
                                    action="#{indexSetting.setIsCandidateActive(true)}"
                                    style="color: #{indexSetting.candidateColor}"
                                    update="containerIndex"  />

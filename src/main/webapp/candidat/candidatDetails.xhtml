@@ -17,7 +17,7 @@
         </b:column>
         <b:column>
             <b:inputText value="#{candidatBean.candidatSelected.nomPref}"
-                         style="width: 230px; font-size: 12px; background: white; border-color: #43B572" placeholder="ex: Aliment" />
+                         style="width: 230px; font-size: 13px; background: white; border-color: #43B572" placeholder="ex: Aliment" />
         </b:column>
 
         <b:column>
@@ -25,7 +25,7 @@
         </b:column>
         <b:column>
             <b:selectOneMenu id="domaine" value="#{candidatBean.candidatSelected.domaine_id}"
-                             style="width: 230px; font-size: 12px; background: white; border-color: #43B572">
+                             style="width: 230px; font-size: 13px; background: white; border-color: #43B572">
                 <f:selectItems value="#{candidatBean.domaines}" var="domaine"
                                itemLabel="#{domaine.name}" itemValue="#{domaine.id}"/>
             </b:selectOneMenu>
@@ -35,16 +35,21 @@
             <h:outputText value="Terme générique"/>
         </b:column>
         <b:column>
-            <b:inputText value="#{candidatBean.candidatSelected.termeGenerique}"
-                         style="width: 230px" placeholder="ex: Nourriture, etc..."/>
+            <b:selectOneMenu value="#{candidatBean.candidatSelected.termeGenerique_id}"
+                             style="width: 230px; font-size: 13px; background: white; border-color: #43B572">
+                <f:selectItems value="#{candidatBean.allTermes}" var="candidat"
+                               itemLabel="#{candidat.nomPref}" itemValue="#{candidat.idConcepte}"/>
+            </b:selectOneMenu>
         </b:column>
 
         <b:column>
             <h:outputText value="Termes associés"/>
         </b:column>
         <b:column>
-            <p:chips placeholder="ex: ..." value="#{candidatBean.candidatSelected.termesAssocies}"
-                     style="width: 100%; margin-top: 4px" />
+            <p:selectCheckboxMenu value="#{candidatBean.candidatSelected.termesAssocies}" label="Liste des termes associés" multiple="true"
+                                  filter="true" filterMatchMode="startsWith" style="width: 100%; font-size: 13px; background: white; border-color: #43B572">
+                <f:selectItems value="#{candidatBean.allTermes}" var="candidat" itemLabel="#{candidat.nomPref}" itemValue="#{candidat.idConcepte}"/>
+            </p:selectCheckboxMenu>
         </b:column>
 
         <b:column>
@@ -52,7 +57,7 @@
         </b:column>
         <b:column>
             <p:chips value="#{candidatBean.candidatSelected.employePour}"
-                     placeholder="ex: ..." style="width: 100%; margin-top: 4px;" />
+                     placeholder="ex: ..." style="width: 100%; margin-top: 4px; width: 100%" />
         </b:column>
 
         <b:column>
@@ -60,7 +65,7 @@
         </b:column>
         <b:column>
             <b:inputTextarea value="#{candidatBean.candidatSelected.defenition}"
-                             style="width: 100%; resize: none;"/>
+                             style="width: 100%; resize: none; font-size: 13px; background: white; border-color: #43B572"/>
         </b:column>
 
         <b:column>
@@ -68,7 +73,7 @@
         </b:column>
         <b:column>
             <b:inputTextarea value="#{candidatBean.candidatSelected.noteApplication}"
-                             style="width: 100%; resize: none;"/>
+                             style="width: 100%; resize: none; font-size: 13px; background: white; border-color: #43B572"/>
         </b:column>
     </b:row>
 

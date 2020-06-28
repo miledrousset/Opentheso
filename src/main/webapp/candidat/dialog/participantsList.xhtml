@@ -11,7 +11,7 @@
             
             <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
             
-            <ui:repeat var="participant" value="#{discussionService.participants}">
+            <ui:repeat var="participant" value="#{candidatBean.candidatSelected.participants}">
                 <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                     <b:column span="4" >
                         <h:outputText value="#{participant}"/>

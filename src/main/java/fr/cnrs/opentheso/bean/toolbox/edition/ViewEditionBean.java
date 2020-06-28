@@ -64,8 +64,10 @@ public class ViewEditionBean implements Serializable {
         return alternateColor;
     }
 
-    public String getAlternateColor(Boolean isNewLine) {
-        if (isNewLine) {
+    public String getAlternateColor(int position) {
+        if (position == 0) {
+            alternateColor = "#C8EAD6";
+        } else {
             if (alternateColor.equalsIgnoreCase("#FAFAFA")) {
                 alternateColor = "#C8EAD6";
             } else {

@@ -55,7 +55,7 @@ public class DomaineDao extends BasicDao {
             executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
                     +newIdgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
         } else {
-            executDelete(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idconcept+"' AND idgroup = '"
+            executDeleteRequest(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idconcept+"' AND idgroup = '"
                     +oldIdgroup+"' AND idthesaurus = '"+idthesaurus+"'");
         }
 

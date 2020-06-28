@@ -4,21 +4,15 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-public class NoteDao {
-
-    private final Log LOG = LogFactory.getLog(NoteDao.class);
+public class NoteDao extends BasicDao{
 
     public String getNoteCandidat(Statement stmt, String idconcept, String idThesaurus, String noteType) {
         String definition = null;
         try {
-            stmt.executeQuery("SELECT lexicalvalue FROM note "
-                    + "WHERE notetypecode = '" + noteType + "' "
-                    + "AND id_concept = '" + idconcept + "' AND "
-                    + "id_thesaurus = '" + idThesaurus + "'");
-            ResultSet resultSet = stmt.getResultSet();
+            stmt.executeQuery("SELECT lexicalvalue FROM note WHERE notetypecode = '" + noteType + "' AND id_concept = '"
+                    + idconcept + "' AND id_thesaurus = '" + idThesaurus + "'");
+            resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 definition = resultSet.getString("lexicalvalue");
             }
@@ -28,29 +22,37 @@ public class NoteDao {
         return definition;
     }
 
-    public void SaveNote(Connect connect, Statement stmt, String noteType, String noteValue, String idTerme, 
-            String idConcepte, String lang, String idThesaurus) {
+    public void SaveNote(Connect connect, String noteType, String noteValue, String idTerme, String idConcepte,
+                         String idThesaurus, String lang) {
         try {
             stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeUpdate("INSERT INTO public.note(notetypecode, id_thesaurus, id_term, "
-                    + "id_concept, lang, lexicalvalue) VALUES ('"+noteType+"', '"+idThesaurus+"', "+idTerme+"', '"+idConcepte
-                    +"', '"+lang+"', '"+noteValue+"')");
+            stmt.executeUpdate("INSERT INTO note(notetypecode, id_thesaurus, id_term, id_concept, lexicalvalue, lang) " +
+                    "VALUES ('"+noteType+"', '"+idThesaurus+"', '"+idTerme+"', '"+idConcepte +"', '"+noteValue+"', '"+lang+"')");
             stmt.close();
-            connect.getPoolConnexion().getConnection().close();
+        } catch (SQLException e) {
+            LOG.error(e);
+            System.out.println("Erreur : " + e);
+        }
+    }
+
+    public void updateNote(Connect connect, String noteType, String noteValue, String idTerme,
+            String idConcepte, String idThesaurus, String lang) {
+        try {
+            stmt = connect.getPoolConnexion().getConnection().createStatement();
+            stmt.executeUpdate("UPDATE note SET lexicalvalue='"+noteValue+"' AND lang = '"+lang+"' WHERE notetypecode= '"
+                    +noteType +"' AND id_thesaurus='"+idThesaurus+"' AND id_term='"+idTerme+"' AND id_concept='"+idConcepte+"'");
+            stmt.close();
         } catch (SQLException e) {
             LOG.error(e);
         }
     }
 
-    public void updateNote(Connect connect, Statement stmt, String noteType, String noteValue, String idTerme, 
-            String idConcepte, String lang, String idThesaurus) {
+    public void deleteNote(Connect connect, String noteType, String noteValue, String idTerme, String idConcepte, String idThesaurus) {
         try {
             stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeUpdate("UPDATE public.note SET lexicalvalue='"+noteValue+"' WHERE notetypecode= '"
-                    +noteType+"' AND id_thesaurus='"+idThesaurus+"' AND id_term='"
-                    +idTerme+"' AND id_concept='"+idConcepte+"' AND lang='"+lang+"'");
+            stmt.executeUpdate("DELETE FROM note WHEN lexicalvalue='"+noteValue+"' AND notetypecode= '" +noteType
+                    +"' AND id_thesaurus='"+idThesaurus+"' AND id_term='"+idTerme+"' AND id_concept='"+idConcepte+"'");
             stmt.close();
-            connect.getPoolConnexion().getConnection().close();
         } catch (SQLException e) {
             LOG.error(e);
         }

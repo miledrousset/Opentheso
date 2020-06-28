@@ -10,17 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CondidatDao extends BasicDao {
+public class CandidatDao extends BasicDao {
     
 
-    public List<CandidatDto> searchAllCondidats(Statement stmt, String idThesaurus) throws SQLException {
+    public List<CandidatDto> searchAllCondidats(Statement stmt, String idThesaurus, String lang) throws SQLException {
 
         List<CandidatDto> temps = new ArrayList<>();
 
-        String request = "SELECT nomPreTer.id_term, nomPreTer.lexical_value, con.id_concept, con.id_thesaurus, con.created "
-                + "FROM non_preferred_term nomPreTer, preferred_term preTer, concept con "
-                + "WHERE nomPreTer.id_term = preTer.id_term "
-                + "AND con.id_concept = preTer.id_concept ";
+        String request = "SELECT nomPreTer.lang, nomPreTer.id_term, nomPreTer.lexical_value, con.id_concept, con.id_thesaurus, con.created, users.username, term.contributor " +
+                "FROM non_preferred_term nomPreTer, preferred_term preTer, concept con, term, users " +
+                "WHERE nomPreTer.id_term = preTer.id_term " +
+                "AND con.id_concept = preTer.id_concept " +
+                "AND term.id_term = nomPreTer.id_term " +
+                "AND users.id_user = term.contributor ";
+
+        if (!StringUtils.isEmpty(lang)) {
+            request +=  "AND nomPreTer.lang = '"+lang+"' ";
+        }
 
         if (!StringUtils.isEmpty(idThesaurus)) {
             request +=  "AND con.id_thesaurus = '"+idThesaurus+"'";
@@ -36,6 +42,8 @@ public class CondidatDao extends BasicDao {
             candidatDto.setIdConcepte(resultSet.getString("id_concept"));
             candidatDto.setIdThesaurus(resultSet.getString("id_thesaurus"));
             candidatDto.setCreationDate(resultSet.getDate("created"));
+            candidatDto.setUser(resultSet.getString("username"));
+            candidatDto.setUserId(resultSet.getInt("contributor"));
             temps.add(candidatDto);
         }
         resultSet.close();

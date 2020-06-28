@@ -23,6 +23,9 @@
         <message-bundle>preferences</message-bundle>
     </application>
     <application>
+        <locale-config>
+            <default-locale>fr</default-locale>
+        </locale-config>
         <resource-bundle>
             <base-name>language/site</base-name>
             <var>langue_fr</var>

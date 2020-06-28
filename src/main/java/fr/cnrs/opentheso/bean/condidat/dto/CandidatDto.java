@@ -14,6 +14,9 @@ public class CandidatDto implements Serializable {
     private String idTerm;
     private String idConcepte;
     private String idThesaurus;
+    private String lang;
+    private String user;
+    private int userId;
 
     private String nomPref;
     private Date creationDate;
@@ -22,12 +25,13 @@ public class CandidatDto implements Serializable {
     private int nbrParticipant;
 
     private int domaine_id;
-    private String termeGenerique;
+    private String termeGenerique_id;
     private String defenition;
     private String noteApplication;
 
     private List<String> termesAssocies;
     private List<String> employePour;
+    private List<String> participants;
 
     private List<TraductionDto> traductions;
     private List<CorpusDto> corpus;
@@ -39,13 +43,20 @@ public class CandidatDto implements Serializable {
         traductions = new ArrayList<>();
     }
 
+    public CandidatDto(String nomPref) {
+        idConcepte = null;
+        this.nomPref = nomPref;
+    }
+
     public CandidatDto(CandidatDto source) {
         this.idTerm = source.getIdTerm();
         this.idConcepte = source.getIdConcepte();
         this.idThesaurus = source.getIdThesaurus();
+        this.userId = source.getUserId();
+        this.user = source.getUser();
         this.nomPref = source.getNomPref();
         this.domaine_id = source.getDomaine_id();
-        this.termeGenerique = source.getTermeGenerique();
+        this.termeGenerique_id = source.getTermeGenerique_id();
         this.defenition = source.getDefenition();
         this.noteApplication = source.getNoteApplication();
         this.termesAssocies = source.getTermesAssocies();
@@ -62,12 +73,12 @@ public class CandidatDto implements Serializable {
         this.domaine_id = domaine_id;
     }
 
-    public String getTermeGenerique() {
-        return termeGenerique;
+    public String getTermeGenerique_id() {
+        return termeGenerique_id;
     }
 
-    public void setTermeGenerique(String termeGenerique) {
-        this.termeGenerique = termeGenerique;
+    public void setTermeGenerique_id(String termeGenerique_id) {
+        this.termeGenerique_id = termeGenerique_id;
     }
 
     public String getDefenition() {
@@ -190,4 +201,35 @@ public class CandidatDto implements Serializable {
         this.idThesaurus = idThesaurus;
     }
 
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
+
+    public List<String> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<String> participants) {
+        this.participants = participants;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 }

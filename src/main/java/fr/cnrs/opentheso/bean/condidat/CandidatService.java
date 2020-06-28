@@ -4,9 +4,9 @@ import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bean.condidat.dao.CondidatDao;
+import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
 import fr.cnrs.opentheso.bean.condidat.dao.DomaineDao;
-import fr.cnrs.opentheso.bean.condidat.dao.IntituleDao;
+import fr.cnrs.opentheso.bean.condidat.dao.TermeDao;
 import fr.cnrs.opentheso.bean.condidat.dao.LangageDao;
 import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.condidat.dao.NoteDao;
@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.commons.logging.Log;
@@ -35,12 +36,12 @@ public class CandidatService implements Serializable {
 
     private Statement stmt;
 
-    public List<CandidatDto> getAllCandidats(Connect connect, String idThesaurus) {
+    public List<CandidatDto> getAllCandidats(Connect connect, String idThesaurus, String lang) {
         List<CandidatDto> temps = new ArrayList<>();
         try {
             stmt = connect.getPoolConnexion().getConnection().createStatement();
-            CondidatDao condidatDao = new CondidatDao();
-            temps = condidatDao.searchAllCondidats(stmt, idThesaurus);
+            CandidatDao condidatDao = new CandidatDao();
+            temps = condidatDao.searchAllCondidats(stmt, idThesaurus, lang);
             for (CandidatDto candidatDto : temps) {
                 candidatDto.setStatut(condidatDao.searchCondidatStatus(stmt,
                         candidatDto.getIdConcepte(), candidatDto.getIdThesaurus()));
@@ -68,7 +69,7 @@ public class CandidatService implements Serializable {
             return null;
         }
 
-        new CondidatDao().setStatutForCandidat(connect, 0, idNewCondidat,
+        new CandidatDao().setStatutForCandidat(connect, 0, idNewCondidat,
                 concept.getIdThesaurus(), concept.getIdUser() + "");
 
         String idTerm = new TermHelper().addTerm(connect.getPoolConnexion().getConnection(),
@@ -79,7 +80,7 @@ public class CandidatService implements Serializable {
             return null;
         }
 
-        new IntituleDao().saveIntitule(connect, candidatSelected.getNomPref(),
+        new TermeDao().saveIntitule(connect, candidatSelected.getNomPref(),
                 concept.getIdThesaurus(), concept.getLang(), idNewCondidat,
                 concept.getIdUser() + "", idTerm);
 
@@ -89,7 +90,7 @@ public class CandidatService implements Serializable {
     public void updateIntitule(Connect connect, String intitule, String idThesaurus,
             String lang, String idConcept, String idTerm) throws SQLException {
 
-        new IntituleDao().updateIntitule(connect, intitule, idThesaurus, lang, idConcept, idTerm);
+        new TermeDao().updateIntitule(connect, intitule, idThesaurus, lang, idConcept, idTerm);
     }
 
     public void updateDetailsCondidat(Connect connect, CandidatDto candidatSelected, CandidatDto initialCandidat)
@@ -106,6 +107,41 @@ public class CandidatService implements Serializable {
 
         }
 
+        //update terme générique
+        if (initialCandidat.getTermeGenerique_id() == null && candidatSelected.getTermeGenerique_id() != null) {
+            new TermeDao().saveNewTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
+                    candidatSelected.getIdThesaurus(), "TG");
+        } else if (!candidatSelected.getTermeGenerique_id().equals(initialCandidat.getDomaine_id())) {
+            if (candidatSelected.getTermeGenerique_id() == null) {
+                new TermeDao().deleteExistingTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
+                        candidatSelected.getIdThesaurus(), "TG");
+            } else {
+                new TermeDao().updateTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
+                        candidatSelected.getIdThesaurus(), "TG");
+            }
+        }
+        
+        //update terme associés
+        TermeDao termeDao = new TermeDao();
+        termeDao.deleteAllTermesByConcepteAndRole(connect, candidatSelected.getIdConcepte(), 
+                    candidatSelected.getIdThesaurus(), "TS");
+        if (!CollectionUtils.isEmpty(candidatSelected.getTermesAssocies())) {
+            //insert new associted termes-
+            candidatSelected.getTermesAssocies().stream().forEach(terme -> {
+                termeDao.saveNewTerme(connect, candidatSelected.getIdConcepte(), terme, 
+                        candidatSelected.getIdThesaurus(), "TS");
+            });
+        }
+
+        //update défénition
+        saveNote(connect, initialCandidat == null ? "" : initialCandidat.getDefenition(), candidatSelected.getDefenition(),
+                candidatSelected,"definition");
+
+        //update note
+        saveNote(connect, initialCandidat == null ? "" : initialCandidat.getNoteApplication(), candidatSelected.getNoteApplication(),
+                candidatSelected,"note");
+
+        //update traduction
     }
 
     public List<DomaineDto> getDomainesList(Connect connect, String idThesaurus) {
@@ -118,13 +154,20 @@ public class CandidatService implements Serializable {
 
             candidatSelected.setDomaine_id(new DomaineDao().getDomaineCandidat(stmt, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus()));
-            candidatSelected.setMessages(new MessageDao().getMessagesCandidat(stmt, candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus(), username));
+            candidatSelected.setTermeGenerique_id(new TermeDao().searchTGByConceptAndThesaurus(connect,
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+            candidatSelected.setTermesAssocies(new TermeDao().searchTSByConceptAndThesaurus(connect,
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
             candidatSelected.setDefenition(new NoteDao().getNoteCandidat(stmt, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), "definition"));
             candidatSelected.setNoteApplication(new NoteDao().getNoteCandidat(stmt, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), "note"));
             candidatSelected.setTraductions(new LangageDao().getLangagesCandidat(stmt, candidatSelected.getIdThesaurus()));
+            candidatSelected.setMessages(new MessageDao().getMessagesCandidat(stmt, candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdThesaurus(), username));
+            candidatSelected.setParticipants(new MessageDao().getParticipantsByCandidat(connect,candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdThesaurus()));
+
             stmt.close();
             connect.getPoolConnexion().getConnection().close();
         } catch (SQLException e) {
@@ -135,33 +178,30 @@ public class CandidatService implements Serializable {
 
     public List<MessageDto> getAllMessagesCandidat(Connect connect, String idconcept,
             String idThesaurus, String username) throws SQLException {
-
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
-        return new MessageDao().getAllMessagesCandidat(connect, stmt, idconcept,
-                idThesaurus, username);
+        return new MessageDao().getAllMessagesCandidat(connect, idconcept, idThesaurus, username);
     }
 
     public void addNewMessage(Connect connect, String msg, String idUser, String idConcept,
             String idThesaurus) throws SQLException {
-
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
-        new MessageDao().addNewMessage(connect, stmt, msg, idUser, idConcept,
-                idThesaurus);
+        new MessageDao().addNewMessage(connect, msg, idUser, idConcept, idThesaurus);
     }
 
-    public void saveNote(Connect connect, String initialNoteValue, String newNoteValue,
-            CandidatDto candidatSelected, String lang, String noteType) throws SQLException {
+    public void saveNote(Connect connect, String initialNoteValue, String newNoteValue, CandidatDto candidatSelected,
+                         String noteType) throws SQLException {
 
         stmt = connect.getPoolConnexion().getConnection().createStatement();
+        NoteDao noteDao = new NoteDao();
+        noteDao.deleteNote(connect, noteType, newNoteValue, candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus());
+
         if (!StringUtils.isEmpty(newNoteValue) && StringUtils.isEmpty(initialNoteValue)) {
-            new NoteDao().SaveNote(connect, stmt, noteType, newNoteValue,
-                    candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
-                    lang, candidatSelected.getIdThesaurus());
+            noteDao.SaveNote(connect, noteType, newNoteValue, candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         } else if (!StringUtils.isEmpty(newNoteValue) && !newNoteValue.equals(initialNoteValue)) {
-            new NoteDao().updateNote(connect, stmt, noteType, newNoteValue,
-                    candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
-                    lang, candidatSelected.getIdThesaurus());
+            noteDao.updateNote(connect, noteType, newNoteValue, candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         }
+        stmt.close();
     }
 
 }

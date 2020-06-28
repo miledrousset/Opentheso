@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -27,6 +28,7 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
+
 @Named(value = "candidatBean")
 @SessionScoped
 public class CandidatBean implements Serializable {
@@ -42,6 +44,9 @@ public class CandidatBean implements Serializable {
 
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
+    
+    @Inject
+    private LanguageBean languageBean;
 
     private CandidatService candidatService;
 
@@ -53,8 +58,7 @@ public class CandidatBean implements Serializable {
     private String searchValue;
 
     private CandidatDto candidatSelected, initialCandidat;
-    private List<CandidatDto> candidatList;
-    
+    private List<CandidatDto> candidatList, allTermes;
     private List<DomaineDto> domaines;
 
     @PostConstruct
@@ -65,38 +69,42 @@ public class CandidatBean implements Serializable {
         isNewCandidatActivate = false;
 
         selectedTheso.getSelectedIdTheso();
-        candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso());
-        domaines = new ArrayList<>();
-        domaines.add(new DomaineDto(0, "Selectionnez un domaine"));
-        domaines.addAll(candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso()));
+        candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
     }
 
     public void selectMyCandidats() {
         if (myCandidatsSelected) {
             candidatList = candidatList.stream()
-                    .filter(candidat -> candidat.getNomPref().equalsIgnoreCase("Firas GABSI"))
+                    .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
                     .collect(Collectors.toList());
         } else {
-            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso());
+            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
         }
+        showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
+                .append(languageBean.getMsg("candidat.result_found")).toString());
     }
 
     public void searchByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue)) {
             candidatList = candidatList.stream()
-                    .filter(candidat -> candidat.getNomPref().contains(searchValue))
+                    .filter(candidat -> candidat.getNomPref().contains(searchValue) || candidat.getUser().contains(searchValue))
                     .collect(Collectors.toList());
         } else {
-            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso());
+            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
         }
+        showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
+                .append(languageBean.getMsg("candidat.result_found")).toString());
     }
 
     public void showCandidatSelected(CandidatDto candidatDto) {
         candidatSelected = candidatDto;
         candidatService.getCandidatDetails(connect, candidatSelected, currentUser.getUsername());
         initialCandidat = new CandidatDto(candidatSelected);
+        getTermes(candidatDto.getNomPref());
+        getDomainesListe();
         setIsNewCandidatActivate(true);
     }
+
 
     public boolean isIsListCandidatsActivate() {
         return isListCandidatsActivate;
@@ -209,26 +217,7 @@ public class CandidatBean implements Serializable {
 
         candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat);
 
-        
-        //update terme générique
-        //update terme associés
-        //update employé pour 
-        //update défénition
-        /*
-        candidatService.saveNote(connect, initialCandidat == null ? "" : initialCandidat.getDefenition(), 
-                candidatSelected.getDefenition(), candidatSelected, 
-                selectedTheso.getSelectedLang(), "definition");
-        
-        //update note
-        candidatService.saveNote(connect, initialCandidat == null ? "" : initialCandidat.getNoteApplication(), 
-                candidatSelected.getNoteApplication(), candidatSelected, 
-                selectedTheso.getSelectedLang(), "note");
-        //update traduction
-        //corpus lié
-
-         */
-
-        candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso());
+        candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info",
                 "Le candidat a bien été ajouté");
@@ -298,13 +287,58 @@ public class CandidatBean implements Serializable {
     }
 
     public void initialNewCandidat() {
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir avant un thesaurus !");
+            return;
+        }
         setIsNewCandidatActivate(true);
         candidatSelected = new CandidatDto();
+        candidatSelected.setLang(languageBean.getIdLangue());
+        candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+        getDomainesListe();
+        getTermes("");
         initialCandidat = null;
+    }
+
+    public void showMessage(FacesMessage.Severity messageType, String messageValue) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+        }
     }
 
     public List<DomaineDto> getDomaines() {
         return domaines;
     }
-    
+
+    public List<CandidatDto> getAllTermes() {
+        return allTermes;
+    }
+
+    public void setAllTermes(List<CandidatDto> allTermes) {
+        this.allTermes = allTermes;
+    }
+
+    public LanguageBean getLanguageBean() {
+        return languageBean;
+    }
+
+    public void setLanguageBean(LanguageBean languageBean) {
+        this.languageBean = languageBean;
+    }
+
+    private void getDomainesListe() {
+        domaines = new ArrayList<>();
+        domaines.add(new DomaineDto(0, "Selectionnez un domaine"));
+        domaines.addAll(candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso()));
+    }
+
+    private void getTermes(String termeToRemove) {
+        allTermes = new ArrayList<>();
+        allTermes.add(new CandidatDto("Selectionnez un terme générique"));
+        allTermes.addAll(candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(termeToRemove))
+                .collect(Collectors.toList()));
+    }
+ 
 }

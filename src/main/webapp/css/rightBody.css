@@ -15,3 +15,8 @@ Creator Miled Rousset
     background-color: #FAEDE5;
     border-color:#FAEDE5;
 }
+
+@font-face {
+    font-family: myCustomFont;
+    src: url(fonts/FreeSans.ttf);
+}
