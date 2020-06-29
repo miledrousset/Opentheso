@@ -1,7 +1,9 @@
 package fr.cnrs.opentheso.bean.condidat;
 
+import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.utils.EmailUtils;
 
@@ -18,7 +20,6 @@ import javax.mail.internet.*;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +31,9 @@ public class DiscussionService implements Serializable {
 
     @Inject
     private CandidatBean candidatBean;
+    
+    @Inject
+    private LanguageBean langueBean;
 
     @Inject
     private Connect connect;
@@ -39,7 +43,7 @@ public class DiscussionService implements Serializable {
     public List<String> getParticipantsInConversation() {
         if (candidatBean != null && candidatBean.getCandidatSelected() != null) {
             return new MessageDao().getParticipantsByCandidat(
-                    connect, candidatBean.getCandidatSelected().getIdConcepte(),
+                    connect.getPoolConnexion(), candidatBean.getCandidatSelected().getIdConcepte(),
                     candidatBean.getCandidatSelected().getIdThesaurus());
         } else {
             return new ArrayList<>();
@@ -47,37 +51,44 @@ public class DiscussionService implements Serializable {
     }
 
     public void sendMessage() throws SQLException {
-
+        
+        if (StringUtils.isEmpty(candidatBean.getMessage())) {
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg1"));
+            return;
+        }
+        
         MessageDto messageDto = new MessageDto();
         messageDto.setDate(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
         messageDto.setNom(candidatBean.getCurrentUser().getUsername().toUpperCase());
         messageDto.setMsg(candidatBean.getMessage());
-
-        new CandidatService().addNewMessage(connect, candidatBean.getMessage(),
-                candidatBean.getCurrentUser().getNodeUser().getIdUser() + "",
-                candidatBean.getCandidatSelected().getIdConcepte(),
+        
+        HikariDataSource connection = connect.getPoolConnexion();
+        
+        MessageDao messageDao = new MessageDao();
+        messageDao.addNewMessage(connection, 
+                candidatBean.getMessage(), 
+                candidatBean.getCurrentUser().getNodeUser().getIdUser()+"", 
+                candidatBean.getCandidatSelected().getIdConcepte(), 
                 candidatBean.getCandidatSelected().getIdThesaurus());
 
-        candidatBean.getCandidatSelected().setMessages(new CandidatService()
-                .getAllMessagesCandidat(connect,
-                        candidatBean.getCandidatSelected().getIdConcepte(),
-                        candidatBean.getCandidatSelected().getIdThesaurus(),
-                        candidatBean.getCurrentUser().getUsername()));
-
+        candidatBean.getCandidatSelected().setMessages(messageDao.getAllMessagesByCandidat(
+                connection, 
+                candidatBean.getCandidatSelected().getIdConcepte(), 
+                candidatBean.getCandidatSelected().getIdThesaurus(), 
+                candidatBean.getCurrentUser().getNodeUser().getIdUser()));
+      
         candidatBean.setMessage("");
-
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Message envoyé !", null);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, langueBean.getMsg("candidat.send_message.msg2"));
+        
+        connection.close();
     }
 
     public void sendInvitation() {
 
-        FacesMessage msg = null;
-
         if (StringUtils.isEmpty(email)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Vous n'avez pas précisé une adresse mail !", null);
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg3"));
         } else if (!EmailUtils.isValidEmailAddress(email)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "votre adresse email n'est pas valide !", null);
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg4"));
         } else {
 
             String from = "opentheso@mom.fr";
@@ -94,18 +105,13 @@ public class DiscussionService implements Serializable {
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
                 message.setSubject("Invitation à une conversation !");
                 message.setText("C'est le body du message");
-
                 // Send message
                 Transport.send(message);
-
-                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Invitation envoyée !", null);
+                candidatBean.showMessage(FacesMessage.SEVERITY_INFO, langueBean.getMsg("candidat.send_message.msg5"));
             } catch (MessagingException mex) {
-                mex.printStackTrace();
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Une erreur est survenu pendant l'envoie de l'invitation !", null);
+                candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg6"));
             }
         }
-
-        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public String getEmail() {

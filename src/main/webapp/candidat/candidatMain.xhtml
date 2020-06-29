@@ -13,7 +13,7 @@
         <b:row rendered="#{candidatBean.isIsNewCandidatActivate()}" style="padding-left: 25px; padding-right: 25px">
             <b:row>
                 <b:column span="12">
-                    <b:navCommandLink value="⬅ Retour à la liste des candidats" 
+                    <b:navCommandLink value="#{langueBean.getMsg('candidat.retur')}" 
                                       update="candidatForm" ajax="false" style="color: #43B572" 
                                       actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
                 </b:column>
@@ -28,7 +28,7 @@
             </b:row>
             <b:row>
                 <b:column span="12" style="align-content: center">
-                    <b:commandButton value="Soumettre la fiche à un admin" 
+                    <b:commandButton value="#{langueBean.getMsg('candidat.submit')}" 
                               style="background: #F47B2A; border-color: #F47B2A; display: block; 
                               margin-left: auto; margin-right: auto; margin-top: 10px; color: white" 
                               look="primary" size="lg" />

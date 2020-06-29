@@ -1,6 +1,9 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -38,44 +41,45 @@ public class TermeDao extends BasicDao {
             stmt.close();
         } catch (SQLException e) {
             LOG.error(e);
-            System.out.println(">>>> Erreur : " + e);
         }
     }
 
-    public String searchTGByConceptAndThesaurus(Connect connect, String idConceptSelected, String idThesaurus) {
+    public String searchTGByConceptAndThesaurus(HikariDataSource hikariDataSource, String idConceptSelected, 
+            String idThesaurus) throws SQLException {
         String idTerme = null;
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeQuery("SELECT id_concept2 FROM hierarchical_relationship WHERE id_concept1 = '"+idConceptSelected
-                    +"' AND id_thesaurus= '"+idThesaurus+"' AND role = 'TG';");
+            openDataBase(hikariDataSource);
+            stmt.executeQuery(new StringBuffer("SELECT id_concept2 FROM hierarchical_relationship WHERE id_concept1 = '")
+                    .append(idConceptSelected).append("' AND id_thesaurus= '")
+                    .append(idThesaurus).append("' AND role = 'TG'").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 idTerme = resultSet.getString("id_concept2");
             }
-            resultSet.close();
-            stmt.close();
+            closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
-            System.out.println(">>>> Erreur : " + e);
+            closeDataBase();
         }
         return idTerme;
     }
 
-    public List<String> searchTSByConceptAndThesaurus(Connect connect, String idConceptSelected, String idThesaurus) {
+    public List<String> searchTSByConceptAndThesaurus(HikariDataSource hikariDataSource, String idConceptSelected, 
+            String idThesaurus) throws SQLException {
         List<String> termes = new ArrayList<>();
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeQuery("SELECT id_concept2 FROM hierarchical_relationship WHERE id_concept1 = '"+idConceptSelected
-                    +"' AND id_thesaurus= '"+idThesaurus+"' AND role = 'TS';");
+            openDataBase(hikariDataSource);
+            stmt.executeQuery(new StringBuffer("SELECT id_concept2 FROM hierarchical_relationship WHERE id_concept1 = '")
+                    .append(idConceptSelected).append("' AND id_thesaurus= '")
+                    .append(idThesaurus).append("' AND role = 'TS'").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 termes.add(resultSet.getString("id_concept2"));
             }
-            resultSet.close();
-            stmt.close();
+            closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
-            System.out.println(">>>> Erreur : " + e);
+            closeDataBase();
         }
         return termes;
     }
@@ -88,7 +92,6 @@ public class TermeDao extends BasicDao {
             stmt.close();
         } catch (SQLException e) {
             LOG.error(e);
-            System.out.println(">>>> Erreur : " + e);
         }
     }
 
@@ -100,7 +103,6 @@ public class TermeDao extends BasicDao {
             stmt.close();
         } catch (SQLException e) {
             LOG.error(e);
-            System.out.println(">>>> Erreur : " + e);
         }
     }
 
@@ -112,7 +114,6 @@ public class TermeDao extends BasicDao {
             stmt.close();
         } catch (SQLException e) {
             LOG.error(e);
-            System.out.println(">>>> Erreur : " + e);
         }
     }
 
@@ -125,7 +126,6 @@ public class TermeDao extends BasicDao {
             stmt.close();
         } catch (SQLException e) {
             LOG.error(e);
-            System.out.println(">>>> Erreur : " + e);
         }
     }
 
@@ -139,6 +139,25 @@ public class TermeDao extends BasicDao {
         }
         resultSet.close();
         return idTerme;
+    }
+    
+    public List<TraductionDto> getTraductionsCandidat(HikariDataSource hikariDataSource, String idThesaurus) {
+        List<TraductionDto> Traductions = new ArrayList<>();
+        try {
+            openDataBase(hikariDataSource);
+            stmt.executeQuery("SELECT lang, lexical_value FROM term WHERE id_thesaurus = '" + idThesaurus + "'");
+            resultSet = stmt.getResultSet();
+            while (resultSet.next()) {
+                TraductionDto traductionDto = new TraductionDto();
+                traductionDto.setLangue(LanguageEnum.valueOf(resultSet.getString("lang").toUpperCase()).getLanguage());
+                traductionDto.setTraduction(resultSet.getString("lexical_value"));
+                Traductions.add(traductionDto);
+            }
+            closeDataBase();
+        } catch (SQLException e) {
+            LOG.error(e);
+        }
+        return Traductions;
     }
     
 }

@@ -1,11 +1,11 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
+import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,15 +62,17 @@ public class DomaineDao extends BasicDao {
         stmt.close();
     }
 
-    public int getDomaineCandidat(Statement stmt, String idconcept, String idThesaurus) {
+    public int getDomaineCandidat(HikariDataSource hikariDataSource, String idconcept, String idThesaurus) {
         int domaine = 0;
         try {
-            stmt.executeQuery("SELECT idgroup FROM concept_group_concept WHERE idthesaurus = '"+idThesaurus+"' AND idconcept = '"+idconcept+"';");
+            openDataBase(hikariDataSource);
+            stmt.executeQuery(new StringBuffer("SELECT idgroup FROM concept_group_concept WHERE idthesaurus = '")
+                    .append(idThesaurus).append("' AND idconcept = '").append(idconcept).append("'").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 domaine = resultSet.getInt("idgroup");
             }
-            resultSet.close();
+            closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
         }

@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,6 +19,7 @@ public class BasicDao {
 
     protected ResultSet resultSet;
     protected Statement stmt;
+    protected Connection connection;
     
     
     protected int executInsertRequest(Statement stmt, String sqlRequest) throws SQLException {
@@ -28,5 +31,15 @@ public class BasicDao {
              return stmt.execute(sqlRequest);
     }
     
+    protected void openDataBase(HikariDataSource hikariDataSource) throws SQLException {
+        connection = hikariDataSource.getConnection();
+        stmt = connection.createStatement();
+    }
+    
+    protected void closeDataBase() throws SQLException {
+        if (!resultSet.isClosed()) resultSet.close();
+        if (!stmt.isClosed()) stmt.close();
+        if (!connection.isClosed()) connection.close();
+    }
     
 }

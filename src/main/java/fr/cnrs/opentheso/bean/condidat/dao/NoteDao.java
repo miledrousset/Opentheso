@@ -1,58 +1,68 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import java.sql.ResultSet;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-public class NoteDao extends BasicDao{
+public class NoteDao extends BasicDao {
 
-    public String getNoteCandidat(Statement stmt, String idconcept, String idThesaurus, String noteType) {
+    public String getNoteCandidat(HikariDataSource hikariDataSource, String idconcept, String idThesaurus, 
+            String noteType, String lang) {
+        
         String definition = null;
         try {
-            stmt.executeQuery("SELECT lexicalvalue FROM note WHERE notetypecode = '" + noteType + "' AND id_concept = '"
-                    + idconcept + "' AND id_thesaurus = '" + idThesaurus + "'");
+            openDataBase(hikariDataSource);
+            stmt.executeQuery(new StringBuffer("SELECT lexicalvalue FROM note WHERE notetypecode = '")
+                    .append(noteType).append("' AND id_concept = '").append(idconcept)
+                    .append("' AND id_thesaurus = '").append(idThesaurus).append("' AND lang='")
+                    .append(lang).append("'").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 definition = resultSet.getString("lexicalvalue");
             }
+            closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
         }
         return definition;
     }
 
-    public void SaveNote(Connect connect, String noteType, String noteValue, String idTerme, String idConcepte,
+    public void SaveNote(HikariDataSource hikariDataSource, String noteType, String noteValue, String idTerme, String idConcepte,
                          String idThesaurus, String lang) {
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeUpdate("INSERT INTO note(notetypecode, id_thesaurus, id_term, id_concept, lexicalvalue, lang) " +
-                    "VALUES ('"+noteType+"', '"+idThesaurus+"', '"+idTerme+"', '"+idConcepte +"', '"+noteValue+"', '"+lang+"')");
-            stmt.close();
+            openDataBase(hikariDataSource);
+            stmt.executeUpdate(new StringBuffer("INSERT INTO note(notetypecode, id_thesaurus, id_term, id_concept, lexicalvalue, lang) ")
+                    .append("VALUES ('").append(noteType).append("', '").append(idThesaurus).append("', '")
+                    .append(idTerme).append("', '").append(idConcepte).append("', '")
+                    .append(noteValue).append("', '").append(lang).append("')").toString());
+            closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
-            System.out.println("Erreur : " + e);
         }
     }
 
-    public void updateNote(Connect connect, String noteType, String noteValue, String idTerme,
+    public void updateNote(HikariDataSource hikariDataSource, String noteType, String noteValue, String idTerme,
             String idConcepte, String idThesaurus, String lang) {
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeUpdate("UPDATE note SET lexicalvalue='"+noteValue+"' AND lang = '"+lang+"' WHERE notetypecode= '"
-                    +noteType +"' AND id_thesaurus='"+idThesaurus+"' AND id_term='"+idTerme+"' AND id_concept='"+idConcepte+"'");
-            stmt.close();
+            openDataBase(hikariDataSource);
+            stmt.executeUpdate(new StringBuffer("UPDATE note SET lexicalvalue='").append(noteValue)
+                    .append("' AND lang = '").append(lang).append("' WHERE notetypecode= '").append(noteType)
+                    .append("' AND id_thesaurus='").append(idThesaurus).append("' AND id_term='")
+                    .append(idTerme).append("' AND id_concept='").append(idConcepte).append("'").toString());
+            closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
         }
     }
 
-    public void deleteNote(Connect connect, String noteType, String noteValue, String idTerme, String idConcepte, String idThesaurus) {
+    public void deleteNote(HikariDataSource hikariDataSource, String noteType, String noteValue, 
+            String idTerme, String idConcepte, String idThesaurus) {
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeUpdate("DELETE FROM note WHEN lexicalvalue='"+noteValue+"' AND notetypecode= '" +noteType
-                    +"' AND id_thesaurus='"+idThesaurus+"' AND id_term='"+idTerme+"' AND id_concept='"+idConcepte+"'");
-            stmt.close();
+            openDataBase(hikariDataSource);
+            stmt.executeUpdate(new StringBuffer("DELETE FROM note WHEN lexicalvalue='").append(noteValue)
+                    .append("' AND notetypecode= '").append(noteType).append("' AND id_thesaurus='")
+                    .append(idThesaurus).append("' AND id_term='").append(idTerme)
+                    .append("' AND id_concept='").append(idConcepte).append("'").toString());
+            closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
         }

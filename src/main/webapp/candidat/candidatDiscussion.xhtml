@@ -6,7 +6,7 @@
 
     <b:row style="font-weight: bold; background-color: #FAFAFA;">
         <b:column>
-            <h:outputLabel value="Discussion" style=" margin-left: 10px"/>
+            <h:outputLabel value="#{langueBean.getMsg('candidat.discussion')}" style=" margin-left: 10px"/>
         </b:column>
     </b:row>
 
@@ -48,7 +48,7 @@
     <b:row style="background-color: #FFFFFF; height: 80px; margin-top: 2px; 
            margin-left: 10px; margin-right: 10px; border: #FAFAFA">
         <b:column>
-            <b:inputTextarea value="#{candidatBean.message}" placeholder="Ecrire ici..." 
+            <b:inputTextarea value="#{candidatBean.message}" placeholder="#{langueBean.getMsg('candidat.write_here')}"
                              style="width: 100%; height: 80px; border: #FFFFFF; resize: none; padding: 5px"/>
         </b:column>
     </b:row>
@@ -56,7 +56,7 @@
     <b:row style="background-color: #FFFFFF; margin-bottom: 5px; 
            border: #FAFAFA; margin-left: 10px; margin-right: 10px">
         <b:column>
-            <b:commandButton value="Envoyer" style="background: #FFFFFF; color: #43B572; border-color: #43B572; float: right;
+            <b:commandButton value="#{langueBean.getMsg('candidat.send')}" style="background: #FFFFFF; color: #43B572; border-color: #43B572; float: right;
                     margin-bottom: 15px" ajax="true" look="primary" size="sm" actionListener="#{discussionService.sendMessage()}"
                     update="candidatForm messageIndex " />
         </b:column>
@@ -65,12 +65,13 @@
     <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px; 
            margin-left: 10px; margin-right: 10px ">
         <b:column span="6">
-            <b:commandButton value="Voir les participants" style="background: #43B572; border: #43B572; color: white;"
+            <b:commandButton value="#{langueBean.getMsg('candidat.show_participants')}" style="background: #43B572; border: #43B572; color: white;"
+                             update="newParticipantForm"
                              actionListener="#{discussionService.getParticipantsInConversation()}"
                              oncomplete="PF('participantsList').show();" ajax="true" />    
         </b:column>
         <b:column span="6">
-            <b:commandButton value="Demande des contributeurs" style="background: #43B572; float: right; border: #43B572; color: white" 
+            <b:commandButton value="#{langueBean.getMsg('candidat.send_invitation')}" style="background: #43B572; float: right; border: #43B572; color: white"
                              oncomplete="PF('sendChatInvitation').show();" ajax="true" />
         </b:column>
     </b:row>

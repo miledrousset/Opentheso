@@ -100,7 +100,8 @@ public class CandidatBean implements Serializable {
         candidatSelected = candidatDto;
         candidatService.getCandidatDetails(connect, candidatSelected, currentUser.getUsername());
         initialCandidat = new CandidatDto(candidatSelected);
-        getTermes(candidatDto.getNomPref());
+        allTermes = candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(candidatDto.getNomPref()))
+                .collect(Collectors.toList());
         getDomainesListe();
         setIsNewCandidatActivate(true);
     }
@@ -296,7 +297,7 @@ public class CandidatBean implements Serializable {
         candidatSelected.setLang(languageBean.getIdLangue());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
         getDomainesListe();
-        getTermes("");
+        allTermes = candidatList;
         initialCandidat = null;
     }
 
@@ -332,13 +333,6 @@ public class CandidatBean implements Serializable {
         domaines = new ArrayList<>();
         domaines.add(new DomaineDto(0, "Selectionnez un domaine"));
         domaines.addAll(candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso()));
-    }
-
-    private void getTermes(String termeToRemove) {
-        allTermes = new ArrayList<>();
-        allTermes.add(new CandidatDto("Selectionnez un terme générique"));
-        allTermes.addAll(candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(termeToRemove))
-                .collect(Collectors.toList()));
     }
  
 }

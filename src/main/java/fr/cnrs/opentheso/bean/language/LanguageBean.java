@@ -1,10 +1,9 @@
 package fr.cnrs.opentheso.bean.language;
 
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -50,7 +49,8 @@ public class LanguageBean implements Serializable {
         idLangue = l.toUpperCase();
         FacesContext.getCurrentInstance().getViewRoot().setLocale(new Locale(l));
 
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Langue "+l+" !"));
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", 
+                LanguageEnum.valueOf(l.toUpperCase()).getLanguage() + " !"));
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
