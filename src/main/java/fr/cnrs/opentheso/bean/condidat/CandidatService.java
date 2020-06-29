@@ -204,7 +204,7 @@ public class CandidatService implements Serializable {
     }
 
     public void saveNote(Connect connect, String initialNoteValue, String newNoteValue, CandidatDto candidatSelected,
-            String noteType) throws SQLException {
+            String noteType) {
         
         HikariDataSource connection = connect.getPoolConnexion();
         NoteDao noteDao = new NoteDao();

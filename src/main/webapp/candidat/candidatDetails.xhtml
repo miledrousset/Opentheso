@@ -205,55 +205,81 @@
         </b:column>
     </b:row>
 
-    <p:outputLabel value="Alignement" style="margin-top: 15px;" />
-    <b:row style="width: 100%; margin-top: -5px;">
-        <p:panelGrid style="width: 100%;">
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA ">
-                <p:column style="width: 40%;">
-                    <p:inputText placeholder="ex: Nourriture" style="width: 100%"/>
-                </p:column>
+    <b:row style="margin-top: 15px;">
+        <b:column>
+            <h:outputText value="Alignement"/>
+        </b:column>
+        <b:column span="12" style="margin-top: 5px">
+            <h:form id="alignementForm">
+                <b:row style="font-size: 12px;  color: #666666">
+                    <b:column span="3">
+                        <h:outputText value="#{langueBean.getMsg('candidat.value')}"/>
+                    </b:column>
+                    <b:column span="9">
+                        <h:outputText value="URL"/>
+                    </b:column>
+                </b:row>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                <ui:repeat id="listAlignements" var="allignement" value="#{conceptView.nodeConcept.nodeAlignments}">
+                    <b:row rendered="#{conceptView.nodeConcept.nodeAlignments.size() == 0}">
+                        <h:outputText  value="....." title="pas d'alignements" style="font-size: 12px; color: grey; font-style: italic " />
+                    </b:row>
+                    <b:row rendered="#{conceptView.nodeConcept.nodeAlignments.size() != 0}"
+                            style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected
+                            .corpus.indexOf(carpus))}; padding-top: 5px">
+                        <b:column span="3" >
+                            <h:outputText value="#{allignement.alignmentLabelType}"/>
+                        </b:column>
+                        <b:column span="9" >
+                            <b:link href="#{allignement.uri_target}"
+                                    value="#{allignement.uri_target}"
+                                    tooltip="#{allignement.thesaurus_target}" tooltip-delay-show="1000"
+                                    target="_blank"
+                                    icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                        </b:column>
+                    </b:row>
+                </ui:repeat>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                <b:row>
+                    <b:column>
+                        <b:dropMenu icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                    style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <b:navCommandLink value="Ajouter alignement auto"
+                                              actionListener="#{alignmentBean.initAlignementByStep(
+                                                        selectedTheso.currentIdTheso,
+                                                        conceptView.nodeConcept.concept.idConcept,
+                                                        conceptView.selectedLang)}"
+                                              action="#{alignmentBean.nextTen(conceptView.selectedLang, selectedTheso.currentIdTheso)}"
+                                              oncomplete="PF('addAlignment').show();"
+                                              update="idAddAlignment addAlignmentForm"
+                                              style="font-size: 12px;"></b:navCommandLink>
 
-                <p:column style="width: 40%;">
-                    <p:inputText placeholder="Source" style="width: 100%" />
-                </p:column>
+                            <b:navCommandLink value="Ajouter alignement manuel"
+                                              actionListener="#{alignmentManualBean.reset()}"
+                                              oncomplete="PF('addManualAlignment').show();"
+                                              update="idAddManualAlignment addManualAlignmentForm"
+                                              style="font-size: 12px;"></b:navCommandLink>
 
-                <p:column rowspan="2" style="width: 20%;">
-                    <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" />
-                    <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
-                </p:column>
-            </p:row>
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA">
-                <p:column colspan="2">
-                    <p:inputText placeholder="URL" style="width: 100%;"  />
-                </p:column>
-            </p:row>
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA">
-                <p:column style="width: 40%;">
-                    <p:inputText placeholder="ex: Nourriture" style="width: 100%"/>
-                </p:column>
+                            <b:navCommandLink value="Modifier l'alignement"
+                                              action="#{alignmentManualBean.reset()}"
+                                              oncomplete="PF('updateAlignment').show();"
+                                              update="idUpdateAlignment updateAlignmentForm"
+                                              style="font-size: 12px;"></b:navCommandLink>
 
-                <p:column style="width: 40%;">
-                    <p:inputText placeholder="Source" style="width: 100%" />
-                </p:column>
-
-                <p:column rowspan="2" style="width: 20%;">
-                    <b:button icon="remove" style="background: #43B572; color: white;" look="primary" size="sm" />
-                    <b:button icon="save" style="background: #43B572; color: white; margin-left: 5px" look="primary" size="sm" />
-                </p:column>
-            </p:row>
-            <p:row style="background-color: #FAFAFA; border: #FAFAFA">
-                <p:column colspan="2">
-                    <p:inputText placeholder="URL" style="width: 100%;"  />
-                </p:column>
-            </p:row>
-
-        </p:panelGrid>
-
-        <b:row style="margin-top: 20px; margin-left: 10px;">
-            <b:commandButton value="#{langueBean.getMsg('candidat.save')}" style="background: #43B572; color: white; margin-left: 5px"
-                             look="primary" size="sm" actionListener="#{candidatBean.saveConcept()}" />
-        </b:row>
-
-    </b:row> 
+                            <b:navCommandLink value="supprimer alignement"
+                                              actionListener="#{alignmentBean.initAlignementByStep(
+                                                        selectedTheso.currentIdTheso,
+                                                        conceptView.nodeConcept.concept.idConcept,
+                                                        conceptView.selectedLang)}"
+                                              action="#{alignmentManualBean.reset()}"
+                                              oncomplete="PF('deleteAlignment').show();"
+                                              update="idDeleteAlignment deleteAlignmentForm"
+                                              style="font-size: 12px;"></b:navCommandLink>
+                        </b:dropMenu>
+                    </b:column>
+                </b:row>
+            </h:form>
+        </b:column>
+    </b:row>
 
 </ui:fragment>

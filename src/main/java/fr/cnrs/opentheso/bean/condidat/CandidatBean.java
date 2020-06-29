@@ -25,6 +25,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -47,6 +49,9 @@ public class CandidatBean implements Serializable {
     
     @Inject
     private LanguageBean languageBean;
+
+    @Inject
+    private ConceptView conceptView;
 
     private CandidatService candidatService;
 
@@ -103,6 +108,10 @@ public class CandidatBean implements Serializable {
         allTermes = candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(candidatDto.getNomPref()))
                 .collect(Collectors.toList());
         getDomainesListe();
+
+        conceptView.setNodeConcept(new ConceptHelper().getConcept(connect.getPoolConnexion(), candidatDto.getIdConcepte(),
+                selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue()));
+
         setIsNewCandidatActivate(true);
     }
 
@@ -327,6 +336,14 @@ public class CandidatBean implements Serializable {
 
     public void setLanguageBean(LanguageBean languageBean) {
         this.languageBean = languageBean;
+    }
+
+    public ConceptView getConceptView() {
+        return conceptView;
+    }
+
+    public void setConceptView(ConceptView conceptView) {
+        this.conceptView = conceptView;
     }
 
     private void getDomainesListe() {
