@@ -114,54 +114,50 @@ public class CandidatService implements Serializable {
         new TermeDao().updateIntitule(connect, intitule, idThesaurus, lang, idConcept, idTerm);
     }
 
-    public void updateDetailsCondidat(Connect connect, CandidatDto candidatSelected, CandidatDto initialCandidat)
+    public void updateDetailsCondidat(Connect connect, CandidatDto candidatSelected, CandidatDto initialCandidat,
+                                      List<CandidatDto> allTerms, List<DomaineDto> allDomaines)
             throws SQLException {
 
         //update domaine
-        if (initialCandidat == null || (initialCandidat.getDomaine_id() == 0 && candidatSelected.getDomaine_id() > 0)) {
-            new DomaineDao().addNewDomaine(connect, candidatSelected.getDomaine_id(), candidatSelected.getIdThesaurus(),
+        if (initialCandidat == null || (StringUtils.isEmpty(initialCandidat.getDomaine())
+                && !StringUtils.isEmpty(candidatSelected.getDomaine()))) {
+            new DomaineDao().addNewDomaine(connect, getDomaineId(allDomaines,candidatSelected.getDomaine()),
+                    candidatSelected.getIdThesaurus(),
                     candidatSelected.getIdConcepte());
-        } else if (candidatSelected.getDomaine_id() != initialCandidat.getDomaine_id()
-                && initialCandidat.getDomaine_id() != 0) {
-            new DomaineDao().updateDomaine(connect, initialCandidat.getDomaine_id(), candidatSelected.getDomaine_id(),
+            
+        } else if (!candidatSelected.getDomaine().equals(initialCandidat.getDomaine()) && !StringUtils.isEmpty(initialCandidat.getDomaine())) {
+            new DomaineDao().updateDomaine(connect, getDomaineId(allDomaines, initialCandidat.getDomaine()),
+                    getDomaineId(allDomaines, candidatSelected.getDomaine()),
                     candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
-
         }
 
+        TermeDao termeDao = new TermeDao();
         //update terme générique
-        if (initialCandidat == null || (initialCandidat.getTermeGenerique_id() == null && candidatSelected.getTermeGenerique_id() != null)) {
-            new TermeDao().saveNewTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
-                    candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel());
-        } else if (!candidatSelected.getTermeGenerique_id().equals(initialCandidat.getDomaine_id())) {
-            if (candidatSelected.getTermeGenerique_id() == null) {
-                new TermeDao().deleteExistingTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
+        termeDao.deleteAllTermesByConcepteAndRole(connect, candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel());
+        if (!CollectionUtils.isEmpty(candidatSelected.getTermesGenerique())) {
+            candidatSelected.getTermesGenerique().stream().forEach(terme -> {
+                termeDao.saveNewTerme(connect, candidatSelected.getIdConcepte(), getIdCancepteFromLabel(allTerms, terme),
                         candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel());
-            } else {
-                new TermeDao().updateTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
-                        candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel());
-            }
+            });
         }
 
         //update terme associés
-        TermeDao termeDao = new TermeDao();
         termeDao.deleteAllTermesByConcepteAndRole(connect, candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), TermEnum.TERME_ASSOCIE.getLabel());
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesAssocies())) {
-            //insert new associted termes-
             candidatSelected.getTermesAssocies().stream().forEach(terme -> {
-                termeDao.saveNewTerme(connect, candidatSelected.getIdConcepte(), terme,
+                termeDao.saveNewTerme(connect, candidatSelected.getIdConcepte(), getIdCancepteFromLabel(allTerms, terme),
                         candidatSelected.getIdThesaurus(), TermEnum.TERME_ASSOCIE.getLabel());
             });
         }
 
         // Employé pour
-        RelationsHelper relationsHelper = new RelationsHelper();
         termeDao.deleteAllTermesByConcepteAndRole(connect, candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), TermEnum.EMPLOYE.getLabel());
         if (!CollectionUtils.isEmpty(candidatSelected.getEmployePour())) {
-            //insert new associted termes-
             candidatSelected.getEmployePour().stream().forEach(terme -> {
-                termeDao.saveNewTerme(connect, candidatSelected.getIdConcepte(), terme,
+                termeDao.saveNewTerme(connect, candidatSelected.getIdConcepte(), getIdCancepteFromLabel(allTerms, terme),
                         candidatSelected.getIdThesaurus(), TermEnum.EMPLOYE.getLabel());
             });
         }
@@ -176,8 +172,26 @@ public class CandidatService implements Serializable {
 
     }
 
-    public List<DomaineDto> getDomainesList(Connect connect, String idThesaurus) {
-        return new DomaineDao().getAllDomaines(connect, idThesaurus);
+    private String getIdCancepteFromLabel(List<CandidatDto> termes, String label) {
+        for (CandidatDto candidat : termes) {
+            if (candidat.getNomPref().equals(label)) {
+                return candidat.getIdConcepte();
+            }
+        }
+        return null;
+    }
+
+    private int getDomaineId(List<DomaineDto> domaines, String label) {
+        for (DomaineDto domaineDto : domaines) {
+            if (domaineDto.getName().equals(label)) {
+                return domaineDto.getId();
+            }
+        }
+        return 0;
+    }
+
+    public List<DomaineDto> getDomainesList(Connect connect, String idThesaurus, String lang) {
+        return new DomaineDao().getAllDomaines(connect, idThesaurus, lang);
     }
 
     public void getCandidatDetails(Connect connect, CandidatDto candidatSelected) {
@@ -187,17 +201,22 @@ public class CandidatService implements Serializable {
             TermeDao termeDao = new TermeDao();
             MessageDao messageDao = new MessageDao();
             
-            candidatSelected.setDomaine_id(new DomaineDao().getDomaineCandidat(connection, candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus()));
+            candidatSelected.setDomaine(new DomaineDao().getDomaineCandidatByConceptAndThesaurusAndLang(connection,
+                    candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdThesaurus(),
+                    candidatSelected.getLang()));
             
-            candidatSelected.setTermeGenerique_id(termeDao.searchTGByConceptAndThesaurus(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+            candidatSelected.setTermesGenerique(termeDao.searchTermeByConceptAndThesaurusAndRoleAndLang(connection,
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel(),
+                    candidatSelected.getLang()));
             
-            candidatSelected.setTermesAssocies(termeDao.searchTermeConceptAndThesaurusAndRole(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), TermEnum.TERME_ASSOCIE.getLabel()));
+            candidatSelected.setTermesAssocies(termeDao.searchTermeByConceptAndThesaurusAndRoleAndLang(connection,
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), TermEnum.TERME_ASSOCIE.getLabel(),
+                    candidatSelected.getLang()));
 
-            candidatSelected.setEmployePour(termeDao.searchTermeConceptAndThesaurusAndRole(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), TermEnum.EMPLOYE.getLabel()));
+            candidatSelected.setEmployePour(termeDao.searchTermeByConceptAndThesaurusAndRoleAndLang(connection,
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), TermEnum.EMPLOYE.getLabel(),
+                    candidatSelected.getLang()));
 
             candidatSelected.setDefenition(noteDao.getNoteCandidat(connection, 
                     candidatSelected.getIdConcepte(),

@@ -21,8 +21,8 @@ public class CandidatDto implements Serializable {
     private int nbrDemande;
     private int nbrParticipant;
 
-    private int domaine_id;
-    private String termeGenerique_id;
+    private String domaine;
+    private List<String> termesGenerique;
     private String defenition;
     private String noteApplication;
 
@@ -52,8 +52,8 @@ public class CandidatDto implements Serializable {
         this.userId = source.getUserId();
         this.user = source.getUser();
         this.nomPref = source.getNomPref();
-        this.domaine_id = source.getDomaine_id();
-        this.termeGenerique_id = source.getTermeGenerique_id();
+        this.domaine = source.getDomaine();
+        this.termesGenerique = source.getTermesGenerique();
         this.defenition = source.getDefenition();
         this.noteApplication = source.getNoteApplication();
         this.termesAssocies = source.getTermesAssocies();
@@ -62,20 +62,20 @@ public class CandidatDto implements Serializable {
         this.traductions = source.getTraductions();
     }
 
-    public int getDomaine_id() {
-        return domaine_id;
+    public String getDomaine() {
+        return domaine;
     }
 
-    public void setDomaine_id(int domaine_id) {
-        this.domaine_id = domaine_id;
+    public void setDomaine(String domaine) {
+        this.domaine = domaine;
     }
 
-    public String getTermeGenerique_id() {
-        return termeGenerique_id;
+    public List<String> getTermesGenerique() {
+        return termesGenerique;
     }
 
-    public void setTermeGenerique_id(String termeGenerique_id) {
-        this.termeGenerique_id = termeGenerique_id;
+    public void setTermesGenerique(List<String> termesGenerique) {
+        this.termesGenerique = termesGenerique;
     }
 
     public String getDefenition() {

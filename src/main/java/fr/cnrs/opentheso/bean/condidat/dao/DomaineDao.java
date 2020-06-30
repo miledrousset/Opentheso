@@ -12,16 +12,12 @@ import java.util.List;
 
 public class DomaineDao extends BasicDao {
     
-    public List<DomaineDto> getAllDomaines(Connect connect, String idThesaurus) {
+    public List<DomaineDto> getAllDomaines(Connect connect, String idThesaurus, String lang) {
         List<DomaineDto> domaines = new ArrayList<>();
         try {
             stmt = connect.getPoolConnexion().getConnection().createStatement();
-
-            String request = "SELECT idgroup, lexicalvalue FROM concept_group_label";
-            if (!StringUtils.isEmpty(idThesaurus))
-                request += " where idthesaurus = '" + idThesaurus+"'";
-
-            stmt.executeQuery(request);
+            stmt.executeQuery("SELECT idgroup, lexicalvalue FROM concept_group_label where idthesaurus = '"
+                    + idThesaurus+"' AND lang = '"+lang+"'");
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 DomaineDto domaineDto = new DomaineDto();
@@ -62,15 +58,20 @@ public class DomaineDao extends BasicDao {
         stmt.close();
     }
 
-    public int getDomaineCandidat(HikariDataSource hikariDataSource, String idconcept, String idThesaurus) {
-        int domaine = 0;
+    public String getDomaineCandidatByConceptAndThesaurusAndLang(HikariDataSource hikariDataSource, String idconcept,
+                                                              String idThesaurus, String lang) {
+        String domaine = null;
         try {
             openDataBase(hikariDataSource);
-            stmt.executeQuery(new StringBuffer("SELECT idgroup FROM concept_group_concept WHERE idthesaurus = '")
-                    .append(idThesaurus).append("' AND idconcept = '").append(idconcept).append("'").toString());
+            stmt.executeQuery(new StringBuffer("SELECT lab.lexicalvalue, lab.lang " +
+                    "FROM concept_group_concept con, concept_group_label lab " +
+                    "WHERE con.idgroup = lab.idgroup " +
+                    "AND con.idthesaurus = '"+idThesaurus+"' " +
+                    "AND idconcept = '"+idconcept+"' " +
+                    "AND lab.lang = '"+lang+"'").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
-                domaine = resultSet.getInt("idgroup");
+                domaine = resultSet.getString("lexicalvalue");
             }
             closeDataBase();
         } catch (SQLException e) {

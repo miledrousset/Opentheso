@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.sql.SQLException;
@@ -17,9 +16,6 @@ public class TermeDao extends BasicDao {
                              String idTerm) throws SQLException {
         
         stmt = connect.getPoolConnexion().getConnection().createStatement();
-        
-        // insert in preferred_term
-        //stmt.executeUpdate("INSERT INTO preferred_term(id_concept, id_term, id_thesaurus) VALUES ('" +idConcept+"', '" +idTerm+"', '"+idThesaurus+"')");
 
         // insert in non_preferred_term      
         stmt.executeUpdate(new StringBuffer("INSERT INTO non_preferred_term(lexical_value, lang, id_thesaurus, hiden, id_term) VALUES ('"
@@ -74,37 +70,22 @@ public class TermeDao extends BasicDao {
         }
     }
 
-    public String searchTGByConceptAndThesaurus(HikariDataSource hikariDataSource, String idConceptSelected, 
-            String idThesaurus) throws SQLException {
-        String idTerme = null;
-        try {
-            openDataBase(hikariDataSource);
-            stmt.executeQuery(new StringBuffer("SELECT id_concept2 FROM hierarchical_relationship WHERE id_concept1 = '")
-                    .append(idConceptSelected).append("' AND id_thesaurus= '")
-                    .append(idThesaurus).append("' AND role = 'BT'").toString());
-            resultSet = stmt.getResultSet();
-            while (resultSet.next()) {
-                idTerme = resultSet.getString("id_concept2");
-            }
-            closeDataBase();
-        } catch (SQLException e) {
-            LOG.error(e);
-            closeDataBase();
-        }
-        return idTerme;
-    }
-
-    public List<String> searchTermeConceptAndThesaurusAndRole(HikariDataSource hikariDataSource, String idConceptSelected,
-                                     String idThesaurus, String role) throws SQLException {
+    public List<String> searchTermeByConceptAndThesaurusAndRoleAndLang(HikariDataSource hikariDataSource, String idConceptSelected,
+                                     String idThesaurus, String role, String lang) throws SQLException {
         List<String> termes = new ArrayList<>();
         try {
             openDataBase(hikariDataSource);
-            stmt.executeQuery(new StringBuffer("SELECT id_concept2 FROM hierarchical_relationship WHERE id_concept1 = '")
-                    .append(idConceptSelected).append("' AND id_thesaurus= '").append(idThesaurus).append("' AND role = '")
-                    .append(role).append("'").toString());
+            stmt.executeQuery(new StringBuffer("SELECT nomPreTer.lexical_value " +
+                    "FROM hierarchical_relationship hie, non_preferred_term nomPreTer, preferred_term preTer " +
+                    "WHERE nomPreTer.id_term = preTer.id_term " +
+                    "AND hie.id_concept2 = preTer.id_concept " +
+                    "AND hie.id_concept1 = '"+idConceptSelected+"'" +
+                    "AND hie.id_thesaurus= '"+idThesaurus+"'" +
+                    "AND hie.role = '"+role+"'" +
+                    "AND nomPreTer.lang = '"+lang+"'").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
-                termes.add(resultSet.getString("id_concept2"));
+                termes.add(resultSet.getString("lexical_value"));
             }
             closeDataBase();
         } catch (SQLException e) {

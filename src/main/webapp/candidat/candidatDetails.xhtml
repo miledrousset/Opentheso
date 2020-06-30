@@ -26,45 +26,32 @@
             <h:outputText value="#{langueBean.getMsg('candidat.domaine')}"/>
         </b:column>
         <b:column>
-            <b:selectOneMenu value="#{candidatBean.candidatSelected.domaine_id}"
-                             style="width: 230px; font-size: 13px; background: white; border-color: #43B572">
-                <f:selectItems value="#{candidatBean.domaines}" var="domaine"
-                               itemLabel="#{domaine.name}" itemValue="#{domaine.id}"/>
-            </b:selectOneMenu>
+            <p:autoComplete value="#{candidatBean.candidatSelected.domaine_id}"
+                            completeMethod="#{candidatBean.searchDomaineName}"/>
         </b:column>
 
         <b:column>
             <h:outputText value="#{langueBean.getMsg('candidat.generic_term')}"/>
         </b:column>
         <b:column>
-            <b:selectOneMenu value="#{candidatBean.candidatSelected.termeGenerique_id}"
-                             style="width: 230px; font-size: 13px; background: white; border-color: #43B572">
-                <f:selectItems value="#{candidatBean.allTermes1}" var="candidat"
-                               itemLabel="#{candidat.nomPref}" itemValue="#{candidat.idConcepte}"/>
-            </b:selectOneMenu>
+            <p:autoComplete value="#{candidatBean.candidatSelected.termesGenerique}" multiple="true"
+                            completeMethod="#{candidatBean.searchTerme}"/>
         </b:column>
 
         <b:column>
             <h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}"/>
         </b:column>
         <b:column>
-            <p:selectCheckboxMenu value="#{candidatBean.candidatSelected.termesAssocies}" 
-                                  label="#{langueBean.getMsg('candidat.associeted_terms_label')}" 
-                                  multiple="true" filter="true" filterMatchMode="startsWith" 
-                                  style="width: 100%; height: 30px; font-size: 13px; background: white; border-color: #43B572">
-                <f:selectItems value="#{candidatBean.allTermes}" var="candidat" itemLabel="#{candidat.nomPref}" itemValue="#{candidat.idConcepte}"/>
-            </p:selectCheckboxMenu>
+            <p:autoComplete value="#{candidatBean.candidatSelected.termesAssocies}" multiple="true" 
+                    completeMethod="#{candidatBean.searchTerme}"/>
         </b:column>
 
         <b:column style="margin-top: 15px">
             <h:outputText value="#{langueBean.getMsg('candidat.used_for')}" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
-            <p:selectCheckboxMenu value="#{candidatBean.candidatSelected.employePour}"
-                                  multiple="true" filter="true" filterMatchMode="startsWith"
-                                  style="width: 100%; height: 30px; font-size: 13px; background: white; border-color: #43B572">
-                <f:selectItems value="#{candidatBean.allTermes}" var="candidat" itemLabel="#{candidat.nomPref}" itemValue="#{candidat.idConcepte}"/>
-            </p:selectCheckboxMenu>
+            <p:autoComplete value="#{candidatBean.candidatSelected.employePour}" multiple="true" 
+                    completeMethod="#{candidatBean.searchTerme}"/>
         </b:column>
 
         <b:column style="margin-top: 15px">

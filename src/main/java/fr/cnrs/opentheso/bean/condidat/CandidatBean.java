@@ -62,7 +62,7 @@ public class CandidatBean implements Serializable {
     private String searchValue;
 
     private CandidatDto candidatSelected, initialCandidat;
-    private List<CandidatDto> candidatList, allTermes, allTermes1;
+    private List<CandidatDto> candidatList, allTermes;
     private List<DomaineDto> domaines;
 
     @PostConstruct
@@ -101,28 +101,28 @@ public class CandidatBean implements Serializable {
     }
 
     public void showCandidatSelected(CandidatDto candidatDto) {
+
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir avant un thesaurus !");
+            return;
+        }
+
         candidatSelected = candidatDto;
         candidatSelected.setLang(languageBean.getIdLangue());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
+        candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
         candidatService.getCandidatDetails(connect, candidatSelected);
         initialCandidat = new CandidatDto(candidatSelected);
 
         allTermes = candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(candidatDto.getNomPref()))
                 .collect(Collectors.toList());
-        allTermes1 = new ArrayList<>();
-        allTermes1.add(new CandidatDto("Veuillez selectionner un terme"));
-        allTermes1.addAll(allTermes);
 
-        getDomainesListe();
+        domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
 
         conceptView.setNodeConcept(new ConceptHelper().getConcept(connect.getPoolConnexion(), candidatDto.getIdConcepte(),
                 selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue()));
 
         setIsNewCandidatActivate(true);
-    }
-
-    public boolean isIsListCandidatsActivate() {
-        return isListCandidatsActivate;
     }
 
     public void setIsListCandidatsActivate(boolean isListCandidatsActivate) {
@@ -215,7 +215,7 @@ public class CandidatBean implements Serializable {
             }
         }
 
-        candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat);
+        candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat, allTermes, domaines);
 
         candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
 
@@ -228,6 +228,73 @@ public class CandidatBean implements Serializable {
         pf.ajax().update("messageIndex");
         pf.ajax().update("candidatForm");
 
+    }
+
+    public List<String> searchDomaineName(String enteredValue) {
+        List<String> matches = new ArrayList<>();
+        for (DomaineDto s : domaines) {
+            if (s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
+                matches.add(s.getName());
+            }
+        }
+        return matches;
+    }
+
+    public List<String> searchTerme(String enteredValue) {
+        List<String> matches = new ArrayList<>();
+        //using data factory for getting suggestions
+        for (CandidatDto s : allTermes) {
+            if (s.getNomPref().toLowerCase().startsWith(enteredValue.toLowerCase())) {
+                matches.add(s.getNomPref());
+            }
+        }
+        return matches;
+    }
+
+    public void initialNewCandidat() throws SQLException {
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir avant un thesaurus !");
+            return;
+        }
+
+        Concept concept = new Concept();
+        concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+        concept.setTopConcept(true);
+        concept.setLang(languageBean.getIdLangue());
+        concept.setIdUser(currentUser.getNodeUser().getIdUser());
+        concept.setUserName(currentUser.getUsername());
+        concept.setStatus("D");
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        String idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
+
+        if (idNewConcept == null) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+        setIsNewCandidatActivate(true);
+        candidatSelected = new CandidatDto();
+        candidatSelected.setIdConcepte(idNewConcept);
+        candidatSelected.setLang(languageBean.getIdLangue());
+        candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+        candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
+
+        domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
+
+        allTermes = candidatList;
+
+        initialCandidat = null;
+    }
+
+    public void showMessage(FacesMessage.Severity messageType, String messageValue) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+        }
     }
 
     public String getMessage() {
@@ -286,55 +353,6 @@ public class CandidatBean implements Serializable {
         this.currentUser = currentUser;
     }
 
-    public void initialNewCandidat() throws SQLException {
-        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir avant un thesaurus !");
-            return;
-        }
-
-        Concept concept = new Concept();
-        concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-        concept.setTopConcept(true);
-        concept.setLang(languageBean.getIdLangue());
-        concept.setIdUser(currentUser.getNodeUser().getIdUser());
-        concept.setUserName(currentUser.getUsername());
-        concept.setStatus("D");
-
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        String idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
-
-        if (idNewConcept == null) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-        
-        setIsNewCandidatActivate(true);
-        candidatSelected = new CandidatDto();
-        candidatSelected.setIdConcepte(idNewConcept);
-        candidatSelected.setLang(languageBean.getIdLangue());
-        candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-        candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
-
-        getDomainesListe();
-        allTermes = candidatList;
-
-        allTermes1 = new ArrayList<>();
-        allTermes1.add(new CandidatDto("Veuillez selectionner un terme"));
-        allTermes1.addAll(allTermes);
-
-        initialCandidat = null;
-    }
-
-    public void showMessage(FacesMessage.Severity messageType, String messageValue) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }
-    }
-
     public List<DomaineDto> getDomaines() {
         return domaines;
     }
@@ -345,14 +363,6 @@ public class CandidatBean implements Serializable {
 
     public void setAllTermes(List<CandidatDto> allTermes) {
         this.allTermes = allTermes;
-    }
-
-    public List<CandidatDto> getAllTermes1() {
-        return allTermes1;
-    }
-
-    public void setAllTermes1(List<CandidatDto> allTermes1) {
-        this.allTermes1 = allTermes1;
     }
 
     public LanguageBean getLanguageBean() {
@@ -371,10 +381,8 @@ public class CandidatBean implements Serializable {
         this.conceptView = conceptView;
     }
 
-    private void getDomainesListe() {
-        domaines = new ArrayList<>();
-        domaines.add(new DomaineDto(0, "Selectionnez un domaine"));
-        domaines.addAll(candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso()));
+    public boolean isIsListCandidatsActivate() {
+        return isListCandidatsActivate;
     }
 
 }
