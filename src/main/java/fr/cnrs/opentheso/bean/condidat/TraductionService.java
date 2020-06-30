@@ -1,13 +1,18 @@
 package fr.cnrs.opentheso.bean.condidat;
 
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bean.condidat.dao.TermeDao;
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
+import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.stream.Collectors;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 @Named(value = "traductionService")
@@ -48,50 +53,75 @@ public class TraductionService implements Serializable {
         newTraduction = "";
     }
 
-    public void addTraductionCandidat() {
+    public void addTraductionCandidat() throws SQLException {
 
+        Term term = new Term();
+        term.setStatus("D");
+        term.setLang(newLangage);
+        term.setLexical_value(newTraduction);
+        term.setId_thesaurus(candidatBean.getCandidatSelected().getIdThesaurus());
+        term.setContributor(candidatBean.getCurrentUser().getNodeUser().getIdUser());
+        term.setIdUser(candidatBean.getCurrentUser().getNodeUser().getIdUser()+"");
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec sucée", null);
-        FacesContext.getCurrentInstance().addMessage(null, message);
-        
-        candidatBean.getCandidatSelected().getTraductions().add(new TraductionDto(newLangage, newTraduction));
+        HikariDataSource connection = connect.getPoolConnexion();
+
+        new TermHelper().addTerm(connection.getConnection(), term, candidatBean.getCandidatSelected().getIdConcepte(),
+                candidatBean.getCandidatSelected().getUserId());
+
+        refrechTraductions(connection);
+
+        connection.close();
+
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec succée");
         candidatBean.setIsNewCandidatActivate(true);
     }
 
-    public void deleteTraduction() {
-        List<TraductionDto> temps = candidatBean.getCandidatSelected().getTraductions();
-
-        for (int i = 0; i < temps.size(); i++) {
-            if (traduction != null && traduction.equals(temps.get(i).getTraduction())) {
-                temps.remove(i);
-            }
-        }
-
-        if (candidatBean.getCandidatSelected().getTraductions().size() != temps.size()) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction supprimée avec succée !", null);
-            FacesContext.getCurrentInstance().addMessage(null, message);
-
-            candidatBean.getCandidatSelected().setTraductions(temps);
-            candidatBean.setIsNewCandidatActivate(true);
-        }
+    private void refrechTraductions(HikariDataSource connection) {
+        candidatBean.getCandidatSelected().setTraductions(new TermHelper().getTraductionsOfConcept(connection,
+                candidatBean.getCandidatSelected().getIdConcepte(),
+                candidatBean.getCandidatSelected().getIdThesaurus(),
+                candidatBean.getCandidatSelected().getLang())
+                .stream().map(termPref -> new TraductionDto(LanguageEnum.valueOf(termPref.getLang()).getLanguage(),
+                        termPref.getLexicalValue())).collect(Collectors.toList()));
     }
 
-    public void updateTraduction() {
+    public void deleteTraduction() throws SQLException {
 
-        List<TraductionDto> temps = candidatBean.getCandidatSelected().getTraductions();
+        HikariDataSource connection = connect.getPoolConnexion();
 
-        for (TraductionDto traductionDto : temps) {
-            if (traductionOld != null && traductionOld.equals(traductionDto.getTraduction())
-                    && langageOld != null && langageOld.equals(traductionDto.getLangue())) {
-                traductionDto.setLangue(langage);
-                traductionDto.setTraduction(traduction);
-            }
-        }
+        new TermeDao().deleteTermByValueAndLangAndThesaurus(connection, candidatBean.getCandidatSelected().getIdThesaurus(), langage, traduction);
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Traduction mise à jour avec succée !", null);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+        refrechTraductions(connection);
 
-        candidatBean.getCandidatSelected().setTraductions(temps);
+        connection.close();
+
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction supprimée avec succée");
+        candidatBean.setIsNewCandidatActivate(true);
+    }
+
+    public void updateTraduction() throws SQLException {
+
+        HikariDataSource connection = connect.getPoolConnexion();
+
+        new TermeDao().deleteTermByValueAndLangAndThesaurus(connection, candidatBean.getCandidatSelected().getIdThesaurus(),
+                langageOld, traductionOld);
+
+        Term term = new Term();
+        term.setStatus("D");
+        term.setLang(langage);
+        term.setLexical_value(traduction);
+        term.setId_thesaurus(candidatBean.getCandidatSelected().getIdThesaurus());
+        term.setContributor(candidatBean.getCurrentUser().getNodeUser().getIdUser());
+        term.setIdUser(candidatBean.getCurrentUser().getNodeUser().getIdUser()+"");
+
+        new TermHelper().addTerm(connection.getConnection(), term, candidatBean.getCandidatSelected().getIdConcepte(),
+                candidatBean.getCandidatSelected().getUserId());
+
+        refrechTraductions(connection);
+
+        connection.close();
+
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction mise à jour avec succée !");
         candidatBean.setIsNewCandidatActivate(true);
     }
 

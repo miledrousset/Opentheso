@@ -2,15 +2,22 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idEditTraduction" header="Modifier une traduction" widgetVar="editTraduction" 
               modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" >  
 
         <h:form id="editTraductionForm">
 
-            <b:inputText value="#{traductionService.langage}" required="true" 
-                         label="Langage : " style="font-size: 12px;" />
+            <b:selectOneMenu required="true" label="Langage : " value="#{traductionService.langage}"
+                             style="font-size: 12px;">
+                <f:selectItem itemLabel="Français" itemValue="FR" />
+                <f:selectItem itemLabel="English"  itemValue="EN" />
+                <f:selectItem itemLabel="Española" itemValue="ES" />
+                <f:selectItem itemLabel="Italiano" itemValue="IT" />
+                <f:selectItem itemLabel="Deutsche" itemValue="DE" />
+            </b:selectOneMenu>
 
             <b:inputText value="#{traductionService.traduction}" required="true" 
                          label="Traduction : " style="font-size: 12px;" />

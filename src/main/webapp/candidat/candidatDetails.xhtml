@@ -39,7 +39,7 @@
         <b:column>
             <b:selectOneMenu value="#{candidatBean.candidatSelected.termeGenerique_id}"
                              style="width: 230px; font-size: 13px; background: white; border-color: #43B572">
-                <f:selectItems value="#{candidatBean.allTermes}" var="candidat"
+                <f:selectItems value="#{candidatBean.allTermes1}" var="candidat"
                                itemLabel="#{candidat.nomPref}" itemValue="#{candidat.idConcepte}"/>
             </b:selectOneMenu>
         </b:column>
@@ -60,8 +60,8 @@
             <h:outputText value="#{langueBean.getMsg('candidat.used_for')}" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
-            <p:selectCheckboxMenu value="#{candidatBean.candidatSelected.employePour}" 
-                                  multiple="true" filter="true" filterMatchMode="startsWith" 
+            <p:selectCheckboxMenu value="#{candidatBean.candidatSelected.employePour}"
+                                  multiple="true" filter="true" filterMatchMode="startsWith"
                                   style="width: 100%; height: 30px; font-size: 13px; background: white; border-color: #43B572">
                 <f:selectItems value="#{candidatBean.allTermes}" var="candidat" itemLabel="#{candidat.nomPref}" itemValue="#{candidat.idConcepte}"/>
             </p:selectCheckboxMenu>
@@ -104,10 +104,16 @@
                         <h:outputText value="#{langueBean.getMsg('candidat.remove')}"/>
                     </b:column>                         
                 </b:row>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                <b:row rendered="#{candidatBean.candidatSelected.traductions.size() == 0}">
+                    <b:column>
+                        <h:outputText  value="Aucune traduction n'est disponible ..." style="font-size: 12px; color: grey; font-style: italic " />
+                    </b:column>
+                </b:row>
                 <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.
-                                     candidatSelected.traductions.indexOf(traduction))}; padding-top: 5px">
+                                candidatSelected.traductions.indexOf(traduction))}; padding-top: 5px"
+                                rendered="#{candidatBean.candidatSelected.traductions.size() > 0}">
                         <b:column span="4" >
                             <h:outputText value="#{traduction.langue}"/>
                         </b:column>
@@ -136,7 +142,7 @@
                     <b:column>
                         <b:navCommandLink value="Ajouter une nouvelle traduction"
                                           oncomplete="PF('newTraduction').show();" ajax="false"
-                                          styleClass="buttonIconOrange" style="color: #43B572"
+                                          styleClass="buttonIconOrange" style="color: #f47b2a"
                                           actionListener="#{traductionService.init()}"
                                           update="idNewTraduction newTraductionForm messageIndex"/>
                     </b:column>
@@ -165,10 +171,16 @@
                         <h:outputText value="#{langueBean.getMsg('candidat.remove')}"/>
                     </b:column>                         
                 </b:row>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                <b:row rendered="#{candidatBean.candidatSelected.corpus.size() == 0}">
+                    <b:column>
+                        <h:outputText  value="Aucun corpus n'est disponible ..." style="font-size: 12px; color: grey; font-style: italic " />
+                    </b:column>
+                </b:row>
                 <ui:repeat id="listCorpus" var="carpus" value="#{candidatBean.candidatSelected.corpus}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(
-                                 candidatBean.candidatSelected.corpus.indexOf(carpus))}; padding-top: 5px">
+                           candidatBean.candidatSelected.corpus.indexOf(carpus))}; padding-top: 5px"
+                           rendered="#{candidatBean.candidatSelected.corpus.size() > 0}">
                         <b:column span="4" >
                             <h:outputText value="#{carpus.value}"/>
                         </b:column>
@@ -196,7 +208,7 @@
                     <b:column>
                         <b:navCommandLink value="Ajouter une nouvelle corpus"
                                           oncomplete="PF('newCorpus').show();" ajax="false"
-                                          styleClass="buttonIconOrange" style="color: #43B572"
+                                          styleClass="buttonIconOrange" style="color: #f47b2a"
                                           actionListener="#{corpusService.init()}"
                                           update="idNewCorpus newCorpusForm"/>
                     </b:column>
@@ -220,21 +232,21 @@
                     </b:column>
                 </b:row>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                <b:row rendered="#{conceptView.nodeConcept.nodeAlignments == null || conceptView.nodeConcept.nodeAlignments.size() == 0}">
+                    <b:column>
+                        <h:outputText value="pas d'alignements" style="font-size: 12px; color: grey; font-style: italic " />
+                    </b:column>
+                </b:row>
                 <ui:repeat id="listAlignements" var="allignement" value="#{conceptView.nodeConcept.nodeAlignments}">
-                    <b:row rendered="#{conceptView.nodeConcept.nodeAlignments.size() == 0}">
-                        <h:outputText  value="....." title="pas d'alignements" style="font-size: 12px; color: grey; font-style: italic " />
-                    </b:row>
                     <b:row rendered="#{conceptView.nodeConcept.nodeAlignments.size() != 0}"
-                            style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected
-                            .corpus.indexOf(carpus))}; padding-top: 5px">
+                            style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(conceptView.nodeConcept
+                            .nodeAlignments.indexOf(carpus))}; padding-top: 5px">
                         <b:column span="3" >
                             <h:outputText value="#{allignement.alignmentLabelType}"/>
                         </b:column>
                         <b:column span="9" >
-                            <b:link href="#{allignement.uri_target}"
-                                    value="#{allignement.uri_target}"
-                                    tooltip="#{allignement.thesaurus_target}" tooltip-delay-show="1000"
-                                    target="_blank"
+                            <b:link href="#{allignement.uri_target}" value="#{allignement.uri_target}"
+                                    tooltip="#{allignement.thesaurus_target}" tooltip-delay-show="1000" target="_blank"
                                     icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
                         </b:column>
                     </b:row>
@@ -245,41 +257,34 @@
                         <b:dropMenu icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                                     style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <b:navCommandLink value="Ajouter alignement auto"
-                                              actionListener="#{alignmentBean.initAlignementByStep(
-                                                        selectedTheso.currentIdTheso,
-                                                        conceptView.nodeConcept.concept.idConcept,
-                                                        conceptView.selectedLang)}"
+                                              actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
+                                                        conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
                                               action="#{alignmentBean.nextTen(conceptView.selectedLang, selectedTheso.currentIdTheso)}"
-                                              oncomplete="PF('addAlignment').show();"
-                                              update="idAddAlignment addAlignmentForm"
-                                              style="font-size: 12px;"></b:navCommandLink>
+                                              oncomplete="PF('addAlignment').show();" update="candidatForm" style="font-size: 12px;"/>
 
-                            <b:navCommandLink value="Ajouter alignement manuel"
-                                              actionListener="#{alignmentManualBean.reset()}"
-                                              oncomplete="PF('addManualAlignment').show();"
-                                              update="idAddManualAlignment addManualAlignmentForm"
-                                              style="font-size: 12px;"></b:navCommandLink>
+                            <b:navCommandLink value="Ajouter alignement manuel" actionListener="#{alignmentManualBean.reset()}"
+                                              oncomplete="PF('addManualAlignment').show();" update="candidatForm"
+                                              style="font-size: 12px;"/>
 
-                            <b:navCommandLink value="Modifier l'alignement"
-                                              action="#{alignmentManualBean.reset()}"
-                                              oncomplete="PF('updateAlignment').show();"
-                                              update="idUpdateAlignment updateAlignmentForm"
-                                              style="font-size: 12px;"></b:navCommandLink>
+                            <b:navCommandLink value="Modifier l'alignement" action="#{alignmentManualBean.reset()}"
+                                              oncomplete="PF('updateAlignment').show();" update="candidatForm"
+                                              style="font-size: 12px;"/>
 
                             <b:navCommandLink value="supprimer alignement"
-                                              actionListener="#{alignmentBean.initAlignementByStep(
-                                                        selectedTheso.currentIdTheso,
-                                                        conceptView.nodeConcept.concept.idConcept,
-                                                        conceptView.selectedLang)}"
-                                              action="#{alignmentManualBean.reset()}"
-                                              oncomplete="PF('deleteAlignment').show();"
-                                              update="idDeleteAlignment deleteAlignmentForm"
-                                              style="font-size: 12px;"></b:navCommandLink>
+                                              actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
+                                                        conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
+                                              action="#{alignmentManualBean.reset()}" oncomplete="PF('deleteAlignment').show();"
+                                              update="candidatForm" style="font-size: 12px;"/>
                         </b:dropMenu>
                     </b:column>
                 </b:row>
             </h:form>
         </b:column>
+    </b:row>
+
+    <b:row style="margin-top: 20px; margin-left: 10px;">
+        <b:commandButton value="#{langueBean.getMsg('candidat.save')}" style="background: #43B572; color: white; margin-left: 5px"
+                         look="primary" size="sm" actionListener="#{candidatBean.saveConcept()}" />
     </b:row>
 
 </ui:fragment>

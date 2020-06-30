@@ -30,7 +30,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
-
 @Named(value = "candidatBean")
 @SessionScoped
 public class CandidatBean implements Serializable {
@@ -46,7 +45,7 @@ public class CandidatBean implements Serializable {
 
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
-    
+
     @Inject
     private LanguageBean languageBean;
 
@@ -63,7 +62,7 @@ public class CandidatBean implements Serializable {
     private String searchValue;
 
     private CandidatDto candidatSelected, initialCandidat;
-    private List<CandidatDto> candidatList, allTermes;
+    private List<CandidatDto> candidatList, allTermes, allTermes1;
     private List<DomaineDto> domaines;
 
     @PostConstruct
@@ -103,10 +102,17 @@ public class CandidatBean implements Serializable {
 
     public void showCandidatSelected(CandidatDto candidatDto) {
         candidatSelected = candidatDto;
-        candidatService.getCandidatDetails(connect, candidatSelected, currentUser.getUsername());
+        candidatSelected.setLang(languageBean.getIdLangue());
+        candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
+        candidatService.getCandidatDetails(connect, candidatSelected);
         initialCandidat = new CandidatDto(candidatSelected);
+
         allTermes = candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(candidatDto.getNomPref()))
                 .collect(Collectors.toList());
+        allTermes1 = new ArrayList<>();
+        allTermes1.add(new CandidatDto("Veuillez selectionner un terme"));
+        allTermes1.addAll(allTermes);
+
         getDomainesListe();
 
         conceptView.setNodeConcept(new ConceptHelper().getConcept(connect.getPoolConnexion(), candidatDto.getIdConcepte(),
@@ -114,7 +120,6 @@ public class CandidatBean implements Serializable {
 
         setIsNewCandidatActivate(true);
     }
-
 
     public boolean isIsListCandidatsActivate() {
         return isListCandidatsActivate;
@@ -142,8 +147,7 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        if (roleOnThesoBean.getNodePreference()
-                == null) {
+        if (roleOnThesoBean.getNodePreference() == null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -156,8 +160,7 @@ public class CandidatBean implements Serializable {
 
             conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-            // en cas d'un nouveau candidat
-            // verification dans les prefLabels
+            // en cas d'un nouveau candidat, verification dans les prefLabels
             if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
                     selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un TopTerme existe déjà avec ce nom !");
@@ -172,34 +175,21 @@ public class CandidatBean implements Serializable {
                 return;
             }
 
-            Concept concept = new Concept();
-            concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-            concept.setTopConcept(true);
-            concept.setLang(selectedTheso.getSelectedLang());
-            concept.setIdUser(currentUser.getNodeUser().getIdUser());
-            concept.setUserName(currentUser.getUsername());
-            concept.setStatus("D");
-
             Term terme = new Term();
             terme.setId_thesaurus(selectedTheso.getCurrentIdTheso());
-            terme.setLang(selectedTheso.getSelectedLang());
+            terme.setLang(languageBean.getIdLangue());
+            terme.setContributor(currentUser.getNodeUser().getIdUser());
             terme.setLexical_value(candidatSelected.getNomPref().trim());
             terme.setStatus("D");
-
-            String idNewConcept = candidatService.saveNewCondidat(connect, concept,
-                    terme, candidatSelected, conceptHelper);
-
-            if (idNewConcept == null) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
+            
+            candidatService.saveNewTerm(connect, terme, candidatSelected);
 
             if (conceptHelper.getNodePreference() != null) {
                 ArrayList<String> idConcepts = new ArrayList<>();
                 // création de l'identifiant Handle
                 if (conceptHelper.getNodePreference().isUseHandle()) {
-                    if (!conceptHelper.addIdHandle(connect.getPoolConnexion().getConnection(), idNewConcept, concept.getIdThesaurus())) {
+                    if (!conceptHelper.addIdHandle(connect.getPoolConnexion().getConnection(), candidatSelected.getIdConcepte(), 
+                            candidatSelected.getIdThesaurus())) {
                         connect.getPoolConnexion().getConnection().rollback();
                         connect.getPoolConnexion().close();
                         Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Handle a échouée");
@@ -208,8 +198,8 @@ public class CandidatBean implements Serializable {
                 }
 
                 if (conceptHelper.getNodePreference().isUseArk()) {
-                    idConcepts.add(idNewConcept);
-                    if (!conceptHelper.generateArkId(connect.getPoolConnexion(), concept.getIdThesaurus(), idConcepts)) {
+                    idConcepts.add(candidatSelected.getIdConcepte());
+                    if (!conceptHelper.generateArkId(connect.getPoolConnexion(), candidatSelected.getIdThesaurus(), idConcepts)) {
                         connect.getPoolConnexion().getConnection().rollback();
                         connect.getPoolConnexion().close();
                         message = message + "La création Ark a échouée";
@@ -296,17 +286,44 @@ public class CandidatBean implements Serializable {
         this.currentUser = currentUser;
     }
 
-    public void initialNewCandidat() {
+    public void initialNewCandidat() throws SQLException {
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir avant un thesaurus !");
             return;
         }
+
+        Concept concept = new Concept();
+        concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+        concept.setTopConcept(true);
+        concept.setLang(languageBean.getIdLangue());
+        concept.setIdUser(currentUser.getNodeUser().getIdUser());
+        concept.setUserName(currentUser.getUsername());
+        concept.setStatus("D");
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        String idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
+
+        if (idNewConcept == null) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        
         setIsNewCandidatActivate(true);
         candidatSelected = new CandidatDto();
+        candidatSelected.setIdConcepte(idNewConcept);
         candidatSelected.setLang(languageBean.getIdLangue());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+        candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
+
         getDomainesListe();
         allTermes = candidatList;
+
+        allTermes1 = new ArrayList<>();
+        allTermes1.add(new CandidatDto("Veuillez selectionner un terme"));
+        allTermes1.addAll(allTermes);
+
         initialCandidat = null;
     }
 
@@ -330,6 +347,14 @@ public class CandidatBean implements Serializable {
         this.allTermes = allTermes;
     }
 
+    public List<CandidatDto> getAllTermes1() {
+        return allTermes1;
+    }
+
+    public void setAllTermes1(List<CandidatDto> allTermes1) {
+        this.allTermes1 = allTermes1;
+    }
+
     public LanguageBean getLanguageBean() {
         return languageBean;
     }
@@ -351,5 +376,5 @@ public class CandidatBean implements Serializable {
         domaines.add(new DomaineDto(0, "Selectionnez un domaine"));
         domaines.addAll(candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso()));
     }
- 
+
 }

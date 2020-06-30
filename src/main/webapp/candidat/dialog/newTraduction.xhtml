@@ -10,8 +10,14 @@
 
         <h:form id="newTraductionForm" style="width: 320px; display: block; margin-left: auto; margin-right: auto;">
 
-            <b:inputText value="#{traductionService.newLangage}" required="true" 
-                         label="Langage : " style="font-size: 12px;" />
+            <b:selectOneMenu required="true" label="Langage : " value="#{traductionService.newLangage}"
+                             style="font-size: 12px;">
+                <f:selectItem itemLabel="Français" itemValue="FR" />
+                <f:selectItem itemLabel="English"  itemValue="EN" />
+                <f:selectItem itemLabel="Española" itemValue="ES" />
+                <f:selectItem itemLabel="Italiano" itemValue="IT" />
+                <f:selectItem itemLabel="Deutsche" itemValue="DE" />
+            </b:selectOneMenu>
 
             <b:inputText value="#{traductionService.newTraduction}" required="true" 
                          label="Traduction : " style="font-size: 12px;" />

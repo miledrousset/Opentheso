@@ -10,6 +10,7 @@ public class NoteDao extends BasicDao {
         
         String definition = null;
         try {
+
             openDataBase(hikariDataSource);
             stmt.executeQuery(new StringBuffer("SELECT lexicalvalue FROM note WHERE notetypecode = '")
                     .append(noteType).append("' AND id_concept = '").append(idconcept)

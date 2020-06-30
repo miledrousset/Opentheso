@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
 import fr.cnrs.opentheso.bean.condidat.dao.DomaineDao;
@@ -12,7 +13,10 @@ import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.condidat.dao.NoteDao;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
+import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
+import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import fr.cnrs.opentheso.bean.condidat.enumeration.NoteEnum;
+import fr.cnrs.opentheso.bean.condidat.enumeration.TermEnum;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.Serializable;
@@ -23,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -64,10 +70,9 @@ public class CandidatService implements Serializable {
         }
         return temps;
     }
-
-    public String saveNewCondidat(Connect connect, Concept concept, Term term,
-            CandidatDto candidatSelected, ConceptHelper conceptHelper) throws SQLException {
-
+    
+    public String saveNewCondidat(Connect connect, Concept concept, ConceptHelper conceptHelper) 
+            throws SQLException {
         HikariDataSource connection = connect.getPoolConnexion();
         String idNewCondidat = conceptHelper.addConceptInTable(connect.getPoolConnexion().getConnection(), concept, concept.getIdUser());
         if (idNewCondidat == null) {
@@ -76,27 +81,36 @@ public class CandidatService implements Serializable {
             return null;
         }
 
-        new CandidatDao().setStatutForCandidat(connection, 0, idNewCondidat,
-                concept.getIdThesaurus(), concept.getIdUser() + "");
+        new CandidatDao().setStatutForCandidat(connection, 1, idNewCondidat, concept.getIdThesaurus(),
+                concept.getIdUser() + "");
 
-        String idTerm = new TermHelper().addTerm(connect.getPoolConnexion().getConnection(),
-                term, idNewCondidat, concept.getIdUser());
+        connection.close();
+        return idNewCondidat;
+    }
+
+    public String saveNewTerm(Connect connect, Term term, CandidatDto candidatSelected) throws SQLException {
+        
+        HikariDataSource connection = connect.getPoolConnexion();
+        
+        String idTerm = new TermHelper().addTerm(connect.getPoolConnexion().getConnection(), term,
+                candidatSelected.getIdConcepte(), candidatSelected.getUserId());
+
         if (idTerm == null) {
             connect.getPoolConnexion().getConnection().rollback();
             connect.getPoolConnexion().close();
             return null;
         }
 
-        new TermeDao().saveIntitule(connect, candidatSelected.getNomPref(),
-                concept.getIdThesaurus(), concept.getLang(), idNewCondidat,
-                concept.getIdUser() + "", idTerm);
+        new TermeDao().saveIntitule(connect, candidatSelected.getNomPref(), candidatSelected.getIdThesaurus(), 
+                candidatSelected.getLang(), candidatSelected.getIdConcepte(), idTerm);
+        
+        connection.close();
 
-        return idNewCondidat;
+        return idTerm;
     }
 
     public void updateIntitule(Connect connect, String intitule, String idThesaurus,
-            String lang, String idConcept, String idTerm) throws SQLException {
-
+            String lang, String idConcept, String idTerm) {
         new TermeDao().updateIntitule(connect, intitule, idThesaurus, lang, idConcept, idTerm);
     }
 
@@ -104,7 +118,7 @@ public class CandidatService implements Serializable {
             throws SQLException {
 
         //update domaine
-        if (initialCandidat.getDomaine_id() == 0 && candidatSelected.getDomaine_id() > 0) {
+        if (initialCandidat == null || (initialCandidat.getDomaine_id() == 0 && candidatSelected.getDomaine_id() > 0)) {
             new DomaineDao().addNewDomaine(connect, candidatSelected.getDomaine_id(), candidatSelected.getIdThesaurus(),
                     candidatSelected.getIdConcepte());
         } else if (candidatSelected.getDomaine_id() != initialCandidat.getDomaine_id()
@@ -115,47 +129,58 @@ public class CandidatService implements Serializable {
         }
 
         //update terme générique
-        if (initialCandidat.getTermeGenerique_id() == null && candidatSelected.getTermeGenerique_id() != null) {
+        if (initialCandidat == null || (initialCandidat.getTermeGenerique_id() == null && candidatSelected.getTermeGenerique_id() != null)) {
             new TermeDao().saveNewTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
-                    candidatSelected.getIdThesaurus(), "TG");
+                    candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel());
         } else if (!candidatSelected.getTermeGenerique_id().equals(initialCandidat.getDomaine_id())) {
             if (candidatSelected.getTermeGenerique_id() == null) {
                 new TermeDao().deleteExistingTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
-                        candidatSelected.getIdThesaurus(), "TG");
+                        candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel());
             } else {
                 new TermeDao().updateTerme(connect, candidatSelected.getIdConcepte(), candidatSelected.getTermeGenerique_id(),
-                        candidatSelected.getIdThesaurus(), "TG");
+                        candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel());
             }
         }
 
         //update terme associés
         TermeDao termeDao = new TermeDao();
         termeDao.deleteAllTermesByConcepteAndRole(connect, candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus(), "TS");
+                candidatSelected.getIdThesaurus(), TermEnum.TERME_ASSOCIE.getLabel());
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesAssocies())) {
             //insert new associted termes-
             candidatSelected.getTermesAssocies().stream().forEach(terme -> {
                 termeDao.saveNewTerme(connect, candidatSelected.getIdConcepte(), terme,
-                        candidatSelected.getIdThesaurus(), "TS");
+                        candidatSelected.getIdThesaurus(), TermEnum.TERME_ASSOCIE.getLabel());
+            });
+        }
+
+        // Employé pour
+        RelationsHelper relationsHelper = new RelationsHelper();
+        termeDao.deleteAllTermesByConcepteAndRole(connect, candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), TermEnum.EMPLOYE.getLabel());
+        if (!CollectionUtils.isEmpty(candidatSelected.getEmployePour())) {
+            //insert new associted termes-
+            candidatSelected.getEmployePour().stream().forEach(terme -> {
+                termeDao.saveNewTerme(connect, candidatSelected.getIdConcepte(), terme,
+                        candidatSelected.getIdThesaurus(), TermEnum.EMPLOYE.getLabel());
             });
         }
 
         //update défénition
         saveNote(connect, initialCandidat == null ? "" : initialCandidat.getDefenition(), candidatSelected.getDefenition(),
-                candidatSelected, "definition");
+                candidatSelected, NoteEnum.DEFINITION.getName());
 
         //update note
         saveNote(connect, initialCandidat == null ? "" : initialCandidat.getNoteApplication(), candidatSelected.getNoteApplication(),
-                candidatSelected, "note");
+                candidatSelected, NoteEnum.NOTE.getName());
 
-        //update traduction
     }
 
     public List<DomaineDto> getDomainesList(Connect connect, String idThesaurus) {
         return new DomaineDao().getAllDomaines(connect, idThesaurus);
     }
 
-    public void getCandidatDetails(Connect connect, CandidatDto candidatSelected, String username) {
+    public void getCandidatDetails(Connect connect, CandidatDto candidatSelected) {
         HikariDataSource connection = connect.getPoolConnexion();
         try {
             NoteDao noteDao = new NoteDao();
@@ -168,9 +193,12 @@ public class CandidatService implements Serializable {
             candidatSelected.setTermeGenerique_id(termeDao.searchTGByConceptAndThesaurus(connection,
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
             
-            candidatSelected.setTermesAssocies(termeDao.searchTSByConceptAndThesaurus(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
-            
+            candidatSelected.setTermesAssocies(termeDao.searchTermeConceptAndThesaurusAndRole(connection,
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), TermEnum.TERME_ASSOCIE.getLabel()));
+
+            candidatSelected.setEmployePour(termeDao.searchTermeConceptAndThesaurusAndRole(connection,
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), TermEnum.EMPLOYE.getLabel()));
+
             candidatSelected.setDefenition(noteDao.getNoteCandidat(connection, 
                     candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), 
@@ -182,9 +210,13 @@ public class CandidatService implements Serializable {
                     candidatSelected.getIdThesaurus(), 
                     NoteEnum.NOTE.getName(),
                     candidatSelected.getLang()));
-            
-            candidatSelected.setTraductions(termeDao.getTraductionsCandidat(connection, 
-                    candidatSelected.getIdThesaurus()));
+
+            candidatSelected.setTraductions(new TermHelper().getTraductionsOfConcept(connection,
+                    candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdThesaurus(),
+                    candidatSelected.getLang())
+                    .stream().map(term -> new TraductionDto(LanguageEnum.valueOf(term.getLang()).getLanguage(),
+                            term.getLexicalValue())).collect(Collectors.toList()));
             
             candidatSelected.setMessages(messageDao.getAllMessagesByCandidat(connection, 
                     candidatSelected.getIdConcepte(),
@@ -194,7 +226,6 @@ public class CandidatService implements Serializable {
             candidatSelected.setParticipants(messageDao.getParticipantsByCandidat(connection, 
                     candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus()));
-
             connection.close();
             connect.getPoolConnexion().getConnection().close();
         } catch (SQLException e) {

@@ -37,9 +37,9 @@ public class BasicDao {
     }
     
     protected void closeDataBase() throws SQLException {
-        if (!resultSet.isClosed()) resultSet.close();
-        if (!stmt.isClosed()) stmt.close();
-        if (!connection.isClosed()) connection.close();
+        if (resultSet != null && resultSet.isClosed()) resultSet.close();
+        if (stmt != null && !stmt.isClosed()) stmt.close();
+        if (connection != null && !connection.isClosed()) connection.close();
     }
     
 }
