@@ -27,7 +27,7 @@ public class NoteDao extends BasicDao {
         return definition;
     }
 
-    public void SaveNote(HikariDataSource hikariDataSource, String noteType, String noteValue, String idTerme, String idConcepte,
+    public void saveNote(HikariDataSource hikariDataSource, String noteType, String noteValue, String idTerme, String idConcepte,
                          String idThesaurus, String lang) {
         try {
             openDataBase(hikariDataSource);

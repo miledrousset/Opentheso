@@ -17,25 +17,17 @@ public class CandidatDao extends BasicDao {
 
         openDataBase(hikariDataSource);
 
-        StringBuffer request = new StringBuffer("SELECT nomPreTer.lang, nomPreTer.id_term, nomPreTer.lexical_value,")
+        stmt.executeQuery(new StringBuffer("SELECT nomPreTer.lang, nomPreTer.id_term, nomPreTer.lexical_value,")
                 .append("con.id_concept, con.id_thesaurus, con.created, users.username, term.contributor ")
                 .append("FROM non_preferred_term nomPreTer, preferred_term preTer, concept con, term, users ")
                 .append("WHERE nomPreTer.id_term = preTer.id_term ")
                 .append("AND con.id_concept = preTer.id_concept ")
                 .append("AND term.id_term = nomPreTer.id_term ")
-                .append("AND users.id_user = term.contributor ");
+                .append("AND users.id_user = term.contributor ")
+                .append("AND nomPreTer.lang = '").append(lang).append("' ")
+                .append("AND con.id_thesaurus = '").append(idThesaurus).append("'")
+                .append("ORDER BY nomPreTer.lexical_value ASC").toString());
 
-        if (!StringUtils.isEmpty(lang)) {
-            request.append("AND nomPreTer.lang = '").append(lang).append("' ");
-        }
-
-        if (!StringUtils.isEmpty(idThesaurus)) {
-            request.append("AND con.id_thesaurus = '").append(idThesaurus).append("'");
-        }
-
-        request.append("ORDER BY nomPreTer.lexical_value ASC");
-
-        stmt.executeQuery(request.toString());
         resultSet = stmt.getResultSet();
 
         while (resultSet.next()) {

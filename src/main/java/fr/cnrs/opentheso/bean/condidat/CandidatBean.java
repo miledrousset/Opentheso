@@ -52,7 +52,7 @@ public class CandidatBean implements Serializable {
     @Inject
     private ConceptView conceptView;
 
-    private CandidatService candidatService;
+    private CandidatService candidatService = new CandidatService();
 
     private boolean isListCandidatsActivate;
     private boolean isNewCandidatActivate;
@@ -66,13 +66,15 @@ public class CandidatBean implements Serializable {
     private List<DomaineDto> domaines;
 
     @PostConstruct
-    public void init() {
-        candidatService = new CandidatService();
-
+    public void initCandidatModule() {
         isListCandidatsActivate = true;
         isNewCandidatActivate = false;
 
-        selectedTheso.getSelectedIdTheso();
+        if (StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez selectionner un Thesorus avant !");
+            return;
+        }
+
         candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
     }
 
