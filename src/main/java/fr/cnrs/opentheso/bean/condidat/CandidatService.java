@@ -256,9 +256,14 @@ public class CandidatService implements Serializable {
     }
 
     public void saveNote(Connect connect, List<String> newNoteValue, CandidatDto candidatSelected, String noteType) {
+        HikariDataSource connection = connect.getPoolConnexion();
+        NoteDao noteDao = new NoteDao();
+        noteDao.deleteAllNoteByConceptAndThesaurusAndType(connection, noteType, candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());
         newNoteValue.forEach(note -> {
-            saveNote(connect, note, candidatSelected, NoteEnum.DEFINITION.getName());
+            noteDao.saveNote(connection, noteType, note, candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         });
+        connection.close();
     }
 
 }

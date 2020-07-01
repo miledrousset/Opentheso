@@ -15,21 +15,24 @@ public class DefinitionBean implements Serializable {
     private CandidatBean candidatBean;
 
     private String definition;
+    private String oldDefinition;
 
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-    
     public void init() {
         this.definition = "";
     }
-    
+
     public void init(String definition) {
         this.definition = definition;
+        this.oldDefinition = definition;
+    }
+
+    public void editDefinition() {
+        int pos = candidatBean.getCandidatSelected().getDefenitions().indexOf(oldDefinition);
+
+        if (pos > -1) {
+            candidatBean.getCandidatSelected().getDefenitions().set(pos, definition);
+        }
+        definition = "";
     }
     
     public void addDefinition() {
@@ -62,6 +65,22 @@ public class DefinitionBean implements Serializable {
             }
         }
         definition = "";
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
+    }
+
+    public String getOldDefinition() {
+        return oldDefinition;
+    }
+
+    public void setOldDefinition(String oldDefinition) {
+        this.oldDefinition = oldDefinition;
     }
 
 }

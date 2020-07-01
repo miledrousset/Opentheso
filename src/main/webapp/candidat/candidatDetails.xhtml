@@ -69,9 +69,17 @@
                     <ui:repeat id="listdefinitions" var="def" value="#{candidatBean.candidatSelected.defenitions}" >
                         <b:row style="font-size: 12px; padding-top: 5px"
                                rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
-                            <b:column span="11" >
+                            <b:column span="10" >
                                 <h:outputText value="#{def}"/>
-                            </b:column>  
+                            </b:column>
+                            <b:column span="1">
+                                <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
+                                                  oncomplete="PF('editDefinition').show();" style="color: #f47b2a;"
+                                                  actionListener="#{definitionBean.init(def)}"
+                                                  styleClass="buttonIconOrange" ajax="false"
+                                                  update="idEditDefinition editDefinitionForm"/>
+                            </b:column>
+
                             <b:column span="1">
                                 <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
                                                   styleClass="buttonIconOrange" style="color: #f47b2a;"

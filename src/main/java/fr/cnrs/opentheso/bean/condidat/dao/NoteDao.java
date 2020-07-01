@@ -91,4 +91,16 @@ public class NoteDao extends BasicDao {
             LOG.error(e);
         }
     }
+
+    public void deleteAllNoteByConceptAndThesaurusAndType(HikariDataSource hikariDataSource, String noteType,
+                                                          String idConcepte, String idThesaurus) {
+        try {
+            openDataBase(hikariDataSource);
+            stmt.executeUpdate(new StringBuffer("DELETE FROM note WHERE notetypecode= '").append(noteType).append("' AND id_thesaurus='")
+                    .append(idThesaurus).append("' AND id_concept='").append(idConcepte).append("'").toString());
+            closeDataBase();
+        } catch (SQLException e) {
+            LOG.error(e);
+        }
+    }
 }
