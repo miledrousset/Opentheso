@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -99,5 +98,17 @@ public class CandidatDao extends BasicDao {
                 "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus) "
                 + "VALUES (" + idConcepte + ", " + status + ", now(), " + idUser + ", '" + idThesaurus + "')");
         closeDataBase();
+    }
+
+    public int getMaxCandidatId(HikariDataSource hikariDataSource) throws SQLException {
+        int nbrDemande = 0;
+        openDataBase(hikariDataSource);
+        stmt.executeQuery(new StringBuffer("SELECT COALESCE(max(id_concept), '0') max_id from concept").toString());
+        resultSet = stmt.getResultSet();
+        while (resultSet.next()) {
+            nbrDemande = resultSet.getInt("max_id");
+        }
+        closeDataBase();
+        return nbrDemande;
     }
 }

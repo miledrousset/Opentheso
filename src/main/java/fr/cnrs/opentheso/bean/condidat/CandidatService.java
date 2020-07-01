@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
 import fr.cnrs.opentheso.bean.condidat.dao.DomaineDao;
@@ -69,6 +68,13 @@ public class CandidatService implements Serializable {
             }
         }
         return temps;
+    }
+
+    public String getCandidatID(Connect connect) throws SQLException {
+        HikariDataSource connection = connect.getPoolConnexion();
+        int id = new CandidatDao().getMaxCandidatId(connection) + 1;
+        connection.close();
+        return id+"";
     }
     
     public String saveNewCondidat(Connect connect, Concept concept, ConceptHelper conceptHelper) 
@@ -162,7 +168,7 @@ public class CandidatService implements Serializable {
         }
 
         //update défénition
-        saveNote(connect, candidatSelected.getDefenition(), candidatSelected, NoteEnum.DEFINITION.getName());
+        saveNote(connect, candidatSelected.getDefenitions(), candidatSelected, NoteEnum.DEFINITION.getName());
 
         //update note
         saveNote(connect, candidatSelected.getNoteApplication(), candidatSelected, NoteEnum.NOTE.getName());
@@ -213,7 +219,7 @@ public class CandidatService implements Serializable {
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), TermEnum.EMPLOYE.getLabel(),
                     candidatSelected.getLang()));
 
-            candidatSelected.setDefenition(noteDao.getNoteCandidat(connection, candidatSelected.getIdConcepte(),
+            candidatSelected.setDefenitions(noteDao.getNotesCandidat(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), NoteEnum.DEFINITION.getName(), candidatSelected.getLang()));
             
             candidatSelected.setNoteApplication(noteDao.getNoteCandidat(connection, candidatSelected.getIdConcepte(),
@@ -247,6 +253,12 @@ public class CandidatService implements Serializable {
         noteDao.saveNote(connection, noteType, newNoteValue, candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         connection.close();
+    }
+
+    public void saveNote(Connect connect, List<String> newNoteValue, CandidatDto candidatSelected, String noteType) {
+        newNoteValue.forEach(note -> {
+            saveNote(connect, note, candidatSelected, NoteEnum.DEFINITION.getName());
+        });
     }
 
 }

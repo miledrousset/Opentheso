@@ -2,6 +2,8 @@ package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NoteDao extends BasicDao {
 
@@ -25,6 +27,27 @@ public class NoteDao extends BasicDao {
             LOG.error(e);
         }
         return definition;
+    }
+
+    public List<String> getNotesCandidat(HikariDataSource hikariDataSource, String idconcept, String idThesaurus, 
+            String noteType, String lang) {
+        
+        List<String> definitions = new ArrayList<>();
+        try {
+            openDataBase(hikariDataSource);
+            stmt.executeQuery(new StringBuffer("SELECT lexicalvalue FROM note WHERE notetypecode = '")
+                    .append(noteType).append("' AND id_concept = '").append(idconcept)
+                    .append("' AND id_thesaurus = '").append(idThesaurus).append("' AND lang='")
+                    .append(lang).append("'").toString());
+            resultSet = stmt.getResultSet();
+            while (resultSet.next()) {
+                definitions.add(resultSet.getString("lexicalvalue"));
+            }
+            closeDataBase();
+        } catch (SQLException e) {
+            LOG.error(e);
+        }
+        return definitions;
     }
 
     public void saveNote(HikariDataSource hikariDataSource, String noteType, String noteValue, String idTerme, String idConcepte,

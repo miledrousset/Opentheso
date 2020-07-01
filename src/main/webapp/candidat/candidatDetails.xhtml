@@ -17,12 +17,11 @@
             <h:outputText value="#{langueBean.getMsg('candidat.title')}"/>
         </b:column>
         <b:column>
-            <b:inputText value="#{candidatBean.candidatSelected.nomPref}"
-                         style="width: 230px; font-size: 13px; background: white; border-color: #43B572" 
-                         placeholder="ex: Aliment" />
+            <p:inputText value="#{candidatBean.candidatSelected.nomPref}"
+                         style="width: 230px; font-size: 13px; background: white;" />
         </b:column>
 
-        <b:column>
+        <b:column style="margin-top: 15px;">
             <h:outputText value="#{langueBean.getMsg('candidat.domaine')}"/>
         </b:column>
         <b:column>
@@ -30,20 +29,20 @@
                             completeMethod="#{candidatBean.searchDomaineName}"/>
         </b:column>
 
-        <b:column>
-            <h:outputText value="#{langueBean.getMsg('candidat.generic_term')}"/>
+        <b:column style="margin-top: 15px;">
+            <h:outputText value="#{langueBean.getMsg('candidat.generic_term')}" />
         </b:column>
         <b:column>
             <p:autoComplete value="#{candidatBean.candidatSelected.termesGenerique}" multiple="true"
                             completeMethod="#{candidatBean.searchTerme}"/>
         </b:column>
 
-        <b:column>
-            <h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}"/>
+        <b:column style="margin-top: 15px;">
+            <h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
             <p:autoComplete value="#{candidatBean.candidatSelected.termesAssocies}" multiple="true" 
-                    completeMethod="#{candidatBean.searchTerme}"/>
+                            completeMethod="#{candidatBean.searchTerme}"/>
         </b:column>
 
         <b:column style="margin-top: 15px">
@@ -51,23 +50,57 @@
         </b:column>
         <b:column>
             <p:autoComplete value="#{candidatBean.candidatSelected.employePour}" multiple="true" 
-                    completeMethod="#{candidatBean.searchTerme}"/>
+                            completeMethod="#{candidatBean.searchTerme}"/>
         </b:column>
 
         <b:column style="margin-top: 15px">
             <h:outputText value="#{langueBean.getMsg('candidat.definition')}" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
-            <b:inputTextarea value="#{candidatBean.candidatSelected.defenition}"
-                             style="width: 100%; resize: none; font-size: 13px; background: white; border-color: #43B572"/>
+            <h:form id="listDefinitionsForm">
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                <b:row rendered="#{candidatBean.candidatSelected.defenitions == null ||
+                                   candidatBean.candidatSelected.defenitions.size() == 0}">
+                    <b:column>
+                        <h:outputText  value="Aucune définition existe pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
+                    </b:column>
+                </b:row>
+                <b:row rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
+                    <ui:repeat id="listdefinitions" var="def" value="#{candidatBean.candidatSelected.defenitions}" >
+                        <b:row style="font-size: 12px; padding-top: 5px"
+                               rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
+                            <b:column span="11" >
+                                <h:outputText value="#{def}"/>
+                            </b:column>  
+                            <b:column span="1">
+                                <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
+                                                  styleClass="buttonIconOrange" style="color: #f47b2a;"
+                                                  actionListener="#{definitionBean.init(def)}"
+                                                  oncomplete="PF('confirmDeleteDefinition').show();"
+                                                  update="idConfirmDeleteDefinition confirmDeleteDefinitionForm messageIndex"/>
+                            </b:column>                        
+                        </b:row>   
+                    </ui:repeat>
+                </b:row>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+                <b:row>
+                    <b:column>
+                        <b:navCommandLink value="Ajouter une nouvelle définition"
+                                          oncomplete="PF('newDefinition').show();" ajax="false"
+                                          styleClass="buttonIconOrange" style="color: #f47b2a"
+                                          actionListener="#{definitionBean.init()}"
+                                          update="idNewDefinition newDefinitionForm messageIndex"/>
+                    </b:column>
+                </b:row>
+            </h:form>
         </b:column>
 
-        <b:column>
+        <b:column style="margin-top: 15px;">
             <h:outputText value="#{langueBean.getMsg('candidat.application_note')}" style="margin-top: 15px;"/>
         </b:column>
         <b:column>
             <b:inputTextarea value="#{candidatBean.candidatSelected.noteApplication}"
-                             style="width: 100%; resize: none; font-size: 13px; background: white; border-color: #43B572"/>
+                             style="width: 100%; resize: none; font-size: 13px; background: white;"/>
         </b:column>
     </b:row>
 
@@ -94,13 +127,13 @@
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
                 <b:row rendered="#{candidatBean.candidatSelected.traductions.size() == 0}">
                     <b:column>
-                        <h:outputText  value="Aucune traduction n'est disponible ..." style="font-size: 12px; color: grey; font-style: italic " />
+                        <h:outputText  value="Aucune traduction existe pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
                     </b:column>
                 </b:row>
                 <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.
-                                candidatSelected.traductions.indexOf(traduction))}; padding-top: 5px"
-                                rendered="#{candidatBean.candidatSelected.traductions.size() > 0}">
+                                                                       candidatSelected.traductions.indexOf(traduction))}; padding-top: 5px"
+                           rendered="#{candidatBean.candidatSelected.traductions.size() > 0}">
                         <b:column span="4" >
                             <h:outputText value="#{traduction.langue}"/>
                         </b:column>
@@ -166,7 +199,7 @@
                 </b:row>
                 <ui:repeat id="listCorpus" var="carpus" value="#{candidatBean.candidatSelected.corpus}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(
-                           candidatBean.candidatSelected.corpus.indexOf(carpus))}; padding-top: 5px"
+                                                                       candidatBean.candidatSelected.corpus.indexOf(carpus))}; padding-top: 5px"
                            rendered="#{candidatBean.candidatSelected.corpus.size() > 0}">
                         <b:column span="4" >
                             <h:outputText value="#{carpus.value}"/>
@@ -221,13 +254,14 @@
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
                 <b:row rendered="#{conceptView.nodeConcept.nodeAlignments == null || conceptView.nodeConcept.nodeAlignments.size() == 0}">
                     <b:column>
-                        <h:outputText value="pas d'alignements" style="font-size: 12px; color: grey; font-style: italic " />
+                        <h:outputText value="Aucun alignement existe pour le moment ..." 
+                                      style="font-size: 12px; color: grey; font-style: italic " />
                     </b:column>
                 </b:row>
                 <ui:repeat id="listAlignements" var="allignement" value="#{conceptView.nodeConcept.nodeAlignments}">
                     <b:row rendered="#{conceptView.nodeConcept.nodeAlignments.size() != 0}"
-                            style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(conceptView.nodeConcept
-                            .nodeAlignments.indexOf(carpus))}; padding-top: 5px">
+                           style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(conceptView.nodeConcept
+                                                                       .nodeAlignments.indexOf(carpus))}; padding-top: 5px">
                         <b:column span="3" >
                             <h:outputText value="#{allignement.alignmentLabelType}"/>
                         </b:column>
@@ -245,7 +279,7 @@
                                     style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <b:navCommandLink value="Ajouter alignement auto"
                                               actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
-                                                        conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
+                                                                conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
                                               action="#{alignmentBean.nextTen(conceptView.selectedLang, selectedTheso.currentIdTheso)}"
                                               oncomplete="PF('addAlignment').show();" update="candidatForm" style="font-size: 12px;"/>
 
@@ -259,7 +293,7 @@
 
                             <b:navCommandLink value="supprimer alignement"
                                               actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
-                                                        conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
+                                                                conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
                                               action="#{alignmentManualBean.reset()}" oncomplete="PF('deleteAlignment').show();"
                                               update="candidatForm" style="font-size: 12px;"/>
                         </b:dropMenu>

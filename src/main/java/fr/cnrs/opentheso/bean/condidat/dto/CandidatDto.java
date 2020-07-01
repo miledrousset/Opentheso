@@ -22,14 +22,13 @@ public class CandidatDto implements Serializable {
     private int nbrParticipant;
 
     private String domaine;
-    private List<String> termesGenerique;
-    private String defenition;
     private String noteApplication;
 
+    private List<String> defenitions;
+    private List<String> termesGenerique;
     private List<String> termesAssocies;
     private List<String> employePour;
     private List<String> participants;
-
     private List<TraductionDto> traductions;
     private List<CorpusDto> corpus;
     private List<MessageDto> messages;
@@ -54,7 +53,7 @@ public class CandidatDto implements Serializable {
         this.nomPref = source.getNomPref();
         this.domaine = source.getDomaine();
         this.termesGenerique = source.getTermesGenerique();
-        this.defenition = source.getDefenition();
+        this.defenitions = source.getDefenitions();
         this.noteApplication = source.getNoteApplication();
         this.termesAssocies = source.getTermesAssocies();
         this.corpus = source.getCorpus();
@@ -78,12 +77,12 @@ public class CandidatDto implements Serializable {
         this.termesGenerique = termesGenerique;
     }
 
-    public String getDefenition() {
-        return defenition;
+    public List<String> getDefenitions() {
+        return defenitions;
     }
 
-    public void setDefenition(String defenition) {
-        this.defenition = defenition;
+    public void setDefenitions(List<String> defenitions) {
+        this.defenitions = defenitions;
     }
 
     public String getNoteApplication() {

@@ -59,6 +59,7 @@ public class CandidatBean implements Serializable {
     private boolean myCandidatsSelected;
 
     private String message;
+    private String definition;
     private String searchValue;
 
     private CandidatDto candidatSelected, initialCandidat;
@@ -177,6 +178,24 @@ public class CandidatBean implements Serializable {
                 return;
             }
 
+            Concept concept = new Concept();
+            concept.setIdConcept(candidatSelected.getIdConcepte());
+            concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+            concept.setTopConcept(true);
+            concept.setLang(languageBean.getIdLangue());
+            concept.setIdUser(currentUser.getNodeUser().getIdUser());
+            concept.setUserName(currentUser.getUsername());
+            concept.setStatus("D");
+
+            conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+            String idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
+
+            if (idNewConcept == null) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+
             Term terme = new Term();
             terme.setId_thesaurus(selectedTheso.getCurrentIdTheso());
             terme.setLang(languageBean.getIdLangue());
@@ -259,27 +278,10 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        Concept concept = new Concept();
-        concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-        concept.setTopConcept(true);
-        concept.setLang(languageBean.getIdLangue());
-        concept.setIdUser(currentUser.getNodeUser().getIdUser());
-        concept.setUserName(currentUser.getUsername());
-        concept.setStatus("D");
-
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        String idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
-
-        if (idNewConcept == null) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-
         setIsNewCandidatActivate(true);
+
         candidatSelected = new CandidatDto();
-        candidatSelected.setIdConcepte(idNewConcept);
+        candidatSelected.setIdConcepte(candidatService.getCandidatID(connect));
         candidatSelected.setLang(languageBean.getIdLangue());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
@@ -385,6 +387,14 @@ public class CandidatBean implements Serializable {
 
     public boolean isIsListCandidatsActivate() {
         return isListCandidatsActivate;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 
 }
