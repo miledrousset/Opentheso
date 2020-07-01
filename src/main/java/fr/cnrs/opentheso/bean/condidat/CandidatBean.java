@@ -73,6 +73,8 @@ public class CandidatBean implements Serializable {
 
         if (StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez selectionner un Thesorus avant !");
+            candidatList = new ArrayList<>();
+            PrimeFaces.current().ajax().update("candidatForm");
             return;
         }
 
@@ -296,9 +298,7 @@ public class CandidatBean implements Serializable {
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }
+        pf.ajax().update("messageIndex");
     }
 
     public String getMessage() {

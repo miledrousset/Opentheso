@@ -24,8 +24,8 @@
         <b:column style="margin-top: 15px;">
             <h:outputText value="#{langueBean.getMsg('candidat.domaine')}"/>
         </b:column>
-        <b:column>
-            <p:autoComplete value="#{candidatBean.candidatSelected.domaine}"
+        <b:column style="width: 100%;">
+            <p:autoComplete value="#{candidatBean.candidatSelected.domaine}" style="width: 100%; "
                             completeMethod="#{candidatBean.searchDomaineName}"/>
         </b:column>
 
@@ -66,29 +66,31 @@
                     </b:column>
                 </b:row>
                 <b:row rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
-                    <ui:repeat id="listdefinitions" var="def" value="#{candidatBean.candidatSelected.defenitions}" >
-                        <b:row style="font-size: 12px; padding-top: 5px"
-                               rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
-                            <b:column span="10" >
-                                <h:outputText value="#{def}"/>
-                            </b:column>
-                            <b:column span="1">
-                                <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
-                                                  oncomplete="PF('editDefinition').show();" style="color: #f47b2a;"
-                                                  actionListener="#{definitionBean.init(def)}"
-                                                  styleClass="buttonIconOrange" ajax="false"
-                                                  update="idEditDefinition editDefinitionForm"/>
-                            </b:column>
-
-                            <b:column span="1">
-                                <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
-                                                  styleClass="buttonIconOrange" style="color: #f47b2a;"
-                                                  actionListener="#{definitionBean.init(def)}"
-                                                  oncomplete="PF('confirmDeleteDefinition').show();"
-                                                  update="idConfirmDeleteDefinition confirmDeleteDefinitionForm messageIndex"/>
-                            </b:column>                        
-                        </b:row>   
-                    </ui:repeat>
+                    <b:column>
+                        <ui:repeat id="listdefinitions" var="def" value="#{candidatBean.candidatSelected.defenitions}" >
+                            <b:row style="font-size: 12px; padding-top: 5px; background-color: #{
+                                   viewEditionBean.getAlternateColor(candidatBean.candidatSelected.defenitions.indexOf(def))}"
+                                   rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
+                                <b:column span="10" >
+                                    <h:outputText value="#{def}"/>
+                                </b:column>
+                                <b:column span="1">
+                                    <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
+                                                      oncomplete="PF('editDefinition').show();" style="color: #f47b2a;"
+                                                      actionListener="#{definitionBean.init(def)}"
+                                                      styleClass="buttonIconOrange" ajax="false"
+                                                      update="idEditDefinition editDefinitionForm"/>
+                                </b:column>
+                                <b:column span="1">
+                                    <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
+                                                      styleClass="buttonIconOrange" style="color: #f47b2a;"
+                                                      actionListener="#{definitionBean.init(def)}"
+                                                      oncomplete="PF('confirmDeleteDefinition').show();"
+                                                      update="idConfirmDeleteDefinition confirmDeleteDefinitionForm messageIndex"/>
+                                </b:column>                        
+                            </b:row>   
+                        </ui:repeat>
+                    </b:column>
                 </b:row>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
                 <b:row>
