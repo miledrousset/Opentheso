@@ -72,7 +72,7 @@
                             <b:selectOneMenu value="#{selectedTheso.selectedIdTheso}" 
                                              onselect="#{selectedTheso.setSelectedTheso()} #{searchBean.reset()} #{viewEditorThesoHomeBean.reset()} #{viewEditorHomeBean.reset()}
                                              #{candidatBean.initCandidatModule()}"
-                                             update="containerIndex candidatForm"
+                                             update="containerIndex candidatForm formMenu"
                                              style="font-size: 12px; max-width: 180px;  background: white">
                                 <f:selectItem itemLabel="(select thesaurus)" itemValue=""/>
                                 <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />

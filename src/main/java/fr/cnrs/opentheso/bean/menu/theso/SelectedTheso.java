@@ -117,7 +117,7 @@ public class SelectedTheso implements Serializable {
         startNewTheso(null);
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
-        indexSetting.setIsThesoActive(true);
+        //indexSetting.setIsThesoActive(true);
         
     }
     
