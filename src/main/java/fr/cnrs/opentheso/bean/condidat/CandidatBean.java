@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -51,8 +52,11 @@ public class CandidatBean implements Serializable {
 
     @Inject
     private ConceptView conceptView;
+    
+    @Inject
+    private AlignmentBean alignmentBean;
 
-    private CandidatService candidatService = new CandidatService();
+    private final CandidatService candidatService = new CandidatService();
 
     private boolean isListCandidatsActivate;
     private boolean isNewCandidatActivate;
@@ -72,9 +76,7 @@ public class CandidatBean implements Serializable {
         isNewCandidatActivate = false;
 
         if (StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez selectionner un Thesorus avant !");
             candidatList = new ArrayList<>();
-            PrimeFaces.current().ajax().update("candidatForm");
             return;
         }
 
@@ -126,6 +128,9 @@ public class CandidatBean implements Serializable {
 
         conceptView.setNodeConcept(new ConceptHelper().getConcept(connect.getPoolConnexion(), candidatDto.getIdConcepte(),
                 selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue()));
+        
+        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatDto.getIdConcepte(), languageBean.getIdLangue());
+        alignmentBean.setIdConceptSelectedForAlignment(candidatDto.getIdConcepte());
 
         setIsNewCandidatActivate(true);
     }
@@ -187,7 +192,7 @@ public class CandidatBean implements Serializable {
             concept.setLang(languageBean.getIdLangue());
             concept.setIdUser(currentUser.getNodeUser().getIdUser());
             concept.setUserName(currentUser.getUsername());
-            concept.setStatus("D");
+            concept.setStatus("CA");
 
             conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
             String idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
@@ -289,6 +294,9 @@ public class CandidatBean implements Serializable {
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
 
         domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
+
+        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatSelected.getIdConcepte(), languageBean.getIdLangue());
+        alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
 
         allTermes = candidatList;
 

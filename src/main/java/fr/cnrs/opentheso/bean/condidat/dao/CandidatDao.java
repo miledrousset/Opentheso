@@ -22,6 +22,7 @@ public class CandidatDao extends BasicDao {
                 .append("WHERE nomPreTer.id_term = preTer.id_term ")
                 .append("AND con.id_concept = preTer.id_concept ")
                 .append("AND term.id_term = nomPreTer.id_term ")
+                .append("AND con.status = 'CA' ")
                 .append("AND users.id_user = term.contributor ")
                 .append("AND nomPreTer.lang = '").append(lang).append("' ")
                 .append("AND con.id_thesaurus = '").append(idThesaurus).append("'")
