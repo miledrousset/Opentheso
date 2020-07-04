@@ -83,7 +83,8 @@ public class SetAlignmentSourceBean implements Serializable {
         alignmentBean.setViewSetting(true);
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
+            pf.ajax().update("viewTabConcept");
+            pf.ajax().update("addAlignmentForm");
         }        
 
     }
@@ -110,7 +111,7 @@ public class SetAlignmentSourceBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             alignmentBean.setViewSetting(false);
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelManagement");
+                pf.ajax().update("panelManagement");
             }                   
             return;  
         }
@@ -126,7 +127,7 @@ public class SetAlignmentSourceBean implements Serializable {
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     alignmentBean.setViewSetting(false);
                     if (pf.isAjaxRequest()) {
-                        pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelManagement");
+                        pf.ajax().update("panelManagement");
                     }                   
                     return;                       
                 }
@@ -143,7 +144,7 @@ public class SetAlignmentSourceBean implements Serializable {
                 conceptView.getSelectedLang());
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
+            pf.ajax().update("addAlignmentForm");
         }    
     }
     
@@ -151,7 +152,7 @@ public class SetAlignmentSourceBean implements Serializable {
         alignmentBean.setViewSetting(false);
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
+            pf.ajax().update("addAlignmentForm");
         }   
     }
 

@@ -34,6 +34,14 @@
                                     profileForm"                                    
                                    style="color: #{indexSetting.profileColor}">                                   
                         </b:navCommandLink>
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
+                                          action="#{indexSetting.setIsToolBoxActive(true)}"
+                                          actionListener="#{toolBoxBean.reset()}"
+                                          update="containerIndex formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
+                                          toolBoxForm" 
+                                          value="Boite à outils" icon-align="right" 
+                                          style="color: #{indexSetting.toolBoxColor}">
+                        </b:navCommandLink>   
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" 
                                    value="Paramètres" 
                                    action="#{indexSetting.setIsSettingActive(true)}"
@@ -42,14 +50,6 @@
                                     settingForm"                                    
                                    style="color: #{indexSetting.settingColor}">                                   
                         </b:navCommandLink>
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
-                                          action="#{indexSetting.setIsToolBoxActive(true)}"
-                                          actionListener="#{toolBoxBean.reset()}"
-                                          update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
-                                          toolBoxForm" 
-                                          value="Boite à outils" icon-align="right" 
-                                          style="color: #{indexSetting.toolBoxColor}">
-                        </b:navCommandLink>                  
                     </b:navbarLinks>                     
                     
                     

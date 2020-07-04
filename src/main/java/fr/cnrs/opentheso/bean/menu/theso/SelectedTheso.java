@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.PrimeFaces;
 
 @Named(value = "selectedTheso")
 @SessionScoped
@@ -117,7 +118,7 @@ public class SelectedTheso implements Serializable {
         startNewTheso(null);
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
-        //indexSetting.setIsThesoActive(true);
+        PrimeFaces.current().ajax().update("formMenu");
         
     }
     

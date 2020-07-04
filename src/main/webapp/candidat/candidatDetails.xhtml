@@ -278,7 +278,7 @@
                         <b:column span="9" >
                             <b:link href="#{allignement.uri_target}" value="#{allignement.uri_target}"
                                     tooltip="#{allignement.thesaurus_target}" tooltip-delay-show="1000" target="_blank"
-                                    icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                                    icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"/>
                         </b:column>
                     </b:row>
                 </ui:repeat>
@@ -289,9 +289,9 @@
                                     style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <b:navCommandLink value="Ajouter alignement auto"
                                               actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
-                                                                conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
-                                              action="#{alignmentBean.nextTen(conceptView.selectedLang, selectedTheso.currentIdTheso)}"
-                                              oncomplete="PF('addAlignment').show();" update="candidatForm" style="font-size: 12px;"/>
+                                                                candidatBean.candidatSelected.idConcept, candidatBean.languageBean.idLangue)}"
+                                              action="#{alignmentBean.nextTen(candidatBean.languageBean.idLangue, selectedTheso.currentIdTheso)}"
+                                              oncomplete="PF('addAlignment').show();" update="candidatForm alignementForm" style="font-size: 12px;"/>
 
                             <b:navCommandLink value="Ajouter alignement manuel" actionListener="#{alignmentManualBean.reset()}"
                                               oncomplete="PF('addManualAlignment').show();" update="candidatForm"
@@ -303,7 +303,7 @@
 
                             <b:navCommandLink value="supprimer alignement"
                                               actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
-                                                                conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
+                                                                candidatBean.candidatSelected.idConcept, candidatBean.languageBean.idLangue)}"
                                               action="#{alignmentManualBean.reset()}" oncomplete="PF('deleteAlignment').show();"
                                               update="candidatForm" style="font-size: 12px;"/>
                         </b:dropMenu>

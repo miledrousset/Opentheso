@@ -38,9 +38,8 @@
                                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <b:navCommandLink value="Les sources" 
                                                       action="#{setAlignmentSourceBean.init()}"
-                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
-                                                      formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
-                                                      style="font-size: 12px;"></b:navCommandLink>
+                                                      update="columnRightPanel panelSetting columnRightPanel"
+                                                      style="font-size: 12px;"/>
                                 </b:dropMenu> 
                             </b:navbarLinks>
                         </b:column>                         
@@ -94,7 +93,8 @@
                                                     <b:navCommandLink value="#{conceptList.value}"
                                                                       actionListener="#{alignmentBean.selectConceptForAlignment(conceptList.id)}"
                                                                       update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel 
-                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal"/>
+                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal 
+                                                                      :addAlignmentForm:columnRightPanel :addAlignmentForm:columnRightPanel:columnRightPanelLocal"/>
                                                 </b:column>
                                             </b:row>
                                         </ui:repeat>
@@ -329,8 +329,7 @@
                                                                                         selectedTheso.selectedIdTheso, 
                                                                                         alignmentBean.idConceptSelectedForAlignment,
                                                                                         currentUser.nodeUser.idUser)}"
-                                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanel
-                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal" >
+                                                                      update="columnRightPanel columnRightPanelLocal candidatForm" >
                                                     </b:navCommandLink>
                                                 </b:column>
                                                 <b:column span="1">
@@ -525,21 +524,16 @@
                             </b:panel>  
                             <b:row style="margin-bottom: 10px;">
                                 <b:column span="4" offset="3" >
-                                    <b:commandButton id="buttonCancel" value="cancel"
-                                                     update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
-                                                     formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
-                                                     style="width:100%; font-size: 13px; 
-                                                     font-weight: normal;
+                                    <b:commandButton id="buttonCancel" value="cancel" update="columnRightPanel panelSetting"
+                                                     style="width:100%; font-size: 13px; font-weight: normal;
                                                      color: white; background: #8C8C8C; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.cancel()}"/>
                                 </b:column>                                    
                                 <b:column span="4" offset="1" >
                                     <b:commandButton id="buttonSubmit" value="Valider"
-                                                     update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
-                                                     formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
-                                                     style="width:100%; font-size: 13px; 
-                                                     font-weight: normal;
+                                                     update="columnRightPanel panelSetting"
+                                                     style="width:100%; font-size: 13px; font-weight: normal;
                                                      color: white; background: #F7A269; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.updateSelectedAlignment()}"/>

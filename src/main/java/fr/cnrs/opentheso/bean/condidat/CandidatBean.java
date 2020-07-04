@@ -298,6 +298,8 @@ public class CandidatBean implements Serializable {
         alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatSelected.getIdConcepte(), languageBean.getIdLangue());
         alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
 
+        conceptView.getNodeConcept().setNodeAlignments(new ArrayList<>());
+
         allTermes = candidatList;
 
         initialCandidat = null;
