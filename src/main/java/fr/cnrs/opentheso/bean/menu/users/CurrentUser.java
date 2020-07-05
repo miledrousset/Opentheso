@@ -65,7 +65,7 @@ public class CurrentUser implements Serializable {
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
 
-       if (pf.isAjaxRequest()) {
+        if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex");
             pf.ajax().update("formMenu");
             pf.ajax().update("formRightTab");
@@ -76,19 +76,7 @@ public class CurrentUser implements Serializable {
             pf.ajax().update("formSearch:languageSelect");
             pf.ajax().update("formSearch");
             
-        }        
-     
-        
-
-   /*     if (pf.isAjaxRequest()) {
-            pf.ajax().update("loginForm");
-            pf.ajax().update("formMenu");
-            pf.ajax().update("formRightTab");
-            pf.ajax().update("formLeftTab");  
-            pf.ajax().update("messageIndex"); 
-            pf.ajax().update("homePageForm");            
-            
-        }*/
+        }
         initHtmlPages();
     }
 
@@ -132,7 +120,6 @@ public class CurrentUser implements Serializable {
         }
         facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-     //   PrimeFaces.current().executeScript("$('.login').modal('hide')");
         
         PrimeFaces.current().executeScript("PF('login').hide();");
 
