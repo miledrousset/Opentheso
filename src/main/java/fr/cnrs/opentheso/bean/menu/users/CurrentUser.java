@@ -57,11 +57,11 @@ public class CurrentUser implements Serializable {
     }
 
     public void disconnect() {
-        FacesMessage facesMessage;        
+        FacesMessage facesMessage;
         facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
-        FacesContext.getCurrentInstance().addMessage(null, facesMessage);        
+        FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         nodeUser = null;
-        
+
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
 
@@ -72,12 +72,16 @@ public class CurrentUser implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("formLeftTab");
             pf.ajax().update("homePageForm");
-            pf.ajax().update("loginForm"); 
+            pf.ajax().update("loginForm");
             pf.ajax().update("formSearch:languageSelect");
             pf.ajax().update("formSearch");
-            
+
         }
         initHtmlPages();
+    }
+
+    public void disconnect(String msg) {
+
     }
 
     /**

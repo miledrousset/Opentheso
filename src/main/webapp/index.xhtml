@@ -38,7 +38,7 @@
     </h:head>
 
     <h:body>
-        <p:idleMonitor timeout="#{session.maxInactiveInterval * 1000 - 60000}">
+        <p:idleMonitor timeout="#{sessionControl.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
 
