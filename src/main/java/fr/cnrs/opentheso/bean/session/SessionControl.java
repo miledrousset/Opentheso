@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.session;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
