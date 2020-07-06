@@ -78,11 +78,20 @@ public class ArkHelper2 {
         nodeJson2.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection
         nodeJson2.setQualifiers(new ArrayList<>()); 
         nodeJson2.setNaan(nodePreference.getIdNaan());
+        nodeJson2.setUseHandle(nodePreference.isGenerateHandle());
 //        nodeJson2.setHandle_prefix("20.500.11859");
        
-        // création de l'identifiant Ark et Handle 
-        if(!arkClientRest.addArk(nodeJson2.getJsonString())) return false;
+        // récupération du Token
+        if(arkClientRest.getLoginJson() == null) return false;
 
+        String token = arkClientRest.getToken();
+        nodeJson2.setToken(token);
+       
+        // création de l'identifiant Ark et Handle 
+        String jsonDatas = nodeJson2.getJsonString();
+        if(jsonDatas == null) return false;
+        if(!arkClientRest.addArk(jsonDatas)) return false;        
+        
         idArk = arkClientRest.getIdArk();
         idHandle = arkClientRest.getIdHandle();
         if (idArk == null) {
@@ -139,9 +148,7 @@ public class ArkHelper2 {
         }
         idArk = "";
         idHandle = "";
-        
-
-        
+      
         NodeJson2 nodeJson2 = new NodeJson2();
         nodeJson2.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
         nodeJson2.setTitle(nodeMetaData.getTitle());
@@ -150,16 +157,18 @@ public class ArkHelper2 {
         nodeJson2.setType(nodePreference.getPrefixArk());  //pcrt : préfixe pour sous distinguer une sous entité:  p= pactols, crt= code DCMI pour collection
         nodeJson2.setNaan(nodePreference.getIdNaan());
         nodeJson2.setArk(idArk);
+        nodeJson2.setUseHandle(nodePreference.isGenerateHandle());
         
         // récupération du Token
         if(arkClientRest.getLoginJson() == null) return false;
-        String token = arkClientRest.getLoginJson().getString("token");
+    
+        String token = arkClientRest.getToken();
         nodeJson2.setToken(token);
-     //   nodeJson2.setToken(arkClientRest.loginJson.);
+
         // création de l'identifiant Ark et Handle 
         String jsonDatas = nodeJson2.getJsonString();
         if(jsonDatas == null) return false;
-        if(!arkClientRest.addArk2(jsonDatas)) return false;
+        if(!arkClientRest.addArk(jsonDatas)) return false;
 
         idArk = arkClientRest.getIdArk();
         idHandle = arkClientRest.getIdHandle();
@@ -195,26 +204,32 @@ public class ArkHelper2 {
         }
         idHandle = null;
      
-        NodeJson nodeJson = new NodeJson();
-        nodeJson.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
-        nodeJson.setArk(idArk);
-        nodeJson.setTitle(nodeMetaData.getTitle());
-        nodeJson.setCreator(nodeMetaData.getCreator());
-        nodeJson.setDcElements(nodeMetaData.getDcElementsList()); // n'est pas encore exploité
-        nodeJson.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection
-        nodeJson.setLanguage(nodePreference.getSourceLang());
-        nodeJson.setNaan(nodePreference.getIdNaan());
-        nodeJson.setHandle_prefix("20.500.11859");
+        NodeJson2 nodeJson2 = new NodeJson2();
+        nodeJson2.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
+        nodeJson2.setArk(idArk);
+        nodeJson2.setTitle(nodeMetaData.getTitle());
+        nodeJson2.setCreator(nodeMetaData.getCreator());
+        nodeJson2.setDcElements(nodeMetaData.getDcElementsList()); // n'est pas encore exploité
+        nodeJson2.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection
+        nodeJson2.setNaan(nodePreference.getIdNaan());
+        nodeJson2.setUseHandle(nodePreference.isGenerateHandle());
        
-//        if(!arkClientRest.login()) return false;
-        // création de l'identifiant Ark et Handle 
-        if(!arkClientRest.updateArk(nodeJson.getJsonString())) return false;
+        String token = arkClientRest.getToken();
+        nodeJson2.setToken(token);        
+
+        // mise à jour de Ark et Handle 
+        String jsonDatas = nodeJson2.getJsonString();
+        if(jsonDatas == null) return false;        
+        
+        if(!arkClientRest.updateArk(nodeJson2.getJsonString())) return false;
 
         idHandle = arkClientRest.getIdHandle();
 
-        if (idHandle == null) {
-            message = "La connexion Handle a échouée";
-            return false;
+        if(nodePreference.isGenerateHandle()) {        
+            if (idHandle == null) {
+                message = "La connexion Handle a échouée";
+                return false;
+            }
         }
         return true;
     }    

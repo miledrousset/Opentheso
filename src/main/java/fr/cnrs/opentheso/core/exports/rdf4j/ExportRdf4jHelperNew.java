@@ -483,24 +483,29 @@ public class ExportRdf4jHelperNew {
         // en dernier, on prend l'URL basique d'Opentheso
         // 1 seule URI est possible pour l'export par concept
         // URI de type Ark
-        if (nodeConceptExport.getConcept().getIdArk() != null) {
-            if (!nodeConceptExport.getConcept().getIdArk().trim().isEmpty()) {
-                uri = nodePreference.getServeurArk() + nodeConceptExport.getConcept().getIdArk();
-                return uri;
+        if(nodePreference.isOriginalUriIsArk()) {
+            if (nodeConceptExport.getConcept().getIdArk() != null) {
+                if (!nodeConceptExport.getConcept().getIdArk().trim().isEmpty()) {
+                    uri = nodePreference.getUriArk()+ nodeConceptExport.getConcept().getIdArk();
+                    return uri;
+                }
             }
         }
-        // URI de type Handle
-        if (nodeConceptExport.getConcept().getIdHandle() != null) {
-            if (!nodeConceptExport.getConcept().getIdHandle().trim().isEmpty()) {
-                uri = "https://hdl.handle.net/" + nodeConceptExport.getConcept().getIdHandle();
-                return uri;
+        
+        if(nodePreference.isOriginalUriIsHandle()) {
+            // URI de type Handle
+            if (nodeConceptExport.getConcept().getIdHandle() != null) {
+                if (!nodeConceptExport.getConcept().getIdHandle().trim().isEmpty()) {
+                    uri = "https://hdl.handle.net/" + nodeConceptExport.getConcept().getIdHandle();
+                    return uri;
+                }
             }
         }
         // si on ne trouve pas ni Handle, ni Ark
         //    uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
-//        uri = nodePreference.getCheminSite() + "?idc=" + nodeConceptExport.getConcept().getIdConcept()
-//                        + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
-        uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
+        uri = nodePreference.getCheminSite() + "?idc=" + nodeConceptExport.getConcept().getIdConcept()
+                        + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
+//        uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
 
         return uri;
     }
@@ -529,25 +534,29 @@ public class ExportRdf4jHelperNew {
         // en dernier, on prend l'URL basique d'Opentheso
         // 1 seule URI est possible pour l'export par concept
         // URI de type Ark
-        if (nodeGroupLabel.getIdArk() != null) {
-            if (!nodeGroupLabel.getIdArk().trim().isEmpty()) {
-                uri = nodePreference.getServeurArk() + nodeGroupLabel.getIdArk();
-                return uri;
+        if(nodePreference.isOriginalUriIsArk()) {
+            if (nodeGroupLabel.getIdArk() != null) {
+                if (!nodeGroupLabel.getIdArk().trim().isEmpty()) {
+                    uri = nodePreference.getUriArk() + nodeGroupLabel.getIdArk();
+                    return uri;
+                }
             }
         }
-        // URI de type Handle
-        if (nodeGroupLabel.getIdHandle() != null) {
-            if (!nodeGroupLabel.getIdHandle().trim().isEmpty()) {
-                uri = "https://hdl.handle.net/" + nodeGroupLabel.getIdHandle();
-                return uri;
+        if(nodePreference.isOriginalUriIsHandle()) {        
+            // URI de type Handle
+            if (nodeGroupLabel.getIdHandle() != null) {
+                if (!nodeGroupLabel.getIdHandle().trim().isEmpty()) {
+                    uri = "https://hdl.handle.net/" + nodeGroupLabel.getIdHandle();
+                    return uri;
+                }
             }
         }
         // si on ne trouve pas ni Handle, ni Ark
 //        uri = nodePreference.getCheminSite() + nodeGroupLabel.getIdGroup();
-//        uri = nodePreference.getCheminSite() + "?idg=" + nodeGroupLabel.getIdGroup()
-//                    + "&idt=" + nodeGroupLabel.getIdThesaurus();
+        uri = nodePreference.getCheminSite() + "?idg=" + nodeGroupLabel.getIdGroup()
+                    + "&idt=" + nodeGroupLabel.getIdThesaurus();
 
-        uri = nodePreference.getCheminSite() + nodeGroupLabel.getIdGroup();
+    //    uri = nodePreference.getCheminSite() + nodeGroupLabel.getIdGroup();
         return uri;
     }
 
@@ -614,26 +623,30 @@ public class ExportRdf4jHelperNew {
         // en dernier, on prend l'URL basique d'Opentheso
         // 1 seule URI est possible pour l'export par concept
         // URI de type Ark
-        if (nodeUri.getIdArk() != null) {
-            if (!nodeUri.getIdArk().trim().isEmpty()) {
-                uri = nodePreference.getServeurArk() + nodeUri.getIdArk();
-                return uri;
+
+        if(nodePreference.isOriginalUriIsArk()) {
+            if (nodeUri.getIdArk() != null) {
+                if (!nodeUri.getIdArk().trim().isEmpty()) {
+                    uri = nodePreference.getUriArk() + nodeUri.getIdArk();
+                    return uri;
+                }
             }
         }
-        // URI de type Handle
-        if (nodeUri.getIdHandle() != null) {
-            if (!nodeUri.getIdHandle().trim().isEmpty()) {
-                uri = "https://hdl.handle.net/" + nodeUri.getIdHandle();
-                return uri;
+        if(nodePreference.isOriginalUriIsHandle()) {
+            // URI de type Handle
+            if (nodeUri.getIdHandle() != null) {
+                if (!nodeUri.getIdHandle().trim().isEmpty()) {
+                    uri = "https://hdl.handle.net/" + nodeUri.getIdHandle();
+                    return uri;
+                }
             }
         }
 
         // si on ne trouve pas ni Handle, ni Ark
-        //    uri = nodePreference.getCheminSite() + nodeUri.getIdConcept();
-//        uri = nodePreference.getCheminSite() + "?idc=" + nodeUri.getIdConcept()
-//                        + "&idt=" + idTheso;   
-//                        //+ "&amp;idt=" + idTheso;
-        uri = nodePreference.getCheminSite() + nodeUri.getIdConcept();
+        uri = nodePreference.getCheminSite() + "?idc=" + nodeUri.getIdConcept()
+                        + "&idt=" + idTheso;   
+                        //+ "&amp;idt=" + idTheso;
+    //    uri = nodePreference.getCheminSite() + nodeUri.getIdConcept();
         return uri;
     }
 

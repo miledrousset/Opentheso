@@ -6,7 +6,7 @@
     </context-param>
     <context-param>
         <param-name>version</param-name>
-        <param-value>20.06</param-value>
+        <param-value>20.07</param-value>
     </context-param>
     
     <!-- Activates the waitcursor and the double-click protection 
@@ -76,6 +76,7 @@
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>    
     
+
     
     
     

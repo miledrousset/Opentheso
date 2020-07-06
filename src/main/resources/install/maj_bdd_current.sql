@@ -21,6 +21,21 @@
 
 
 
+-- requête pour récupérer les candidat d'un thésaurus
+--select term_candidat.lexical_value, concept_candidat.status, concept_candidat.id_thesaurus
+--from concept_candidat, concept_term_candidat, term_candidat
+--where
+--concept_candidat.id_concept = concept_term_candidat.id_concept
+--and
+--concept_candidat.id_thesaurus = concept_term_candidat.id_thesaurus
+--and
+--concept_term_candidat.id_term = term_candidat.id_term
+--and
+--concept_term_candidat.id_thesaurus = term_candidat.id_thesaurus
+--and
+--term_candidat.id_thesaurus = '166' 
+
+
 
 
 
@@ -1886,6 +1901,8 @@ $$LANGUAGE plpgsql VOLATILE;
 
 
 
+
+
 ----------------------------------------------------------------------------
 -- mises à jour
 --
@@ -2418,6 +2435,31 @@ create or replace function update_table_preferences_original_uri() returns void 
 $$language plpgsql;
 
 
+----------------------------------------------------------------------------
+-- Création de la table corpus pour le lien avec les ressources externes
+CREATE OR REPLACE FUNCTION create_table_corpus()
+  RETURNS void AS $$
+BEGIN
+    IF NOT EXISTS (SELECT table_name FROM information_schema.tables WHERE table_name = 'corpus_link') THEN
+        execute 
+                '
+                CREATE TABLE public.corpus_link
+                (
+                    id_theso character varying NOT NULL,
+                    corpus_name character varying NOT NULL DEFAULT ''''::character varying,
+                    uri_count character varying DEFAULT ''''::character varying,
+                    uri_link character varying NOT NULL DEFAULT ''''::character varying,
+                    CONSTRAINT corpus_link_pkey PRIMARY KEY (id_theso, corpus_name)
+                );  ';
+
+    END IF;
+END;
+$$  LANGUAGE plpgsql;
+
+
+
+
+
 -- execution des fonctions 
 SELECT update_table_iconcept_group_label_historique();
 SELECT alter_table_concept_group_addcolumn_id_handle();
@@ -2436,6 +2478,7 @@ SELECT update_table_note_historique();
 SELECT update_table_term_historique();
 SELECT update_table_preferences_original_uri();
 select update_table_user_role_group_constraint();
+select create_table_corpus();
 
 
 
@@ -2457,7 +2500,7 @@ select delete_fonction('table_hompage','');
 select delete_fonction('table_thesohompage','');
 select delete_fonction('update_table_preferences_original_uri','');
 select delete_fonction('update_table_user_role_group_constraint','');
-
+select delete_fonction('create_table_corpus','');
 
 
 

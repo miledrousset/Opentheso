@@ -44,6 +44,7 @@ public class ArkHelper {
     }
     
     
+    // ne fonctionne pas
     public boolean isHandleExistOnServer(String idHandle) {
         return arkClientRest.isHandleExist(idHandle);
     }

@@ -143,6 +143,9 @@ public class SearchBean implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
             }
+            if(nodeConceptSearchs.size() > 0) {
+                onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+            }
         }
 
         if(withNote) {
@@ -159,6 +162,10 @@ public class SearchBean implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
             }
+            if(nodeConceptSearchs.size() > 0) {
+                onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+            }            
+         
         }
         
         if(exactMatch) {
@@ -173,6 +180,9 @@ public class SearchBean implements Serializable {
                     nodeSearchMini1.getIdConcept(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
+            }
+            if(nodeConceptSearchs.size() > 0) {
+                onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
             }
         }
         
@@ -191,7 +201,7 @@ public class SearchBean implements Serializable {
                         selectedTheso.getCurrentLang())
                 );
             }
-            if(nodeConceptSearchs.size() > 1) {
+            if(nodeConceptSearchs.size() > 0) {
                 onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
             }
         }

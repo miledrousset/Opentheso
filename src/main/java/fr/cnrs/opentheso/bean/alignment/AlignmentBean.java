@@ -74,6 +74,7 @@ public class AlignmentBean implements Serializable {
     private boolean isViewSelection = false;
     
     private boolean viewSetting = false;
+    private boolean viewAddNewSource = false;    
 
     private ArrayList<AlignementSource> alignementSources;
     private String selectedAlignement;
@@ -359,6 +360,7 @@ public class AlignmentBean implements Serializable {
             String idConcept, String currentLang) {
         alignmentInProgress = false;
         viewSetting = false;
+        viewAddNewSource = false;
         AlignmentHelper alignmentHelper = new AlignmentHelper();
 
         alignementSources = alignmentHelper.getAlignementSource(connect.getPoolConnexion(), idTheso);
@@ -1775,5 +1777,15 @@ public class AlignmentBean implements Serializable {
     public void setViewSetting(boolean viewSetting) {
         this.viewSetting = viewSetting;
     }
+
+    public boolean isViewAddNewSource() {
+        return viewAddNewSource;
+    }
+
+    public void setViewAddNewSource(boolean viewAddNewSource) {
+        this.viewAddNewSource = viewAddNewSource;
+    }
+    
+    
 
 }

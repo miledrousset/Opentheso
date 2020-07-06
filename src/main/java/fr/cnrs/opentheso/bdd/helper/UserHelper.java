@@ -981,6 +981,8 @@ public class UserHelper {
             String userGroupName) {
         Statement stmt;
         boolean status = false;
+        
+        userGroupName = new StringPlus().convertString(userGroupName);        
         try {
             Connection conn = ds.getConnection();
             try {

@@ -65,7 +65,8 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
-    
+
+   
     /**
      * Cettte fonction permet de retourner la liste des TopConcept avec IdArk et
      * handle

@@ -62,7 +62,7 @@ public class WriteRdf4j {
         builder.setNamespace("dcterms", "http://purl.org/dc/terms/");
         builder.setNamespace("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
         builder.setNamespace("iso-thes", "http://purl.org/iso25964/skos-thes#");
- //       builder.setNamespace("opentheso", "http://purl.org/umu/uneskos#");
+        builder.setNamespace("opentheso", "http://purl.org/umu/uneskos#");
         builder.setNamespace("foaf", "http://xmlns.com/foaf/0.1/");
 
     }
@@ -393,9 +393,9 @@ public class WriteRdf4j {
                     break;
                     
                 /// unesco properties for Groups or Collections    
-              /*  case SKOSProperty.memberOf:
+                case SKOSProperty.memberOf:
                     builder.add("opentheso:memberOf", uri);
-                    break;     */      
+                    break;     
             }
 
         }
