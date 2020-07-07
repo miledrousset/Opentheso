@@ -19,6 +19,7 @@ public class NodeCorpus {
     private int count;
             
     public NodeCorpus() {
+        count = -1;
     }
 
     public String getCorpusName() {

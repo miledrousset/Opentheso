@@ -1,0 +1,62 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="idEditCorpus" header="Modifier le corpus" widgetVar="editCorpus" 
+              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >         
+
+        <h:form id="editCorpusForm">           
+            <b:row >
+                <b:column span="12" >
+                    <b:inputText label="Nom" value="#{corpusBean.nodeCorpusForEdit.corpusName}" style="font-size: 12px;"/>
+                </b:column>                    
+            </b:row>
+            <b:row >
+                <b:column span="12" >
+                    <b:inputText label="Uri pour le count" value="#{corpusBean.nodeCorpusForEdit.uriCount}" style="font-size: 12px;"
+                                 tooltip="Valeur non obligatoire !!! Mettez (##id##) pour remplacer par l'id du concept ou (##value##) pour remplacer par le label"
+                                 tooltipDelayShow="500"/>
+                </b:column>
+            </b:row>
+            <b:row >
+                <b:column span="12" >
+                    <b:inputText label="Uri pour le lien" value="#{corpusBean.nodeCorpusForEdit.uriLink}" style="font-size: 12px;"
+                                 tooltip="Mettez (##id##) pour remplacer par l'id du concept ou (##value##) pour remplacer par le label"
+                                 tooltipDelayShow="500"/>
+                </b:column>
+            </b:row>    
+            <b:row >
+                <b:column span="12" >
+                    <!-- Changement de status On/Off -->
+                    <b:row >
+                        <b:column span="8" >
+                            <h:outputText value="Pour activer ou désactiver ce corpus Off/On" style="font-size: 12px;"/>
+                        </b:column>
+                        <b:column span="2" offset="1">
+                            <p:toggleSwitch label="Off/On" id="toggleThesoStatus" value="#{corpusBean.nodeCorpusForEdit.active}" style="font-size: 12px"/>
+                        </b:column>                    
+                    </b:row>
+                </b:column>
+            </b:row>
+            
+            <b:row >
+                <b:column span="10" offset="1" >
+                    <b:messages autoUpdate="true"/>
+                </b:column>
+            </b:row>                
+
+            <b:row style="margin-top:  20px;">
+                <b:column span="6" offset="3" >
+                    <b:commandButton 
+                                     value="Enregistrer" update="editCorpusForm"
+                                     class="btn btn-primary"
+                                     action="#{corpusBean.updateCorpus()}" 
+                                     style="width:100%; font-size: 12px;
+                                     color: white; background: #43B572;"/>
+                </b:column>
+            </b:row>    
+        </h:form>
+    </p:dialog>  
+</ui:fragment>

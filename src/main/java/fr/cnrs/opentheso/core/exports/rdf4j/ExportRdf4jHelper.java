@@ -1055,7 +1055,7 @@ public class ExportRdf4jHelper {
         // URI de type Ark
         if (nodeUri.getIdArk() != null) {
             if (!nodeUri.getIdArk().trim().isEmpty()) {
-                uri = nodePreference.getServeurArk() + nodeUri.getIdArk();
+                uri = nodePreference.getUriArk() + nodeUri.getIdArk();
                 return uri;
             }
         }

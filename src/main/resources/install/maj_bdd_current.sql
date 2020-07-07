@@ -2442,15 +2442,15 @@ CREATE OR REPLACE FUNCTION create_table_corpus()
 BEGIN
     IF NOT EXISTS (SELECT table_name FROM information_schema.tables WHERE table_name = 'corpus_link') THEN
         execute 
-                '
-                CREATE TABLE public.corpus_link
+                'CREATE TABLE public.corpus_link
                 (
                     id_theso character varying NOT NULL,
                     corpus_name character varying NOT NULL DEFAULT ''''::character varying,
                     uri_count character varying DEFAULT ''''::character varying,
                     uri_link character varying NOT NULL DEFAULT ''''::character varying,
+                    active boolean DEFAULT false,
                     CONSTRAINT corpus_link_pkey PRIMARY KEY (id_theso, corpus_name)
-                );  ';
+                );';
 
     END IF;
 END;

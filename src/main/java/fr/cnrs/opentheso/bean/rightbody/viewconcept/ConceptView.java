@@ -142,7 +142,7 @@ public class ConceptView implements Serializable {
         CorpusHelper corpusHelper = new CorpusHelper();
         
         
-        nodeCorpuses = corpusHelper.getAllCorpus(connect.getPoolConnexion(), idTheso);
+        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }      
@@ -184,7 +184,7 @@ public class ConceptView implements Serializable {
         }
         // récupération des informations sur les corpus liés 
         CorpusHelper corpusHelper = new CorpusHelper();
-        nodeCorpuses = corpusHelper.getAllCorpus(connect.getPoolConnexion(), idTheso);
+        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
@@ -198,25 +198,21 @@ public class ConceptView implements Serializable {
     private void setCorpus(){
         if(nodeConcept != null) {
             for (NodeCorpus nodeCorpuse : nodeCorpuses) {
-                if(nodeCorpuse.isActive()) {
-                    // recherche par Id
-                    if(nodeCorpuse.getUriLink().contains("##id##")){
-                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                // recherche par Id
+                if(nodeCorpuse.getUriLink().contains("##id##")){
+                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
 
-                        if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
-                            nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
-                            setCorpusCount(nodeCorpuse);
-                        }
-                    }
-                    // recherche par value
-                    if(nodeCorpuse.getUriLink().contains("##value##")){
-                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
-                        nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                        nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
                         setCorpusCount(nodeCorpuse);
-                    } 
-                } else {
-                    nodeCorpuses.remove(nodeCorpuse);
+                    }
                 }
+                // recherche par value
+                if(nodeCorpuse.getUriLink().contains("##value##")){
+                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    setCorpusCount(nodeCorpuse);
+                } 
             }
         }
     }
