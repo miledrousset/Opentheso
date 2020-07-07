@@ -47,7 +47,7 @@ public class SelectedTheso implements Serializable {
     private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
     @Inject
     private ViewEditorHomeBean viewEditorHomeBean;
-    
+
     @Inject RightBodySetting rightBodySetting;
 
     private static final long serialVersionUID = 1L;
@@ -146,6 +146,8 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsThesoActive(true);
+
+        PrimeFaces.current().ajax().update("formMenu");
 
     }
 
@@ -273,7 +275,7 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsThesoActive(true);
         rightBodySetting.setShowConceptToOn();
-        rightBodySetting.setIndex("0");  
+        rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
         // ne marche pas

@@ -36,10 +36,9 @@
                                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les sources d'alignement" tooltip-delay-show="1000"
                                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    <b:navCommandLink value="Gérer les sources" 
+                                    <b:navCommandLink value="Gérer les sources"
                                                       action="#{setAlignmentSourceBean.init()}"
-                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
-                                                      formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
+                                                      update="columnRightPanel panelSetting"
                                                       style="font-size: 12px;"></b:navCommandLink>
                                     <b:navCommandLink value="Ajouter une source"
                                                       disabled="false"
@@ -47,7 +46,7 @@
                                                       action="#{setAlignmentSourceBean.initAddSource()}"
                                                       update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
                                                       formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource"
-                                                      style="font-size: 12px;"></b:navCommandLink>                                                      
+                                                      style="font-size: 12px;"></b:navCommandLink>
                                 </b:dropMenu> 
                             </b:navbarLinks>
                         </b:column>                         
@@ -101,7 +100,8 @@
                                                     <b:navCommandLink value="#{conceptList.value}"
                                                                       actionListener="#{alignmentBean.selectConceptForAlignment(conceptList.id)}"
                                                                       update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel 
-                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal"/>
+                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal
+                                                                      :addAlignmentForm:columnRightPanel :addAlignmentForm:columnRightPanel:columnRightPanelLocal"/>
                                                 </b:column>
                                             </b:row>
                                         </ui:repeat>
@@ -336,8 +336,7 @@
                                                                                         selectedTheso.selectedIdTheso, 
                                                                                         alignmentBean.idConceptSelectedForAlignment,
                                                                                         currentUser.nodeUser.idUser)}"
-                                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanel
-                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal" >
+                                                                      update="columnRightPanel columnRightPanelLocal candidatForm" >
                                                     </b:navCommandLink>
                                                 </b:column>
                                                 <b:column span="1">
@@ -532,21 +531,16 @@
                             </b:panel>  
                             <b:row style="margin-bottom: 10px;">
                                 <b:column span="4" offset="3" >
-                                    <b:commandButton id="buttonCancel" value="cancel"
-                                                     update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
-                                                     formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
-                                                     style="width:100%; font-size: 13px; 
-                                                     font-weight: normal;
+                                    <b:commandButton id="buttonCancel" value="cancel" update="columnRightPanel panelSetting"
+                                                     style="width:100%; font-size: 13px; font-weight: normal;
                                                      color: white; background: #8C8C8C; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.cancel()}"/>
                                 </b:column>                                    
                                 <b:column span="4" offset="1" >
                                     <b:commandButton id="buttonSubmit" value="Valider"
-                                                     update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
-                                                     formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
-                                                     style="width:100%; font-size: 13px; 
-                                                     font-weight: normal;
+                                                     update="columnRightPanel panelSetting"
+                                                     style="width:100%; font-size: 13px; font-weight: normal;
                                                      color: white; background: #F7A269; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.updateSelectedAlignment()}"/>
@@ -555,7 +549,7 @@
 
                         </b:panel>
                     </b:column>
-                </b:row>   
+                </b:row>
 
 
                 <!-- Pour ajouter une nouvelle source de type Opentheso -->
@@ -568,11 +562,11 @@
                                     <h:outputText value="Nom" style="font-size: 12px;"/>
                                 </b:column>
                                 <b:column span="7">
-                                    <b:inputText placeholder="Nom de la source" value="#{setAlignmentSourceBean.sourceName}" 
+                                    <b:inputText placeholder="Nom de la source" value="#{setAlignmentSourceBean.sourceName}"
                                                  style="font-size: 12px; height: 25px; "/>
-                                </b:column>                                  
+                                </b:column>
                             </b:row>
-                            
+
                             <b:row>
                                 <b:column span="2" offset="1">
                                     <h:outputText value="Uri" style="font-size: 12px;"/>
@@ -581,9 +575,9 @@
                                     <b:inputText placeholder="Uri du serveur" value="#{setAlignmentSourceBean.sourceUri}"
                                                  style="font-size: 12px; height: 25px;"
                                                  tooltip="Indiquer l'URL du serveur exemple (https://monserveur.fr/opentheso)" tooltip-delay-show="500"/>
-                                </b:column>                                  
-                            </b:row>    
-                            
+                                </b:column>
+                            </b:row>
+
                             <b:row>
                                 <b:column span="2" offset="1">
                                     <h:outputText value="Id. du thésaurus" style="font-size: 12px;"/>
@@ -592,9 +586,9 @@
                                     <b:inputText placeholder="Identifiant du thésaurus" value="#{setAlignmentSourceBean.sourceIdTheso}"
                                                  style="font-size: 12px; height: 25px;"
                                                  tooltip="Indiquer l'identifiant du thésaurus exemple (th1)" tooltip-delay-show="500"/>
-                                </b:column>                                  
-                            </b:row>        
-                            
+                                </b:column>
+                            </b:row>
+
                             <b:row>
                                 <b:column span="2" offset="1">
                                     <h:outputText value="Description" style="font-size: 12px;"/>
@@ -603,34 +597,34 @@
                                     <b:inputText placeholder="note" value="#{setAlignmentSourceBean.description}"
                                                  style="font-size: 12px; height: 25px;"
                                                  tooltip="Description de cette source" tooltip-delay-show="500"/>
-                                </b:column>                                  
-                            </b:row>                            
+                                </b:column>
+                            </b:row>
                             <p:spacer/>
                             <b:row style="margin-bottom: 10px;">
                                 <b:column span="4" offset="1" >
                                     <b:commandButton id="buttonCancel2" value="cancel"
                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
                                                      formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource"
-                                                     style="width:100%; font-size: 13px; 
+                                                     style="width:100%; font-size: 13px;
                                                      font-weight: normal;
                                                      color: white; background: #8C8C8C; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.cancel()}"/>
-                                </b:column>                                    
+                                </b:column>
                                 <b:column span="4" offset="1" >
                                     <b:commandButton id="buttonSubmit2" value="Ajouter"
                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
                                                      formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource"
-                                                     style="width:100%; font-size: 13px; 
+                                                     style="width:100%; font-size: 13px;
                                                      font-weight: normal;
                                                      color: white; background: #F7A269; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.addAlignmentSource(currentUser.nodeUser.idUser)}"/>
                                 </b:column>
-                            </b:row>  
+                            </b:row>
                         </b:panel>
                     </b:column>
-                </b:row>                  
+                </b:row>
 
 
             </b:row>

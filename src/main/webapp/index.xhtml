@@ -88,7 +88,11 @@
 
             <h:panelGroup  rendered="#{indexSetting.isProfileActive}">
                 <ui:include src="/profile/profile.xhtml" />
-            </h:panelGroup>            
+            </h:panelGroup>  
+
+            <h:panelGroup  rendered="#{indexSetting.isCandidateActive}">
+                <ui:include src="/candidat/candidatMain.xhtml" />
+            </h:panelGroup>           
 
             <h:panelGroup  rendered="#{indexSetting.isSettingActive}">
                 <ui:include src="/setting/setting.xhtml" />

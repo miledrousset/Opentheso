@@ -22,11 +22,11 @@
                         </b:navCommandLink>
 
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
-                                   value="Candidat"  
+                                   value="#{langueBean.getMsg('candidat.titre')}"
                                    action="#{indexSetting.setIsCandidateActive(true)}"
                                    style="color: #{indexSetting.candidateColor}"
-                                   update="containerIndex formMenu">                                   
-                        </b:navCommandLink>
+                                   update="containerIndex"  />
+
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}"
                                    value="Profil" 
                                    action="#{indexSetting.setIsProfileActive(true)}"
@@ -35,7 +35,15 @@
                                     profileForm"                                    
                                    style="color: #{indexSetting.profileColor}">                                   
                         </b:navCommandLink>
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" 
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}"
+                                          action="#{indexSetting.setIsToolBoxActive(true)}"
+                                          actionListener="#{toolBoxBean.reset()}"
+                                          update="containerIndex formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
+                                          toolBoxForm"
+                                          value="Boite à outils" icon-align="right"
+                                          style="color: #{indexSetting.toolBoxColor}">
+                        </b:navCommandLink>
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}"
                                    value="Paramètres" 
                                    action="#{indexSetting.setIsSettingActive(true)}"
                                    actionListener="#{settingAndToolsBean.reset()}"
@@ -43,14 +51,6 @@
                                     settingForm"                                    
                                    style="color: #{indexSetting.settingColor}">                                   
                         </b:navCommandLink>
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
-                                          action="#{indexSetting.setIsToolBoxActive(true)}"
-                                          actionListener="#{toolBoxBean.reset()}"
-                                          update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
-                                          toolBoxForm" 
-                                          value="Boite à outils" icon-align="right" 
-                                          style="color: #{indexSetting.toolBoxColor}">
-                        </b:navCommandLink>                  
                     </b:navbarLinks>                     
                     
                     
@@ -70,17 +70,17 @@
 
                         <!-- liste des thésaurus -->                
                         <b:navLink style="height: 30px; margin-top: -3px; margin-right: -10px;">
-                            
+
                             <p:selectOneMenu id="idListTheso" value="#{selectedTheso.selectedIdTheso}"
                                  style="font-size: 12px;  width: 180px; "
 
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;">
                                 <p:ajax event="valueChange" update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab
-                                             containerIndex homePageForm" 
+                                             containerIndex homePageForm"
                                              listener="#{selectedTheso.setSelectedTheso()}" />
                                 <f:selectItem itemLabel="(select thesaurus)" itemValue=""/>
                                 <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
-                            </p:selectOneMenu> 
+                            </p:selectOneMenu>
                         </b:navLink> 
 
 
