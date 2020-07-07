@@ -24,6 +24,15 @@
                                               action="#{settingAndToolsBean.setIsIdentifierActive(true)}"
                                               update="settingForm"/>
                         </b:column>
+                    </b:row> 
+                    <p:spacer/>
+                    <b:row>
+                        <b:column span="11" offset="1">
+                            <b:navCommandLink value="Corpus" style="color: #{settingAndToolsBean.corpusColor}"
+                                              action="#{settingAndToolsBean.setIsCorpusActive(true)}"
+                                              actionListener="#{corpusBean.init()}"
+                                              update="settingForm"/>
+                        </b:column>
                     </b:row>                      
                     <p:spacer/>
                     <b:row>
@@ -40,12 +49,17 @@
             <b:column span="9" rendered="#{settingAndToolsBean.isPreferenceActive}">
                 <ui:include src="/setting/preference.xhtml" />
             </b:column>
+            <b:column span="9" rendered="#{settingAndToolsBean.isIdentifierActive}">
+                <ui:include src="/setting/identifier.xhtml" />
+            </b:column>    
+            <b:column span="9" rendered="#{settingAndToolsBean.isCorpusActive}">
+                <ui:include src="/setting/corpus.xhtml" />
+            </b:column>              
+            
             <b:column span="9" rendered="#{settingAndToolsBean.isMaintenanceActive}">
                 <ui:include src="/setting/maintenance.xhtml" />
             </b:column>      
-            <b:column span="9" rendered="#{settingAndToolsBean.isIdentifierActive}">
-                <ui:include src="/setting/identifier.xhtml" />
-            </b:column>     
+  
           
         </b:row>
     </h:form>        

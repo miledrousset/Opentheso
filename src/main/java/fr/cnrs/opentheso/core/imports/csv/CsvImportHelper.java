@@ -49,9 +49,9 @@ public class CsvImportHelper {
     public CsvImportHelper(NodePreference nodePreference) {
         this.nodePreference = nodePreference;
     }
-    
+
     public CsvImportHelper() {
-    }    
+    }
 
     /**
      * initialisation des paramètres d'import
@@ -140,9 +140,8 @@ public class CsvImportHelper {
             Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-    }    
-    
-    
+    }
+
     public void addSingleConcept(
             HikariDataSource ds,
             String idTheso,
@@ -187,14 +186,32 @@ public class CsvImportHelper {
                 idConcept = conceptHelper.addConcept(ds, idConceptPere, "NT", concept, term, idUser);
                 if (idConcept == null) {
                     message = message + "\n" + "erreur dans l'intégration du concept " + prefLabel.getLabel();
+                } else {
+                    conceptObject.setIdConcept(idConcept);
+                    idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idTheso);
+                    //                    if (idTerm == null) {
+                    //                        message = message + "\n" + "erreur dans l'intégration du concept " + prefLabel.getLabel();
+                    //                    }
+                    conceptObject.setIdTerm(idTerm);
+                    first = false;
                 }
-                conceptObject.setIdConcept(idConcept);
-                idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idTheso);
-                if (idTerm == null) {
-                    message = message + "\n" + "erreur dans l'intégration du concept " + prefLabel.getLabel();
+                if (idConcept != null) {
+                    // synonymes et cachés
+                    addAltLabels(ds, idTheso, conceptObject);
+
+                    // notes
+                    addNotes(ds, idTheso, conceptObject);
+
+                    // relations
+                    addRelations(ds, idTheso, conceptObject);
+
+                    // alignements
+                    addAlignments(ds, idTheso, conceptObject);
+
+                    // géolocalisation
+                    addGeoLocalisation(ds, idTheso, conceptObject);
                 }
-                conceptObject.setIdTerm(idTerm);
-                first = false;
+
             } // ajout des traductions
             else {
                 if (idConcept != null) {
@@ -213,20 +230,6 @@ public class CsvImportHelper {
             }
         }
 
-        // synonymes et cachés
-        addAltLabels(ds, idTheso, conceptObject);
-
-        // notes
-        addNotes(ds, idTheso, conceptObject);
-
-        // relations
-        addRelations(ds, idTheso, conceptObject);
-        
-        // alignements
-        addAlignments(ds, idTheso, conceptObject);
-        
-        // géolocalisation
-        addGeoLocalisation(ds, idTheso, conceptObject);
     }
 
     /**
@@ -251,15 +254,15 @@ public class CsvImportHelper {
             return false;
         }
         addLangsToThesaurus(ds, idTheso, thesoName, langs);
-        
+
         GroupHelper groupHelper = new GroupHelper();
         if (!groupHelper.addGroupDefault(ds, langueSource, idTheso)) {
             return false;
         }
         idDefaultGroup = "orphans";
         for (CsvReadHelper.ConceptObject conceptObject1 : conceptObject) {
-       //     fileBean.setAbs_progress(fileBean.getAbs_progress() + 1);
-        //    fileBean.setProgress(fileBean.getAbs_progress() / fileBean.getTotal() * 100);
+            //     fileBean.setAbs_progress(fileBean.getAbs_progress() + 1);
+            //    fileBean.setProgress(fileBean.getAbs_progress() / fileBean.getTotal() * 100);
 
             switch (conceptObject1.getType().trim().toLowerCase()) {
                 case "skos:concept":
@@ -268,7 +271,7 @@ public class CsvImportHelper {
                         return false;
                     }
                     break;
-    /*           case "":
+                /*           case "":
                     // ajout de concept
                     if (!addConcept(ds, idTheso, conceptObject1)) {
                         return false;
@@ -286,8 +289,6 @@ public class CsvImportHelper {
         }
         return true;
     }
-
-
 
     /**
      * permet d'ajouter les langues détectées au thésaurus
@@ -370,7 +371,7 @@ public class CsvImportHelper {
             CsvReadHelper.ConceptObject conceptObject) {
 
         conceptObject.setIdTerm(conceptObject.getIdConcept());
-        
+
         if (!addPrefLabel(ds, idTheso, conceptObject)) {
             return false;
         }
@@ -407,7 +408,7 @@ public class CsvImportHelper {
             String idTheso,
             CsvReadHelper.ConceptObject conceptObject) {
 
-        if (conceptObject.getIdConcept()== null || conceptObject.getIdConcept().isEmpty()) {
+        if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
             message = message + "\n" + "concept sans identifiant : " + conceptObject.getPrefLabels().toString();
             return false;
         }
@@ -466,22 +467,22 @@ public class CsvImportHelper {
                 term.setCreator(idUser);
                 term.setSource("");
                 term.setStatus("");
-                if(!termHelper.addTermTraduction(conn, term, idUser)) {
+                if (!termHelper.addTermTraduction(conn, term, idUser)) {
                     conn.rollback();
                     conn.close();
                     message = message + "\n" + "erreur dans l'intégration du terme " + prefLabel.getLabel();
                     return false;
                 }
                 conn.commit();
-            /*if (!conceptHelper.addConceptTraduction(ds, term, idUser)) {
+                /*if (!conceptHelper.addConceptTraduction(ds, term, idUser)) {
                     message = message + "\n" + "erreur dans l'intégration du terme " + prefLabel.getLabel();
                 }*/
             }
             conn.close();
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
-            if(conn != null) {
+            if (conn != null) {
                 try {
                     conn.close();
                 } catch (SQLException ex1) {
@@ -490,7 +491,7 @@ public class CsvImportHelper {
             }
             return false;
         }
-       
+
         return true;
     }
 
@@ -558,7 +559,7 @@ public class CsvImportHelper {
                     idTheso,
                     note.getLabel(),
                     "note", idUser);
-        }        
+        }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
             noteHelper.addTermNote(ds, conceptObject.getIdTerm(),
                     note.getLang(),
@@ -757,7 +758,7 @@ public class CsvImportHelper {
         GroupHelper groupHelper = new GroupHelper();
         if (conceptObject.getMembers().isEmpty()) {
             // ajout dans le groupe par defaut (NoGroup)
-         //   groupHelper.addConceptGroupConcept(ds, idDefaultGroup, conceptObject.getIdConcept(), idTheso);
+            //   groupHelper.addConceptGroupConcept(ds, idDefaultGroup, conceptObject.getIdConcept(), idTheso);
         } else {
             for (String member : conceptObject.getMembers()) {
                 groupHelper.addConceptGroupConcept(ds, member.trim(), conceptObject.getIdConcept(), idTheso);
@@ -765,4 +766,4 @@ public class CsvImportHelper {
         }
         return true;
     }
- }
+}

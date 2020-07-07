@@ -104,7 +104,7 @@ public class GpsBean implements Serializable {
     public void deleteCoordinateGps() {
 
         FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();;
+        PrimeFaces pf = PrimeFaces.current();
 
         GpsHelper gpsHelper = new GpsHelper();
         

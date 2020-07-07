@@ -44,6 +44,7 @@ public class ArkHelper {
     }
     
     
+    // ne fonctionne pas
     public boolean isHandleExistOnServer(String idHandle) {
         return arkClientRest.isHandleExist(idHandle);
     }
@@ -200,7 +201,7 @@ public class ArkHelper {
         // création de l'identifiant Ark et Handle 
         String jsonDatas = nodeJson.getJsonString();
         if(jsonDatas == null) return false;
-        if(!arkClientRest.addArk(jsonDatas)) return false;
+  //      if(!arkClientRest.addArk(jsonDatas)) return false;
 
         idArk = arkClientRest.getIdArk();
         idHandle = arkClientRest.getIdHandle();

@@ -8,7 +8,7 @@
     <h:panelGroup id="conceptView" rendered="#{conceptView.nodeConcept != null}" styleClass="textOpentheso">    
         <!-- Actions sur le concept -->
         <b:row id="idConceptViewActions" rendered="#{(currentUser.nodeUser != null)}" >           
-            <b:column span="1" offset="11">
+            <b:column span="1" offset="11" colXs="2" offset-xs="10">
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and 
                                         (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             icon-awesome="fa-plus-circle" icon-size="l"  value=""
@@ -41,7 +41,6 @@
                                        style="font-size: 12px;"
                                        update="idCutAndPaste cutAndPasteForm">
                     </b:navCommandLink>                    
-                    <b:navLink/>
                     <b:navCommandLink value="Supprimer le concept" 
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idDeleteConcept deleteConceptForm"
@@ -49,13 +48,32 @@
                                       oncomplete="PF('deleteConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>   
+                    <b:navCommandLink rendered="#{roleOnTheso.nodePreference.useArk}" value="Générer l'identifiant Ark" 
+                                      disabled="false"                                      
+                                      actionListener="#{editConcept.infosArk()}"
+                                      update="idGenerateArk generateArkForm"
+                                      action="#{editConcept.reset()}"
+                                      oncomplete="PF('generateArk').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>                       
+                    <b:navLink/>
+                    <b:navCommandLink value="Importer une liste des concepts"
+                                      tooltip="Importer une liste de concepts spécifiques au format tabulé sous #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
+                                      actionListener="#{editConcept.infosDelete()}"
+                                      update="idListImportCsv listImportCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('listImportCsv').show();"
+                                      style="font-size: 12px; ">
+                    </b:navCommandLink>                     
                 </b:dropMenu>        
             </b:column>
 
         </b:row> 
         <ui:include src="/dialog/dragAndDrop/dragAndDrop.xhtml" />
         <ui:include src="/dialog/dragAndDrop/cutAndPaste.xhtml" />
-        <ui:include src="/dialog/concept/deleteConcept.xhtml" />        
+        <ui:include src="/dialog/concept/deleteConcept.xhtml" />   
+        <ui:include src="/dialog/import/listImportCsv.xhtml" />       
+        <ui:include src="/dialog/concept/generateArk.xhtml" />         
 
 
         <!-- Fil d'ariane -->
@@ -167,12 +185,16 @@
 
             <b:column id="idConceptGroupColumn" span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() != 0}">
                 <ui:repeat   var="domaine" value="#{conceptView.nodeConcept.nodeConceptGroup}" varStatus="status">
-                    <h:outputText rendered="#{domaine.lexicalValue != ''}"
-                                  value="#{domaine.lexicalValue}" title="#{domaine.conceptGroup.idgroup}"
-                                  style="color: #666666"/>                    
-                    <h:outputText rendered="#{domaine.lexicalValue == ''}" 
-                                  value="(#{domaine.conceptGroup.idgroup})" 
-                                  title="pas de traduction dans cette langue" style="color: #FF7979"/>
+                    <b:navCommandLink rendered="#{domaine.lexicalValue != ''}"
+                                      value="#{domaine.lexicalValue}"
+                                      action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
+                                      update="formLeftTab formRightTab indexTitle"
+                                      style="color: #43B572;"></b:navCommandLink>  
+                    <b:navCommandLink rendered="#{domaine.lexicalValue == ''}"
+                                      value="#{domaine.lexicalValue}"
+                                      action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
+                                      update="formLeftTab formRightTab indexTitle"
+                                      style="color: #43B572;"></b:navCommandLink>                                        
 
                     <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
                 </ui:repeat>
@@ -827,11 +849,11 @@
         <!-- ligne GPS -->
         <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
             <b:column span="3" colXs="3">
-                <h:outputText value="Corrdonnées GPS" />
+                <h:outputText value="Coordonnées GPS" />
             </b:column>
             <b:column span="1">
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les traductions" tooltip-delay-show="1000"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les coordonnées GPS" tooltip-delay-show="1000"
                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                     <b:navCommandLink value="Ajouter/modifier les coordonnées GPS" 
                                       actionListener="#{gpsBean.reset()}"
@@ -876,7 +898,7 @@
 
 
         <!-- ligne Corpus liés -->        
-        <b:row >
+        <b:row rendered="#{conceptView.nodeCorpuses != null and conceptView.nodeCorpuses.size() != 0}">
             <b:column span="3" colXs="3">
                 <h:outputText value="Corpus lié" />
             </b:column>
@@ -884,16 +906,16 @@
                 <p:commandButton rendered="#{user.nodeUser != null}" icon="fas fa-cog fa-xs"  style="color:#F7A269; background: none; border: none; box-shadow: none" />
             </b:column>            
             <b:column span="8" colXs="8">
-                <b:row>
-                    <b:column >
-                        <h:outputText value="en cours ......" style="font-size: 12px; color: #666666"/>
-                    </b:column> 
-                </b:row> 
-                <b:row>
-                    <b:column>
-                        <h:outputText value="en cours ......" style="font-size: 12px; color: #666666"/>
-                    </b:column>
-                </b:row>
+                <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
+                    <b:row>
+                        <b:column >
+                            <b:link href="#{corpus.uriLink}"
+                                    value="#{corpus.corpusName} (#{corpus.count})" icon="link" 
+                                    target="_blank"
+                                    icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>                            
+                        </b:column> 
+                    </b:row> 
+                </ui:repeat> 
                 <p:separator styleClass="separator" style="margin-top: 2px"/>                
             </b:column>
         </b:row>
@@ -1048,8 +1070,8 @@
                 <h:outputText value="IdArk" style="margin-left: 5px;"/>
             </b:column>
             <b:column span="8" colXs="8">
-                <b:link href="#{roleOnTheso.nodePreference.serveurArk}#{conceptView.nodeConcept.concept.idArk}"
-                        value="#{roleOnTheso.nodePreference.serveurArk}#{conceptView.nodeConcept.concept.idArk}"
+                <b:link href="#{roleOnTheso.nodePreference.uriArk}#{conceptView.nodeConcept.concept.idArk}"
+                        value="#{roleOnTheso.nodePreference.uriArk}#{conceptView.nodeConcept.concept.idArk}"
                         target="_blank"
                         icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
             </b:column>
@@ -1059,8 +1081,8 @@
                 <h:outputText value="IdHandle" style="margin-left: 5px;"/>
             </b:column>
             <b:column span="8" colXs="8">
-                <b:link href="#{roleOnTheso.nodePreference.urlApiHandle}#{conceptView.nodeConcept.concept.idHandle}"
-                        value="#{roleOnTheso.nodePreference.urlApiHandle}#{conceptView.nodeConcept.concept.idHandle}"
+                <b:link href="https://hdl.handle.net/#{conceptView.nodeConcept.concept.idHandle}"
+                        value="https://hdl.handle.net/#{conceptView.nodeConcept.concept.idHandle}"
                         target="_blank"
                         icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
             </b:column>

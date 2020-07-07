@@ -27,6 +27,31 @@ public class StatisticHelper {
         this.nombreConcept = nombreConcept;
     }
     
+    /*
+    select count(concept.id_concept)
+        from concept, concept_group_concept where
+        concept_group_concept.idconcept = concept.id_concept
+        and
+        concept_group_concept.idthesaurus = concept.id_thesaurus
+        and
+        modified >= '2019-01-01' and modified <= '2020-06-03'
+        and concept.id_thesaurus= 'th13' and concept_group_concept.idgroup = 'pcrtIriK2LwtHZ';
+    */
+    
+    /*
+    select count(term.id_term) 
+        from term, preferred_term, concept_group_concept where
+        concept_group_concept.idconcept = preferred_term.id_concept
+        and
+        concept_group_concept.idthesaurus = preferred_term.id_thesaurus
+        and
+        preferred_term.id_term = term.id_term
+        and
+        preferred_term.id_thesaurus = term.id_thesaurus
+        and
+        modified >= '2019-01-01' and modified <= '2020-06-04' 
+        and term.id_thesaurus= 'th13' and lang = 'fr' and concept_group_concept.idgroup = 'pcrtIriK2LwtHZ'
+    */
     
     
     /**

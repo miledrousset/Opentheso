@@ -20,6 +20,9 @@ public class AlignementSource {
     private String alignement_format;
     private  int id;
     private String description;
+    
+    
+    // deprecated
     private boolean isGps;
 
     public AlignementSource() {

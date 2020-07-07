@@ -44,18 +44,12 @@ import org.primefaces.model.TreeNode;
 
 public class Tree implements Serializable {
 
-    @Inject
-    private Connect connect;
-    @Inject
-    private RightBodySetting rightBodySetting;
-    @Inject
-    private LeftBodySetting leftBodySetting;
-    @Inject
-    ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
+    @Inject private Connect connect;
+    @Inject private RightBodySetting rightBodySetting;
+    @Inject private LeftBodySetting leftBodySetting;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
 
     private DataService dataService;
 
@@ -267,18 +261,16 @@ public class Tree implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {
         if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
             rightBodySetting.setShowConceptToOn();
-            conceptBean.getConcept(idTheso,
+            conceptBean.getConceptForTree(idTheso,
                     ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
         }
         if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {
             rightBodySetting.setShowConceptToOn();
 
-            conceptBean.getConcept(idTheso,
+            conceptBean.getConceptForTree(idTheso,
                     ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
         }
-        if (((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup()) {
-            rightBodySetting.setShowGroupToOn();
-        }
+        
         rightBodySetting.setIndex("0");
     }
 

@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
@@ -52,6 +53,8 @@ public class TreeGroups implements Serializable {
     ConceptView conceptView;    
     @Inject
     GroupView groupView;
+    @Inject private LeftBodySetting leftBodySetting;
+    
 
     private DataService dataService;
 
@@ -243,10 +246,20 @@ public class TreeGroups implements Serializable {
          */
     }
 
+    public void selectThisGroup(String idGroup) {
+        rightBodySetting.setShowGroupToOn();
+        groupView.getGroup(idTheso, idGroup, idLang);
+        rightBodySetting.setIndex("1");  
+        leftBodySetting.setIndex("2");
+        if(selectedNode != null)
+            selectedNode.setSelected(false);
+        
+    }    
+    
     public void onNodeSelect(NodeSelectEvent event) {
         if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
             rightBodySetting.setShowConceptToOn();
-            conceptView.getConcept(idTheso,
+            conceptView.getConceptForTree(idTheso,
                     ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
             rightBodySetting.setIndex("0");
         }

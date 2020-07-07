@@ -143,6 +143,9 @@ public class SearchBean implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
             }
+            if(nodeConceptSearchs.size() > 0) {
+                onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+            }
         }
 
         if(withNote) {
@@ -159,6 +162,10 @@ public class SearchBean implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
             }
+            if(nodeConceptSearchs.size() > 0) {
+                onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+            }            
+         
         }
         
         if(exactMatch) {
@@ -174,24 +181,27 @@ public class SearchBean implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
             }
+            if(nodeConceptSearchs.size() > 0) {
+                onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+            }
         }
         
         if(!withId && !withNote && !exactMatch) {
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchExactMatch(
+            ArrayList<String> nodeSearchMinis = searchHelper.searchFullTextId(
                     connect.getPoolConnexion(),
                     searchValue, selectedTheso.getCurrentLang(),
                     selectedTheso.getCurrentIdTheso()
                     );            
-            for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
+            for (String nodeSearchMini : nodeSearchMinis) {
                 nodeConceptSearchs.add(
                         conceptHelper.getConceptForSearch(
                         connect.getPoolConnexion(),
-                        nodeSearchMini.getIdConcept(),
+                        nodeSearchMini,
                         selectedTheso.getCurrentIdTheso(),
                         selectedTheso.getCurrentLang())
                 );
             }
-            if(nodeConceptSearchs.size() > 1) {
+            if(nodeConceptSearchs.size() > 0) {
                 onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
             }
         }

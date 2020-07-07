@@ -6,21 +6,49 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -30,19 +58,17 @@ import javax.inject.Inject;
 @SessionScoped
 public class ConceptView implements Serializable {
 
-    @Inject
-    private Connect connect;
-    
-    @Inject
-    private IndexSetting indexSetting;   
-    @Inject
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject
-    private ViewEditorHomeBean viewEditorHomeBean;    
-    
+    @Inject private Connect connect;
+    @Inject private IndexSetting indexSetting;   
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private ViewEditorHomeBean viewEditorHomeBean;    
+    @Inject private Tree tree;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private SelectedTheso selectedTheso;
 
     private NodeConcept nodeConcept;
     private String selectedLang;
+    private ArrayList <NodeCorpus> nodeCorpuses;
     
     
     private ArrayList<String> pathOfConcept;
@@ -87,10 +113,12 @@ public class ConceptView implements Serializable {
         examples = new ArrayList<>();
         historyNotes = new ArrayList<>();
         sizeToShowNT = 0;
+        nodeCorpuses = null;
     }
 
     /**
      * récuparation des informations pour le concept sélectionné
+     * c'est pour la navigation entre les concepts dans la vue de droite avec deployement de l'arbre
      *
      * @param idTheso
      * @param idConcept
@@ -99,14 +127,207 @@ public class ConceptView implements Serializable {
     public void getConcept(String idTheso, String idConcept, String idLang) {
         ConceptHelper conceptHelper = new ConceptHelper();
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        if(nodeConcept == null) return;
+
         pathOfConcept(idTheso, idConcept, idLang);
-        selectedLang = idLang;
         setNotes();
-        setSizeToShowNT();
+        setSizeToShowNT();            
+        selectedLang = idLang;
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
+        
+        
+        // récupération des informations sur les corpus liés 
+        CorpusHelper corpusHelper = new CorpusHelper();
+        
+        
+        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+        if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
+            setCorpus();
+        }      
+
+        // deployement de l'arbre si l'option est true
+        if(roleOnThesoBean.getNodePreference() != null) {
+            if(roleOnThesoBean.getNodePreference().isAuto_expand_tree()){
+                tree.expandTreeToPath(
+                    idConcept,
+                    idTheso,
+                    idLang);
+                PrimeFaces pf = PrimeFaces.current();;
+                if (pf.isAjaxRequest()) {
+//                    pf.ajax().update("formLeftTab");
+                    pf.ajax().update("formLeftTab:tabTree:tree");
+                    pf.ajax().update("formSearch:languageSelect");
+                    pf.executeScript("srollToSelected()");
+                }   
+                selectedTheso.actionFromConceptToOn();
+            }
+        }
     }
+    
+    /**
+     * récuparation des informations pour le concept sélectionné
+     * après une sélection dans l'arbre
+     *
+     * @param idTheso
+     * @param idConcept
+     * @param idLang
+     */
+    public void getConceptForTree(String idTheso, String idConcept, String idLang) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        if(nodeConcept != null) {
+            pathOfConcept(idTheso, idConcept, idLang);
+            setNotes();
+            setSizeToShowNT();            
+        }
+        // récupération des informations sur les corpus liés 
+        CorpusHelper corpusHelper = new CorpusHelper();
+        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+        if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
+            setCorpus();
+        }
+        
+        selectedLang = idLang;
+        indexSetting.setIsValueSelected(true);
+        viewEditorHomeBean.reset();
+        viewEditorThesoHomeBean.reset();
+    }    
+    
+    private void setCorpus(){
+        if(nodeConcept != null) {
+            for (NodeCorpus nodeCorpuse : nodeCorpuses) {
+                // recherche par Id
+                if(nodeCorpuse.getUriLink().contains("##id##")){
+                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+
+                    if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                        nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                        setCorpusCount(nodeCorpuse);
+                    }
+                }
+                // recherche par value
+                if(nodeCorpuse.getUriLink().contains("##value##")){
+                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    setCorpusCount(nodeCorpuse);
+                } 
+            }
+        }
+    }
+    
+    private void setCorpusCount(NodeCorpus nodeCorpus){
+        if(nodeConcept != null) {
+            if(nodeCorpus == null) return;
+            if(nodeCorpus.getUriCount().contains("https://")) {
+                nodeCorpus.setCount(getCountOfResourcesFromHttps(nodeCorpus.getUriCount()));
+            }
+            if(nodeCorpus.getUriCount().contains("http://")) {
+                
+            }
+        }        
+    }
+    
+    private int getCountOfResourcesFromHttps(String uri) {
+        String output;
+        String json = "";
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
+        }
+        };
+
+        // Install the all-trusting trust manager
+        SSLContext sc;
+        try {
+            sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KeyManagementException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // Create all-trusting host name verifier
+        HostnameVerifier allHostsValid = new HostnameVerifier() {
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        };
+        // Install the all-trusting host verifier
+        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);        
+        
+        
+        // récupération du total des notices 
+        
+        try {
+            URL url = new URL(uri);
+            
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setUseCaches(false);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            int status = conn.getResponseCode();
+            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            while ((output = br.readLine()) != null) {
+                json += output;
+            }
+            return getCountFromJson(json);            
+
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        return -1;
+    }
+    private int getCountFromJson(String jsonText) {
+        if(jsonText == null) return -1;
+        JsonObject jsonObject;
+        try ( //{"responseCode":1,"handle":"20.500.11942/opentheso443"}
+            JsonReader reader = Json.createReader(new StringReader(jsonText))) {
+            jsonObject = reader.readObject();
+            return jsonObject.getInt("count");            
+        }
+    }  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     private void setSizeToShowNT() {
         // Max 20
@@ -195,9 +416,6 @@ public class ConceptView implements Serializable {
                 case "scopeNote" :
                     scopeNotes.add(nodeNote);
                     break;
-                case "historyNote" :
-                    historyNotes.add(nodeNote);
-                    break;                     
             }
         }
         for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
@@ -214,6 +432,9 @@ public class ConceptView implements Serializable {
                 case "example" :
                     examples.add(nodeNote);
                     break; 
+                case "historyNote" :
+                    historyNotes.add(nodeNote);
+                    break;                         
             }
         }        
     }
@@ -315,6 +536,14 @@ public class ConceptView implements Serializable {
 
     public void setHistoryNotes(ArrayList<NodeNote> historyNotes) {
         this.historyNotes = historyNotes;
+    }
+
+    public ArrayList<NodeCorpus> getNodeCorpuses() {
+        return nodeCorpuses;
+    }
+
+    public void setNodeCorpuses(ArrayList<NodeCorpus> nodeCorpuses) {
+        this.nodeCorpuses = nodeCorpuses;
     }
 
 }

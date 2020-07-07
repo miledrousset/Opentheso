@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -29,6 +28,8 @@ public class MoveThesoToProjectBean implements Serializable {
     @Inject private Connect connect;
     @Inject private MyProjectBean myProjectBean;
     @Inject private CurrentUser currentUser;
+    @Inject private SuperAdminBean superAdminBean;
+            
     
     private NodeIdValue selectedThesoToMove;
     private String currentProject;
@@ -49,6 +50,14 @@ public class MoveThesoToProjectBean implements Serializable {
         this.selectedThesoToMove = selectedThesoToMove;
         this.currentProject = currentProject;
     }   
+    
+    public void setThesoSuperAdmin(String idTheso, String thesoName, String currentProject) {
+        selectedThesoToMove = new NodeIdValue();
+        selectedThesoToMove.setId(idTheso);
+        selectedThesoToMove.setValue(thesoName);
+
+        this.currentProject = currentProject;
+    }       
     
     public ArrayList<NodeUserGroup> autoCompleteProject(String projectName) {
         UserHelper userHelper = new UserHelper();
@@ -98,7 +107,42 @@ public class MoveThesoToProjectBean implements Serializable {
             pf.ajax().update("profileForm:myProjectForm");
             pf.ajax().update("profileForm:modifyProjectForm");
         }*/
+    }
+    
+    public void moveThesoToProjectSA(){
+        FacesMessage msg;
+        
+        if(newProject== null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de projet sélectioné !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }   
+
+        UserHelper userHelper = new UserHelper();
+        if(!userHelper.moveThesoToGroup(
+                connect.getPoolConnexion(),
+                selectedThesoToMove.getId(),
+                Integer.parseInt(currentProject),
+                newProject.getIdGroup() )){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de déplacement !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;             
+        }
+               
+             
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Projet déplacé avec succès !!!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        superAdminBean.init();
+/*        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            //    pf.ajax().update("messageIndex");
+            pf.ajax().update("profileForm:myProjectForm");
+            pf.ajax().update("profileForm:modifyProjectForm");
+        }*/
     }      
+    
 
     public NodeUserGroup getNewProject() {
         return newProject;

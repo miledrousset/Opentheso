@@ -4,7 +4,7 @@
 
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>20.05</version>
+    <version>20.07</version>
     <packaging>war</packaging>
 
     <name>opentheso2</name>
@@ -17,7 +17,7 @@
     <dependencies>
         
         <!-- Rdf4j -->
-  <!--      <dependency>
+        <!--      <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-model</artifactId>
             <version>3.0.1</version>
@@ -34,21 +34,58 @@
       
         
         
-        <!-- pour le webservices-->
+        <!-- pour le webservices  -->
+        <!--        <dependency>
+                  <groupId>org.glassfish.jersey.bundles</groupId>
+                  <artifactId>jaxrs-ri</artifactId>
+                  <version>2.29.1</version>
+              </dependency> 
+        -->      
+        
+        
+        <!-- ne marche pas au delà de cette version 2.25 pour java 8, pour java11, il faut utiliser les verisons plus récentes-->
         <dependency>
-            <groupId>org.glassfish.jersey.bundles</groupId>
-            <artifactId>jaxrs-ri</artifactId>
-            <version>2.29.1</version>
-        </dependency> 
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.25.1</version>
+        </dependency>
+        
         
         <!-- Pour le webservices de ARK de la MOM-->
+        <!-- dépendance à supprimer, car incompatible avec la vesrion officielle de glassfish.jersey -->
+        <!--
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>1.19.4</version>
             <type>jar</type>
         </dependency>
-
+        -->
+        <!--
+        <dependency>
+            <groupId>org.glassfish.jersey.bundles</groupId>
+            <artifactId>jaxrs-ri</artifactId>
+            <version>2.25.1</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+        
+        
+        
+        
+        
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.1.4</version>
+            <type>jar</type>
+        </dependency>
+        
+        
+        
+        
+        
+        
         
         
         <!-- BDD postgresql -->
@@ -67,9 +104,9 @@
         
         <!-- Icons Awesome -->
         <dependency>
-             <groupId>org.webjars</groupId>
-             <artifactId>font-awesome</artifactId>
-             <version>5.12.0</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>5.12.0</version>
         </dependency>         
         
         <!-- CDI beans inject dependency -->
@@ -185,12 +222,7 @@
             <type>jar</type>
         </dependency>
 
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>1.19.4</version>
-            <type>jar</type>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-core</artifactId>
@@ -209,6 +241,24 @@
             <artifactId>junit</artifactId>
             <groupId>junit</groupId>
             <version>4.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <scope>test</scope>
+            <version>2.44.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opera</groupId>
+            <artifactId>operadriver</artifactId>
+            <scope>test</scope>
+            <version>1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-remote-driver</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

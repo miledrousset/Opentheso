@@ -6,7 +6,6 @@
 package fr.cnrs.opentheso.bean.alignment;
 
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeSelectedAlignment;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -18,9 +17,12 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Optional;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
+import org.glassfish.jersey.server.Uri;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -46,6 +48,14 @@ public class SetAlignmentSourceBean implements Serializable {
     private ArrayList<NodeSelectedAlignment> selectedAlignmentsOfTheso;
     
     private ArrayList<NodeSelectedAlignment> nodeSelectedAlignmentsAll;
+    
+    
+    //// pour l'ajout d'une nouvelle source
+    private String sourceName;
+    private String sourceUri;
+    private String sourceIdTheso;
+    private String description;
+    
 
     public SetAlignmentSourceBean() {
     }
@@ -81,18 +91,112 @@ public class SetAlignmentSourceBean implements Serializable {
             }
         }
         alignmentBean.setViewSetting(true);
+        alignmentBean.setViewAddNewSource(false);
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("viewTabConcept");
             pf.ajax().update("addAlignmentForm");
         }        
-
+    }
+    
+    public void initAddSource(){
+        
+        sourceName = null;
+        sourceUri = null;
+        sourceIdTheso = null;   
+        description = null;
+        
+        alignmentBean.setViewAddNewSource(true);
+        alignmentBean.setViewSetting(false);        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
+        }   
     }
 
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }    
+    
+    /**
+     * permet d'ajouter une source d'alignement et affecter cette source au thésaurus en cours.
+     * @param idUser 
+     */
+    public void addAlignmentSource(int idUser){
+        FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
+        
+        if(sourceName == null || sourceName.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le nom de la source est obligatoire !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+            }                   
+            return;  
+        }
+        if(sourceUri == null || sourceUri.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL est obligatoire !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+            }                   
+            return;  
+        }       
+        if(sourceIdTheso == null || sourceIdTheso.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'Id. du thésaurus est obligatoire !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+            }                   
+            return;  
+        } 
+        
+
+        if(sourceUri.lastIndexOf("/") + 1 == sourceUri.length() ) {
+            sourceUri = sourceUri.substring(0, sourceUri.length()-1);
+        }
+        
+                
+        String requete = sourceUri + "/api/search?q=##value##&lang=##lang##&theso=" + sourceIdTheso;
+        
+        AlignementSource alignementSource = new AlignementSource();
+        alignementSource.setAlignement_format("skos");
+        alignementSource.setDescription(description);
+//        alignementSource.setId(id);
+        alignementSource.setRequete(requete);
+        alignementSource.setSource(sourceName);
+        alignementSource.setTypeRequete("REST");
+        
+        
+        AlignmentHelper alignementHelper = new AlignmentHelper();
+        
+        if(!alignementHelper.addNewAlignmentSource(
+                connect.getPoolConnexion(),
+                alignementSource,
+                idUser, selectedTheso.getCurrentIdTheso())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur côté base de données !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            alignementHelper.getMessage();
+            return;
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", " Source ajoutée avec succès !");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
+            pf.ajax().update("messageIndex");
+        }           
+        alignmentBean.setViewAddNewSource(false);
+        alignmentBean.setViewSetting(false);  
+    }
+    
+    private String removeLastCharOptional(String s) {
+        return Optional.ofNullable(s)
+          .filter(str -> str.length() != 0)
+          .map(str -> str.substring(0, str.length() - 1))
+          .orElse(s);
+    }
     
     public void updateSelectedAlignment(){
         if(nodeSelectedAlignmentsAll == null) return;
@@ -150,6 +254,7 @@ public class SetAlignmentSourceBean implements Serializable {
     
     public void cancel(){
         alignmentBean.setViewSetting(false);
+        alignmentBean.setViewAddNewSource(false);        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("addAlignmentForm");
@@ -178,6 +283,38 @@ public class SetAlignmentSourceBean implements Serializable {
 
     public void setNodeSelectedAlignmentsAll(ArrayList<NodeSelectedAlignment> nodeSelectedAlignmentsAll) {
         this.nodeSelectedAlignmentsAll = nodeSelectedAlignmentsAll;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
+    public String getSourceUri() {
+        return sourceUri;
+    }
+
+    public void setSourceUri(String sourceUri) {
+        this.sourceUri = sourceUri;
+    }
+
+    public String getSourceIdTheso() {
+        return sourceIdTheso;
+    }
+
+    public void setSourceIdTheso(String sourceIdTheso) {
+        this.sourceIdTheso = sourceIdTheso;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 

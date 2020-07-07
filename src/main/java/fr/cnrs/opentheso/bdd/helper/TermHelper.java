@@ -3184,6 +3184,55 @@ public class TermHelper {
         }
         return idTerm;
     }
+    
+    /**
+     * Cette fonction permet de savoir si le terme existe ou non
+     * en ignorant uniquement la casse 
+     *
+     * @param ds
+     * @param title
+     * @param idThesaurus
+     * @param idLang
+     * @return boolean
+     */
+    public boolean isTermExistIgnoreCase(HikariDataSource ds,
+            String title, String idThesaurus, String idLang) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        boolean existe = false;
+        title = new StringPlus().convertString(title);
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select id_term from term where "
+                            + "lexical_value ilike "
+                            + "'" + title + "'  and lang = '" + idLang
+                            + "' and id_thesaurus = '" + idThesaurus
+                            + "'";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet.next()) {
+                        existe = resultSet.getRow() != 0;
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while asking if Title of Term exist : " + title, sqle);
+        }
+        return existe;
+    }    
 
     /**
      * Cette fonction permet de savoir si le terme existe ou non

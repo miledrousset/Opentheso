@@ -6,7 +6,7 @@
     </context-param>
     <context-param>
         <param-name>version</param-name>
-        <param-value>20.05</param-value>
+        <param-value>20.07</param-value>
     </context-param>
     
     <!-- Activates the waitcursor and the double-click protection 
@@ -59,6 +59,28 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
+    
+    
+    <!-- pour le webservices-->
+    <servlet>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>fr.cnrs.opentheso.ws</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+     <servlet-mapping>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>    
+    
+
+    
+    
+    
+    
     <session-config>
         <session-timeout>
             30
