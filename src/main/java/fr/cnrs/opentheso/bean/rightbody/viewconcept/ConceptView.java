@@ -5,6 +5,11 @@
  */
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
+import com.jsf2leaf.model.LatLong;
+import com.jsf2leaf.model.Layer;
+import com.jsf2leaf.model.Map;
+import com.jsf2leaf.model.Marker;
+import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
@@ -34,12 +39,15 @@ public class ConceptView implements Serializable {
     private Connect connect;
     
     @Inject
-    private IndexSetting indexSetting;   
+    private IndexSetting indexSetting;
+
     @Inject
     private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+
     @Inject
-    private ViewEditorHomeBean viewEditorHomeBean;    
-    
+    private ViewEditorHomeBean viewEditorHomeBean;
+
+    private Map mapModel;
 
     private NodeConcept nodeConcept;
     private String selectedLang;
@@ -63,8 +71,7 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> definitions;    
     private ArrayList<NodeNote> editorialNotes; 
     private ArrayList<NodeNote> examples;
-    private ArrayList<NodeNote> historyNotes;  
-    
+    private ArrayList<NodeNote> historyNotes;
 
     /**
      * Creates a new instance of ConceptBean
@@ -99,6 +106,11 @@ public class ConceptView implements Serializable {
     public void getConcept(String idTheso, String idConcept, String idLang) {
         ConceptHelper conceptHelper = new ConceptHelper();
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+
+        if (nodeConcept.getNodeGps() != null) {
+            initMap();
+        }
+
         pathOfConcept(idTheso, idConcept, idLang);
         selectedLang = idLang;
         setNotes();
@@ -106,6 +118,29 @@ public class ConceptView implements Serializable {
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
+    }
+    
+    private void initMap()  {
+        
+        LatLong place = new LatLong(nodeConcept.getNodeGps().getLatitude()+"", 
+            nodeConcept.getNodeGps().getLongitude()+"");
+        
+        String titre = nodeConcept.getTerm() != null ? nodeConcept.getTerm().getLexical_value() : "";
+        
+        //Configure Map
+        mapModel = new Map();
+        mapModel.setWidth("580px");
+        mapModel.setHeight("420px");
+        mapModel.setCenter(place);
+        mapModel.setZoom(13);
+        mapModel.setAttribution("OpenTheso");
+        mapModel.setMiniMap(false);
+        mapModel.setLayerControl(false);
+        mapModel.setDraggingEnabled(true);
+        mapModel.setZoomEnabled(true);
+
+        //addMarker
+        mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
     }
     
     private void setSizeToShowNT() {
@@ -317,4 +352,7 @@ public class ConceptView implements Serializable {
         this.historyNotes = historyNotes;
     }
 
+    public Map getMapModel() {
+        return mapModel;
+    }
 }

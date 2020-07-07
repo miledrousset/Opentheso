@@ -15,24 +15,12 @@
     </properties>
     
     <dependencies>
-        
-        <!-- Rdf4j -->
-  <!--      <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-model</artifactId>
-            <version>3.0.1</version>
-            <type>jar</type>
-        </dependency>
+
         <dependency>
-          <groupId>org.eclipse.rdf4j</groupId>
-          <artifactId>rdf4j-runtime</artifactId>
-          <version>3.0.1</version>
-        </dependency>     
-        -->  
-        
-        
-      
-        
+            <groupId>com.github.themrleon</groupId>
+            <artifactId>JSF2Leaf</artifactId>
+            <version>1.0</version>
+        </dependency>
         
         <!-- pour le webservices-->
         <dependency>
@@ -197,12 +185,6 @@
             <version>3.3.0</version>
             <type>jar</type>
         </dependency>
-        <dependency>
-            <groupId>virt_jena3</groupId>
-            <artifactId>virt_jena</artifactId>
-            <version>3.0</version>
-            <type>jar</type>
-        </dependency>
 
         <dependency>
             <artifactId>junit</artifactId>
@@ -221,7 +203,7 @@
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-shaded</artifactId>
             <version>3.1.2.Final</version>
-        </dependency>        
+        </dependency>
     </dependencies>
     
 
