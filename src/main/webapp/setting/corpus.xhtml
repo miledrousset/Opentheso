@@ -61,8 +61,8 @@
                             <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="l"
                                               actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
                                               tooltip="Modifier ce corpus" tooltip-delay-show="500"
-                                              update="settingForm:corpusForm:editCorpusForm settingForm:idEditCorpus"
-                                              oncomplete="PF('editCorpus').show();"
+                                              update="settingForm:corpusForm:confirmDeleteForm settingForm:idConfirmDeleteCorpus"
+                                              oncomplete="PF('confirmDeleteCorpus').show();"
                                               style="color: #f47b2a; ">
                             </b:navCommandLink>       
                         </p:column>                        
@@ -77,5 +77,8 @@
     </b:column>  
     <b:column span="9" rendered="#{settingAndToolsBean.isCorpusActive}">
         <ui:include src="/dialog/setting/newCorpus.xhtml" />
-    </b:column>      
+    </b:column>   
+    <b:column span="9" rendered="#{settingAndToolsBean.isCorpusActive}">
+        <ui:include src="/dialog/setting/confirmDeleteCorpus.xhtml" />
+    </b:column>     
 </ui:fragment>

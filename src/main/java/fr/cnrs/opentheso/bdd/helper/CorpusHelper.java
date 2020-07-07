@@ -187,7 +187,47 @@ public class CorpusHelper {
             log.error("Error while insert new Corpus : " + nodeCorpus.getCorpusName(), sqle);
         }
         return status;
-    }        
+    }  
+    
+    
+    /**
+     * permet de suprimer un corpus
+     * @param ds
+     * @param idTheso
+     * @param name
+     * @return 
+     */
+    public boolean deleteCorpus(
+            HikariDataSource ds, 
+            String idTheso, String name){
+        Connection conn;
+        Statement stmt;
+        boolean status = false;
+
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "delete from corpus_link where"
+                            + " id_theso = '" + idTheso + "'"
+                            + " and corpus_name = '" + name + "'";
+                    stmt.executeUpdate(query);
+                    status = true;
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting Corpus : " + name, sqle);
+        }
+        return status;
+    }      
+        
     
     /**
      * permet de savoir si le nom du corpus exite ou non

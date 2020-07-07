@@ -1,0 +1,40 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="idConfirmDeleteCorpus" header="Confirmer la suppression" widgetVar="confirmDeleteCorpus" 
+              modal="true" resizable="true" position="top" width="300" style="margin-top: 150px" >         
+
+        <h:form id="confirmDeleteForm">   
+            <b:row >
+                <b:column span="11" offset="1" >
+                    <h:outputText value="Voulez-vous supprimer le lien vers ce corpus " style="font-size: 13px; color: black;"/>                    
+                </b:column>
+            </b:row>
+            <b:row >
+                <b:column span="11" offset="1" >
+                    <h:outputText value="#{corpusBean.nodeCorpusForEdit.corpusName}"
+                                  style="font-size: 13px; color: #C63632;"/>
+                </b:column>            
+            </b:row>
+
+            <p:spacer/>
+
+            <b:row style="margin-bottom: 20px; margin-top: 15px">
+                <b:column span="8" offset="2" >
+                    <b:commandButton 
+                                     id="buttonDel" value="Supprimer" 
+                                     ajax="true"
+                                     class="btn btn-primary"
+                                     action="#{corpusBean.deleteCorpus()}"
+                                     update="settingForm:corpusForm:idConfirmDeleteCorpus settingForm:corpusForm:tabCorpus messageIndex"
+                                     oncomplete="PF('confirmDeleteCorpus').hide();"
+                                     style="width:100%; font-size: 12px;
+                                     color: white; background: #C63632;"/>
+                </b:column>
+            </b:row>    
+        </h:form>  
+    </p:dialog>     
+</ui:fragment>

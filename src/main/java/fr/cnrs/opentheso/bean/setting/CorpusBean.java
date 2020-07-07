@@ -142,6 +142,32 @@ public class CorpusBean implements Serializable {
     }    
     
     
+    public void deleteCorpus(){
+        FacesMessage msg;
+        if (nodeCorpusForEdit == null) return;
+
+        CorpusHelper corpusHelper = new CorpusHelper();
+        if(!corpusHelper.deleteCorpus(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                nodeCorpusForEdit.getCorpusName())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification de corpus !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus modifié avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().executeScript("PF('newCorpus').hide();");
+        init();
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("settingForm:corpusForm:tabCorpus");
+        }        
+    }       
+    
     public void setCorpusForEdit(NodeCorpus nodeCorpus) {
         nodeCorpusForEdit = nodeCorpus;
         oldName = nodeCorpus.getCorpusName();
