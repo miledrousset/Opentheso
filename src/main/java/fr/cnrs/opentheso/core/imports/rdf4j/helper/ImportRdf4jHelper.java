@@ -32,9 +32,7 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
@@ -69,7 +67,7 @@ public class ImportRdf4jHelper {
     private ArrayList<String> idLangsFound;
 
 //    private boolean useArk;
-    private String identifierType;
+    private String selectedIdentifier;
     private String prefixHandle;
 
     private NodePreference nodePreference;
@@ -253,11 +251,23 @@ public class ImportRdf4jHelper {
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
             nodePreference.setOriginalUri(uri);
+            if(selectedIdentifier.equalsIgnoreCase("ark")){
+                nodePreference.setOriginalUriIsArk(true);
+            }
+            if(selectedIdentifier.equalsIgnoreCase("handle")){
+                nodePreference.setOriginalUriIsHandle(true);
+            }            
             preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);            
         } else {
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
             nodePreference.setOriginalUri(uri);
+            if(selectedIdentifier.equalsIgnoreCase("ark")){
+                nodePreference.setOriginalUriIsArk(true);
+            }
+            if(selectedIdentifier.equalsIgnoreCase("handle")){
+                nodePreference.setOriginalUriIsHandle(true);
+            }             
             preferencesHelper.addPreference(ds, nodePreference, idTheso); 
         }
     }
@@ -446,10 +456,10 @@ public class ImportRdf4jHelper {
         acs.concept.setIdConcept(idConcept);
 
         // option cochée
-        if (identifierType.equalsIgnoreCase("ark")) {
+        if (selectedIdentifier.equalsIgnoreCase("ark")) {
             acs.concept.setIdArk(getIdArkFromUri(conceptResource.getUri()));
         }
-        if (identifierType.equalsIgnoreCase("handle")) {
+        if (selectedIdentifier.equalsIgnoreCase("handle")) {
             acs.concept.setIdHandle(getIdHandleFromUri(conceptResource.getUri()));
         }
 
@@ -1132,13 +1142,15 @@ public class ImportRdf4jHelper {
         this.message = message;
     }
 
-    public String getIdentifierType() {
-        return identifierType;
+    public String getSelectedIdentifier() {
+        return selectedIdentifier;
     }
 
-    public void setIdentifierType(String identifierType) {
-        this.identifierType = identifierType;
+    public void setSelectedIdentifier(String selectedIdentifier) {
+        this.selectedIdentifier = selectedIdentifier;
     }
+
+
 
     public String getPrefixHandle() {
         return prefixHandle;

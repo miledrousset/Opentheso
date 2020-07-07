@@ -1,0 +1,78 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <b:row>
+        <b:column>
+            <b:commandButton id="addNewCandidat" value="#{langueBean.getMsg('candidat.add')}" size="sm" class="btn btn-success" 
+                             style="font-size: 13px; color: white; background: #43B572; border: #43B572; padding-left: 20px; 
+                             padding-right: 20px;" ajax="true" actionListener="#{candidatBean.initialNewCandidat()}" update="candidatForm"/>
+        </b:column>
+    </b:row>
+
+    <b:row style="margin-top: 20px">
+        <b:column medium-screen="6">
+            <b:selectBooleanCheckbox caption="#{langueBean.getMsg('candidat.my_candidats')}" value="#{candidatBean.myCandidatsSelected}"
+                                     onclick="ajax:candidatBean.selectMyCandidats()" update="candidatForm" style="font-size: 11px;"/>
+        </b:column>
+        <b:column medium-screen="6">
+            <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
+                          text-align: right; vertical-align: central" value="#{langueBean.getMsg('candidat.search')}"/>
+            <b:inputText value="#{candidatBean.searchValue}">
+                <f:facet name="append">
+                    <b:commandButton look="success" iconAwesome="search" icon-align="right" 
+                                     update="candidatForm" actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
+                </f:facet>
+            </b:inputText>
+        </b:column>
+    </b:row>
+
+    <b:row style="margin-top: 20px">
+        <b:column>
+            <b:row style="font-size: 12px; color: #666666">
+                <b:column span="4">
+                    <h:outputText value="#{langueBean.getMsg('candidat.titre')}"/>
+                </b:column>
+                <b:column span="2">
+                    <h:outputText value="#{langueBean.getMsg('candidat.creation_date')}"/>
+                </b:column>
+                <b:column span="2">
+                    <h:outputText value="#{langueBean.getMsg('candidat.state')}"/>
+                </b:column> 
+                <b:column span="2">
+                    <h:outputText value="#{langueBean.getMsg('candidat.requests')}"/>
+                </b:column>  
+                <b:column span="2">
+                    <h:outputText value="#{langueBean.getMsg('candidat.participants')}"/>
+                </b:column>                          
+            </b:row>
+            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+            <ui:repeat id="candidtatsList" var="candidat" value="#{candidatBean.candidatList}">
+                <b:row style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatList.indexOf(candidat))}; 
+                       padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
+                    <b:column span="4" >
+                        <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572" 
+                                          actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
+                    </b:column>
+                    <b:column span="2" >
+                        <h:outputText value="#{candidat.creationDate}" />
+                    </b:column>
+                    <b:column span="2">
+                        <h:outputText value="#{candidat.statut}" />  
+                    </b:column>
+                    <b:column span="2">
+                        <h:outputText value="#{candidat.nbrDemande}" />
+                    </b:column> 
+                    <b:column span="2">
+                        <h:outputText value="#{candidat.nbrParticipant}" />
+                    </b:column>                         
+                </b:row>   
+            </ui:repeat>
+            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+        </b:column>
+    </b:row>
+
+</ui:fragment>

@@ -14,7 +14,9 @@
                 <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexical_value == ''}"
                               value="Opentheso"/>
             </title>  
-        </h:panelGroup>            
+        </h:panelGroup>
+        <link rel="icon" href="images/icon_opentheso.png" />        
+        
         <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="css/menu.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="css/search.css" media="screen" />  
@@ -45,7 +47,9 @@
         <f:metadata>
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
             <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
-            <f:event listener="#{selectedTheso.preRenderView}" type="preRenderView"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+         <!--   <f:event listener="{selectedTheso.preRenderView}" type="preRenderView"/> -->
+
         </f:metadata>
 
         <b:growl id="messageIndex"
@@ -62,14 +66,14 @@
         <h:outputStylesheet library="webjars" name="font-awesome/5.12.0/css/all.min-jsf.css" /> 
         <h:outputStylesheet library="webjars" name="font-awesome/5.12.0/css/v4-shims.min-jsf.css" />        
 
-        <b:container id="containerIndex">
+        <b:container id="containerIndex" >
             <ui:include src="menu.xhtml" />
 
             <h:panelGroup  rendered="#{indexSetting.isThesoActive and indexSetting.isSelectedTheso}">
                 <ui:include src="search.xhtml" />                
             </h:panelGroup>
 
-            <h:panelGroup  rendered="#{indexSetting.isThesoActive and indexSetting.isSelectedTheso}">
+            <h:panelGroup  rendered="#{indexSetting.isThesoActive and indexSetting.isSelectedTheso}" >
                 <ui:include  src="body.xhtml" />
             </h:panelGroup>
 
@@ -79,7 +83,11 @@
 
             <h:panelGroup  rendered="#{indexSetting.isProfileActive}">
                 <ui:include src="/profile/profile.xhtml" />
-            </h:panelGroup>            
+            </h:panelGroup>  
+
+            <h:panelGroup  rendered="#{indexSetting.isCandidateActive}">
+                <ui:include src="/candidat/candidatMain.xhtml" />
+            </h:panelGroup>           
 
             <h:panelGroup  rendered="#{indexSetting.isSettingActive}">
                 <ui:include src="/setting/setting.xhtml" />

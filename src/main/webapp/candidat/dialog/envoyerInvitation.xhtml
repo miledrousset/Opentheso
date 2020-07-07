@@ -1,0 +1,33 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="idSendChatInvitation" header="Envoyer une invitation" widgetVar="sendChatInvitation" 
+              modal="true" resizable="false" position="top" width="350" height="150" style="margin: 10px; border: 10px" >
+
+        <h:form id="sendChatInvitationForm" style="width: 100%">
+
+            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px;"/>
+
+            <b:row style="margin-top: 10px">  
+                <b:column>
+                    <h:outputLabel value="E-mail : "/>
+                </b:column>
+                <b:column>
+                    <b:inputText placeholder="toto@gmail.com" value="#{discussionService.email}"/>
+                </b:column>
+            </b:row>
+
+            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+
+            <b:row style="margin: 10px">
+                <p:commandButton value="Envoyer" styleClass="ui-priority-primary" ajax="false" class="btn btn-primary"
+                                 style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                 oncomplete="PF('participantsList').hide()" actionListener="#{discussionService.sendInvitation()}"/>
+            </b:row>
+        </h:form>
+
+    </p:dialog>   
+</ui:fragment>

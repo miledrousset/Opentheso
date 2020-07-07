@@ -132,14 +132,7 @@ public class CurrentUser implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex");
-            pf.ajax().update("formMenu");
-            pf.ajax().update("formRightTab");
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("formLeftTab");
-            pf.ajax().update("homePageForm");
-            pf.ajax().update("loginForm"); 
-            pf.ajax().update("formSearch:languageSelect");
-            pf.ajax().update("formSearch");
+            pf.ajax().update("formMenu");;
             
         }
         

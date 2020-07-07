@@ -18,50 +18,61 @@ import java.io.Serializable;
 public class ViewEditionBean implements Serializable {
 
     private String alternateColor;
-    
+
     // les vues
     private boolean isViewListTheso;
     private boolean isViewExportSkos;
     private boolean isViewImportSkos;
-    private boolean isViewImportCsv;    
-    
+    private boolean isViewImportCsv;
+
     private boolean isViewNewTheso;
     private boolean isViewModifyTheso;
-    
-    
+
     private boolean isExportStarted;
-    
 
     private boolean isImportStarted;
-    
+
     public ViewEditionBean() {
-        alternateColor = "#FFFFFF";
+        alternateColor = "#C8EAD6";
         isViewListTheso = true;
         isViewExportSkos = false;
         isViewImportSkos = false;
-        isViewImportCsv = false;       
+        isViewImportCsv = false;
         isImportStarted = false;
         isViewNewTheso = false;
         isViewModifyTheso = false;
     }
-    
-    public void init(){
-        alternateColor = "#FFFFFF";
+
+    public void init() {
+        alternateColor = "#C8EAD6";
         isViewListTheso = true;
         isViewExportSkos = false;
         isExportStarted = false;
         isViewImportSkos = false;
-        isViewImportCsv = false;          
+        isViewImportCsv = false;
         isImportStarted = false;
         isViewNewTheso = false;
         isViewModifyTheso = false;
     }
-    
-    public String getNewAlternateColor(){
-        if(alternateColor.equalsIgnoreCase("#C8EAD6")) {
-            alternateColor = "#FFFFFF";
-        } else {
+
+    public String getNewAlternateColor() {
+        if (alternateColor.equalsIgnoreCase("#FFFFFF")) {
             alternateColor = "#C8EAD6";
+        } else {
+            alternateColor = "#FFFFFF";
+        }
+        return alternateColor;
+    }
+
+    public String getAlternateColor(int position) {
+        if (position == 0) {
+            alternateColor = "#C8EAD6";
+        } else {
+            if (alternateColor.equalsIgnoreCase("#FAFAFA")) {
+                alternateColor = "#C8EAD6";
+            } else {
+                alternateColor = "#FAFAFA";
+            }
         }
         return alternateColor;
     }
@@ -72,7 +83,7 @@ public class ViewEditionBean implements Serializable {
 
     public void setIsViewListTheso(boolean isViewListTheso) {
         this.isViewListTheso = isViewListTheso;
-        isViewExportSkos = false;        
+        isViewExportSkos = false;
     }
 
     public boolean isIsViewExportSkos() {
@@ -83,7 +94,7 @@ public class ViewEditionBean implements Serializable {
         this.isViewExportSkos = isViewExportSkos;
         isViewListTheso = false;
         isViewImportSkos = false;
-        isViewImportCsv = false;          
+        isViewImportCsv = false;
         isViewNewTheso = false;
         isViewModifyTheso = false;
     }
@@ -112,7 +123,7 @@ public class ViewEditionBean implements Serializable {
         isViewExportSkos = false;
         isViewNewTheso = false;
         isViewModifyTheso = false;
-        isViewImportCsv = false;          
+        isViewImportCsv = false;
     }
 
     public boolean isIsImportStarted() {
@@ -133,7 +144,7 @@ public class ViewEditionBean implements Serializable {
         isViewExportSkos = false;
         isViewListTheso = false;
         isViewImportSkos = false;
-        isViewImportCsv = false;          
+        isViewImportCsv = false;
         isViewModifyTheso = false;
     }
 
@@ -146,8 +157,8 @@ public class ViewEditionBean implements Serializable {
         isViewNewTheso = false;
         isViewExportSkos = false;
         isViewListTheso = false;
-        isViewImportSkos = false; 
-        isViewImportCsv = false;          
+        isViewImportSkos = false;
+        isViewImportCsv = false;
     }
 
     public boolean isIsViewImportCsv() {
@@ -159,11 +170,8 @@ public class ViewEditionBean implements Serializable {
         isViewNewTheso = false;
         isViewExportSkos = false;
         isViewListTheso = false;
-        isViewImportSkos = false; 
+        isViewImportSkos = false;
         isViewModifyTheso = false;
     }
 
-    
-    
-    
 }

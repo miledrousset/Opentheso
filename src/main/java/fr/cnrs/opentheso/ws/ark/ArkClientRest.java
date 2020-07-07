@@ -1,22 +1,24 @@
 package fr.cnrs.opentheso.ws.ark;
 
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-
-
 import java.io.StringReader;
 import java.util.Properties;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
-import org.primefaces.shaded.json.JSONObject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+//import org.primefaces.shaded.json.JSONObject;
 
 
 public final class ArkClientRest {
     private Properties propertiesArk;  
-    Client client;
+//    private Client client;
     
     private String idArk;
     private String idHandle;
@@ -29,8 +31,9 @@ public final class ArkClientRest {
     private String urlHandle = "http://193.48.137.68:8000/api/handles/";
     private String jsonArk;
     
-    JSONObject loginJson;
+    private JsonObject loginJson;
     
+    private String token;
     
     private String message;
     
@@ -47,42 +50,247 @@ public final class ArkClientRest {
         this.propertiesArk = propertiesArk;
     }    
     
+    
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////// nouvelles fontions //////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////       
+    
     /**
      * pour établir la connexion
      * @return
      * #MR
      */
     public boolean login() {
-        client = Client.create();
-        WebResource webResource = client
-                .resource(
-                        propertiesArk.getProperty("serverHost") +
-                        "/rest/login/username=" +
+        Client client= ClientBuilder.newClient();
+        WebTarget webTarget = client
+                .target(propertiesArk.getProperty("serverHost"))
+                .path("rest/login/username=" +
                         propertiesArk.getProperty("user") + 
                         "&password=" +
                         propertiesArk.getProperty("password") +
                         "&naan=" + 
-                        propertiesArk.getProperty("idNaan"));
+                        propertiesArk.getProperty("idNaan"));     
 
-        ClientResponse response = webResource.accept("application/json")
-                .get(ClientResponse.class);
-
-        if (response.getStatus() != 200) {
-           /* throw new RuntimeException("Failed : HTTP error code : "
-                    + response.getStatus());*/
-            message = "Erreur de login";
-            return false;
-        }
-        loginJson = new JSONObject(response.getEntity(String.class));
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);        
+        Response response = invocationBuilder.get();
+        String tokenString = null;
+        try {
+            if (response.getStatus() != 200) {
+                message = "Erreur de login: " + response.getStatus();
+                return false;
+            }
+            tokenString = response.readEntity(String.class);
+        } finally {
+            response.close();
+            client.close();
+        }          
+        getTokenFromString(tokenString);
         return true;
     }       
     
+    private void getTokenFromString(String tokenString){
+        token = null;
+        try (JsonReader jsonReader = Json.createReader(new StringReader(tokenString))) {
+            loginJson = jsonReader.readObject();
+            token = loginJson.getString("token").trim();
+        } catch (Exception e) {
+        }
+    }
+    
     /**
+     * permet de retourner un objet Json contenant l'identifiant Ark et Handle (serveur Ark MOM)
+     * @param ark
+     * @return 
+     */
+    public boolean getArk(String ark) {
+        Client client= ClientBuilder.newClient();  
+        
+        String idArk1 = ark.substring(ark.indexOf("/")+1);
+        String naan = ark.substring(0, ark.indexOf("/"));
+        if(idArk1 == null || naan == null) return false;
+        
+        WebTarget webTarget = client
+                .target(propertiesArk.getProperty("serverHost"))
+                .path("/rest/v1/ark/naan=" +
+                        naan + 
+                        "&id=" +
+                        idArk1);          
+
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);        
+        Response response = invocationBuilder.get();
+        try {
+            if (response.getStatus() != 200) {
+                 message = "Erreur lors de la récupération d'un ARK : " + response.getStatus();
+                 return false;
+            }
+            jsonArk = response.readEntity(String.class);
+        } finally {
+            response.close();
+            client.close();
+        }
+        setForGet();
+        return true;
+    }     
+    
+    /**
+     * permet d'ajouter un identifiant Ark et Handle
+     * @param arkString
+     * @return 
+     */
+    public boolean addArk(String arkString) {
+        jsonArk = null;
+       
+        // il faut vérifier la connexion avant 
+        if(loginJson == null) return false;
+
+        Client client= ClientBuilder.newClient();        
+        WebTarget webTarget = client
+                .target(propertiesArk.getProperty("serverHost"))
+                .path("rest/v1/ark/add");
+        
+        Response response =  webTarget.request(MediaType.APPLICATION_JSON).put(Entity.json(arkString));  
+        try {
+            if (response.getStatus() != 200) {
+                message =  "Erreur lors de l'ajout d'un Ark" + response.getStatus();
+                response.close();
+                client.close();
+                return false;
+            }
+            jsonArk = response.readEntity(String.class);
+        } finally {
+            response.close();
+            client.close();
+        }
+        setIdArkHandle();
+        return true;
+    }
+    
+    /**
+     * permet de vérifier si l'identifiant Ark exsite
+     * @param ark
+     * @return 
+     */
+    public boolean isArkExist(String ark) {
+        Client client= ClientBuilder.newClient(); 
+        
+        String idArk1 = ark.substring(ark.indexOf("/")+1);
+        String naan = ark.substring(0, ark.indexOf("/"));
+        WebTarget webTarget = client
+                .target(propertiesArk.getProperty("serverHost"))
+                .path("/rest/ark/naan=" + 
+                        naan + 
+                        "&id=" +
+                        idArk1); 
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);        
+        Response response = invocationBuilder.get();
+        String output = null;
+        try {
+            if (response.getStatus() != 200) {
+                message = "Erreur " + response.getStatus();
+                return false;
+            }
+            output = response.readEntity(String.class);
+        } finally {
+            response.close();
+            client.close();
+        }           
+        return isExist(output);        
+    }    
+    private boolean isExist(String jsonResponse){
+        if(jsonResponse == null) return false;
+        JsonReader reader = Json.createReader(new StringReader(jsonResponse));
+        JsonObject jsonObject = reader.readObject();
+        reader.close();
+
+        JsonString values = jsonObject.getJsonString("description");
+        if(values != null){
+            if(values.getString().contains("Inexistant ARK")) return false;
+            else
+                if(values.getString().contains("Ark retreived")) return true;
+        }
+        return false; 
+    }    
+    
+    /**
+     * permet de mettre à jour un abjet Ark 
+     * @param arkString
+     * @return 
+     */
+    public boolean updateArk(String arkString) {
+        jsonArk = null;
+        
+        // il faut se connecter avant
+        if(loginJson == null) return false;
+        
+        Client client= ClientBuilder.newClient();        
+        WebTarget webTarget = client
+                .target(propertiesArk.getProperty("serverHost"))
+                .path("rest/v1/ark/update");
+        
+        Response response =  webTarget.request(MediaType.APPLICATION_JSON).put(Entity.json(arkString));   
+
+        try {
+            if (response.getStatus() != 200) {
+                message = "Erreur lors de la mise à jour d'un Ark : " + response.getStatus();
+                response.close();
+                client.close();
+                return false;
+            }
+            jsonArk = response.readEntity(String.class);
+        } finally {
+            response.close();
+            client.close();
+        }   
+         
+        return setForUpdate();
+    }      
+    
+ ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////// Fin nouvelles fontions //////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /** Ne marche pas
      * permet de vérifier si l'identifiant handle exsite
      * @param idHandle
      * @return 
      */
     public boolean isHandleExist(String idHandle) {
+        return true;
 
     //    String prefixe = "20.500.11859"; // prefixe MOM
     //    String idHandle = "66666.crt0eTJm32hksG";
@@ -100,7 +308,7 @@ public final class ArkClientRest {
 
     //    String internalId = "66666.crt2hbt7fWNBn";
     //    Client client = Client.create();
-
+/*
         String output;
         client = Client.create();        
         WebResource webResource = client
@@ -120,103 +328,18 @@ public final class ArkClientRest {
             return true;
             //System.err.println("existe");
         }
-        return false;
+        return false;*/
     }    
     
-    /**
-     * permet de vérifier si l'identifiant Ark exsite
-     * @param ark
-     * @return 
-     */
-    public boolean isArkExist(String ark) {
-        client = Client.create();
-        String idArk1 = ark.substring(ark.indexOf("/")+1);
-        String naan = ark.substring(0, ark.indexOf("/"));
-        WebResource webResource = client.resource(propertiesArk.getProperty("serverHost") +
-                        "/rest/ark/naan=" + 
-                        naan + 
-                        "&id=" +
-                        idArk1);
-        ClientResponse response = webResource.accept("application/json")
-                .get(ClientResponse.class);
-        if (response.getStatus() != 200) {
-           // throw new RuntimeException("Failed : HTTP error code : "
-           //         + response.getStatus());
-            message = "Erreur lors de la requête pour savoir si Ark existe";
-            return false;
-        }
-        String retour = response.getEntity(String.class);
-//        System.out.println(jsonArk);
-        return isExist(retour);
-    }
     
-    /**
-     * permet de retourner un objet Json contenant l'identifiant Ark et Handle (serveur Ark MOM)
-     * @param ark
-     * @return 
-     */
-    public boolean getArk(String ark) {
-        client = Client.create();
-        String idArk1 = ark.substring(ark.indexOf("/")+1);
-        String naan = ark.substring(0, ark.indexOf("/"));
-        if(idArk1 == null || naan == null) return false;
-        WebResource webResource = client.resource(propertiesArk.getProperty("serverHost") +
-                        "/rest/ark/naan=" + 
-                        naan + 
-                        "&id=" +
-                        idArk1);
-        ClientResponse response = webResource.accept("application/json")
-                .get(ClientResponse.class);
-        if (response.getStatus() != 200) {
-            message = "Erreur lors de la récupération d'un ARK";            
-            return false;
-        }
-        jsonArk = response.getEntity(String.class);
-        setForGet();
-        return true;
-    }     
     
-    private boolean isExist(String jsonResponse){
-        if(jsonResponse == null) return false;
-        JsonReader reader = Json.createReader(new StringReader(jsonResponse));
-        JsonObject jsonObject = reader.readObject();
-        reader.close();
 
-        JsonString values = jsonObject.getJsonString("description");
-        if(values != null){
-            if(values.getString().contains("Inexistant ARK")) return false;
-            else
-                if(values.getString().contains("Ark retreived")) return true;
-        }
-        return false; 
-    }
+    
+    
+    
 
-    /**
-     * permet d'ajouter un identifiant Ark et Handle
-     * @param arkString
-     * @return 
-     */
-    public boolean addArk(String arkString) {
-        jsonArk = null;
-        
-        // il faut se connecter avant 
-        if(loginJson == null) return false;
-        loginJson.put("content", arkString);
 
-        WebResource webResource = client
-                .resource(propertiesArk.getProperty("serverHost")
-                        + "/rest/ark/single");
 
-        ClientResponse response = webResource.type("application/json")
-                .put(ClientResponse.class, loginJson.toString());
-        if (response.getStatus() == 200) {
-            jsonArk = response.getEntity(String.class);
-            setIdArkHandle();
-            return true;
-        }
-        message = "Erreur lors de l'ajout d'un Ark";
-        return false;
-    } 
     
     /**
      * permet d'ajouter un identifiant Ark et Handle
@@ -224,6 +347,8 @@ public final class ArkClientRest {
      * @return 
      */
     public boolean deleteHandle(String arkString) {
+        return true;
+        /*
         jsonArk = null;
         
         // il faut se connecter avant 
@@ -242,34 +367,10 @@ public final class ArkClientRest {
             return true;
         }
         message = "Erreur lors de de la suppression de l'id Handle";
-        return false;
+        return false;*/
     }     
     
-    /**
-     * permet de mettre à jour un abjet Ark 
-     * @param arkString
-     * @return 
-     */
-    public boolean updateArk(String arkString) {
-        jsonArk = null;
-        
-        // il faut se connecter avant
-        if(loginJson == null) return false;
-
-        loginJson.put("content", arkString);
-
-        WebResource webResource = client
-                .resource(propertiesArk.getProperty("serverHost") + "/rest/ark/");
-
-        ClientResponse response = webResource.type("application/json")
-                .post(ClientResponse.class, loginJson.toString());
-        if (response.getStatus() != 200) {
-            message = "Erreur lors de la mise à jour d'un Ark";            
-            return false;
-        }
-        jsonArk = response.getEntity(String.class);
-        return setForUpdate();
-    }    
+  
     
     
     
@@ -287,11 +388,11 @@ public final class ArkClientRest {
         JsonObject jsonObject = reader.readObject();
         reader.close();
 
-        if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("success")) {
+        if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ok")) {
             idArk = jsonObject.getJsonObject("result").getString("ark");
             idHandle = jsonObject.getJsonObject("result").getString("handle");
             Uri = jsonObject.getJsonObject("result").getString("urlTarget");
-            loginJson.put("token", jsonObject.getJsonString("token"));
+            token = jsonObject.getJsonString("token").getString();
             return true;
         }
         message = "Erreur lors de la lecture du Json";
@@ -309,7 +410,7 @@ public final class ArkClientRest {
             idArk = jsonObject.getJsonObject("result").getString("ark");
             idHandle = jsonObject.getJsonObject("result").getString("handle");
             Uri = jsonObject.getJsonObject("result").getString("urlTarget");
-            loginJson.put("token", jsonObject.getJsonString("token"));
+            token = jsonObject.getJsonString("token").getString();
             return true;
         }
         message = "Erreur lors de la lecture du Json";
@@ -320,21 +421,25 @@ public final class ArkClientRest {
         if(jsonArk == null) return false;
         JsonReader reader = Json.createReader(new StringReader(jsonArk));
         JsonObject jsonObject = reader.readObject();
+        
+       // JsonArray jsonArray = jsonObject.asJsonArray();
         reader.close();
 
-        JsonString values = jsonObject.getJsonString("Ark");
+        JsonObject jo = jsonObject.getJsonObject("result");
+        
+        JsonString values = jo.getJsonString("ark");
         if(values == null)
             idArk = null;
         else
-            idArk = values.getString().trim();
+            idArk = values.getString().trim();        
         
-        values = jsonObject.getJsonString("Handle");
+        
+        values = jo.getJsonString("handle");
         if(values == null)
             idHandle = null;
         else
-            idHandle = values.getString().trim();
-        
-        loginJson.put("token", jsonObject.getJsonString("token"));
+            idHandle = values.getString().trim();        
+
         return true;        
     }
 
@@ -353,7 +458,21 @@ public final class ArkClientRest {
     public String getMessage() {
         return message;
     }
-    
-    
+
+    public JsonObject getLoginJson() {
+        return loginJson;
+    }
+
+    public void setLoginJson(JsonObject loginJson) {
+        this.loginJson = loginJson;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
     
 }

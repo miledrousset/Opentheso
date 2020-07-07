@@ -74,6 +74,7 @@ public class AlignmentBean implements Serializable {
     private boolean isViewSelection = false;
     
     private boolean viewSetting = false;
+    private boolean viewAddNewSource = false;    
 
     private ArrayList<AlignementSource> alignementSources;
     private String selectedAlignement;
@@ -359,6 +360,7 @@ public class AlignmentBean implements Serializable {
             String idConcept, String currentLang) {
         alignmentInProgress = false;
         viewSetting = false;
+        viewAddNewSource = false;
         AlignmentHelper alignmentHelper = new AlignmentHelper();
 
         alignementSources = alignmentHelper.getAlignementSource(connect.getPoolConnexion(), idTheso);
@@ -1322,10 +1324,11 @@ public class AlignmentBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);        
         
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptAlignment");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");  
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptImages");             
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptGps");            
+            pf.ajax().update("idConceptAlignment");
+            pf.ajax().update("idConceptTraductions");
+            pf.ajax().update("idConceptImages");
+            pf.ajax().update("idConceptGps");
+            pf.ajax().update("candidatForm");
         }         
         isViewResult = true;
         isViewSelection = false;
@@ -1775,5 +1778,15 @@ public class AlignmentBean implements Serializable {
     public void setViewSetting(boolean viewSetting) {
         this.viewSetting = viewSetting;
     }
+
+    public boolean isViewAddNewSource() {
+        return viewAddNewSource;
+    }
+
+    public void setViewAddNewSource(boolean viewAddNewSource) {
+        this.viewAddNewSource = viewAddNewSource;
+    }
+    
+    
 
 }

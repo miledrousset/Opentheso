@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
@@ -43,6 +44,57 @@ public class ThesaurusHelper {
         this.identifierType = identifierType;
     }
 
+    
+    
+    /**
+     * Retourne la liste de tous les thésaurus dans la langue sélectionnée
+     * @param ds
+     * @param idLang
+     * @return 
+     */
+    public ArrayList<NodeIdValue> getAllTheso(HikariDataSource ds, String idLang) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        boolean withPrivateTheso = true;
+        List <String> tabIdThesaurus = getAllIdOfThesaurus(ds, withPrivateTheso);
+
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query;
+
+                    for (String idTheso : tabIdThesaurus) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(idTheso);
+                        nodeIdValue.setValue("");
+                        query = "select title from thesaurus_label where"
+                                + " id_thesaurus = '" + idTheso + "'" + " and lang = '" + idLang + "'";
+                        stmt.executeQuery(query);
+                        resultSet = stmt.getResultSet();
+                        if (resultSet.next()) {
+                            nodeIdValue.setValue(resultSet.getString("title"));
+                        }
+                        nodeIdValues.add(nodeIdValue);
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting all thesaurus : " , sqle);
+        }
+        return nodeIdValues;
+    }    
+    
     
     /**
      * permet de savoir si le thésaurus est public ou privé

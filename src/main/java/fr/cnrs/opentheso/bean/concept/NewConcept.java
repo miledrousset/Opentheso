@@ -389,11 +389,16 @@ public class NewConcept implements Serializable {
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(!conceptHelper.getMessage().isEmpty()) {
+            FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN, "", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg2);                 
+        }
+       
  //       PrimeFaces.current().executeScript("PF('addNT').hide();");
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
+        //    pf.ajax().update("messageIndex");
             pf.ajax().update("formRightTab:viewTabConcept:idConceptNarrower");     
         }
 

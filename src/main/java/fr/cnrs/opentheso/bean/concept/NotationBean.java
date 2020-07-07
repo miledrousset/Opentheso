@@ -58,7 +58,7 @@ public class NotationBean implements Serializable {
             int idUser) {
 
         FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();;
+        PrimeFaces pf = PrimeFaces.current();
 
         ConceptHelper conceptHelper = new ConceptHelper();
         

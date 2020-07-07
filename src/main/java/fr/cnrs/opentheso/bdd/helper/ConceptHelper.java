@@ -38,6 +38,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.ws.ark.ArkHelper;
+import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,7 +65,8 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
-    
+
+   
     /**
      * Cettte fonction permet de retourner la liste des TopConcept avec IdArk et
      * handle
@@ -1262,8 +1264,8 @@ public class ConceptHelper {
             String idTheso,
             ArrayList<String> idConcepts) {
 
-        ArkHelper arkHelper = new ArkHelper(nodePreference);
-        if (!arkHelper.login()) {
+        ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
+        if (!arkHelper2.login()) {
             return false;
         }
 
@@ -1296,40 +1298,46 @@ public class ConceptHelper {
             /// cas où on n'a pas d'idArk dans le concept, il faut alors le créer sur Arkeo
             if (concept.getIdArk() == null || concept.getIdArk().isEmpty()) {
                 // création d'un identifiant Ark + (Handle avec le serveur Ark de la MOM)
-                if (!arkHelper.addArk(privateUri, nodeMetaData)) {
-                    message = arkHelper.getMessage();
+                if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
+                    message = arkHelper2.getMessage();
                     return false;
                 }
-                if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper.getIdArk())) {
+                if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdArk())) {
                     return false;
                 }
-                if (!updateHandleIdOfConcept(ds, idConcept, idTheso, arkHelper.getIdHandle())) {
-                    return false;
+                if(nodePreference.isGenerateHandle()){
+                    if (!updateHandleIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdHandle())) {
+                        return false;
+                    }
                 }
             } else {
                 // ark existe dans Opentheso, on vérifie si Ark est présent sur le serveur Ark 
-                if (arkHelper.isArkExistOnServer(concept.getIdArk())) {
+                if (arkHelper2.isArkExistOnServer(concept.getIdArk())) {
                     // ark existe sur le serveur, alors on applique une mise à jour
                     // pour l'URL et les métadonnées
-                    if (!arkHelper.updateArk(concept.getIdArk(), privateUri, nodeMetaData)) {
-                        message = arkHelper.getMessage();
+                    if (!arkHelper2.updateArk(concept.getIdArk(), privateUri, nodeMetaData)) {
+                        message = arkHelper2.getMessage();
                         return false;
                     }
-                    if (!updateHandleIdOfConcept(ds, idConcept, idTheso, arkHelper.getIdHandle())) {
-                        return false;
+                    if(nodePreference.isGenerateHandle()){
+                        if (!updateHandleIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdHandle())) {
+                            return false;
+                        }
                     }
                 } else {
                     // création d'un identifiant Ark avec en paramètre l'ID Ark existant sur Opentheso
                     // + (création de l'ID Handle avec le serveur Ark de la MOM)
-                    if (!arkHelper.addArkWithProvidedId(concept.getIdArk(), privateUri, nodeMetaData)) {
-                        message = arkHelper.getMessage();
+                    if (!arkHelper2.addArkWithProvidedId(concept.getIdArk(), privateUri, nodeMetaData)) {
+                        message = arkHelper2.getMessage();
                         return false;
                     }
-                    if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper.getIdArk())) {
+                    if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdArk())) {
                         return false;
                     }
-                    if (!updateHandleIdOfConcept(ds, idConcept, idTheso, arkHelper.getIdHandle())) {
-                        return false;
+                    if(nodePreference.isGenerateHandle()){                    
+                        if (!updateHandleIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdHandle())) {
+                            return false;
+                        }
                     }
                 }
             }
@@ -3257,7 +3265,7 @@ public class ConceptHelper {
      * @param urlSite
      * @return
      */
-    private boolean addIdHandle(Connection conn,
+    public boolean addIdHandle(Connection conn,
             String idConcept,
             String idThesaurus) {
         if (nodePreference == null) {

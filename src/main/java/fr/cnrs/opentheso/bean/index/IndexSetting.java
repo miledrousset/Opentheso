@@ -5,6 +5,9 @@
  */
 package fr.cnrs.opentheso.bean.index;
 
+import fr.cnrs.opentheso.bean.condidat.CandidatBean;
+
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -16,6 +19,9 @@ import java.io.Serializable;
 @Named(value = "indexSetting")
 @SessionScoped
 public class IndexSetting implements Serializable {
+
+    @Inject
+    private CandidatBean candidatBean;
 
     // si un thésaurus est sélectionné 
     private boolean isSelectedTheso;

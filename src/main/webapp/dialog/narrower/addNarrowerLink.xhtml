@@ -4,7 +4,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog id="idAddNarrowerLink" header="Ajouter une relation sépcifique" widgetVar="addNarrowerLink" 
+    <p:dialog id="idAddNarrowerLink" header="Ajouter une relation spécifique" widgetVar="addNarrowerLink" 
               modal="true" resizable="true" position="top" width="400" style="margin-top: 150px" >        
         <h:form id="addNarrowerLinkForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">

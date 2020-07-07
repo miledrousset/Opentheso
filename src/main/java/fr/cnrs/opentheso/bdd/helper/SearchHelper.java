@@ -46,7 +46,258 @@ public class SearchHelper {
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////    
 
+    
+    
+    /**
+     * Permet de chercher les terms avec précision pour limiter le bruit
+     *
+     * @param ds
+     * @param value
+     * @param idLang
+     * @param idTheso
+     * @return
+     */
+    public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(HikariDataSource ds,
+            String value, String idLang, String idTheso) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        StringPlus stringPlus = new StringPlus();
 
+        ArrayList<NodeAutoCompletion> nodeAutoCompletions = new ArrayList<>();
+        value = stringPlus.convertString(value);
+        value = stringPlus.unaccentLowerString(value);
+        
+        String multiValuesPT = "";
+        String multiValuesNPT = "";        
+        String values[] = value.trim().split(" ");
+        for (String value1 : values) {
+            multiValuesPT += 
+                    " and ("
+                    + " f_unaccent(lower(term.lexical_value)) like '" + value1 + "%'"
+                    + " or"
+                    + " f_unaccent(lower(term.lexical_value)) like '% " + value1 + "%'"
+                    + " or"
+                    + " f_unaccent(lower(term.lexical_value)) like '%''" + value1 + "%'"                    
+                    + ")";
+            multiValuesNPT += 
+                    " and ("
+                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value1 + "%'"
+                    + " or"
+                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '% " + value1 + "%'"
+                    + " or"
+                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '%''" + value1 + "%'"                     
+                    + ")";            
+        }
+        
+
+        String query;
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    query = "select term.lexical_value,"
+                            + " concept.id_concept, concept.id_ark, concept.id_handle"
+                            + " from term, preferred_term, concept where"
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and preferred_term.id_term = term.id_term"
+                            + " and"
+                            + " preferred_term.id_thesaurus = term.id_thesaurus"
+                            + " and"
+                            + " term.id_thesaurus = '" + idTheso + "'"
+                            + " and term.lang = '" + idLang + "'"
+                            + multiValuesPT
+                            + " limit 100";
+
+                    resultSet = stmt.executeQuery(query);
+                    while (resultSet.next()) {
+                        NodeAutoCompletion nodeAutoCompletion = new NodeAutoCompletion();
+                        nodeAutoCompletion.setIdConcept(resultSet.getString("id_concept"));
+                        nodeAutoCompletion.setIdArk(resultSet.getString("id_ark"));
+                        nodeAutoCompletion.setIdHandle(resultSet.getString("id_handle"));                        
+                        nodeAutoCompletion.setPrefLabel(resultSet.getString("lexical_value"));
+                        nodeAutoCompletion.setIsAltLabel(false);
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
+                            nodeAutoCompletions.add(0, nodeAutoCompletion);
+                        } else {
+                            nodeAutoCompletions.add(nodeAutoCompletion);
+                        }                        
+                    }
+
+                    /**
+                     * recherche de Synonymes
+                     */
+                    query = "select non_preferred_term.lexical_value," +
+                            " concept.id_concept, concept.id_ark, concept.id_handle" +
+                            " from non_preferred_term, preferred_term, concept" +
+                            " where" +
+                            " preferred_term.id_term = non_preferred_term.id_term " +
+                            " and preferred_term.id_thesaurus = non_preferred_term.id_thesaurus" +
+                            " and preferred_term.id_concept = concept.id_concept" +
+                            " AND preferred_term.id_thesaurus = concept.id_thesaurus" +
+                            " and non_preferred_term.id_thesaurus = '" + idTheso + "'" +
+                            " and non_preferred_term.lang = '" + idLang + "'" +
+                            multiValuesNPT +
+                            " limit 100";
+
+                    resultSet = stmt.executeQuery(query);
+
+                    while (resultSet.next()) {
+                        NodeAutoCompletion nodeAutoCompletion = new NodeAutoCompletion();
+                        nodeAutoCompletion.setIdConcept(resultSet.getString("id_concept"));
+                        nodeAutoCompletion.setIdArk(resultSet.getString("id_ark"));
+                        nodeAutoCompletion.setIdHandle(resultSet.getString("id_handle"));                        
+                        nodeAutoCompletion.setPrefLabel(resultSet.getString("lexical_value"));
+                        nodeAutoCompletion.setIsAltLabel(true);
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
+                            nodeAutoCompletions.add(0, nodeAutoCompletion);
+                        } else {
+                            nodeAutoCompletions.add(nodeAutoCompletion);
+                        }
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeAutoCompletions;
+    }    
+    
+    
+    /** 
+     * Cette fonction permet de faire une recherche par valeur sur les termes
+     * Préférés et les synonymes (la recherche porte sur les termes contenus
+     * dans une chaine) en utilisant la méthode PostgreSQL Trigram Index, le
+     * résultat est proche d'une recherche avec ElasticSearch
+     *
+     * Elle retourne les identifiants avec filtre des doublons
+     * 
+     *
+     * @param ds
+     * @param value
+     * @param idLang
+     * @param idThesaurus
+     * @return
+     */
+    public ArrayList<String> searchFullTextId(HikariDataSource ds,
+            String value, String idLang, String idThesaurus) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        StringPlus stringPlus = new StringPlus();
+
+        ArrayList<String> listIds = null;
+        value = stringPlus.convertString(value);
+        value = stringPlus.unaccentLowerString(value);
+
+        String preparedValuePT = " and f_unaccent(lower(term.lexical_value)) like '%" + value + "%'";
+        String preparedValueNPT = " and f_unaccent(lower(non_preferred_term.lexical_value)) like '%" + value + "%'";
+
+        String query;
+        String lang;
+        String langSynonyme;
+
+        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
+        if (idLang.isEmpty()) {
+            lang = "";
+            langSynonyme = "";
+        } else {
+            lang = " and term.lang ='" + idLang + "'";
+            langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
+        }
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    listIds = new ArrayList<>();
+                    query = "SELECT preferred_term.id_concept, term.lexical_value "
+                            + " FROM term, preferred_term WHERE "
+                            + " preferred_term.id_term = term.id_term AND"
+                            + " preferred_term.id_thesaurus = term.id_thesaurus"
+                            + preparedValuePT
+                            + " and term.id_thesaurus = '" + idThesaurus + "'"
+                            + lang
+                            + " order by term.lexical_value limit 150";
+
+                    resultSet = stmt.executeQuery(query);
+                    while (resultSet.next()) {
+                  /*      NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
+                        nodeSearchMini.setIsAltLabel(false);*/
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
+                            if(!listIds.contains(resultSet.getString("id_concept")))
+                                listIds.add(0, resultSet.getString("id_concept"));
+                        } else {
+                            if(!listIds.contains(resultSet.getString("id_concept")))
+                                listIds.add(resultSet.getString("id_concept"));
+                        }
+                    }
+                    /**
+                     * recherche de Synonymes
+                     */
+                    query = "SELECT preferred_term.id_concept,"
+                            + " non_preferred_term.lexical_value as npt,"
+                            + " term.lexical_value as pt"
+                            + " FROM"
+                            + " non_preferred_term, term, preferred_term WHERE"
+                            + "  preferred_term.id_term = term.id_term AND"
+                            + "  preferred_term.id_thesaurus = term.id_thesaurus AND"
+                            + "   preferred_term.id_term = non_preferred_term.id_term AND"
+                            + "   term.lang = non_preferred_term.lang AND"
+                            + "   preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
+                            + preparedValueNPT
+                            + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                            + langSynonyme
+                            + " order by non_preferred_term.lexical_value limit 100";
+
+                    resultSet = stmt.executeQuery(query);
+
+                    while (resultSet.next()) {
+                     /*   NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMini.setAltLabel(resultSet.getString("npt"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
+                        nodeSearchMini.setIsAltLabel(true);*/
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("npt"))) {
+                            if(!listIds.contains(resultSet.getString("id_concept")))
+                                listIds.add(0, resultSet.getString("id_concept"));                            
+                            
+                            
+                        } else {
+                            if(!listIds.contains(resultSet.getString("id_concept")))
+                                listIds.add(resultSet.getString("id_concept"));
+                        }
+                           /* if (nodeSearchMinis.get(0).getPrefLabel().equalsIgnoreCase(value.trim())) {
+                                nodeSearchMinis.add(1, nodeSearchMini);
+                            } else {
+                                nodeSearchMinis.add(0, nodeSearchMini);
+                            }
+                        } else {
+                            nodeSearchMinis.add(nodeSearchMini);
+                        }*/
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listIds;
+    }    
+    
     /** En cours d'optimisation (non utilisée encore)
      * Cette fonction permet de faire une recherche par valeur sur les termes
      * Préférés et les synonymes (la recherche porte sur les termes contenus
@@ -210,7 +461,12 @@ public class SearchHelper {
                             + "	or"
                             + "	f_unaccent(lower(lexical_value)) like '" + value + "-%'"
                             + "	or"
-                            + "	f_unaccent(lower(lexical_value)) like '%-" + value + "'"
+                            
+                            // ajouter récemment par MR
+                            + "	f_unaccent(lower(lexical_value)) like '%" + value + "-%'"
+                            
+                            + "	or"
+                            + "	f_unaccent(lower(lexical_value)) like '%-" + value + "%'"                            
                             + "	or"
                             + "	f_unaccent(lower(lexical_value)) like '%''" + value + "'"
                             + "	)"
@@ -1423,19 +1679,33 @@ public class SearchHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    query = "SELECT preferred_term.id_concept"
-                            + " FROM term, preferred_term, concept,concept_group_concept WHERE "
-                            + "concept_group_concept.idthesaurus  = term.id_thesaurus AND "
-                            + "concept_group_concept.idconcept = preferred_term.id_concept AND"
-                            + " concept.id_concept = preferred_term.id_concept AND"
-                            + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                            + " preferred_term.id_term = term.id_term AND"
-                            + " preferred_term.id_thesaurus = term.id_thesaurus"
-                            + multivaluesTerm
-                            + " and term.id_thesaurus = '" + idThesaurus + "'"
-                            + lang
-                            + group
-                            + " order by lexical_value ASC LIMIT 200";
+                    if(group.isEmpty()) {
+                        query = "SELECT preferred_term.id_concept"
+                                + " FROM term, preferred_term, concept WHERE "
+                                + " concept.id_concept = preferred_term.id_concept AND"
+                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
+                                + " preferred_term.id_term = term.id_term AND"
+                                + " preferred_term.id_thesaurus = term.id_thesaurus"
+                                + multivaluesTerm
+                                + " and term.id_thesaurus = '" + idThesaurus + "'"
+                                + lang
+                                + " order by lexical_value ASC LIMIT 200";                        
+                    } else {
+                        query = "SELECT preferred_term.id_concept"
+                                + " FROM term, preferred_term, concept,concept_group_concept WHERE "
+                                + "concept_group_concept.idthesaurus  = term.id_thesaurus AND "
+                                + "concept_group_concept.idconcept = preferred_term.id_concept AND"
+                                + " concept.id_concept = preferred_term.id_concept AND"
+                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
+                                + " preferred_term.id_term = term.id_term AND"
+                                + " preferred_term.id_thesaurus = term.id_thesaurus"
+                                + multivaluesTerm
+                                + " and term.id_thesaurus = '" + idThesaurus + "'"
+                                + lang
+                                + group
+                                + " order by lexical_value ASC LIMIT 200";
+                    }
+
 
                     resultSet = stmt.executeQuery(query);
                     idConcepts = new ArrayList<>();
@@ -1446,20 +1716,33 @@ public class SearchHelper {
                     /**
                      * recherche de Synonymes
                      */
-                    query = "SELECT preferred_term.id_concept"
-                            + " FROM non_preferred_term, preferred_term,concept_group_concept, concept WHERE "
-                            + " concept.id_concept = concept_group_concept.idconcept AND"
-                            + "  concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                            + "  preferred_term.id_term = non_preferred_term.id_term AND"
-                            + "  preferred_term.id_concept = concept.id_concept AND"
-                            + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
-                            + "  preferred_term.id_thesaurus = non_preferred_term.id_thesaurus "
-                            + multivaluesSynonyme
-                            + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                            + langSynonyme
-                            + group
-                            + " order by lexical_value ASC LIMIT 200";
-
+                    if(group.isEmpty()) {
+                        query = "SELECT preferred_term.id_concept"
+                                + " FROM non_preferred_term, preferred_term, concept WHERE "
+                                + "  preferred_term.id_term = non_preferred_term.id_term AND"
+                                + "  preferred_term.id_concept = concept.id_concept AND"
+                                + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
+                                + "  preferred_term.id_thesaurus = non_preferred_term.id_thesaurus "
+                                + multivaluesSynonyme
+                                + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                                + langSynonyme
+                                + group
+                                + " order by lexical_value ASC LIMIT 200";                        
+                    } else {
+                        query = "SELECT preferred_term.id_concept"
+                                + " FROM non_preferred_term, preferred_term,concept_group_concept, concept WHERE "
+                                + " concept.id_concept = concept_group_concept.idconcept AND"
+                                + "  concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                                + "  preferred_term.id_term = non_preferred_term.id_term AND"
+                                + "  preferred_term.id_concept = concept.id_concept AND"
+                                + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
+                                + "  preferred_term.id_thesaurus = non_preferred_term.id_thesaurus "
+                                + multivaluesSynonyme
+                                + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                                + langSynonyme
+                                + group
+                                + " order by lexical_value ASC LIMIT 200";                        
+                    }                 
                     resultSet = stmt.executeQuery(query);
 
                     while (resultSet.next()) {

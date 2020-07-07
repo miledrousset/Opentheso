@@ -1,21 +1,27 @@
 package fr.cnrs.opentheso.bean.language;
 
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.PrimeFaces;
 
-@Named (value="langueBean")
+@Named(value = "langueBean")
 @SessionScoped
 public class LanguageBean implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
-    @Inject private Connect connect;
-    
+    @Inject
+    private Connect connect;
+
     private String currentBundle;
     private String idLangue;
 
@@ -37,11 +43,19 @@ public class LanguageBean implements Serializable {
         currentBundle = "langue_" + connect.getWorkLanguage();
         idLangue = connect.getWorkLanguage().toUpperCase();
     }
-  
+
     public void changeLangue(String l) {
         currentBundle = "langue_" + l;
         idLangue = l.toUpperCase();
-    }    
+        FacesContext.getCurrentInstance().getViewRoot().setLocale(new Locale(l));
+
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", 
+                LanguageEnum.valueOf(l.toUpperCase()).getLanguage() + " !"));
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+        }
+    }
 
     public String getMsg(String msg) {
         return getBundleLangue(currentBundle).getString(msg);

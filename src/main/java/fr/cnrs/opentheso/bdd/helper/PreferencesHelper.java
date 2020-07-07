@@ -45,15 +45,18 @@ public class PreferencesHelper {
                         np = new NodePreference();
                         np.setSourceLang(resultSet.getString("source_lang"));
                         np.setIdentifierType(resultSet.getInt("identifier_type"));
-                        np.setPreferredName(resultSet.getString("preferredname"));                        
+                        np.setPreferredName(resultSet.getString("preferredname")); 
+                        np.setAuto_expand_tree(resultSet.getBoolean("auto_expand_tree"));
                         
                         // Ark
                         np.setUseArk(resultSet.getBoolean("use_ark"));
                         np.setServeurArk(resultSet.getString("server_ark"));
+                        np.setUriArk(resultSet.getString("uri_ark"));                        
                         np.setIdNaan(resultSet.getString("id_naan"));
                         np.setPrefixArk(resultSet.getString("prefix_ark"));
                         np.setUserArk(resultSet.getString("user_ark"));
                         np.setPassArk(resultSet.getString("pass_ark"));
+                        np.setGenerateHandle(resultSet.getBoolean("generate_handle"));
                         
                         // Handle
                         np.setUseHandle(resultSet.getBoolean("use_handle"));
@@ -300,15 +303,19 @@ public class PreferencesHelper {
                          //   + ", alert_cdt='" + np.isAlertCdt() + "'"
                             + ", identifier_type='" + np.getIdentifierType() + "'"
                             + ", preferredname='" + np.getPreferredName()+ "'"
+                            + ", auto_expand_tree='" + np.isAuto_expand_tree() + "'"
                             
                             // Ark
                             + ", use_ark='" + np.isUseArk() + "'"
                             + ", server_ark='" + stringPlus.convertString(np.getServeurArk()) + "'"
+                            + ", uri_ark='" + stringPlus.convertString(np.getUriArk()) + "'"
                             + ", id_naan='" + np.getIdNaan() + "'"
                             + ", prefix_ark ='" + np.getPrefixArk() + "'"                            
                             + ", user_ark='" + np.getUserArk() + "'"
                             //+ ", pass_ark='" + MD5Password.getEncodedPassword(np.getPassArk()) + "'"
                             + ", pass_ark='" + np.getPassArk() + "'"
+                             + ", generate_handle='" + np.isGenerateHandle() + "'"
+                            
 
                             // Handle
                             + ", use_handle = '" + np.isUseHandle() + "'"
@@ -381,10 +388,11 @@ public class PreferencesHelper {
                             + " dossier_resize, bdd_active, bdd_use_id, url_bdd,"
                             + " url_counter_bdd, z3950actif, collection_adresse,"
                             + " notice_url, url_encode, path_notice1, path_notice2," 
-                            + " chemin_site, webservices, use_ark, server_ark," 
-                            + " id_naan, prefix_ark, user_ark, pass_ark, use_handle,"
+                            + " chemin_site, webservices, use_ark, server_ark, uri_ark," 
+                            + " id_naan, prefix_ark, user_ark, pass_ark, generate_handle,"
+                            + " use_handle,"
                             + " user_handle, pass_handle, path_key_handle, path_cert_handle,"
-                            + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, original_uri,"
+                            + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
                             + " original_uri_is_ark, original_uri_is_handle)"
  
                             + " values('" + idThesaurus + "'"
@@ -409,12 +417,14 @@ public class PreferencesHelper {
                             // Ark
                             + ",'" + np.isUseArk() + "'"
                             + ",'" + stringPlus.convertString(np.getServeurArk()) + "'"
+                            + ",'" + stringPlus.convertString(np.getUriArk()) + "'"
                             + ",'" + np.getIdNaan() + "'"
                             + ",'" + np.getPrefixArk() + "'"                            
                             + ",'" + np.getUserArk() + "'"
                             //+ ", pass_ark='" + MD5Password.getEncodedPassword(np.getPassArk()) + "'"
                             + ",'" + np.getPassArk() + "'"
-
+                            + ",'" + np.isGenerateHandle() + "'"
+                            
                             // Handle
                             + ",'" + np.isUseHandle() + "'"
                             + ",'" + np.getUserHandle() + "'"
@@ -424,7 +434,9 @@ public class PreferencesHelper {
                             + ",'" + np.getUrlApiHandle() + "'"
                             + ",'" + np.getPrefixIdHandle() + "'"
                             + ",'" + np.getPrivatePrefixHandle() + "'"
+                            
                             + ",'" + np.getPreferredName() + "'"
+                            + "," + np.isAuto_expand_tree()                            
                             + ",'" + np.getOriginalUri() + "'"
                             + "," + np.isOriginalUriIsArk()
                             + "," + np.isOriginalUriIsHandle()                            

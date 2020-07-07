@@ -889,7 +889,7 @@ public class AlignmentHelper {
      * @param currentIdTheso
      * @return 
      */
-    public boolean addNewAlignment(HikariDataSource ds, AlignementSource alignement,
+    public boolean addNewAlignmentSource(HikariDataSource ds, AlignementSource alignement,
             int id_user, String currentIdTheso) {
         int id_alignement;
         boolean status = false;
@@ -920,6 +920,7 @@ public class AlignmentHelper {
 
         } catch (SQLException ex) {
             Logger.getLogger(AlignmentHelper.class.getName()).log(Level.SEVERE, null, ex);
+            message = ex.toString();
         }
         return status;
     }
@@ -993,6 +994,7 @@ public class AlignmentHelper {
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while insert new Alignement : ", sqle);
+            message = sqle.toString();
         }
         return status;
     }

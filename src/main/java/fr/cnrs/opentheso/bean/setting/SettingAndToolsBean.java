@@ -22,12 +22,14 @@ public class SettingAndToolsBean implements Serializable {
     @Inject private PreferenceBean preferenceBean;
     
     private boolean isPreferenceActive;
-    private boolean isMaintenanceActive;
     private boolean isIdentifierActive;
+    private boolean isCorpusActive;    
+    private boolean isMaintenanceActive;
     
     private String preferenceColor;
-    private String maintenanceColor;
     private String identifierColor;
+    private String corpusColor;
+    private String maintenanceColor;
     
     public SettingAndToolsBean() {
     }
@@ -36,6 +38,7 @@ public class SettingAndToolsBean implements Serializable {
         isPreferenceActive = true;
         isMaintenanceActive = false;
         isIdentifierActive = false;
+        isCorpusActive = false;
         
         // activation de la couleur pour edition
         resetColor();
@@ -51,7 +54,8 @@ public class SettingAndToolsBean implements Serializable {
     public void setIsPreferenceActive(boolean isPreferenceActive) {
         this.isPreferenceActive = isPreferenceActive;
         isMaintenanceActive = false;
-        isIdentifierActive = false;  
+        isIdentifierActive = false;
+        isCorpusActive = false;
         resetColor();
         preferenceColor = "white";         
     }
@@ -65,6 +69,7 @@ public class SettingAndToolsBean implements Serializable {
         this.isMaintenanceActive = isMaintenanceActive;
         isPreferenceActive = false;
         isIdentifierActive = false;  
+        isCorpusActive = false;
         resetColor();
         maintenanceColor = "white";   
     }
@@ -77,15 +82,32 @@ public class SettingAndToolsBean implements Serializable {
         this.isIdentifierActive = isIdentifierActive;
         isPreferenceActive = false;
         isMaintenanceActive = false;
+        isCorpusActive = false;
         resetColor();
         identifierColor = "white";        
     }
+
+    public boolean isIsCorpusActive() {
+        return isCorpusActive;
+    }
+
+    public void setIsCorpusActive(boolean isCorpusActive) {
+        this.isCorpusActive = isCorpusActive;
+        isPreferenceActive = false;
+        isMaintenanceActive = false;
+        isIdentifierActive = false;
+        resetColor();
+        corpusColor = "white";          
+    }
+    
+    
     
     
     private void resetColor(){
         preferenceColor = "#B3DDC4";
         maintenanceColor = "#B3DDC4";
-        identifierColor = "#B3DDC4";          
+        identifierColor = "#B3DDC4";   
+        corpusColor = "#B3DDC4";
     }
 
     public String getPreferenceColor() {
@@ -111,6 +133,15 @@ public class SettingAndToolsBean implements Serializable {
     public void setIdentifierColor(String identifierColor) {
         this.identifierColor = identifierColor;
     }
+
+    public String getCorpusColor() {
+        return corpusColor;
+    }
+
+    public void setCorpusColor(String corpusColor) {
+        this.corpusColor = corpusColor;
+    }
+    
     
     
 }

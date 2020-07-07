@@ -158,7 +158,7 @@ public class MyProjectBean implements Serializable {
      * permet de récupérer la liste des utilisateurs suivants les options choisies
      */
     private void listUsersByGroup(){
-        if (selectedProject == null) {
+        if (selectedProject == null || selectedProject.isEmpty()) {
             return;
         }
         UserHelper userHelper = new UserHelper();

@@ -1,0 +1,61 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui">
+
+    <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
+            style="margin-top: -20px; border-left: 20px; border-right: 20px;  background-color: #FAFAFA; padding: 50px">
+
+        <b:row rendered="#{candidatBean.isIsListCandidatsActivate()}">
+            <ui:include src="/candidat/candidatsList.xhtml" />
+        </b:row>
+
+        <b:row rendered="#{candidatBean.isIsNewCandidatActivate()}" style="padding-left: 25px; padding-right: 25px">
+            <b:row>
+                <b:column span="12">
+                    <b:navCommandLink value="#{langueBean.getMsg('candidat.retur')}" 
+                                      update="candidatForm" ajax="false" style="color: #43B572" 
+                                      actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
+                </b:column>
+            </b:row>
+            <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px">
+                <b:column medium-screen="6">
+                    <ui:include src="/candidat/candidatDetails.xhtml" />
+                </b:column>
+                <b:column medium-screen="6" style="vertical-align: top;">
+                    <ui:include src="/candidat/candidatDiscussion.xhtml" />
+                </b:column>
+            </b:row>
+            <b:row>
+                <b:column span="12" style="align-content: center">
+                    <b:commandButton value="#{langueBean.getMsg('candidat.submit')}" 
+                              style="background: #F47B2A; border-color: #F47B2A; display: block; 
+                              margin-left: auto; margin-right: auto; margin-top: 10px; color: white" 
+                              look="primary" size="lg" />
+                </b:column>
+            </b:row>
+        </b:row>
+    </h:form>   
+
+    <ui:include src="/candidat/dialog/newTraduction.xhtml" />
+    <ui:include src="/candidat/dialog/editTraduction.xhtml" />
+    <ui:include src="/candidat/dialog/deleteTraduction.xhtml" />
+
+    <ui:include src="/candidat/dialog/newDefinition.xhtml" />
+    <ui:include src="/candidat/dialog/deleteDefinition.xhtml" />
+    <ui:include src="/candidat/dialog/editDefinition.xhtml" />
+
+    <ui:include src="/candidat/dialog/newCorpus.xhtml" />
+    <ui:include src="/candidat/dialog/editCorpus.xhtml" /> 
+    <ui:include src="/candidat/dialog/deleteCorpus.xhtml" /> 
+
+    <ui:include src="/candidat/dialog/participantsList.xhtml" /> 
+    <ui:include src="/candidat/dialog/envoyerInvitation.xhtml" />
+
+    <ui:include src="/dialog/alignment/addAlignment.xhtml" />
+    <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />
+    <ui:include src="/dialog/alignment/deleteAlignment.xhtml" />
+    <ui:include src="/dialog/alignment/updateAlignment.xhtml" />
+
+
+</ui:fragment>

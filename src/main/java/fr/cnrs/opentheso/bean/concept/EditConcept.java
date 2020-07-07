@@ -41,7 +41,7 @@ public class EditConcept implements Serializable {
     @Inject
     private LanguageBean languageBean;
     @Inject
-    private ConceptView conceptBean;
+    private ConceptView conceptView;
     @Inject
     private SelectedTheso selectedTheso;
     @Inject
@@ -149,7 +149,7 @@ public class EditConcept implements Serializable {
 
         TermHelper termHelper = new TermHelper();
         String idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idTheso);
+                conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso);
         if (idTerm == null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
             FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
@@ -175,9 +175,9 @@ public class EditConcept implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idTheso,
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptView.getNodeConcept().getConcept().getIdConcept());
 
-        conceptBean.getConcept(idTheso, conceptBean.getNodeConcept().getConcept().getIdConcept(), idLang);
+        conceptView.getConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idLang);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été modifié");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -193,8 +193,8 @@ public class EditConcept implements Serializable {
         if (tree.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
-                    conceptBean.getNodeConcept().getConcept().getIdConcept())) {
-                tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(), idTheso, idLang);
+                    conceptView.getNodeConcept().getConcept().getIdConcept())) {
+                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idLang);
             }
             ((TreeNodeData) tree.getSelectedNode().getData()).setName(prefLabel);
             if (pf.isAjaxRequest()) {
@@ -210,9 +210,8 @@ public class EditConcept implements Serializable {
     }
 
     public void infosDelete() {
-
         String message;
-        if (conceptBean.getNodeConcept().getNodeNT().isEmpty()) { // pas d'enfants
+        if (conceptView.getNodeConcept().getNodeNT().isEmpty()) { // pas d'enfants
             message = "La suppression du concept est définitive !!";
         } else {
             message = "La suppression de la branche est définitive !!";
@@ -244,10 +243,10 @@ public class EditConcept implements Serializable {
 
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-        if (conceptBean.getNodeConcept().getNodeNT().isEmpty()) {
+        if (conceptView.getNodeConcept().getNodeNT().isEmpty()) {
             // suppression du concept
             if (!conceptHelper.deleteConcept(connect.getPoolConnexion(),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptView.getNodeConcept().getConcept().getIdConcept(),
                     idTheso,
                     idUser)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué !!");
@@ -257,7 +256,7 @@ public class EditConcept implements Serializable {
         } else {
             /// suppression d'une branche
             deleteBranch(
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptView.getNodeConcept().getConcept().getIdConcept(),
                     idTheso, idUser);
         }
 
@@ -266,8 +265,8 @@ public class EditConcept implements Serializable {
         if (tree.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
-                    conceptBean.getNodeConcept().getConcept().getIdConcept())) {
-                tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptView.getNodeConcept().getConcept().getIdConcept())) {
+                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(),
                         idTheso,
                         selectedTheso.getCurrentLang());
             }
@@ -280,9 +279,9 @@ public class EditConcept implements Serializable {
                 }
             }
         }
-        if (!conceptBean.getNodeConcept().getNodeBT().isEmpty()) {
-            conceptBean.getConcept(idTheso,
-                    conceptBean.getNodeConcept().getNodeBT().get(0).getIdConcept(),
+        if (!conceptView.getNodeConcept().getNodeBT().isEmpty()) {
+            conceptView.getConcept(idTheso,
+                    conceptView.getNodeConcept().getNodeBT().get(0).getIdConcept(),
                     selectedTheso.getCurrentLang());
         }
 
@@ -316,6 +315,47 @@ public class EditConcept implements Serializable {
                     idConcept,
                     idTheso,
                     idUser);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public void infosArk() {
+        String message = "Permet de générer un identifiant Ark, si l'identifiant existe, il sera mise à jour !!";
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }    
+    
+    /**
+     * permet de générer l'identifiant Ark, s'il n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void generateArk(){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts = new ArrayList<>();
+        idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        FacesMessage msg;
+        if(!conceptHelper.generateArkId(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                idConcepts)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
         }
     }
 

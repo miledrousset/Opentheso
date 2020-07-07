@@ -1,18 +1,19 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
-             xmlns:f="http://java.sun.com/jsf/core">
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:p="http://primefaces.org/ui">
 
 
-    <b:form id="formMenu">
-        <b:row>
+    <b:form id="formMenu" >
+        <b:row >
             <b:column span="12">
                 <!-- gestion du menu -->
                 <b:navBar brandImg="images/logo_Opentheso.png" brand-img-style="marginheight:34px;width: 139px;margin-top: -8px;"
                           brandHref="index.xhtml" fluid="true">
 
                     
-                    <b:navbarLinks pull="left">
+                    <b:navbarLinks pull="left" rendered="#{currentUser.nodeUser != null}">
                         <b:navCommandLink 
                             value="Thésaurus" 
                             action="#{indexSetting.setIsThesoActive(true)}"
@@ -21,11 +22,11 @@
                         </b:navCommandLink>
 
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
-                                   value="Candidat"  
+                                   value="#{langueBean.getMsg('candidat.titre')}"
                                    action="#{indexSetting.setIsCandidateActive(true)}"
                                    style="color: #{indexSetting.candidateColor}"
-                                   update="containerIndex formMenu">                                   
-                        </b:navCommandLink>
+                                   update="containerIndex"  />
+
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}"
                                    value="Profil" 
                                    action="#{indexSetting.setIsProfileActive(true)}"
@@ -34,7 +35,15 @@
                                     profileForm"                                    
                                    style="color: #{indexSetting.profileColor}">                                   
                         </b:navCommandLink>
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" 
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}"
+                                          action="#{indexSetting.setIsToolBoxActive(true)}"
+                                          actionListener="#{toolBoxBean.reset()}"
+                                          update="containerIndex formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
+                                          toolBoxForm"
+                                          value="Boite à outils" icon-align="right"
+                                          style="color: #{indexSetting.toolBoxColor}">
+                        </b:navCommandLink>
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}"
                                    value="Paramètres" 
                                    action="#{indexSetting.setIsSettingActive(true)}"
                                    actionListener="#{settingAndToolsBean.reset()}"
@@ -42,14 +51,6 @@
                                     settingForm"                                    
                                    style="color: #{indexSetting.settingColor}">                                   
                         </b:navCommandLink>
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
-                                          action="#{indexSetting.setIsToolBoxActive(true)}"
-                                          actionListener="#{toolBoxBean.reset()}"
-                                          update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
-                                          toolBoxForm" 
-                                          value="Boite à outils" icon-align="right" 
-                                          style="color: #{indexSetting.toolBoxColor}">
-                        </b:navCommandLink>                  
                     </b:navbarLinks>                     
                     
                     
@@ -69,14 +70,17 @@
 
                         <!-- liste des thésaurus -->                
                         <b:navLink style="height: 30px; margin-top: -3px; margin-right: -10px;">
-                            <b:selectOneMenu value="#{selectedTheso.selectedIdTheso}" 
-                                             onselect="#{selectedTheso.setSelectedTheso()} #{searchBean.reset()} #{viewEditorThesoHomeBean.reset()} #{viewEditorHomeBean.reset()}"
-                                             update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab
-                                             containerIndex homePageForm"                                 
-                                             style="font-size: 12px; max-width: 180px;  background: white">
+
+                            <p:selectOneMenu id="idListTheso" value="#{selectedTheso.selectedIdTheso}"
+                                 style="font-size: 12px;  width: 180px; "
+
+                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                                <p:ajax event="valueChange" update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab
+                                             containerIndex homePageForm"
+                                             listener="#{selectedTheso.setSelectedTheso()}" />
                                 <f:selectItem itemLabel="(select thesaurus)" itemValue=""/>
                                 <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
-                            </b:selectOneMenu>
+                            </p:selectOneMenu>
                         </b:navLink> 
 
 
