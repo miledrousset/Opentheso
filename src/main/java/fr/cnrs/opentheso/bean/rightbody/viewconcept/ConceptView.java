@@ -129,8 +129,8 @@ public class ConceptView implements Serializable {
         
         //Configure Map
         mapModel = new Map();
-        mapModel.setWidth("400px");
-        mapModel.setHeight("400px");
+        mapModel.setWidth("350px");
+        mapModel.setHeight("250px");
         mapModel.setCenter(place);
         mapModel.setZoom(13);
         mapModel.setAttribution("OpenTheso");
