@@ -40,14 +40,9 @@
     </h:head>
 
     <h:body>
-
-        <!--- pour garder la session ouverte en permanence il faut voir pour la déconnexion automatique ? -->
-        <p:idleMonitor timeout="#{session.maxInactiveInterval * 1000 - 60000}">
-            <p:ajax event="idle" listener="#{sessionControl.onIdle}" />
-            <p:ajax event="active" listener="#{sessionControl.onActive}" />
+        <p:idleMonitor timeout="#{sessionControl.timeout}">
+            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
-
-
 
         <f:metadata>
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>

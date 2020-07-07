@@ -57,39 +57,31 @@ public class CurrentUser implements Serializable {
     }
 
     public void disconnect() {
-        FacesMessage facesMessage;        
+        FacesMessage facesMessage;
         facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
-        FacesContext.getCurrentInstance().addMessage(null, facesMessage);        
+        FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         nodeUser = null;
-        
+
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
 
-       if (pf.isAjaxRequest()) {
+        if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex");
             pf.ajax().update("formMenu");
             pf.ajax().update("formRightTab");
             pf.ajax().update("messageIndex");
             pf.ajax().update("formLeftTab");
             pf.ajax().update("homePageForm");
-            pf.ajax().update("loginForm"); 
+            pf.ajax().update("loginForm");
             pf.ajax().update("formSearch:languageSelect");
             pf.ajax().update("formSearch");
-            
-        }        
-     
-        
 
-   /*     if (pf.isAjaxRequest()) {
-            pf.ajax().update("loginForm");
-            pf.ajax().update("formMenu");
-            pf.ajax().update("formRightTab");
-            pf.ajax().update("formLeftTab");  
-            pf.ajax().update("messageIndex"); 
-            pf.ajax().update("homePageForm");            
-            
-        }*/
+        }
         initHtmlPages();
+    }
+
+    public void disconnect(String msg) {
+
     }
 
     /**
@@ -132,7 +124,6 @@ public class CurrentUser implements Serializable {
         }
         facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-     //   PrimeFaces.current().executeScript("$('.login').modal('hide')");
         
         PrimeFaces.current().executeScript("PF('login').hide();");
 

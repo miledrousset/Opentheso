@@ -1,47 +1,42 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.session;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.util.ResourceBundle;
 
-/**
- *
- * @author miledrousset
- */
+
 @Named(value = "sessionControl")
-@RequestScoped
-public class SessionControl {
+@SessionScoped
+public class SessionControl implements Serializable {
 
-    /**
-     * Creates a new instance of SessionControl
-     */
-    public SessionControl() {
-    }
-    
-    public void onIdle() {
-        try {
-         /*   FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-                    "No activity.", "What are you doing over there?"));*/
-            ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-            ec.redirect(ec.getRequestContextPath() + "/index.xhtml");
-        } catch (IOException ex) {
-            Logger.getLogger(SessionControl.class.getName()).log(Level.SEVERE, null, ex);
+    @Inject
+    private CurrentUser currentUser;
+
+    private final int DEFAULT_TIMEOUT_IN_MIN = 10;
+
+
+    public void isTimeout() {
+        if (currentUser.getNodeUser() != null) {
+            currentUser.disconnect();
         }
     }
- 
-    public void onActive() {
-    /*    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                        "Welcome Back", "Well, that's a long coffee break!"));*/
-    }    
+
+
+    public int getTimeout() {
+        int minNbr;
+        try {
+            FacesContext context = FacesContext.getCurrentInstance();
+            ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
+            minNbr = Integer.parseInt(bundlePref.getString("timeout_nbr_minute"));
+        } catch(Exception e) {
+            minNbr = DEFAULT_TIMEOUT_IN_MIN;
+        }
+        return (minNbr * 60 * 1000);
+    }
     
 }
