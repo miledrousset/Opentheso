@@ -118,6 +118,7 @@ public class IndexSetting implements Serializable {
     }
 
     public void setIsCandidateActive(boolean isCandidateActive) {
+        candidatBean.initCandidatModule();
         this.isCandidateActive = isCandidateActive;
         isThesoActive = false;   
         isProfileActive = false; 

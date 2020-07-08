@@ -82,8 +82,6 @@ public class CandidatService implements Serializable {
         HikariDataSource connection = connect.getPoolConnexion();
         String idNewCondidat = conceptHelper.addConceptInTable(connect.getPoolConnexion().getConnection(), concept, concept.getIdUser());
         if (idNewCondidat == null) {
-            connect.getPoolConnexion().getConnection().rollback();
-            connect.getPoolConnexion().close();
             return null;
         }
 

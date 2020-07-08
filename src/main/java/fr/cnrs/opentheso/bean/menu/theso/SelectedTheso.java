@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
+import fr.cnrs.opentheso.bean.condidat.CandidatBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
@@ -30,6 +31,9 @@ public class SelectedTheso implements Serializable {
 
     @Inject
     private IndexSetting indexSetting;
+
+    @Inject
+    private CandidatBean candidatBean;
 
     @Inject
     private TreeGroups treeGroups;
@@ -111,6 +115,9 @@ public class SelectedTheso implements Serializable {
             isUriRequest = false;
             return;
         }
+
+        candidatBean.initCandidatModule();
+
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
             roleOnThesoBean.showListTheso();
             treeGroups.reset();
@@ -145,9 +152,11 @@ public class SelectedTheso implements Serializable {
         startNewTheso(null);
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
-        indexSetting.setIsThesoActive(true);
+        //indexSetting.setIsThesoActive(true);
 
         PrimeFaces.current().ajax().update("formMenu");
+        PrimeFaces.current().ajax().update("candidatForm");
+        PrimeFaces.current().ajax().update("containerIndex");
 
     }
 

@@ -74,13 +74,16 @@ public class CandidatBean implements Serializable {
     public void initCandidatModule() {
         isListCandidatsActivate = true;
         isNewCandidatActivate = false;
-
-        if (StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
+        getAllCandidatsByThesoAndLangue();
+    }
+    
+    public void getAllCandidatsByThesoAndLangue() {
+        if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
+            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getSelectedIdTheso(),
+                    languageBean.getIdLangue());
+        } else {
             candidatList = new ArrayList<>();
-            return;
         }
-
-        candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
     }
 
     public void selectMyCandidats() {
@@ -89,7 +92,7 @@ public class CandidatBean implements Serializable {
                     .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
                     .collect(Collectors.toList());
         } else {
-            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
+            getAllCandidatsByThesoAndLangue();
         }
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
@@ -101,7 +104,7 @@ public class CandidatBean implements Serializable {
                     .filter(candidat -> candidat.getNomPref().contains(searchValue) || candidat.getUser().contains(searchValue))
                     .collect(Collectors.toList());
         } else {
-            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
+            getAllCandidatsByThesoAndLangue();
         }
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
@@ -245,23 +248,21 @@ public class CandidatBean implements Serializable {
 
         candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat, allTermes, domaines);
 
-        candidatList = candidatService.getAllCandidats(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
+        getAllCandidatsByThesoAndLangue();
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info",
-                "Le candidat a bien été ajouté");
+        showMessage(FacesMessage.SEVERITY_INFO, "Le candidat a bien été ajouté");
 
-        FacesContext.getCurrentInstance().addMessage(null, msg);
         setIsListCandidatsActivate(true);
-        PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("messageIndex");
-        pf.ajax().update("candidatForm");
+        
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm");
 
     }
 
     public List<String> searchDomaineName(String enteredValue) {
         List<String> matches = new ArrayList<>();
         for (DomaineDto s : domaines) {
-            if (s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
+            if (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
                 matches.add(s.getName());
             }
         }
@@ -298,7 +299,8 @@ public class CandidatBean implements Serializable {
         alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatSelected.getIdConcepte(), languageBean.getIdLangue());
         alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
 
-        conceptView.getNodeConcept().setNodeAlignments(new ArrayList<>());
+        if (conceptView.getNodeConcept() != null)
+            conceptView.getNodeConcept().setNodeAlignments(new ArrayList<>());
 
         allTermes = candidatList;
 

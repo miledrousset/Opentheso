@@ -37,6 +37,11 @@ public class CandidatDto implements Serializable {
         corpus = new ArrayList<>();
         messages = new ArrayList<>();
         traductions = new ArrayList<>();
+        defenitions = new ArrayList<>();
+        termesGenerique = new ArrayList<>();
+        termesAssocies = new ArrayList<>();
+        employePour = new ArrayList<>();
+        participants = new ArrayList<>();
     }
 
     public CandidatDto(String nomPref) {
