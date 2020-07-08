@@ -5,6 +5,11 @@
  */
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
+import com.jsf2leaf.model.LatLong;
+import com.jsf2leaf.model.Layer;
+import com.jsf2leaf.model.Map;
+import com.jsf2leaf.model.Marker;
+import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
@@ -59,17 +64,18 @@ import org.primefaces.PrimeFaces;
 public class ConceptView implements Serializable {
 
     @Inject private Connect connect;
-    @Inject private IndexSetting indexSetting;   
+    @Inject private IndexSetting indexSetting;
     @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject private ViewEditorHomeBean viewEditorHomeBean;    
+    @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private Tree tree;
     @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private SelectedTheso selectedTheso;
 
+    private Map mapModel;
     private NodeConcept nodeConcept;
     private String selectedLang;
     private ArrayList <NodeCorpus> nodeCorpuses;
-    
+
     
     private ArrayList<String> pathOfConcept;
     private ArrayList<NodePath> pathLabel;
@@ -89,8 +95,8 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> definitions;    
     private ArrayList<NodeNote> editorialNotes; 
     private ArrayList<NodeNote> examples;
-    private ArrayList<NodeNote> historyNotes;  
-    
+    private ArrayList<NodeNote> historyNotes;
+
 
     /**
      * Creates a new instance of ConceptBean
@@ -129,23 +135,27 @@ public class ConceptView implements Serializable {
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
         if(nodeConcept == null) return;
 
+        if (nodeConcept.getNodeGps() != null) {
+            initMap();
+        }
+
         pathOfConcept(idTheso, idConcept, idLang);
         setNotes();
-        setSizeToShowNT();            
+        setSizeToShowNT();
         selectedLang = idLang;
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
-        
-        
-        // récupération des informations sur les corpus liés 
+
+
+        // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
-        
-        
+
+
         nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
             setCorpus();
-        }      
+        }
 
         // deployement de l'arbre si l'option est true
         if(roleOnThesoBean.getNodePreference() != null) {
@@ -160,12 +170,12 @@ public class ConceptView implements Serializable {
                     pf.ajax().update("formLeftTab:tabTree:tree");
                     pf.ajax().update("formSearch:languageSelect");
                     pf.executeScript("srollToSelected()");
-                }   
+                }
                 selectedTheso.actionFromConceptToOn();
             }
         }
     }
-    
+
     /**
      * récuparation des informations pour le concept sélectionné
      * après une sélection dans l'arbre
@@ -180,21 +190,47 @@ public class ConceptView implements Serializable {
         if(nodeConcept != null) {
             pathOfConcept(idTheso, idConcept, idLang);
             setNotes();
-            setSizeToShowNT();            
+            setSizeToShowNT();
         }
-        // récupération des informations sur les corpus liés 
+        // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
         nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
-        
+        if (nodeConcept.getNodeGps() != null) {
+            initMap();
+        }
+
         selectedLang = idLang;
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
-    }    
-    
+    }
+
+    private void initMap()  {
+
+        LatLong place = new LatLong(nodeConcept.getNodeGps().getLatitude()+"",
+                nodeConcept.getNodeGps().getLongitude()+"");
+
+        String titre = nodeConcept.getTerm() != null ? nodeConcept.getTerm().getLexical_value() : "";
+
+        //Configure Map
+        mapModel = new Map();
+        mapModel.setWidth("100%");
+        mapModel.setHeight("250px");
+        mapModel.setCenter(place);
+        mapModel.setZoom(13);
+        mapModel.setAttribution("OpenTheso");
+        mapModel.setMiniMap(false);
+        mapModel.setLayerControl(false);
+        mapModel.setDraggingEnabled(true);
+        mapModel.setZoomEnabled(true);
+
+        //addMarker
+        mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
+    }
+
     private void setCorpus(){
         if(nodeConcept != null) {
             for (NodeCorpus nodeCorpuse : nodeCorpuses) {
@@ -212,11 +248,11 @@ public class ConceptView implements Serializable {
                     nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
                     nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
                     setCorpusCount(nodeCorpuse);
-                } 
+                }
             }
         }
     }
-    
+
     private void setCorpusCount(NodeCorpus nodeCorpus){
         if(nodeConcept != null) {
             if(nodeCorpus == null) return;
@@ -224,11 +260,11 @@ public class ConceptView implements Serializable {
                 nodeCorpus.setCount(getCountOfResourcesFromHttps(nodeCorpus.getUriCount()));
             }
             if(nodeCorpus.getUriCount().contains("http://")) {
-                
+
             }
-        }        
+        }
     }
-    
+
     private int getCountOfResourcesFromHttps(String uri) {
         String output;
         String json = "";
@@ -261,14 +297,14 @@ public class ConceptView implements Serializable {
             }
         };
         // Install the all-trusting host verifier
-        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);        
-        
-        
-        // récupération du total des notices 
-        
+        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+
+        // récupération du total des notices
+
         try {
             URL url = new URL(uri);
-            
+
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", "application/json");
@@ -277,12 +313,12 @@ public class ConceptView implements Serializable {
             conn.setDoOutput(true);
             int status = conn.getResponseCode();
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-            
+
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             while ((output = br.readLine()) != null) {
                 json += output;
             }
-            return getCountFromJson(json);            
+            return getCountFromJson(json);
 
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
@@ -292,7 +328,7 @@ public class ConceptView implements Serializable {
             Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
         return -1;
     }
     private int getCountFromJson(String jsonText) {
@@ -301,34 +337,34 @@ public class ConceptView implements Serializable {
         try ( //{"responseCode":1,"handle":"20.500.11942/opentheso443"}
             JsonReader reader = Json.createReader(new StringReader(jsonText))) {
             jsonObject = reader.readObject();
-            return jsonObject.getInt("count");            
+            return jsonObject.getInt("count");
         }
-    }  
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private void setSizeToShowNT() {
         // Max 20
         if(nodeConcept.getNodeNT().size() > 20)
@@ -434,7 +470,7 @@ public class ConceptView implements Serializable {
                     break; 
                 case "historyNote" :
                     historyNotes.add(nodeNote);
-                    break;                         
+                    break;
             }
         }        
     }
@@ -546,4 +582,7 @@ public class ConceptView implements Serializable {
         this.nodeCorpuses = nodeCorpuses;
     }
 
+    public Map getMapModel() {
+        return mapModel;
+    }
 }
