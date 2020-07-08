@@ -871,9 +871,12 @@
                         </b:column>
                     </b:row>
                     <b:row>
-                        <p:panel header="Map" toggleable="true" closable="false" toggleSpeed="500">
-                            <leaf:mapAdvanced map="#{conceptView.mapModel}" />
-                        </p:panel>
+                        <b:column>
+                            <p:panel header="Map" toggleable="true" closable="false" toggleSpeed="500" 
+                                     style="margin-top: 10px; margin-bottom: 10px">
+                                <leaf:mapAdvanced map="#{conceptView.mapModel}" />
+                            </p:panel>
+                        </b:column>
                     </b:row>
                     <b:row>
                         <b:column>

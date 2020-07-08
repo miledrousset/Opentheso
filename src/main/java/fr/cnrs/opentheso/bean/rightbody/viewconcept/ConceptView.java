@@ -129,7 +129,7 @@ public class ConceptView implements Serializable {
         
         //Configure Map
         mapModel = new Map();
-        mapModel.setWidth("350px");
+        mapModel.setWidth("100%");
         mapModel.setHeight("250px");
         mapModel.setCenter(place);
         mapModel.setZoom(13);
@@ -140,7 +140,7 @@ public class ConceptView implements Serializable {
         mapModel.setZoomEnabled(true);
 
         //addMarker
-        mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#42A068"))));
+        mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
     }
     
     private void setSizeToShowNT() {
