@@ -17,7 +17,12 @@
         <param-value>omega</param-value>
     </context-param>  
 
-    <!-- pour gérer le timeOut -->
+    <!-- pour éviter une erreur de type javax.faces.application.ViewExpiredException: viewId:/index.xhtml -->
+    <context-param>
+       <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
+       <param-value>true</param-value>
+    </context-param>     
+    
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>

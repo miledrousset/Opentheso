@@ -3,9 +3,9 @@
 --
 
 -- Dumped from database version 11.5
--- Dumped by pg_dump version 11.5
+-- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-26 16:04:39 CEST
+-- Started on 2020-07-09 12:18:30 CEST
 
 
 --
@@ -34,39 +34,16 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- TOC entry 3 (class 3079 OID 16395)
+-- TOC entry 3 (class 3079 OID 69566)
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
 --
 
 
 
---
--- TOC entry 3920 (class 0 OID 0)
--- Dependencies: 3
--- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: -
---
-
-
 
 
 --
--- TOC entry 2 (class 3079 OID 16472)
--- Name: unaccent; Type: EXTENSION; Schema: -; Owner: -
---
-
-
-
-
---
--- TOC entry 3921 (class 0 OID 0)
--- Dependencies: 2
--- Name: EXTENSION unaccent; Type: COMMENT; Schema: -; Owner: -
---
-
-
-
---
--- TOC entry 715 (class 1247 OID 16480)
+-- TOC entry 721 (class 1247 OID 69651)
 -- Name: alignement_format; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -78,7 +55,7 @@ CREATE TYPE public.alignement_format AS ENUM (
 
 
 --
--- TOC entry 718 (class 1247 OID 16488)
+-- TOC entry 724 (class 1247 OID 69658)
 -- Name: alignement_type_rqt; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -89,7 +66,7 @@ CREATE TYPE public.alignement_type_rqt AS ENUM (
 
 
 --
--- TOC entry 721 (class 1247 OID 16494)
+-- TOC entry 727 (class 1247 OID 69664)
 -- Name: auth_method; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -102,7 +79,7 @@ CREATE TYPE public.auth_method AS ENUM (
 
 
 --
--- TOC entry 330 (class 1255 OID 16503)
+-- TOC entry 336 (class 1255 OID 69673)
 -- Name: f_unaccent(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -114,7 +91,7 @@ $_$;
 
 
 --
--- TOC entry 331 (class 1255 OID 68015)
+-- TOC entry 337 (class 1255 OID 70684)
 -- Name: unaccent_string(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -138,7 +115,7 @@ $_$;
 
 
 --
--- TOC entry 198 (class 1259 OID 16505)
+-- TOC entry 198 (class 1259 OID 69675)
 -- Name: alignement_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -152,10 +129,8 @@ CREATE SEQUENCE public.alignement_id_seq
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
-
 --
--- TOC entry 199 (class 1259 OID 16507)
+-- TOC entry 199 (class 1259 OID 69677)
 -- Name: alignement; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -175,7 +150,7 @@ CREATE TABLE public.alignement (
 
 
 --
--- TOC entry 200 (class 1259 OID 16516)
+-- TOC entry 200 (class 1259 OID 69686)
 -- Name: alignement_preferences_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -188,7 +163,7 @@ CREATE SEQUENCE public.alignement_preferences_id_seq
 
 
 --
--- TOC entry 201 (class 1259 OID 16518)
+-- TOC entry 201 (class 1259 OID 69688)
 -- Name: alignement_preferences; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -203,7 +178,7 @@ CREATE TABLE public.alignement_preferences (
 
 
 --
--- TOC entry 202 (class 1259 OID 16525)
+-- TOC entry 202 (class 1259 OID 69695)
 -- Name: alignement_source__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -216,7 +191,7 @@ CREATE SEQUENCE public.alignement_source__id_seq
 
 
 --
--- TOC entry 203 (class 1259 OID 16527)
+-- TOC entry 203 (class 1259 OID 69697)
 -- Name: alignement_source; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -234,7 +209,7 @@ CREATE TABLE public.alignement_source (
 
 
 --
--- TOC entry 204 (class 1259 OID 16535)
+-- TOC entry 204 (class 1259 OID 69706)
 -- Name: alignement_type; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -247,7 +222,7 @@ CREATE TABLE public.alignement_type (
 
 
 --
--- TOC entry 205 (class 1259 OID 16541)
+-- TOC entry 205 (class 1259 OID 69712)
 -- Name: bt_type; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -260,7 +235,60 @@ CREATE TABLE public.bt_type (
 
 
 --
--- TOC entry 206 (class 1259 OID 16547)
+-- TOC entry 284 (class 1259 OID 70538)
+-- Name: candidat_messages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.candidat_messages (
+    id_message integer NOT NULL,
+    value text NOT NULL,
+    id_user integer,
+    id_concept integer,
+    id_thesaurus character varying,
+    date text
+);
+
+
+--
+-- TOC entry 283 (class 1259 OID 70536)
+-- Name: candidat_messages_id_message_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.candidat_messages_id_message_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3969 (class 0 OID 0)
+-- Dependencies: 283
+-- Name: candidat_messages_id_message_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.candidat_messages_id_message_seq OWNED BY public.candidat_messages.id_message;
+
+
+--
+-- TOC entry 285 (class 1259 OID 70547)
+-- Name: candidat_status; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.candidat_status (
+    id_concept integer NOT NULL,
+    id_status integer,
+    date date,
+    id_user integer,
+    id_thesaurus character varying,
+    message text
+);
+
+
+--
+-- TOC entry 206 (class 1259 OID 69718)
 -- Name: compound_equivalence; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -271,7 +299,7 @@ CREATE TABLE public.compound_equivalence (
 
 
 --
--- TOC entry 207 (class 1259 OID 16553)
+-- TOC entry 207 (class 1259 OID 69724)
 -- Name: concept__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -284,7 +312,7 @@ CREATE SEQUENCE public.concept__id_seq
 
 
 --
--- TOC entry 208 (class 1259 OID 16555)
+-- TOC entry 208 (class 1259 OID 69726)
 -- Name: concept; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -304,7 +332,7 @@ CREATE TABLE public.concept (
 
 
 --
--- TOC entry 209 (class 1259 OID 16568)
+-- TOC entry 209 (class 1259 OID 69739)
 -- Name: concept_candidat__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -317,7 +345,7 @@ CREATE SEQUENCE public.concept_candidat__id_seq
 
 
 --
--- TOC entry 210 (class 1259 OID 16570)
+-- TOC entry 210 (class 1259 OID 69741)
 -- Name: concept_candidat; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -334,7 +362,7 @@ CREATE TABLE public.concept_candidat (
 
 
 --
--- TOC entry 211 (class 1259 OID 16580)
+-- TOC entry 211 (class 1259 OID 69751)
 -- Name: concept_fusion; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -348,7 +376,7 @@ CREATE TABLE public.concept_fusion (
 
 
 --
--- TOC entry 212 (class 1259 OID 16587)
+-- TOC entry 212 (class 1259 OID 69758)
 -- Name: concept_group__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -361,7 +389,7 @@ CREATE SEQUENCE public.concept_group__id_seq
 
 
 --
--- TOC entry 213 (class 1259 OID 16589)
+-- TOC entry 213 (class 1259 OID 69760)
 -- Name: concept_group; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -378,7 +406,7 @@ CREATE TABLE public.concept_group (
 
 
 --
--- TOC entry 214 (class 1259 OID 16598)
+-- TOC entry 214 (class 1259 OID 69769)
 -- Name: concept_group_concept; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -390,7 +418,7 @@ CREATE TABLE public.concept_group_concept (
 
 
 --
--- TOC entry 215 (class 1259 OID 16604)
+-- TOC entry 215 (class 1259 OID 69775)
 -- Name: concept_group_historique__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -403,7 +431,7 @@ CREATE SEQUENCE public.concept_group_historique__id_seq
 
 
 --
--- TOC entry 216 (class 1259 OID 16606)
+-- TOC entry 216 (class 1259 OID 69777)
 -- Name: concept_group_historique; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -422,7 +450,7 @@ CREATE TABLE public.concept_group_historique (
 
 
 --
--- TOC entry 217 (class 1259 OID 16614)
+-- TOC entry 217 (class 1259 OID 69785)
 -- Name: concept_group_label_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -435,7 +463,7 @@ CREATE SEQUENCE public.concept_group_label_id_seq
 
 
 --
--- TOC entry 218 (class 1259 OID 16616)
+-- TOC entry 218 (class 1259 OID 69787)
 -- Name: concept_group_label; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -451,7 +479,7 @@ CREATE TABLE public.concept_group_label (
 
 
 --
--- TOC entry 219 (class 1259 OID 16625)
+-- TOC entry 219 (class 1259 OID 69796)
 -- Name: concept_group_label_historique__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -464,7 +492,7 @@ CREATE SEQUENCE public.concept_group_label_historique__id_seq
 
 
 --
--- TOC entry 220 (class 1259 OID 16627)
+-- TOC entry 220 (class 1259 OID 69798)
 -- Name: concept_group_label_historique; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -480,7 +508,7 @@ CREATE TABLE public.concept_group_label_historique (
 
 
 --
--- TOC entry 221 (class 1259 OID 16635)
+-- TOC entry 221 (class 1259 OID 69806)
 -- Name: concept_group_type; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -492,7 +520,7 @@ CREATE TABLE public.concept_group_type (
 
 
 --
--- TOC entry 222 (class 1259 OID 16641)
+-- TOC entry 222 (class 1259 OID 69812)
 -- Name: concept_historique__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -505,7 +533,7 @@ CREATE SEQUENCE public.concept_historique__id_seq
 
 
 --
--- TOC entry 223 (class 1259 OID 16643)
+-- TOC entry 223 (class 1259 OID 69814)
 -- Name: concept_historique; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -524,7 +552,7 @@ CREATE TABLE public.concept_historique (
 
 
 --
--- TOC entry 224 (class 1259 OID 16652)
+-- TOC entry 224 (class 1259 OID 69823)
 -- Name: concept_orphan; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -535,7 +563,7 @@ CREATE TABLE public.concept_orphan (
 
 
 --
--- TOC entry 225 (class 1259 OID 16658)
+-- TOC entry 225 (class 1259 OID 69829)
 -- Name: concept_term_candidat; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -547,7 +575,7 @@ CREATE TABLE public.concept_term_candidat (
 
 
 --
--- TOC entry 226 (class 1259 OID 16664)
+-- TOC entry 226 (class 1259 OID 69835)
 -- Name: copyright; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -558,7 +586,21 @@ CREATE TABLE public.copyright (
 
 
 --
--- TOC entry 227 (class 1259 OID 16670)
+-- TOC entry 282 (class 1259 OID 70522)
+-- Name: corpus_link; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.corpus_link (
+    id_theso character varying NOT NULL,
+    corpus_name character varying DEFAULT ''::character varying NOT NULL,
+    uri_count character varying DEFAULT ''::character varying,
+    uri_link character varying DEFAULT ''::character varying NOT NULL,
+    active boolean DEFAULT false
+);
+
+
+--
+-- TOC entry 227 (class 1259 OID 69841)
 -- Name: custom_concept_attribute; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -571,7 +613,7 @@ CREATE TABLE public.custom_concept_attribute (
 
 
 --
--- TOC entry 228 (class 1259 OID 16676)
+-- TOC entry 228 (class 1259 OID 69847)
 -- Name: custom_term_attribute; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -584,7 +626,7 @@ CREATE TABLE public.custom_term_attribute (
 
 
 --
--- TOC entry 229 (class 1259 OID 16682)
+-- TOC entry 229 (class 1259 OID 69853)
 -- Name: external_images; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -599,7 +641,7 @@ CREATE TABLE public.external_images (
 
 
 --
--- TOC entry 230 (class 1259 OID 16689)
+-- TOC entry 230 (class 1259 OID 69860)
 -- Name: facet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -612,7 +654,7 @@ CREATE SEQUENCE public.facet_id_seq
 
 
 --
--- TOC entry 231 (class 1259 OID 16691)
+-- TOC entry 231 (class 1259 OID 69862)
 -- Name: gps; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -625,7 +667,7 @@ CREATE TABLE public.gps (
 
 
 --
--- TOC entry 232 (class 1259 OID 16697)
+-- TOC entry 232 (class 1259 OID 69868)
 -- Name: gps_preferences_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -638,7 +680,7 @@ CREATE SEQUENCE public.gps_preferences_id_seq
 
 
 --
--- TOC entry 233 (class 1259 OID 16699)
+-- TOC entry 233 (class 1259 OID 69870)
 -- Name: gps_preferences; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -654,7 +696,7 @@ CREATE TABLE public.gps_preferences (
 
 
 --
--- TOC entry 234 (class 1259 OID 16709)
+-- TOC entry 234 (class 1259 OID 69880)
 -- Name: hierarchical_relationship; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -667,7 +709,7 @@ CREATE TABLE public.hierarchical_relationship (
 
 
 --
--- TOC entry 235 (class 1259 OID 16715)
+-- TOC entry 235 (class 1259 OID 69886)
 -- Name: hierarchical_relationship_historique; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -683,7 +725,7 @@ CREATE TABLE public.hierarchical_relationship_historique (
 
 
 --
--- TOC entry 280 (class 1259 OID 40590)
+-- TOC entry 236 (class 1259 OID 69893)
 -- Name: homepage; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -694,7 +736,7 @@ CREATE TABLE public.homepage (
 
 
 --
--- TOC entry 236 (class 1259 OID 16722)
+-- TOC entry 237 (class 1259 OID 69899)
 -- Name: images; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -709,7 +751,7 @@ CREATE TABLE public.images (
 
 
 --
--- TOC entry 237 (class 1259 OID 16729)
+-- TOC entry 238 (class 1259 OID 69906)
 -- Name: info; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -720,7 +762,7 @@ CREATE TABLE public.info (
 
 
 --
--- TOC entry 238 (class 1259 OID 16735)
+-- TOC entry 239 (class 1259 OID 69912)
 -- Name: languages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -733,7 +775,7 @@ CREATE SEQUENCE public.languages_id_seq
 
 
 --
--- TOC entry 283 (class 1259 OID 67904)
+-- TOC entry 289 (class 1259 OID 70573)
 -- Name: languages_iso639; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -747,7 +789,7 @@ CREATE TABLE public.languages_iso639 (
 
 
 --
--- TOC entry 239 (class 1259 OID 16744)
+-- TOC entry 240 (class 1259 OID 69921)
 -- Name: node_label; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -762,7 +804,7 @@ CREATE TABLE public.node_label (
 
 
 --
--- TOC entry 240 (class 1259 OID 16752)
+-- TOC entry 241 (class 1259 OID 69929)
 -- Name: non_preferred_term; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -780,7 +822,7 @@ CREATE TABLE public.non_preferred_term (
 
 
 --
--- TOC entry 241 (class 1259 OID 16761)
+-- TOC entry 242 (class 1259 OID 69938)
 -- Name: non_preferred_term_historique; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -799,7 +841,7 @@ CREATE TABLE public.non_preferred_term_historique (
 
 
 --
--- TOC entry 242 (class 1259 OID 16769)
+-- TOC entry 243 (class 1259 OID 69946)
 -- Name: note__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -812,7 +854,7 @@ CREATE SEQUENCE public.note__id_seq
 
 
 --
--- TOC entry 243 (class 1259 OID 16771)
+-- TOC entry 244 (class 1259 OID 69948)
 -- Name: note; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -830,7 +872,7 @@ CREATE TABLE public.note (
 
 
 --
--- TOC entry 244 (class 1259 OID 16780)
+-- TOC entry 245 (class 1259 OID 69957)
 -- Name: note_historique__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -843,7 +885,7 @@ CREATE SEQUENCE public.note_historique__id_seq
 
 
 --
--- TOC entry 245 (class 1259 OID 16782)
+-- TOC entry 246 (class 1259 OID 69959)
 -- Name: note_historique; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -862,7 +904,7 @@ CREATE TABLE public.note_historique (
 
 
 --
--- TOC entry 282 (class 1259 OID 67895)
+-- TOC entry 288 (class 1259 OID 70564)
 -- Name: note_type; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -877,7 +919,7 @@ CREATE TABLE public.note_type (
 
 
 --
--- TOC entry 246 (class 1259 OID 16797)
+-- TOC entry 247 (class 1259 OID 69974)
 -- Name: nt_type; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -890,7 +932,7 @@ CREATE TABLE public.nt_type (
 
 
 --
--- TOC entry 247 (class 1259 OID 16803)
+-- TOC entry 248 (class 1259 OID 69980)
 -- Name: permuted; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -907,7 +949,7 @@ CREATE TABLE public.permuted (
 
 
 --
--- TOC entry 248 (class 1259 OID 16809)
+-- TOC entry 249 (class 1259 OID 69986)
 -- Name: pref__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -920,7 +962,7 @@ CREATE SEQUENCE public.pref__id_seq
 
 
 --
--- TOC entry 249 (class 1259 OID 16811)
+-- TOC entry 250 (class 1259 OID 69988)
 -- Name: preferences; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -959,13 +1001,16 @@ CREATE TABLE public.preferences (
     private_prefix_handle character varying DEFAULT 'crt'::character varying NOT NULL,
     preferredname character varying,
     original_uri character varying,
-    original_uri_is_ark boolean,
-    original_uri_is_handle boolean
+    original_uri_is_ark boolean DEFAULT false,
+    original_uri_is_handle boolean DEFAULT false,
+    uri_ark character varying DEFAULT 'https://ark.mom.fr/ark:/'::character varying,
+    generate_handle boolean DEFAULT true,
+    auto_expand_tree boolean DEFAULT true
 );
 
 
 --
--- TOC entry 250 (class 1259 OID 16844)
+-- TOC entry 251 (class 1259 OID 70021)
 -- Name: preferences_sparql; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -981,7 +1026,7 @@ CREATE TABLE public.preferences_sparql (
 
 
 --
--- TOC entry 251 (class 1259 OID 16851)
+-- TOC entry 252 (class 1259 OID 70028)
 -- Name: preferred_term; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -993,7 +1038,7 @@ CREATE TABLE public.preferred_term (
 
 
 --
--- TOC entry 252 (class 1259 OID 16857)
+-- TOC entry 253 (class 1259 OID 70034)
 -- Name: proposition; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1010,7 +1055,7 @@ CREATE TABLE public.proposition (
 
 
 --
--- TOC entry 253 (class 1259 OID 16865)
+-- TOC entry 254 (class 1259 OID 70042)
 -- Name: relation_group; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1023,7 +1068,7 @@ CREATE TABLE public.relation_group (
 
 
 --
--- TOC entry 254 (class 1259 OID 16871)
+-- TOC entry 255 (class 1259 OID 70048)
 -- Name: roles; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1035,7 +1080,7 @@ CREATE TABLE public.roles (
 
 
 --
--- TOC entry 255 (class 1259 OID 16877)
+-- TOC entry 256 (class 1259 OID 70054)
 -- Name: role_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1048,8 +1093,8 @@ CREATE SEQUENCE public.role_id_seq
 
 
 --
--- TOC entry 3922 (class 0 OID 0)
--- Dependencies: 255
+-- TOC entry 3970 (class 0 OID 0)
+-- Dependencies: 256
 -- Name: role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -1057,7 +1102,7 @@ ALTER SEQUENCE public.role_id_seq OWNED BY public.roles.id;
 
 
 --
--- TOC entry 256 (class 1259 OID 16879)
+-- TOC entry 257 (class 1259 OID 70056)
 -- Name: routine_mail; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1072,7 +1117,7 @@ CREATE TABLE public.routine_mail (
 
 
 --
--- TOC entry 257 (class 1259 OID 16886)
+-- TOC entry 258 (class 1259 OID 70063)
 -- Name: split_non_preferred_term; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1081,7 +1126,41 @@ CREATE TABLE public.split_non_preferred_term (
 
 
 --
--- TOC entry 258 (class 1259 OID 16889)
+-- TOC entry 287 (class 1259 OID 70555)
+-- Name: status; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.status (
+    id_status integer NOT NULL,
+    value text
+);
+
+
+--
+-- TOC entry 286 (class 1259 OID 70553)
+-- Name: status_id_status_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.status_id_status_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3971 (class 0 OID 0)
+-- Dependencies: 286
+-- Name: status_id_status_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.status_id_status_seq OWNED BY public.status.id_status;
+
+
+--
+-- TOC entry 259 (class 1259 OID 70066)
 -- Name: term__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1094,7 +1173,7 @@ CREATE SEQUENCE public.term__id_seq
 
 
 --
--- TOC entry 259 (class 1259 OID 16891)
+-- TOC entry 260 (class 1259 OID 70068)
 -- Name: term; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1114,7 +1193,7 @@ CREATE TABLE public.term (
 
 
 --
--- TOC entry 260 (class 1259 OID 16901)
+-- TOC entry 261 (class 1259 OID 70078)
 -- Name: term_candidat__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1127,7 +1206,7 @@ CREATE SEQUENCE public.term_candidat__id_seq
 
 
 --
--- TOC entry 261 (class 1259 OID 16903)
+-- TOC entry 262 (class 1259 OID 70080)
 -- Name: term_candidat; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1144,7 +1223,7 @@ CREATE TABLE public.term_candidat (
 
 
 --
--- TOC entry 262 (class 1259 OID 16912)
+-- TOC entry 263 (class 1259 OID 70089)
 -- Name: term_historique__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1157,7 +1236,7 @@ CREATE SEQUENCE public.term_historique__id_seq
 
 
 --
--- TOC entry 263 (class 1259 OID 16914)
+-- TOC entry 264 (class 1259 OID 70091)
 -- Name: term_historique; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1176,7 +1255,7 @@ CREATE TABLE public.term_historique (
 
 
 --
--- TOC entry 264 (class 1259 OID 16923)
+-- TOC entry 265 (class 1259 OID 70100)
 -- Name: thesaurus_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1189,7 +1268,7 @@ CREATE SEQUENCE public.thesaurus_id_seq
 
 
 --
--- TOC entry 265 (class 1259 OID 16925)
+-- TOC entry 266 (class 1259 OID 70102)
 -- Name: thesaurus; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1204,7 +1283,7 @@ CREATE TABLE public.thesaurus (
 
 
 --
--- TOC entry 266 (class 1259 OID 16935)
+-- TOC entry 267 (class 1259 OID 70112)
 -- Name: thesaurus_alignement_source; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1215,7 +1294,7 @@ CREATE TABLE public.thesaurus_alignement_source (
 
 
 --
--- TOC entry 267 (class 1259 OID 16941)
+-- TOC entry 268 (class 1259 OID 70118)
 -- Name: thesaurus_array; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1229,7 +1308,7 @@ CREATE TABLE public.thesaurus_array (
 
 
 --
--- TOC entry 268 (class 1259 OID 16949)
+-- TOC entry 269 (class 1259 OID 70126)
 -- Name: thesaurus_array_concept; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1242,7 +1321,7 @@ CREATE TABLE public.thesaurus_array_concept (
 
 
 --
--- TOC entry 269 (class 1259 OID 16956)
+-- TOC entry 270 (class 1259 OID 70133)
 -- Name: thesaurus_label; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1267,7 +1346,7 @@ CREATE TABLE public.thesaurus_label (
 
 
 --
--- TOC entry 281 (class 1259 OID 40596)
+-- TOC entry 271 (class 1259 OID 70141)
 -- Name: thesohomepage; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1279,7 +1358,7 @@ CREATE TABLE public.thesohomepage (
 
 
 --
--- TOC entry 270 (class 1259 OID 16964)
+-- TOC entry 272 (class 1259 OID 70147)
 -- Name: user__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1292,7 +1371,7 @@ CREATE SEQUENCE public.user__id_seq
 
 
 --
--- TOC entry 271 (class 1259 OID 16966)
+-- TOC entry 273 (class 1259 OID 70149)
 -- Name: user_group_label__id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1305,7 +1384,7 @@ CREATE SEQUENCE public.user_group_label__id_seq
 
 
 --
--- TOC entry 272 (class 1259 OID 16968)
+-- TOC entry 274 (class 1259 OID 70151)
 -- Name: user_group_label; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1316,7 +1395,7 @@ CREATE TABLE public.user_group_label (
 
 
 --
--- TOC entry 273 (class 1259 OID 16975)
+-- TOC entry 275 (class 1259 OID 70158)
 -- Name: user_group_thesaurus; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1327,7 +1406,7 @@ CREATE TABLE public.user_group_thesaurus (
 
 
 --
--- TOC entry 274 (class 1259 OID 16981)
+-- TOC entry 276 (class 1259 OID 70164)
 -- Name: user_role_group; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1339,7 +1418,7 @@ CREATE TABLE public.user_role_group (
 
 
 --
--- TOC entry 275 (class 1259 OID 16984)
+-- TOC entry 277 (class 1259 OID 70167)
 -- Name: user_role_only_on; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1352,7 +1431,7 @@ CREATE TABLE public.user_role_only_on (
 
 
 --
--- TOC entry 276 (class 1259 OID 16991)
+-- TOC entry 278 (class 1259 OID 70174)
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1369,7 +1448,7 @@ CREATE TABLE public.users (
 
 
 --
--- TOC entry 277 (class 1259 OID 17002)
+-- TOC entry 279 (class 1259 OID 70185)
 -- Name: users2; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1385,7 +1464,7 @@ CREATE TABLE public.users2 (
 
 
 --
--- TOC entry 278 (class 1259 OID 17011)
+-- TOC entry 280 (class 1259 OID 70194)
 -- Name: users_historique; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1399,7 +1478,7 @@ CREATE TABLE public.users_historique (
 
 
 --
--- TOC entry 279 (class 1259 OID 17019)
+-- TOC entry 281 (class 1259 OID 70202)
 -- Name: version_history; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1414,7 +1493,15 @@ CREATE TABLE public.version_history (
 
 
 --
--- TOC entry 3502 (class 2604 OID 68014)
+-- TOC entry 3568 (class 2604 OID 70541)
+-- Name: candidat_messages id_message; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.candidat_messages ALTER COLUMN id_message SET DEFAULT nextval('public.candidat_messages_id_message_seq'::regclass);
+
+
+--
+-- TOC entry 3531 (class 2604 OID 70683)
 -- Name: roles id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1422,7 +1509,15 @@ ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.role_i
 
 
 --
--- TOC entry 3830 (class 0 OID 16507)
+-- TOC entry 3569 (class 2604 OID 70558)
+-- Name: status id_status; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.status ALTER COLUMN id_status SET DEFAULT nextval('public.status_id_status_seq'::regclass);
+
+
+--
+-- TOC entry 3871 (class 0 OID 69677)
 -- Dependencies: 199
 -- Data for Name: alignement; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1430,7 +1525,7 @@ ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.role_i
 
 
 --
--- TOC entry 3832 (class 0 OID 16518)
+-- TOC entry 3873 (class 0 OID 69688)
 -- Dependencies: 201
 -- Data for Name: alignement_preferences; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1438,7 +1533,7 @@ ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.role_i
 
 
 --
--- TOC entry 3834 (class 0 OID 16527)
+-- TOC entry 3875 (class 0 OID 69697)
 -- Dependencies: 203
 -- Data for Name: alignement_source; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1453,23 +1548,23 @@ SELECT ?instrument ?prop ?value where {
   FILTER( (regex(?prop,skos:prefLabel) || regex(?prop,skos:altLabel))  && regex(?value, ##value##,"i") ) 
     filter(lang(?value) =##lang##)
 } LIMIT 20', 'SPARQL', 'skos', 5, 1, '', false, 'Opentheso');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('IdRefSujets', 'https://www.idref.fr/Sru/Solr?wt=json&version=2.2&start=&rows=100&indent=on&fl=id,ppn_z,affcourt_z&q=subjectheading_t:(##value##)%20AND%20recordtype_z:r', 'REST', 'json', 89, 1, 'alignement avec les Sujets de IdRef ABES Rameaux', false, 'IdRefSujets');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('IdRefAuteurs', 'https://www.idref.fr/Sru/Solr?wt=json&q=nom_t:(##nom##)%20AND%20prenom_t:(##prenom##)%20AND%20recordtype_z:a&fl=ppn_z,affcourt_z,prenom_s,nom_s&start=0&rows=30&version=2.2', 'REST', 'json', 90, 1, 'alignement avec les Auteurs de IdRef ABES', false, 'IdRefAuteurs');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('IdRefPersonnes', 'https://www.idref.fr/Sru/Solr?wt=json&q=persname_t:(##value##)&fl=ppn_z,affcourt_z,prenom_s,nom_s&start=0&rows=30&version=2.2', 'REST', 'json', 91, 1, 'alignement avec les Noms de personnes de IdRef ABES', false, 'IdRefPersonnes');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('IdRefTitreUniforme', 'https://www.idref.fr/Sru/Solr?wt=json&version=2.2&start=&rows=100&indent=on&fl=id,ppn_z,affcourt_z&q=uniformtitle_t:(##value##)%20AND%20recordtype_z:f', 'REST', 'json', 92, 1, 'alignement avec les titres uniformes de IdRef ABES', false, 'IdRefTitreUniforme');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('IdRefSujets', 'https://www.idref.fr/Sru/Solr?wt=json&version=2.2&start=&rows=100&indent=on&fl=id,ppn_z,affcourt_z&q=subjectheading_t:(##value##)%20AND%20recordtype_z:r', 'REST', 'json', 111, 1, 'alignement avec les Sujets de IdRef ABES Rameaux', false, 'IdRefSujets');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('IdRefAuteurs', 'https://www.idref.fr/Sru/Solr?wt=json&q=nom_t:(##nom##)%20AND%20prenom_t:(##prenom##)%20AND%20recordtype_z:a&fl=ppn_z,affcourt_z,prenom_s,nom_s&start=0&rows=30&version=2.2', 'REST', 'json', 112, 1, 'alignement avec les Auteurs de IdRef ABES', false, 'IdRefAuteurs');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('IdRefPersonnes', 'https://www.idref.fr/Sru/Solr?wt=json&q=persname_t:(##value##)&fl=ppn_z,affcourt_z,prenom_s,nom_s&start=0&rows=30&version=2.2', 'REST', 'json', 113, 1, 'alignement avec les Noms de personnes de IdRef ABES', false, 'IdRefPersonnes');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('IdRefTitreUniforme', 'https://www.idref.fr/Sru/Solr?wt=json&version=2.2&start=&rows=100&indent=on&fl=id,ppn_z,affcourt_z&q=uniformtitle_t:(##value##)%20AND%20recordtype_z:f', 'REST', 'json', 114, 1, 'alignement avec les titres uniformes de IdRef ABES', false, 'IdRefTitreUniforme');
 INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Wikidata', 'SELECT ?item ?itemLabel ?itemDescription WHERE {
                     ?item rdfs:label "##value##"@##lang##.
                     SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],##lang##". }
-                    }', 'SPARQL', 'json', 93, 1, 'alignement avec le thésaurus de wikidata', false, 'Wikidata');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Getty_AAT', 'http://vocabsservices.getty.edu/AATService.asmx/AATGetTermMatch?term=##value##&logop=and&notes=', 'REST', 'xml', 94, 1, 'alignement avec le thésaurus du Getty AAT', false, 'Getty_AAT');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('GeoNames', 'http://api.geonames.org/search?q=##value##&maxRows=10&style=FULL&lang=##lang##&username=opentheso', 'REST', 'xml', 95, 1, 'Alignement avec GeoNames', true, 'GeoNames');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Pactols', 'https://pactols.frantiq.fr/opentheso/api/search?q=##value##&lang=##lang##&theso=TH_1', 'REST', 'skos', 96, 1, 'Alignement avec PACTOLS', false, 'Opentheso');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Gemet', 'https://www.eionet.europa.eu/gemet/getConceptsMatchingKeyword?keyword=##value##&search_mode=3&thesaurus_uri=http://www.eionet.europa.eu/gemet/concept/&language=##lang##', 'REST', 'json', 97, 1, 'Alignement avec le thésaurus Gemet', false, 'Gemet');
-INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Agrovoc', 'http://agrovoc.uniroma2.it/agrovoc/rest/v1/search/?query=##value##&lang=##lang##', 'REST', 'json', 98, 1, 'Alignement avec le thésaurus Agrovoc', false, 'Agrovoc');
+                    }', 'SPARQL', 'json', 115, 1, 'alignement avec le thésaurus de wikidata', false, 'Wikidata');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Getty_AAT', 'http://vocabsservices.getty.edu/AATService.asmx/AATGetTermMatch?term=##value##&logop=and&notes=', 'REST', 'xml', 116, 1, 'alignement avec le thésaurus du Getty AAT', false, 'Getty_AAT');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('GeoNames', 'http://api.geonames.org/search?q=##value##&maxRows=10&style=FULL&lang=##lang##&username=opentheso', 'REST', 'xml', 117, 1, 'Alignement avec GeoNames', true, 'GeoNames');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Pactols', 'https://pactols.frantiq.fr/opentheso/api/search?q=##value##&lang=##lang##&theso=TH_1', 'REST', 'skos', 118, 1, 'Alignement avec PACTOLS', false, 'Opentheso');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Gemet', 'https://www.eionet.europa.eu/gemet/getConceptsMatchingKeyword?keyword=##value##&search_mode=3&thesaurus_uri=http://www.eionet.europa.eu/gemet/concept/&language=##lang##', 'REST', 'json', 119, 1, 'Alignement avec le thésaurus Gemet', false, 'Gemet');
+INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id, id_user, description, gps, source_filter) VALUES ('Agrovoc', 'http://agrovoc.uniroma2.it/agrovoc/rest/v1/search/?query=##value##&lang=##lang##', 'REST', 'json', 120, 1, 'Alignement avec le thésaurus Agrovoc', false, 'Agrovoc');
 
 
 --
--- TOC entry 3835 (class 0 OID 16535)
+-- TOC entry 3876 (class 0 OID 69706)
 -- Dependencies: 204
 -- Data for Name: alignement_type; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1482,7 +1577,7 @@ INSERT INTO public.alignement_type (id, label, isocode, label_skos) VALUES (5, '
 
 
 --
--- TOC entry 3836 (class 0 OID 16541)
+-- TOC entry 3877 (class 0 OID 69712)
 -- Dependencies: 205
 -- Data for Name: bt_type; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1494,7 +1589,23 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3837 (class 0 OID 16547)
+-- TOC entry 3956 (class 0 OID 70538)
+-- Dependencies: 284
+-- Data for Name: candidat_messages; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- TOC entry 3957 (class 0 OID 70547)
+-- Dependencies: 285
+-- Data for Name: candidat_status; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- TOC entry 3878 (class 0 OID 69718)
 -- Dependencies: 206
 -- Data for Name: compound_equivalence; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1502,7 +1613,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3839 (class 0 OID 16555)
+-- TOC entry 3880 (class 0 OID 69726)
 -- Dependencies: 208
 -- Data for Name: concept; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1510,7 +1621,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3841 (class 0 OID 16570)
+-- TOC entry 3882 (class 0 OID 69741)
 -- Dependencies: 210
 -- Data for Name: concept_candidat; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1518,7 +1629,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3842 (class 0 OID 16580)
+-- TOC entry 3883 (class 0 OID 69751)
 -- Dependencies: 211
 -- Data for Name: concept_fusion; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1526,7 +1637,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3844 (class 0 OID 16589)
+-- TOC entry 3885 (class 0 OID 69760)
 -- Dependencies: 213
 -- Data for Name: concept_group; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1534,7 +1645,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3845 (class 0 OID 16598)
+-- TOC entry 3886 (class 0 OID 69769)
 -- Dependencies: 214
 -- Data for Name: concept_group_concept; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1542,7 +1653,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3847 (class 0 OID 16606)
+-- TOC entry 3888 (class 0 OID 69777)
 -- Dependencies: 216
 -- Data for Name: concept_group_historique; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1550,7 +1661,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3849 (class 0 OID 16616)
+-- TOC entry 3890 (class 0 OID 69787)
 -- Dependencies: 218
 -- Data for Name: concept_group_label; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1558,7 +1669,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3851 (class 0 OID 16627)
+-- TOC entry 3892 (class 0 OID 69798)
 -- Dependencies: 220
 -- Data for Name: concept_group_label_historique; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1566,7 +1677,7 @@ INSERT INTO public.bt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3852 (class 0 OID 16635)
+-- TOC entry 3893 (class 0 OID 69806)
 -- Dependencies: 221
 -- Data for Name: concept_group_type; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1578,7 +1689,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3854 (class 0 OID 16643)
+-- TOC entry 3895 (class 0 OID 69814)
 -- Dependencies: 223
 -- Data for Name: concept_historique; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1586,7 +1697,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3855 (class 0 OID 16652)
+-- TOC entry 3896 (class 0 OID 69823)
 -- Dependencies: 224
 -- Data for Name: concept_orphan; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1594,7 +1705,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3856 (class 0 OID 16658)
+-- TOC entry 3897 (class 0 OID 69829)
 -- Dependencies: 225
 -- Data for Name: concept_term_candidat; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1602,7 +1713,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3857 (class 0 OID 16664)
+-- TOC entry 3898 (class 0 OID 69835)
 -- Dependencies: 226
 -- Data for Name: copyright; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1610,7 +1721,15 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3858 (class 0 OID 16670)
+-- TOC entry 3954 (class 0 OID 70522)
+-- Dependencies: 282
+-- Data for Name: corpus_link; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- TOC entry 3899 (class 0 OID 69841)
 -- Dependencies: 227
 -- Data for Name: custom_concept_attribute; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1618,7 +1737,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3859 (class 0 OID 16676)
+-- TOC entry 3900 (class 0 OID 69847)
 -- Dependencies: 228
 -- Data for Name: custom_term_attribute; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1626,7 +1745,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3860 (class 0 OID 16682)
+-- TOC entry 3901 (class 0 OID 69853)
 -- Dependencies: 229
 -- Data for Name: external_images; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1634,7 +1753,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3862 (class 0 OID 16691)
+-- TOC entry 3903 (class 0 OID 69862)
 -- Dependencies: 231
 -- Data for Name: gps; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1642,7 +1761,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3864 (class 0 OID 16699)
+-- TOC entry 3905 (class 0 OID 69870)
 -- Dependencies: 233
 -- Data for Name: gps_preferences; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1650,7 +1769,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3865 (class 0 OID 16709)
+-- TOC entry 3906 (class 0 OID 69880)
 -- Dependencies: 234
 -- Data for Name: hierarchical_relationship; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1658,7 +1777,7 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3866 (class 0 OID 16715)
+-- TOC entry 3907 (class 0 OID 69886)
 -- Dependencies: 235
 -- Data for Name: hierarchical_relationship_historique; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -1666,8 +1785,8 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3911 (class 0 OID 40590)
--- Dependencies: 280
+-- TOC entry 3908 (class 0 OID 69893)
+-- Dependencies: 236
 -- Data for Name: homepage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -1676,16 +1795,16 @@ INSERT INTO public.homepage (htmlcode, lang) VALUES ('<h1><img src="data:image/p
 
 
 --
--- TOC entry 3867 (class 0 OID 16722)
--- Dependencies: 236
+-- TOC entry 3909 (class 0 OID 69899)
+-- Dependencies: 237
 -- Data for Name: images; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3868 (class 0 OID 16729)
--- Dependencies: 237
+-- TOC entry 3910 (class 0 OID 69906)
+-- Dependencies: 238
 -- Data for Name: info; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -1693,8 +1812,8 @@ INSERT INTO public.info (version_opentheso, version_bdd) VALUES ('0.0.0', 'xyz')
 
 
 --
--- TOC entry 3914 (class 0 OID 67904)
--- Dependencies: 283
+-- TOC entry 3961 (class 0 OID 70573)
+-- Dependencies: 289
 -- Data for Name: languages_iso639; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -1909,48 +2028,48 @@ INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_na
 
 
 --
--- TOC entry 3870 (class 0 OID 16744)
--- Dependencies: 239
+-- TOC entry 3912 (class 0 OID 69921)
+-- Dependencies: 240
 -- Data for Name: node_label; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3871 (class 0 OID 16752)
--- Dependencies: 240
+-- TOC entry 3913 (class 0 OID 69929)
+-- Dependencies: 241
 -- Data for Name: non_preferred_term; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3872 (class 0 OID 16761)
--- Dependencies: 241
+-- TOC entry 3914 (class 0 OID 69938)
+-- Dependencies: 242
 -- Data for Name: non_preferred_term_historique; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3874 (class 0 OID 16771)
--- Dependencies: 243
+-- TOC entry 3916 (class 0 OID 69948)
+-- Dependencies: 244
 -- Data for Name: note; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3876 (class 0 OID 16782)
--- Dependencies: 245
+-- TOC entry 3918 (class 0 OID 69959)
+-- Dependencies: 246
 -- Data for Name: note_historique; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3913 (class 0 OID 67895)
--- Dependencies: 282
+-- TOC entry 3960 (class 0 OID 70564)
+-- Dependencies: 288
 -- Data for Name: note_type; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -1964,8 +2083,8 @@ INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUE
 
 
 --
--- TOC entry 3877 (class 0 OID 16797)
--- Dependencies: 246
+-- TOC entry 3919 (class 0 OID 69974)
+-- Dependencies: 247
 -- Data for Name: nt_type; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -1976,56 +2095,57 @@ INSERT INTO public.nt_type (id, relation, description_fr, description_en) VALUES
 
 
 --
--- TOC entry 3878 (class 0 OID 16803)
--- Dependencies: 247
+-- TOC entry 3920 (class 0 OID 69980)
+-- Dependencies: 248
 -- Data for Name: permuted; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3880 (class 0 OID 16811)
--- Dependencies: 249
+-- TOC entry 3922 (class 0 OID 69988)
+-- Dependencies: 250
 -- Data for Name: preferences; Type: TABLE DATA; Schema: public; Owner: -
 --
 
+INSERT INTO public.preferences (id_pref, id_thesaurus, source_lang, identifier_type, path_image, dossier_resize, bdd_active, bdd_use_id, url_bdd, url_counter_bdd, z3950actif, collection_adresse, notice_url, url_encode, path_notice1, path_notice2, chemin_site, webservices, use_ark, server_ark, id_naan, prefix_ark, user_ark, pass_ark, use_handle, user_handle, pass_handle, path_key_handle, path_cert_handle, url_api_handle, prefix_handle, private_prefix_handle, preferredname, original_uri, original_uri_is_ark, original_uri_is_handle, uri_ark, generate_handle, auto_expand_tree) VALUES (1, 'th1', 'fr', 2, '/var/www/images/', 'resize', false, false, 'http://www.mondomaine.fr/concept/##value##', 'http://mondomaine.fr/concept/##conceptId##/total', false, 'KOHA/biblios', 'http://catalogue.mondomaine.fr/cgi-bin/koha/opac-search.pl?type=opac&op=do_search&q=an=terme', 'UTF-8', '/var/www/notices/repositories.xml', '/var/www/notices/SchemaMappings.xml', 'http://mondomaine.fr/', true, false, 'http://ark.mondomaine.fr/ark:/', '66666', 'crt', NULL, NULL, false, NULL, NULL, '/certificat/key.p12', '/certificat/cacerts2', 'https://handle-server.mondomaine.fr:8001/api/handles/', '66.666.66666', 'crt', 'th1', NULL, false, false, 'https://ark.mom.fr/ark:/', true, true);
 
 
 --
--- TOC entry 3881 (class 0 OID 16844)
--- Dependencies: 250
+-- TOC entry 3923 (class 0 OID 70021)
+-- Dependencies: 251
 -- Data for Name: preferences_sparql; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3882 (class 0 OID 16851)
--- Dependencies: 251
+-- TOC entry 3924 (class 0 OID 70028)
+-- Dependencies: 252
 -- Data for Name: preferred_term; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3883 (class 0 OID 16857)
--- Dependencies: 252
+-- TOC entry 3925 (class 0 OID 70034)
+-- Dependencies: 253
 -- Data for Name: proposition; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3884 (class 0 OID 16865)
--- Dependencies: 253
+-- TOC entry 3926 (class 0 OID 70042)
+-- Dependencies: 254
 -- Data for Name: relation_group; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3885 (class 0 OID 16871)
--- Dependencies: 254
+-- TOC entry 3927 (class 0 OID 70048)
+-- Dependencies: 255
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -2036,88 +2156,106 @@ INSERT INTO public.roles (id, name, description) VALUES (4, 'contributor', 'trad
 
 
 --
--- TOC entry 3887 (class 0 OID 16879)
--- Dependencies: 256
+-- TOC entry 3929 (class 0 OID 70056)
+-- Dependencies: 257
 -- Data for Name: routine_mail; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3888 (class 0 OID 16886)
--- Dependencies: 257
+-- TOC entry 3930 (class 0 OID 70063)
+-- Dependencies: 258
 -- Data for Name: split_non_preferred_term; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3890 (class 0 OID 16891)
--- Dependencies: 259
+-- TOC entry 3959 (class 0 OID 70555)
+-- Dependencies: 287
+-- Data for Name: status; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public.status (id_status, value) VALUES (1, 'En attente');
+INSERT INTO public.status (id_status, value) VALUES (2, 'Inséré');
+INSERT INTO public.status (id_status, value) VALUES (3, 'Rejeté');
+
+
+--
+-- TOC entry 3932 (class 0 OID 70068)
+-- Dependencies: 260
 -- Data for Name: term; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3892 (class 0 OID 16903)
--- Dependencies: 261
+-- TOC entry 3934 (class 0 OID 70080)
+-- Dependencies: 262
 -- Data for Name: term_candidat; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3894 (class 0 OID 16914)
--- Dependencies: 263
+-- TOC entry 3936 (class 0 OID 70091)
+-- Dependencies: 264
 -- Data for Name: term_historique; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3896 (class 0 OID 16925)
--- Dependencies: 265
+-- TOC entry 3938 (class 0 OID 70102)
+-- Dependencies: 266
 -- Data for Name: thesaurus; Type: TABLE DATA; Schema: public; Owner: -
 --
 
+INSERT INTO public.thesaurus (id_thesaurus, id_ark, created, modified, id, private) VALUES ('th1', '', '2020-07-09 00:00:00', '2020-07-09 00:00:00', 1, false);
 
 
 --
--- TOC entry 3897 (class 0 OID 16935)
--- Dependencies: 266
+-- TOC entry 3939 (class 0 OID 70112)
+-- Dependencies: 267
 -- Data for Name: thesaurus_alignement_source; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3898 (class 0 OID 16941)
--- Dependencies: 267
+-- TOC entry 3940 (class 0 OID 70118)
+-- Dependencies: 268
 -- Data for Name: thesaurus_array; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3899 (class 0 OID 16949)
--- Dependencies: 268
+-- TOC entry 3941 (class 0 OID 70126)
+-- Dependencies: 269
 -- Data for Name: thesaurus_array_concept; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3900 (class 0 OID 16956)
--- Dependencies: 269
+-- TOC entry 3942 (class 0 OID 70133)
+-- Dependencies: 270
 -- Data for Name: thesaurus_label; Type: TABLE DATA; Schema: public; Owner: -
 --
 
+INSERT INTO public.thesaurus_label (id_thesaurus, contributor, coverage, creator, created, modified, description, format, lang, publisher, relation, rights, source, subject, title, type) VALUES ('th1', '', '', '', '2020-07-09 00:00:00', '2020-07-09 00:00:00', '', '', 'de', '', '', '', '', '', 'OpenEdition', '');
+INSERT INTO public.thesaurus_label (id_thesaurus, contributor, coverage, creator, created, modified, description, format, lang, publisher, relation, rights, source, subject, title, type) VALUES ('th1', '', '', '', '2020-07-09 00:00:00', '2020-07-09 00:00:00', '', '', 'it', '', '', '', '', '', 'OpenEdition', '');
+INSERT INTO public.thesaurus_label (id_thesaurus, contributor, coverage, creator, created, modified, description, format, lang, publisher, relation, rights, source, subject, title, type) VALUES ('th1', '', '', '', '2020-07-09 00:00:00', '2020-07-09 00:00:00', '', '', 'pt', '', '', '', '', '', 'OpenEdition', '');
+INSERT INTO public.thesaurus_label (id_thesaurus, contributor, coverage, creator, created, modified, description, format, lang, publisher, relation, rights, source, subject, title, type) VALUES ('th1', '', '', '', '2020-07-09 00:00:00', '2020-07-09 00:00:00', '', '', 'en', '', '', '', '', '', 'OpenEdition', '');
+INSERT INTO public.thesaurus_label (id_thesaurus, contributor, coverage, creator, created, modified, description, format, lang, publisher, relation, rights, source, subject, title, type) VALUES ('th1', '', '', '', '2020-07-09 00:00:00', '2020-07-09 00:00:00', '', '', 'fr', '', '', '', '', '', 'OpenEdition', '');
+INSERT INTO public.thesaurus_label (id_thesaurus, contributor, coverage, creator, created, modified, description, format, lang, publisher, relation, rights, source, subject, title, type) VALUES ('th1', '', '', '', '2020-07-09 00:00:00', '2020-07-09 00:00:00', '', '', 'es', '', '', '', '', '', 'OpenEdition', '');
 
 
 --
--- TOC entry 3912 (class 0 OID 40596)
--- Dependencies: 281
+-- TOC entry 3943 (class 0 OID 70141)
+-- Dependencies: 271
 -- Data for Name: thesohomepage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -2129,40 +2267,40 @@ INSERT INTO public.thesohomepage (htmlcode, lang, idtheso) VALUES ('<p>à propos
 
 
 --
--- TOC entry 3903 (class 0 OID 16968)
--- Dependencies: 272
+-- TOC entry 3946 (class 0 OID 70151)
+-- Dependencies: 274
 -- Data for Name: user_group_label; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3904 (class 0 OID 16975)
--- Dependencies: 273
+-- TOC entry 3947 (class 0 OID 70158)
+-- Dependencies: 275
 -- Data for Name: user_group_thesaurus; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3905 (class 0 OID 16981)
--- Dependencies: 274
+-- TOC entry 3948 (class 0 OID 70164)
+-- Dependencies: 276
 -- Data for Name: user_role_group; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3906 (class 0 OID 16984)
--- Dependencies: 275
+-- TOC entry 3949 (class 0 OID 70167)
+-- Dependencies: 277
 -- Data for Name: user_role_only_on; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3907 (class 0 OID 16991)
--- Dependencies: 276
+-- TOC entry 3950 (class 0 OID 70174)
+-- Dependencies: 278
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -2170,31 +2308,31 @@ INSERT INTO public.users (id_user, username, password, active, mail, passtomodif
 
 
 --
--- TOC entry 3908 (class 0 OID 17002)
--- Dependencies: 277
+-- TOC entry 3951 (class 0 OID 70185)
+-- Dependencies: 279
 -- Data for Name: users2; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3909 (class 0 OID 17011)
--- Dependencies: 278
+-- TOC entry 3952 (class 0 OID 70194)
+-- Dependencies: 280
 -- Data for Name: users_historique; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3910 (class 0 OID 17019)
--- Dependencies: 279
+-- TOC entry 3953 (class 0 OID 70202)
+-- Dependencies: 281
 -- Data for Name: version_history; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3923 (class 0 OID 0)
+-- TOC entry 3972 (class 0 OID 0)
 -- Dependencies: 198
 -- Name: alignement_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2203,7 +2341,7 @@ SELECT pg_catalog.setval('public.alignement_id_seq', 1, false);
 
 
 --
--- TOC entry 3924 (class 0 OID 0)
+-- TOC entry 3973 (class 0 OID 0)
 -- Dependencies: 200
 -- Name: alignement_preferences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2212,16 +2350,25 @@ SELECT pg_catalog.setval('public.alignement_preferences_id_seq', 1, false);
 
 
 --
--- TOC entry 3925 (class 0 OID 0)
+-- TOC entry 3974 (class 0 OID 0)
 -- Dependencies: 202
 -- Name: alignement_source__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.alignement_source__id_seq', 98, true);
+SELECT pg_catalog.setval('public.alignement_source__id_seq', 120, true);
 
 
 --
--- TOC entry 3926 (class 0 OID 0)
+-- TOC entry 3975 (class 0 OID 0)
+-- Dependencies: 283
+-- Name: candidat_messages_id_message_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.candidat_messages_id_message_seq', 1, false);
+
+
+--
+-- TOC entry 3976 (class 0 OID 0)
 -- Dependencies: 207
 -- Name: concept__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2230,7 +2377,7 @@ SELECT pg_catalog.setval('public.concept__id_seq', 1, false);
 
 
 --
--- TOC entry 3927 (class 0 OID 0)
+-- TOC entry 3977 (class 0 OID 0)
 -- Dependencies: 209
 -- Name: concept_candidat__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2239,7 +2386,7 @@ SELECT pg_catalog.setval('public.concept_candidat__id_seq', 1, false);
 
 
 --
--- TOC entry 3928 (class 0 OID 0)
+-- TOC entry 3978 (class 0 OID 0)
 -- Dependencies: 212
 -- Name: concept_group__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2248,7 +2395,7 @@ SELECT pg_catalog.setval('public.concept_group__id_seq', 1, false);
 
 
 --
--- TOC entry 3929 (class 0 OID 0)
+-- TOC entry 3979 (class 0 OID 0)
 -- Dependencies: 215
 -- Name: concept_group_historique__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2257,7 +2404,7 @@ SELECT pg_catalog.setval('public.concept_group_historique__id_seq', 1, false);
 
 
 --
--- TOC entry 3930 (class 0 OID 0)
+-- TOC entry 3980 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: concept_group_label_historique__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2266,7 +2413,7 @@ SELECT pg_catalog.setval('public.concept_group_label_historique__id_seq', 1, fal
 
 
 --
--- TOC entry 3931 (class 0 OID 0)
+-- TOC entry 3981 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: concept_group_label_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2275,7 +2422,7 @@ SELECT pg_catalog.setval('public.concept_group_label_id_seq', 1, false);
 
 
 --
--- TOC entry 3932 (class 0 OID 0)
+-- TOC entry 3982 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: concept_historique__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2284,7 +2431,7 @@ SELECT pg_catalog.setval('public.concept_historique__id_seq', 1, false);
 
 
 --
--- TOC entry 3933 (class 0 OID 0)
+-- TOC entry 3983 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: facet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2293,7 +2440,7 @@ SELECT pg_catalog.setval('public.facet_id_seq', 1, false);
 
 
 --
--- TOC entry 3934 (class 0 OID 0)
+-- TOC entry 3984 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: gps_preferences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -2302,8 +2449,8 @@ SELECT pg_catalog.setval('public.gps_preferences_id_seq', 1, false);
 
 
 --
--- TOC entry 3935 (class 0 OID 0)
--- Dependencies: 238
+-- TOC entry 3985 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: languages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2311,8 +2458,8 @@ SELECT pg_catalog.setval('public.languages_id_seq', 189, false);
 
 
 --
--- TOC entry 3936 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 3986 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: note__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2320,8 +2467,8 @@ SELECT pg_catalog.setval('public.note__id_seq', 1, false);
 
 
 --
--- TOC entry 3937 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 3987 (class 0 OID 0)
+-- Dependencies: 245
 -- Name: note_historique__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2329,17 +2476,17 @@ SELECT pg_catalog.setval('public.note_historique__id_seq', 1, false);
 
 
 --
--- TOC entry 3938 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 3988 (class 0 OID 0)
+-- Dependencies: 249
 -- Name: pref__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.pref__id_seq', 1, false);
+SELECT pg_catalog.setval('public.pref__id_seq', 1, true);
 
 
 --
--- TOC entry 3939 (class 0 OID 0)
--- Dependencies: 255
+-- TOC entry 3989 (class 0 OID 0)
+-- Dependencies: 256
 -- Name: role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2347,8 +2494,17 @@ SELECT pg_catalog.setval('public.role_id_seq', 6, true);
 
 
 --
--- TOC entry 3940 (class 0 OID 0)
--- Dependencies: 258
+-- TOC entry 3990 (class 0 OID 0)
+-- Dependencies: 286
+-- Name: status_id_status_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.status_id_status_seq', 1, false);
+
+
+--
+-- TOC entry 3991 (class 0 OID 0)
+-- Dependencies: 259
 -- Name: term__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2356,8 +2512,8 @@ SELECT pg_catalog.setval('public.term__id_seq', 1, false);
 
 
 --
--- TOC entry 3941 (class 0 OID 0)
--- Dependencies: 260
+-- TOC entry 3992 (class 0 OID 0)
+-- Dependencies: 261
 -- Name: term_candidat__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2365,8 +2521,8 @@ SELECT pg_catalog.setval('public.term_candidat__id_seq', 1, false);
 
 
 --
--- TOC entry 3942 (class 0 OID 0)
--- Dependencies: 262
+-- TOC entry 3993 (class 0 OID 0)
+-- Dependencies: 263
 -- Name: term_historique__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2374,17 +2530,17 @@ SELECT pg_catalog.setval('public.term_historique__id_seq', 1, false);
 
 
 --
--- TOC entry 3943 (class 0 OID 0)
--- Dependencies: 264
+-- TOC entry 3994 (class 0 OID 0)
+-- Dependencies: 265
 -- Name: thesaurus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.thesaurus_id_seq', 1, false);
+SELECT pg_catalog.setval('public.thesaurus_id_seq', 1, true);
 
 
 --
--- TOC entry 3944 (class 0 OID 0)
--- Dependencies: 270
+-- TOC entry 3995 (class 0 OID 0)
+-- Dependencies: 272
 -- Name: user__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2392,8 +2548,8 @@ SELECT pg_catalog.setval('public.user__id_seq', 2, false);
 
 
 --
--- TOC entry 3945 (class 0 OID 0)
--- Dependencies: 271
+-- TOC entry 3996 (class 0 OID 0)
+-- Dependencies: 273
 -- Name: user_group_label__id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2401,7 +2557,7 @@ SELECT pg_catalog.setval('public.user_group_label__id_seq', 1, false);
 
 
 --
--- TOC entry 3697 (class 2606 OID 17027)
+-- TOC entry 3736 (class 2606 OID 70212)
 -- Name: version_history VersionHistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2410,7 +2566,7 @@ ALTER TABLE ONLY public.version_history
 
 
 --
--- TOC entry 3538 (class 2606 OID 17029)
+-- TOC entry 3573 (class 2606 OID 70214)
 -- Name: alignement alignement_internal_id_concept_internal_id_thesaurus_uri_ta_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2419,7 +2575,7 @@ ALTER TABLE ONLY public.alignement
 
 
 --
--- TOC entry 3540 (class 2606 OID 17031)
+-- TOC entry 3575 (class 2606 OID 70216)
 -- Name: alignement alignement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2428,7 +2584,7 @@ ALTER TABLE ONLY public.alignement
 
 
 --
--- TOC entry 3542 (class 2606 OID 17033)
+-- TOC entry 3577 (class 2606 OID 70218)
 -- Name: alignement_preferences alignement_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2437,7 +2593,7 @@ ALTER TABLE ONLY public.alignement_preferences
 
 
 --
--- TOC entry 3544 (class 2606 OID 17035)
+-- TOC entry 3579 (class 2606 OID 70220)
 -- Name: alignement_source alignement_source_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2446,7 +2602,7 @@ ALTER TABLE ONLY public.alignement_source
 
 
 --
--- TOC entry 3546 (class 2606 OID 17037)
+-- TOC entry 3581 (class 2606 OID 70222)
 -- Name: alignement_source alignement_source_source_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2455,7 +2611,7 @@ ALTER TABLE ONLY public.alignement_source
 
 
 --
--- TOC entry 3548 (class 2606 OID 17039)
+-- TOC entry 3583 (class 2606 OID 70224)
 -- Name: alignement_type alignment_type_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2464,7 +2620,7 @@ ALTER TABLE ONLY public.alignement_type
 
 
 --
--- TOC entry 3550 (class 2606 OID 17041)
+-- TOC entry 3585 (class 2606 OID 70226)
 -- Name: bt_type bt_type_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2473,7 +2629,7 @@ ALTER TABLE ONLY public.bt_type
 
 
 --
--- TOC entry 3552 (class 2606 OID 17043)
+-- TOC entry 3587 (class 2606 OID 70228)
 -- Name: bt_type bt_type_relation_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2482,7 +2638,16 @@ ALTER TABLE ONLY public.bt_type
 
 
 --
--- TOC entry 3554 (class 2606 OID 17045)
+-- TOC entry 3740 (class 2606 OID 70546)
+-- Name: candidat_messages candidat_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.candidat_messages
+    ADD CONSTRAINT candidat_messages_pkey PRIMARY KEY (id_message);
+
+
+--
+-- TOC entry 3589 (class 2606 OID 70230)
 -- Name: compound_equivalence compound_equivalence_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2491,7 +2656,7 @@ ALTER TABLE ONLY public.compound_equivalence
 
 
 --
--- TOC entry 3559 (class 2606 OID 17047)
+-- TOC entry 3594 (class 2606 OID 70232)
 -- Name: concept_candidat concept_candidat_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2500,7 +2665,7 @@ ALTER TABLE ONLY public.concept_candidat
 
 
 --
--- TOC entry 3561 (class 2606 OID 17049)
+-- TOC entry 3596 (class 2606 OID 70234)
 -- Name: concept_candidat concept_candidat_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2509,7 +2674,7 @@ ALTER TABLE ONLY public.concept_candidat
 
 
 --
--- TOC entry 3579 (class 2606 OID 68013)
+-- TOC entry 3614 (class 2606 OID 70682)
 -- Name: concept_historique concept_copy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2518,7 +2683,7 @@ ALTER TABLE ONLY public.concept_historique
 
 
 --
--- TOC entry 3563 (class 2606 OID 17053)
+-- TOC entry 3598 (class 2606 OID 70238)
 -- Name: concept_fusion concept_fusion_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2527,7 +2692,7 @@ ALTER TABLE ONLY public.concept_fusion
 
 
 --
--- TOC entry 3567 (class 2606 OID 17055)
+-- TOC entry 3602 (class 2606 OID 70240)
 -- Name: concept_group_concept concept_group_concept_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2536,7 +2701,7 @@ ALTER TABLE ONLY public.concept_group_concept
 
 
 --
--- TOC entry 3569 (class 2606 OID 17057)
+-- TOC entry 3604 (class 2606 OID 70242)
 -- Name: concept_group_historique concept_group_copy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2545,7 +2710,7 @@ ALTER TABLE ONLY public.concept_group_historique
 
 
 --
--- TOC entry 3575 (class 2606 OID 17059)
+-- TOC entry 3610 (class 2606 OID 70244)
 -- Name: concept_group_label_historique concept_group_label_copy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2554,7 +2719,7 @@ ALTER TABLE ONLY public.concept_group_label_historique
 
 
 --
--- TOC entry 3571 (class 2606 OID 17061)
+-- TOC entry 3606 (class 2606 OID 70246)
 -- Name: concept_group_label concept_group_label_idgrouplabel_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2563,7 +2728,7 @@ ALTER TABLE ONLY public.concept_group_label
 
 
 --
--- TOC entry 3573 (class 2606 OID 17063)
+-- TOC entry 3608 (class 2606 OID 70248)
 -- Name: concept_group_label concept_group_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2572,7 +2737,7 @@ ALTER TABLE ONLY public.concept_group_label
 
 
 --
--- TOC entry 3565 (class 2606 OID 17065)
+-- TOC entry 3600 (class 2606 OID 70250)
 -- Name: concept_group concept_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2581,7 +2746,7 @@ ALTER TABLE ONLY public.concept_group
 
 
 --
--- TOC entry 3577 (class 2606 OID 17067)
+-- TOC entry 3612 (class 2606 OID 70252)
 -- Name: concept_group_type concept_group_type_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2590,7 +2755,7 @@ ALTER TABLE ONLY public.concept_group_type
 
 
 --
--- TOC entry 3581 (class 2606 OID 17069)
+-- TOC entry 3616 (class 2606 OID 70254)
 -- Name: concept_orphan concept_orphan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2599,7 +2764,7 @@ ALTER TABLE ONLY public.concept_orphan
 
 
 --
--- TOC entry 3557 (class 2606 OID 17071)
+-- TOC entry 3592 (class 2606 OID 70256)
 -- Name: concept concept_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2608,7 +2773,7 @@ ALTER TABLE ONLY public.concept
 
 
 --
--- TOC entry 3583 (class 2606 OID 17073)
+-- TOC entry 3618 (class 2606 OID 70258)
 -- Name: concept_term_candidat concept_term_candidat_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2617,7 +2782,7 @@ ALTER TABLE ONLY public.concept_term_candidat
 
 
 --
--- TOC entry 3585 (class 2606 OID 17075)
+-- TOC entry 3620 (class 2606 OID 70260)
 -- Name: copyright copyright_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2626,7 +2791,16 @@ ALTER TABLE ONLY public.copyright
 
 
 --
--- TOC entry 3587 (class 2606 OID 17077)
+-- TOC entry 3738 (class 2606 OID 70533)
+-- Name: corpus_link corpus_link_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.corpus_link
+    ADD CONSTRAINT corpus_link_pkey PRIMARY KEY (id_theso, corpus_name);
+
+
+--
+-- TOC entry 3622 (class 2606 OID 70262)
 -- Name: custom_concept_attribute custom_concept_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2635,7 +2809,7 @@ ALTER TABLE ONLY public.custom_concept_attribute
 
 
 --
--- TOC entry 3589 (class 2606 OID 17079)
+-- TOC entry 3624 (class 2606 OID 70264)
 -- Name: custom_term_attribute custom_term_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2644,7 +2818,7 @@ ALTER TABLE ONLY public.custom_term_attribute
 
 
 --
--- TOC entry 3591 (class 2606 OID 17081)
+-- TOC entry 3626 (class 2606 OID 70266)
 -- Name: external_images external_images_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2653,7 +2827,7 @@ ALTER TABLE ONLY public.external_images
 
 
 --
--- TOC entry 3593 (class 2606 OID 67986)
+-- TOC entry 3628 (class 2606 OID 70655)
 -- Name: gps gps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2662,7 +2836,7 @@ ALTER TABLE ONLY public.gps
 
 
 --
--- TOC entry 3595 (class 2606 OID 17085)
+-- TOC entry 3630 (class 2606 OID 70270)
 -- Name: gps_preferences gps_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2671,7 +2845,7 @@ ALTER TABLE ONLY public.gps_preferences
 
 
 --
--- TOC entry 3599 (class 2606 OID 17087)
+-- TOC entry 3634 (class 2606 OID 70272)
 -- Name: hierarchical_relationship_historique hierarchical_relationship_copy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2680,7 +2854,7 @@ ALTER TABLE ONLY public.hierarchical_relationship_historique
 
 
 --
--- TOC entry 3597 (class 2606 OID 17089)
+-- TOC entry 3632 (class 2606 OID 70274)
 -- Name: hierarchical_relationship hierarchical_relationship_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2689,7 +2863,7 @@ ALTER TABLE ONLY public.hierarchical_relationship
 
 
 --
--- TOC entry 3699 (class 2606 OID 40603)
+-- TOC entry 3636 (class 2606 OID 70276)
 -- Name: homepage homepage_lang_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2698,7 +2872,7 @@ ALTER TABLE ONLY public.homepage
 
 
 --
--- TOC entry 3601 (class 2606 OID 17091)
+-- TOC entry 3638 (class 2606 OID 70278)
 -- Name: images images_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2707,7 +2881,7 @@ ALTER TABLE ONLY public.images
 
 
 --
--- TOC entry 3603 (class 2606 OID 17093)
+-- TOC entry 3640 (class 2606 OID 70280)
 -- Name: info info_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2716,7 +2890,7 @@ ALTER TABLE ONLY public.info
 
 
 --
--- TOC entry 3705 (class 2606 OID 67914)
+-- TOC entry 3746 (class 2606 OID 70583)
 -- Name: languages_iso639 languages_iso639_iso639_1_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2725,7 +2899,7 @@ ALTER TABLE ONLY public.languages_iso639
 
 
 --
--- TOC entry 3707 (class 2606 OID 67912)
+-- TOC entry 3748 (class 2606 OID 70581)
 -- Name: languages_iso639 languages_iso639_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2734,7 +2908,7 @@ ALTER TABLE ONLY public.languages_iso639
 
 
 --
--- TOC entry 3605 (class 2606 OID 17099)
+-- TOC entry 3642 (class 2606 OID 70286)
 -- Name: node_label node_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2743,7 +2917,7 @@ ALTER TABLE ONLY public.node_label
 
 
 --
--- TOC entry 3608 (class 2606 OID 17101)
+-- TOC entry 3645 (class 2606 OID 70288)
 -- Name: non_preferred_term non_prefered_term_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2752,7 +2926,7 @@ ALTER TABLE ONLY public.non_preferred_term
 
 
 --
--- TOC entry 3611 (class 2606 OID 17103)
+-- TOC entry 3648 (class 2606 OID 70290)
 -- Name: non_preferred_term_historique non_preferred_term_copy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2761,7 +2935,7 @@ ALTER TABLE ONLY public.non_preferred_term_historique
 
 
 --
--- TOC entry 3620 (class 2606 OID 17105)
+-- TOC entry 3657 (class 2606 OID 70292)
 -- Name: note_historique note_copy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2770,7 +2944,7 @@ ALTER TABLE ONLY public.note_historique
 
 
 --
--- TOC entry 3614 (class 2606 OID 67982)
+-- TOC entry 3651 (class 2606 OID 70651)
 -- Name: note note_notetypecode_id_thesaurus_id_concept_lang_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2779,7 +2953,7 @@ ALTER TABLE ONLY public.note
 
 
 --
--- TOC entry 3616 (class 2606 OID 67984)
+-- TOC entry 3653 (class 2606 OID 70653)
 -- Name: note note_notetypecode_id_thesaurus_id_term_lang_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2788,7 +2962,7 @@ ALTER TABLE ONLY public.note
 
 
 --
--- TOC entry 3618 (class 2606 OID 17111)
+-- TOC entry 3655 (class 2606 OID 70298)
 -- Name: note note_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2797,7 +2971,7 @@ ALTER TABLE ONLY public.note
 
 
 --
--- TOC entry 3622 (class 2606 OID 17113)
+-- TOC entry 3659 (class 2606 OID 70300)
 -- Name: nt_type nt_type_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2806,7 +2980,7 @@ ALTER TABLE ONLY public.nt_type
 
 
 --
--- TOC entry 3624 (class 2606 OID 17115)
+-- TOC entry 3661 (class 2606 OID 70302)
 -- Name: nt_type nt_type_relation_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2815,7 +2989,7 @@ ALTER TABLE ONLY public.nt_type
 
 
 --
--- TOC entry 3627 (class 2606 OID 17117)
+-- TOC entry 3664 (class 2606 OID 70304)
 -- Name: permuted permuted_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2824,7 +2998,7 @@ ALTER TABLE ONLY public.permuted
 
 
 --
--- TOC entry 3703 (class 2606 OID 67903)
+-- TOC entry 3744 (class 2606 OID 70572)
 -- Name: note_type pk_note_type; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2833,7 +3007,7 @@ ALTER TABLE ONLY public.note_type
 
 
 --
--- TOC entry 3641 (class 2606 OID 17121)
+-- TOC entry 3678 (class 2606 OID 70308)
 -- Name: relation_group pk_relation_group; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2842,7 +3016,7 @@ ALTER TABLE ONLY public.relation_group
 
 
 --
--- TOC entry 3629 (class 2606 OID 17123)
+-- TOC entry 3666 (class 2606 OID 70310)
 -- Name: preferences preferences_id_thesaurus_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2851,7 +3025,7 @@ ALTER TABLE ONLY public.preferences
 
 
 --
--- TOC entry 3631 (class 2606 OID 17125)
+-- TOC entry 3668 (class 2606 OID 70312)
 -- Name: preferences preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2860,7 +3034,7 @@ ALTER TABLE ONLY public.preferences
 
 
 --
--- TOC entry 3633 (class 2606 OID 17127)
+-- TOC entry 3670 (class 2606 OID 70314)
 -- Name: preferences preferences_preferredname_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2869,7 +3043,7 @@ ALTER TABLE ONLY public.preferences
 
 
 --
--- TOC entry 3635 (class 2606 OID 17129)
+-- TOC entry 3672 (class 2606 OID 70316)
 -- Name: preferences_sparql preferences_sparql_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2878,7 +3052,7 @@ ALTER TABLE ONLY public.preferences_sparql
 
 
 --
--- TOC entry 3637 (class 2606 OID 17131)
+-- TOC entry 3674 (class 2606 OID 70318)
 -- Name: preferred_term preferred_term_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2887,7 +3061,7 @@ ALTER TABLE ONLY public.preferred_term
 
 
 --
--- TOC entry 3639 (class 2606 OID 17133)
+-- TOC entry 3676 (class 2606 OID 70320)
 -- Name: proposition proposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2896,7 +3070,7 @@ ALTER TABLE ONLY public.proposition
 
 
 --
--- TOC entry 3643 (class 2606 OID 17135)
+-- TOC entry 3680 (class 2606 OID 70322)
 -- Name: roles role_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2905,7 +3079,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 3645 (class 2606 OID 17137)
+-- TOC entry 3682 (class 2606 OID 70324)
 -- Name: routine_mail routine_mail_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2914,7 +3088,16 @@ ALTER TABLE ONLY public.routine_mail
 
 
 --
--- TOC entry 3656 (class 2606 OID 17139)
+-- TOC entry 3742 (class 2606 OID 70563)
+-- Name: status status_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.status
+    ADD CONSTRAINT status_pkey PRIMARY KEY (id_status);
+
+
+--
+-- TOC entry 3693 (class 2606 OID 70326)
 -- Name: term_candidat term_candidat_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2923,7 +3106,7 @@ ALTER TABLE ONLY public.term_candidat
 
 
 --
--- TOC entry 3659 (class 2606 OID 68011)
+-- TOC entry 3696 (class 2606 OID 70680)
 -- Name: term_historique term_copy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2932,7 +3115,7 @@ ALTER TABLE ONLY public.term_historique
 
 
 --
--- TOC entry 3648 (class 2606 OID 17143)
+-- TOC entry 3685 (class 2606 OID 70330)
 -- Name: term term_id_term_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2941,7 +3124,7 @@ ALTER TABLE ONLY public.term
 
 
 --
--- TOC entry 3650 (class 2606 OID 17145)
+-- TOC entry 3687 (class 2606 OID 70332)
 -- Name: term term_id_term_lexical_value_lang_id_thesaurus_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2950,7 +3133,7 @@ ALTER TABLE ONLY public.term
 
 
 --
--- TOC entry 3653 (class 2606 OID 17147)
+-- TOC entry 3690 (class 2606 OID 70334)
 -- Name: term term_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2959,7 +3142,7 @@ ALTER TABLE ONLY public.term
 
 
 --
--- TOC entry 3663 (class 2606 OID 17149)
+-- TOC entry 3700 (class 2606 OID 70336)
 -- Name: thesaurus_alignement_source thesaurus_alignement_source_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2968,7 +3151,7 @@ ALTER TABLE ONLY public.thesaurus_alignement_source
 
 
 --
--- TOC entry 3667 (class 2606 OID 17151)
+-- TOC entry 3704 (class 2606 OID 70338)
 -- Name: thesaurus_array_concept thesaurus_array_concept_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2977,7 +3160,7 @@ ALTER TABLE ONLY public.thesaurus_array_concept
 
 
 --
--- TOC entry 3665 (class 2606 OID 17153)
+-- TOC entry 3702 (class 2606 OID 70340)
 -- Name: thesaurus_array thesaurus_array_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2986,7 +3169,7 @@ ALTER TABLE ONLY public.thesaurus_array
 
 
 --
--- TOC entry 3669 (class 2606 OID 17155)
+-- TOC entry 3706 (class 2606 OID 70342)
 -- Name: thesaurus_label thesaurus_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2995,7 +3178,7 @@ ALTER TABLE ONLY public.thesaurus_label
 
 
 --
--- TOC entry 3661 (class 2606 OID 17157)
+-- TOC entry 3698 (class 2606 OID 70344)
 -- Name: thesaurus thesaurus_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3004,7 +3187,7 @@ ALTER TABLE ONLY public.thesaurus
 
 
 --
--- TOC entry 3701 (class 2606 OID 40605)
+-- TOC entry 3710 (class 2606 OID 70346)
 -- Name: thesohomepage thesohomepage_idtheso_lang_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3013,7 +3196,7 @@ ALTER TABLE ONLY public.thesohomepage
 
 
 --
--- TOC entry 3671 (class 2606 OID 17159)
+-- TOC entry 3708 (class 2606 OID 70348)
 -- Name: thesaurus_label unique_thesau_lang; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3022,7 +3205,7 @@ ALTER TABLE ONLY public.thesaurus_label
 
 
 --
--- TOC entry 3673 (class 2606 OID 17161)
+-- TOC entry 3712 (class 2606 OID 70350)
 -- Name: user_group_label user_group-label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3031,7 +3214,7 @@ ALTER TABLE ONLY public.user_group_label
 
 
 --
--- TOC entry 3679 (class 2606 OID 68033)
+-- TOC entry 3718 (class 2606 OID 70708)
 -- Name: user_role_group user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3040,7 +3223,7 @@ ALTER TABLE ONLY public.user_role_group
 
 
 --
--- TOC entry 3675 (class 2606 OID 17163)
+-- TOC entry 3714 (class 2606 OID 70354)
 -- Name: user_group_thesaurus user_group_thesaurus_id_thesaurus_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3049,7 +3232,7 @@ ALTER TABLE ONLY public.user_group_thesaurus
 
 
 --
--- TOC entry 3677 (class 2606 OID 17165)
+-- TOC entry 3716 (class 2606 OID 70356)
 -- Name: user_group_thesaurus user_group_thesaurus_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3058,7 +3241,7 @@ ALTER TABLE ONLY public.user_group_thesaurus
 
 
 --
--- TOC entry 3683 (class 2606 OID 17167)
+-- TOC entry 3722 (class 2606 OID 70358)
 -- Name: users user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3067,7 +3250,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3681 (class 2606 OID 17169)
+-- TOC entry 3720 (class 2606 OID 70360)
 -- Name: user_role_only_on user_role_only_on_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3076,7 +3259,7 @@ ALTER TABLE ONLY public.user_role_only_on
 
 
 --
--- TOC entry 3695 (class 2606 OID 17173)
+-- TOC entry 3734 (class 2606 OID 70362)
 -- Name: users_historique users_historique_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3085,7 +3268,7 @@ ALTER TABLE ONLY public.users_historique
 
 
 --
--- TOC entry 3689 (class 2606 OID 17175)
+-- TOC entry 3728 (class 2606 OID 70364)
 -- Name: users2 users_login_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3094,7 +3277,7 @@ ALTER TABLE ONLY public.users2
 
 
 --
--- TOC entry 3691 (class 2606 OID 17177)
+-- TOC entry 3730 (class 2606 OID 70366)
 -- Name: users2 users_mail_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3103,7 +3286,7 @@ ALTER TABLE ONLY public.users2
 
 
 --
--- TOC entry 3685 (class 2606 OID 17179)
+-- TOC entry 3724 (class 2606 OID 70368)
 -- Name: users users_mail_key1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3112,7 +3295,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3693 (class 2606 OID 17181)
+-- TOC entry 3732 (class 2606 OID 70370)
 -- Name: users2 users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3121,7 +3304,7 @@ ALTER TABLE ONLY public.users2
 
 
 --
--- TOC entry 3687 (class 2606 OID 17183)
+-- TOC entry 3726 (class 2606 OID 70372)
 -- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3130,7 +3313,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3555 (class 1259 OID 17184)
+-- TOC entry 3590 (class 1259 OID 70373)
 -- Name: concept_notation_unaccent; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3138,7 +3321,7 @@ CREATE INDEX concept_notation_unaccent ON public.concept USING gin (public.f_una
 
 
 --
--- TOC entry 3646 (class 1259 OID 17185)
+-- TOC entry 3683 (class 1259 OID 70374)
 -- Name: index_lexical_value; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3146,7 +3329,7 @@ CREATE INDEX index_lexical_value ON public.term USING btree (lexical_value);
 
 
 --
--- TOC entry 3657 (class 1259 OID 17186)
+-- TOC entry 3694 (class 1259 OID 70375)
 -- Name: index_lexical_value_copy; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3154,7 +3337,7 @@ CREATE INDEX index_lexical_value_copy ON public.term_historique USING btree (lex
 
 
 --
--- TOC entry 3606 (class 1259 OID 17187)
+-- TOC entry 3643 (class 1259 OID 70376)
 -- Name: index_lexical_value_npt; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3162,7 +3345,7 @@ CREATE INDEX index_lexical_value_npt ON public.non_preferred_term USING btree (l
 
 
 --
--- TOC entry 3612 (class 1259 OID 17188)
+-- TOC entry 3649 (class 1259 OID 70377)
 -- Name: note_lexical_value_unaccent; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3170,7 +3353,7 @@ CREATE INDEX note_lexical_value_unaccent ON public.note USING gin (public.f_unac
 
 
 --
--- TOC entry 3625 (class 1259 OID 17189)
+-- TOC entry 3662 (class 1259 OID 70378)
 -- Name: permuted_lexical_value_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3178,7 +3361,7 @@ CREATE INDEX permuted_lexical_value_idx ON public.permuted USING btree (lexical_
 
 
 --
--- TOC entry 3609 (class 1259 OID 17190)
+-- TOC entry 3646 (class 1259 OID 70379)
 -- Name: term_lexical_value_npt_unaccent; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3186,7 +3369,7 @@ CREATE INDEX term_lexical_value_npt_unaccent ON public.non_preferred_term USING 
 
 
 --
--- TOC entry 3651 (class 1259 OID 17191)
+-- TOC entry 3688 (class 1259 OID 70380)
 -- Name: term_lexical_value_unaccent; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3194,14 +3377,14 @@ CREATE INDEX term_lexical_value_unaccent ON public.term USING gin (public.f_unac
 
 
 --
--- TOC entry 3654 (class 1259 OID 17192)
+-- TOC entry 3691 (class 1259 OID 70381)
 -- Name: terms_values_gin; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX terms_values_gin ON public.term USING gin (lexical_value public.gin_trgm_ops);
 
 
--- Completed on 2020-05-26 16:04:40 CEST
+-- Completed on 2020-07-09 12:18:31 CEST
 
 --
 -- PostgreSQL database dump complete
