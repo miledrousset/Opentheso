@@ -70,18 +70,15 @@
 
                         <!-- liste des thésaurus -->                
                         <b:navLink style="height: 30px; margin-top: -3px; margin-right: -10px;">
-
                             <p:selectOneMenu id="idListTheso" value="#{selectedTheso.selectedIdTheso}"
-                                 style="font-size: 12px;  width: 180px; "
-
+                                 style="font-size: 12px;  width: 180px;"
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;">
-                                <p:ajax event="valueChange" update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab
-                                             containerIndex homePageForm"
+                                <p:ajax event="valueChange" update="containerIndex candidatForm formMenu"
                                              listener="#{selectedTheso.setSelectedTheso()}" />
                                 <f:selectItem itemLabel="(select thesaurus)" itemValue=""/>
                                 <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
                             </p:selectOneMenu>
-                        </b:navLink> 
+                        </b:navLink>
 
 
                         <!-- Langues -->

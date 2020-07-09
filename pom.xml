@@ -15,34 +15,13 @@
     </properties>
     
     <dependencies>
-        
-        <!-- Rdf4j -->
-        <!--      <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-model</artifactId>
-            <version>3.0.1</version>
-            <type>jar</type>
-        </dependency>
+
         <dependency>
-          <groupId>org.eclipse.rdf4j</groupId>
-          <artifactId>rdf4j-runtime</artifactId>
-          <version>3.0.1</version>
-        </dependency>     
-        -->  
-        
-        
-      
-        
-        
-        <!-- pour le webservices  -->
-        <!--        <dependency>
-                  <groupId>org.glassfish.jersey.bundles</groupId>
-                  <artifactId>jaxrs-ri</artifactId>
-                  <version>2.29.1</version>
-              </dependency> 
-        -->      
-        
-        
+            <groupId>com.github.themrleon</groupId>
+            <artifactId>JSF2Leaf</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!-- ne marche pas au delà de cette version 2.25 pour java 8, pour java11, il faut utiliser les verisons plus récentes-->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
@@ -50,44 +29,21 @@
             <version>2.25.1</version>
         </dependency>
         
-        
         <!-- Pour le webservices de ARK de la MOM-->
-        <!-- dépendance à supprimer, car incompatible avec la vesrion officielle de glassfish.jersey -->
-        <!--
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>1.19.4</version>
             <type>jar</type>
         </dependency>
-        -->
-        <!--
-        <dependency>
-            <groupId>org.glassfish.jersey.bundles</groupId>
-            <artifactId>jaxrs-ri</artifactId>
-            <version>2.25.1</version>
-            <scope>provided</scope>
-        </dependency>
-        -->
-        
-        
-        
-        
-        
+
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
             <version>1.1.4</version>
             <type>jar</type>
         </dependency>
-        
-        
-        
-        
-        
-        
-        
-        
+
         <!-- BDD postgresql -->
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -272,13 +228,13 @@
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-shaded</artifactId>
             <version>3.1.2.Final</version>
-        </dependency>    
-        
+        </dependency>
+
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
-        </dependency>    
+        </dependency>
     </dependencies>
     
 

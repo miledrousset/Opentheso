@@ -1262,8 +1262,7 @@ public class AlignmentBean implements Serializable {
      * @param idConcept
      * @param idUser
      */
-    public void addAlignment(String idTheso, String idConcept,
-            int idUser) {
+    public void addAlignment(String idTheso, String idConcept, int idUser) {
         if (selectedNodeAlignment == null) {
             return;
         }
@@ -1329,7 +1328,9 @@ public class AlignmentBean implements Serializable {
             pf.ajax().update("idConceptImages");
             pf.ajax().update("idConceptGps");
             pf.ajax().update("candidatForm");
+            pf.ajax().update("formRightTab");
         }         
+        
         isViewResult = true;
         isViewSelection = false;
         setExistingAlignment(idConcept, idTheso);

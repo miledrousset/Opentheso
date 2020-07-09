@@ -3,7 +3,7 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
     <h:panelGroup id="conceptView" rendered="#{conceptView.nodeConcept != null}" styleClass="textOpentheso">    
         <!-- Actions sur le concept -->
@@ -877,24 +877,37 @@
 
                 <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeGps != null}">
                     <b:row>
-                        <b:column >
-                            <h:outputText value="lat: " style="font-size: 12px;"/>
-                            <h:outputText value="#{conceptView.nodeConcept.nodeGps.latitude}" style="font-size: 12px; color: #666666"/>
-                        </b:column> 
-                    </b:row> 
-                    <b:row>
-                        <b:column>
-                            <h:outputText value="long: " style="font-size: 12px;"/>                            
-                            <h:outputText value="#{conceptView.nodeConcept.nodeGps.longitude}" style="font-size: 12px; color: #666666"/>
+                        <b:column span="8">
+                            <b:row>
+                                <b:column>
+                                    <h:outputText value="Lat: " style="font-size: 12px;"/>
+                                    <h:outputText value="#{conceptView.nodeConcept.nodeGps.latitude}" style="font-size: 12px; color: #666666"/>
+                                </b:column>
+                            </b:row>
+                            <b:row>
+                                <b:column>
+                                    <h:outputText value="Long: " style="font-size: 12px;"/>
+                                    <h:outputText value="#{conceptView.nodeConcept.nodeGps.longitude}" style="font-size: 12px; color: #666666"/>
+                                </b:column>
+                            </b:row>
                         </b:column>
                     </b:row>
-
-                    <p:separator styleClass="separator" style="margin-top: 2px"/>
+                    <b:row>
+                        <b:column>
+                            <p:panel header="Map" toggleable="true" closable="false" toggleSpeed="500" 
+                                     style="margin-top: 10px; margin-bottom: 10px">
+                                <leaf:mapAdvanced map="#{conceptView.mapModel}" />
+                            </p:panel>
+                        </b:column>
+                    </b:row>
+                    <b:row>
+                        <b:column>
+                            <p:separator styleClass="separator" style="margin-top: 2px;"/>
+                        </b:column>
+                    </b:row>
                 </b:column>
             </h:panelGroup>
         </b:row>
-
-
 
 
         <!-- ligne Corpus liés -->        
@@ -1042,7 +1055,7 @@
             <b:column span="4" colXs="4">
                 <h:outputText value="Uri d'origine" style="margin-left: 5px;"/>
             </b:column>
-            
+
             <!-- Cas d'uri de type Ark -->
             <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
                 <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
@@ -1050,7 +1063,7 @@
                         target="_blank"
                         icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
             </b:column>            
-            
+
             <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
                 <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
                         value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}" icon="link" 
@@ -1064,7 +1077,7 @@
                         icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
             </b:column>            
         </b:row >        
-        
+
         <b:row rendered="#{conceptView.nodeConcept.concept.idArk != ''}">
             <b:column span="4" colXs="4">
                 <h:outputText value="IdArk" style="margin-left: 5px;"/>
@@ -1160,8 +1173,8 @@
         <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />  
 
         <ui:include src="/dialog/gps/setGps.xhtml" />      
-        <ui:include src="/dialog/gps/deleteGps.xhtml" />      
-        
+        <ui:include src="/dialog/gps/deleteGps.xhtml" />
+
     </h:panelGroup>
 
 

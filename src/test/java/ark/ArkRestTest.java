@@ -38,6 +38,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.primefaces.shaded.json.JSONObject;
 
@@ -45,6 +46,7 @@ import org.primefaces.shaded.json.JSONObject;
  *
  * @author miledrousset
  */
+@Ignore
 public class ArkRestTest {
     
     public ArkRestTest() {

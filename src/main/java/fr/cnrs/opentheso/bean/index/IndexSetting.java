@@ -6,11 +6,15 @@
 package fr.cnrs.opentheso.bean.index;
 
 import fr.cnrs.opentheso.bean.condidat.CandidatBean;
+import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -117,14 +121,17 @@ public class IndexSetting implements Serializable {
         return isCandidateActive;
     }
 
-    public void setIsCandidateActive(boolean isCandidateActive) {
+    public void setIsCandidateActive(boolean isCandidateActive) throws IOException {
+        candidatBean.initCandidatModule();
         this.isCandidateActive = isCandidateActive;
         isThesoActive = false;   
         isProfileActive = false; 
         isSettingActive = false;    
         isToolBoxActive = false;  
         resetColor();
-        candidateColor = "white";          
+        candidateColor = "white";   
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 
     public boolean isIsProfileActive() {
