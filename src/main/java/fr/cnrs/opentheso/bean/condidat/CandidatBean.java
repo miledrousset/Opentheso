@@ -76,6 +76,9 @@ public class CandidatBean implements Serializable {
     public void initCandidatModule() {
         isListCandidatsActivate = true;
         isNewCandidatActivate = false;
+        candidatList = new ArrayList<>();
+        allTermes = new ArrayList<>();
+        domaines = new ArrayList<>();
         getAllCandidatsByThesoAndLangue();
     }
     
