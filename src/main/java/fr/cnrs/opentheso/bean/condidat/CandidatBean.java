@@ -26,6 +26,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import java.io.IOException;
+import javax.faces.context.ExternalContext;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -109,7 +112,7 @@ public class CandidatBean implements Serializable {
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
 
-    public void showCandidatSelected(CandidatDto candidatDto) {
+    public void showCandidatSelected(CandidatDto candidatDto) throws IOException {
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
@@ -135,11 +138,17 @@ public class CandidatBean implements Serializable {
         alignmentBean.setIdConceptSelectedForAlignment(candidatDto.getIdConcepte());
 
         setIsNewCandidatActivate(true);
+        
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 
-    public void setIsListCandidatsActivate(boolean isListCandidatsActivate) {
+    public void setIsListCandidatsActivate(boolean isListCandidatsActivate) throws IOException {
         this.isListCandidatsActivate = isListCandidatsActivate;
         isNewCandidatActivate = false;
+        
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 
     public boolean isIsNewCandidatActivate() {
@@ -151,7 +160,7 @@ public class CandidatBean implements Serializable {
         isListCandidatsActivate = false;
     }
 
-    public void saveConcept() throws SQLException {
+    public void saveConcept() throws SQLException, IOException {
 
         if (StringUtils.isEmpty(candidatSelected.getNomPref())) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg1"));
@@ -270,7 +279,7 @@ public class CandidatBean implements Serializable {
         return matches;
     }
 
-    public void initialNewCandidat() throws SQLException {
+    public void initialNewCandidat() throws SQLException, IOException {
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
             return;
@@ -295,6 +304,9 @@ public class CandidatBean implements Serializable {
         allTermes = candidatList;
 
         initialCandidat = null;
+        
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
