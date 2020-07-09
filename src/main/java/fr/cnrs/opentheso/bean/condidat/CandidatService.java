@@ -70,11 +70,16 @@ public class CandidatService implements Serializable {
         return temps;
     }
 
-    public String getCandidatID(Connect connect) throws SQLException {
+    public String getCandidatID(Connect connect) {
+        int id = 0;
         HikariDataSource connection = connect.getPoolConnexion();
-        int id = new CandidatDao().getMaxCandidatId(connection) + 1;
+        try {
+            id = new CandidatDao().getMaxCandidatId(connection);
+        } catch (Exception e) {
+            LOG.error(e);
+        }
         connection.close();
-        return id+"";
+        return (id+1)+"";
     }
     
     public String saveNewCondidat(Connect connect, Concept concept, ConceptHelper conceptHelper) 
