@@ -282,7 +282,7 @@ public class CandidatBean implements Serializable {
         return matches;
     }
 
-    public void initialNewCandidat() throws SQLException, IOException {
+    public void initialNewCandidat() throws IOException {
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
             return;

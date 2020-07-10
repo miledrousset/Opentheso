@@ -50,7 +50,7 @@ public class DiscussionService implements Serializable {
         }
     }
 
-    public void sendMessage() throws SQLException {
+    public void sendMessage() {
         
         if (StringUtils.isEmpty(candidatBean.getMessage())) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg1"));

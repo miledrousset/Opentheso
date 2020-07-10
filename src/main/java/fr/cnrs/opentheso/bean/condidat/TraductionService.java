@@ -57,7 +57,7 @@ public class TraductionService implements Serializable {
 
         Term term = new Term();
         term.setStatus("D");
-        term.setLang(newLangage);
+        term.setLang(newLangage.toLowerCase());
         term.setLexical_value(newTraduction);
         term.setId_thesaurus(candidatBean.getCandidatSelected().getIdThesaurus());
         term.setContributor(candidatBean.getCurrentUser().getNodeUser().getIdUser());
@@ -89,7 +89,8 @@ public class TraductionService implements Serializable {
 
         HikariDataSource connection = connect.getPoolConnexion();
 
-        new TermeDao().deleteTermByValueAndLangAndThesaurus(connection, candidatBean.getCandidatSelected().getIdThesaurus(), langage, traduction);
+        new TermeDao().deleteTermByValueAndLangAndThesaurus(connection, candidatBean.getCandidatSelected().getIdThesaurus(),
+                langage.toLowerCase(), traduction);
 
         refrechTraductions(connection);
 
@@ -104,11 +105,11 @@ public class TraductionService implements Serializable {
         HikariDataSource connection = connect.getPoolConnexion();
 
         new TermeDao().deleteTermByValueAndLangAndThesaurus(connection, candidatBean.getCandidatSelected().getIdThesaurus(),
-                langageOld, traductionOld);
+                langageOld.toLowerCase(), traductionOld);
 
         Term term = new Term();
         term.setStatus("D");
-        term.setLang(langage);
+        term.setLang(langage.toLowerCase());
         term.setLexical_value(traduction);
         term.setId_thesaurus(candidatBean.getCandidatSelected().getIdThesaurus());
         term.setContributor(candidatBean.getCurrentUser().getNodeUser().getIdUser());

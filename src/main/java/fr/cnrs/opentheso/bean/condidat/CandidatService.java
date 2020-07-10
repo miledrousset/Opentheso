@@ -187,13 +187,13 @@ public class CandidatService implements Serializable {
         return null;
     }
 
-    private int getDomaineId(List<DomaineDto> domaines, String label) {
+    private String getDomaineId(List<DomaineDto> domaines, String label) {
         for (DomaineDto domaineDto : domaines) {
             if (domaineDto.getName().equals(label)) {
                 return domaineDto.getId();
             }
         }
-        return 0;
+        return "";
     }
 
     public List<DomaineDto> getDomainesList(Connect connect, String idThesaurus, String lang) {

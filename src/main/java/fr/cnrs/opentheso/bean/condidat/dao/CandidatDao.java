@@ -104,7 +104,7 @@ public class CandidatDao extends BasicDao {
     public int getMaxCandidatId(HikariDataSource hikariDataSource) throws SQLException {
         int nbrDemande = 0;
         openDataBase(hikariDataSource);
-        stmt.executeQuery(new StringBuffer("SELECT COALESCE(max(id_concept), '0') max_id from concept").toString());
+        stmt.executeQuery("SELECT COALESCE(max(id_concept), '0') max_id from concept where status = 'CA'");
         resultSet = stmt.getResultSet();
         while (resultSet.next()) {
             nbrDemande = resultSet.getInt("max_id");
