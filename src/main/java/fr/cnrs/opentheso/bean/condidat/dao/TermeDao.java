@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
+import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,7 +10,20 @@ import java.util.List;
 
 
 public class TermeDao extends BasicDao {
-    
+
+
+    public void addNewTerme(HikariDataSource hikariDataSource, Term term) throws SQLException {
+        try {
+            openDataBase(hikariDataSource);
+            stmt.executeQuery("INSERT INTO term (id_term, lexical_value, lang, id_thesaurus, status, contributor, creator) VALUES ('"
+                    +term.getId_term()+"', '"+term.getLexical_value()+"', '"+term.getLang()+"', '"+term.getId_thesaurus()+"', '"
+                    +term.getStatus()+"', '"+term.getIdUser()+"', '"+term.getIdUser()+"')");
+            closeDataBase();
+        } catch (SQLException e) {
+            LOG.error(e);
+            closeDataBase();
+        }
+    }
     
     public void saveIntitule(Connect connect, String intitule, String idThesaurus, String lang, String idConcept,
                              String idTerm) throws SQLException {
@@ -24,13 +37,11 @@ public class TermeDao extends BasicDao {
         stmt.close();
     }
 
-    public String getIdTermeByValueAndLangAndThesaurus(HikariDataSource hikariDataSource, String idThesaurus, String lang,
-                                                       String value) throws SQLException {
+    public String getIdTermeByCandidatAndThesaurus(HikariDataSource hikariDataSource, String idThesaurus, String idCandidat) throws SQLException {
         String idTerm = null;
         try {
             openDataBase(hikariDataSource);
-            stmt.executeQuery("SELECT id_term from term WHERE id_thesaurus='"+idThesaurus+"' AND lang = '"+ LanguageEnum.fromString(lang)
-                    +"' AND lexical_value = '"+value+"'");
+            stmt.executeQuery("SELECT id_term FROM preferred_term where id_thesaurus = '"+idThesaurus+"' AND id_concept = '"+idCandidat+"'");
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 idTerm = resultSet.getString("id_term");
@@ -43,13 +54,10 @@ public class TermeDao extends BasicDao {
         return idTerm;
     }
 
-    public void deleteTermByValueAndLangAndThesaurus(HikariDataSource hikariDataSource, String idThesaurus, String lang,
-                                                     String value) throws SQLException {
+    public void updateTerme(HikariDataSource hikariDataSource, String idTerm, String newValue, String lang) throws SQLException {
         try {
-            String idTerm = getIdTermeByValueAndLangAndThesaurus(hikariDataSource, idThesaurus, lang, value);
             openDataBase(hikariDataSource);
-            stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"'");
-            stmt.executeUpdate("DELETE FROM preferred_term WHERE id_term = '"+idTerm+"'");
+            stmt.executeUpdate("UPDATE term SET lexical_value = '"+newValue + "' WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'");
             closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
@@ -57,16 +65,28 @@ public class TermeDao extends BasicDao {
         }
     }
 
-    public void updateIntitule(Connect connect, String intitule, String idThesaurus, String lang, String idConcept,
-                               String idTerm) {
+    public void deleteTermByIdTermAndLang(HikariDataSource hikariDataSource, String idTerm, String lang) throws SQLException {
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
+            openDataBase(hikariDataSource);
+            stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'");
+            closeDataBase();
+        } catch (SQLException e) {
+            LOG.error(e);
+            closeDataBase();
+        }
+    }
+
+    public void updateIntitule(HikariDataSource hikariDataSource, String intitule, String idThesaurus, String lang, String idConcept,
+                               String idTerm) throws SQLException {
+        try {
+            openDataBase(hikariDataSource);
             String idTerme = getIdPreferredTerme(stmt, idConcept, idThesaurus);
             stmt.executeUpdate("UPDATE non_preferred_term SET lexical_value = '"+intitule+"', lang='"
                     +lang+"' WHERE id_term ='"+idTerme+"' AND id_term = '"+idTerm+"'");
-            stmt.close();
+            closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
+            closeDataBase();
         }
     }
 
@@ -100,28 +120,6 @@ public class TermeDao extends BasicDao {
             stmt = connect.getPoolConnexion().getConnection().createStatement();
             executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
                     +idConceptSelected+"', '"+idThesaurus+"', '"+role+"', '"+idConceptdestination+"')");
-            stmt.close();
-        } catch (SQLException e) {
-            LOG.error(e);
-        }
-    }
-
-    public void updateTerme(Connect connect, String idConceptSelected, String idConceptdestination, String idThesaurus, String role) {
-        try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            executInsertRequest(stmt, "UPDATE hierarchical_relationship SET id_concept2 = '"+idConceptdestination
-                    +"' WHERE id_concept1= '"+idConceptSelected+"' AND id_thesaurus= '"+idThesaurus+"' AND role='"+role+"'");
-            stmt.close();
-        } catch (SQLException e) {
-            LOG.error(e);
-        }
-    }
-
-    public void deleteExistingTerme(Connect connect, String idConceptSelected, String idConceptdestination, String idThesaurus, String role) {
-        try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            executDeleteRequest(stmt, "DELETE FROM hierarchical_relationship WHERE id_concept1 = '"+idConceptSelected
-                    +"'AND id_concept2 = '"+idConceptdestination+"' AND id_thesaurus = '"+idThesaurus+"' AND role = '"+role+"'");
             stmt.close();
         } catch (SQLException e) {
             LOG.error(e);

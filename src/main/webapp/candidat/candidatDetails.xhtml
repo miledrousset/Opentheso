@@ -26,7 +26,7 @@
         </b:column>
         <b:column style="width: 100%;">
             <p:autoComplete value="#{candidatBean.candidatSelected.domaine}" style="width: 100%; "
-                            completeMethod="#{candidatBean.searchDomaineName}"/>
+                            completeMethod="#{candidatBean.searchDomaineName}" scrollHeight="150"/>
         </b:column>
 
         <b:column style="margin-top: 15px;">
@@ -62,7 +62,7 @@
                 <b:row rendered="#{candidatBean.candidatSelected.defenitions == null ||
                                    candidatBean.candidatSelected.defenitions.size() == 0}">
                     <b:column>
-                        <h:outputText  value="Aucune définition existe pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
+                        <h:outputText value="Aucune définition existe pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
                     </b:column>
                 </b:row>
                 <b:row rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
@@ -72,7 +72,7 @@
                                    viewEditionBean.getAlternateColor(candidatBean.candidatSelected.defenitions.indexOf(def))}"
                                    rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
                                 <b:column span="10" >
-                                    <h:outputText value="#{def}"/>
+                                    <h:outputText value="#{def}" style="width: 100%; resize: none; font-size: 13px;"/>
                                 </b:column>
                                 <b:column span="1">
                                     <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"

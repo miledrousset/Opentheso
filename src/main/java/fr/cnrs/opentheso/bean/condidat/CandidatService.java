@@ -105,8 +105,6 @@ public class CandidatService implements Serializable {
                 candidatSelected.getIdConcepte(), candidatSelected.getUserId());
 
         if (idTerm == null) {
-            connect.getPoolConnexion().getConnection().rollback();
-            connect.getPoolConnexion().close();
             return null;
         }
 
@@ -119,8 +117,8 @@ public class CandidatService implements Serializable {
     }
 
     public void updateIntitule(Connect connect, String intitule, String idThesaurus,
-            String lang, String idConcept, String idTerm) {
-        new TermeDao().updateIntitule(connect, intitule, idThesaurus, lang, idConcept, idTerm);
+            String lang, String idConcept, String idTerm) throws SQLException {
+        new TermeDao().updateIntitule(connect.getPoolConnexion(), intitule, idThesaurus, lang, idConcept, idTerm);
     }
 
     public void updateDetailsCondidat(Connect connect, CandidatDto candidatSelected, CandidatDto initialCandidat,
@@ -230,7 +228,7 @@ public class CandidatService implements Serializable {
 
             candidatSelected.setTraductions(new TermHelper().getTraductionsOfConcept(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
-                            term -> new TraductionDto(LanguageEnum.valueOf(term.getLang()).getLanguage(),
+                            term -> new TraductionDto(LanguageEnum.valueOf(term.getLang().toUpperCase()).getLanguage(),
                             term.getLexicalValue())).collect(Collectors.toList()));
             
             candidatSelected.setMessages(messageDao.getAllMessagesByCandidat(connection, candidatSelected.getIdConcepte(),

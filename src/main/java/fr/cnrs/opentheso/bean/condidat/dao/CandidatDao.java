@@ -16,7 +16,7 @@ public class CandidatDao extends BasicDao {
 
         openDataBase(hikariDataSource);
 
-        stmt.executeQuery(new StringBuffer("SELECT nomPreTer.lang, nomPreTer.id_term, nomPreTer.lexical_value,")
+        stmt.executeQuery(new StringBuffer("SELECT DISTINCT nomPreTer.lang, nomPreTer.id_term, nomPreTer.lexical_value,")
                 .append("con.id_concept, con.id_thesaurus, con.created, users.username, term.contributor ")
                 .append("FROM non_preferred_term nomPreTer, preferred_term preTer, concept con, term, users ")
                 .append("WHERE nomPreTer.id_term = preTer.id_term ")

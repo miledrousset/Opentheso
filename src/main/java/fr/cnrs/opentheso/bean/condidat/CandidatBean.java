@@ -262,13 +262,17 @@ public class CandidatBean implements Serializable {
     }
 
     public List<String> searchDomaineName(String enteredValue) {
-        List<String> matches = new ArrayList<>();
-        for (DomaineDto s : domaines) {
-            if (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
-                matches.add(s.getName());
+        if ("%".equals(enteredValue)) {
+            return domaines.stream().map(domaineDto -> domaineDto.getName()).collect(Collectors.toList());
+        } else  {
+            List<String> matches = new ArrayList<>();
+            for (DomaineDto s : domaines) {
+                if (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
+                    matches.add(s.getName());
+                }
             }
+            return matches;
         }
-        return matches;
     }
 
     public List<String> searchTerme(String enteredValue) {
