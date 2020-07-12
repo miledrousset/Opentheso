@@ -4,8 +4,10 @@ import fr.cnrs.opentheso.bean.condidat.CandidatBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.PrimeFaces;
 
 @Named(value = "definitionBean")
 @SessionScoped
@@ -33,6 +35,11 @@ public class DefinitionBean implements Serializable {
             candidatBean.getCandidatSelected().getDefenitions().set(pos, definition);
         }
         definition = "";
+        
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition modifiée avec sucée");
+            
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm");
     }
     
     public void addDefinition() {
@@ -49,6 +56,11 @@ public class DefinitionBean implements Serializable {
         }
         candidatBean.getCandidatSelected().getDefenitions().add(definition);
         definition = "";
+        
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition ajoutée avec sucée");
+            
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm");
     }
     
     public void deleteDefinition() {
@@ -65,6 +77,11 @@ public class DefinitionBean implements Serializable {
             }
         }
         definition = "";
+        
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition supprimée avec sucée");
+            
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm");
     }
 
     public String getDefinition() {

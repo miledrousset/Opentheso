@@ -15,8 +15,8 @@
             <b:row>
                 <b:column span="6">
                     <p:commandButton value="Ajouter"
-                                     update="idNewDefinition newDefinitionForm :candidatForm:listDefinitionsForm messageIndex"
-                                     styleClass="ui-priority-primary" ajax="false" class="btn btn-primary"
+                                     update=":candidatForm:listDefinitionsForm messageIndex"
+                                     styleClass="ui-priority-primary" ajax="true" class="btn btn-primary"
                                      style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"                                    
                                      action="#{definitionBean.addDefinition()}"
                                      oncomplete="PF('newDefinition').hide();"/>

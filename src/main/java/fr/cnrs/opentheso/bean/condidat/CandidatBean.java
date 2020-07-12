@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
+import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -57,6 +58,9 @@ public class CandidatBean implements Serializable {
     
     @Inject
     private AlignmentBean alignmentBean;
+    
+    @Inject
+    private AlignmentManualBean alignmentManualBean;
 
     private final CandidatService candidatService = new CandidatService();
 
@@ -258,6 +262,40 @@ public class CandidatBean implements Serializable {
         
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm");
+
+    }
+
+    public void showAllignementDialog(int pos) {
+
+        if (initialCandidat == null) {
+            showMessage(FacesMessage.SEVERITY_INFO, "Vous devez enregistrer votre candidat avant de gérer les alignements.");
+            return;
+        }
+        
+        switch (pos) {
+            case 1: 
+                alignmentBean.initAlignementByStep(
+                        selectedTheso.getCurrentIdTheso(),
+                        candidatSelected.getIdConcepte(), 
+                        languageBean.getIdLangue());
+                alignmentBean.nextTen(languageBean.getIdLangue(), selectedTheso.getCurrentIdTheso());
+                PrimeFaces.current().executeScript("PF('addAlignment').show();");
+                return;
+            case 2:
+                alignmentManualBean.reset();
+                PrimeFaces.current().executeScript("PF('addManualAlignment').show();");
+                return;
+            case 3:
+                alignmentManualBean.reset();
+                PrimeFaces.current().executeScript("PF('updateAlignment').show();");
+                return;
+            default:
+                alignmentManualBean.reset();
+                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                        candidatSelected.getIdConcepte(), languageBean.getIdLangue());
+                        
+                PrimeFaces.current().executeScript("PF('deleteAlignment').show();");
+        }
 
     }
 
