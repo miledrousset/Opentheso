@@ -293,9 +293,9 @@ public class CandidatBean implements Serializable {
                 alignmentManualBean.reset();
                 alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                         candidatSelected.getIdConcepte(), languageBean.getIdLangue());
-                        
                 PrimeFaces.current().executeScript("PF('deleteAlignment').show();");
         }
+        PrimeFaces.current().ajax().update("addAlignmentForm");
 
     }
 

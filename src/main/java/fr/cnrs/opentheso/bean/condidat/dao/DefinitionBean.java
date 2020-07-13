@@ -32,7 +32,7 @@ public class DefinitionBean implements Serializable {
         int pos = candidatBean.getCandidatSelected().getDefenitions().indexOf(oldDefinition);
 
         if (pos > -1) {
-            candidatBean.getCandidatSelected().getDefenitions().set(pos, definition);
+            candidatBean.getCandidatSelected().getDefenitions().set(pos, definition.replaceAll("(\r\n|\n)", "<br />"));
         }
         definition = "";
         
@@ -54,7 +54,7 @@ public class DefinitionBean implements Serializable {
                 return;
             }
         }
-        candidatBean.getCandidatSelected().getDefenitions().add(definition);
+        candidatBean.getCandidatSelected().getDefenitions().add(definition.replaceAll("(\r\n|\n)", "<br />"));
         definition = "";
         
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition ajoutée avec sucée");
