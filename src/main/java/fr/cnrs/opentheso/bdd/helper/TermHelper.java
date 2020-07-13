@@ -938,8 +938,7 @@ public class TermHelper {
                      * Ajout des informations dans la table Concept
                      */
                     query = "Insert into term "
-                            + "(id_term, lexical_value, lang, "
-                            + "id_thesaurus, source, status, contributor, creator)"
+                            + "(id_term, lexical_value, lang, id_thesaurus, source, status, contributor, creator)"
                             + " values ("
                             + "'" + term.getId_term() + "'"
                             + ",'" + term.getLexical_value() + "'"

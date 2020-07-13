@@ -4,8 +4,10 @@ import fr.cnrs.opentheso.bean.condidat.CandidatBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.PrimeFaces;
 
 @Named(value = "definitionBean")
 @SessionScoped
@@ -30,9 +32,14 @@ public class DefinitionBean implements Serializable {
         int pos = candidatBean.getCandidatSelected().getDefenitions().indexOf(oldDefinition);
 
         if (pos > -1) {
-            candidatBean.getCandidatSelected().getDefenitions().set(pos, definition);
+            candidatBean.getCandidatSelected().getDefenitions().set(pos, definition.replaceAll("(\r\n|\n)", "<br />"));
         }
         definition = "";
+        
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition modifiée avec sucée");
+            
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm");
     }
     
     public void addDefinition() {
@@ -47,8 +54,13 @@ public class DefinitionBean implements Serializable {
                 return;
             }
         }
-        candidatBean.getCandidatSelected().getDefenitions().add(definition);
+        candidatBean.getCandidatSelected().getDefenitions().add(definition.replaceAll("(\r\n|\n)", "<br />"));
         definition = "";
+        
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition ajoutée avec sucée");
+            
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm");
     }
     
     public void deleteDefinition() {
@@ -65,6 +77,11 @@ public class DefinitionBean implements Serializable {
             }
         }
         definition = "";
+        
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition supprimée avec sucée");
+            
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm");
     }
 
     public String getDefinition() {

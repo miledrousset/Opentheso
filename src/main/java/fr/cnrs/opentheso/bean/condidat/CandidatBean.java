@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
+import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -57,6 +58,9 @@ public class CandidatBean implements Serializable {
     
     @Inject
     private AlignmentBean alignmentBean;
+    
+    @Inject
+    private AlignmentManualBean alignmentManualBean;
 
     private final CandidatService candidatService = new CandidatService();
 
@@ -261,14 +265,52 @@ public class CandidatBean implements Serializable {
 
     }
 
-    public List<String> searchDomaineName(String enteredValue) {
-        List<String> matches = new ArrayList<>();
-        for (DomaineDto s : domaines) {
-            if (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
-                matches.add(s.getName());
-            }
+    public void showAllignementDialog(int pos) {
+
+        if (initialCandidat == null) {
+            showMessage(FacesMessage.SEVERITY_INFO, "Vous devez enregistrer votre candidat avant de gérer les alignements.");
+            return;
         }
-        return matches;
+        
+        switch (pos) {
+            case 1: 
+                alignmentBean.initAlignementByStep(
+                        selectedTheso.getCurrentIdTheso(),
+                        candidatSelected.getIdConcepte(), 
+                        languageBean.getIdLangue());
+                alignmentBean.nextTen(languageBean.getIdLangue(), selectedTheso.getCurrentIdTheso());
+                PrimeFaces.current().executeScript("PF('addAlignment').show();");
+                return;
+            case 2:
+                alignmentManualBean.reset();
+                PrimeFaces.current().executeScript("PF('addManualAlignment').show();");
+                return;
+            case 3:
+                alignmentManualBean.reset();
+                PrimeFaces.current().executeScript("PF('updateAlignment').show();");
+                return;
+            default:
+                alignmentManualBean.reset();
+                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                        candidatSelected.getIdConcepte(), languageBean.getIdLangue());
+                PrimeFaces.current().executeScript("PF('deleteAlignment').show();");
+        }
+        PrimeFaces.current().ajax().update("addAlignmentForm");
+
+    }
+
+    public List<String> searchDomaineName(String enteredValue) {
+        if ("%".equals(enteredValue)) {
+            return domaines.stream().map(domaineDto -> domaineDto.getName()).collect(Collectors.toList());
+        } else  {
+            List<String> matches = new ArrayList<>();
+            for (DomaineDto s : domaines) {
+                if (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
+                    matches.add(s.getName());
+                }
+            }
+            return matches;
+        }
     }
 
     public List<String> searchTerme(String enteredValue) {
@@ -282,7 +324,7 @@ public class CandidatBean implements Serializable {
         return matches;
     }
 
-    public void initialNewCandidat() throws SQLException, IOException {
+    public void initialNewCandidat() throws IOException {
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
             return;
@@ -332,6 +374,10 @@ public class CandidatBean implements Serializable {
 
     public void setCandidatList(List<CandidatDto> candidatList) {
         this.candidatList = candidatList;
+    }
+
+    public CandidatDto getInitialCandidat() {
+        return initialCandidat;
     }
 
     public Connect getConnect() {

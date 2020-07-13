@@ -41,7 +41,7 @@ public class NoteDao extends BasicDao {
                     .append(lang).append("'").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
-                definitions.add(resultSet.getString("lexicalvalue"));
+                definitions.add(resultSet.getString("lexicalvalue").replaceAll("(\r\n|\n)", "<br />"));
             }
             closeDataBase();
         } catch (SQLException e) {

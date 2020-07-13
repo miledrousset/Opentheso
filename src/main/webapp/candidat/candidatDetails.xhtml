@@ -26,7 +26,7 @@
         </b:column>
         <b:column style="width: 100%;">
             <p:autoComplete value="#{candidatBean.candidatSelected.domaine}" style="width: 100%; "
-                            completeMethod="#{candidatBean.searchDomaineName}"/>
+                            completeMethod="#{candidatBean.searchDomaineName}" scrollHeight="150"/>
         </b:column>
 
         <b:column style="margin-top: 15px;">
@@ -62,7 +62,7 @@
                 <b:row rendered="#{candidatBean.candidatSelected.defenitions == null ||
                                    candidatBean.candidatSelected.defenitions.size() == 0}">
                     <b:column>
-                        <h:outputText  value="Aucune définition existe pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
+                        <h:outputText value="Aucune définition existe pour le moment ..." style="font-size: 12px; color: grey; font-style: italic"/>
                     </b:column>
                 </b:row>
                 <b:row rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
@@ -72,14 +72,14 @@
                                    viewEditionBean.getAlternateColor(candidatBean.candidatSelected.defenitions.indexOf(def))}"
                                    rendered="#{candidatBean.candidatSelected.defenitions.size() > 0}">
                                 <b:column span="10" >
-                                    <h:outputText value="#{def}"/>
+                                    <h:outputText value="#{def}" style="width: 100%; resize: none; font-size: 13px;" escape="false" />
                                 </b:column>
                                 <b:column span="1">
                                     <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
                                                       oncomplete="PF('editDefinition').show();" style="color: #f47b2a;"
                                                       actionListener="#{definitionBean.init(def)}"
                                                       styleClass="buttonIconOrange" ajax="false"
-                                                      update="idEditDefinition editDefinitionForm"/>
+                                                      update="idEditDefinition editDefinitionForm messageIndex"/>
                                 </b:column>
                                 <b:column span="1">
                                     <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
@@ -201,48 +201,9 @@
                         <h:outputText value="#{langueBean.getMsg('candidat.remove')}"/>
                     </b:column>                         
                 </b:row>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-                <b:row rendered="#{candidatBean.candidatSelected.corpus.size() == 0}">
-                    <b:column>
-                        <h:outputText  value="Aucun corpus n'est disponible ..." style="font-size: 12px; color: grey; font-style: italic " />
-                    </b:column>
-                </b:row>
-                <ui:repeat id="listCorpus" var="carpus" value="#{candidatBean.candidatSelected.corpus}">
-                    <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(
-                                                                       candidatBean.candidatSelected.corpus.indexOf(carpus))}; padding-top: 5px"
-                           rendered="#{candidatBean.candidatSelected.corpus.size() > 0}">
-                        <b:column span="4" >
-                            <h:outputText value="#{carpus.value}"/>
-                        </b:column>
-                        <b:column span="4" >
-                            <h:outputText value="#{carpus.url}"/>
-                        </b:column>
-                        <b:column span="2">
-                            <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
-                                              oncomplete="PF('editCorpus').show();" style="color: #f47b2a;"
-                                              actionListener="#{corpusService.init(carpus)}"
-                                              styleClass="buttonIconOrange" ajax="false"
-                                              update="idEditCorpus editCorpusForm"/>     
-                        </b:column>
-                        <b:column span="2">
-                            <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
-                                              styleClass="buttonIconOrange" style="color: #f47b2a;"
-                                              actionListener="#{corpusService.init(carpus)}"
-                                              oncomplete="PF('confirmDeleteCorpus').show();" 
-                                              update="idCorpusDelete corpusDeleteForm"/>
-                        </b:column>                         
-                    </b:row>   
-                </ui:repeat>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>              
+                <h:outputText  value="Non disponible pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " /> 
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-                <b:row>
-                    <b:column>
-                        <b:navCommandLink value="Ajouter une nouvelle corpus"
-                                          oncomplete="PF('newCorpus').show();" ajax="false"
-                                          styleClass="buttonIconOrange" style="color: #f47b2a"
-                                          actionListener="#{corpusService.init()}"
-                                          update="idNewCorpus newCorpusForm"/>
-                    </b:column>
-                </b:row>
             </h:form>
         </b:column>
     </b:row>
@@ -288,23 +249,18 @@
                         <b:dropMenu icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                                     style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <b:navCommandLink value="Ajouter alignement auto"
-                                              actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
-                                                                candidatBean.candidatSelected.idConcept, candidatBean.languageBean.idLangue)}"
-                                              action="#{alignmentBean.nextTen(candidatBean.languageBean.idLangue, selectedTheso.currentIdTheso)}"
-                                              oncomplete="PF('addAlignment').show();" update="candidatForm alignementForm" style="font-size: 12px;"/>
+                                              actionListener="#{candidatBean.showAllignementDialog(1)}"
+                                              update="candidatForm alignementForm" style="font-size: 12px;"/>
 
-                            <b:navCommandLink value="Ajouter alignement manuel" actionListener="#{alignmentManualBean.reset()}"
-                                              oncomplete="PF('addManualAlignment').show();" update="candidatForm"
+                            <b:navCommandLink value="Ajouter alignement manuel" update="candidatForm"
+                                              actionListener="#{candidatBean.showAllignementDialog(2)}" 
                                               style="font-size: 12px;"/>
 
-                            <b:navCommandLink value="Modifier l'alignement" action="#{alignmentManualBean.reset()}"
-                                              oncomplete="PF('updateAlignment').show();" update="candidatForm"
-                                              style="font-size: 12px;"/>
+                            <b:navCommandLink value="Modifier l'alignement" actionListener="#{candidatBean.showAllignementDialog(3)}" 
+                                              update="candidatForm" style="font-size: 12px;"/>
 
                             <b:navCommandLink value="supprimer alignement"
-                                              actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
-                                                                candidatBean.candidatSelected.idConcept, candidatBean.languageBean.idLangue)}"
-                                              action="#{alignmentManualBean.reset()}" oncomplete="PF('deleteAlignment').show();"
+                                              actionListener="#{candidatBean.showAllignementDialog(4)}"
                                               update="candidatForm" style="font-size: 12px;"/>
                         </b:dropMenu>
                     </b:column>
