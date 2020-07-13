@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.condidat;
 
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
 import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -16,6 +17,9 @@ public class TraductionService implements Serializable {
 
     @Inject
     private CandidatBean candidatBean;
+
+    @Inject
+    private LanguageBean languageBean;
 
     private String langage;
     private String traduction;
@@ -46,12 +50,19 @@ public class TraductionService implements Serializable {
     }
 
     public void addTraductionCandidat() {
+        for (TraductionDto traduction : candidatBean.getCandidatSelected().getTraductions()) {
+            if (traduction.getLangue().equals(LanguageEnum.valueOf(newLangage).getLanguage())
+                && traduction.getTraduction().equals(newTraduction)) {
+                return;
+            }
+        }
+
         TraductionDto traduction = new TraductionDto();
         traduction.setLangue(LanguageEnum.valueOf(newLangage).getLanguage());
         traduction.setTraduction(newTraduction);
         candidatBean.getCandidatSelected().getTraductions().add(traduction);
 
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec succée");
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));
     }
 
     public void deleteTraduction() {
@@ -65,7 +76,7 @@ public class TraductionService implements Serializable {
         }
         candidatBean.getCandidatSelected().setTraductions(temps);
 
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction supprimée avec succée");
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));
     }
 
     public void updateTraduction() {
@@ -77,7 +88,7 @@ public class TraductionService implements Serializable {
             }
         }
 
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction mise à jour avec succée !");
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO,  languageBean.getMsg("candidat.traduction.msg3"));
     }
 
     public String getLangage() {

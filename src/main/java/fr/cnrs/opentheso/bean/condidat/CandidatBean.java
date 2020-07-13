@@ -376,6 +376,10 @@ public class CandidatBean implements Serializable {
         this.candidatList = candidatList;
     }
 
+    public CandidatDto getInitialCandidat() {
+        return initialCandidat;
+    }
+
     public Connect getConnect() {
         return connect;
     }

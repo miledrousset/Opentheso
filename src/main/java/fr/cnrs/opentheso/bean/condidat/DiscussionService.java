@@ -38,6 +38,9 @@ public class DiscussionService implements Serializable {
     @Inject
     private Connect connect;
 
+    @Inject
+    private LanguageBean languageBean;
+
     private String email;
     
     private List<String> participants;
@@ -51,7 +54,7 @@ public class DiscussionService implements Serializable {
                 candidatBean.getCandidatSelected().getIdThesaurus());
         
         if (CollectionUtils.isEmpty(participants)) {
-            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, "Il n'existe aucun participant");
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg8"));
             return new ArrayList<>();
         }
 
@@ -62,6 +65,11 @@ public class DiscussionService implements Serializable {
     }
 
     public void sendMessage() {
+
+        if (candidatBean.getInitialCandidat() == null) {
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg7"));
+            return;
+        }
         
         if (StringUtils.isEmpty(candidatBean.getMessage())) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg1"));
