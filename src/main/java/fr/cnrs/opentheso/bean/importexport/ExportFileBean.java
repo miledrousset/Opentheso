@@ -6,11 +6,14 @@
 package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.core.exports.csv.WriteCSV;
+import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
@@ -19,9 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -30,76 +33,88 @@ import org.primefaces.model.DefaultStreamedContent;
 
 import org.primefaces.model.StreamedContent;
 
-@Named(value = "exportFileBean")
-@SessionScoped
-
 /**
  *
  * @author miledrousset
  */
-public class ExportFileBean implements Serializable{
+@Named(value = "exportFileBean")
+@ViewScoped
+public class ExportFileBean implements Serializable {
 
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
+
     @Inject
     private Connect connect;
-    
-    
+
     // progressBar
+    private int sizeOfTheso;
+    private float progressBar, progressStep;
+    
 
-    private double sizeOfTheso;
-    private int progressBar = 0;
-    private int progressStep = 0;
-    
-    private String messages;
-    
-    public ExportFileBean() {
-    }
-    
-    public void init(){
-        progressBar = 0;
-        progressStep = 0;
-    }
-    
-    public void onComplete(){
-        
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Resultat !", messages);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
+    public StreamedContent exportThesorus(String idTheso, List<NodeLangTheso> selectedLanguages,
+            List<NodeGroup> selectedGroups, String codeLang, String codeLang2, int type, String format) {
 
-    
-    public double getSizeOfTheso() {
-        return sizeOfTheso; 
+        ExportRdf4jHelper exportRdf4jHelper = intiDataThesorus(idTheso, selectedLanguages, selectedGroups);
 
-        
-    }    
+        if ("PDF".equalsIgnoreCase(format)) {
+            WritePdf writePdf = new WritePdf(exportRdf4jHelper.getSkosXmlDocument(), codeLang, codeLang2, type);
 
-    public void setSizeOfTheso(double sizeOfTheso) {
-        this.sizeOfTheso = sizeOfTheso;
+            return new DefaultStreamedContent(new ByteArrayInputStream(writePdf.getOutput().toByteArray()),
+                    "application/pdf", idTheso + ".pdf");
+        } else if ("PDF".equalsIgnoreCase(format)) {
+            WriteCSV writeCsv = new WriteCSV(exportRdf4jHelper.getSkosXmlDocument(), codeLang, codeLang2);
+
+            return new DefaultStreamedContent(new ByteArrayInputStream(writeCsv.getOutput().toByteArray()),
+                    "text/csv", idTheso + ".csv");
+        } else {
+            return null;
+        }
+
     }
 
-    public int getProgressBar() {
+    private ExportRdf4jHelper intiDataThesorus(String idTheso, List<NodeLangTheso> selectedLanguages, List<NodeGroup> selectedGroups) {
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
+
+        if (nodePreference == null) {
+            return null;
+        }
+
+        sizeOfTheso = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso).size();
+        progressStep = (float) 100 / sizeOfTheso;
+
+        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
+        exportRdf4jHelper.setInfos(connect.getPoolConnexion(), "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        exportRdf4jHelper.setNodePreference(nodePreference);
+        exportRdf4jHelper.addThesaurus(idTheso, selectedLanguages);
+        exportRdf4jHelper.addGroup(idTheso, selectedLanguages, selectedGroups);
+        exportRdf4jHelper.addConcept(idTheso, this, selectedLanguages);
+
+        return exportRdf4jHelper;
+    }
+
+    public float getProgressBar() {
         return progressBar;
     }
 
-    public void setProgressBar(int progressBar) {
+    public void setProgressBar(float progressBar) {
         this.progressBar = progressBar;
     }
 
-    public int getProgressStep() {
+    public float getProgressStep() {
         return progressStep;
     }
 
-    public void setProgressStep(int progressStep) {
+    public void setProgressStep(float progressStep) {
         this.progressStep = progressStep;
     }
 
     public void cancel() {
         progressBar = 0;
-    }  
+    }
 
-        
-    
+
+
     /**
      * Cette fonction permet d'exporter un concept en SKOS en temps réel dans la
      * page principale
@@ -157,18 +172,18 @@ public class ExportFileBean implements Serializable{
                 .build();
         return file;
     }
-    
+
     /**
      * permet d'exporter un thésaurus complet au format RDF avec filtres :
      * - des langues choisies
      * - des groupes choisis
-     * 
+     *
      * @param idTheso
      * @param selectedLanguages
      * @param selectedGroups
      * @param nodePreference
      * @param type
-     * @return 
+     * @return
      */
     public StreamedContent thesoToRdf(String idTheso,
             List<NodeLangTheso> selectedLanguages,
@@ -176,7 +191,9 @@ public class ExportFileBean implements Serializable{
             NodePreference nodePreference,
             String type) {
 
-        init();
+        progressBar = 0;
+        progressStep = 0;
+        
         RDFFormat format = null;
         String extention = "xml";
         StreamedContent file = null;
@@ -201,7 +218,7 @@ public class ExportFileBean implements Serializable{
         }
 
     //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
-        WriteRdf4j writeRdf4j = loadExportHelper(idTheso, nodePreference);        
+        WriteRdf4j writeRdf4j = loadExportHelper(idTheso, nodePreference);
         if(writeRdf4j != null) {
             ByteArrayOutputStream out;
             out = new ByteArrayOutputStream();
@@ -213,10 +230,10 @@ public class ExportFileBean implements Serializable{
                 .stream(()->new ByteArrayInputStream(out.toByteArray()))
                 .build();
         }
-        
+
         return file;
-    }    
-    
+    }
+
     private WriteRdf4j loadExportHelper(String idTheso,
             NodePreference nodePreference) {
         progressStep = 0;
@@ -225,11 +242,11 @@ public class ExportFileBean implements Serializable{
                     new FacesMessage(FacesMessage.SEVERITY_WARN, "Info :", "!!! Veuillez ouvrir le thésaurus pour l'initialiser avant export !!!"));
             return null;
         }
-        
+
         // pour savoir quel Uri exporter, une seule possible
         boolean useUriArk = false;
         boolean userUriHandle = false;
-        
+
         ConceptHelper conceptHelper = new ConceptHelper();
         sizeOfTheso = conceptHelper.getConceptCountOfThesaurus(connect.getPoolConnexion(), idTheso);
 
@@ -241,15 +258,16 @@ public class ExportFileBean implements Serializable{
                 userUriHandle);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso);
         exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
-    
+
         ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         for (String idConcept : allConcepts) {
             exportRdf4jHelperNew.exportConcept(
                     connect.getPoolConnexion(),
                     idTheso,
                     idConcept);
+
             progressStep = progressStep + 1;
-            progressBar = (int)(progressStep/sizeOfTheso) * 100; 
+            progressBar = (int) (progressStep / sizeOfTheso) * 100;
             if (progressBar > 100) {
                 progressBar = 100;
             }
@@ -257,10 +275,10 @@ public class ExportFileBean implements Serializable{
         }
         //pour afficher les messages dans primefaces
         exportRdf4jHelperNew.getMessages();
-        
+
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
         return writeRdf4j;
     }
-  
-   
+
+
 }

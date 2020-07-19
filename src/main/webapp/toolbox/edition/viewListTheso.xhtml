@@ -3,6 +3,7 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui">
+    
     <h:form id="listThesoForm">
         <b:row>
             <b:column span="3" offset="1">
@@ -91,17 +92,27 @@
                                                   action="#{viewEditionBean.setIsViewExportSkos(true)}"
                                                   update="toolBoxForm toolBoxForm:listThesoForm"
                                                   style="font-size: 12px;"/>
+                                
+                                <b:navCommandLink value="PDF" ajax="false" tooltip="Exporter le thésaurus au format PDF" tooltip-delay-show="1000"
+                                                  actionListener="#{exportBean.init(listTheso, 'PDF')}"
+                                                  action="#{viewEditionBean.setIsViewExportPDF(true)}"
+                                                  update="toolBoxForm"
+                                                  style="font-size: 12px;"/>
+                                
+                                <b:navCommandLink value="CSV" ajax="false" tooltip="Exporter le thésaurus au format CSV" tooltip-delay-show="1000"
+                                                  actionListener="#{exportBean.init(listTheso, 'CSV')}"
+                                                  action="#{viewEditionBean.setIsViewExportPDF(true)}"
+                                                  update="toolBoxForm"
+                                                  style="font-size: 12px;"/>
                             </b:dropMenu> 
                         </b:column>
 
                         <b:column span="2">
                             <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg"
-                                              actionListener="#{deleteThesoBean.confirmDelete(listTheso)}"
-                                              update="toolBoxForm:idConfirmDelete toolBoxForm:confirmDeleteForm"
-                                              oncomplete="PF('confirmDelete').show();"
-                                              style="color: #f47b2a; ">
-                            </b:navCommandLink>
-
+                                             actionListener="#{deleteThesoBean.confirmDelete(listTheso)}"
+                                             update="toolBoxForm:idConfirmDelete toolBoxForm:confirmDeleteForm"
+                                             oncomplete="PF('confirmDelete').show();"
+                                             style="color: #f47b2a; "/>
                         </b:column>                         
                     </b:row>   
                 </ui:repeat>

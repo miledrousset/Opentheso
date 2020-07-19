@@ -19,5 +19,8 @@
     </b:panel>     
     <b:panel rendered="#{viewEditionBean.isViewModifyTheso}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
         <ui:include src="viewModifyTheso.xhtml" />
-    </b:panel>         
+    </b:panel> 
+    <b:panel rendered="#{viewEditionBean.isViewExportPDF}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+        <ui:include src="/toolbox/edition/viewImportPDF.xhtml" />
+    </b:panel>        
 </ui:fragment>

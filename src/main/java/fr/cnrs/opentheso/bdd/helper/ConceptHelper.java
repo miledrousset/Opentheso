@@ -3773,14 +3773,14 @@ public class ConceptHelper {
      * @param idThesaurus
      * @return ArrayList
      */
-    public double getConceptCountOfThesaurus(HikariDataSource ds,
+    public int getConceptCountOfThesaurus(HikariDataSource ds,
             String idThesaurus) {
 
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
         //int count = 0;
-        double count = 0.0;
+        int count = 0;
 
         try {
             // Get connection from pool

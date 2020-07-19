@@ -377,7 +377,6 @@ public class ExportRdf4jHelper {
             for (NodeLangTheso nodeLang : selectedLanguages) {
                 if (nodeLang.getCode().equals(traduction.getLang())) {
                     isInselectedLanguages = true;
-
                     break;
                 }
 
@@ -434,14 +433,15 @@ public class ExportRdf4jHelper {
         sKOSResource.addIdentifier(nodeConcept.getConcept().getIdConcept(), SKOSProperty.identifier);
     
     //    sKOSResource.setPath("A/B/C/D/"+nodeConcept.getConcept().getIdConcept());
-        downloadBean.setProgressStep(downloadBean.getProgressStep() + 1);
-        progress = (downloadBean.getProgressStep() / downloadBean.getSizeOfTheso()) * 100;
-
-        if (progress > 100) {
-            progress = 100;
-        }
-
-        downloadBean.setProgressBar((int) progress);    
+        //downloadBean.setProgressStep(downloadBean.getProgressStep() + 1);
+        //progress = (downloadBean.getProgressStep() / downloadBean.getSizeOfTheso()) * 100;
+        //System.out.println("getProgressStep >>> "+ downloadBean.getProgressStep());
+        //System.out.println("getProgressBar >>> "+ downloadBean.getProgressBar());
+        //System.out.println("------------------------------------------");
+        
+        downloadBean.setProgressBar(downloadBean.getProgressStep() + downloadBean.getProgressBar());
+        //downloadBean.setProgressBar((int) progress);    
+        
         skosXmlDocument.addconcept(sKOSResource);
 
     }

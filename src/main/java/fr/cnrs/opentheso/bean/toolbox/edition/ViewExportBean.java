@@ -98,7 +98,8 @@ public class ViewExportBean implements Serializable {
         exportFormat.add("turtle");
         selectedExportFormat = "skos";
 
-        downloadBean.init();
+        downloadBean.setProgressBar(0);
+        downloadBean.setProgressStep(0);
     }
 
 
@@ -181,7 +182,5 @@ public class ViewExportBean implements Serializable {
     public void setSelectedExportFormat(String selectedExportFormat) {
         this.selectedExportFormat = selectedExportFormat;
     }
-
-
 
 }
