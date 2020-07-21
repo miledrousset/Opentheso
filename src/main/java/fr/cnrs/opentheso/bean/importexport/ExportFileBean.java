@@ -60,7 +60,8 @@ public class ExportFileBean implements Serializable {
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
             initDatas();
-            WritePdf writePdf = new WritePdf(exportRdf4jHelper.getSkosXmlDocument(), codeLang, codeLang2, 0);
+            WritePdf writePdf = new WritePdf(exportRdf4jHelper.getSkosXmlDocument(), codeLang, codeLang2, viewExportBean.getTypes()
+                    .indexOf(viewExportBean.getTypeSelected()));
             return new DefaultStreamedContent(new ByteArrayInputStream(writePdf.getOutput().toByteArray()),
                     "application/pdf", viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf");
 
@@ -70,11 +71,8 @@ public class ExportFileBean implements Serializable {
             return new DefaultStreamedContent(new ByteArrayInputStream(writeCsv.getOutput().toByteArray()),
                     "text/csv", viewExportBean.getNodeIdValueOfTheso().getId() + ".csv");
         } else {
-            return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewExportBean.getSelectedLanguages(),
-                    viewExportBean.getSelectedGroups(),
-                    viewExportBean.getNodePreference(),
-                    viewExportBean.getSelectedExportFormat());
+            return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedLanguages(),
+                    viewExportBean.getSelectedGroups(), viewExportBean.getNodePreference(), viewExportBean.getSelectedExportFormat());
         }
 
     }
