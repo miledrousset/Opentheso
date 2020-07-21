@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.bean.importexport.ExportFileBean;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
@@ -135,11 +136,13 @@ public class ExportRdf4jHelperNew {
         skosXmlDocument.setConceptScheme(conceptScheme);
     }
     
-    public void exportCollections(HikariDataSource ds, String idTheso){
+    public void exportCollections(HikariDataSource ds, String idTheso, ExportFileBean exportFileBean){
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<String> rootGroupList = groupHelper.getListIdOfRootGroup(ds, idTheso);
         NodeGroupLabel nodeGroupLabel;
         for (String idGroup : rootGroupList) {
+            exportFileBean.setProgressBar(exportFileBean.getProgressBar() + exportFileBean.getProgressStep());
+            
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
             SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);                    
             sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);

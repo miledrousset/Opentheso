@@ -1,0 +1,96 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:panelGroup id="viewExportThesaurus">
+
+        <b:row style="margin-bottom: 15px">
+            <b:column>
+                <h:outputText value="Exportation du thésaurus : 
+                              #{viewExportBean.nodeIdValueOfTheso.value} (#{viewExportBean.nodeIdValueOfTheso.id})" styleClass="textInfo"/>
+            </b:column>
+        </b:row>
+
+        <p:panel header="Types" rendered="#{viewExportBean.isPdfExport()}" toggleable="true" closable="false" toggleSpeed="500"
+                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+            <p:dataTable id="listType" var="type" value="#{viewExportBean.types}"
+                         selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0">
+                <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
+                <p:column headerText="Code">
+                    <h:outputText value="#{type}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500" 
+                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+            <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}"
+                         selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
+                <p:column headerText="Code" width="60">
+                    <h:outputText value="#{langue.code}" />
+                </p:column>
+                <p:column headerText="Langue">
+                    <h:outputText value="#{langue.value}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500" 
+                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+            <p:dataTable id="listGroupe" var="groupOfTheso" value="#{viewExportBean.groupList}" style=";margin-bottom:0"
+                         selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}">
+                <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
+                <p:column headerText="Id" width="200" styleClass="styleText2">
+                    <h:outputText value="#{groupOfTheso.conceptGroup.idgroup}" />
+                </p:column>
+                <p:column headerText="Group" styleClass="styleText2">
+                    <h:outputText value="#{groupOfTheso.lexicalValue}" styleClass="styleText2"/>
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <b:row rendered="#{viewExportBean.isRdfExport()}">
+            <b:column span="2" offset="7">
+                <h:outputText value="Format de sortie :" />
+            </b:column>
+            <b:column span="2" >
+                <p:selectOneMenu value="#{viewExportBean.selectedExportFormat}"
+                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                    <f:selectItems  value="#{viewExportBean.exportFormat}" var="format" itemLabel="#{format}" itemValue="#{format}"/>
+
+                </p:selectOneMenu>
+            </b:column>
+        </b:row>
+
+        <br /><br />
+
+        <b:row>
+            <b:column span="6">
+                <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
+                                 class="btn btn-success" style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
+                                 onclick="PF('pbAjax').start();PF('pbAjax').show()" update="viewExportThesaurus" >
+                    <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
+                </p:commandButton>
+            </b:column>
+            
+            <b:column span="6">
+                <p:commandButton icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
+                                 style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
+                                 actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
+                                 update="toolBoxForm toolBoxForm:listThesoForm"/>
+            </b:column>
+        </b:row>
+
+        <br/><br/>
+
+        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{progressBarView.progress}" labelTemplate=""
+                       styleClass="animated" global="false" interval="200" style="font-size: 13px; color: white;"/>
+
+    </h:panelGroup>
+
+</ui:fragment>

@@ -79,6 +79,88 @@ public class ExportRdf4jHelper {
 
         return true;
     }
+    
+    public void exportCollections(HikariDataSource ds, String idTheso){
+        GroupHelper groupHelper = new GroupHelper();
+        ArrayList<String> rootGroupList = groupHelper.getListIdOfRootGroup(ds, idTheso);
+        NodeGroupLabel nodeGroupLabel;
+        for (String idGroup : rootGroupList) {
+            nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
+            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);                    
+            sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+            addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);                    
+        }
+    }
+    
+    private void addChildsGroupRecursive(HikariDataSource ds,
+            String idTheso,
+            String idParent,
+            SKOSResource sKOSResource) {
+        GroupHelper groupHelper = new GroupHelper();
+
+        ArrayList<String> listIdsOfGroupChilds = groupHelper.getListGroupChildIdOfGroup(ds, idParent, idTheso);
+        writeGroupInfo(ds, sKOSResource, idTheso, idParent);
+
+        for (String idOfGroupChild : listIdsOfGroupChilds) {
+            sKOSResource = new SKOSResource();
+            addChildsGroupRecursive(ds, idTheso, idOfGroupChild, sKOSResource);
+        }
+    }
+    
+    private void writeGroupInfo(HikariDataSource ds, SKOSResource sKOSResource,
+            String idTheso, String idOfGroupChild) {
+
+        NodeGroupLabel nodeGroupLabel;
+        nodeGroupLabel = new GroupHelper().getNodeGroupLabel(ds, idOfGroupChild, idTheso);
+
+        sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
+        sKOSResource.setProperty(SKOSProperty.ConceptGroup);
+
+        for (NodeGroupTraductions traduction : nodeGroupLabel.getNodeGroupTraductionses()) {
+            sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.prefLabel);
+
+            //dates
+            String created;
+            String modified;
+            created = traduction.getCreated().toString();
+            modified = traduction.getModified().toString();
+            if (created != null) {
+                sKOSResource.addDate(created, SKOSProperty.created);
+            }
+            if (modified != null) {
+                sKOSResource.addDate(modified, SKOSProperty.modified);
+            }
+        }
+
+        ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idOfGroupChild, idTheso);
+//        ArrayList<NodeUri> nodeUris = new ConceptHelper().getListIdsOfTopConceptsForExport(ds, idOfGroupChild, idTheso);
+        
+        ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
+        
+        for (NodeUri nodeUri : nodeUris) {
+            sKOSResource.addRelation(getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
+      //      addMember(ds, nodeUri.getIdConcept(), idTheso, sKOSResource);
+        }
+
+        for (String id : childURI) {
+            sKOSResource.addRelation(getUriFromId(id), SKOSProperty.subGroup);
+            superGroupHashMap.put(id, idOfGroupChild);
+        }
+
+        String idSuperGroup = superGroupHashMap.get(idOfGroupChild);
+
+        if (idSuperGroup != null) {
+            sKOSResource.addRelation(getUriFromId(idSuperGroup), SKOSProperty.superGroup);
+            superGroupHashMap.remove(idOfGroupChild);
+        }
+        
+        // ajout de la notation
+        if (nodeGroupLabel.getNotation() != null && !nodeGroupLabel.getNotation().equals("null")) {
+            if(!nodeGroupLabel.getNotation().isEmpty())
+                sKOSResource.addNotation(nodeGroupLabel.getNotation());
+        }
+        skosXmlDocument.addGroup(sKOSResource);
+    } 
 
     
     ////////////////////////////////////////////////////////////////////////////
@@ -331,11 +413,7 @@ public class ExportRdf4jHelper {
 
         for (String idOfConceptChildren : listIdsOfConceptChildren) {
             sKOSResource = new SKOSResource();
-            //writeConceptInfo(conceptHelper, concept, idThesaurus, idOfConceptChildren, downloadBean, selectedLanguages);
-
-            //if (conceptHelper.haveChildren(ds, idThesaurus, idOfConceptChildren)) {
             addFilsConceptRecursif(idThesaurus, idOfConceptChildren, sKOSResource, downloadBean, selectedLanguages);
-            //}
         }
     }
 
@@ -349,11 +427,7 @@ public class ExportRdf4jHelper {
 
         for (String idOfConceptChildren : listIdsOfConceptChildren) {
             sKOSResource = new SKOSResource();
-            //writeConceptInfo(conceptHelper, concept, idThesaurus, idOfConceptChildren, downloadBean, selectedLanguages);
-
-            //if (conceptHelper.haveChildren(ds, idThesaurus, idOfConceptChildren)) {
             addFilsConceptRecursif(idThesaurus, idOfConceptChildren, sKOSResource);
-            //}
         }
 
     }
@@ -431,16 +505,8 @@ public class ExportRdf4jHelper {
         }        
         
         sKOSResource.addIdentifier(nodeConcept.getConcept().getIdConcept(), SKOSProperty.identifier);
-    
-    //    sKOSResource.setPath("A/B/C/D/"+nodeConcept.getConcept().getIdConcept());
-        //downloadBean.setProgressStep(downloadBean.getProgressStep() + 1);
-        //progress = (downloadBean.getProgressStep() / downloadBean.getSizeOfTheso()) * 100;
-        //System.out.println("getProgressStep >>> "+ downloadBean.getProgressStep());
-        //System.out.println("getProgressBar >>> "+ downloadBean.getProgressBar());
-        //System.out.println("------------------------------------------");
         
         downloadBean.setProgressBar(downloadBean.getProgressStep() + downloadBean.getProgressBar());
-        //downloadBean.setProgressBar((int) progress);    
         
         skosXmlDocument.addconcept(sKOSResource);
 

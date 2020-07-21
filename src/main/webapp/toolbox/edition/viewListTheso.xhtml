@@ -88,19 +88,19 @@
                                 style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px;" contentStyle="font-size: 12px;">
                                 <b:navCommandLink value="RDF_Skos" ajax="false"
                                                   tooltip="Exporter le thésaurus au format Skos" tooltip-delay-show="1000"
-                                                  actionListener="#{viewExportBean.init(listTheso)}"
+                                                  actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
                                                   action="#{viewEditionBean.setIsViewExportSkos(true)}"
                                                   update="toolBoxForm toolBoxForm:listThesoForm"
                                                   style="font-size: 12px;"/>
                                 
                                 <b:navCommandLink value="PDF" ajax="false" tooltip="Exporter le thésaurus au format PDF" tooltip-delay-show="1000"
-                                                  actionListener="#{exportBean.init(listTheso, 'PDF')}"
+                                                  actionListener="#{viewExportBean.init(listTheso, 'PDF')}"
                                                   action="#{viewEditionBean.setIsViewExportPDF(true)}"
                                                   update="toolBoxForm"
                                                   style="font-size: 12px;"/>
                                 
                                 <b:navCommandLink value="CSV" ajax="false" tooltip="Exporter le thésaurus au format CSV" tooltip-delay-show="1000"
-                                                  actionListener="#{exportBean.init(listTheso, 'CSV')}"
+                                                  actionListener="#{viewExportBean.init(listTheso, 'CSV')}"
                                                   action="#{viewEditionBean.setIsViewExportPDF(true)}"
                                                   update="toolBoxForm"
                                                   style="font-size: 12px;"/>

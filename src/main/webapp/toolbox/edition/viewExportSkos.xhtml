@@ -8,7 +8,7 @@
     <h:form id="viewExportSkosForm">
         <b:row style="margin-left: 30px; margin-right: 30px; ">
             <b:column span="12">
-                <h:outputText value="export du thésaurus : "/>
+                <h:outputText value="Export du thésaurus : "/>
                 <h:outputText value="#{viewExportBean.nodeIdValueOfTheso.value} (#{viewExportBean.nodeIdValueOfTheso.id})" style="color: #C63632"/>
             </b:column>
         </b:row>
@@ -19,7 +19,7 @@
         <!-- la liste des langues disponibles pour filtrer pour l'export -->
         <b:row contentDisabled="true">
             <b:column span="12" style="margin-left: 5px; " >
-                <b:panel title="Filtre des langues"  contentStyle="font-size: 12px" collapsed="true" >         
+                <b:panel title="Filtre des langues" contentStyle="font-size: 12px" collapsed="true" >         
                     <p:dataTable id="checkboxLang" var="langOfTheso" value="#{viewExportBean.languagesOfTheso}"
                                  selection="#{viewExportBean.selectedLanguages}" rowKey="#{langOfTheso.code}"
                                  style="font-size: 12px;" >
@@ -96,21 +96,14 @@
                                  ajax="true"
                                  value="Exporter"
                                  tooltip="Exporter le thésaurus" tooltip-delay-show="1000">
-                    <p:fileDownload value="#{exportFileBean.thesoToRdf(viewExportBean.nodeIdValueOfTheso.id,
-                                             viewExportBean.selectedLanguages,
-                                             viewExportBean.selectedGroups,
-                                             viewExportBean.nodePreference,
-                                             viewExportBean.selectedExportFormat)}" />
+                    <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                 </b:commandButton>   
             </b:column>
         </b:row>
         <p:spacer/>
         <b:row >
             <b:column span="10" offset="1">
-                <p:progressBar  widgetVar="pbAjaxExport" ajax="true" 
-                               value="#{exportFileBean.progressBar}" 
-                              
-                               labelTemplate="{value}%" styleClass="animated" global="false" >
+                <p:progressBar  widgetVar="pbAjaxExport" ajax="true" value="#{exportFileBean.progressBar}" labelTemplate="{value}%" styleClass="animated" global="false" >
                 </p:progressBar> 
             </b:column>                
         </b:row>
