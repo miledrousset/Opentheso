@@ -62,7 +62,8 @@ public class ExportFileBean implements Serializable {
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
             initDatas();
-            WritePdf writePdf = new WritePdf(exportRdf4jHelper.getSkosXmlDocument(), codeLang, codeLang2, 0);
+            WritePdf writePdf = new WritePdf(exportRdf4jHelper.getSkosXmlDocument(), codeLang, codeLang2, viewExportBean
+                    .getTypes().indexOf(viewExportBean.getTypeSelected()));
             return new DefaultStreamedContent(new ByteArrayInputStream(writePdf.getOutput().toByteArray()),
                     "application/pdf", viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf");
 
