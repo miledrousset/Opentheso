@@ -103,26 +103,23 @@ public class Rest_new {
     @Produces("application/rdf+xml;charset=UTF-8")
     public Response getSkosFromArk__(@PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+
         if(naan == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        if(naan.isEmpty()){
-            ds.close();            
+        if(naan.isEmpty()){         
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if(arkId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if(arkId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null){
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();        
+        }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConcept(ds,
                 naan + "/" + arkId,
@@ -147,26 +144,22 @@ public class Rest_new {
     @Produces("application/rdf+xml;charset=UTF-8")
     public Response getSkosFromArk(@PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+
         if(naan == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        if(naan.isEmpty()){
-            ds.close();            
+        if(naan.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if(arkId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if(arkId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConcept(ds,
                 naan + "/" + arkId,
@@ -190,25 +183,23 @@ public class Rest_new {
     @Produces("application/json;charset=UTF-8")
     public Response getJsonFromArk__(@PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
-        HikariDataSource ds = connect();        
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(naan == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(naan.isEmpty()){
-            ds.close();            
+        if(naan.isEmpty()){           
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
-        }       
+        }    
+        
+        HikariDataSource ds = connect();        
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
 
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConcept(ds,
@@ -233,26 +224,23 @@ public class Rest_new {
     @Produces("application/json;charset=UTF-8")
     public Response getJsonFromArk(@PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
-        HikariDataSource ds = connect();        
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(naan == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(naan.isEmpty()){
-            ds.close();            
+        if(naan.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
         }       
 
+        HikariDataSource ds = connect();        
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConcept(ds,
                 naan + "/" + arkId,
@@ -276,26 +264,22 @@ public class Rest_new {
     @Produces("application/ld+json;charset=UTF-8")
     public Response getJsonldFromArk__(@PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
-        HikariDataSource ds = connect();        
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(naan == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(naan.isEmpty()){
-            ds.close();            
+        if(naan.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
         }      
-
+        HikariDataSource ds = connect();        
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConcept(ds,
                 naan + "/" + arkId,
@@ -319,25 +303,22 @@ public class Rest_new {
     @Produces("application/ld+json;charset=UTF-8")
     public Response getJsonldFromArk(@PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
-        HikariDataSource ds = connect();        
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(naan == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(naan.isEmpty()){
-            ds.close();            
+        if(naan.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
         }      
+        HikariDataSource ds = connect();        
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
 
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConcept(ds,
@@ -362,26 +343,22 @@ public class Rest_new {
     @Produces("text/turtle;charset=UTF-8")
     public Response getTurtleFromArk__(@PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
-        HikariDataSource ds = connect();        
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+
         if(naan == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        if(naan.isEmpty()){
-            ds.close();            
+        if(naan.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if(arkId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if(arkId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();        
         }      
-
+        HikariDataSource ds = connect();        
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConcept(ds,
                 naan + "/" + arkId,
@@ -405,25 +382,22 @@ public class Rest_new {
     @Produces("text/turtle;charset=UTF-8")
     public Response getTurtleFromArk(@PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
-        HikariDataSource ds = connect();        
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+
         if(naan == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        if(naan.isEmpty()){
-            ds.close();            
+        if(naan.isEmpty()){           
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if(arkId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if(arkId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();        
         }      
+        HikariDataSource ds = connect();        
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();        
 
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConcept(ds,
@@ -494,26 +468,22 @@ public class Rest_new {
             @PathParam("hdl2") String hdl2,
             @PathParam("hdl3") String hdl3,
             @PathParam("handleId") String handleId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+
         if(hdl1 == null || hdl2 == null || hdl3 == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){
-            ds.close();            
+        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){         
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if(handleId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if(handleId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptHdl(ds,
                 hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
@@ -542,26 +512,22 @@ public class Rest_new {
             @PathParam("hdl2") String hdl2,
             @PathParam("hdl3") String hdl3,
             @PathParam("handleId") String handleId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+
         if(hdl1 == null || hdl2 == null || hdl3 == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){
-            ds.close();            
+        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if(handleId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if(handleId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptHdl(ds,
                 hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
@@ -591,26 +557,22 @@ public class Rest_new {
             @PathParam("hdl2") String hdl2,
             @PathParam("hdl3") String hdl3,
             @PathParam("handleId") String handleId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(hdl1 == null || hdl2 == null || hdl3 == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){
-            ds.close();            
+        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){        
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(handleId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(handleId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptHdl(ds,
                 hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
@@ -639,26 +601,22 @@ public class Rest_new {
             @PathParam("hdl2") String hdl2,
             @PathParam("hdl3") String hdl3,
             @PathParam("handleId") String handleId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(hdl1 == null || hdl2 == null || hdl3 == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){
-            ds.close();            
+        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){        
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(handleId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(handleId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptHdl(ds,
                 hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
@@ -687,26 +645,22 @@ public class Rest_new {
             @PathParam("hdl2") String hdl2,
             @PathParam("hdl3") String hdl3,
             @PathParam("handleId") String handleId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(hdl1 == null || hdl2 == null || hdl3 == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){
-            ds.close();            
+        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(handleId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(handleId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptHdl(ds,
                 hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
@@ -735,26 +689,22 @@ public class Rest_new {
             @PathParam("hdl2") String hdl2,
             @PathParam("hdl3") String hdl3,
             @PathParam("handleId") String handleId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(hdl1 == null || hdl2 == null || hdl3 == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){
-            ds.close();            
+        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(handleId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(handleId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptHdl(ds,
                 hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
@@ -783,26 +733,22 @@ public class Rest_new {
             @PathParam("hdl2") String hdl2,
             @PathParam("hdl3") String hdl3,
             @PathParam("handleId") String handleId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+
         if(hdl1 == null || hdl2 == null || hdl3 == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){
-            ds.close();            
+        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){           
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if(handleId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if(handleId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptHdl(ds,
                 hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
@@ -831,26 +777,22 @@ public class Rest_new {
             @PathParam("hdl2") String hdl2,
             @PathParam("hdl3") String hdl3,
             @PathParam("handleId") String handleId) {
-        HikariDataSource ds = connect();
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+
         if(hdl1 == null || hdl2 == null || hdl3 == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){
-            ds.close();            
+        if(hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()){       
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if(handleId == null) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if(handleId.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();        
         }
-
+        HikariDataSource ds = connect();
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptHdl(ds,
                 hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
@@ -924,18 +866,16 @@ public class Rest_new {
     public Response getSkosFromIdConcept__(
             @PathParam("idTheso") String idTheso,
             @PathParam("idConcept") String idConcept) {
+
+        if(idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if(idConcept.isEmpty()){         
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
         HikariDataSource ds = connect();
         if(ds == null)
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        if(idConcept == null) {
-            ds.close();
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if(idConcept.isEmpty()){
-            ds.close();            
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
                 idConcept, idTheso, 
@@ -960,18 +900,16 @@ public class Rest_new {
     public Response getSkosFromIdConcept(
             @PathParam("idTheso") String idTheso,
             @PathParam("idConcept") String idConcept) {
+
+        if(idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if(idConcept.isEmpty()){       
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
         HikariDataSource ds = connect();
         if(ds == null)
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        if(idConcept == null) {
-            ds.close();
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if(idConcept.isEmpty()){
-            ds.close();            
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
                 idConcept, idTheso, 
@@ -996,18 +934,16 @@ public class Rest_new {
     public Response getJsonFromIdConcept__(
             @PathParam("idTheso") String idTheso,
             @PathParam("idConcept") String idConcept) {
+
+        if(idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if(idConcept.isEmpty()){          
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
         HikariDataSource ds = connect();
         if(ds == null)
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        if(idConcept == null) {
-            ds.close();
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if(idConcept.isEmpty()){
-            ds.close();            
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
                 idConcept, idTheso, 
@@ -1032,18 +968,16 @@ public class Rest_new {
     public Response getJsonFromIdConcept(
             @PathParam("idTheso") String idTheso,
             @PathParam("idConcept") String idConcept) {
+
+        if(idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if(idConcept.isEmpty()){         
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
         HikariDataSource ds = connect();
         if(ds == null)
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        if(idConcept == null) {
-            ds.close();
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if(idConcept.isEmpty()){
-            ds.close();            
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
                 idConcept, idTheso, 
@@ -1068,18 +1002,16 @@ public class Rest_new {
     public Response getJsonLdFromIdConcept__(
             @PathParam("idTheso") String idTheso,
             @PathParam("idConcept") String idConcept) {
+
+        if(idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if(idConcept.isEmpty()){          
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
         HikariDataSource ds = connect();
         if(ds == null)
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        if(idConcept == null) {
-            ds.close();
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if(idConcept.isEmpty()){
-            ds.close();            
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
                 idConcept, idTheso, 
@@ -1104,18 +1036,16 @@ public class Rest_new {
     public Response getJsonLdFromIdConcept(
             @PathParam("idTheso") String idTheso,
             @PathParam("idConcept") String idConcept) {
+
+        if(idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if(idConcept.isEmpty()){          
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
         HikariDataSource ds = connect();
         if(ds == null)
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        if(idConcept == null) {
-            ds.close();
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if(idConcept.isEmpty()){
-            ds.close();            
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
                 idConcept, idTheso, 
@@ -1140,18 +1070,16 @@ public class Rest_new {
     public Response getTurtleFromIdConcept__(
             @PathParam("idTheso") String idTheso,
             @PathParam("idConcept") String idConcept) {
+
+        if(idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if(idConcept.isEmpty()){            
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
         HikariDataSource ds = connect();
         if(ds == null)
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        if(idConcept == null) {
-            ds.close();
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if(idConcept.isEmpty()){
-            ds.close();            
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
                 idConcept, idTheso, 
@@ -1176,18 +1104,16 @@ public class Rest_new {
     public Response getTurtleFromIdConcept(
             @PathParam("idTheso") String idTheso,
             @PathParam("idConcept") String idConcept) {
+
+        if(idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if(idConcept.isEmpty()){         
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
         HikariDataSource ds = connect();
         if(ds == null)
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        if(idConcept == null) {
-            ds.close();
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if(idConcept.isEmpty()){
-            ds.close();            
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
                 idConcept, idTheso, 
@@ -1236,22 +1162,19 @@ public class Rest_new {
             @PathParam("naan") String naan,
             @PathParam("idArk") String arkId) {
         
-        HikariDataSource ds = connect();        
-        if(ds == null)
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
         if(naan == null || naan.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        if(arkId == null || arkId.isEmpty()){
-            ds.close();            
+        if(arkId == null || arkId.isEmpty()){          
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(idLang == null || idLang.isEmpty()) {
-            ds.close();
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-
+        HikariDataSource ds = connect();        
+        if(ds == null)
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.getPrefLabelFromArk(ds, naan, arkId, idLang);
         ds.close();
@@ -1649,6 +1572,7 @@ public class Rest_new {
                 case "notation:":
                     value = value.substring(value.indexOf(":") + 1);
                     datas = restRDFHelper.findNotation(ds, idTheso, value, format);
+                    ds.close();
                     return datas;
             }
         }

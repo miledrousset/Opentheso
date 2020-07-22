@@ -36,16 +36,18 @@
                                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les sources d'alignement" tooltip-delay-show="1000"
                                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    <b:navCommandLink value="Gérer les sources"
+                                    <b:navCommandLink value="Gérer les sources" 
                                                       action="#{setAlignmentSourceBean.init()}"
-                                                      update="addAlignmentForm candidatForm"
-                                                      style="font-size: 12px;"/>
+                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
+                                                      formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
+                                                      style="font-size: 12px;"></b:navCommandLink>
                                     <b:navCommandLink value="Ajouter une source"
                                                       disabled="false"
                                                       tooltip="Ajouter une nouvelle source de type Opentheso"
                                                       action="#{setAlignmentSourceBean.initAddSource()}"
-                                                      update="addAlignmentForm candidatForm"
-                                                      style="font-size: 12px;"></b:navCommandLink>
+                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
+                                                      formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource"
+                                                      style="font-size: 12px;"></b:navCommandLink>                                                      
                                 </b:dropMenu> 
                             </b:navbarLinks>
                         </b:column>                         
@@ -72,19 +74,19 @@
                                 <b:navCommandLink value="set" id="reset" icon-awesome="fas fa-step-backward" style="color: #f47b2a"
                                                   action="#{alignmentBean.restart(conceptView.selectedLang,  selectedTheso.currentIdTheso)}"
                                                   styleClass="styleButton_db"
-                                                  update="addAlignmentForm candidatForm"/>
+                                                  update="addAlignmentForm:columnLeftPanel"/>
                             </b:column>
                             <b:column span="4">                
                                 <b:navCommandLink value="pre" id="previous" icon-awesome="fas fa-arrow-circle-left" style="color: #43B572"
                                                   action="#{alignmentBean.previousTen(conceptView.selectedLang,  selectedTheso.currentIdTheso)}" 
                                                   styleClass="styleButton_db"
-                                                  update="addAlignmentForm candidatForm"/>
+                                                  update="addAlignmentForm:columnLeftPanel"/>
                             </b:column>
                             <b:column span="4">
                                 <b:navCommandLink value="next" id="next" icon-awesome="fas fa-arrow-circle-right" style="color: #43B572"
                                                   action="#{alignmentBean.nextTen(conceptView.selectedLang,  selectedTheso.currentIdTheso)}"
                                                   styleClass="styleButton_db"
-                                                  update="addAlignmentForm candidatForm"/>
+                                                  update="addAlignmentForm:columnLeftPanel"/>
                             </b:column>
                         </b:row>
 
@@ -99,8 +101,7 @@
                                                     <b:navCommandLink value="#{conceptList.value}"
                                                                       actionListener="#{alignmentBean.selectConceptForAlignment(conceptList.id)}"
                                                                       update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel 
-                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal
-                                                                      :addAlignmentForm:columnRightPanel :addAlignmentForm:columnRightPanel:columnRightPanelLocal"/>
+                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal"/>
                                                 </b:column>
                                             </b:row>
                                         </ui:repeat>
@@ -124,27 +125,28 @@
                                     <b:column span="5" rendered="#{!alignmentBean.isNameAlignment}" style="font-size: 12px; margin-top: -5px">
                                         <b:inputText value="#{alignmentBean.conceptValueForAlignment}" 
                                                      tooltip="concept à aligner" tooltip-delay-show="1000"
-                                                     style="height: 25px;" />
+                                                     style="height: 25px; border-color: #43B572" />
                                     </b:column>
 
                                     <!-- nom et prénom pour IdRef -->
                                     <b:column span="3" rendered="#{alignmentBean.isNameAlignment}" style="font-size: 12px; margin-top: -5px" >
                                         <b:inputText tooltip="Nom" placeholder="Nom" tooltip-delay-show="1000"
                                                      value="#{alignmentBean.nom}" 
-                                                     style="height: 25px;"/>
+                                                     style="height: 25px; border-color: #43B572"/>
                                     </b:column>
                                     <b:column span="3" rendered="#{alignmentBean.isNameAlignment}"  style="font-size: 12px; margin-top: -5px">
                                         <b:inputText tooltip="Prenom" placeholder="Prenom" tooltip-delay-show="1000"
                                                      value="#{alignmentBean.prenom}" 
-                                                     style="height: 25px;"/>
+                                                     style="height: 25px; border-color: #43B572"/>
                                     </b:column>
 
                                     <b:column span="4" style="font-size: 12px; margin-top: -5px; ">
                                         <p:selectOneMenu id="console" value="#{alignmentBean.selectedAlignement}"
-                                                         style="font-size: 12px; background: none; border: none; box-shadow: none;"
-                                                         panelStyle="font-size: 12px; background: none; border: none; box-shadow: none;">
+                                                         style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
+                                                         
+                                                         panelStyle="font-size: 12px; background: red; border: none; box-shadow: none;">
                                             <f:selectItems  value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>                                
-                                            <p:ajax event="change" listener="#{alignmentBean.actionChoix()}"  update="addAlignmentForm candidatForm"/>
+                                            <p:ajax event="change" listener="#{alignmentBean.actionChoix()}"  update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"/>
                                         </p:selectOneMenu>                                
                                     </b:column>
 
@@ -156,7 +158,7 @@
                                                                     alignmentBean.idConceptSelectedForAlignment,
                                                                     alignmentBean.conceptValueForAlignment,
                                                                     conceptView.selectedLang)}"
-                                                          update="addAlignmentForm candidatForm"
+                                                          update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"
                                                           styleClass="styleButton_db" />
                                     </b:column> 
                                     <b:column span="1" offset="1">
@@ -224,7 +226,7 @@
                                                                              color: white; background: #8C8C8C; border: none; box-shadow: none;"
                                                                              class="btn btn-primary"
                                                                              action="#{alignmentBean.cancelManualAlignment()}"
-                                                                             update="addAlignmentForm candidatForm"/>
+                                                                             update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"/>
                                                         </b:column>                                                              
                                                         <b:column span="4" offset="4" >
                                                             <b:commandButton id="buttonSubmitManual" value="Valider" 
@@ -232,7 +234,7 @@
                                                                              font-weight: normal;
                                                                              color: white; background: #F7A269; border: none; box-shadow: none;"
                                                                              class="btn btn-primary"
-                                                                             update="addAlignmentForm candidatForm"
+                                                                             update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"
                                                                              actionListener="#{alignmentManualBean.addManualAlignement()}"
                                                                              action="#{alignmentBean.validManualAlignment()}" />
                                                         </b:column>                    
@@ -296,7 +298,7 @@
                                                                                     nodeAlign,
                                                                                     selectedTheso.selectedIdTheso,
                                                                                     conceptView.nodeConcept.concept.idConcept)}"
-                                                                          update="addAlignmentForm candidatForm">
+                                                                          update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel">
                                                         </b:navCommandLink>
                                                     </b:column>                                            
 
@@ -318,7 +320,7 @@
                                                 <b:column span="4">
                                                     <p:selectOneMenu id="alignmentType" value="#{alignmentBean.selectedAlignementType}"
                                                                      title="Type d'alignement"
-                                                                     style="font-size: 12px; background: none; border: none; box-shadow: none;"
+                                                                     style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
                                                                      panelStyle="font-size: 12px; background: none; border: none; box-shadow: none;">
                                                         <f:selectItems value="#{alignmentBean.alignmentTypes}" var="type" itemLabel="#{type.value}" itemValue="#{type.key}" />
                                                     </p:selectOneMenu>
@@ -335,14 +337,15 @@
                                                                                         selectedTheso.selectedIdTheso, 
                                                                                         alignmentBean.idConceptSelectedForAlignment,
                                                                                         currentUser.nodeUser.idUser)}"
-                                                                      update="columnRightPanel columnRightPanelLocal candidatForm" >
+                                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanel
+                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal" >
                                                     </b:navCommandLink>
                                                 </b:column>
                                                 <b:column span="1">
                                                     <b:navCommandLink id="cancel" iconAwesome="fas fa-undo" style="color: #f47b2a"
                                                                       tooltip="Retour sans aligner"  tooltip-delay-show="1000"
                                                                       action="#{alignmentBean.cancelAlignment()}"
-                                                                      update="addAlignmentForm candidatForm">
+                                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel">
                                                     </b:navCommandLink>  
                                                 </b:column>                                            
                                             </b:row>
@@ -530,16 +533,21 @@
                             </b:panel>  
                             <b:row style="margin-bottom: 10px;">
                                 <b:column span="4" offset="3" >
-                                    <b:commandButton id="buttonCancel" value="cancel" update="addAlignmentForm candidatForm"
-                                                     style="width:100%; font-size: 13px; font-weight: normal;
+                                    <b:commandButton id="buttonCancel" value="cancel"
+                                                     update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
+                                                     formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
+                                                     style="width:100%; font-size: 13px; 
+                                                     font-weight: normal;
                                                      color: white; background: #8C8C8C; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.cancel()}"/>
                                 </b:column>                                    
                                 <b:column span="4" offset="1" >
                                     <b:commandButton id="buttonSubmit" value="Valider"
-                                                     update="addAlignmentForm candidatForm"
-                                                     style="width:100%; font-size: 13px; font-weight: normal;
+                                                     update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
+                                                     formRightTab:viewTabConcept:addAlignmentForm:panelSetting"
+                                                     style="width:100%; font-size: 13px; 
+                                                     font-weight: normal;
                                                      color: white; background: #F7A269; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.updateSelectedAlignment()}"/>
@@ -548,7 +556,7 @@
 
                         </b:panel>
                     </b:column>
-                </b:row>
+                </b:row>   
 
 
                 <!-- Pour ajouter une nouvelle source de type Opentheso -->
@@ -561,11 +569,11 @@
                                     <h:outputText value="Nom" style="font-size: 12px;"/>
                                 </b:column>
                                 <b:column span="7">
-                                    <b:inputText placeholder="Nom de la source" value="#{setAlignmentSourceBean.sourceName}"
+                                    <b:inputText placeholder="Nom de la source" value="#{setAlignmentSourceBean.sourceName}" 
                                                  style="font-size: 12px; height: 25px; "/>
-                                </b:column>
+                                </b:column>                                  
                             </b:row>
-
+                            
                             <b:row>
                                 <b:column span="2" offset="1">
                                     <h:outputText value="Uri" style="font-size: 12px;"/>
@@ -574,9 +582,9 @@
                                     <b:inputText placeholder="Uri du serveur" value="#{setAlignmentSourceBean.sourceUri}"
                                                  style="font-size: 12px; height: 25px;"
                                                  tooltip="Indiquer l'URL du serveur exemple (https://monserveur.fr/opentheso)" tooltip-delay-show="500"/>
-                                </b:column>
-                            </b:row>
-
+                                </b:column>                                  
+                            </b:row>    
+                            
                             <b:row>
                                 <b:column span="2" offset="1">
                                     <h:outputText value="Id. du thésaurus" style="font-size: 12px;"/>
@@ -585,9 +593,9 @@
                                     <b:inputText placeholder="Identifiant du thésaurus" value="#{setAlignmentSourceBean.sourceIdTheso}"
                                                  style="font-size: 12px; height: 25px;"
                                                  tooltip="Indiquer l'identifiant du thésaurus exemple (th1)" tooltip-delay-show="500"/>
-                                </b:column>
-                            </b:row>
-
+                                </b:column>                                  
+                            </b:row>        
+                            
                             <b:row>
                                 <b:column span="2" offset="1">
                                     <h:outputText value="Description" style="font-size: 12px;"/>
@@ -596,32 +604,34 @@
                                     <b:inputText placeholder="note" value="#{setAlignmentSourceBean.description}"
                                                  style="font-size: 12px; height: 25px;"
                                                  tooltip="Description de cette source" tooltip-delay-show="500"/>
-                                </b:column>
-                            </b:row>
+                                </b:column>                                  
+                            </b:row>                            
                             <p:spacer/>
                             <b:row style="margin-bottom: 10px;">
                                 <b:column span="4" offset="1" >
                                     <b:commandButton id="buttonCancel2" value="cancel"
-                                                     update="addAlignmentForm candidatForm"
-                                                     style="width:100%; font-size: 13px;
+                                                     update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
+                                                     formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource"
+                                                     style="width:100%; font-size: 13px; 
                                                      font-weight: normal;
                                                      color: white; background: #8C8C8C; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.cancel()}"/>
-                                </b:column>
+                                </b:column>                                    
                                 <b:column span="4" offset="1" >
                                     <b:commandButton id="buttonSubmit2" value="Ajouter"
-                                                     update="addAlignmentForm candidatForm"
-                                                     style="width:100%; font-size: 13px;
+                                                     update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
+                                                     formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource"
+                                                     style="width:100%; font-size: 13px; 
                                                      font-weight: normal;
                                                      color: white; background: #F7A269; border: none; box-shadow: none;"
                                                      class="btn btn-primary"
                                                      action="#{setAlignmentSourceBean.addAlignmentSource(currentUser.nodeUser.idUser)}"/>
                                 </b:column>
-                            </b:row>
+                            </b:row>  
                         </b:panel>
                     </b:column>
-                </b:row>
+                </b:row>                  
 
 
             </b:row>

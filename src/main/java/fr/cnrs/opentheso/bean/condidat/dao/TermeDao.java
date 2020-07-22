@@ -2,12 +2,13 @@ package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class TermeDao extends BasicDao {
 
@@ -35,6 +36,20 @@ public class TermeDao extends BasicDao {
                     +intitule+"', '"+lang+"', '"+idThesaurus+"', false, '"+idTerm+"')").toString());
         
         stmt.close();
+    }
+    
+    public void addNewEmployePour(Connect connect, 
+            String intitule,
+            String idThesaurus,
+            String lang,
+            String idTerm) throws SQLException{
+        stmt = connect.getPoolConnexion().getConnection().createStatement();
+
+        // insert in non_preferred_term      
+        stmt.executeUpdate(new StringBuffer("INSERT INTO non_preferred_term(lexical_value, lang, id_thesaurus, hiden, id_term) VALUES ('"
+                    +intitule+"', '"+lang+"', '"+idThesaurus+"', false, '"+idTerm+"')").toString());
+        
+        stmt.close(); 
     }
 
     public String getIdTermeByCandidatAndThesaurus(HikariDataSource hikariDataSource, String idThesaurus, String idCandidat) throws SQLException {
@@ -135,20 +150,8 @@ public class TermeDao extends BasicDao {
         } catch (SQLException e) {
             LOG.error(e);
         }
-    }
-
-    public void deleteAllTermesByConcepteAndRole(Connect connect, String idConceptSelected, 
-                    String idThesaurus, String role) {
-        try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            executDeleteRequest(stmt, "DELETE FROM hierarchical_relationship WHERE id_concept1 = '"+idConceptSelected
-                    +"' AND id_thesaurus = '"+idThesaurus+"' AND role = '"+role+"'");
-            stmt.close();
-        } catch (SQLException e) {
-            LOG.error(e);
-        }
-    }
-
+    }    
+     
     private String getIdPreferredTerme(Statement stmt, String idConcept, String idThesaurus) throws SQLException {
         String idTerme = null;
         stmt.executeQuery("SELECT id_term FROM preferred_term WHERE id_concept = '"+idConcept
@@ -160,5 +163,80 @@ public class TermeDao extends BasicDao {
         resultSet.close();
         return idTerme;
     }
+    
+    /**
+     * permet de récupérer les temes non préférés ou synonymes
+     * @param ds
+     * @param idTerm
+     * @param idTheso
+     * @param idLang
+     * @return 
+     */
+    public String getEmployePour(HikariDataSource ds, String idTerm, String idTheso, String idLang){
+        TermHelper termHelper = new TermHelper();
+        StringBuilder listEM = new StringBuilder();
+        boolean first = true;
+        
+        ArrayList<NodeEM> nodeEMs = termHelper.getNonPreferredTerms(ds, idTerm, idTheso, idLang);
+        if(nodeEMs != null) {
+            for (NodeEM nodeEM : nodeEMs) {
+                if(first) {
+                    listEM.append(nodeEM.getLexical_value());
+                    first = false;
+                } else {
+                    listEM.append(",");
+                    listEM.append(nodeEM.getLexical_value());                    
+                }
+            }
+        }
+        return listEM.toString();
+    }   
+    
+    /**
+     * permet de supprimer un synonymes 
+     * @param hikariDataSource
+     * @param idTerm
+     * @param idTheso
+     * @param lang
+     * @throws SQLException 
+     */
+    public void deleteEMByIdTermAndLang(HikariDataSource hikariDataSource, 
+            String idTerm, String idTheso, String lang) throws SQLException {
+        try {
+            openDataBase(hikariDataSource);
+            stmt.executeUpdate("DELETE FROM non_preferred_term WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'"
+            + " and id_thesaurus = '" + idTheso + "'");
+            closeDataBase();
+        } catch (SQLException e) {
+            LOG.error(e);
+            closeDataBase();
+        }
+    }    
+    
+   
+    /**
+     * déprécié par Miled, remplacé par la classe relationDao
+     * @param connect
+     * @param idConceptSelected
+     * @param idThesaurus
+     * @param role 
+     */
+    /*public void deleteAllTermesByConcepteAndRole(Connect connect, String idConceptSelected, 
+                    String idThesaurus, String role) {
+        try {
+            stmt = connect.getPoolConnexion().getConnection().createStatement();
+            executDeleteRequest(stmt, "DELETE FROM hierarchical_relationship WHERE id_concept1 = '"+idConceptSelected
+                    +"' AND id_thesaurus = '"+idThesaurus+"' AND role = '"+role+"'");
+            
+            executDeleteRequest(stmt, "DELETE FROM hierarchical_relationship WHERE id_concept1 = '"+idConceptSelected
+                    +"' AND id_thesaurus = '"+idThesaurus+"' AND role = '"+role+"'");            
+            stmt.close();
+        } catch (SQLException e) {
+            LOG.error(e);
+        }
+    }*/
+
+ 
+     
     
 }

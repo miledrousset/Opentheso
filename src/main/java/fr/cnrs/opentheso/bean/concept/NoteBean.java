@@ -107,7 +107,7 @@ public class NoteBean implements Serializable {
                 }
                 break;
             case "historyNote":
-                if (!addConceptNote(idUser)) {
+                if (!addtermNote(idUser)) {
                     printErreur();
                     return;
                 }

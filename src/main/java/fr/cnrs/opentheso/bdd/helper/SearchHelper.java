@@ -1230,6 +1230,107 @@ public class SearchHelper {
 
         return nodeSearchMinis;
     }
+    
+    /**
+     * Cette fonction permet de récupérer une liste de termes pour
+     * l'autocomplétion pour créer des relations entre les concepts
+     *
+     * @param ds
+     * @param value
+     * @param idTheso
+     * @param idLang
+     * @return #MR
+     */
+    public ArrayList<NodeIdValue> searchAutoCompletionForRelationIdValue(
+            HikariDataSource ds,
+            String value,
+            String idLang,
+            String idTheso) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        StringPlus stringPlus = new StringPlus();
+
+        value = stringPlus.convertString(value);
+        value = stringPlus.unaccentLowerString(value);
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT "
+                            + " term.lexical_value,"
+                            + " preferred_term.id_concept"
+                            + " FROM"
+                            + " concept, preferred_term, term"
+                            + " WHERE"
+                            + " preferred_term.id_concept = concept.id_concept "
+                            + " AND  preferred_term.id_thesaurus = concept.id_thesaurus "
+                            + " AND  term.id_term = preferred_term.id_term "
+                            + " AND  term.id_thesaurus = preferred_term.id_thesaurus "
+                            + " AND  concept.status != 'hidden' "
+                            + " AND term.lang = '" + idLang + "'"
+                            + " AND term.id_thesaurus = '" + idTheso + "'"
+                            + " AND f_unaccent(lower(term.lexical_value)) LIKE '%" + value + "%' order by term.lexical_value <-> '" + value + "' limit 20";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+
+                        nodeIdValue.setId(resultSet.getString("id_concept"));
+                        nodeIdValue.setValue(resultSet.getString("lexical_value"));
+                        nodeIdValues.add(nodeIdValue);
+                    }
+                    query = "SELECT "
+                            + "  non_preferred_term.lexical_value as npt,"
+                            + "  term.lexical_value as pt,"
+                            + "  preferred_term.id_concept"
+                            + " FROM "
+                            + "  concept, "
+                            + "  preferred_term, "
+                            + "  non_preferred_term, "
+                            + "  term "
+                            + " WHERE "
+                            + "  preferred_term.id_concept = concept.id_concept AND"
+                            + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
+                            + "  non_preferred_term.id_term = preferred_term.id_term AND"
+                            + "  non_preferred_term.id_thesaurus = preferred_term.id_thesaurus AND"
+                            + "  term.id_term = preferred_term.id_term AND"
+                            + "  term.id_thesaurus = preferred_term.id_thesaurus AND"
+                            + "  term.lang = non_preferred_term.lang AND"
+                            + "  concept.status != 'hidden' AND"
+                            + "  non_preferred_term.id_thesaurus = '" + idTheso + "' AND"
+                            + "  non_preferred_term.lang = '" + idLang + "' AND"
+                            + " f_unaccent(lower(non_preferred_term.lexical_value)) LIKE '%" + value + "%'"
+                            + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 20";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+
+                        nodeIdValue.setId(resultSet.getString("id_concept"));
+                        nodeIdValue.setValue(resultSet.getString("npt") + " ->" + resultSet.getString("pt"));
+                        nodeIdValues.add(nodeIdValue);
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List of autocompletion of Text : " + value, sqle);
+        }
+
+        return nodeIdValues;
+    }    
 
 //////////////////////////////////////////////////////////    
 //////////////////////////////////////////////////////////

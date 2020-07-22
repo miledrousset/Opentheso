@@ -3,7 +3,10 @@ package fr.cnrs.opentheso.bean.condidat;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
@@ -28,11 +31,12 @@ import javax.inject.Named;
 
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
-
 
 @Named(value = "candidatBean")
 @SessionScoped
@@ -55,10 +59,10 @@ public class CandidatBean implements Serializable {
 
     @Inject
     private ConceptView conceptView;
-    
+
     @Inject
     private AlignmentBean alignmentBean;
-    
+
     @Inject
     private AlignmentManualBean alignmentManualBean;
 
@@ -85,7 +89,7 @@ public class CandidatBean implements Serializable {
         domaines = new ArrayList<>();
         getAllCandidatsByThesoAndLangue();
     }
-    
+
     public void getAllCandidatsByThesoAndLangue() {
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
             candidatList = candidatService.getAllCandidats(connect, selectedTheso.getSelectedIdTheso(),
@@ -140,12 +144,12 @@ public class CandidatBean implements Serializable {
 
         conceptView.setNodeConcept(new ConceptHelper().getConcept(connect.getPoolConnexion(), candidatDto.getIdConcepte(),
                 selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue()));
-        
+
         alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatDto.getIdConcepte(), languageBean.getIdLangue());
         alignmentBean.setIdConceptSelectedForAlignment(candidatDto.getIdConcepte());
 
         setIsNewCandidatActivate(true);
-        
+
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
@@ -153,7 +157,7 @@ public class CandidatBean implements Serializable {
     public void setIsListCandidatsActivate(boolean isListCandidatsActivate) throws IOException {
         this.isListCandidatsActivate = isListCandidatsActivate;
         isNewCandidatActivate = false;
-        
+
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
@@ -184,8 +188,6 @@ public class CandidatBean implements Serializable {
             ConceptHelper conceptHelper = new ConceptHelper();
             TermHelper termHelper = new TermHelper();
 
-            conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-
             // en cas d'un nouveau candidat, verification dans les prefLabels
             if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
                     selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
@@ -202,34 +204,35 @@ public class CandidatBean implements Serializable {
             Concept concept = new Concept();
             concept.setIdConcept(candidatSelected.getIdConcepte());
             concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-            concept.setTopConcept(true);
-            concept.setLang(languageBean.getIdLangue());
+            concept.setTopConcept(false);
+            concept.setLang(connect.getWorkLanguage());
             concept.setIdUser(currentUser.getNodeUser().getIdUser());
             concept.setUserName(currentUser.getUsername());
             concept.setStatus("CA");
 
             conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-            
+
             String idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
             if (idNewConcept == null) {
                 showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.save.msg5"));
                 return;
             }
-
+            candidatSelected.setIdConcepte(idNewConcept);
             Term terme = new Term();
             terme.setId_thesaurus(selectedTheso.getCurrentIdTheso());
             terme.setLang(languageBean.getIdLangue());
             terme.setContributor(currentUser.getNodeUser().getIdUser());
             terme.setLexical_value(candidatSelected.getNomPref().trim());
+            terme.setSource("candidat");
             terme.setStatus("D");
-            
+
             candidatService.saveNewTerm(connect, terme, candidatSelected);
 
             if (conceptHelper.getNodePreference() != null) {
                 ArrayList<String> idConcepts = new ArrayList<>();
                 // création de l'identifiant Handle
                 if (conceptHelper.getNodePreference().isUseHandle()) {
-                    if (!conceptHelper.addIdHandle(connect.getPoolConnexion().getConnection(), candidatSelected.getIdConcepte(), 
+                    if (!conceptHelper.addIdHandle(connect.getPoolConnexion().getConnection(), candidatSelected.getIdConcepte(),
                             candidatSelected.getIdThesaurus())) {
                         showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.save.msg6"));
                         return;
@@ -252,14 +255,14 @@ public class CandidatBean implements Serializable {
             }
         }
 
-        candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat, allTermes, domaines);
+        candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat, allTermes, domaines, currentUser.getNodeUser().getIdUser());
 
         getAllCandidatsByThesoAndLangue();
 
         showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.save.msg8"));
 
         setIsListCandidatsActivate(true);
-        
+
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm");
 
@@ -271,12 +274,12 @@ public class CandidatBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_INFO, "Vous devez enregistrer votre candidat avant de gérer les alignements.");
             return;
         }
-        
+
         switch (pos) {
-            case 1: 
+            case 1:
                 alignmentBean.initAlignementByStep(
                         selectedTheso.getCurrentIdTheso(),
-                        candidatSelected.getIdConcepte(), 
+                        candidatSelected.getIdConcepte(),
                         languageBean.getIdLangue());
                 alignmentBean.nextTen(languageBean.getIdLangue(), selectedTheso.getCurrentIdTheso());
                 PrimeFaces.current().executeScript("PF('addAlignment').show();");
@@ -302,7 +305,7 @@ public class CandidatBean implements Serializable {
     public List<String> searchDomaineName(String enteredValue) {
         if ("%".equals(enteredValue)) {
             return domaines.stream().map(domaineDto -> domaineDto.getName()).collect(Collectors.toList());
-        } else  {
+        } else {
             List<String> matches = new ArrayList<>();
             for (DomaineDto s : domaines) {
                 if (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
@@ -313,6 +316,56 @@ public class CandidatBean implements Serializable {
         }
     }
 
+    //// ajouté par Miled
+    /**
+     * permet d'ajouter un vote pour ce candidat, c'est 1 seul vote par
+     * utilisateur
+     */
+    public void addVote() {
+        try {
+            // cas où il y a un vote, on le supprime
+            if (candidatService.getVote(connect,
+                        candidatSelected.getIdThesaurus(),
+                        candidatSelected.getIdConcepte(),
+                        currentUser.getNodeUser().getIdUser())) {
+                candidatService.removeVote(connect,
+                        candidatSelected.getIdThesaurus(),
+                        candidatSelected.getIdConcepte(),
+                        currentUser.getNodeUser().getIdUser());
+                candidatSelected.setVoted(false);
+            } else {
+                // cas ou il n'y a pas de vote, alors on vote
+            candidatService.addVote(connect,
+                    candidatSelected.getIdThesaurus(),
+                    candidatSelected.getIdConcepte(),
+                    currentUser.getNodeUser().getIdUser());
+                candidatSelected.setVoted(true);            
+            }
+
+        //    getAllCandidatsByThesoAndLangue();
+
+    //        setIsListCandidatsActivate(true);
+        } catch (SQLException sqle) {
+            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
+                Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, sqle.toString());
+                showMessage(FacesMessage.SEVERITY_ERROR, "Le vote a échoué");
+                return;
+            }
+        }
+        /*catch (IOException ex) {
+            Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, ex);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Le vote a échoué");
+            return;
+        }*/
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Vote enregistré");
+
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm:vote");
+    }
+
+//// déprécié par Miled    
+    /*
     public List<String> searchTerme(String enteredValue) {
         List<String> matches = new ArrayList<>();
         //using data factory for getting suggestions
@@ -322,7 +375,40 @@ public class CandidatBean implements Serializable {
             }
         }
         return matches;
+    }*/
+    /**
+     * permet de retourner la liste des concepts possibles pour ajouter une
+     * relation NT (en ignorant les relations interdites) on ignore les concepts
+     * de type TT on ignore les concepts de type RT
+     *
+     * @param value
+     * @return
+     */
+    public List<NodeSearchMini> searchTerme(String value) {
+        List<NodeSearchMini> liste = new ArrayList<>();
+        SearchHelper searchHelper = new SearchHelper();
+        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
+            liste = searchHelper.searchAutoCompletionForRelation(
+                    connect.getPoolConnexion(),
+                    value,
+                    selectedTheso.getCurrentLang(),
+                    selectedTheso.getCurrentIdTheso());
+        }
+        return liste;
     }
+    
+    public ArrayList<NodeIdValue> searchTerme2(String value) {
+        ArrayList<NodeIdValue> liste = new ArrayList<>();
+        SearchHelper searchHelper = new SearchHelper();
+        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
+            liste = searchHelper.searchAutoCompletionForRelationIdValue(
+                    connect.getPoolConnexion(),
+                    value,
+                    selectedTheso.getCurrentLang(),
+                    selectedTheso.getCurrentIdTheso());
+        }
+        return liste;
+    }    
 
     public void initialNewCandidat() throws IOException {
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
@@ -333,7 +419,7 @@ public class CandidatBean implements Serializable {
         setIsNewCandidatActivate(true);
 
         candidatSelected = new CandidatDto();
-        candidatSelected.setIdConcepte(candidatService.getCandidatID(connect));
+        candidatSelected.setIdConcepte(null);//candidatService.getCandidatID(connect));
         candidatSelected.setLang(languageBean.getIdLangue());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
@@ -343,13 +429,14 @@ public class CandidatBean implements Serializable {
         alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatSelected.getIdConcepte(), languageBean.getIdLangue());
         alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
 
-        if (conceptView.getNodeConcept() != null)
+        if (conceptView.getNodeConcept() != null) {
             conceptView.getNodeConcept().setNodeAlignments(new ArrayList<>());
+        }
 
         allTermes = candidatList;
 
         initialCandidat = null;
-        
+
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }

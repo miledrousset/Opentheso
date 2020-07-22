@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,12 +13,13 @@ public class MessageDao extends BasicDao {
 
     public void addNewMessage(HikariDataSource hikariDataSource, String msg, String idUser, 
             String idConcept, String idThesaurus) {
+        msg = new StringPlus().convertString(msg);
         try {
             openDataBase(hikariDataSource);
             stmt.executeUpdate(new StringBuffer("INSERT INTO candidat_messages(value, id_user, date, id_concept, id_thesaurus) ")
                     .append("VALUES ('").append(msg).append("', ").append(idUser).append(", '")
-                    .append(sdf.format(new Date())).append("', ").append(idConcept)
-                    .append(", '").append(idThesaurus).append("')").toString());
+                    .append(sdf.format(new Date())).append("', '").append(idConcept)
+                    .append("', '").append(idThesaurus).append("')").toString());
             closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
@@ -31,7 +33,7 @@ public class MessageDao extends BasicDao {
         try {
             openDataBase(hikariDataSource);
             stmt.executeQuery(new StringBuffer("SELECT users.id_user, users.username, cand.value, cand.date FROM candidat_messages cand, users ")
-                    .append("WHERE id_concept = ").append(idconcept).append(" AND id_thesaurus = '")
+                    .append("WHERE id_concept = '").append(idconcept).append("' AND id_thesaurus = '")
                     .append(idThesaurus).append("' AND cand.id_user = users.id_user").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
@@ -56,8 +58,8 @@ public class MessageDao extends BasicDao {
         try {
             openDataBase(hikariDataSource);
             stmt.executeQuery(new StringBuffer("SELECT DISTINCT users.username FROM candidat_messages msg, users users ")
-                    .append("WHERE msg.id_user = users.id_user AND msg.id_concept = ")
-                    .append(candidatId).append(" AND msg.id_thesaurus = '")
+                    .append("WHERE msg.id_user = users.id_user AND msg.id_concept = '")
+                    .append(candidatId).append("' AND msg.id_thesaurus = '")
                     .append(thesaurusId).append("'").toString());
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {

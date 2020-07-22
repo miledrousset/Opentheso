@@ -53,11 +53,6 @@
 
 
 
-
-
-
-
-
 -- !!! Important !!!
 -- pour créer ces extensions, il faut avoir des privilèves SuperAdmin sur Postgres
 --
@@ -151,6 +146,76 @@ INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUE
 -- pour remettre tous les concepts dans un group en particulier 
 -- insert into concept_group_concept (idgroup,idthesaurus,idconcept) 
 -- select 'G2854', id_thesaurus, id_concept from concept where id_thesaurus = '43' 
+
+
+
+
+
+-- nouvelles tables pour le nouveau module de candidats 
+-- Table: candidat_messages
+CREATE TABLE IF NOT EXISTS public.candidat_messages
+(
+    id_message SERIAL PRIMARY KEY,
+    value text NOT NULL,
+    id_user integer,
+    id_concept character varying,
+    id_thesaurus character varying,
+    date text
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+-- Table: candidat_status
+CREATE TABLE IF NOT EXISTS public.candidat_status
+(
+    id_concept character varying NOT NULL,
+    id_status integer,
+    date date,
+    id_user integer,
+    id_thesaurus character varying,
+    message text,
+    CONSTRAINT candidat_status_id_concept_id_thesaurus_key UNIQUE (id_concept, id_thesaurus)
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: candidat_vote
+CREATE TABLE IF NOT EXISTS public.candidat_vote
+(
+    id_vote SERIAL PRIMARY KEY,
+    id_user integer,
+    id_concept character varying,
+    id_thesaurus character varying,
+    CONSTRAINT candidat_vote_id_user_id_concept_id_thesaurus_key UNIQUE (id_user, id_concept, id_thesaurus)
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: status
+DROP TABLE if exists public.status;
+CREATE TABLE IF NOT EXISTS status
+(
+    id_status SERIAL PRIMARY KEY,
+    value text
+)
+WITH (
+  OIDS=FALSE
+);
+INSERT INTO status (id_status, value) VALUES (1, 'En attente'), (2, 'Inséré'), (3, 'Rejeté');
+
+
+
+
+
+
+
+
+
+
 
 
 

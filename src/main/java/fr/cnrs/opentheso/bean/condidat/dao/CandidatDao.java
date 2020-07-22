@@ -15,18 +15,37 @@ public class CandidatDao extends BasicDao {
         List<CandidatDto> temps = new ArrayList<>();
 
         openDataBase(hikariDataSource);
-
+        
+        /* erreur, il ne faut pas récupérer les termes de la table (non preferredTerm)
         stmt.executeQuery(new StringBuffer("SELECT DISTINCT nomPreTer.lang, nomPreTer.id_term, nomPreTer.lexical_value,")
-                .append("con.id_concept, con.id_thesaurus, con.created, users.username, term.contributor ")
-                .append("FROM non_preferred_term nomPreTer, preferred_term preTer, concept con, term, users ")
-                .append("WHERE nomPreTer.id_term = preTer.id_term ")
-                .append("AND con.id_concept = preTer.id_concept ")
-                .append("AND term.id_term = nomPreTer.id_term ")
-                .append("AND con.status = 'CA' ")
-                .append("AND users.id_user = term.contributor ")
-                .append("AND nomPreTer.lang = '").append(lang).append("' ")
-                .append("AND con.id_thesaurus = '").append(idThesaurus).append("'")
-                .append("ORDER BY nomPreTer.lexical_value ASC").toString());
+                .append(" con.id_concept, con.id_thesaurus, con.created, users.username, term.contributor ")
+                .append(" FROM non_preferred_term nomPreTer, preferred_term preTer, concept con, term, users ")
+                .append(" WHERE nomPreTer.id_term = preTer.id_term ")
+                .append(" AND con.id_concept = preTer.id_concept ")
+                .append(" AND term.id_term = nomPreTer.id_term ")
+                .append(" AND con.status = 'CA' ")
+                .append(" AND users.id_user = term.contributor ")
+                .append(" AND nomPreTer.lang = '").append(lang).append("' ")
+                .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
+                .append(" ORDER BY nomPreTer.lexical_value ASC").toString()); */
+        
+        stmt.executeQuery(new StringBuffer("SELECT term.lang, term.id_term,")
+                .append(" term.lexical_value, con.id_concept,")
+                .append(" con.id_thesaurus, con.created,")
+                .append(" users.username, term.contributor")              
+
+                .append(" FROM preferred_term preTer, concept con, term, users")
+                .append(" WHERE") 
+                .append(" con.id_concept = preTer.id_concept") 
+                .append(" AND term.id_term = preTer.id_term") 
+                .append(" AND con.id_thesaurus = preTer.id_thesaurus")                 
+                .append(" AND preTer.id_thesaurus = term.id_thesaurus")  
+                .append(" AND con.status = 'CA'")  
+                .append(" AND users.id_user = term.contributor")  
+                  
+                .append(" AND term.lang = '").append(lang).append("' ")
+                .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
+                .append(" ORDER BY term.lexical_value ASC").toString());        
 
         resultSet = stmt.getResultSet();
 
@@ -51,8 +70,8 @@ public class CandidatDao extends BasicDao {
         String status = null;
         openDataBase(hikariDataSource);
         stmt.executeQuery(new StringBuffer("SELECT sta.value FROM candidat_status can_sta, status sta ")
-                .append("WHERE can_sta.id_status = sta.id_status AND can_sta.id_concept = ")
-                .append(idCouncepte).append(" AND can_sta.id_thesaurus = '")
+                .append("WHERE can_sta.id_status = sta.id_status AND can_sta.id_concept = '")
+                .append(idCouncepte).append("' AND can_sta.id_thesaurus = '")
                 .append(idThesaurus).append("'").toString());
         resultSet = stmt.getResultSet();
         while (resultSet.next()) {
@@ -65,8 +84,8 @@ public class CandidatDao extends BasicDao {
     public int searchParticipantCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus) throws SQLException {
         int nbrParticipant = 0;
         openDataBase(hikariDataSource);
-        stmt.executeQuery(new StringBuffer("SELECT count(*) FROM candidat_messages WHERE id_concept = ")
-                .append(idCouncepte).append(" AND id_thesaurus = '")
+        stmt.executeQuery(new StringBuffer("SELECT count(*) FROM candidat_messages WHERE id_concept = '")
+                .append(idCouncepte).append("' AND id_thesaurus = '")
                 .append(idThesaurus).append("'").toString());
         resultSet = stmt.getResultSet();
         while (resultSet.next()) {
@@ -97,7 +116,7 @@ public class CandidatDao extends BasicDao {
         openDataBase(hikariDataSource);
         executInsertRequest(stmt,
                 "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus) "
-                + "VALUES (" + idConcepte + ", " + status + ", now(), " + idUser + ", '" + idThesaurus + "')");
+                + "VALUES ('" + idConcepte + "', " + status + ", now(), " + idUser + ", '" + idThesaurus + "')");
         closeDataBase();
     }
 
@@ -112,4 +131,65 @@ public class CandidatDao extends BasicDao {
         closeDataBase();
         return nbrDemande;
     }
+    
+/////// ajouté par Miled
+    
+    public int searchVoteCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus) throws SQLException {
+        int nbrDemande = 0;
+        openDataBase(hikariDataSource);
+        stmt.executeQuery(new StringBuffer("SELECT count(*) FROM candidat_vote WHERE id_concept = '")
+                .append(idCouncepte).append("' AND id_thesaurus = '")
+                .append(idThesaurus).append("'").toString());
+        resultSet = stmt.getResultSet();
+        while (resultSet.next()) {
+            nbrDemande = resultSet.getInt("count");
+        }
+
+        closeDataBase();
+        return nbrDemande;
+    }    
+    
+    public boolean addVote(HikariDataSource hikariDataSource,
+            String idThesaurus, String idConcept, int idUser) throws SQLException {
+        openDataBase(hikariDataSource);
+        executInsertRequest(stmt,
+                "INSERT INTO candidat_vote(id_user, id_concept, id_thesaurus) "
+                + "VALUES (" + idUser + ",'" + idConcept + "','" + idThesaurus + "')");
+        closeDataBase();
+        return true;
+    }
+    
+    public boolean removeVote(HikariDataSource hikariDataSource,
+            String idThesaurus, String idConcept, int idUser) throws SQLException {
+        openDataBase(hikariDataSource);
+        executInsertRequest(stmt,
+                "delete from candidat_vote where "
+                + "id_user = " + idUser 
+                + " and id_concept = '" + idConcept + "'"
+                + " and id_thesaurus = '" + idThesaurus + "'");
+        closeDataBase();
+        return true;
+    }    
+    
+    public boolean getVote(HikariDataSource hikariDataSource, 
+                    int userId, 
+                    String idConcept,
+                    String idTheso) throws SQLException {
+        boolean voted = false;
+        openDataBase(hikariDataSource);
+        stmt.executeQuery("select id_vote from candidat_vote" +
+                    " where" +
+                    " id_user = " + userId +
+                    " and id_concept = '" + idConcept + "'" +
+                    " and id_thesaurus = '" + idTheso + "'");
+        
+        resultSet = stmt.getResultSet();
+        if(resultSet.next()) {
+            voted = resultSet.getRow() != 0;
+        }
+        closeDataBase();
+        return voted;
+    }    
+    
+            
 }
