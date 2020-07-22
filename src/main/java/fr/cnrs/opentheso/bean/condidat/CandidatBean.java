@@ -93,11 +93,23 @@ public class CandidatBean implements Serializable {
     public void getAllCandidatsByThesoAndLangue() {
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
             candidatList = candidatService.getAllCandidats(connect, selectedTheso.getSelectedIdTheso(),
-                    languageBean.getIdLangue());
+                    getIdLang());
         } else {
             candidatList = new ArrayList<>();
         }
     }
+    
+    /**
+     * permet de déctercter la langue préférée d'un thésaurus
+     * @return 
+     */
+    private String getIdLang() {
+        String idLang = connect.getWorkLanguage();
+        if (roleOnThesoBean.getNodePreference() != null) {
+            idLang = roleOnThesoBean.getNodePreference().getSourceLang();
+        }
+        return idLang;
+    }    
 
     public void selectMyCandidats() {
         if (myCandidatsSelected) {
