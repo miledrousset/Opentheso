@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -37,7 +38,7 @@ import org.primefaces.model.StreamedContent;
 @Named(value = "exportFileBean")
 @ViewScoped
 public class ExportFileBean implements Serializable {
-    
+
     private final static String DATE_FORMAT = "dd-mm-yyyy";
 
     @Inject
@@ -53,44 +54,42 @@ public class ExportFileBean implements Serializable {
     private int sizeOfTheso;
     private float progressBar, progressStep;
 
-    private ExportRdf4jHelper exportRdf4jHelper;
-    private String codeLang, codeLang2;
+    private List<String> langs;
+    private ExportRdf4jHelperNew exportRdf4jHelper;
 
     public StreamedContent exportThesorus() {
 
         initProgressBar();
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
-            initDatas();
-            WritePdf writePdf = new WritePdf(exportRdf4jHelper.getSkosXmlDocument(), codeLang, codeLang2, viewExportBean
+            exportRdf4jHelper = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedGroups());
+            WritePdf writePdf = new WritePdf(exportRdf4jHelper.getSkosXmlDocument(), langs.get(0),
+                    langs.size() > 1 ? langs.get(1) : null, viewExportBean
                     .getTypes().indexOf(viewExportBean.getTypeSelected()));
-            return new DefaultStreamedContent(new ByteArrayInputStream(writePdf.getOutput().toByteArray()),
-                    "application/pdf", viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf");
+            return DefaultStreamedContent.builder().contentType("application/pdf")
+                    .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
+                    .stream(() -> new ByteArrayInputStream(writePdf.getOutput().toByteArray()))
+                    .build();
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-            initDatas();
-            WriteCSV writeCsv = new WriteCSV(exportRdf4jHelper.getSkosXmlDocument(), codeLang, codeLang2);
-            return new DefaultStreamedContent(new ByteArrayInputStream(writeCsv.getOutput().toByteArray()),
-                    "text/csv", viewExportBean.getNodeIdValueOfTheso().getId() + ".csv");
+            exportRdf4jHelper = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedGroups());
+            WriteCSV writeCsv = new WriteCSV(exportRdf4jHelper.getSkosXmlDocument(), langs, viewExportBean.getCsvDelimiter());
+
+            return DefaultStreamedContent.builder().contentType("text/csv")
+                    .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                    .stream(() -> new ByteArrayInputStream(writeCsv.getOutput().toByteArray()))
+                    .build();
         } else {
-            return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewExportBean.getSelectedLanguages(),
-                    viewExportBean.getSelectedGroups(),
-                    viewExportBean.getNodePreference(),
-                    viewExportBean.getSelectedExportFormat());
+            return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedLanguages(),
+                    viewExportBean.getSelectedGroups(), viewExportBean.getNodePreference(), viewExportBean.getSelectedExportFormat());
         }
 
     }
 
-    private void initDatas() {
-        exportRdf4jHelper = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                viewExportBean.getSelectedLanguages(), viewExportBean.getSelectedGroups());
+    private ExportRdf4jHelperNew getThesorusDatas(String idTheso, List<NodeGroup> selectedGroups) {
 
-        codeLang = viewExportBean.getSelectedLanguages().get(0).getCode();
-        codeLang2 = viewExportBean.getSelectedLanguages().size() > 1 ? viewExportBean.getSelectedLanguages().get(1).getCode() : "";
-    }
+        langs = viewExportBean.getSelectedLanguages().stream().map(lang -> lang.getCode()).collect(Collectors.toList());
 
-    private ExportRdf4jHelper getThesorusDatas(String idTheso, List<NodeLangTheso> selectedLanguages, List<NodeGroup> selectedGroups) {
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
 
         if (nodePreference == null) {
@@ -100,14 +99,16 @@ public class ExportFileBean implements Serializable {
         sizeOfTheso = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso).size();
         progressStep = (float) 100 / sizeOfTheso;
 
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setInfos(connect.getPoolConnexion(), DATE_FORMAT, false, idTheso, nodePreference.getCheminSite());
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.addThesaurus(idTheso, selectedLanguages);
-        exportRdf4jHelper.addGroup(idTheso, selectedLanguages, selectedGroups);
-        exportRdf4jHelper.addConcept(idTheso, this, selectedLanguages);
+        ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
+        resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
+        resources.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
+        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        for (String idConcept : allConcepts) {
+            progressBar += progressStep;
+            resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept);
+        }
 
-        return exportRdf4jHelper;
+        return resources;
     }
 
     public float getProgressBar() {
@@ -163,16 +164,15 @@ public class ExportFileBean implements Serializable {
                 extention = ".json";
                 break;
         }
-        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
-        if (nodePreference == null) {
+
+        if (roleOnThesoBean.getNodePreference() == null) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Absence des préférences !");
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
         }
         ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(connect.getPoolConnexion(), DATE_FORMAT, false, idTheso, nodePreference.getCheminSite());
-        exportRdf4jHelper.setNodePreference(nodePreference);
+        exportRdf4jHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        exportRdf4jHelper.setInfos(connect.getPoolConnexion(), DATE_FORMAT, false, idTheso, roleOnThesoBean.getNodePreference().getCheminSite());
         exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
 
@@ -227,16 +227,12 @@ public class ExportFileBean implements Serializable {
         }
 
         //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
-        WriteRdf4j writeRdf4j = loadExportHelper(idTheso, nodePreference);
-        if (writeRdf4j != null) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            Rio.write(writeRdf4j.getModel(), out, format);
-            //file = new ByteArrayContent(out.toByteArray(), "application/xml", idTheso + " " + extention);
-            file = DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + " " + extention)
+        ExportRdf4jHelperNew datas = getThesorusDatas(idTheso, selectedGroups);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Rio.write(new WriteRdf4j(datas.getSkosXmlDocument()).getModel(), out, format);
+            
+        return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
                     .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
-        }
-
-        return file;
     }
 
     private WriteRdf4j loadExportHelper(String idTheso, NodePreference nodePreference) {
@@ -251,20 +247,20 @@ public class ExportFileBean implements Serializable {
         boolean useUriArk = false;
         boolean userUriHandle = false;
 
-        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         ArrayList<String> rootGroupList = new GroupHelper().getListIdOfRootGroup(connect.getPoolConnexion(), idTheso);
-        progressStep = (float) 100 / (rootGroupList.size() + allConcepts.size()/4);
+        progressStep = (float) 100 / rootGroupList.size();
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, useUriArk, userUriHandle);
-        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso);
-        exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso, this);
-        
+        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
+        exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
+
+        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         for (String idConcept : allConcepts) {
             progressBar += progressStep;
             exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept);
         }
-        
+
         return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
     }
 

@@ -53,9 +53,7 @@ public class ViewExportBean implements Serializable {
 
     private List<String> exportFormat;
     private List<String> types;
-    private String selectedExportFormat, typeSelected;
-
-    private String formatFile;
+    private String selectedExportFormat, typeSelected, formatFile, csvDelimiter;
     
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
@@ -115,6 +113,10 @@ public class ViewExportBean implements Serializable {
 
     public boolean isRdfExport() {
         return "RDF".equals(formatFile);
+    }
+
+    public boolean isCsvExport() {
+        return "CSV".equals(formatFile);
     }
     
     public String getFormat() {
@@ -216,4 +218,13 @@ public class ViewExportBean implements Serializable {
     public void setTypeSelected(String typeSelected) {
         this.typeSelected = typeSelected;
     }
+
+    public String getCsvDelimiter() {
+        return csvDelimiter;
+    }
+
+    public void setCsvDelimiter(String csvDelimiter) {
+        this.csvDelimiter = csvDelimiter;
+    }
+
 }

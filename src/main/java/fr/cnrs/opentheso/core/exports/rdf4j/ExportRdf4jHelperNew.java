@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
@@ -87,7 +86,8 @@ public class ExportRdf4jHelperNew {
      * @param idTheso
      * @return 
      */
-    public void exportTheso(HikariDataSource ds, String idTheso) {
+    public void exportTheso(HikariDataSource ds, String idTheso, NodePreference nodePreference) {
+        this.nodePreference = nodePreference;
         NodeThesaurus nodeThesaurus = new ThesaurusHelper().getNodeThesaurus(ds, idTheso);
         String uri = getUriFromId(nodeThesaurus.getIdThesaurus());
         SKOSResource conceptScheme = new SKOSResource(uri, SKOSProperty.ConceptScheme);
@@ -135,14 +135,23 @@ public class ExportRdf4jHelperNew {
         });
         skosXmlDocument.setConceptScheme(conceptScheme);
     }
+
+    public void exportSelectedCollections(HikariDataSource ds, String idTheso, List<NodeGroup> selectedGroups){
+        GroupHelper groupHelper = new GroupHelper();
+        NodeGroupLabel nodeGroupLabel;
+        for (NodeGroup group : selectedGroups) {
+            nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, group.getConceptGroup().getIdgroup(), idTheso);
+            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
+            sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+            addChildsGroupRecursive(ds, idTheso, group.getConceptGroup().getIdgroup(), sKOSResource);
+        }
+    }
     
-    public void exportCollections(HikariDataSource ds, String idTheso, ExportFileBean exportFileBean){
+    public void exportCollections(HikariDataSource ds, String idTheso){
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<String> rootGroupList = groupHelper.getListIdOfRootGroup(ds, idTheso);
         NodeGroupLabel nodeGroupLabel;
         for (String idGroup : rootGroupList) {
-            exportFileBean.setProgressBar(exportFileBean.getProgressBar() + exportFileBean.getProgressStep());
-            
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
             SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);                    
             sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
@@ -517,7 +526,6 @@ public class ExportRdf4jHelperNew {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriFromGroup(NodeGroupLabel nodeGroupLabel) {
@@ -567,7 +575,6 @@ public class ExportRdf4jHelperNew {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriGroupFromNodeUri(NodeUri nodeUri, String idTheso) {
@@ -610,7 +617,6 @@ public class ExportRdf4jHelperNew {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriFromNodeUri(NodeUri nodeUri, String idTheso) {

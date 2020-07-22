@@ -19,7 +19,7 @@ public class ProgressBarView implements Serializable {
         if (progressValue > 100) {
             progressValue = 100;
         }
-        
+
         return progressValue;
     }
 

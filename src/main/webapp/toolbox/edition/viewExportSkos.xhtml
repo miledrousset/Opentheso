@@ -40,7 +40,7 @@
         <!-- la liste des groupes disponibles pour filtrer pour l'export -->
         <b:row contentDisabled="true">
             <b:column span="12" style="margin-left: 5px;">
-                <b:panel title="Filtre des collections"  contentStyle="font-size: 12px" collapsed="true" >
+                <b:panel title="Filtre des collections" contentStyle="font-size: 12px" collapsed="true" >
                     <p:dataTable id="checkboxGroup" var="groupOfTheso" value="#{viewExportBean.groupList}"
                                  selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.conceptGroup.idgroup}"
                                  style="font-size: 12px;" >

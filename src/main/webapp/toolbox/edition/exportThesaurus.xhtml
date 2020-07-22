@@ -66,6 +66,21 @@
                 </p:selectOneMenu>
             </b:column>
         </b:row>
+        
+        <b:row rendered="#{viewExportBean.isCsvExport()}" style="margin-left: 30px; margin-right: 30px;">
+            <b:column span="2">
+                <h:outputText value="Délimiteur Csv :" style="font-size: 12px;" />
+            </b:column>
+            <b:column span="3">
+                <p:selectOneMenu value="#{viewExportBean.csvDelimiter}" 
+                                 styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                 style="width: 100%; background: none;  box-shadow: none; ">
+                    <f:selectItem itemLabel=";" itemValue=";" />
+                    <f:selectItem itemLabel="," itemValue="," />
+                    <f:selectItem itemLabel="\t" itemValue="\t" />
+                </p:selectOneMenu>
+            </b:column>
+        </b:row>
 
         <br /><br />
 
@@ -73,7 +88,7 @@
             <b:column span="6">
                 <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
                                  class="btn btn-success" style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
-                                 onclick="PF('pbAjax').start();PF('pbAjax').show()" update="viewExportThesaurus" >
+                                 onclick="PF('pbAjax').start();" update="viewExportThesaurus" >
                     <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                 </p:commandButton>
             </b:column>
@@ -88,8 +103,8 @@
 
         <br/><br/>
 
-        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{progressBarView.progress}" labelTemplate=""
-                       styleClass="animated" global="false" interval="200" style="font-size: 13px; color: white;"/>
+        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{progressBarView.progress}" labelTemplate="" styleClass="animated"
+                       global="false" interval="1000" style="font-size: 13px; color: white;"/>
 
     </h:panelGroup>
 
