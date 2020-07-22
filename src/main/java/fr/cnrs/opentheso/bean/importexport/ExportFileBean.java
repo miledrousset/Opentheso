@@ -57,6 +57,7 @@ public class ExportFileBean implements Serializable {
     private List<String> langs;
     private ExportRdf4jHelperNew exportRdf4jHelper;
 
+    
     public StreamedContent exportThesorus() {
 
         initProgressBar();
@@ -100,6 +101,7 @@ public class ExportFileBean implements Serializable {
         progressStep = (float) 100 / sizeOfTheso;
 
         ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
+        resources.setInfos(nodePreference, DATE_FORMAT, false, false);
         resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
         resources.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
         ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
@@ -233,35 +235,6 @@ public class ExportFileBean implements Serializable {
             
         return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
                     .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
-    }
-
-    private WriteRdf4j loadExportHelper(String idTheso, NodePreference nodePreference) {
-
-        if (nodePreference == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Info :", "!!! Veuillez ouvrir le thésaurus pour l'initialiser avant export !!!"));
-            return null;
-        }
-
-        // pour savoir quel Uri exporter, une seule possible
-        boolean useUriArk = false;
-        boolean userUriHandle = false;
-
-        ArrayList<String> rootGroupList = new GroupHelper().getListIdOfRootGroup(connect.getPoolConnexion(), idTheso);
-        progressStep = (float) 100 / rootGroupList.size();
-
-        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, useUriArk, userUriHandle);
-        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
-        exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
-
-        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
-        for (String idConcept : allConcepts) {
-            progressBar += progressStep;
-            exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept);
-        }
-
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
     }
 
 }

@@ -117,7 +117,10 @@ public class WriteCSV {
         stringBuffer.append(getLabelValue(skosResource.getLabelsList(), langs.get(0), SKOSProperty.hiddenLabel)).append(seperate);//hiddenLabel
         
         for (String lang : langs) {
-            stringBuffer.append("'" + getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.definition) + "'").append(seperate);//definition
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.definition);
+            def = def.replaceAll("amp;", "");
+            def = def.replaceAll(";", ",");
+            stringBuffer.append(def).append(seperate);//definition
         }
         
         stringBuffer.append(getDocumentationValue(skosResource.getDocumentationsList(), langs.get(0), SKOSProperty.scopeNote)).append(seperate)//scopeNote
