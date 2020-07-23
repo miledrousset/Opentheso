@@ -202,35 +202,42 @@ public class CandidatService implements Serializable {
         saveNote(connect, candidatSelected.getNoteApplication(), candidatSelected, NoteEnum.NOTE.getName());
 
         //update traduction
-        saveTraduction(connect, candidatSelected);
+//        saveTraduction(connect, candidatSelected);
 
     }
 
-    private void saveTraduction(Connect connect, CandidatDto candidatSelected) throws SQLException {
+    // déprécié par Miled , ca se passe dans TraductionService
+    // il faut faire l'aciton de création en temps réel, ceci évite à lutilisateur 
+    //d'oublier d'enregistrer et surtout de controler en temps réel l'existance des traductions dans le thésaurus 
+/*    private void saveTraduction(Connect connect, CandidatDto candidatSelected) throws SQLException {
         HikariDataSource connection = connect.getPoolConnexion();
 
         TermeDao termeDao = new TermeDao();
 
-        String idTerm = termeDao.getIdTermeByCandidatAndThesaurus(connection, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
+    //    String idTerm = termeDao.getIdTermeByCandidatAndThesaurus(connection, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
 
-        termeDao.deleteTermsByIdTerm(connection, idTerm, candidatSelected.getLang());
+        termeDao.deleteTermsByIdTerm(connection, candidatSelected.getIdTerm(), candidatSelected.getLang());
 
         for (TraductionDto traduction : candidatSelected.getTraductions()) {
             Term term = new Term();
             term.setStatus("D");
-            term.setLang(traduction.getLangue().toLowerCase());
+            term.setSource("Candidat");
+            term.setLang(traduction.getLangue().trim().toLowerCase());
             term.setLexical_value(traduction.getTraduction());
             term.setId_thesaurus(candidatSelected.getIdThesaurus());
             term.setContributor(candidatSelected.getUserId());
             term.setIdUser(candidatSelected.getUserId() + "");
-            term.setId_term(idTerm);
+            term.setId_term(candidatSelected.getIdTerm());
 
             termeDao.addNewTerme(connection, term);
         }
 
         connection.close();
-    }
+    }*/
 
+    /// déprécié par Miled, on ne peut pas récupérer un Id d'après un label,
+    // le label peut être en doublon
+    /*
     private String getIdCancepteFromLabel(List<CandidatDto> termes, String label) {
         for (CandidatDto candidat : termes) {
             if (candidat.getNomPref().equals(label)) {
@@ -238,7 +245,7 @@ public class CandidatService implements Serializable {
             }
         }
         return null;
-    }
+    }*/
 
     private String getDomaineId(List<DomaineDto> domaines, String label) {
         for (DomaineDto domaineDto : domaines) {
@@ -285,7 +292,7 @@ public class CandidatService implements Serializable {
 
             candidatSelected.setTraductions(new TermHelper().getTraductionsOfConcept(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
-                    term -> new TraductionDto(LanguageEnum.fromString(term.getLang().toUpperCase()).getLanguage(),
+                    term -> new TraductionDto(term.getLang(),
                             term.getLexicalValue())).collect(Collectors.toList()));
 
             candidatSelected.setMessages(messageDao.getAllMessagesByCandidat(connection, candidatSelected.getIdConcepte(),

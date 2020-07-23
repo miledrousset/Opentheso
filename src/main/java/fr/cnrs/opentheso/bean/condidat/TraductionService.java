@@ -1,17 +1,27 @@
 package fr.cnrs.opentheso.bean.condidat;
 
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.bean.condidat.dao.TermeDao;
+import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
 import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import java.io.IOException;
 
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 
@@ -63,6 +73,7 @@ public class TraductionService implements Serializable {
     public void init() {
         newLangage = "";
         newTraduction = "";
+        nodeLangsFiltered = new ArrayList<>();        
         initLanguages();
     }
     
@@ -87,20 +98,36 @@ public class TraductionService implements Serializable {
 
     }        
 
-    public void addTraductionCandidat() {
-        for (TraductionDto traduction : candidatBean.getCandidatSelected().getTraductions()) {
-            if (traduction.getLangue().equals(LanguageEnum.valueOf(newLangage).getLanguage())
-                && traduction.getTraduction().equals(newTraduction)) {
-                return;
-            }
+    public void addTraductionCandidat(){
+        TermHelper termHelper = new TermHelper();
+        
+        if(termHelper.isTermExistIgnoreCase(candidatBean.getConnect().getPoolConnexion(),
+                newTraduction,
+                candidatBean.getCandidatSelected().getIdThesaurus(),
+                newLangage)) {
+            candidatBean.showMessage(FacesMessage.SEVERITY_ERROR,  "Un label identique existe déjà dans le thésaurus");            
+            return;
+        }
+        TermeDao termeDao = new TermeDao();
+        Term term = new Term();
+        term.setStatus("D");
+        term.setSource("Candidat");
+        term.setLang(newLangage);
+        term.setLexical_value(newTraduction);
+        term.setId_thesaurus(candidatBean.getCandidatSelected().getIdThesaurus());
+        term.setContributor(candidatBean.getCandidatSelected().getUserId());
+        term.setCreator(candidatBean.getCandidatSelected().getUserId());
+        term.setId_term(candidatBean.getCandidatSelected().getIdTerm());
+
+        try {
+            termeDao.addNewTerme(candidatBean.getConnect().getPoolConnexion(), term);
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));            
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
         }
 
-        TraductionDto traduction = new TraductionDto();
-        traduction.setLangue(LanguageEnum.valueOf(newLangage).getLanguage());
-        traduction.setTraduction(newTraduction);
-        candidatBean.getCandidatSelected().getTraductions().add(traduction);
-
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));
     }
 
     public void deleteTraduction() {

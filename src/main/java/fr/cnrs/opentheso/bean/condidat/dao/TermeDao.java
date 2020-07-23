@@ -16,9 +16,9 @@ public class TermeDao extends BasicDao {
     public void addNewTerme(HikariDataSource hikariDataSource, Term term) throws SQLException {
         try {
             openDataBase(hikariDataSource);
-            stmt.executeQuery("INSERT INTO term (id_term, lexical_value, lang, id_thesaurus, status, contributor, creator) VALUES ('"
+            stmt.executeUpdate("INSERT INTO term (id_term, lexical_value, lang, id_thesaurus, status, contributor, creator) VALUES ('"
                     +term.getId_term()+"', '"+term.getLexical_value()+"', '"+term.getLang()+"', '"+term.getId_thesaurus()+"', '"
-                    +term.getStatus()+"', '"+term.getIdUser()+"', '"+term.getIdUser()+"')");
+                    +term.getStatus()+"', "+term.getContributor()+", "+term.getCreator()+")");
             closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
