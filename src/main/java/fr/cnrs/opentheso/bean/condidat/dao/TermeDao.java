@@ -102,13 +102,16 @@ public class TermeDao extends BasicDao {
         }
     }
 
-    public void updateIntitule(HikariDataSource hikariDataSource, String intitule, String idThesaurus, String lang, String idConcept,
-                               String idTerm) throws SQLException {
+    public void updateIntitule(HikariDataSource hikariDataSource,
+            String intitule, String idTerm, String idThesaurus, String lang
+                               ) throws SQLException {
         try {
             openDataBase(hikariDataSource);
-            String idTerme = getIdPreferredTerme(stmt, idConcept, idThesaurus);
-            stmt.executeUpdate("UPDATE non_preferred_term SET lexical_value = '"+intitule+"', lang='"
-                    +lang+"' WHERE id_term ='"+idTerme+"' AND id_term = '"+idTerm+"'");
+//            String idTerme = getIdPreferredTerme(stmt, idConcept, idThesaurus);
+            stmt.executeUpdate("update term set lexical_value = '" + intitule + "'"
+                    + " WHERE id_term = '" + idTerm + "'" 
+                    + " AND lang = '" + lang + "'"
+                    + " AND id_thesaurus = '" + idThesaurus + "'");
             closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);

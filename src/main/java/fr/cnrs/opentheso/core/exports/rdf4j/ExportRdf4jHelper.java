@@ -1159,9 +1159,13 @@ public class ExportRdf4jHelper {
      * @return 
      */
     private String getPath(){
-        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
-        path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-        return path;
+        if(FacesContext.getCurrentInstance() != null) {
+            String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+            path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+            return path;
+        } else 
+            return "https://localhost";
+        
     }
 
     public SKOSXmlDocument getSkosXmlDocument() {

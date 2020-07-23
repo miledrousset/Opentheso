@@ -122,8 +122,9 @@ public class CandidatService implements Serializable {
     }
 
     public void updateIntitule(Connect connect, String intitule, String idThesaurus,
-            String lang, String idConcept, String idTerm) throws SQLException {
-        new TermeDao().updateIntitule(connect.getPoolConnexion(), intitule, idThesaurus, lang, idConcept, idTerm);
+            String lang, String idTerm) throws SQLException {
+        new TermeDao().updateIntitule(connect.getPoolConnexion(),
+                intitule, idTerm, idThesaurus, lang);
     }
 
     public void updateDetailsCondidat(Connect connect, CandidatDto candidatSelected, CandidatDto initialCandidat,

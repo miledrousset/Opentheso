@@ -6137,7 +6137,7 @@ public class ConceptHelper {
             ArrayList<String> firstPath,
             ArrayList<String> path,
             ArrayList<ArrayList<String>> tabId) {
-        System.err.println("Concept = " + idConcept);
+    //    System.err.println("Concept = " + idConcept);
         RelationsHelper relationsHelper = new RelationsHelper();
 
         ArrayList<String> resultat = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);

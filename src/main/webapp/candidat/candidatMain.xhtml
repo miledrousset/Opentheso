@@ -14,7 +14,8 @@
             <b:row>
                 <b:column span="12">
                     <b:navCommandLink value="#{langueBean.getMsg('candidat.return')}" 
-                                      update="candidatForm" ajax="false" style="color: #43B572" 
+                                      update="candidatForm" ajax="false" style="color: #F47B2A" 
+                                      action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
                                       actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
                 </b:column>
             </b:row>

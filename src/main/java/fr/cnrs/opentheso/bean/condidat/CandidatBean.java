@@ -263,7 +263,7 @@ public class CandidatBean implements Serializable {
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
                 candidatService.updateIntitule(connect, candidatSelected.getNomPref(), selectedTheso.getCurrentIdTheso(),
-                        selectedTheso.getSelectedLang(), candidatSelected.getIdConcepte() + "", candidatSelected.getIdTerm());
+                        selectedTheso.getSelectedLang(), candidatSelected.getIdTerm());
             }
         }
 
@@ -271,9 +271,9 @@ public class CandidatBean implements Serializable {
 
         getAllCandidatsByThesoAndLangue();
 
-        showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.save.msg8"));
+        showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
 
-        setIsListCandidatsActivate(true);
+    //    setIsListCandidatsActivate(true);
 
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm");

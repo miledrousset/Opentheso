@@ -18,10 +18,22 @@
                 <f:selectItem itemLabel="Italiano" itemValue="IT" />
                 <f:selectItem itemLabel="Deutsche" itemValue="DE" />
             </b:selectOneMenu>
+            
+            <!-- Langues du thésaurus -->
+
+                <p:selectOneMenu id="collection" label="Langue" value="#{traductionService.newLangage}" 
+                                 style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                    <f:selectItems  value="#{traductionService.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                </p:selectOneMenu>
+           
 
             <b:inputText value="#{traductionService.newTraduction}" required="true" 
                          label="Traduction : " style="font-size: 12px;" />
 
+      
+                
+                
+                
             <b:row>
                 <b:column span="6">
                     <p:commandButton id="ajouterTraductionBtn" value="Ajouter" 

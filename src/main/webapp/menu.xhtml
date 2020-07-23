@@ -22,7 +22,7 @@
                         </b:navCommandLink>
 
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
-                                          disabled="false"
+                                          disabled="true"
                                    value="#{langueBean.getMsg('candidat.titre')}"
                                    action="#{indexSetting.setIsCandidateActive(true)}"
                                    style="color: #{indexSetting.candidateColor}"

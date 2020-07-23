@@ -1,12 +1,16 @@
 package fr.cnrs.opentheso.bean.condidat;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
+import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
 import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
@@ -20,6 +24,8 @@ public class TraductionService implements Serializable {
 
     @Inject
     private LanguageBean languageBean;
+    
+    @Inject private SelectedTheso selectedTheso;
 
     private String langage;
     private String traduction;
@@ -30,12 +36,19 @@ public class TraductionService implements Serializable {
     private String newLangage;
     private String newTraduction;
     
+    
+    private ArrayList<NodeLangTheso> nodeLangs;
+    private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits    
 
     public TraductionService() {
         langage = null;
         traduction = null;
     }
 
+    /**
+     * set pour la modification d'une tradcution
+     * @param traductionDto 
+     */
     public void init(TraductionDto traductionDto) {
         langage = traductionDto.getLangue();
         traduction = traductionDto.getTraduction();
@@ -44,10 +57,35 @@ public class TraductionService implements Serializable {
         traductionOld = traduction;
     }
     
+    /**
+     * set pour une nouvelle traduction
+     */
     public void init() {
         newLangage = "";
         newTraduction = "";
+        initLanguages();
     }
+    
+    private void initLanguages(){
+        nodeLangs = selectedTheso.getNodeLangs();
+
+        nodeLangs.forEach((nodeLang) -> {
+            nodeLangsFiltered.add(nodeLang);
+        });
+       
+        // les langues à ignorer
+        ArrayList<String> langsToRemove = new ArrayList<>();
+        langsToRemove.add(candidatBean.getCandidatSelected().getLang());
+        for (TraductionDto traductionDto : candidatBean.getCandidatSelected().getTraductions()) {
+            langsToRemove.add(traductionDto.getLangue());
+        }
+        for (NodeLangTheso nodeLang : nodeLangs) {
+            if(langsToRemove.contains(nodeLang.getCode())) {
+                nodeLangsFiltered.remove(nodeLang);
+            }
+        }
+
+    }        
 
     public void addTraductionCandidat() {
         for (TraductionDto traduction : candidatBean.getCandidatSelected().getTraductions()) {
@@ -137,6 +175,14 @@ public class TraductionService implements Serializable {
 
     public void setNewTraduction(String newTraduction) {
         this.newTraduction = newTraduction;
+    }
+
+    public ArrayList<NodeLangTheso> getNodeLangsFiltered() {
+        return nodeLangsFiltered;
+    }
+
+    public void setNodeLangsFiltered(ArrayList<NodeLangTheso> nodeLangsFiltered) {
+        this.nodeLangsFiltered = nodeLangsFiltered;
     }
 
 }
