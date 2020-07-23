@@ -29,7 +29,7 @@ public class WriteCSV {
 
     private final String delim_multi_datas = "##";
     
-    private String seperate;
+    private char seperate;
     private BufferedWriter writer;
     private ByteArrayOutputStream output;
 
@@ -39,7 +39,7 @@ public class WriteCSV {
      * @param xmlDocument
      * @param langs
      */
-    public WriteCSV(SKOSXmlDocument xmlDocument, List<String> langs, String seperate) {
+    public WriteCSV(SKOSXmlDocument xmlDocument, List<String> langs, char seperate) {
 
         try {
             this.seperate = seperate;
