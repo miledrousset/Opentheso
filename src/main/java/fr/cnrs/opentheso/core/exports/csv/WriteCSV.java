@@ -5,7 +5,6 @@
  */
 package fr.cnrs.opentheso.core.exports.csv;
 
-import fr.cnrs.opentheso.skosapi.SKOSCreator;
 import fr.cnrs.opentheso.skosapi.SKOSDate;
 import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
@@ -22,11 +21,14 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 
 
 public class WriteCSV {
 
+    private final String delim_multi_datas = "##";
+    
     private String seperate;
     private BufferedWriter writer;
     private ByteArrayOutputStream output;
@@ -156,56 +158,26 @@ public class WriteCSV {
     }
 
     private String getMemberValue(ArrayList<SKOSRelation> sKOSRelations) {
-        String memberOf = "";
-        boolean first = true;
         
-        if(sKOSRelations == null) return memberOf;
-       
-        if(!CollectionUtils.isEmpty(sKOSRelations)) {
-            for (SKOSRelation sKOSRelation : sKOSRelations) {
-                if(sKOSRelation.getProperty() == SKOSProperty.memberOf) {
-                    if(first) {
-                        memberOf = sKOSRelation.getTargetUri();
-                        first = false;
-                    } else {
-                        memberOf = memberOf + "##" + sKOSRelation.getTargetUri();                        
-                    }
-                }
-            }
-        }
-        return memberOf;
+        return sKOSRelations.stream()
+                .filter(sKOSRelation -> sKOSRelation.getProperty() == SKOSProperty.memberOf)
+                .map(sKOSRelation -> sKOSRelation.getTargetUri())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     private String getRelationGivenValue(List<SKOSRelation> relations, int propertie) {
-        String value = "";
-        boolean first = true;        
-        for (SKOSRelation relation : relations) {
-            if (relation.getProperty() == propertie) {
-                if(first) {
-                    value = relation.getTargetUri();
-                    first = false;
-                } else {
-                    value = value + "##" + relation.getTargetUri();
-                }
-            }
-        }
-        return value;
+        
+        return relations.stream()
+                .filter(relation -> relation.getProperty() == propertie)
+                .map(relation -> relation.getTargetUri())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     private String getAlligementValue(List<SKOSMatch> matchs, int propertie) {
-        String value = "";
-        boolean first = true;          
-        for (SKOSMatch alignment : matchs) {
-            if (alignment.getProperty() == propertie) {
-                if(first) {
-                    value = alignment.getValue();
-                    first = false;
-                } else {
-                    value = value + "##" + alignment.getValue();;
-                }                
-            }
-        }
-        return value;
+        return matchs.stream()
+                .filter(alignment -> alignment.getProperty() == propertie)
+                .map(alignment -> alignment.getValue())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     public String getNotation(List<SKOSNotation> notations) {
@@ -238,36 +210,19 @@ public class WriteCSV {
     }    
     
     private String getLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
-        String value = "";
-        boolean first = true;          
         
-        for (SKOSLabel label : labels) {
-            if (label.getProperty() == propertie && label.getLanguage().equals(lang)) {
-                if(first) {
-                    value = label.getLabel();
-                    first = false;
-                } else {
-                    value = value + "##" + label.getLabel();
-                }  
-            }
-        }
-        return value;
+        return labels.stream()
+                .filter(label -> label.getProperty() == propertie && label.getLanguage().equals(lang))
+                .map(label -> label.getLabel())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     private String getDocumentationValue(ArrayList<SKOSDocumentation> documentations, String lang, int propertie) {
-        String value = "";
-        boolean first = true;         
-        for (SKOSDocumentation document : documentations) {
-            if (document.getProperty() == propertie && document.getLanguage().equals(lang)) {
-                if(first) {
-                    value = document.getText();
-                    first = false;
-                } else {
-                    value = value + "##" + document.getText();
-                }  
-            }
-        }
-        return value;
+        
+        return documentations.stream()
+                .filter(document -> document.getProperty() == propertie && document.getLanguage().equals(lang))
+                .map(document -> document.getText())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     public ByteArrayOutputStream getOutput() {
