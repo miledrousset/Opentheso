@@ -107,7 +107,7 @@ public class WriteCSV {
                 .append(type).append(seperate) ;//rdf:type
         
         for (String lang : langs) {
-            stringBuffer.append(getLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.prefLabel)).append(seperate); //skos:prefLabel
+            stringBuffer.append(getPrefLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.prefLabel)).append(seperate); //skos:prefLabel
         }
         
         for (String lang : langs) {
@@ -132,7 +132,7 @@ public class WriteCSV {
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch)).append(seperate) //closeMatch
                 .append(getLatValue(skosResource.getGPSCoordinates())).append(seperate)//geo:lat
                 .append(getLongValue(skosResource.getGPSCoordinates())).append(seperate)//geo:long
-                .append(getMemberValue(skosResource.getCreatorList())).append(seperate)//skos:member
+                .append(getMemberValue(skosResource.getRelationsList())).append(seperate)//skos:member
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.created)).append(seperate)//sdct:created
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.modified)).append(seperate);//dct:modified
         writer.write(stringBuffer.toString());
@@ -141,6 +141,7 @@ public class WriteCSV {
 
     private String getLatValue(SKOSGPSCoordinates coordinates) {
         if (coordinates != null) {
+            if(coordinates.getLat() == null) return "";
             return coordinates.getLat();
         }
         return "";
@@ -148,24 +149,44 @@ public class WriteCSV {
 
     private String getLongValue(SKOSGPSCoordinates coordinates) {
         if (coordinates != null) {
+            if(coordinates.getLon() == null) return "";
             return coordinates.getLon();
         }
         return "";
     }
 
-    private String getMemberValue(List<SKOSCreator> creators) {
-        if (!CollectionUtils.isEmpty(creators)) {
-            return creators.get(0).getCreator();
+    private String getMemberValue(ArrayList<SKOSRelation> sKOSRelations) {
+        String memberOf = "";
+        boolean first = true;
+        
+        if(sKOSRelations == null) return memberOf;
+       
+        if(!CollectionUtils.isEmpty(sKOSRelations)) {
+            for (SKOSRelation sKOSRelation : sKOSRelations) {
+                if(sKOSRelation.getProperty() == SKOSProperty.memberOf) {
+                    if(first) {
+                        memberOf = sKOSRelation.getTargetUri();
+                        first = false;
+                    } else {
+                        memberOf = memberOf + "##" + sKOSRelation.getTargetUri();                        
+                    }
+                }
+            }
         }
-        return "";
+        return memberOf;
     }
 
     private String getRelationGivenValue(List<SKOSRelation> relations, int propertie) {
         String value = "";
+        boolean first = true;        
         for (SKOSRelation relation : relations) {
             if (relation.getProperty() == propertie) {
-                value = relation.getTargetUri();
-                break;
+                if(first) {
+                    value = relation.getTargetUri();
+                    first = false;
+                } else {
+                    value = value + "##" + relation.getTargetUri();
+                }
             }
         }
         return value;
@@ -173,10 +194,15 @@ public class WriteCSV {
 
     private String getAlligementValue(List<SKOSMatch> matchs, int propertie) {
         String value = "";
-        for (SKOSMatch date : matchs) {
-            if (date.getProperty() == propertie) {
-                value = date.getValue();
-                break;
+        boolean first = true;          
+        for (SKOSMatch alignment : matchs) {
+            if (alignment.getProperty() == propertie) {
+                if(first) {
+                    value = alignment.getValue();
+                    first = false;
+                } else {
+                    value = value + "##" + alignment.getValue();;
+                }                
             }
         }
         return value;
@@ -200,7 +226,7 @@ public class WriteCSV {
         return value;
     }
 
-    private String getLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
+    private String getPrefLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
         String value = "";
         for (SKOSLabel label : labels) {
             if (label.getProperty() == propertie && label.getLanguage().equals(lang)) {
@@ -209,14 +235,36 @@ public class WriteCSV {
             }
         }
         return value;
+    }    
+    
+    private String getLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
+        String value = "";
+        boolean first = true;          
+        
+        for (SKOSLabel label : labels) {
+            if (label.getProperty() == propertie && label.getLanguage().equals(lang)) {
+                if(first) {
+                    value = label.getLabel();
+                    first = false;
+                } else {
+                    value = value + "##" + label.getLabel();
+                }  
+            }
+        }
+        return value;
     }
 
     private String getDocumentationValue(ArrayList<SKOSDocumentation> documentations, String lang, int propertie) {
         String value = "";
+        boolean first = true;         
         for (SKOSDocumentation document : documentations) {
             if (document.getProperty() == propertie && document.getLanguage().equals(lang)) {
-                value = document.getText();
-                break;
+                if(first) {
+                    value = document.getText();
+                    first = false;
+                } else {
+                    value = value + "##" + document.getText();
+                }  
             }
         }
         return value;
