@@ -2,14 +2,15 @@
 
 --  !!!!!!! Attention !!!!!!!!!
 --
--- pour le passage des anciennes versions vers la 4.3
+-- à appliquer uniquement pour le passage des anciennes versions vers la 20.07
 -- il faut appliquer ce script à votre BDD actuelle,
 -- il faut faire une sauvegarde avant toute opération
---
+-- pour une nouvelle installation, il faut utiliser le script (opentheso_current.sql) en créant votre BDD avant 
+
 --  !!!!!!! Attention !!!!!!!!! 
 
--- version=20.06
--- date : 22/06/2020
+-- version=20.07
+-- date : 29/07/2020
 --
 -- n'oubliez pas de définir le role suivant votre installation 
 --
