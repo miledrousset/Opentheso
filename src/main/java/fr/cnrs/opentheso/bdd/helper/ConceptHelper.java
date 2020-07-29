@@ -66,6 +66,121 @@ public class ConceptHelper {
      * /*************************************************************
      */
 
+    /**
+     * Cette fonction permet de récupérer la liste des concepts suivant l'id du
+     * Concept-Père et le thésaurus sous forme de classe NodeConceptTree (sans
+     * les relations) elle fait le tri alphabétique ou par notation
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @param isSortByNotation
+     * @return Objet class NodeConceptTree
+     */
+    public ArrayList<NodeConceptTree> getListConcepts(HikariDataSource ds,
+            String idConcept, String idThesaurus, String idLang,
+            boolean isSortByNotation) {
+
+        // check pour choix de tri entre alphabétique sur terme ou sur notation  
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<NodeConceptTree> nodeConceptTree = null;
+        String query;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    if (isSortByNotation) {
+                        /// Notation Sort 
+                        query = "SELECT concept.notation, hierarchical_relationship.id_concept2"
+                                + " FROM concept, hierarchical_relationship"
+                                + " WHERE "
+                                + " concept.id_concept = hierarchical_relationship.id_concept2 AND"
+                                + " concept.id_thesaurus = hierarchical_relationship.id_thesaurus AND"
+                                + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "' AND"
+                                + " hierarchical_relationship.id_concept1 = '" + idConcept + "' AND"
+                                + " hierarchical_relationship.role ILIKE 'NT%'"
+                                + " and concept.status != 'CA'"
+                                + " ORDER BY"
+                                + " concept.notation ASC;";
+                    } else {
+                        // alphabétique Sort
+                        query = "select id_concept2 from hierarchical_relationship, concept"
+                                + " where concept.id_thesaurus = hierarchical_relationship.id_thesaurus"
+                                + " and concept.id_concept = hierarchical_relationship.id_concept2"
+                                + " and hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
+                                + " and id_concept1 = '" + idConcept + "'"
+                                + " and role LIKE 'NT%'"
+                                + " and concept.status != 'CA'";
+                    }
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet != null) {
+                        nodeConceptTree = new ArrayList<>();
+                        while (resultSet.next()) {
+                            NodeConceptTree nodeConceptTree1 = new NodeConceptTree();
+                            nodeConceptTree1.setIdConcept(resultSet.getString("id_concept2"));
+                            if (isSortByNotation) {
+                                nodeConceptTree1.setNotation(resultSet.getString("notation"));
+                            }
+
+                            nodeConceptTree1.setIdThesaurus(idThesaurus);
+                            nodeConceptTree1.setIdLang(idLang);
+                            nodeConceptTree1.setIsTerm(true);
+                            nodeConceptTree.add(nodeConceptTree1);
+                        }
+                    }
+                    for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
+                        query = "SELECT term.lexical_value, concept.status"
+                                + " FROM concept, preferred_term, term"
+                                + " WHERE concept.id_concept = preferred_term.id_concept AND"
+                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
+                                + " preferred_term.id_term = term.id_term AND"
+                                + " preferred_term.id_thesaurus = term.id_thesaurus AND"
+                                + " concept.id_concept = '" + nodeConceptTree1.getIdConcept() + "' AND"
+                                + " term.lang = '" + idLang + "' AND"
+                                + " term.id_thesaurus = '" + idThesaurus + "';";
+
+                        stmt.executeQuery(query);
+                        resultSet = stmt.getResultSet();
+                        if (resultSet != null) {
+                            resultSet.next();
+                            if (resultSet.getRow() == 0) {
+                                nodeConceptTree1.setTitle("");
+                                nodeConceptTree1.setStatusConcept("");
+                            } else {
+                                nodeConceptTree1.setTitle(resultSet.getString("lexical_value"));
+                                if (resultSet.getString("status") == null) {
+                                    nodeConceptTree1.setStatusConcept("");
+                                } else {
+                                    nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
+                                }
+                            }
+                            nodeConceptTree1.setHaveChildren(
+                                    haveChildren(ds, idThesaurus, nodeConceptTree1.getIdConcept())
+                            );
+                        }
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting ListConcept of Concept : " + idConcept, sqle);
+        }
+        if (!isSortByNotation) {
+            Collections.sort(nodeConceptTree);
+        }
+        return nodeConceptTree;
+    }    
    
     /**
      * Cettte fonction permet de retourner la liste des TopConcept avec IdArk et
@@ -92,7 +207,7 @@ public class ConceptHelper {
                 try {
                     String query = "select id_concept, id_ark, id_handle from concept"
                             + " where id_thesaurus = '" + idTheso + "'"
-                            + " and top_concept = true";
+                            + " and top_concept = true and status !='CA'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
@@ -304,7 +419,7 @@ public class ConceptHelper {
                 try {
                     String query = "select id_concept from concept where id_thesaurus = '"
                             + idThesaurus + "'"
-                            + " and top_concept = true";
+                            + " and top_concept = true and status != 'CA'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
@@ -352,7 +467,7 @@ public class ConceptHelper {
                         query = "SELECT concept.notation, concept.status, concept.id_concept"
                                 + " FROM concept WHERE"
                                 + " concept.id_thesaurus = '" + idThesaurus + "' AND"
-                                + " concept.top_concept = true"
+                                + " concept.top_concept = true and status != 'CA'"
                                 + " ORDER BY concept.notation ASC";
                     } else {
                         query = "SELECT concept.status, concept.id_concept"
@@ -494,6 +609,7 @@ public class ConceptHelper {
                             + " concept.id_concept = concept_group_concept.idconcept AND"
                             + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                            + " concept.status != 'CA' and"
                             + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -5389,7 +5505,7 @@ public class ConceptHelper {
         return listIdsOfConcept;
     }
 
-    public ArrayList<String> getListChildrenOfConceptNotExist(HikariDataSource ds,
+/*    public ArrayList<String> getListChildrenOfConceptNotExist(HikariDataSource ds,
             String idConcept, String idThesaurus, int id_alignement_source) {
 
         Connection conn;
@@ -5435,119 +5551,9 @@ public class ConceptHelper {
             log.error("Error while getting List of Id of Concept : " + idConcept, sqle);
         }
         return listIdsOfConcept;
-    }
+    }*/
 
-    /**
-     * Cette fonction permet de récupérer la liste des concepts suivant l'id du
-     * Concept-Père et le thésaurus sous forme de classe NodeConceptTree (sans
-     * les relations) elle fait le tri alphabétique ou par notation
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @param idLang
-     * @param isSortByNotation
-     * @return Objet class NodeConceptTree
-     */
-    public ArrayList<NodeConceptTree> getListConcepts(HikariDataSource ds,
-            String idConcept, String idThesaurus, String idLang,
-            boolean isSortByNotation) {
 
-        // check pour choix de tri entre alphabétique sur terme ou sur notation  
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
-        ArrayList<NodeConceptTree> nodeConceptTree = null;
-        String query;
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    if (isSortByNotation) {
-                        /// Notation Sort 
-                        query = "SELECT concept.notation, hierarchical_relationship.id_concept2"
-                                + " FROM concept, hierarchical_relationship"
-                                + " WHERE "
-                                + " concept.id_concept = hierarchical_relationship.id_concept2 AND"
-                                + " concept.id_thesaurus = hierarchical_relationship.id_thesaurus AND"
-                                + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "' AND"
-                                + " hierarchical_relationship.id_concept1 = '" + idConcept + "' AND"
-                                + " hierarchical_relationship.role ILIKE 'NT%'"
-                                + " ORDER BY"
-                                + " concept.notation ASC;";
-                    } else {
-                        // alphabétique Sort
-                        query = "select id_concept2 from hierarchical_relationship"
-                                + " where id_thesaurus = '" + idThesaurus + "'"
-                                + " and id_concept1 = '" + idConcept + "'"
-                                + " and role LIKE 'NT%'";
-                    }
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    if (resultSet != null) {
-                        nodeConceptTree = new ArrayList<>();
-                        while (resultSet.next()) {
-                            NodeConceptTree nodeConceptTree1 = new NodeConceptTree();
-                            nodeConceptTree1.setIdConcept(resultSet.getString("id_concept2"));
-                            if (isSortByNotation) {
-                                nodeConceptTree1.setNotation(resultSet.getString("notation"));
-                            }
-
-                            nodeConceptTree1.setIdThesaurus(idThesaurus);
-                            nodeConceptTree1.setIdLang(idLang);
-                            nodeConceptTree1.setIsTerm(true);
-                            nodeConceptTree.add(nodeConceptTree1);
-                        }
-                    }
-                    for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
-                        query = "SELECT term.lexical_value, concept.status"
-                                + " FROM concept, preferred_term, term"
-                                + " WHERE concept.id_concept = preferred_term.id_concept AND"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                                + " preferred_term.id_term = term.id_term AND"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus AND"
-                                + " concept.id_concept = '" + nodeConceptTree1.getIdConcept() + "' AND"
-                                + " term.lang = '" + idLang + "' AND"
-                                + " term.id_thesaurus = '" + idThesaurus + "';";
-
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
-                            resultSet.next();
-                            if (resultSet.getRow() == 0) {
-                                nodeConceptTree1.setTitle("");
-                                nodeConceptTree1.setStatusConcept("");
-                            } else {
-                                nodeConceptTree1.setTitle(resultSet.getString("lexical_value"));
-                                if (resultSet.getString("status") == null) {
-                                    nodeConceptTree1.setStatusConcept("");
-                                } else {
-                                    nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
-                                }
-                            }
-                            nodeConceptTree1.setHaveChildren(
-                                    haveChildren(ds, idThesaurus, nodeConceptTree1.getIdConcept())
-                            );
-                        }
-                    }
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting ListConcept of Concept : " + idConcept, sqle);
-        }
-        if (!isSortByNotation) {
-            Collections.sort(nodeConceptTree);
-        }
-        return nodeConceptTree;
-    }
 
     private ArrayList<NodeHieraRelation> getRelations(
             ArrayList<NodeHieraRelation> nodeHieraRelations,

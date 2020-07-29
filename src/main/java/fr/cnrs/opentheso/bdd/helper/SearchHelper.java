@@ -219,12 +219,16 @@ public class SearchHelper {
                 try {
                     listIds = new ArrayList<>();
                     query = "SELECT preferred_term.id_concept, term.lexical_value "
-                            + " FROM term, preferred_term WHERE "
+                            + " FROM term, preferred_term, concept WHERE "
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
                             + " preferred_term.id_term = term.id_term AND"
                             + " preferred_term.id_thesaurus = term.id_thesaurus"
                             + preparedValuePT
                             + " and term.id_thesaurus = '" + idThesaurus + "'"
                             + lang
+                            + " and concept.status != 'CA'"
                             + " order by term.lexical_value limit 150";
 
                     resultSet = stmt.executeQuery(query);
@@ -248,7 +252,10 @@ public class SearchHelper {
                             + " non_preferred_term.lexical_value as npt,"
                             + " term.lexical_value as pt"
                             + " FROM"
-                            + " non_preferred_term, term, preferred_term WHERE"
+                            + " non_preferred_term, term, preferred_term, concept WHERE"
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
                             + "  preferred_term.id_term = term.id_term AND"
                             + "  preferred_term.id_thesaurus = term.id_thesaurus AND"
                             + "   preferred_term.id_term = non_preferred_term.id_term AND"
@@ -257,6 +264,7 @@ public class SearchHelper {
                             + preparedValueNPT
                             + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                             + langSynonyme
+                            + " and concept.status != 'CA'"
                             + " order by non_preferred_term.lexical_value limit 100";
 
                     resultSet = stmt.executeQuery(query);
@@ -445,13 +453,17 @@ public class SearchHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    query = "select preferred_term.id_concept, term.lexical_value, term.id_term from term, preferred_term where"
+                    query = "select preferred_term.id_concept, term.lexical_value, term.id_term from term, preferred_term, concept where"
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
                             + " preferred_term.id_term = term.id_term"
                             + " and"
                             + " preferred_term.id_thesaurus = term.id_thesaurus"
                             + " and"
                             + " term.id_thesaurus = '" + idTheso + "'"
                             + " and term.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'"
                             + " and ("
                             + "	f_unaccent(lower(lexical_value)) like '" + value + "'"
                             + "	or"
@@ -492,7 +504,10 @@ public class SearchHelper {
                      */
                     query = "select preferred_term.id_concept, term.id_term,"
                             + " non_preferred_term.lexical_value as npt, term.lexical_value as pt"
-                            + " from non_preferred_term, term, preferred_term where"
+                            + " from non_preferred_term, term, preferred_term, concept where"
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
                             + " preferred_term.id_term = term.id_term"
                             + " and"
                             + " preferred_term.id_thesaurus = term.id_thesaurus"
@@ -505,6 +520,7 @@ public class SearchHelper {
                             + " and"
                             + " term.id_thesaurus = '" + idTheso + "'"
                             + " and term.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'"                            
                             + " and ("
                             + "	f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value + "'"
                             + "	or"
@@ -698,13 +714,17 @@ public class SearchHelper {
                     // recherche avec les synonymes
                     if (synonym) {
                         query = "SELECT preferred_term.id_concept, non_preferred_term.lexical_value"
-                                + " FROM non_preferred_term, preferred_term WHERE "
+                                + " FROM non_preferred_term, preferred_term, concept WHERE "
+                                + " concept.id_concept = preferred_term.id_concept"
+                                + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                                + " and"
                                 + " preferred_term.id_term = non_preferred_term.id_term AND"
                                 + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
                                 + " and"
                                 + " f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value + "%'"
                                 + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                                 + " and non_preferred_term.lang ='" + idLang + "'"
+                                + " and concept.status != 'CA'"
                                 + " order by lexical_value ASC LIMIT 200";
 
                         resultSet = stmt.executeQuery(query);
@@ -716,13 +736,17 @@ public class SearchHelper {
                         }
                         if (permuted) {
                             query = "SELECT preferred_term.id_concept, non_preferred_term.lexical_value"
-                                    + " FROM non_preferred_term, preferred_term WHERE "
+                                    + " FROM non_preferred_term, preferred_term, concept WHERE "
+                                    + " concept.id_concept = preferred_term.id_concept"
+                                    + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                                    + " and"
                                     + " preferred_term.id_term = non_preferred_term.id_term AND"
                                     + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
                                     + " and"
                                     + " f_unaccent(lower(non_preferred_term.lexical_value)) like '% " + value + "%'"
                                     + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                                     + " and non_preferred_term.lang ='" + idLang + "'"
+                                    + " and concept.status != 'CA'"
                                     + " order by lexical_value ASC LIMIT 200";
 
                             resultSet = stmt.executeQuery(query);
@@ -736,13 +760,17 @@ public class SearchHelper {
                     } else {
                         // sans les synonymes
                         query = "SELECT preferred_term.id_concept, term.lexical_value"
-                                + " FROM term, preferred_term WHERE "
+                                + " FROM term, preferred_term, concept WHERE "
+                                + " concept.id_concept = preferred_term.id_concept"
+                                + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                                + " and"
                                 + " preferred_term.id_term = term.id_term AND"
                                 + " preferred_term.id_thesaurus = term.id_thesaurus"
                                 + " and"
                                 + " f_unaccent(lower(term.lexical_value)) like '" + value + "%'"
                                 + " and term.id_thesaurus = '" + idThesaurus + "'"
                                 + " and term.lang ='" + idLang + "'"
+                                + " and concept.status != 'CA'"
                                 + " order by lexical_value ASC LIMIT 200";
 
                         resultSet = stmt.executeQuery(query);
@@ -754,13 +782,17 @@ public class SearchHelper {
                         }
                         if (permuted) {
                             query = "SELECT preferred_term.id_concept, term.lexical_value"
-                                    + " FROM term, preferred_term WHERE "
+                                    + " FROM term, preferred_term, concept WHERE "
+                                    + " concept.id_concept = preferred_term.id_concept"
+                                    + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                                    + " and"
                                     + " preferred_term.id_term = term.id_term AND"
                                     + " preferred_term.id_thesaurus = term.id_thesaurus"
                                     + " and"
                                     + " f_unaccent(lower(term.lexical_value)) like '% " + value + "%'"
                                     + " and term.id_thesaurus = '" + idThesaurus + "'"
                                     + " and term.lang ='" + idLang + "'"
+                                    + " and concept.status != 'CA'"
                                     + " order by lexical_value ASC LIMIT 200";
 
                             resultSet = stmt.executeQuery(query);
@@ -917,7 +949,10 @@ public class SearchHelper {
                 try {
                     // notes de type terme
                     query = "SELECT distinct preferred_term.id_concept"
-                            + " FROM note, preferred_term WHERE"
+                            + " FROM note, preferred_term, concept WHERE"
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
                             + " preferred_term.id_term = note.id_term"
                             + " and"
                             + " preferred_term.id_thesaurus = note.id_thesaurus"
@@ -925,7 +960,8 @@ public class SearchHelper {
                             + //" and" +
                             //" f_unaccent(lower(note.lexicalvalue)) like '%" + value + "%'" +
                             " and note.id_thesaurus = '" + idThesaurus + "'"
-                            + " and note.lang = '" + idLang + "'";
+                            + " and note.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'";
 
                     resultSet = stmt.executeQuery(query);
 
@@ -934,7 +970,10 @@ public class SearchHelper {
                     }
                     // notes des concepts
                     query = "SELECT distinct preferred_term.id_concept"
-                            + " FROM note, preferred_term WHERE"
+                            + " FROM note, preferred_term, concept WHERE"
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
                             + " preferred_term.id_concept = note.id_concept"
                             + " and"
                             + " preferred_term.id_thesaurus = note.id_thesaurus"
@@ -942,7 +981,8 @@ public class SearchHelper {
                             //" f_unaccent(lower(note.lexicalvalue)) % '" + value + "'" +
                             multiValues
                             + " and note.id_thesaurus = '" + idThesaurus + "'"
-                            + " and note.lang = '" + idLang + "'";
+                            + " and note.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'";
 
                     resultSet = stmt.executeQuery(query);
 
@@ -986,6 +1026,7 @@ public class SearchHelper {
                     String query = "SELECT concept.id_concept"
                             + " FROM concept WHERE "
                             + " concept.id_thesaurus = '" + idTheso + "'"
+                            + " and status != 'CA'"
                             + " and (concept.id_concept = '" + value + "'"
                             + " or concept.id_ark = '" + value + "'"
                             + " or concept.id_handle = '" + value + "')";
@@ -1056,12 +1097,16 @@ public class SearchHelper {
                 try {
                     nodeSearchMinis = new ArrayList<>();
                     query = "SELECT preferred_term.id_concept, term.lexical_value, term.id_term "
-                            + " FROM term, preferred_term WHERE "
-                            + " preferred_term.id_term = term.id_term AND"
+                            + " FROM term, preferred_term, concept "
+                            + " WHERE "
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and preferred_term.id_term = term.id_term AND"
                             + " preferred_term.id_thesaurus = term.id_thesaurus"
                             + preparedValuePT
                             + " and term.id_thesaurus = '" + idThesaurus + "'"
                             + lang
+                            + " and concept.status != 'CA'"
                             + " order by term.lexical_value <-> '" + value + "'";
 
                     resultSet = stmt.executeQuery(query);
@@ -1084,7 +1129,11 @@ public class SearchHelper {
                             + " non_preferred_term.lexical_value as npt,"
                             + " term.lexical_value as pt"
                             + " FROM"
-                            + " non_preferred_term, term, preferred_term WHERE"
+                            + " non_preferred_term, term, preferred_term, concept"
+                            + " WHERE"
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
                             + "  preferred_term.id_term = term.id_term AND"
                             + "  preferred_term.id_thesaurus = term.id_thesaurus AND"
                             + "   preferred_term.id_term = non_preferred_term.id_term AND"
@@ -1093,6 +1142,7 @@ public class SearchHelper {
                             + preparedValueNPT
                             + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                             + langSynonyme
+                            + " and concept.status != 'CA'"
                             + " order by non_preferred_term.lexical_value <-> '" + value + "'";
 
                     resultSet = stmt.executeQuery(query);
@@ -1170,6 +1220,7 @@ public class SearchHelper {
                             + " AND  term.id_thesaurus = preferred_term.id_thesaurus "
                             + " AND  concept.status != 'hidden' "
                             + " AND term.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'"
                             + " AND term.id_thesaurus = '" + idTheso + "'"
                             + " AND f_unaccent(lower(term.lexical_value)) LIKE '%" + value + "%' order by term.lexical_value <-> '" + value + "' limit 20";
 
@@ -1202,7 +1253,9 @@ public class SearchHelper {
                             + "  term.lang = non_preferred_term.lang AND"
                             + "  concept.status != 'hidden' AND"
                             + "  non_preferred_term.id_thesaurus = '" + idTheso + "' AND"
-                            + "  non_preferred_term.lang = '" + idLang + "' AND"
+                            + "  non_preferred_term.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'"
+                            + " AND"
                             + " f_unaccent(lower(non_preferred_term.lexical_value)) LIKE '%" + value + "%'"
                             + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 20";
 
@@ -1274,6 +1327,7 @@ public class SearchHelper {
                             + " AND  term.id_thesaurus = preferred_term.id_thesaurus "
                             + " AND  concept.status != 'hidden' "
                             + " AND term.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'"
                             + " AND term.id_thesaurus = '" + idTheso + "'"
                             + " AND f_unaccent(lower(term.lexical_value)) LIKE '%" + value + "%' order by term.lexical_value <-> '" + value + "' limit 20";
 
@@ -1305,7 +1359,9 @@ public class SearchHelper {
                             + "  term.lang = non_preferred_term.lang AND"
                             + "  concept.status != 'hidden' AND"
                             + "  non_preferred_term.id_thesaurus = '" + idTheso + "' AND"
-                            + "  non_preferred_term.lang = '" + idLang + "' AND"
+                            + "  non_preferred_term.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'"
+                            + " AND"
                             + " f_unaccent(lower(non_preferred_term.lexical_value)) LIKE '%" + value + "%'"
                             + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 20";
 
