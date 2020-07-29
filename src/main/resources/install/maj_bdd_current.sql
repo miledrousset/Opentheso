@@ -19,8 +19,6 @@
  SET ROLE = opentheso;
 
 
-
-
 -- requête pour récupérer les candidat d'un thésaurus
 --select term_candidat.lexical_value, concept_candidat.status, concept_candidat.id_thesaurus
 --from concept_candidat, concept_term_candidat, term_candidat
@@ -172,15 +170,21 @@ CREATE TABLE IF NOT EXISTS public.candidat_status
 (
     id_concept character varying NOT NULL,
     id_status integer,
-    date date,
+    date date with time zone NOT NULL DEFAULT now(),
     id_user integer,
     id_thesaurus character varying,
     message text,
+    id_user_admin integer,
     CONSTRAINT candidat_status_id_concept_id_thesaurus_key UNIQUE (id_concept, id_thesaurus)
 )
 WITH (
   OIDS=FALSE
 );
+
+DEFAULT now() pour candidat_status 
+id_user_admin
+
+
 
 -- Table: candidat_vote
 CREATE TABLE IF NOT EXISTS public.candidat_vote
@@ -2464,6 +2468,17 @@ create or replace function update_table_term_historique() returns void as $$
 $$language plpgsql;
 
 
+----------------------------------------------------------------------------
+-- mise à jour de la table note / ajout de la colonne id_user 
+create or replace function update_table_note_user() returns void as $$
+    begin 
+        IF NOT EXISTS (SELECT * FROM information_schema.columns WHERE table_name='note' AND column_name='id_user' ) THEN
+            execute 'Alter TABLE note ADD COLUMN id_user integer;';
+        end if;
+    end;
+$$language plpgsql;
+
+
 create or replace function create_table_external_images() returns void as $$
     begin 
         IF NOT EXISTS (SELECT * FROM information_schema.tables WHERE table_name='external_images') THEN
@@ -2544,7 +2559,7 @@ SELECT update_table_term_historique();
 SELECT update_table_preferences_original_uri();
 select update_table_user_role_group_constraint();
 select create_table_corpus();
-
+select update_table_note_user();
 
 
 -- suppression des fonctions 
@@ -2567,7 +2582,7 @@ select delete_fonction('update_table_preferences_original_uri','');
 select delete_fonction('update_table_user_role_group_constraint','');
 select delete_fonction('create_table_corpus','');
 
-
+select delete_fonction('update_table_note_user', '');
 
 
 

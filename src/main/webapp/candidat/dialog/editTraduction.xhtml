@@ -17,19 +17,22 @@
                          label="Traduction : " style="font-size: 12px;" />
 
             <b:row>
-                <b:column span="6">
+                
+                <b:column span="5" offset="1">
                     <p:commandButton value="Modifier"  styleClass="ui-priority-primary" ajax="false"
-                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572;" 
+                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #43B572;" 
                                      class="btn btn-primary" action="#{traductionService.updateTraduction()}" 
                                      oncomplete="PF('editTraduction').hide();"/>
                 </b:column>
-                <b:column span="6">
-                    <p:commandButton value="Fermer"  styleClass="ui-priority-primary" ajax="false"
-                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; 
+                <b:column span="5" >
+                    <p:commandButton value="Retour" 
+                                     icon="fas fa-undo fas 2x"                                       
+                                     styleClass="ui-priority-primary" ajax="false"
+                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #FFC107; 
                                      border: none; box-shadow: none; float: right" class="btn btn-primary"
                                      oncomplete="PF('editTraduction').hide();"/>
+                </b:column>                
 
-                </b:column>
             </b:row>
 
         </h:form>

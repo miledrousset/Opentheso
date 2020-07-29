@@ -1,16 +1,11 @@
 package fr.cnrs.opentheso.bean.condidat;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.condidat.dao.TermeDao;
-import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
-import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;
 
@@ -19,7 +14,6 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
@@ -130,30 +124,43 @@ public class TraductionService implements Serializable {
 
     }
 
+    /**
+     * permet de supprimer une tradcution
+     * #MR
+     */
     public void deleteTraduction() {
-
-        List<TraductionDto> temps =  candidatBean.getCandidatSelected().getTraductions();
-        for (int i = 0; i < temps.size(); i++) {
-            if (temps.get(i).getTraduction().equalsIgnoreCase(traductionOld) && 
-                    temps.get(i).getLangue().equalsIgnoreCase(langageOld)) {
-                temps.remove(i);
-            }
+        TermeDao termeDao = new TermeDao();
+        try {
+            termeDao.deleteTermByIdTermAndLang(candidatBean.getConnect().getPoolConnexion(),
+                    candidatBean.getCandidatSelected().getIdTerm(),
+                    langage,
+                    candidatBean.getCandidatSelected().getIdThesaurus());
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));            
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
         }
-        candidatBean.getCandidatSelected().setTraductions(temps);
-
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));
     }
 
+    /**
+     * permet de modifier une traduction
+     * #MR
+     */
     public void updateTraduction() {
-        for (TraductionDto traductionDto : candidatBean.getCandidatSelected().getTraductions()) {
-            if (traductionDto.getTraduction().equalsIgnoreCase(traductionOld) && 
-                    traductionDto.getLangue().equalsIgnoreCase(langageOld)) {
-                traductionDto.setLangue(langage);
-                traductionDto.setTraduction(traduction);
-            }
-        }
-
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO,  languageBean.getMsg("candidat.traduction.msg3"));
+        TermeDao termeDao = new TermeDao();
+        try {
+            termeDao.updateIntitule(candidatBean.getConnect().getPoolConnexion(),
+                    traduction,
+                    candidatBean.getCandidatSelected().getIdTerm(),
+                    candidatBean.getCandidatSelected().getIdThesaurus(),
+                    langage);
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());            
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO,  languageBean.getMsg("candidat.traduction.msg3"));            
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
+        }        
     }
 
     public String getLangage() {

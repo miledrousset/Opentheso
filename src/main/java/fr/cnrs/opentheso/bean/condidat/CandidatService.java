@@ -74,6 +74,44 @@ public class CandidatService implements Serializable {
         return temps;
     }
 
+    /**
+     * permet de récupérer la liste des candidats qui sont en attente
+     * @param connect
+     * @param idThesaurus
+     * @param lang
+     * @return 
+     */
+    public List<CandidatDto> getWaitingCandidats(Connect connect, String idThesaurus, String lang) {
+        List<CandidatDto> temps = new ArrayList<>();
+        HikariDataSource connection = connect.getPoolConnexion();
+        try {
+            CandidatDao condidatDao = new CandidatDao();
+            temps = condidatDao.searchWaitingCandidats(connection, idThesaurus, lang);
+            temps.forEach(candidatDto -> {
+                try {
+                    candidatDto.setStatut(condidatDao.searchCondidatStatus(connection, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus()));
+                    candidatDto.setNbrParticipant(condidatDao.searchParticipantCount(connection, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus()));
+                    candidatDto.setNbrDemande(condidatDao.searchDemandeCount(connection, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus()));
+                    candidatDto.setNbrVote(condidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus()));
+                } catch (SQLException ex) {
+                    Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            connection.close();
+        } catch (SQLException sqle) {
+            LOG.error(sqle);
+            System.err.println("Error >>> " + sqle);
+            if (!connection.isClosed()) {
+                connection.close();
+            }
+        }
+        return temps;
+    }    
+    
     public String getCandidatID(Connect connect) {
         int id = 0;
         HikariDataSource connection = connect.getPoolConnexion();
@@ -196,10 +234,10 @@ public class CandidatService implements Serializable {
 
 
         //update défénition
-        saveNote(connect, candidatSelected.getDefenitions(), candidatSelected, NoteEnum.DEFINITION.getName());
+ //       saveNote(connect, candidatSelected.getDefenitions(), candidatSelected, NoteEnum.DEFINITION.getName());
 
         //update note
-        saveNote(connect, candidatSelected.getNoteApplication(), candidatSelected, NoteEnum.NOTE.getName());
+  //      saveNote(connect, candidatSelected.getNoteApplication(), candidatSelected, NoteEnum.NOTE.getName());
 
         //update traduction
 //        saveTraduction(connect, candidatSelected);
@@ -284,12 +322,12 @@ public class CandidatService implements Serializable {
                     candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(),
                     candidatSelected.getLang()));
              
-            candidatSelected.setDefenitions(noteDao.getNotesCandidat(connection, candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus(), NoteEnum.DEFINITION.getName(), candidatSelected.getLang()));
-
+            candidatSelected.setNodeNotes(noteDao.getNotesCandidat(connection, candidatSelected.getIdConcepte(),
+                    candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus()));
+/*
             candidatSelected.setNoteApplication(noteDao.getNoteCandidat(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), NoteEnum.NOTE.getName(), candidatSelected.getLang()));
-
+*/
             candidatSelected.setTraductions(new TermHelper().getTraductionsOfConcept(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
                     term -> new TraductionDto(term.getLang(),
@@ -351,5 +389,13 @@ public class CandidatService implements Serializable {
             String idThesaurus, String idConcept, int idUser) throws SQLException {
         new CandidatDao().removeVote(connect.getPoolConnexion(), idThesaurus, idConcept, idUser);
     }
+    
+    public boolean insertCandidate(Connect connect, CandidatDto candidatDto, String adminMessage, int idUser) {
+        return new CandidatDao().insertCandidate(connect.getPoolConnexion(), candidatDto, adminMessage, idUser);
+    }
+    
+    public boolean rejectCandidate(Connect connect, CandidatDto candidatDto, String adminMessage, int idUser) {
+        return new CandidatDao().rejectCandidate(connect.getPoolConnexion(), candidatDto, adminMessage, idUser);
+    }     
 
 }

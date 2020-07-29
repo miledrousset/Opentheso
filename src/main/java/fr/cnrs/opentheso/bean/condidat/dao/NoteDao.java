@@ -1,12 +1,56 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NoteDao extends BasicDao {
 
+    
+    /**
+     * Permet de récupérer toutes les notes d'un candidat
+     * @param hikariDataSource
+     * @param idconcept
+     * @param id_term
+     * @param idThesaurus
+     * @return 
+     */
+    public List<NodeNote> getNotesCandidat(HikariDataSource hikariDataSource,
+            String idconcept, String id_term, String idThesaurus) {
+        
+        List<NodeNote> nodeNotes = new ArrayList<>();
+        try {
+            openDataBase(hikariDataSource);
+            stmt.executeQuery(new StringBuffer("SELECT id, notetypecode, id_term, id_concept, lang, lexicalvalue, id_user FROM note WHERE ")
+                    .append(" (id_concept = '").append(idconcept)
+                    .append("' or id_term = '").append(id_term)
+                    .append("') AND id_thesaurus = '").append(idThesaurus).append("'")
+                    .toString());
+            
+            resultSet = stmt.getResultSet();
+            while (resultSet.next()) {
+                NodeNote nodeNote = new NodeNote();
+                nodeNote.setId_note(resultSet.getInt("id"));
+                nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
+                nodeNote.setId_term(resultSet.getString("id_term"));
+                nodeNote.setId_concept(resultSet.getString("id_concept"));                
+                nodeNote.setLang(resultSet.getString("lang"));
+                nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
+                nodeNote.setIdUser(resultSet.getInt("id_user"));
+                
+                nodeNotes.add(nodeNote);
+                
+              ///  definitions.add(resultSet.getString("lexicalvalue").replaceAll("(\r\n|\n)", "<br />"));
+            }
+            closeDataBase();
+        } catch (SQLException e) {
+            LOG.error(e);
+        }
+        return nodeNotes;
+    }        
+    
     public String getNoteCandidat(HikariDataSource hikariDataSource, String idconcept, String idThesaurus, 
             String noteType, String lang) {
         
@@ -29,6 +73,8 @@ public class NoteDao extends BasicDao {
         return definition;
     }
 
+    /// déprécié par Miled
+    /*
     public List<String> getNotesCandidat(HikariDataSource hikariDataSource, String idconcept, String idThesaurus, 
             String noteType, String lang) {
         
@@ -48,7 +94,7 @@ public class NoteDao extends BasicDao {
             LOG.error(e);
         }
         return definitions;
-    }
+    }*/
 
     public void saveNote(HikariDataSource hikariDataSource, String noteType, String noteValue, String idTerme, String idConcepte,
                          String idThesaurus, String lang) {

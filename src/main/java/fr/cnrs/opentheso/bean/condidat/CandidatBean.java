@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
@@ -71,6 +72,7 @@ public class CandidatBean implements Serializable {
     private boolean isListCandidatsActivate;
     private boolean isNewCandidatActivate;
     private boolean myCandidatsSelected;
+    private boolean isShowCandidatActivate;
 
     private String message;
     private String definition;
@@ -84,6 +86,7 @@ public class CandidatBean implements Serializable {
     public void initCandidatModule() {
         isListCandidatsActivate = true;
         isNewCandidatActivate = false;
+        isShowCandidatActivate = false;
         candidatList = new ArrayList<>();
         allTermes = new ArrayList<>();
         domaines = new ArrayList<>();
@@ -92,7 +95,7 @@ public class CandidatBean implements Serializable {
 
     public void getAllCandidatsByThesoAndLangue() {
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
-            candidatList = candidatService.getAllCandidats(connect, selectedTheso.getSelectedIdTheso(),
+            candidatList = candidatService.getWaitingCandidats(connect, selectedTheso.getSelectedIdTheso(),
                     getIdLang());
         } else {
             candidatList = new ArrayList<>();
@@ -154,13 +157,7 @@ public class CandidatBean implements Serializable {
 
         domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
 
-        conceptView.setNodeConcept(new ConceptHelper().getConcept(connect.getPoolConnexion(), candidatDto.getIdConcepte(),
-                selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue()));
-
-        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatDto.getIdConcepte(), languageBean.getIdLangue());
-        alignmentBean.setIdConceptSelectedForAlignment(candidatDto.getIdConcepte());
-
-        setIsNewCandidatActivate(true);
+        setIsShowCandidatActivate(true);
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
@@ -169,6 +166,7 @@ public class CandidatBean implements Serializable {
     public void setIsListCandidatsActivate(boolean isListCandidatsActivate) throws IOException {
         this.isListCandidatsActivate = isListCandidatsActivate;
         isNewCandidatActivate = false;
+        isShowCandidatActivate = false;
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
@@ -181,7 +179,20 @@ public class CandidatBean implements Serializable {
     public void setIsNewCandidatActivate(boolean isNewCandidatActivate) {
         this.isNewCandidatActivate = isNewCandidatActivate;
         isListCandidatsActivate = false;
+        isShowCandidatActivate = false;
     }
+
+    public boolean isIsShowCandidatActivate() {
+        return isShowCandidatActivate;
+    }
+
+    public void setIsShowCandidatActivate(boolean isShowCandidatActivate) {
+        this.isShowCandidatActivate = isShowCandidatActivate;
+        isListCandidatsActivate = false;
+        isNewCandidatActivate = false;        
+    }
+    
+    
 
     public void saveConcept() throws SQLException, IOException {
 
@@ -259,6 +270,7 @@ public class CandidatBean implements Serializable {
                     }
                 }
             }
+            setIsListCandidatsActivate(true);
 
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
@@ -274,15 +286,20 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
 
     //    setIsListCandidatsActivate(true);
-
-        PrimeFaces.current().ajax().update("messageIndex");
-        PrimeFaces.current().ajax().update("candidatForm");
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+  //          PrimeFaces.current().ajax().update("messageIndex");
+  //          PrimeFaces.current().ajax().update("candidatForm");
+        }
 
     }
 
+    
+    
+    
     public void showAllignementDialog(int pos) {
 
-        if (initialCandidat == null) {
+/*        if (initialCandidat == null) {
             showMessage(FacesMessage.SEVERITY_INFO, "Vous devez enregistrer votre candidat avant de gérer les alignements.");
             return;
         }
@@ -310,7 +327,7 @@ public class CandidatBean implements Serializable {
                         candidatSelected.getIdConcepte(), languageBean.getIdLangue());
                 PrimeFaces.current().executeScript("PF('deleteAlignment').show();");
         }
-        PrimeFaces.current().ajax().update("addAlignmentForm");
+        PrimeFaces.current().ajax().update("addAlignmentForm");*/
 
     }
 
@@ -438,12 +455,12 @@ public class CandidatBean implements Serializable {
 
         domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
 
-        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatSelected.getIdConcepte(), languageBean.getIdLangue());
-        alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
+//        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatSelected.getIdConcepte(), languageBean.getIdLangue());
+//        alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
 
-        if (conceptView.getNodeConcept() != null) {
-            conceptView.getNodeConcept().setNodeAlignments(new ArrayList<>());
-        }
+ //       if (conceptView.getNodeConcept() != null) {
+//            conceptView.getNodeConcept().setNodeAlignments(new ArrayList<>());
+//        }
 
         allTermes = candidatList;
 
@@ -451,6 +468,24 @@ public class CandidatBean implements Serializable {
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+    }
+    
+    /**
+     * permet de récupérer le nom d'un utilisateur d'après son ID
+     * @param idUser
+     * @return 
+     */
+    public String getUserName(int idUser){
+        UserHelper userHelper = new UserHelper();
+        return userHelper.getNameUser(connect.getPoolConnexion(), idUser);
+       
+    }
+    
+    /**
+     * permet de traiter un candidat (insérer ou rejeté) avec un message
+     */
+    public void processCandidate(){
+        
     }
 
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {

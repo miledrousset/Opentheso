@@ -69,10 +69,12 @@ public class TermeDao extends BasicDao {
         return idTerm;
     }
 
-    public void updateTerme(HikariDataSource hikariDataSource, String idTerm, String newValue, String lang) throws SQLException {
+    public void updateTerme(HikariDataSource hikariDataSource,
+            String idTerm, String newValue, String lang, String idTheso) throws SQLException {
         try {
             openDataBase(hikariDataSource);
-            stmt.executeUpdate("UPDATE term SET lexical_value = '"+newValue + "' WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'");
+            stmt.executeUpdate("UPDATE term SET lexical_value = '"+newValue + "' WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'"
+            + " and id_thesaurus = '" +  idTheso + "'");
             closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
@@ -80,10 +82,20 @@ public class TermeDao extends BasicDao {
         }
     }
 
-    public void deleteTermByIdTermAndLang(HikariDataSource hikariDataSource, String idTerm, String lang) throws SQLException {
+    /**
+     * permet de supprimer une traduction
+     * @param hikariDataSource
+     * @param idTerm
+     * @param lang
+     * @param idTheso
+     * @throws SQLException 
+     */
+    public void deleteTermByIdTermAndLang(HikariDataSource hikariDataSource,
+            String idTerm, String lang, String idTheso) throws SQLException {
         try {
             openDataBase(hikariDataSource);
-            stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'");
+            stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'"
+            + " and id_thesaurus = '" +  idTheso + "'");
             closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
@@ -91,10 +103,12 @@ public class TermeDao extends BasicDao {
         }
     }
 
-    public void deleteTermsByIdTerm(HikariDataSource hikariDataSource, String idTerm, String lang) throws SQLException {
+    public void deleteTermsByIdTerm(HikariDataSource hikariDataSource,
+            String idTerm, String lang, String idTheso) throws SQLException {
         try {
             openDataBase(hikariDataSource);
-            stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"' AND lang != '"+lang+"'");
+            stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"' AND lang != '"+lang+"'"
+            + " and id_thesaurus = '" +  idTheso + "'");
             closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
@@ -107,7 +121,6 @@ public class TermeDao extends BasicDao {
                                ) throws SQLException {
         try {
             openDataBase(hikariDataSource);
-//            String idTerme = getIdPreferredTerme(stmt, idConcept, idThesaurus);
             stmt.executeUpdate("update term set lexical_value = '" + intitule + "'"
                     + " WHERE id_term = '" + idTerm + "'" 
                     + " AND lang = '" + lang + "'"

@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.condidat.dto;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +25,8 @@ public class CandidatDto implements Serializable {
     private boolean voted;
     private int nbrVote;
 
-
+    private String noteApplication;
+    private List<String> defenitions;
 
 
     private List<String> participants;
@@ -34,18 +36,13 @@ public class CandidatDto implements Serializable {
     
     
     // ajoutés par Miled 
-    private String domaine;    
-    private String noteApplication;
-    private List<String> defenitions;
-
-
-    
+    private String domaine;
+    private List<NodeNote> nodeNotes;    
     
     //    private List<String> termesGenerique;
     private ArrayList<NodeIdValue> termesGenerique;  
     //private List<String> termesAssocies;    
     private ArrayList<NodeIdValue> termesAssocies;   
-    
     
     //private List<String> employePour;    
     private String employePour;    
@@ -269,6 +266,14 @@ public class CandidatDto implements Serializable {
 
     public void setNbrVote(int nbrVote) {
         this.nbrVote = nbrVote;
+    }
+
+    public List<NodeNote> getNodeNotes() {
+        return nodeNotes;
+    }
+
+    public void setNodeNotes(List<NodeNote> nodeNotes) {
+        this.nodeNotes = nodeNotes;
     }
 
 

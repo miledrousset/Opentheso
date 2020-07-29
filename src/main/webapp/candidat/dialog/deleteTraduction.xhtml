@@ -30,18 +30,20 @@
             <p:spacer/>
             
             <b:row style="margin-bottom: 20px; margin-top: 15px">
-                <b:column span="6">
+                <b:column span="5" offset="1">
                     <p:commandButton id="deleteTraductionBtn" value="Supprimer" 
+                                     
                                      update="idConfirmDelete confirmDeleteForm :candidatForm:listTraductionForm"
                                      styleClass="ui-priority-primary" ajax="false"
-                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
                                      class="btn btn-primary"
                                      action="#{traductionService.deleteTraduction()}" 
                                      oncomplete="PF('confirmDeleteTraduction').hide();"/>
                 </b:column>
-                <b:column span="6">
+                <b:column span="5" >
                     <p:commandButton value="Annuler"  styleClass="ui-priority-primary" ajax="false"
-                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; 
+                                     icon="fas fa-undo fas 2x"
+                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background-color: #FFC107; 
                                      border: none; box-shadow: none; float: right" class="btn btn-primary"
                                      oncomplete="PF('confirmDeleteTraduction').hide();"/>
 

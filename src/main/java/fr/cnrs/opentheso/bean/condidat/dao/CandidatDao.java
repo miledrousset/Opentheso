@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 
 import java.sql.SQLException;
@@ -64,6 +65,61 @@ public class CandidatDao extends BasicDao {
         closeDataBase();
         return temps;
     }
+    
+    /**
+     * permet de récupérer la liste des candidats qui sont en attente
+     * @param hikariDataSource
+     * @param idThesaurus
+     * @param lang
+     * @return
+     * @throws SQLException 
+     */
+    public List<CandidatDto> searchWaitingCandidats(HikariDataSource hikariDataSource, String idThesaurus,
+            String lang) throws SQLException {
+
+        List<CandidatDto> temps = new ArrayList<>();
+
+        openDataBase(hikariDataSource);
+        
+        stmt.executeQuery(new StringBuffer("SELECT term.lang, term.id_term,")
+                .append(" term.lexical_value, con.id_concept,")
+                .append(" con.id_thesaurus, con.created,")
+                .append(" users.username, term.contributor")              
+
+                .append(" FROM preferred_term preTer, concept con, term, users, candidat_status")
+                .append(" WHERE") 
+                .append(" con.id_concept = candidat_status.id_concept")
+                .append(" and con.id_thesaurus = candidat_status.id_thesaurus")
+                .append(" and con.id_concept = preTer.id_concept") 
+                .append(" AND term.id_term = preTer.id_term") 
+                .append(" AND con.id_thesaurus = preTer.id_thesaurus")                 
+                .append(" AND preTer.id_thesaurus = term.id_thesaurus")  
+                .append(" AND con.status = 'CA'")  
+                .append(" AND users.id_user = term.contributor")  
+                  
+                .append(" AND term.lang = '").append(lang).append("' ")
+                .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
+                .append(" and candidat_status.id_status != 2")
+                .append(" and candidat_status.id_status != 3")                
+                .append(" ORDER BY term.lexical_value ASC").toString());     
+
+        resultSet = stmt.getResultSet();
+
+        while (resultSet.next()) {
+            CandidatDto candidatDto = new CandidatDto();
+            candidatDto.setIdTerm(resultSet.getString("id_term"));
+            candidatDto.setNomPref(resultSet.getString("lexical_value"));
+            candidatDto.setIdConcepte(resultSet.getString("id_concept"));
+            candidatDto.setIdThesaurus(resultSet.getString("id_thesaurus"));
+            candidatDto.setCreationDate(resultSet.getDate("created"));
+            candidatDto.setUser(resultSet.getString("username"));
+            candidatDto.setUserId(resultSet.getInt("contributor"));
+            temps.add(candidatDto);
+        }
+
+        closeDataBase();
+        return temps;
+    }    
 
     public String searchCondidatStatus(HikariDataSource hikariDataSource, String idCouncepte,
             String idThesaurus) throws SQLException {
@@ -119,6 +175,14 @@ public class CandidatDao extends BasicDao {
                 + "VALUES ('" + idConcepte + "', " + status + ", now(), " + idUser + ", '" + idThesaurus + "')");
         closeDataBase();
     }
+    
+    public void insertCandidate(){
+        
+    }
+    
+    public void rejectCandidate(){
+        
+    }    
 
     public int getMaxCandidatId(HikariDataSource hikariDataSource) throws SQLException {
         int nbrDemande = 0;
@@ -191,5 +255,108 @@ public class CandidatDao extends BasicDao {
         return voted;
     }    
     
+    public boolean insertCandidate(HikariDataSource hikariDataSource,
+            CandidatDto candidatDto, String adminMessage, int idUser) {
+        try {
+            openDataBase(hikariDataSource);
+            connection.setAutoCommit(false);
+
+            if(!updateCandidateStatus(candidatDto, adminMessage, 2, idUser)){ // 2 = insérée
+                connection.rollback();
+                closeDataBase();
+                return false;
+            }
+
+            if(!changeCandidateToConcept(candidatDto)){
+                connection.rollback();
+                closeDataBase();
+                return false;
+            }
+            if(candidatDto.getTermesGenerique().isEmpty()) {
+                if(!setTopTermToConcept(candidatDto)){
+                    connection.rollback();
+                    closeDataBase();
+                    return false;
+                }
+            }
+            connection.commit();
+            closeDataBase();
+            return true;            
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+                closeDataBase();
+            } catch (SQLException ex) {
+            }
+        }
+        return false;
+    }     
+    
+    public boolean rejectCandidate(HikariDataSource hikariDataSource,
+            CandidatDto candidatDto, String adminMessage, int idUser) {
+
+        try {
+            openDataBase(hikariDataSource);
+            connection.setAutoCommit(false);
+
+            if(!updateCandidateStatus(candidatDto, adminMessage, 3, idUser)){ // 3 = rejeté
+                connection.rollback();
+                closeDataBase();
+                return false;
+            }
+
+    /*        if(!changeCandidateToConcept(candidatDto)){
+                connection.rollback();
+                closeDataBase();
+                return false;
+            }
+            if(candidatDto.getTermesGenerique().isEmpty()) {
+                if(!setTopTermToConcept(candidatDto)){
+                    connection.rollback();
+                    closeDataBase();
+                    return false;
+                }
+            }*/
+            connection.commit();
+            closeDataBase();
+            return true;            
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+                closeDataBase();
+            } catch (SQLException ex) {
+            }
+        }
+        return false;
+    }      
+    
+    private boolean updateCandidateStatus(CandidatDto candidatDto,
+            String adminMessage, int status, int idUser) throws SQLException{
+        StringPlus stringPlus = new StringPlus();
+        adminMessage = stringPlus.convertString(adminMessage);
+        
+        executInsertRequest(stmt,
+                "update candidat_status set id_status = " + status +
+                ", message = '" + adminMessage + "', id_user_admin = " + idUser +
+                " where id_concept = '" + candidatDto.getIdConcepte() + "'" +
+                " and id_thesaurus = '" + candidatDto.getIdThesaurus() + "'");
+        return true;
+    }
+    
+    private boolean changeCandidateToConcept(CandidatDto candidatDto) throws SQLException{
+        executInsertRequest(stmt,
+                "update concept set status = 'D'" +
+                " where id_concept = '" + candidatDto.getIdConcepte() + "'" +
+                " and id_thesaurus = '" + candidatDto.getIdThesaurus() + "'");
+        return true;
+    }
+    
+    private boolean setTopTermToConcept(CandidatDto candidatDto) throws SQLException{        
+        executInsertRequest(stmt,
+                "update concept set top_concept = true" +
+                " where id_concept = '" + candidatDto.getIdConcepte() + "'" +
+                " and id_thesaurus = '" + candidatDto.getIdThesaurus() + "'");
+        return true;
+    }    
             
 }
