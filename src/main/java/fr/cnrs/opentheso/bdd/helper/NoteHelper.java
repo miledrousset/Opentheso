@@ -1396,6 +1396,40 @@ public class NoteHelper {
             stmt.close();
         }
     }
+    
+    public int getNbrNoteByGroupAndThesoAndLang(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
+
+        Connection conn;
+        Statement stmt;
+        int count = 0;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            stmt = conn.createStatement();
+            stmt.executeQuery("SELECT count(preferred_term.id_concept) " +
+                              "FROM preferred_term, note " +
+                              "WHERE preferred_term.id_thesaurus = note.id_thesaurus " +
+                              "AND (preferred_term.id_term = note.id_term or preferred_term.id_concept = note.id_concept) " +
+                              "AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
+                              "AND preferred_term.id_concept IN (SELECT concept.id_concept " +
+                                             "FROM concept, concept_group_concept " +
+                                             "WHERE concept.id_concept = concept_group_concept.idconcept " +
+                                             "AND concept.id_thesaurus = concept_group_concept.idthesaurus " +
+                                             "AND concept.id_thesaurus = '"+idThesaurus+"' " +
+                                             "AND concept_group_concept.idgroup = '"+idGroup+"') " +
+                              "AND note.lang = '"+idLang+"'");
+            ResultSet resultSet = stmt.getResultSet();
+            if(resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException sqle) {
+            log.error("Error while getting Count of Note in Group : " + idGroup, sqle);
+        }
+        return count;
+    }  
 
 }
 

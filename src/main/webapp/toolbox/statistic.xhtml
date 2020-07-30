@@ -2,19 +2,244 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:form id="statisticForm">
-        <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+    <p:panel id="statisticForm" style="margin-top: -20px; margin-left: -20px; 
+             border: none; padding: 20px; max-height: 700px">
 
-            <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 10px"/> 
+        <b:row>
+            <b:column span="3">
+                <h:outputText style="font-size: 13px;" value="Choix du mode de statistique : "/>
+            </b:column>
+            <b:column span="3">
+                <b:selectOneMenu value="#{statistiqueBean.selectedStatistiqueTypeCode}" 
+                                 styleClass="selectOneMenu_custom" style="font-size: 12px; 
+                                 background: white; border-color: #43B572">
+                    <f:selectItem itemLabel="Général" itemValue="0" />
+                    <f:selectItem itemLabel="Par concept" itemValue="1" />
+                    <f:facet name="append">
+                        <b:commandButton look="success" iconAwesome="thumbs-up" icon-align="right" ajax="true"
+                                         update="toolBoxForm toolBoxForm:statisticForm" 
+                                         actionListener="#{statistiqueBean.onSelectStatType()}"/>
+                    </f:facet>
+                </b:selectOneMenu>
+            </b:column>
+        </b:row>
 
-            <b:row style="margin-left: 30px; margin-right: 30px;">
+        <b:row rendered="#{statistiqueBean.selectLanguageVisible}">
+            <b:column span="3">
+                <h:outputText class="control-label" style="font-size: 13px; height: 34px; margin-top: 7px; vertical-align: central" 
+                              value="Choix de la langue : "/>
+            </b:column>
+            <b:column span="3">
+                <b:selectOneMenu value="#{statistiqueBean.selectedLanguage}"
+                                 style="font-size: 12px; background: white; border-color: #43B572">
+                    <f:selectItems value="#{statistiqueBean.languagesOfTheso}" var="langue"
+                                   itemLabel="#{statistiqueBean.formatLanguage(langue.value)}" itemValue="#{langue}"/>
 
-                <b:column span="12">
-                    <h:outputText value="partie pour les stats du thésaurus" />
+                    <f:facet name="append">
+                        <b:commandButton look="success" iconAwesome="thumbs-up" icon-align="right"
+                                         update="toolBoxForm toolBoxForm:statisticForm"
+                                         actionListener="#{statistiqueBean.onSelectLanguageType()}"/>
+                    </f:facet>
+                </b:selectOneMenu>
+            </b:column>
+        </b:row>
+
+        <p:separator styleClass="separator" style="margin-top: 10px;" rendered="#{statistiqueBean.conceptTypeVisible || statistiqueBean.genericTypeVisible}"/>
+
+        <b:row style="margin-top: 5px" rendered="#{statistiqueBean.conceptTypeVisible}">
+
+            <p:accordionPanel multiple="true">
+                <p:tab title="Filtre par date de modification">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputText style="float: right; font-size: 14px; vertical-align: central; text-align: center" value="Début : "/>
+                        <p:datePicker value="#{statistiqueBean.dateDebut}" style="font-size: 13px; margin-left: 10px; 
+                                      background: white; border-color: #43B572"/>
+
+                        <h:outputText style="float: left; font-size: 14px; vertical-align: central; text-align: center; margin-top: 10px" value="Fin : "/>
+                        <p:datePicker value="#{statistiqueBean.dateFin}" style="font-size: 13px; margin-left: 10px; 
+                                      margin-top: 10px;  background: white; border-color: #43B572"/>
+                    </h:panelGrid>
+                </p:tab>
+
+                <p:tab title="Filtre par collection">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputText style="float: right; font-size: 14px; vertical-align: central; text-align: center; margin-right: 20px" 
+                                      value="Nom de la collection : "/>
+
+                        <p:autoComplete value="#{statistiqueBean.selectedCollection}" completeMethod="#{statistiqueBean.searchDomaineName}" 
+                                        style="font-size: 12px; background: white; border-color: #43B572" />
+
+                    </h:panelGrid>
+                </p:tab>
+            </p:accordionPanel>
+
+            <b:commandButton value="Valider" look="success" iconAwesome="fa-chevron-down" style="float: right; margin-top: 10px" 
+                             update="toolBoxForm toolBoxForm:statisticForm" action="PF('bui').show();"
+                             actionListener="#{statistiqueBean.getStatisitiquesParConcept()}"/>
+        </b:row>
+
+        <h:form id="statistic_par_concept" style="margin-top: 5px" rendered="#{statistiqueBean.conceptTypeVisible}">
+
+            <b:row style="font-size: 12px;  color: #666666">
+                <b:column span="2" style="font-weight: bold;">
+                    <h:outputText value="Id"/>
+                </b:column>
+                <b:column span="2" style="font-weight: bold;">
+                    <h:outputText value="Label"/>
+                </b:column>
+                <b:column span="2" style="font-weight: bold;">
+                    <h:outputText value="Type"/>
+                </b:column> 
+                <b:column span="2" style="font-weight: bold;">
+                    <h:outputText value="Date création"/>
+                </b:column> 
+                <b:column span="2" style="font-weight: bold;">
+                    <h:outputText value="Date modification"/>
+                </b:column>  
+                <b:column span="1" style="font-weight: bold;">
+                    <h:outputText value="Utilisateur"/>
+                </b:column>     
+                <b:column span="1">
+                    <h:outputText value="Info"/>
+                </b:column>                     
+            </b:row>
+
+            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+
+            <p:scrollPanel mode="native" style="width:100%; height:380px"
+                           rendered="#{statistiqueBean.canceptStatistiques.size() > 0}">
+                <ui:repeat var="stat" value="#{statistiqueBean.canceptStatistiques}">
+                    <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(statistiqueBean.canceptStatistiques.indexOf(stat))}; 
+                           padding-top: 5px">
+                        <b:column span="2" >
+                            <h:outputText value="#{stat.idConcept}"/>
+                        </b:column>
+                        <b:column span="2" >
+                            <h:outputText value="#{stat.label}"/>
+                        </b:column>  
+                        <b:column span="2" >
+                            <h:outputText value="#{stat.type}"/>
+                        </b:column>
+                        <b:column span="2" >
+                            <h:outputText value="#{stat.dateCreation}"/>
+                        </b:column>  
+                        <b:column span="2" >
+                            <h:outputText value="#{stat.dateModification}"/>
+                        </b:column> 
+                        <b:column span="1" >
+                            <h:outputText value="#{stat.utilisateur}"/>
+                        </b:column>
+                        <b:column span="1" >
+                            <b:navCommandLink iconAwesome="fa-info-circle" icon-size="lg"
+                                              oncomplete="PF('editCorpus').show();" style="color: #f47b2a;"
+                                              actionListener="#{corpusService.init(carpus)}"
+                                              styleClass="buttonIconOrange" ajax="false"
+                                              update="idEditCorpus editCorpusForm"/> 
+                        </b:column>
+                    </b:row>   
+                </ui:repeat>
+            </p:scrollPanel>
+        </h:form>
+
+        <b:row rendered="#{statistiqueBean.genericTypeVisible}">
+            <b:row>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: right; font-weight: bold;" value="Nom du thesaurus : "/>
+                </b:column>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: left;" value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
                 </b:column>
             </b:row>
-        </b:panel>
-    </h:form>        
+
+            <b:row style="margin-top: 5px">
+                <b:column medium-screen="6">
+                    <h:outputText style="float: right; font-weight: bold;" value="Nombre des concepts : "/>
+                </b:column>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: left;" value="#{statistiqueBean.nbrCanceptByThes}"/>
+                </b:column>
+            </b:row>
+
+            <b:row style="margin-top: 5px">
+                <b:column medium-screen="6">
+                    <h:outputText style="float: right; font-weight: bold;" value="Dernière modification : "/>
+                </b:column>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: left;" value="#{statistiqueBean.derniereModification}"/>
+                </b:column>
+            </b:row>
+
+            <b:row style="margin-top: 20px">
+                <b:column>
+                    <h:form id="statistic">
+
+                        <b:row style="font-size: 12px;  color: #666666">
+                            <b:column span="4">
+                                <h:outputText style="font-weight: bold; margin-left: 10px" value="Collection"/>
+                            </b:column>
+                            <b:column span="2">
+                                <h:outputText style="font-weight: bold;" value="Conceptes"/>
+                            </b:column>
+                            <b:column span="2">
+                                <h:outputText style="font-weight: bold;" value="Synonymes"/>
+                            </b:column> 
+                            <b:column span="2">
+                                <h:outputText style="font-weight: bold;" value="Termes non traduits"/>
+                            </b:column> 
+                            <b:column span="2">
+                                <h:outputText style="font-weight: bold;" value="Notes"/>
+                            </b:column>                        
+                        </b:row>
+
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+
+                        <p:scrollPanel mode="native" style="width:100%; height:380px" 
+                                       rendered="#{statistiqueBean.genericStatistiques.size() > 0}">
+                            <ui:repeat id="data_stat" var="stat" value="#{statistiqueBean.genericStatistiques}">
+                                <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(statistiqueBean.genericStatistiques.indexOf(stat))}; 
+                                       padding-top: 5px">
+                                    <b:column span="4" >
+                                        <h:outputText style="margin-left: 10px" value="#{stat.collection}"/>
+                                    </b:column>
+                                    <b:column span="2" >
+                                        <h:outputText value="#{stat.conceptsNbr}"/>
+                                    </b:column>  
+                                    <b:column span="2" >
+                                        <h:outputText value="#{stat.synonymesNbr}"/>
+                                    </b:column>
+                                    <b:column span="2" >
+                                        <h:outputText value="#{stat.termesNonTraduitsNbr}"/>
+                                    </b:column>  
+                                    <b:column span="2" >
+                                        <h:outputText value="#{stat.notesNbr}"/>
+                                    </b:column>
+                                </b:row>   
+                            </ui:repeat>
+                        </p:scrollPanel>
+
+                    </h:form>
+                </b:column>
+            </b:row>
+
+        </b:row>
+
+        <b:row style="margin-top: 5px">
+            <b:commandButton value="Export CSV" rendered="#{statistiqueBean.showExportButton()}" 
+                             look="success" iconAwesome="fa-chevron-down"
+                             style="float: right; margin-top: 10px" icon="ui-icon-valider"
+                             update="toolBoxForm toolBoxForm:statisticForm">
+                <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
+            </b:commandButton>
+        </b:row>
+
+    </p:panel> 
+
+    <p:blockUI block="statisticForm" widgetVar="bui">
+        Recherche des données...<br />
+        <p:progressBar style="height:6px" mode="indeterminate"/>
+    </p:blockUI>
+
 </ui:fragment>

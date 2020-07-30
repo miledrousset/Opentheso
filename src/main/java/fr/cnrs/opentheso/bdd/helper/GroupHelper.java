@@ -30,6 +30,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 
+import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import org.apache.commons.logging.Log;
@@ -520,9 +522,7 @@ public class GroupHelper {
     /**
      *
      * @param conn
-     * @param idConcept
      * @param idThesaurus
-     * @param urlSite
      * @param nodeMetaData
      * @return
      */
@@ -3666,6 +3666,57 @@ public class GroupHelper {
     }
 
 
+     public ArrayList<String> getListOfGroupByTheo(Connection conn, String idThesaurus) {
 
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList tabIdConceptGroup = null;
+
+        try {
+            // Get connection from pool
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select idgroup from concept_group where idthesaurus = '" + idThesaurus + "'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    tabIdConceptGroup = new ArrayList();
+                    while (resultSet.next()) {
+                        tabIdConceptGroup.add(resultSet.getString("idgroup"));
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List Id or Groups of thesaurus : " + idThesaurus, sqle);
+        }
+        return tabIdConceptGroup;
+    }
+
+    public ArrayList<DomaineDto> getAllGroupsByThesaurusAndLang(Connect connect, String idThesaurus, String lang) {
+        ArrayList<DomaineDto> domaines = new ArrayList<>();
+        try {
+            Statement stmt = connect.getPoolConnexion().getConnection().createStatement();
+            stmt.executeQuery("SELECT idgroup, lexicalvalue FROM concept_group_label where idthesaurus = '"
+                    + idThesaurus+"' AND lang = '"+lang.toLowerCase()+"'");
+            ResultSet resultSet = stmt.getResultSet();
+            while (resultSet.next()) {
+                DomaineDto domaineDto = new DomaineDto();
+                domaineDto.setId(resultSet.getString("idgroup"));
+                domaineDto.setName(resultSet.getString("lexicalvalue"));
+                domaines.add(domaineDto);
+            }
+            resultSet.close();
+            stmt.close();
+        } catch (SQLException e) {
+            log.error(e);
+        }
+        return domaines;
+    }
    
 }
