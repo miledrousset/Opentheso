@@ -8,6 +8,14 @@ package candidate;
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
+import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
+import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import org.junit.Test;
 
@@ -25,10 +33,76 @@ public class getOldCandidateTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
-    public void getCandidates() {
-        
+    public void exportOldCandidatesToSkos() {
+        String idTheso = "TH_1";
+        ArrayList<NodeCandidateOld> nodeCandidateOlds = getCandidates(idTheso);
         
     }
+     
+    private ArrayList<NodeCandidateOld> getCandidates(String idTheso){
+        ConnexionTest connexionTest = new ConnexionTest();
+        HikariDataSource ds = connexionTest.getConnexionPool();        
+
+        
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<NodeCandidateOld> nodeCandidateOlds = new ArrayList<>();
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select concept_candidat.id_concept, concept_candidat.status"
+                            + " from concept_candidat"
+                            + " where"
+                            + " concept_candidat.id_thesaurus = '" + idTheso +"'"
+                            + " and concept_candidat.status = 'a'";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        NodeCandidateOld nodeCandidateOld = new NodeCandidateOld();
+                        nodeCandidateOld.setIdCandidate(resultSet.getString("id_concept"));
+                        nodeCandidateOld.setStatus(resultSet.getString("status"));
+                        nodeCandidateOlds.add(nodeCandidateOld);
+                    }
+                    
+                    for (NodeCandidateOld nodeCandidateOld : nodeCandidateOlds) {
+                        ArrayList<NodeTraductionCandidat> nodeTraductionCandidats = new ArrayList<>();                        
+                        query = "select term_candidat.lexical_value, term_candidat.lang"
+                                + " from concept_term_candidat, term_candidat"
+                                + " where"
+                                + " concept_term_candidat.id_term = term_candidat.id_term"
+                                + " and"
+                                + " concept_term_candidat.id_thesaurus = term_candidat.id_thesaurus"
+                                + " and"
+                                + " term_candidat.id_thesaurus = '" + idTheso + "'"
+                                + " and"
+                                + " concept_term_candidat.id_concept = '" + nodeCandidateOld.getIdCandidate() + "'";
+                        stmt.executeQuery(query);
+                        resultSet = stmt.getResultSet();
+                        while (resultSet.next()) {
+                            NodeTraductionCandidat nodeTraductionCandidat  = new NodeTraductionCandidat();
+                            nodeTraductionCandidat.setIdLang(resultSet.getString("lang"));
+                            nodeTraductionCandidat.setTitle(resultSet.getString("lexical_value"));
+                            nodeTraductionCandidats.add(nodeTraductionCandidat);
+                        }
+                        nodeCandidateOld.setNodeTraductions(nodeTraductionCandidats);
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+
+        }
+        return nodeCandidateOlds;
+    }
+    
     
     @Test
     public void exportCandidatsToCSV() {

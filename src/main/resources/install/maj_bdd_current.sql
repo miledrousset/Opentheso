@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS public.candidat_status
 (
     id_concept character varying NOT NULL,
     id_status integer,
-    date date with time zone NOT NULL DEFAULT now(),
+    date date NOT NULL DEFAULT now(),
     id_user integer,
     id_thesaurus character varying,
     message text,
@@ -181,10 +181,6 @@ CREATE TABLE IF NOT EXISTS public.candidat_status
 WITH (
   OIDS=FALSE
 );
-
-DEFAULT now() pour candidat_status 
-id_user_admin
-
 
 
 -- Table: candidat_vote

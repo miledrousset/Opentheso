@@ -11,7 +11,8 @@ import java.util.List;
 
 public class MessageDao extends BasicDao {
 
-    public void addNewMessage(HikariDataSource hikariDataSource, String msg, String idUser, 
+    public void addNewMessage(HikariDataSource hikariDataSource, String msg,
+            int idUser, 
             String idConcept, String idThesaurus) {
         msg = new StringPlus().convertString(msg);
         try {

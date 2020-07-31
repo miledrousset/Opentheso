@@ -4,8 +4,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
+import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
+import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
 import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
 import fr.cnrs.opentheso.bean.condidat.dao.DomaineDao;
 import fr.cnrs.opentheso.bean.condidat.dao.TermeDao;
@@ -15,9 +18,6 @@ import fr.cnrs.opentheso.bean.condidat.dao.RelationDao;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
-import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
-import fr.cnrs.opentheso.bean.condidat.enumeration.NoteEnum;
-import fr.cnrs.opentheso.bean.condidat.enumeration.TermEnum;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.Serializable;
@@ -139,12 +139,13 @@ public class CandidatService implements Serializable {
         return idNewCondidat;
     }
 
-    public String saveNewTerm(Connect connect, Term term, CandidatDto candidatSelected) throws SQLException {
+    public String saveNewTerm(Connect connect, Term term,
+            String idConcept, int idUser) throws SQLException {
 
         HikariDataSource connection = connect.getPoolConnexion();
 
         String idTerm = new TermHelper().addTerm(connect.getPoolConnexion().getConnection(), term,
-                candidatSelected.getIdConcepte(), candidatSelected.getUserId());
+                idConcept, idUser);
 
         if (idTerm == null) {
             return null;
@@ -231,17 +232,6 @@ public class CandidatService implements Serializable {
                 });
             }            
         }
-
-
-        //update défénition
- //       saveNote(connect, candidatSelected.getDefenitions(), candidatSelected, NoteEnum.DEFINITION.getName());
-
-        //update note
-  //      saveNote(connect, candidatSelected.getNoteApplication(), candidatSelected, NoteEnum.NOTE.getName());
-
-        //update traduction
-//        saveTraduction(connect, candidatSelected);
-
     }
 
     // déprécié par Miled , ca se passe dans TraductionService
@@ -324,10 +314,7 @@ public class CandidatService implements Serializable {
              
             candidatSelected.setNodeNotes(noteDao.getNotesCandidat(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus()));
-/*
-            candidatSelected.setNoteApplication(noteDao.getNoteCandidat(connection, candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus(), NoteEnum.NOTE.getName(), candidatSelected.getLang()));
-*/
+
             candidatSelected.setTraductions(new TermHelper().getTraductionsOfConcept(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
                     term -> new TraductionDto(term.getLang(),
@@ -351,27 +338,6 @@ public class CandidatService implements Serializable {
         }
     }
 
-    public void saveNote(Connect connect, String newNoteValue, CandidatDto candidatSelected, String noteType) {
-
-        HikariDataSource connection = connect.getPoolConnexion();
-        NoteDao noteDao = new NoteDao();
-        noteDao.deleteNote(connection, noteType, newNoteValue, candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus());
-        noteDao.saveNote(connection, noteType, newNoteValue, candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus(), candidatSelected.getLang());
-        connection.close();
-    }
-
-    public void saveNote(Connect connect, List<String> newNoteValue, CandidatDto candidatSelected, String noteType) {
-        HikariDataSource connection = connect.getPoolConnexion();
-        NoteDao noteDao = new NoteDao();
-        noteDao.deleteAllNoteByConceptAndThesaurusAndType(connection, noteType, candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());
-        newNoteValue.forEach(note -> {
-            noteDao.saveNote(connection, noteType, note, candidatSelected.getIdTerm(), candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus(), candidatSelected.getLang());
-        });
-        connection.close();
-    }
 
 ///////// ajouté par Miled
     public void addVote(Connect connect,
@@ -397,5 +363,145 @@ public class CandidatService implements Serializable {
     public boolean rejectCandidate(Connect connect, CandidatDto candidatDto, String adminMessage, int idUser) {
         return new CandidatDao().rejectCandidate(connect.getPoolConnexion(), candidatDto, adminMessage, idUser);
     }     
+    
+    /**
+     * permet de récupérer les anciens candidats saisies dans l'ancien module 
+     * uniquement les candidats qui étatient en attente
+     * @param connect
+     * @param idTheso
+     * @param idUser
+     * @param nodePreference
+     * @return 
+     */    
+    public String getOldCandidates(Connect connect, String idTheso, int idUser,
+            NodePreference nodePreference) {
+        CandidatDao candidatDao = new CandidatDao();
+        StringBuilder messages = new StringBuilder();
+        
+        //// récupération des anciens candidats
+        ArrayList<NodeCandidateOld> nodeCandidateOlds;
+        try {
+            nodeCandidateOlds = candidatDao.getCandidatesIdFromOldModule(connect.getPoolConnexion(), idTheso);
+        } catch (SQLException e) {
+            messages.append("Erreur : ").append(e.getMessage());
+            return messages.toString();
+        }
+        if(nodeCandidateOlds == null || nodeCandidateOlds.isEmpty()) {
+            return "Pas d'anciens candidats à récupérer";
+        }
+        
+        for (NodeCandidateOld nodeCandidateOld : nodeCandidateOlds) {
+            try {
+                nodeCandidateOld.setNodeTraductions(
+                    candidatDao.getCandidatesTraductionsFromOldModule(
+                            connect.getPoolConnexion(), nodeCandidateOld.getIdCandidate(), idTheso));
+                nodeCandidateOld.setNodePropositions(
+                    candidatDao.getCandidatesMessagesFromOldModule(
+                            connect.getPoolConnexion(), nodeCandidateOld.getIdCandidate(), idTheso));
+            } catch (SQLException e) {
+                messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
+                System.out.println(messages.toString());
+            }
+        }
+        
+        //// ajout des anciens candidats au nouveau module
+        ConceptHelper conceptHelper = new ConceptHelper();
+        TermHelper termHelper = new TermHelper();
+        boolean exist = false;
+        boolean first = true;
+        Concept concept = new Concept();
+        String idNewConcept = null;
+        String idNewTerm = null;
+        Term terme = new Term();
+        
+        for (NodeCandidateOld nodeCandidateOld : nodeCandidateOlds) {
+            // ajout du candidat s'il n'existe pas dans le thésaurus en vérifiant langue par langue
+            for (NodeTraductionCandidat nodeTraduction : nodeCandidateOld.getNodeTraductions()) {
+                // en cas d'un nouveau candidat, verification dans les prefLabels
+                if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
+                        nodeTraduction.getTitle().trim(),
+                        idTheso,
+                        nodeTraduction.getIdLang())) {
+                    messages.append("Candidat existe : ").append(nodeTraduction.getTitle());
+                    System.out.println("Candidat existe : " + nodeTraduction.getTitle());
+                    exist = true;
+                    break;
+                }
+            }
+            // si le candidat n'existe pas dans toutes les langues, on l'ajoute
+            if(!exist) {
+                concept.setIdConcept(null);
+                concept.setIdThesaurus(idTheso);
+                concept.setTopConcept(false);
+                concept.setIdUser(idUser);
+               // concept.setUserName(currentUser.getUsername());
+                concept.setStatus("CA");
+
+                conceptHelper.setNodePreference(nodePreference);
+
+                try {
+                    idNewConcept = saveNewCondidat(connect, concept, conceptHelper);
+                } catch (SQLException e) {
+                    messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
+                    System.out.println(messages.toString());
+                }
+                if (idNewConcept == null) {
+                    messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
+                    System.out.println(messages.toString());                    
+                    continue;
+                }
+
+                for (NodeTraductionCandidat nodeTraduction : nodeCandidateOld.getNodeTraductions()) {
+                    if(first) {
+                        terme.setId_thesaurus(idTheso);
+                        terme.setLang(nodeTraduction.getIdLang());
+                        terme.setContributor(idUser);
+                        terme.setLexical_value(nodeTraduction.getTitle().trim());
+                        terme.setSource("candidat");
+                        terme.setStatus("D");
+                        try {
+                            idNewTerm = saveNewTerm(connect, terme, idNewConcept, idUser);                            
+                        } catch (SQLException e) {
+                            messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
+                            System.out.println(messages.toString());                            
+                            continue;                            
+                        }
+                        first = false;
+                    } else {
+                        // ajout des traductions
+                        if(!termHelper.addTraduction(connect.getPoolConnexion(),
+                                nodeTraduction.getTitle(),
+                                idNewTerm,
+                                nodeTraduction.getIdLang(),
+                                "candidat",
+                                "D",
+                                idTheso, idUser)) {
+                            messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
+                            System.out.println(messages.toString());                            
+                        }
+                    }
+                }
+                first = true;
+                // ajout des messages  
+                for (NodeProposition nodeProposition : nodeCandidateOld.getNodePropositions()) {
+                            MessageDao messageDao = new MessageDao();
+                    messageDao.addNewMessage(connect.getPoolConnexion(), 
+                            nodeProposition.getNote(),
+                            nodeProposition.getId_user(),
+                            idNewConcept,
+                            idTheso);
+                }
+                
+                idNewConcept = null;
+                idNewTerm = null;                
+            }
+            exist = false;
+        }
+
+        return "Import réussi\n" + messages.toString();
+    }
+    
+    
+    
 
 }

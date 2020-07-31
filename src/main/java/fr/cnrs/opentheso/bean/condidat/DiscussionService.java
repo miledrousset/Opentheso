@@ -86,7 +86,7 @@ public class DiscussionService implements Serializable {
         MessageDao messageDao = new MessageDao();
         messageDao.addNewMessage(connection, 
                 candidatBean.getMessage(), 
-                candidatBean.getCurrentUser().getNodeUser().getIdUser()+"", 
+                candidatBean.getCurrentUser().getNodeUser().getIdUser(), 
                 candidatBean.getCandidatSelected().getIdConcepte(), 
                 candidatBean.getCandidatSelected().getIdThesaurus());
 

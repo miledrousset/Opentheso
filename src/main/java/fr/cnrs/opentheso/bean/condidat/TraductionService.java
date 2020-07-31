@@ -43,10 +43,13 @@ public class TraductionService implements Serializable {
     
     private ArrayList<NodeLangTheso> nodeLangs;
     private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits    
+    
+    StringBuilder messages;
 
     public TraductionService() {
         langage = null;
         traduction = null;
+        messages = new StringBuilder();
     }
 
     /**
@@ -99,7 +102,11 @@ public class TraductionService implements Serializable {
                 newTraduction,
                 candidatBean.getCandidatSelected().getIdThesaurus(),
                 newLangage)) {
-            candidatBean.showMessage(FacesMessage.SEVERITY_ERROR,  "Un label identique existe déjà dans le thésaurus");            
+            candidatBean.showMessage(FacesMessage.SEVERITY_ERROR,  "Un label identique existe déjà dans le thésaurus");    
+            messages.append("label existe pour :").append(candidatBean.getCandidatSelected().getIdConcepte())
+                    .append("#").append(newTraduction).append(" (").append(langage).append(")");
+            messages.append('\n');
+            
             return;
         }
         TermeDao termeDao = new TermeDao();
@@ -120,6 +127,9 @@ public class TraductionService implements Serializable {
         } catch (SQLException | IOException ex) {
             Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
             candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
+            
+            messages.append("erreur pour :").append(newTraduction).append(" (").append(langage).append(")");
+            messages.append('\n');
         }
 
     }
@@ -218,5 +228,10 @@ public class TraductionService implements Serializable {
     public void setNodeLangsFiltered(ArrayList<NodeLangTheso> nodeLangsFiltered) {
         this.nodeLangsFiltered = nodeLangsFiltered;
     }
+
+    public String getMessages() {
+        return messages.toString();
+    }
+
 
 }

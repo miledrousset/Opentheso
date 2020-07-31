@@ -1,8 +1,12 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
+import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
+import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
+import java.sql.Connection;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -175,14 +179,6 @@ public class CandidatDao extends BasicDao {
                 + "VALUES ('" + idConcepte + "', " + status + ", now(), " + idUser + ", '" + idThesaurus + "')");
         closeDataBase();
     }
-    
-    public void insertCandidate(){
-        
-    }
-    
-    public void rejectCandidate(){
-        
-    }    
 
     public int getMaxCandidatId(HikariDataSource hikariDataSource) throws SQLException {
         int nbrDemande = 0;
@@ -304,19 +300,6 @@ public class CandidatDao extends BasicDao {
                 closeDataBase();
                 return false;
             }
-
-    /*        if(!changeCandidateToConcept(candidatDto)){
-                connection.rollback();
-                closeDataBase();
-                return false;
-            }
-            if(candidatDto.getTermesGenerique().isEmpty()) {
-                if(!setTopTermToConcept(candidatDto)){
-                    connection.rollback();
-                    closeDataBase();
-                    return false;
-                }
-            }*/
             connection.commit();
             closeDataBase();
             return true;            
@@ -329,6 +312,85 @@ public class CandidatDao extends BasicDao {
         }
         return false;
     }      
+    
+////////// import des candidats 
+    
+    public ArrayList<NodeCandidateOld> getCandidatesIdFromOldModule (
+            HikariDataSource hikariDataSource, String idTheso) throws SQLException{
+       
+        ArrayList<NodeCandidateOld> nodeCandidateOlds = new ArrayList<>();
+        
+        openDataBase(hikariDataSource);
+        stmt.executeQuery("select concept_candidat.id_concept, concept_candidat.status"
+                            + " from concept_candidat"
+                            + " where"
+                            + " concept_candidat.id_thesaurus = '" + idTheso +"'"
+                            + " and concept_candidat.status = 'a'");
+        
+        resultSet = stmt.getResultSet();
+        while (resultSet.next()) {
+            NodeCandidateOld nodeCandidateOld = new NodeCandidateOld();
+            nodeCandidateOld.setIdCandidate(resultSet.getString("id_concept"));
+            nodeCandidateOld.setStatus(resultSet.getString("status"));
+            nodeCandidateOlds.add(nodeCandidateOld);
+        }
+        closeDataBase();
+        return nodeCandidateOlds;
+    }
+    
+    public ArrayList<NodeTraductionCandidat> getCandidatesTraductionsFromOldModule(
+            HikariDataSource hikariDataSource, String idOldCandidat, String idTheso) throws SQLException{
+       
+        ArrayList<NodeTraductionCandidat> nodeTraductionCandidats = new ArrayList<>();
+         
+        openDataBase(hikariDataSource);
+        stmt.executeQuery("select term_candidat.lexical_value, term_candidat.lang"
+                                + " from concept_term_candidat, term_candidat"
+                                + " where"
+                                + " concept_term_candidat.id_term = term_candidat.id_term"
+                                + " and"
+                                + " concept_term_candidat.id_thesaurus = term_candidat.id_thesaurus"
+                                + " and"
+                                + " term_candidat.id_thesaurus = '" + idTheso + "'"
+                                + " and"
+                                + " concept_term_candidat.id_concept = '" + idOldCandidat + "'");
+        
+        resultSet = stmt.getResultSet();
+        while (resultSet.next()) {
+            NodeTraductionCandidat nodeTraductionCandidat  = new NodeTraductionCandidat();
+            nodeTraductionCandidat.setIdLang(resultSet.getString("lang"));
+            nodeTraductionCandidat.setTitle(resultSet.getString("lexical_value"));
+            nodeTraductionCandidats.add(nodeTraductionCandidat);
+        }
+        closeDataBase();        
+        return nodeTraductionCandidats;
+    }
+    
+    public ArrayList<NodeProposition> getCandidatesMessagesFromOldModule(
+            HikariDataSource hikariDataSource, String idOldCandidat, String idTheso) throws SQLException{
+       
+        ArrayList<NodeProposition> nodePropositions = new ArrayList<>();
+         
+        openDataBase(hikariDataSource);
+        stmt.executeQuery("select proposition.note, proposition.id_user "
+                + " from proposition where"
+                + " proposition.id_concept = '" + idOldCandidat + "'"
+                + " and proposition.id_thesaurus = '" + idTheso + "'"
+                + " ORDER BY created ASC");
+        
+        resultSet = stmt.getResultSet();
+        while (resultSet.next()) {
+            NodeProposition nodeProposition  = new NodeProposition();
+            nodeProposition.setNote(resultSet.getString("note"));
+            nodeProposition.setId_user(resultSet.getInt("id_user"));
+            nodePropositions.add(nodeProposition);
+        }
+        closeDataBase();        
+        return nodePropositions;
+    }     
+////////// fin import des candidats 
+    
+    
     
     private boolean updateCandidateStatus(CandidatDto candidatDto,
             String adminMessage, int status, int idUser) throws SQLException{
@@ -357,6 +419,10 @@ public class CandidatDao extends BasicDao {
                 " where id_concept = '" + candidatDto.getIdConcepte() + "'" +
                 " and id_thesaurus = '" + candidatDto.getIdThesaurus() + "'");
         return true;
-    }    
+    }
+    
+    
+
+    
             
 }

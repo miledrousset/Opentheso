@@ -249,9 +249,15 @@ public class CandidatBean implements Serializable {
             terme.setSource("candidat");
             terme.setStatus("D");
 
-            candidatService.saveNewTerm(connect, terme, candidatSelected);
-
-            if (conceptHelper.getNodePreference() != null) {
+            candidatService.saveNewTerm(connect, terme, 
+                    candidatSelected.getIdConcepte(), candidatSelected.getUserId());
+            
+            
+            /**
+             * à déplacer au moment d'insérer le candidat dans le thésaurus 
+             * 
+             */
+   /*         if (conceptHelper.getNodePreference() != null) {
                 ArrayList<String> idConcepts = new ArrayList<>();
                 // création de l'identifiant Handle
                 if (conceptHelper.getNodePreference().isUseHandle()) {
@@ -269,7 +275,7 @@ public class CandidatBean implements Serializable {
                         return;
                     }
                 }
-            }
+            }*/
             setIsListCandidatsActivate(true);
 
         } else {
@@ -413,18 +419,6 @@ public class CandidatBean implements Serializable {
      * @param value
      * @return
      */
-    public List<NodeSearchMini> searchTerme(String value) {
-        List<NodeSearchMini> liste = new ArrayList<>();
-        SearchHelper searchHelper = new SearchHelper();
-        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = searchHelper.searchAutoCompletionForRelation(
-                    connect.getPoolConnexion(),
-                    value,
-                    selectedTheso.getCurrentLang(),
-                    selectedTheso.getCurrentIdTheso());
-        }
-        return liste;
-    }
     
     public ArrayList<NodeIdValue> searchTerme2(String value) {
         ArrayList<NodeIdValue> liste = new ArrayList<>();
@@ -482,12 +476,20 @@ public class CandidatBean implements Serializable {
     }
     
     /**
-     * permet de traiter un candidat (insérer ou rejeté) avec un message
+     * permet de récupérer les anciens candidats saisies dans l'ancien module 
+     * uniquement les candidats qui étatient en attente
      */
-    public void processCandidate(){
-        
+    public void getOldCandidates(){
+        String messageInfo = new CandidatService().getOldCandidates(
+                connect,
+                selectedTheso.getCurrentIdTheso(),
+                currentUser.getNodeUser().getIdUser(),
+                roleOnThesoBean.getNodePreference());
+        showMessage(FacesMessage.SEVERITY_INFO, messageInfo);
+        getAllCandidatsByThesoAndLangue();
     }
-
+    
+    
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
         PrimeFaces pf = PrimeFaces.current();

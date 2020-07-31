@@ -3817,7 +3817,8 @@ public class ConceptHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select id_concept from concept where id_thesaurus = '"
-                            + idThesaurus + "'";
+                            + idThesaurus + "'"
+                            + " and concept.status != 'CA'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
@@ -3861,6 +3862,7 @@ public class ConceptHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select id_concept from concept where id_thesaurus ='" + idThesaurus + "'"
+                            + " and concept.status != 'CA'"
                             + " and id_concept not in (select idconcept from concept_group_concept where idthesaurus = '" + idThesaurus + "')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -3905,7 +3907,8 @@ public class ConceptHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select count(id_concept) from concept where id_thesaurus = '"
-                            + idThesaurus + "'";
+                            + idThesaurus + "'"
+                            + " and concept.status != 'CA'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
