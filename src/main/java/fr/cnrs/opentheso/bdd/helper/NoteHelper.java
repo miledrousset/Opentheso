@@ -734,13 +734,13 @@ public class NoteHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "Insert into note "
-                            + "(notetypecode, id_thesaurus, id_concept, lang, lexicalvalue)"
+                            + "(notetypecode, id_thesaurus, id_concept, lang, lexicalvalue, id_user)"
                             + " values ("
                             + "'" + noteTypeCode + "'"
                             + ",'" + idThesaurus + "'"
                             + ",'" + idConcept + "'"
                             + ",'" + idLang + "'"
-                            + ",'" + note + "')";
+                            + ",'" + note + "'," + idUser + ")";
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
@@ -836,7 +836,7 @@ public class NoteHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT id, notetypecode, lexicalvalue, modified, username FROM note_historique, users"
+                    String query = "SELECT id, notetypecode, lexicalvalue, modified, id_user FROM note_historique, users"
                             + " WHERE id_thesaurus = '" + idThesaurus + "'"
                             + " and lang ='" + idLang + "'"
                             + " and (id_concept = '" + idConcept + "' OR id_term = '" + idTerm + "' )"
@@ -854,7 +854,7 @@ public class NoteHelper {
                         nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
-                        nodeNote.setIdUser(resultSet.getString("username"));
+                        nodeNote.setIdUser(resultSet.getInt("id_user"));
                         nodeNotes.add(nodeNote);
                     }
 
@@ -898,7 +898,7 @@ public class NoteHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT id, notetypecode, lexicalvalue, modified, username FROM note_historique, users"
+                    String query = "SELECT id, notetypecode, lexicalvalue, modified, id_user FROM note_historique, users"
                             + " WHERE id_thesaurus = '" + idThesaurus + "'"
                             + " and lang ='" + idLang + "'"
                             + " and (id_concept = '" + idConcept + "' OR id_term = '" + idTerm + "' )"
@@ -921,7 +921,7 @@ public class NoteHelper {
                                     nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
                                     nodeNote.setModified(resultSet.getDate("modified"));
                                     nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
-                                    nodeNote.setIdUser(resultSet.getString("username"));
+                                    nodeNote.setIdUser(resultSet.getInt("id_user"));
                                     nodeNotes.add(nodeNote);
                                 }
                                 exist = true;
@@ -936,7 +936,7 @@ public class NoteHelper {
                             nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
                             nodeNote.setModified(resultSet.getDate("modified"));
                             nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
-                            nodeNote.setIdUser(resultSet.getString("username"));
+                            nodeNote.setIdUser(resultSet.getInt("id_user"));
                             nodeNotes.add(nodeNote);
                         }
 
@@ -985,13 +985,13 @@ public class NoteHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "Insert into note "
-                            + "(notetypecode, id_thesaurus, id_term, lang, lexicalvalue)"
+                            + "(notetypecode, id_thesaurus, id_term, lang, lexicalvalue, id_user)"
                             + " values ("
                             + "'" + noteTypeCode + "'"
                             + ",'" + idThesaurus + "'"
                             + ",'" + idTerm + "'"
                             + ",'" + idLang + "'"
-                            + ",'" + note + "')";
+                            + ",'" + note + "'," + idUser +")";
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {

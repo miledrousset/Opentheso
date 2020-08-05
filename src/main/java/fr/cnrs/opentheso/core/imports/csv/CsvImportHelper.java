@@ -349,7 +349,7 @@ public class CsvImportHelper {
             return false;
         }
         groupHelper.insertGroup(ds, idGroup,
-                idTheso, "C",
+                idTheso, "", "C",
                 conceptObject.getNotation(),
                 "", false, idUser);
 

@@ -9,35 +9,30 @@
               modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" >  
 
         <h:form id="editTraductionForm">
-
-            <b:selectOneMenu required="true" label="Langage : " value="#{traductionService.langage}"
-                             style="font-size: 12px;">
-                <f:selectItem itemLabel="Français" itemValue="FR" />
-                <f:selectItem itemLabel="English"  itemValue="EN" />
-                <f:selectItem itemLabel="Española" itemValue="ES" />
-                <f:selectItem itemLabel="Italiano" itemValue="IT" />
-                <f:selectItem itemLabel="Deutsche" itemValue="DE" />
-            </b:selectOneMenu>
+            
+            <b:inputText value="#{traductionService.langage}" required="true" disabled="true"
+                         label="Langage : " style="font-size: 12px;" />
 
             <b:inputText value="#{traductionService.traduction}" required="true" 
                          label="Traduction : " style="font-size: 12px;" />
 
             <b:row>
-                <b:column span="6">
-                    <p:commandButton value="Modifier" class="btn btn-primary"
-                                     update="idEditTraduction editTraductionForm :candidatForm:listTraductionForm"
-                                     styleClass="ui-priority-primary" ajax="false"
-                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
-                                     action="#{traductionService.updateTraduction()}" 
+                
+                <b:column span="5" offset="1">
+                    <p:commandButton value="Modifier"  styleClass="ui-priority-primary" ajax="false"
+                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #43B572;" 
+                                     class="btn btn-primary" action="#{traductionService.updateTraduction()}" 
                                      oncomplete="PF('editTraduction').hide();"/>
                 </b:column>
-                <b:column span="6">
-                    <p:commandButton value="Fermer"  styleClass="ui-priority-primary" ajax="false"
-                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; 
+                <b:column span="5" >
+                    <p:commandButton value="Retour" 
+                                     icon="fas fa-undo fas 2x"                                       
+                                     styleClass="ui-priority-primary" ajax="false"
+                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #FFC107; 
                                      border: none; box-shadow: none; float: right" class="btn btn-primary"
                                      oncomplete="PF('editTraduction').hide();"/>
+                </b:column>                
 
-                </b:column>
             </b:row>
 
         </h:form>

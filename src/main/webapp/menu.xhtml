@@ -21,7 +21,8 @@
                             style="color: #{indexSetting.thesoColor}">
                         </b:navCommandLink>
 
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" 
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" 
+                                   disabled="false"
                                    value="#{langueBean.getMsg('candidat.titre')}"
                                    action="#{indexSetting.setIsCandidateActive(true)}"
                                    style="color: #{indexSetting.candidateColor}"
@@ -68,7 +69,15 @@
                                           ajax="true" action="#{currentUser.disconnect()}"/>              
 
 
-                        <!-- liste des thésaurus -->                
+
+                        <!-- Relaod Theso -->
+                        <b:navCommandLink  tooltip="Recharger le thésaurus"
+                                           tooltip-delay-show="500"
+                                          icon-awesome="fas fa-sync" icon-size="l" style="margin-right: -10px; color: #C63632"
+                                          ajax="true" action="#{selectedTheso.reloadSelectedTheso()}" 
+                                          update="containerIndex candidatForm formMenu formLeftTab" />     
+                        
+                        <!-- liste des thésaurus -->                 
                         <b:navLink style="height: 30px; margin-top: -3px; margin-right: -10px;">
                             <p:selectOneMenu id="idListTheso" value="#{selectedTheso.selectedIdTheso}"
                                  style="font-size: 12px;  width: 180px;"

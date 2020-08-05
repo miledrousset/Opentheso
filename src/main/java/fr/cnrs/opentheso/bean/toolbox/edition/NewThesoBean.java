@@ -156,7 +156,7 @@ public class NewThesoBean implements Serializable {
                     selectedLang);
         } else {
             nodePreference.setPreferredName(title);
-            preferencesHelper.updateAllPreferenceUser(
+            preferencesHelper.addPreference(//updateAllPreferenceUser(
                     connect.getPoolConnexion(),
                     nodePreference, idNewTheso);
         }

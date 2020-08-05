@@ -24,7 +24,7 @@
                                  style="width: 100%; background: none;  box-shadow: none; "
                                  panelStyle="border: none; box-shadow: none; max-width: 300px" >
                     <f:selectItems  value="#{editThesoBean.languagesOfTheso}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/> 
-                    <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}"  update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"/>
+                    <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}"  />
                 </p:selectOneMenu>
             </b:column> 
 

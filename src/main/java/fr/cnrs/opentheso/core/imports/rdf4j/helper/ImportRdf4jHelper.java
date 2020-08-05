@@ -328,7 +328,18 @@ public class ImportRdf4jHelper {
                     type = "T";
                     break;
             }
-            groupHelper.insertGroup(ds, idGroup, idTheso, type, notationValue, "", false, idUser);
+            
+            String idArkHandle = null;
+            // option cochée
+            if (selectedIdentifier.equalsIgnoreCase("ark")) {
+                idArkHandle = getIdArkFromUri(group.getUri());
+            }
+            if (selectedIdentifier.equalsIgnoreCase("handle")) {
+                idArkHandle = getIdHandleFromUri(group.getUri());
+            }
+            if(idArkHandle == null)
+                idArkHandle = "";
+            groupHelper.insertGroup(ds, idGroup, idTheso, idArkHandle, type, notationValue, "", false, idUser);
             
             // group/sous_group
             for (SKOSRelation relation : group.getRelationsList()) {

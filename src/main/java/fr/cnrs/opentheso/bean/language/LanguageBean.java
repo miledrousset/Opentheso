@@ -62,7 +62,7 @@ public class LanguageBean implements Serializable {
     }
 
     public String getIdLangue() {
-        return idLangue;
+        return idLangue.toLowerCase();
     }
 
     public void setIdLangue(String idLangue) {

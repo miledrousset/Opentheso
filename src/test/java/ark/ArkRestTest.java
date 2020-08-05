@@ -38,6 +38,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.primefaces.shaded.json.JSONObject;
 
@@ -45,6 +46,7 @@ import org.primefaces.shaded.json.JSONObject;
  *
  * @author miledrousset
  */
+@Ignore
 public class ArkRestTest {
     
     public ArkRestTest() {
@@ -65,6 +67,83 @@ public class ArkRestTest {
     @After
     public void tearDown() {
     }
+    
+    private String getTokenFromString(String tokenString){
+        String token;
+        try (javax.json.JsonReader jsonReader = javax.json.Json.createReader(new StringReader(tokenString))) {
+            JsonObject jo = jsonReader.readObject();
+            token = jo.getString("token").trim();
+        } catch (Exception e) {
+            return null;
+        }
+        return token;
+    }  
+    
+    /**
+     * pour établir la connexion
+     * @return
+     * #MR
+     * OK validé
+     */
+    public String login() {
+        Client client= ClientBuilder.newClient();
+        String user = "demo";
+        String pass = "demo2";
+        String naan = "66666";
+        String url = "http://localhost:8082/Arkeo/rest/login/";        
+        
+      
+        String path =  "username=" +
+                        user + 
+                        "&password=" +
+                        pass +
+                        "&naan=" + 
+                        naan;
+        
+        WebTarget webTarget = client.target(url).path(path);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);        
+        Response response = invocationBuilder.get();        
+        if(response.getStatus() != 200) {
+             return null;
+        }
+        String value = response.readEntity(String.class);
+        return value;
+    }
+    
+    @Test
+    public void putArk() {
+        String tokenString = login();
+        String token = getTokenFromString(tokenString);
+        if(token == null) return;
+      
+  /*      
+        
+        String output;
+        String xmlRecord = "";
+
+        String urlArkeo = "http://localhost:8082/Arkeo/rest/v1/ark/add";
+
+        String jsonData = "{\"token\":\"" + token + "\",\"ark\":\"\",\"naan\":\"66666\",\"type\":\"prefix\",\"urlTarget\":\"http://testgg11.fr\",\"title\":\"test1\",\"creator\":\"Miled23\",\"useHandle\":false,\"modificationDate\":\"2019-12-10\",\"dcElments\":[{\"name\":\"creator\",\"value\":\"miledDC\",\"language\":\"fr\"},{\"name\":\"title\",\"value\":\"pour tester1\",\"language\":\"fr\"},{\"name\":\"description\",\"value\":\"description 1\",\"language\":\"fr\"}]}";          
+    //    String jsonData = getJsonData("http://www.mom.fr");
+        
+        Client client= Client.create();
+
+        WebResource webResource = client
+                .resource(urlArkeo);
+
+        ClientResponse response = webResource.type("application/json")
+                .put(ClientResponse.class, jsonData);
+        if (response.getStatus() == 200) {
+            String jsonArk = response.getEntity(String.class);
+            System.err.println(jsonArk);
+           // setIdArkHandle();
+           // return true;
+        }
+   */
+    }       
+    
+    
+    
 
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
@@ -113,7 +192,7 @@ public class ArkRestTest {
 
       
     
-    
+/*    
     private String connect() {
 
         String output = "";
@@ -163,27 +242,13 @@ public class ArkRestTest {
         String test = handleClient.getHandle(pass, pathKey, pathCert, urlHandle, idHandle, internalId);
         System.err.println(test);
         System.err.println(handleClient.getMessage());*/
-    }    
+  /*  }  */  
     
     
-    private String getTokenFromString(String tokenString){
-        String token;
-        try (javax.json.JsonReader jsonReader = javax.json.Json.createReader(new StringReader(tokenString))) {
-            JsonObject jo = jsonReader.readObject();
-            token = jo.getString("token").trim();
-        } catch (Exception e) {
-            return null;
-        }
-        return token;
-    }
+
     
     
-    /**
-     * pour établir la connexion
-     * @return
-     * #MR
-     */
-    public String login() {
+/*    public String login() {
         Client client= ClientBuilder.newClient();
         String user = "demo";
         String pass = "demo2";
@@ -205,9 +270,14 @@ public class ArkRestTest {
              return null;
         }
         String value = response.readEntity(String.class);
-        
-    //    String response = target.request().get(String.class);
         return value;
+
+        
+//////////// ancienne version ////////////
+//////////// dépriécié ///////////////////
+
+    //    String response = target.request().get(String.class);
+
            /* throw new RuntimeException("Failed : HTTP error code : "
                     + response.getStatus());*/
 
@@ -239,38 +309,8 @@ public class ArkRestTest {
   //      return response.getEntity(String.class);
 //        loginJson = new JSONObject(response.getEntity(String.class));
 //        return true;
-    } 
+    //} 
     
-    @Test
-    public void putArk() {
-        String tokenString = login();
-        String token = getTokenFromString(tokenString);
-        if(token == null) return;
-      
-  /*      
-        
-        String output;
-        String xmlRecord = "";
-
-        String urlArkeo = "http://localhost:8082/Arkeo/rest/v1/ark/add";
-
-        String jsonData = "{\"token\":\"" + token + "\",\"ark\":\"\",\"naan\":\"66666\",\"type\":\"prefix\",\"urlTarget\":\"http://testgg11.fr\",\"title\":\"test1\",\"creator\":\"Miled23\",\"useHandle\":false,\"modificationDate\":\"2019-12-10\",\"dcElments\":[{\"name\":\"creator\",\"value\":\"miledDC\",\"language\":\"fr\"},{\"name\":\"title\",\"value\":\"pour tester1\",\"language\":\"fr\"},{\"name\":\"description\",\"value\":\"description 1\",\"language\":\"fr\"}]}";          
-    //    String jsonData = getJsonData("http://www.mom.fr");
-        
-        Client client= Client.create();
-
-        WebResource webResource = client
-                .resource(urlArkeo);
-
-        ClientResponse response = webResource.type("application/json")
-                .put(ClientResponse.class, jsonData);
-        if (response.getStatus() == 200) {
-            String jsonArk = response.getEntity(String.class);
-            System.err.println(jsonArk);
-           // setIdArkHandle();
-           // return true;
-        }
-   */
-    }    
+ 
     
 }

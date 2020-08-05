@@ -3,8 +3,8 @@ package fr.cnrs.opentheso.bean.condidat.enumeration;
 public enum TermEnum {
 
     TERME_GENERIQUE("BT"),
-    TERME_ASSOCIE("NT"),
-    EMPLOYE("RT");
+    TERME_SPECIFIQUE("NT"),
+    TERME_ASSOCIE("RT");
 
     private String label;
 

@@ -29,13 +29,14 @@
             <version>2.25.1</version>
         </dependency>
         
-        <!-- Pour le webservices de ARK de la MOM-->
+        <!-- Pour le webservices de ARK de la MOM à ne plus utiliser 
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>1.19.4</version>
             <type>jar</type>
         </dependency>
+        -->
 
         <dependency>
             <groupId>org.glassfish</groupId>

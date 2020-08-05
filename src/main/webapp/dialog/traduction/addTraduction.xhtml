@@ -22,10 +22,10 @@
                         
                         <!-- Langues du thésaurus -->
                         <b:column span="12" rendered="#{traductionBean.nodeLangsFiltered.size() != 0}">
-                            <b:selectOneMenu id="collection" label="Langue" value="#{traductionBean.selectedLang}" 
-                                             style="font-size: 12px; background: white; border-color: #43B572">
+                            <p:selectOneMenu id="collection" label="Langue" value="#{traductionBean.selectedLang}" 
+                                             style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
                                 <f:selectItems  value="#{traductionBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                            </b:selectOneMenu>                                  
+                            </p:selectOneMenu>                                  
                         </b:column>
                         
 

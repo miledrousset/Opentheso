@@ -16,8 +16,8 @@ public class NodeNote {
     
     private int id_note;
     
-    // For Concept : customnote ; scopeNote ; historyNote
-    // For Term : definition; editorialNote; historyNote; 
+    // For Concept : note, scopeNote
+    // For Term : definition; editorialNote; historyNote, changeNote, example; 
     private String notetypecode;
     
     private String id_term;
@@ -26,7 +26,8 @@ public class NodeNote {
     private String lexicalvalue;
     private Date created;
     private Date modified;
-    private String idUser;
+    private int idUser;
+    private String user;
 
     public NodeNote() {
     }
@@ -95,13 +96,23 @@ public class NodeNote {
         this.modified = modified;
     }
 
-    public String getIdUser() {
+    public int getIdUser() {
         return idUser;
     }
 
-    public void setIdUser(String idUser) {
+    public void setIdUser(int idUser) {
         this.idUser = idUser;
     }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+
 
 
 }

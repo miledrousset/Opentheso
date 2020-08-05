@@ -261,7 +261,7 @@ public class GroupHelper {
 
         String idGroup = "orphans";
 
-        insertGroup(ds, idGroup, idTheso, "C",
+        insertGroup(ds, idGroup, idTheso,"", "C",
                 "", //notation
                 "",
                 false,
@@ -1613,6 +1613,7 @@ public class GroupHelper {
      * @param ds
      * @param idThesaurus
      * @param typeCode
+     * @param idArk
      * @param idGroup
      * @param notation
      * @param urlSite
@@ -1621,7 +1622,9 @@ public class GroupHelper {
      * @return
      */
     public boolean insertGroup(HikariDataSource ds,
-            String idGroup, String idThesaurus,
+            String idGroup,
+            String idThesaurus,
+            String idArk,
             String typeCode,
             String notation,
             String urlSite, boolean isArkActive,
@@ -1631,7 +1634,8 @@ public class GroupHelper {
         Connection conn;
         Statement stmt;
         boolean status = false;
-
+        if(idArk == null)
+            idArk = "";
         /*
          * récupération de l'identifiant Ark pour le ConceptGroup
          * de type : ark:/66666/srvq9a5Ll41sk
@@ -1646,7 +1650,7 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String idArk = "";
+
 
                     if (isArkActive) {
                     /*    ArrayList<DcElement> dcElementsList = new ArrayList<>();

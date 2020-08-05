@@ -300,7 +300,7 @@ public class Tree implements Serializable {
 
         // cas de changement de langue pendant la navigation dans les concepts
         // il faut reconstruire l'arbre dès le début
-        if (!idLang.equalsIgnoreCase(this.idLang)) {
+        if (idLang != null && !idLang.equalsIgnoreCase(this.idLang)) {
             initialise(idTheso, idLang);
         }
 

@@ -8,9 +8,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.utils.EmailUtils;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +20,9 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.PrimeFaces;
 
 
 @Named(value = "discussionService")
@@ -38,19 +38,38 @@ public class DiscussionService implements Serializable {
     @Inject
     private Connect connect;
 
+    @Inject
+    private LanguageBean languageBean;
+
     private String email;
+    
+    private List<String> participants;
+
 
     public List<String> getParticipantsInConversation() {
-        if (candidatBean != null && candidatBean.getCandidatSelected() != null) {
-            return new MessageDao().getParticipantsByCandidat(
-                    connect.getPoolConnexion(), candidatBean.getCandidatSelected().getIdConcepte(),
-                    candidatBean.getCandidatSelected().getIdThesaurus());
-        } else {
+        
+        participants = new MessageDao().getParticipantsByCandidat(
+                connect.getPoolConnexion(), 
+                candidatBean.getCandidatSelected().getIdConcepte(),
+                candidatBean.getCandidatSelected().getIdThesaurus());
+        
+        if (CollectionUtils.isEmpty(participants)) {
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg8"));
             return new ArrayList<>();
         }
+
+        PrimeFaces.current().ajax().update("candidatForm");
+        PrimeFaces.current().executeScript("PF('participantsList').show();");
+
+        return participants;
     }
 
-    public void sendMessage() throws SQLException {
+    public void sendMessage() {
+
+        if (candidatBean.getInitialCandidat() == null) {
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg7"));
+            return;
+        }
         
         if (StringUtils.isEmpty(candidatBean.getMessage())) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg1"));
@@ -67,7 +86,7 @@ public class DiscussionService implements Serializable {
         MessageDao messageDao = new MessageDao();
         messageDao.addNewMessage(connection, 
                 candidatBean.getMessage(), 
-                candidatBean.getCurrentUser().getNodeUser().getIdUser()+"", 
+                candidatBean.getCurrentUser().getNodeUser().getIdUser(), 
                 candidatBean.getCandidatSelected().getIdConcepte(), 
                 candidatBean.getCandidatSelected().getIdThesaurus());
 
@@ -120,6 +139,14 @@ public class DiscussionService implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<String> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<String> participants) {
+        this.participants = participants;
     }
 
 }

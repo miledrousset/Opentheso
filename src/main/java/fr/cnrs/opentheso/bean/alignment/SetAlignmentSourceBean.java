@@ -95,7 +95,7 @@ public class SetAlignmentSourceBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("viewTabConcept");
-            pf.ajax().update("addAlignmentForm");
+  //          pf.ajax().update("addAlignmentForm");
         }        
     }
     
@@ -110,7 +110,7 @@ public class SetAlignmentSourceBean implements Serializable {
         alignmentBean.setViewSetting(false);        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
+//            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
         }   
     }
 
@@ -132,6 +132,7 @@ public class SetAlignmentSourceBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+                pf.ajax().update("messageIndex");
             }                   
             return;  
         }
@@ -140,6 +141,7 @@ public class SetAlignmentSourceBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+                pf.ajax().update("messageIndex");
             }                   
             return;  
         }       
@@ -148,6 +150,7 @@ public class SetAlignmentSourceBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+                pf.ajax().update("messageIndex");
             }                   
             return;  
         } 
@@ -184,7 +187,7 @@ public class SetAlignmentSourceBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
+    //        pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
             pf.ajax().update("messageIndex");
         }           
         alignmentBean.setViewAddNewSource(false);
@@ -257,7 +260,7 @@ public class SetAlignmentSourceBean implements Serializable {
         alignmentBean.setViewAddNewSource(false);        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("addAlignmentForm");
+//            pf.ajax().update("addAlignmentForm");
         }   
     }
 

@@ -99,7 +99,7 @@ public class SelectedTheso implements Serializable {
      * d'initialiser la vue ! sert pour replacer l'arbre
      */
     public void actionFromConceptToOn() {
-        isActionFromConcept = true;
+        isActionFromConcept = true; 
     }
 
     /**
@@ -110,7 +110,7 @@ public class SelectedTheso implements Serializable {
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
-
+        PrimeFaces pf = PrimeFaces.current();
         if (isUriRequest) {
             isUriRequest = false;
             return;
@@ -126,18 +126,18 @@ public class SelectedTheso implements Serializable {
             conceptBean.init();
             init();
             indexSetting.setIsSelectedTheso(false);
-            PrimeFaces pf = PrimeFaces.current();
+            
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formMenu");
                 pf.ajax().update("formLeftTab");
 
-                pf.ajax().update("formSearch:languageSelect");
+                pf.ajax().update("formSearch:languageSelect"); 
                 pf.ajax().update("formSearch");
                 pf.ajax().update("formRightTab");
 
                 pf.ajax().update("containerIndex");
                 pf.ajax().update("homePageForm");
-            }
+            } 
 
             return;
         }
@@ -153,12 +153,38 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         //indexSetting.setIsThesoActive(true);
-
-        PrimeFaces.current().ajax().update("formMenu");
-        PrimeFaces.current().ajax().update("candidatForm");
-        PrimeFaces.current().ajax().update("containerIndex");
-
+        if (pf.isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("formMenu");
+            PrimeFaces.current().ajax().update("candidatForm");
+            PrimeFaces.current().ajax().update("containerIndex");
+        }
     }
+    
+    /**
+     * Permet de Re-charger le thésaurus sélectionné, pour activer des mises à jour non prises en compte
+     */
+    public void reloadSelectedTheso() {
+        searchBean.reset();
+        viewEditorThesoHomeBean.reset();
+        viewEditorHomeBean.reset();
+        PrimeFaces pf = PrimeFaces.current();
+
+        candidatBean.initCandidatModule();
+
+        if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
+            return;
+        }
+        startNewTheso(null);
+        indexSetting.setIsSelectedTheso(true);
+        indexSetting.setIsValueSelected(false);
+        //indexSetting.setIsThesoActive(true);
+      /*  if (pf.isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("formMenu");
+            PrimeFaces.current().ajax().update("candidatForm");
+            PrimeFaces.current().ajax().update("containerIndex");
+            PrimeFaces.current().ajax().update("formLeftTab");
+        }    */
+    }    
 
     /**
      * permet de changer la langue du thésaurus et recharger les données

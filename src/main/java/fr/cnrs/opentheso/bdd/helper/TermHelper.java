@@ -63,7 +63,9 @@ public class TermHelper {
         Statement stmt;
         ResultSet resultSet;
         boolean existe = false;
-        title = new StringPlus().convertString(title);
+        StringPlus stringPlus = new StringPlus();
+        title = stringPlus.convertString(title);
+        title = stringPlus.unaccentLowerString(title);        
 
         try {
             // Get connection from pool
@@ -72,9 +74,8 @@ public class TermHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select id_term from term where "
-                            + "unaccent_string(lexical_value) ilike "
-                            + "unaccent_string('" + title
-                            + "')  and lang = '" + idLang
+                            + " f_unaccent(lower(term.lexical_value)) like '" + title + "'"
+                            + " and lang = '" + idLang
                             + "' and id_thesaurus = '" + idThesaurus
                             + "'";
                     stmt.executeQuery(query);
@@ -938,8 +939,7 @@ public class TermHelper {
                      * Ajout des informations dans la table Concept
                      */
                     query = "Insert into term "
-                            + "(id_term, lexical_value, lang, "
-                            + "id_thesaurus, source, status, contributor, creator)"
+                            + "(id_term, lexical_value, lang, id_thesaurus, source, status, contributor, creator)"
                             + " values ("
                             + "'" + term.getId_term() + "'"
                             + ",'" + term.getLexical_value() + "'"

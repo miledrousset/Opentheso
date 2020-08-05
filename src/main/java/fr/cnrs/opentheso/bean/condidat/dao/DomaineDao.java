@@ -38,7 +38,7 @@ public class DomaineDao extends BasicDao {
         stmt = connect.getPoolConnexion().getConnection().createStatement();
 
         executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
-                +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');");
+                +idgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
 
         stmt.close();
     }
@@ -47,7 +47,7 @@ public class DomaineDao extends BasicDao {
 
         stmt = connect.getPoolConnexion().getConnection().createStatement();
 
-        if (newIdgroup != null) {
+        if (!StringUtils.isEmpty(newIdgroup)) {
             executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
                     +newIdgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
         } else {

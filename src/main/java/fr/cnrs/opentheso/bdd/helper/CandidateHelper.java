@@ -128,6 +128,49 @@ public class CandidateHelper {
         return tot;
     }  
     
+    /**
+     * 
+     * @param ds
+     * @param idTheso
+     * @return 
+     */
+    public ArrayList<NodeCandidatValue> getOldCandidates(HikariDataSource ds,
+            String idTheso) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+
+        ArrayList tabIdCandidat = new ArrayList();
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select id_concept from concept_candidat where id_thesaurus = '" + idTheso + "'"
+                            + " order by id_concept ASC";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        tabIdCandidat.add(resultSet.getString("id_concept"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List Group or Domain of thesaurus : " + idTheso, sqle);
+        }
+        return tabIdCandidat;
+    }    
+    
+    
+
     
     /**
      * ************************************************************
