@@ -63,7 +63,7 @@ public class StatistiqueService {
     }
 
     public List<CanceptStatistiqueData> searchAllConceptsByThesaurus(StatistiqueBean statistiqueBean, Connect connect,
-                         String idTheso, String idLang, Date dateDebut, Date dateFin, String collectionId) {
+                         String idTheso, String idLang, Date dateDebut, Date dateFin, String collectionId, String nbrResultat) {
 
         List<CanceptStatistiqueData> result = new ArrayList<>();
 
@@ -87,7 +87,7 @@ public class StatistiqueService {
 
         try {
             result = new ConceptHelper().searchAllCondidats(connect.getPoolConnexion(), idTheso, 
-                    idLang, debut, fin, collectionId);
+                    idLang, debut, fin, collectionId, nbrResultat);
 
             TermHelper termHelper = new TermHelper();
 

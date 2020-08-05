@@ -2,27 +2,28 @@ package fr.cnrs.opentheso.bean.toolbox.statistique;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.core.exports.csv.StatistiquesRapportCSV;
+import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 
 import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Date;
 import java.util.stream.Collectors;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -43,10 +44,11 @@ public class StatistiqueBean implements Serializable {
     private LanguageBean languageBean;
 
     private boolean selectLanguageVisible, genericTypeVisible, conceptTypeVisible;
-    private String selectedStatistiqueTypeCode, selectedCollection;
+    private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;
     private int nbrCanceptByThes;
     private Date dateDebut, dateFin, derniereModification;
     private NodeLangTheso selectedLanguage;
+    private CanceptStatistiqueData canceptStatistiqueSelected;
 
     private List<GenericStatistiqueData> genericStatistiques;
     private List<CanceptStatistiqueData> canceptStatistiques;
@@ -79,6 +81,9 @@ public class StatistiqueBean implements Serializable {
     }
 
     public void onSelectStatType() {
+        
+        genericStatistiques = new ArrayList<>();
+        canceptStatistiques = new ArrayList<>();
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir un Thesorus avant !");
@@ -130,8 +135,6 @@ public class StatistiqueBean implements Serializable {
 
         if ("0".equals(selectedStatistiqueTypeCode)) {
 
-            PrimeFaces.current().executeScript("PF('bui').show();");
-
             ConceptHelper conceptHelper = new ConceptHelper();
 
             genericStatistiques = new StatistiqueService().searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage.getCode());
@@ -150,13 +153,17 @@ public class StatistiqueBean implements Serializable {
             conceptTypeVisible = true;
         }
     }
+    
+    public boolean isExportVisible() {
+        return !CollectionUtils.isEmpty(genericStatistiques) || !CollectionUtils.isEmpty(canceptStatistiques);
+    }
 
     public void getStatisitiquesParConcept() {
 
-        PrimeFaces.current().executeScript("PF('bui').show();");
-
-        canceptStatistiques = new StatistiqueService().searchAllConceptsByThesaurus(this, connect, selectedTheso.getCurrentIdTheso(),
-                selectedLanguage.getCode(), dateDebut, dateFin, searchGroupIdFromLabel(selectedCollection));
+        canceptStatistiques = new StatistiqueService().searchAllConceptsByThesaurus(this, 
+                connect, selectedTheso.getCurrentIdTheso(),
+                selectedLanguage.getCode(), dateDebut, dateFin, 
+                searchGroupIdFromLabel(selectedCollection), nbrResultat);
 
         PrimeFaces.current().executeScript("PF('bui').hide();");
     }
@@ -173,8 +180,32 @@ public class StatistiqueBean implements Serializable {
         return DefaultStreamedContent.builder()
                 .contentType("text/csv")
                 .name(selectedTheso.getThesoName() + ".csv")
-                .stream(() -> new ByteArrayInputStream(new ByteArrayOutputStream(12).toByteArray()))
+                .stream(() -> new ByteArrayInputStream(statistiquesRapportCSV.getOutput().toByteArray()))
                 .build();
+
+    }
+    
+    private ExportRdf4jHelperNew getThesorusDatas(String idTheso) {
+
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
+
+        if (nodePreference == null) {
+            return null;
+        }
+
+        ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
+        resources.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
+        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        for (String idConcept : allConcepts) {
+            resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept);
+        }
+
+        return resources;
+    }
+    
+    public void setConceptSelected(CanceptStatistiqueData canceptStatistiqueSelected) {
+        this.canceptStatistiqueSelected = canceptStatistiqueSelected;
     }
 
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
@@ -273,6 +304,18 @@ public class StatistiqueBean implements Serializable {
 
     public SelectedTheso getSelectedTheso() {
         return selectedTheso;
+    }
+
+    public String getNbrResultat() {
+        return nbrResultat;
+    }
+
+    public void setNbrResultat(String nbrResultat) {
+        this.nbrResultat = nbrResultat;
+    }
+
+    public CanceptStatistiqueData getCanceptStatistiqueSelected() {
+        return canceptStatistiqueSelected;
     }
 
 }

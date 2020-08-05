@@ -6839,7 +6839,7 @@ public class ConceptHelper {
 
 
     public List<CanceptStatistiqueData> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus, String lang,
-            String dateDebut, String dateFin, String collectionId) throws SQLException {
+            String dateDebut, String dateFin, String collectionId, String nbrResultat) throws SQLException {
 
         List<CanceptStatistiqueData> temps = new ArrayList<>();
         
@@ -6865,7 +6865,8 @@ public class ConceptHelper {
             request.append("AND con.modified BETWEEN '").append(dateDebut).append("' AND '").append(dateFin).append("' ");
         }
             
-        request.append("ORDER BY con.id_concept ASC");
+        request.append("ORDER BY con.id_concept ASC ");
+        request.append("LIMIT " + nbrResultat);
 
         stmt.executeQuery(request.toString());
         ResultSet resultSet = stmt.getResultSet();
