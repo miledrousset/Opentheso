@@ -5,44 +5,56 @@
              xmlns:p="http://primefaces.org/ui">
 
     <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
-            style="margin-top: -20px; border-left: 20px; border-right: 20px;  background-color: #FAFAFA; padding: 50px">
+            style="margin-top: -20px; border-left: 20px; border-right: 20px; background-color: #FAFAFA; padding: 50px">
 
-        <b:row rendered="#{candidatBean.isIsListCandidatsActivate()}">
-            <ui:include src="/candidat/candidatsList.xhtml" />
-        </b:row>
+        <p:tabView dynamic="true" cache="true" effect="fold" style="background-color: #FAFAFA; border-color: #FFFFFF">
+            <p:tab title="Godfather Part I">
+                <b:row rendered="#{candidatBean.isIsListCandidatsActivate()}">
+                    <ui:include src="/candidat/candidatsList.xhtml" />
+                </b:row>
 
-        <b:row rendered="#{!candidatBean.isIsListCandidatsActivate()}" style="padding-left: 25px; padding-right: 25px">
-            <b:row>
-                <b:column span="12">
-                    <b:navCommandLink value="#{langueBean.getMsg('candidat.return')}" 
-                                      update="candidatForm" ajax="false" style="color: #F47B2A" 
-                                      action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
-                                      actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
-                </b:column>
-            </b:row>
-            <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px">
-                <b:column medium-screen="6">
-                    <ui:include src="/candidat/candidatDetails.xhtml" />
-                </b:column>
-                <b:column medium-screen="6" style="vertical-align: top;" rendered="#{!candidatBean.isIsNewCandidatActivate()}">
-                    <ui:include src="/candidat/candidatDiscussion.xhtml" />
-                </b:column>
-            </b:row>
-            <p:spacer/>
-            <b:row rendered="#{(currentUser.nodeUser != null) and 
-                                        (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and (!candidatBean.isIsNewCandidatActivate())}">
-                <b:column span="12" style="align-content: center">
-                    <b:commandButton value="#{langueBean.getMsg('candidat.submit')}" 
-                              style="background: #F47B2A; border-color: #F47B2A; display: block; 
-                              margin-left: auto; margin-right: auto; margin-top: 10px; color: white" look="primary" size="l" 
-                              update="idProcessCandidate processCandidateForm"
-                              oncomplete="PF('processCandidate').show();"
-                              actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"/>
-                </b:column>
-            </b:row>
-        </b:row>
+                <b:row rendered="#{!candidatBean.isIsListCandidatsActivate()}" style="padding-left: 25px; padding-right: 25px">
+                    <b:row>
+                        <b:column span="12">
+                            <b:navCommandLink value="#{langueBean.getMsg('candidat.return')}" 
+                                              update="candidatForm" ajax="false" style="color: #F47B2A" 
+                                              action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
+                                              actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
+                        </b:column>
+                    </b:row>
+                    <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px">
+                        <b:column medium-screen="6">
+                            <ui:include src="/candidat/candidatDetails.xhtml" />
+                        </b:column>
+                        <b:column medium-screen="6" style="vertical-align: top;" rendered="#{!candidatBean.isIsNewCandidatActivate()}">
+                            <ui:include src="/candidat/candidatDiscussion.xhtml" />
+                        </b:column>
+                    </b:row>
+                    <p:spacer/>
+                    <b:row rendered="#{(currentUser.nodeUser != null) and 
+                                       (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and (!candidatBean.isIsNewCandidatActivate())}">
+                        <b:column span="12" style="align-content: center">
+                            <b:commandButton value="#{langueBean.getMsg('candidat.submit')}" 
+                                             style="background: #F47B2A; border-color: #F47B2A; display: block; 
+                                             margin-left: auto; margin-right: auto; margin-top: 10px; color: white" look="primary" size="l" 
+                                             update="idProcessCandidate processCandidateForm"
+                                             oncomplete="PF('processCandidate').show();"
+                                             actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"/>
+                        </b:column>
+                    </b:row>
+                </b:row>
+            </p:tab>
+            <p:tab title="Godfather Part II">
+                <h:panelGrid columns="2" cellpadding="10">
+                    <h:outputText value="Francis Ford Coppola's legendary continuation and sequel to his landmark 1972 film, The_Godfather, parallels the young Vito Corleone's rise with his son Michael's spiritual fall, deepening The_Godfather's depiction of the dark side of the American dream.
+                                  In the early 1900s, the child Vito flees his Sicilian village for America after the local Mafia kills his family. Vito struggles to make a living, legally or illegally, for his wife and growing brood in Little Italy,
+                                  killing the local Black Hand Fanucci after he demands his customary cut of the tyro's business. With Fanucci gone, Vito's communal stature grows." />
+                </h:panelGrid>
+            </p:tab>
+        </p:tabView>
+
     </h:form>   
-    
+
 
     <ui:include src="/candidat/dialog/newTraduction.xhtml" />
     <ui:include src="/candidat/dialog/editTraduction.xhtml" />
@@ -55,15 +67,15 @@
     <ui:include src="/candidat/dialog/participantsList.xhtml" /> 
     <ui:include src="/candidat/dialog/envoyerInvitation.xhtml" />
     <ui:include src="/candidat/dialog/processCandidate.xhtml" />  
-    
-    
+
+
     <ui:include src="/dialog/alignment/addAlignment.xhtml" />
     <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />
     <ui:include src="/dialog/alignment/deleteAlignment.xhtml" />
     <ui:include src="/dialog/alignment/updateAlignment.xhtml" />
-    
-  
-    
+
+
+
 
 
 </ui:fragment>
