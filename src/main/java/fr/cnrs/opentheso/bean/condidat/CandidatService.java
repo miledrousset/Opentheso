@@ -81,12 +81,12 @@ public class CandidatService implements Serializable {
      * @param lang
      * @return 
      */
-    public List<CandidatDto> getWaitingCandidats(Connect connect, String idThesaurus, String lang) {
+    public List<CandidatDto> getCandidatsByStatus(Connect connect, String idThesaurus, String lang, int status) {
         List<CandidatDto> temps = new ArrayList<>();
         HikariDataSource connection = connect.getPoolConnexion();
         try {
             CandidatDao condidatDao = new CandidatDao();
-            temps = condidatDao.searchWaitingCandidats(connection, idThesaurus, lang);
+            temps = condidatDao.searchCandidatsByStatus(connection, idThesaurus, lang, status);
             temps.forEach(candidatDto -> {
                 try {
                     candidatDto.setStatut(condidatDao.searchCondidatStatus(connection, candidatDto.getIdConcepte(),

@@ -1,0 +1,153 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <b:row>
+        <b:column span="12">
+            <b:navCommandLink value="#{langueBean.getMsg('candidat.return')}" 
+                              update="candidatForm" ajax="false" style="color: #F47B2A" 
+                              action= "#{candidatBean.getRejectCandidatByThesoAndLangue()}"
+                              actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
+        </b:column>
+    </b:row>
+
+    <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px">
+
+        <b:column medium-screen="6">
+            
+            <b:row>
+                <b:column span="12">
+                    <h:outputText style="font-weight: bold; background-color: #FAFAFA; font-weight: bold; margin-top: 10px;" 
+                                  value="#{langueBean.getMsg('candidat.file')}"/>
+                </b:column>
+            </b:row>
+
+            <!-- prefLabel -->
+            <b:row style="margin-top: 10px">
+                <b:column span="4">
+                    <h:outputText value="#{langueBean.getMsg('candidat.title')} : " style="font-weight: bold;"/>
+                </b:column>
+                <b:column span="8">
+                    <h:outputText value="#{candidatBean.candidatSelected.nomPref}" style="font-size: 13px;" />
+                </b:column>
+            </b:row>
+
+            <!-- collection -->
+            <b:row style="margin-top: 10px">
+                <b:column span="4">
+                    <h:outputText value="#{langueBean.getMsg('candidat.domaine')} : " style="font-weight: bold;"/>
+                </b:column>
+                <b:column span="8" >
+                    <h:outputText value="#{candidatBean.candidatSelected.domaine}" style="font-size: 13px;"/>
+                </b:column>
+            </b:row>
+
+            <!-- pour les Employé -->   
+            <b:row style="margin-top: 10px;">
+                <b:column span="4">
+                    <h:outputText value="#{langueBean.getMsg('candidat.used_for')} : " style="margin-top: 15px;"/>
+                </b:column>
+                <b:column span="8">
+                    <h:outputText value="#{candidatBean.candidatSelected.employePour}" />
+                </b:column>
+            </b:row>  
+
+            <!-- pour les relations BT -->    
+            <b:row style="margin-top: 10px">
+                <b:column>
+                    <p:dataList value="#{candidatBean.candidatSelected.termesGenerique}" var="term" type="ordered"
+                                emptyMessage="Aucun terme génerique n'est disponible ...">
+                        <f:facet name="header">
+                            #{langueBean.getMsg('candidat.generic_term')}
+                        </f:facet>
+                        #{term.value}
+                    </p:dataList>
+                </b:column>
+            </b:row>  
+
+            <!-- pour les relations RT -->       
+            <b:row style="margin-top: 10px;">
+                <b:column>
+                    <p:dataList value="#{candidatBean.candidatSelected.termesAssocies}" var="term" type="ordered"
+                                emptyMessage="Aucun terme associés n'est disponible ...">
+                        <f:facet name="header">
+                            #{langueBean.getMsg('candidat.associeted_terms')}
+                        </f:facet>
+                        #{term.value}
+                    </p:dataList>
+                </b:column>
+            </b:row> 
+
+            <!-- pour les notes -->       
+            <b:row style="margin-top: 10px;">
+                <b:column>
+                    <p:dataList value="#{candidatBean.candidatSelected.nodeNotes}" var="note" type="ordered"
+                                emptyMessage="Aucune note n'est disponible ...">
+                        <f:facet name="header">Notes</f:facet>
+                        {#{note.lang}} #{note.lexicalvalue}
+                    </p:dataList>
+                </b:column>
+            </b:row>
+
+            <!-- gestion des traductions -->       
+            <b:row style="margin-top: 10px;">
+                <b:column rendered="#{candidatBean.candidatSelected.traductions.size() == 0}">
+                    <p:dataList value="#{candidatBean.candidatSelected.traductions}" var="traduction" type="ordered"
+                                emptyMessage="Aucune traduction n'est disponible ...">
+                        <f:facet name="header">Traductions</f:facet>
+                        {#{traduction.langue}} #{traduction.traduction}
+                    </p:dataList>
+                </b:column>
+            </b:row>
+        </b:column>
+
+        <b:column medium-screen="6" style="vertical-align: top;" rendered="#{!candidatBean.isIsNewCandidatActivate()}">
+
+            <b:row style="font-weight: bold; background-color: #FAFAFA;">
+                <b:column>
+                    <h:outputLabel value="#{langueBean.getMsg('candidat.discussion')}" style=" margin-left: 10px; font-weight: bold;"/>
+                </b:column>
+            </b:row>
+
+            <b:row style="background-color: #FFFFFF; margin-left: 10px; margin-right: 10px">
+                <b:column>
+                    <p:scrollPanel style="max-height: 940px; border: #FAFAFA; background-color: #FFFFFF;">
+
+                        <ui:repeat var="msg" value="#{candidatBean.candidatSelected.messages}">
+
+                            <b:row style="float: #{msg.getMessagePossition()}; font-size: 15px; width: 80%;
+                                   background-color: #{msg.getMessageColor()}; margin-top: 5px; font-weight: bold; margin-left: 5px;
+                                   margin-right: 5px">
+
+                                <b:column style="width: 25%; ">
+                                    <h:outputText value="#{msg.nom}"/>
+                                </b:column>
+
+                                <b:column style="width: 75%; font-size: 12px; text-align: right; font-style: italic; color: #8C8C8C">
+                                    <h:outputText value="#{msg.date}"/>
+                                </b:column> 
+
+                            </b:row>  
+
+                            <b:row style="float: #{msg.getMessagePossition()}; font-size: 12px; width: 80%;
+                                   background-color: #{msg.getMessageColor()}; margin-bottom: 5px; text-align: justify;
+                                   text-justify: inter-word; margin-left: 5px; margin-right: 5px">
+
+                                <b:column style="width: 90%;">
+                                    <h:outputText value="#{msg.msg}"/>
+                                </b:column>
+                            </b:row>
+
+                        </ui:repeat>
+
+                    </p:scrollPanel>
+                </b:column>
+            </b:row>
+
+        </b:column>
+    </b:row>
+
+</ui:fragment>

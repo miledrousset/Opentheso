@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
-import java.sql.Connection;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -78,8 +77,8 @@ public class CandidatDao extends BasicDao {
      * @return
      * @throws SQLException 
      */
-    public List<CandidatDto> searchWaitingCandidats(HikariDataSource hikariDataSource, String idThesaurus,
-            String lang) throws SQLException {
+    public List<CandidatDto> searchCandidatsByStatus(HikariDataSource hikariDataSource, String idThesaurus,
+            String lang, int statut) throws SQLException {
 
         List<CandidatDto> temps = new ArrayList<>();
 
@@ -103,8 +102,7 @@ public class CandidatDao extends BasicDao {
                   
                 .append(" AND term.lang = '").append(lang).append("' ")
                 .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
-                .append(" and candidat_status.id_status != 2")
-                .append(" and candidat_status.id_status != 3")                
+                .append(" and candidat_status.id_status = " + statut)               
                 .append(" ORDER BY term.lexical_value ASC").toString());     
 
         resultSet = stmt.getResultSet();

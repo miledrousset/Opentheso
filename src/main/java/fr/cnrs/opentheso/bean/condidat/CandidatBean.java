@@ -7,8 +7,6 @@ import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
-import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -22,7 +20,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -60,44 +57,54 @@ public class CandidatBean implements Serializable {
     @Inject
     private ConceptView conceptView;
 
-    @Inject
-    private AlignmentBean alignmentBean;
-
-    @Inject
-    private AlignmentManualBean alignmentManualBean;
-
     private final CandidatService candidatService = new CandidatService();
 
     private boolean isListCandidatsActivate;
     private boolean isNewCandidatActivate;
     private boolean myCandidatsSelected;
     private boolean isShowCandidatActivate;
+    private boolean isRejectCandidatsActivate;
 
+    private int tabViewIndexSelected;
     private String message;
     private String definition;
     private String searchValue;
 
     private CandidatDto candidatSelected, initialCandidat;
-    private List<CandidatDto> candidatList, allTermes;
+    private List<CandidatDto> candidatList, rejetCadidat, allTermes;
     private List<DomaineDto> domaines;
 
-    @PostConstruct
+    
     public void initCandidatModule() {
         isListCandidatsActivate = true;
+        isRejectCandidatsActivate = true;
         isNewCandidatActivate = false;
         isShowCandidatActivate = false;
         candidatList = new ArrayList<>();
         allTermes = new ArrayList<>();
         domaines = new ArrayList<>();
         getAllCandidatsByThesoAndLangue();
+        getRejectCandidatByThesoAndLangue();
+        tabViewIndexSelected = 0;
     }
 
     public void getAllCandidatsByThesoAndLangue() {
+        tabViewIndexSelected = 0;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
-            candidatList = candidatService.getWaitingCandidats(connect, selectedTheso.getSelectedIdTheso(),
-                    getIdLang());
+            candidatList = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
+                    getIdLang(), 1);
         } else {
             candidatList = new ArrayList<>();
+        }
+    }
+    
+    public void getRejectCandidatByThesoAndLangue() {
+        tabViewIndexSelected = 1;
+        if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
+            rejetCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
+                    getIdLang(), 3);
+        } else {
+            rejetCadidat = new ArrayList<>();
         }
     }
     
@@ -124,7 +131,31 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
+    
+    public void selectMyRejectCandidats() {
+        if (myCandidatsSelected) {
+            rejetCadidat = rejetCadidat.stream()
+                    .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
+                    .collect(Collectors.toList());
+        } else {
+            getRejectCandidatByThesoAndLangue();
+        }
+        showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(rejetCadidat.size()).append(" ")
+                .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
 
+    public void searchRejectCandByTermeAndAuteur() {
+        if (!StringUtils.isEmpty(searchValue)) {
+            rejetCadidat = rejetCadidat.stream()
+                    .filter(candidat -> candidat.getNomPref().contains(searchValue) || candidat.getUser().contains(searchValue))
+                    .collect(Collectors.toList());
+        } else {
+            getRejectCandidatByThesoAndLangue();
+        }
+        showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(rejetCadidat.size()).append(" ")
+                .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
+    
     public void searchByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue)) {
             candidatList = candidatList.stream()
@@ -136,8 +167,27 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
+    
+    public void showRejectCandidatSelected(CandidatDto candidatDto) throws IOException {
+        
+        tabViewIndexSelected = 1;
+        
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
+            return;
+        }
+        
+        isRejectCandidatsActivate = false;
+        candidatSelected = candidatDto;
+        
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+        
+    }
 
     public void showCandidatSelected(CandidatDto candidatDto) throws IOException {
+        
+        tabViewIndexSelected = 0;
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
@@ -163,7 +213,12 @@ public class CandidatBean implements Serializable {
     }
 
     public void setIsListCandidatsActivate(boolean isListCandidatsActivate) throws IOException {
-        this.isListCandidatsActivate = isListCandidatsActivate;
+        
+        tabViewIndexSelected = 0;
+        
+        isListCandidatsActivate = true;
+        isRejectCandidatsActivate = true;
+        
         isNewCandidatActivate = false;
         isShowCandidatActivate = false;
 
@@ -376,9 +431,6 @@ public class CandidatBean implements Serializable {
                 candidatSelected.setVoted(true);            
             }
 
-        //    getAllCandidatsByThesoAndLangue();
-
-    //        setIsListCandidatsActivate(true);
         } catch (SQLException sqle) {
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
                 Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, sqle.toString());
@@ -386,11 +438,6 @@ public class CandidatBean implements Serializable {
                 return;
             }
         }
-        /*catch (IOException ex) {
-            Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, ex);
-            showMessage(FacesMessage.SEVERITY_ERROR, "Le vote a échoué");
-            return;
-        }*/
 
         showMessage(FacesMessage.SEVERITY_INFO, "Vote enregistré");
 
@@ -447,14 +494,7 @@ public class CandidatBean implements Serializable {
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
 
         domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
-
-//        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), candidatSelected.getIdConcepte(), languageBean.getIdLangue());
-//        alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
-
- //       if (conceptView.getNodeConcept() != null) {
-//            conceptView.getNodeConcept().setNodeAlignments(new ArrayList<>());
-//        }
-
+        
         allTermes = candidatList;
 
         initialCandidat = null;
@@ -595,4 +635,20 @@ public class CandidatBean implements Serializable {
         this.definition = definition;
     }
 
+    public List<CandidatDto> getRejetCadidat() {
+        return rejetCadidat;
+    }
+
+    public boolean isRejectCandidatsActivate() {
+        return isRejectCandidatsActivate;
+    }
+
+    public int getTabViewIndexSelected() {
+        return tabViewIndexSelected;
+    }
+
+    public void setTabViewIndexSelected(int tabViewIndexSelected) {
+        this.tabViewIndexSelected = tabViewIndexSelected;
+    }
+    
 }
