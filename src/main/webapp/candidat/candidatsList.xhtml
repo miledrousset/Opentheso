@@ -5,101 +5,261 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <b:row>
-        <b:column span="2" colXs="5">
-            <b:commandButton id="addNewCandidat" value="#{langueBean.getMsg('candidat.add')}" size="sm" class="btn btn-success" 
-                             style="width: 100%; font-size: 13px; color: white; background: #43B572; border: #43B572; padding-left: 20px; 
-                             padding-right: 20px;" ajax="true" actionListener="#{candidatBean.initialNewCandidat()}" update="candidatForm"/>
-        </b:column>
-        <b:column span="3"  colXs="7">
-                <b:dropButton  tooltip="Importer/exporter les candidats" tooltip-delay-show="500" 
+    <b:panel rendered="#{candidatBean.isListCandidatsActivate()}" style="padding: 10px">
+        <b:row>
+            <b:column span="2" colXs="5">
+                <b:commandButton id="addNewCandidat" value="#{langueBean.getMsg('candidat.add')}" size="sm" class="btn btn-success"
+                                 style="font-size: 13px; color: white; background: #43B572; border: #43B572; padding-left: 20px;
+                                 padding-right: 20px;" ajax="true" actionListener="#{candidatBean.initialNewCandidat()}" update="candidatForm"/>
+            </b:column>
+            <b:column span="3"  colXs="7">
+                <b:dropButton  tooltip="Importer/exporter les candidats" tooltip-delay-show="500"
                                value="Importer/exporter"  icon-size="l" iconAlign="right"
-                    style="width: 100%; background: none; border: none; box-shadow: none; font-size: 12px;"  >
+                               style="width: 100%; background: none; border: none; box-shadow: none; font-size: 12px;"  >
                     <b:navCommandLink value="Récupérer les candidats de l'ancienne version"
                                       tooltip="Permet de récupérer les anciens candidats saisis dans l'ancienne version pour les inclure dans ce nouveau module, seuls les candidats en attente sont récupérés"
                                       tooltip-delay-show="500"
                                       style="font-size: 12px;"
-                                     iconAwesome="fa-download fas_color_orange" 
-                                     action="#{candidatBean.getOldCandidates()}"
-                                     update="candidatForm messageIndex"/>
-                
+                                      iconAwesome="fa-download fas_color_orange"
+                                      action="#{candidatBean.getOldCandidates()}"
+                                      update="candidatForm messageIndex"/>
+
+                    <b:navCommandLink value="Export candidats en format SKOS"
+                                      tooltip="Exporter tout les candidats en format SKOS"
+                                      tooltip-delay-show="500"
+                                      style="font-size: 12px;"
+                                      iconAwesome="fa-download fas_color_orange"
+                                      action="#{candidatBean.setExportViewActivate(true)}"
+                                      update="candidatForm messageIndex"/>
+
+                    <b:navCommandLink value="Importer candidats en format SKOS"
+                                      tooltip="Exporter tout les candidats en format SKOS"
+                                      tooltip-delay-show="500"
+                                      style="font-size: 12px;"
+                                      iconAwesome="fa-download fas_color_orange"
+                                      action="#{candidatBean.setImportViewActivate(true)}"
+                                      update="candidatForm messageIndex"/>
+
                 </b:dropButton>
-        </b:column>        
-    </b:row>
+            </b:column>
+        </b:row>
 
-    <b:row style="margin-top: 20px">
-        <b:column medium-screen="6">
-            <b:selectBooleanCheckbox caption="#{langueBean.getMsg('candidat.my_candidats')}" value="#{candidatBean.myCandidatsSelected}"
-                                     onclick="ajax:candidatBean.selectMyCandidats()" update="candidatForm" style="font-size: 11px;"/>
-        </b:column>
-        <b:column medium-screen="6">
-            <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
-                          text-align: right; vertical-align: central" value="#{langueBean.getMsg('candidat.search')}"/>
-            <b:inputText value="#{candidatBean.searchValue}">
-                <f:facet name="append">
-                    <b:commandButton look="success" iconAwesome="search" icon-align="right" 
-                                     update="candidatForm" actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
-                </f:facet>
-            </b:inputText>
-        </b:column>
-    </b:row>
+        <b:row style="margin-top: 20px">
+            <b:column medium-screen="6">
+                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('candidat.my_candidats')}" value="#{candidatBean.myCandidatsSelected}"
+                                         onclick="ajax:candidatBean.selectMyCandidats()" update="candidatForm" style="font-size: 11px;"/>
+            </b:column>
+            <b:column medium-screen="6">
+                <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
+                              text-align: right; vertical-align: central" value="#{langueBean.getMsg('candidat.search')}"/>
+                <b:inputText value="#{candidatBean.searchValue}">
+                    <f:facet name="append">
+                        <b:commandButton look="success" iconAwesome="search" icon-align="right"
+                                         update="candidatForm" actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
+                    </f:facet>
+                </b:inputText>
+            </b:column>
+        </b:row>
 
-    <b:row style="margin-top: 20px">
-        <b:column>
-            <b:row style="font-size: 12px; color: #666666">
-                <b:column span="1">
-                    <h:outputText value="id"/>
-                </b:column>                  
-                <b:column span="4">
-                    <h:outputText value="#{langueBean.getMsg('candidat.titre')}"/>
-                </b:column>              
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('candidat.creation_date')}"/>
-                </b:column>
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('candidat.state')}"/>
-                </b:column> 
-                <b:column span="1">
-                    <h:outputText value="votes"/>
-                </b:column>  
-                <b:column span="1">
-                    <h:outputText value="messages"/>
-                </b:column>                          
-            </b:row>
-            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-            <b:row rendered="#{candidatBean.candidatList.size() == 0}">
-                <b:column>
-                    <h:outputText value="#{langueBean.getMsg('candidat.save.msg10')}" 
-                                  style="font-size: 12px; color: grey; font-style: italic " />
-                </b:column>
-            </b:row>
-            <ui:repeat id="candidtatsList" var="candidat" value="#{candidatBean.candidatList}">
-                <b:row style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatList.indexOf(candidat))}; 
-                       padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
-                    <b:column span="1" >
-                        <h:outputText value="#{candidat.idConcepte}" />
-                    </b:column>                     
-                    <b:column span="4" >
-                        <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572" 
-                                          actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
+        <b:row style="margin-top: 20px">
+            <b:column>
+                <b:row style="font-size: 12px; color: #666666">
+                    <b:column span="1">
+                        <h:outputText value="id"/>
                     </b:column>
-                  
-                    <b:column span="2" >
-                        <h:outputText value="#{candidat.creationDate}" />
+                    <b:column span="4">
+                        <h:outputText value="#{langueBean.getMsg('candidat.titre')}"/>
                     </b:column>
                     <b:column span="2">
-                        <h:outputText value="#{candidat.statut}" />  
+                        <h:outputText value="#{langueBean.getMsg('candidat.creation_date')}"/>
+                    </b:column>
+                    <b:column span="2">
+                        <h:outputText value="#{langueBean.getMsg('candidat.state')}"/>
                     </b:column>
                     <b:column span="1">
-                        <h:outputText value="#{candidat.nbrVote}" />
-                    </b:column> 
+                        <h:outputText value="votes"/>
+                    </b:column>
                     <b:column span="1">
-                        <h:outputText value="#{candidat.nbrParticipant}" />
-                    </b:column>                         
-                </b:row>   
-            </ui:repeat>
-            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-        </b:column>
-    </b:row>
+                        <h:outputText value="messages"/>
+                    </b:column>
+                </b:row>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                <b:row rendered="#{candidatBean.candidatList.size() == 0}">
+                    <b:column>
+                        <h:outputText value="#{langueBean.getMsg('candidat.save.msg10')}"
+                                      style="font-size: 12px; color: grey; font-style: italic " />
+                    </b:column>
+                </b:row>
+                <ui:repeat id="candidtatsList" var="candidat" value="#{candidatBean.candidatList}">
+                    <b:row style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatList.indexOf(candidat))};
+                           padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
+                        <b:column span="1" >
+                            <h:outputText value="#{candidat.idConcepte}" />
+                        </b:column>
+                        <b:column span="4" >
+                            <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572"
+                                              actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
+                        </b:column>
+
+                        <b:column span="2" >
+                            <h:outputText value="#{candidat.creationDate}" />
+                        </b:column>
+                        <b:column span="2">
+                            <h:outputText value="#{candidat.statut}" />
+                        </b:column>
+                        <b:column span="1">
+                            <h:outputText value="#{candidat.nbrVote}" />
+                        </b:column>
+                        <b:column span="1">
+                            <h:outputText value="#{candidat.nbrParticipant}" />
+                        </b:column>
+                    </b:row>
+                </ui:repeat>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+            </b:column>
+        </b:row>
+    </b:panel>
+
+    <p:panel visible="#{candidatBean.isExportViewActivate()}">
+        
+        <b:row style="margin-bottom: 15px">
+            <b:column>
+                <h:outputText value="Exportation des candidats" />
+            </b:column>
+        </b:row>
+
+        <p:panel header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
+                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+            <p:dataTable id="listLangue" var="langue" value="#{candidatBean.languagesOfTheso}"
+                         selection="#{candidatBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
+                <p:column headerText="Code" width="60">
+                    <h:outputText value="#{langue.code}" />
+                </p:column>
+                <p:column headerText="Langue">
+                    <h:outputText value="#{langue.value}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <b:row>
+            <b:column span="2" offset="7">
+                <h:outputText value="Format de sortie :" />
+            </b:column>
+            <b:column span="2" >
+                <p:selectOneMenu value="#{candidatBean.selectedExportFormat}"
+                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none;"
+                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                    <f:selectItems  value="#{candidatBean.exportFormat}" var="format" itemLabel="#{format}" itemValue="#{format}"/>
+
+                </p:selectOneMenu>
+            </b:column>
+        </b:row>
+
+        <br /><br />
+
+        <b:row>
+            <b:column span="6">
+                <p:commandButton value="Exporter" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
+                                 class="btn btn-success" style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
+                                 onclick="PF('pbAjax').start();" update="viewExportCandidats">
+                    <p:fileDownload value="#{exportFileBean.exportCandidatsEnSkos()}" />
+                </p:commandButton>
+            </b:column>
+
+            <b:column span="6">
+                <p:commandButton icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
+                                 style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
+                                 onclick="#{candidatBean.setListCandidatsActivate(true)}" update="candidatForm"/>
+            </b:column>
+        </b:row>
+
+        <br/><br/>
+
+        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{progressBarView.progress}" labelTemplate="" styleClass="animated"
+                       global="false" interval="1000" style="font-size: 13px; color: white;"/>
+    </p:panel>
+
+    <b:panel id="viewImportSkosForm" rendered="#{candidatBean.isImportViewActivate()}">
+
+        <b:row>
+            <b:column>
+                <h:outputText value="Import candidats en Skos" style="font-size: 14px; color: #C63632"/>
+            </b:column>
+        </b:row>
+
+        <!-- choix du format de sortie Skos, Json, JsonLd, Turtle -->
+        <b:row style="margin-top: 10px">
+            <b:column span="1" >
+                <h:outputText value="Format: " />
+            </b:column>
+            <b:column span="2">
+                <p:selectOneMenu id="idTypeImportSingle" value="#{importFileBean.typeImport}"
+                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                    <f:selectItem itemLabel="Skos" itemValue="0" />
+                    <f:selectItem itemLabel="Json-ld" itemValue="1" />
+                    <f:selectItem itemLabel="Turtle" itemValue="2" />
+                    <f:selectItem itemLabel="Json" itemValue="3" />
+                    <p:ajax event="change" listener="#{importFileBean.stateChangeListener}" />
+                </p:selectOneMenu> 
+            </b:column>
+        </b:row>  
+
+        <!-- Choix du fichier -->   
+        <b:row style="margin-top: 10px">
+            <b:column span="12" > 
+                <p:fileUpload listener="#{importFileBean.loadFileSkos}" label="parcourir" mode="advanced" auto="true"
+                              allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/" update="viewImportSkosForm importButton" 
+                              style="font-size: 12px;" />  
+            </b:column>
+        </b:row> 
+
+        <b:row rendered="#{importFileBean.loadDone}" style="font-size: 12px; margin-top: 10px">
+            <b:column span="5">
+                <h:outputText value="URI: " />
+                <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+            </b:column>
+        </b:row>
+
+        <b:row rendered="#{importFileBean.loadDone}" style="margin-top: 10px; font-size: 12px;">
+            <b:column span="5">
+                <h:outputText value="Total des concepts: " />
+                <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+            </b:column>
+        </b:row>
+
+        <p:spacer/>
+
+        <h:panelGroup id="importButton">  
+            <b:row >
+                <b:column span="2" offset="3">
+                    <p:commandButton id="buttonImportSkos" class="btn btn-success" widgetVar="buttonImportSkos"
+                                     icon="fas fa-check-circle fas 2x" ajax="true" value="Importer" disabled="#{!importFileBean.loadDone}"
+                                     update="toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm"
+                                     onclick="PF('pbAjax').start(); PF('buttonImportSkos').disable();"
+                                     style="width: 100%; background-color: #5CB85C; border: none;"
+                                     actionListener="#{importFileBean.addSkosCandidatToBDD()}"/>
+                </b:column>
+                <b:column span="2" offset="2" >
+                    <p:commandButton id="cancelSkos" icon="fas fa-undo" value="Retour" class="btn btn-success"
+                                     style="width: 100%; background-color: #FFC107; color: black; border: none;"
+                                     actionListener="#{candidatBean.setListCandidatsActivate(true)}"
+                                     update="candidatForm"/>
+                </b:column> 
+            </b:row>
+        </h:panelGroup>
+
+        <p:spacer/>
+
+        <b:row >
+            <b:column span="10" offset="1">
+                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" 
+                               labelTemplate="{value}%" styleClass="animated" global="false" 
+                               style="font-size: 12px; height: 20px;"/>
+            </b:column>                
+        </b:row>               
+
+    </b:panel>
 
 </ui:fragment>

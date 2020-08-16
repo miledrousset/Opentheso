@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
@@ -57,6 +58,9 @@ public class ImportFileBean implements Serializable {
     @Inject private ViewEditionBean viewEditionBean;    
     @Inject private ConceptView conceptView;
     @Inject private Tree tree;    
+
+    @Inject
+    private SelectedTheso selectedTheso;
     
     
     private double progress = 0;
@@ -718,6 +722,42 @@ public class ImportFileBean implements Serializable {
                 error.append(e.toString());
         } finally {
             showError();
+        }
+    }
+
+    /**
+     * permet d'importer les candidats chargé en SKOS 
+     */
+    public void addSkosCandidatToBDD() {
+        
+        int idGroup; 
+        if(selectedUserProject == null || selectedUserProject.isEmpty()) {
+            idGroup = -1;
+        } else
+            idGroup = Integer.parseInt(selectedUserProject);
+        
+        try {
+            progress = 0;
+            progressStep = 0;
+            
+            ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
+            importRdf4jHelper.setInfos(connect.getPoolConnexion(), formatDate, 
+                    currentUser.getNodeUser().getIdUser(), idGroup, connect.getWorkLanguage());
+
+            importRdf4jHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+            importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);
+
+            for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
+                progressStep++;
+                progress = progressStep / total * 100;
+                System.out.println(">>> " + sKOSResource.getIdentifier());
+                //importRdf4jHelper.addConcepts(sKOSResource, selectedTheso.getCurrentIdTheso());
+            }
+            
+        } catch (Exception e) {
+                
+        } finally {
+            
         }
     }    
     

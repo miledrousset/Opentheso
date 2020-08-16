@@ -2,8 +2,7 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup id="panelCandidate">
         <b:row>
@@ -24,7 +23,7 @@
                 <p:inputText value="#{candidatBean.candidatSelected.nomPref}"
                              style="width: 100%; font-size: 13px; background: white;" />
             </b:column>
-            <b:column span="1" offset="1" rendered="#{!candidatBean.isIsNewCandidatActivate()}">
+            <b:column span="1" offset="1" rendered="#{!candidatBean.isNewCandidatActivate()}">
                 <b:navCommandLink rendered="#{candidatBean.candidatSelected.voted}" 
                                   icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
                                   style="color: #f47b2a" action="#{candidatBean.addVote()}"
@@ -35,7 +34,6 @@
                                   tooltip="Cliquez pour voter pour ce candidat" tooltip-delay-show="500"/>
             </b:column>                
         </b:row>
-
 
         <!-- collection -->
         <b:row style="margin-top: 10px">
@@ -50,7 +48,6 @@
                                 inputStyle="width: 100%; height: 28px;box-shadow: none;"/>
             </b:column>
         </b:row>
-
 
         <!-- pour les relations BT -->    
         <b:row style="margin-top: 10px">
@@ -146,7 +143,7 @@
     <!-- pour les 2 sections ci-dessous, l'enregistrement des données est automatique -->
     
     <!-- gestion des notes -->
-    <b:row rendered="#{!candidatBean.isIsNewCandidatActivate()}">
+    <b:row rendered="#{!candidatBean.isNewCandidatActivate()}">
         <b:column style="margin-top: 15px">
             <b:row>
                 <b:column>
@@ -175,17 +172,17 @@
                                    viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
                                    rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}" 
                                    tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}" tooltip-delay-show="500">
-                                <b:column span="7" >
+                                <b:column span="6" >
                                     <h:outputText value="#{note.lexicalvalue}" style="width: 100%; resize: none; font-size: 13px;" escape="false" />
                                 </b:column>
                                 <b:column span="2" >
-                                    <h:outputText value="#{note.notetypecode}" style="width: 100%; resize: none; font-size: 13px;"  />
+                                     <h:outputText value="#{note.notetypecode}" style="width: 100%; resize: none; font-size: 13px;"  />
                                 </b:column>
                                 <b:column span="1" >
-                                    <h:outputText value="#{note.lang}" style="width: 100%; resize: none; font-size: 13px;"  />
+                                     <h:outputText value="#{note.lang}" style="width: 100%; resize: none; font-size: 13px;"  />
                                 </b:column>                                
                                 <b:column span="1">
-                                    <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
+                                     <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
                                                       style="color: #f47b2a;"
                                                       actionListener="#{noteBeanCandidat.initSelectedNode(note)}"  
                                                       
@@ -194,12 +191,22 @@
                                                       oncomplete="PF('editNote').show();"/>
                                 </b:column>
                                 <b:column span="1">
-                                    <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
+                                     <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
                                                       styleClass="buttonIconOrange" style="color: #f47b2a;"
                                                       actionListener="#{noteBeanCandidat.initSelectedNode(note)}"
                                                       oncomplete="PF('deleteNote').show();"
                                                       update="idDeleteNote deleteNoteForm messageIndex"/>
-                                </b:column>                        
+                                </b:column>   
+                                <b:column span="1">
+                                    <b:navCommandLink rendered="#{note.voted}" update="candidatForm"
+                                                        icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
+                                                        style="color: #f47b2a" action="#{candidatBean.addNoteVote(note)}"
+                                                        tooltip="Cliquez pour voter pour cette note" tooltip-delay-show="500"/>
+                                     <b:navCommandLink rendered="#{!note.voted}" update="candidatForm"
+                                                        icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
+                                                        style="color: #666666" action="#{candidatBean.addNoteVote(note)}"
+                                                        tooltip="Cliquez pour voter pour cette note" tooltip-delay-show="500"/>
+                                </b:column>   
                             </b:row>   
                         </ui:repeat>
                     </b:column>
@@ -213,7 +220,7 @@
     
     
     <!-- gestion des traductions -->
-    <b:row rendered="#{!candidatBean.isIsNewCandidatActivate()}">
+    <b:row rendered="#{!candidatBean.isNewCandidatActivate()}">
         <b:column span="12">
             <b:navCommandLink value="Ajouter une nouvelle traduction"
                               icon-awesome="fas fa-plus-circle"

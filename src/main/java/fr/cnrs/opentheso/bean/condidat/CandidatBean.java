@@ -5,10 +5,14 @@ import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
+import fr.cnrs.opentheso.bean.condidat.enumeration.VoteType;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -28,6 +32,7 @@ import javax.inject.Named;
 
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
@@ -64,15 +69,18 @@ public class CandidatBean implements Serializable {
     private boolean myCandidatsSelected;
     private boolean isShowCandidatActivate;
     private boolean isRejectCandidatsActivate;
+    private boolean isExportViewActivate;
+    private boolean isImportViewActivate;
 
     private int tabViewIndexSelected;
-    private String message;
-    private String definition;
-    private String searchValue;
+    private String message, definition, searchValue, selectedExportFormat;
 
     private CandidatDto candidatSelected, initialCandidat;
+    private List<String> exportFormat;
     private List<CandidatDto> candidatList, rejetCadidat, allTermes;
     private List<DomaineDto> domaines;
+    private List<NodeLangTheso> selectedLanguages;
+    private ArrayList<NodeLangTheso> languagesOfTheso;
 
     
     public void initCandidatModule() {
@@ -86,6 +94,17 @@ public class CandidatBean implements Serializable {
         getAllCandidatsByThesoAndLangue();
         getRejectCandidatByThesoAndLangue();
         tabViewIndexSelected = 0;
+        
+        exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
+        selectedExportFormat = "skos";
+        
+        languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        selectedLanguages = new ArrayList<>();
+        languagesOfTheso.forEach((nodeLang) -> {
+            selectedLanguages.add(nodeLang);
+        });
+        
     }
 
     public void getAllCandidatsByThesoAndLangue() {
@@ -206,7 +225,7 @@ public class CandidatBean implements Serializable {
 
         domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
 
-        setIsShowCandidatActivate(true);
+        setShowCandidatActivate(true);
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
@@ -216,7 +235,7 @@ public class CandidatBean implements Serializable {
         
         tabViewIndexSelected = 0;
         
-        isListCandidatsActivate = true;
+        this.isListCandidatsActivate = true;
         isRejectCandidatsActivate = true;
         
         isNewCandidatActivate = false;
@@ -226,7 +245,7 @@ public class CandidatBean implements Serializable {
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 
-    public boolean isIsNewCandidatActivate() {
+    public boolean isNewCandidatActivate() {
         return isNewCandidatActivate;
     }
 
@@ -234,19 +253,21 @@ public class CandidatBean implements Serializable {
         this.isNewCandidatActivate = isNewCandidatActivate;
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
+        isImportViewActivate = false;
+        isExportViewActivate = false;
     }
 
-    public boolean isIsShowCandidatActivate() {
+    public boolean isShowCandidatActivate() {
         return isShowCandidatActivate;
     }
 
-    public void setIsShowCandidatActivate(boolean isShowCandidatActivate) {
+    public void setShowCandidatActivate(boolean isShowCandidatActivate) {
         this.isShowCandidatActivate = isShowCandidatActivate;
         isListCandidatsActivate = false;
-        isNewCandidatActivate = false;        
+        isNewCandidatActivate = false; 
+        isImportViewActivate = false;
+        isExportViewActivate = false;
     }
-    
-    
 
     public void saveConcept() throws SQLException, IOException {
 
@@ -413,21 +434,15 @@ public class CandidatBean implements Serializable {
     public void addVote() {
         try {
             // cas où il y a un vote, on le supprime
-            if (candidatService.getVote(connect,
-                        candidatSelected.getIdThesaurus(),
-                        candidatSelected.getIdConcepte(),
-                        currentUser.getNodeUser().getIdUser())) {
-                candidatService.removeVote(connect,
-                        candidatSelected.getIdThesaurus(),
-                        candidatSelected.getIdConcepte(),
-                        currentUser.getNodeUser().getIdUser());
+            if (candidatService.getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+                        currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT)) {
+                candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), 
+                        currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT);
                 candidatSelected.setVoted(false);
             } else {
                 // cas ou il n'y a pas de vote, alors on vote
-            candidatService.addVote(connect,
-                    candidatSelected.getIdThesaurus(),
-                    candidatSelected.getIdConcepte(),
-                    currentUser.getNodeUser().getIdUser());
+            candidatService.addVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+                    currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT);
                 candidatSelected.setVoted(true);            
             }
 
@@ -440,6 +455,39 @@ public class CandidatBean implements Serializable {
         }
 
         showMessage(FacesMessage.SEVERITY_INFO, "Vote enregistré");
+
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("candidatForm:vote");
+    }
+    
+    /**
+     * permet d'ajouter un vote pour un note de candidat, c'est 1 seul vote par utilisateur
+     * @param nodeNote
+     */
+    public void addNoteVote(NodeNote nodeNote) {
+        try {
+            // cas où il y a un vote, on le supprime
+            if (candidatService.getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), 
+                    currentUser.getNodeUser().getIdUser(), nodeNote.getId_note()+"", VoteType.NOTE)) {
+                
+                candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), 
+                        currentUser.getNodeUser().getIdUser(), nodeNote.getId_note()+"", VoteType.NOTE);
+                nodeNote.setVoted(false);
+            } else {
+                // cas ou il n'y a pas de vote, alors on vote
+            candidatService.addVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+                    currentUser.getNodeUser().getIdUser(), nodeNote.getId_note()+"", VoteType.NOTE);
+                nodeNote.setVoted(true);
+            }
+        } catch (SQLException sqle) {
+            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
+                Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, sqle.toString());
+                showMessage(FacesMessage.SEVERITY_ERROR, "Le vote a échoué");
+                return;
+            }
+        }
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Vote du note enregistré");
 
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm:vote");
@@ -623,9 +671,16 @@ public class CandidatBean implements Serializable {
         this.conceptView = conceptView;
     }
 
-    public boolean isIsListCandidatsActivate() {
+    public boolean isListCandidatsActivate() {
         return isListCandidatsActivate;
     }
+
+    public void setListCandidatsActivate(boolean isListCandidatsActivate) {
+        this.isListCandidatsActivate = isListCandidatsActivate;
+        isImportViewActivate = false;
+        isExportViewActivate = false;
+    }
+    
 
     public String getDefinition() {
         return definition;
@@ -649,6 +704,52 @@ public class CandidatBean implements Serializable {
 
     public void setTabViewIndexSelected(int tabViewIndexSelected) {
         this.tabViewIndexSelected = tabViewIndexSelected;
+    }
+
+    public boolean isExportViewActivate() {
+        return isExportViewActivate;
+    }
+    
+    public void setExportViewActivate(boolean isExportViewActivate) {
+        this.isExportViewActivate = isExportViewActivate;
+        isImportViewActivate = false;
+        isListCandidatsActivate = false;
+        isShowCandidatActivate = false;
+    }
+
+    public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
+        return languagesOfTheso;
+    }
+
+    public List<NodeLangTheso> getSelectedLanguages() {
+        return selectedLanguages;
+    }
+
+    public void setSelectedLanguages(List<NodeLangTheso> selectedLanguages) {
+        this.selectedLanguages = selectedLanguages;
+    }
+
+    public String getSelectedExportFormat() {
+        return selectedExportFormat;
+    }
+
+    public void setSelectedExportFormat(String selectedExportFormat) {
+        this.selectedExportFormat = selectedExportFormat;
+    }
+    
+    public List<String> getExportFormat() {
+        return exportFormat;
+    }
+
+    public boolean isImportViewActivate() {
+        return isImportViewActivate;
+    }
+
+    public void setImportViewActivate(boolean isImportViewActivate) {
+        this.isImportViewActivate = isImportViewActivate;
+        isExportViewActivate = false;
+        isListCandidatsActivate = false;
+        isShowCandidatActivate = false;
     }
     
 }

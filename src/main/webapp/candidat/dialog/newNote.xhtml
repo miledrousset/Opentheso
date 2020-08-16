@@ -6,7 +6,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idNewNote" header="Nouvelle note" widgetVar="newNote" 
-              modal="true" resizable="true" position="top" width="360"  style="margin-top: 50px" >  
+              modal="true" resizable="true" position="top" width="600"  style="margin-top: 50px" >
 
         <h:form id="newNoteForm" style="width: 320px; display: block; margin-left: auto; margin-right: auto;">
             <b:row>
@@ -47,7 +47,9 @@
             <b:row>
                 <b:column span="10" offset="1" >
                     <b:inputTextarea id="idNoteValue" label="texte" placeholder="tapez votre note ..."  
-                                             value="#{noteBeanCandidat.noteValue}" style="font-size: 12px;"/>                          
+                                             value="#{noteBeanCandidat.noteValue}" style="font-size: 12px;"/> 
+                    <!--<p:textEditor widgetVar="idNoteValue" secure="false" value="#{noteBeanCandidat.noteValue}" 
+                                  height="300" style="margin-bottom:12px" placeholder="Tapez votre note ..."/> -->
                 </b:column>
             </b:row>
             

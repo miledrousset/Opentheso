@@ -18,6 +18,7 @@ import fr.cnrs.opentheso.bean.condidat.dao.RelationDao;
 import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
+import fr.cnrs.opentheso.bean.condidat.enumeration.VoteType;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.Serializable;
@@ -58,7 +59,7 @@ public class CandidatService implements Serializable {
                     candidatDto.setNbrDemande(condidatDao.searchDemandeCount(connection, candidatDto.getIdConcepte(),
                             candidatDto.getIdThesaurus()));
                     candidatDto.setNbrVote(condidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus()));
+                            candidatDto.getIdThesaurus(), VoteType.CANDIDAT.getLabel()));
                 } catch (SQLException ex) {
                     Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -96,7 +97,7 @@ public class CandidatService implements Serializable {
                     candidatDto.setNbrDemande(condidatDao.searchDemandeCount(connection, candidatDto.getIdConcepte(),
                             candidatDto.getIdThesaurus()));
                     candidatDto.setNbrVote(condidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus()));
+                            candidatDto.getIdThesaurus(), VoteType.CANDIDAT.getLabel()));
                 } catch (SQLException ex) {
                     Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -314,6 +315,14 @@ public class CandidatService implements Serializable {
              
             candidatSelected.setNodeNotes(noteDao.getNotesCandidat(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus()));
+            candidatSelected.getNodeNotes().forEach(note -> {
+                try {
+                    note.setVoted(getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+                        candidatSelected.getUserId(), note.getId_note()+"", VoteType.NOTE));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
 
             candidatSelected.setTraductions(new TermHelper().getTraductionsOfConcept(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
@@ -323,10 +332,9 @@ public class CandidatService implements Serializable {
             candidatSelected.setMessages(messageDao.getAllMessagesByCandidat(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getUserId()));
 
-            candidatSelected.setVoted(candidatDao.getVote(connection,
-                    candidatSelected.getUserId(),
-                    candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus()));
+            candidatSelected.setVoted(candidatDao.getVote(connection, candidatSelected.getUserId(),
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), null, 
+                    VoteType.CANDIDAT.getLabel()));
 
             connection.close();
             connect.getPoolConnexion().getConnection().close();
@@ -340,20 +348,22 @@ public class CandidatService implements Serializable {
 
 
 ///////// ajouté par Miled
-    public void addVote(Connect connect,
-            String idThesaurus, String idConcept, int idUser) throws SQLException {
-        new CandidatDao().addVote(connect.getPoolConnexion(), idThesaurus, idConcept, idUser);
+    public void addVote(Connect connect, String idThesaurus, String idConcept, int idUser,
+            String idNote, VoteType voteType) throws SQLException {
+        new CandidatDao().addVote(connect.getPoolConnexion(), idThesaurus, idConcept, idUser, idNote, 
+                voteType.getLabel());
     }
 
-    public boolean getVote(Connect connect,
-            String idThesaurus, String idConcept, int idUser) throws SQLException {
-        return new CandidatDao().getVote(connect.getPoolConnexion(),
-                idUser, idConcept, idThesaurus);
+    public boolean getVote(Connect connect, String idThesaurus, String idConcept, int idUser, String idNote,
+            VoteType voteType) throws SQLException {
+        return new CandidatDao().getVote(connect.getPoolConnexion(), idUser, idConcept, idThesaurus, 
+                idNote, voteType.getLabel());
     }
 
-    public void removeVote(Connect connect,
-            String idThesaurus, String idConcept, int idUser) throws SQLException {
-        new CandidatDao().removeVote(connect.getPoolConnexion(), idThesaurus, idConcept, idUser);
+    public void removeVote(Connect connect, String idThesaurus, String idConcept, int idUser, String idNote,
+            VoteType voteType) throws SQLException {
+        new CandidatDao().removeVote(connect.getPoolConnexion(), idThesaurus, idConcept, idUser, idNote,
+                voteType.getLabel());
     }
     
     public boolean insertCandidate(Connect connect, CandidatDto candidatDto, String adminMessage, int idUser) {

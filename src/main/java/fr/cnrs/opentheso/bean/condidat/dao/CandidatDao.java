@@ -192,12 +192,13 @@ public class CandidatDao extends BasicDao {
     
 /////// ajouté par Miled
     
-    public int searchVoteCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus) throws SQLException {
+    public int searchVoteCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus,
+            String typeVote) throws SQLException {
         int nbrDemande = 0;
         openDataBase(hikariDataSource);
         stmt.executeQuery(new StringBuffer("SELECT count(*) FROM candidat_vote WHERE id_concept = '")
-                .append(idCouncepte).append("' AND id_thesaurus = '")
-                .append(idThesaurus).append("'").toString());
+                .append(idCouncepte).append("' AND id_thesaurus = '").append(idThesaurus)
+                .append("' AND type_vote = '").append(typeVote).append("'").toString());
         resultSet = stmt.getResultSet();
         while (resultSet.next()) {
             nbrDemande = resultSet.getInt("count");
@@ -207,39 +208,46 @@ public class CandidatDao extends BasicDao {
         return nbrDemande;
     }    
     
-    public boolean addVote(HikariDataSource hikariDataSource,
-            String idThesaurus, String idConcept, int idUser) throws SQLException {
+    public boolean addVote(HikariDataSource hikariDataSource, String idThesaurus, String idConcept, 
+            int idUser, String idNote, String typeVote) throws SQLException {
         openDataBase(hikariDataSource);
         executInsertRequest(stmt,
-                "INSERT INTO candidat_vote(id_user, id_concept, id_thesaurus) "
-                + "VALUES (" + idUser + ",'" + idConcept + "','" + idThesaurus + "')");
+                "INSERT INTO candidat_vote(id_user, id_concept, id_thesaurus, id_note, type_vote) "
+                + "VALUES (" + idUser + ",'" + idConcept + "','" + idThesaurus + "', '"+idNote+"', '" + typeVote + "')");
         closeDataBase();
         return true;
     }
     
-    public boolean removeVote(HikariDataSource hikariDataSource,
-            String idThesaurus, String idConcept, int idUser) throws SQLException {
+    public boolean removeVote(HikariDataSource hikariDataSource, String idThesaurus, String idConcept, 
+            int idUser, String idNote, String typeVote) throws SQLException {
         openDataBase(hikariDataSource);
-        executInsertRequest(stmt,
-                "delete from candidat_vote where "
-                + "id_user = " + idUser 
+        String requet = "delete from candidat_vote where id_user = " + idUser 
                 + " and id_concept = '" + idConcept + "'"
-                + " and id_thesaurus = '" + idThesaurus + "'");
+                + " and id_thesaurus = '" + idThesaurus + "'"
+                + " and type_vote = '" + typeVote + "'";
+        
+        if (idNote != null) {
+            requet += " and id_note = '" + idNote + "'";
+        }
+        
+        executInsertRequest(stmt, requet);
         closeDataBase();
         return true;
     }    
     
-    public boolean getVote(HikariDataSource hikariDataSource, 
-                    int userId, 
-                    String idConcept,
-                    String idTheso) throws SQLException {
+    public boolean getVote(HikariDataSource hikariDataSource, int userId, String idConcept,
+                    String idTheso, String idNote, String typeVote) throws SQLException {
         boolean voted = false;
         openDataBase(hikariDataSource);
-        stmt.executeQuery("select id_vote from candidat_vote" +
-                    " where" +
+        String requet = "select id_vote from candidat_vote where" +
                     " id_user = " + userId +
                     " and id_concept = '" + idConcept + "'" +
-                    " and id_thesaurus = '" + idTheso + "'");
+                    " and id_thesaurus = '" + idTheso + "'"+
+                    " and type_vote = '" + typeVote + "' ";
+        if (idNote != null){
+            requet += " and id_note = '" + idNote + "' ";
+        }
+        stmt.executeQuery(requet);
         
         resultSet = stmt.getResultSet();
         if(resultSet.next()) {
@@ -418,9 +426,5 @@ public class CandidatDao extends BasicDao {
                 " and id_thesaurus = '" + candidatDto.getIdThesaurus() + "'");
         return true;
     }
-    
-    
-
-    
             
 }

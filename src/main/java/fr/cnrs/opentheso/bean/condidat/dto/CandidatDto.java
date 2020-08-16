@@ -23,6 +23,7 @@ public class CandidatDto implements Serializable {
     private int nbrDemande;
     private int nbrParticipant;
     private boolean voted;
+    private boolean noteVoted;
     private int nbrVote;
 
     private String noteApplication;
@@ -276,9 +277,12 @@ public class CandidatDto implements Serializable {
         this.nodeNotes = nodeNotes;
     }
 
+    public boolean isNoteVoted() {
+        return noteVoted;
+    }
 
-
-    
-    
+    public void setNoteVoted(boolean noteVoted) {
+        this.noteVoted = noteVoted;
+    }
     
 }

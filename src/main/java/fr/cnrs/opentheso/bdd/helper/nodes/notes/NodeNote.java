@@ -28,6 +28,7 @@ public class NodeNote {
     private Date modified;
     private int idUser;
     private String user;
+    private boolean voted;
 
     public NodeNote() {
     }
@@ -112,7 +113,11 @@ public class NodeNote {
         this.user = user;
     }
 
+    public boolean isVoted() {
+        return voted;
+    }
 
-
-
+    public void setVoted(boolean voted) {
+        this.voted = voted;
+    }
 }
