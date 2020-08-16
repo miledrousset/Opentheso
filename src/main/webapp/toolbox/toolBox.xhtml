@@ -19,6 +19,15 @@
                     <p:spacer/>
                     <b:row>
                         <b:column span="11" offset="1">
+                            <b:navCommandLink value="Atelier thésaurus" style="color: #{toolBoxBean.atelierColor}"
+                                              action="#{toolBoxBean.setIsAtelierActive(true)}"
+                                              actionListener="#{viewEditionBean.init()}"
+                                              update="toolBoxForm toolBoxForm:listThesoForm"/>
+                        </b:column>
+                    </b:row>
+                    <p:spacer/>
+                    <b:row>
+                        <b:column span="11" offset="1">
                             <b:navCommandLink value="Statistique" style="color: #{toolBoxBean.statisticColor}"
                                               action="#{toolBoxBean.setIsStatisticActive(true)}"
                                               update="toolBoxForm"/>
@@ -36,7 +45,9 @@
             <b:column span="9" rendered="#{toolBoxBean.isStatisticActive}">
                 <ui:include src="/toolbox/statistic.xhtml" />
             </b:column>
- 
+            <b:column span="9" rendered="#{toolBoxBean.isStatisticActive}">
+                <ui:include src="/toolbox/atelier/atelier.xhtml" />
+            </b:column>
           
         </b:row>
     </h:form>        
