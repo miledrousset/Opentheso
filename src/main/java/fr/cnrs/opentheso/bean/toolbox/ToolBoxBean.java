@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.toolbox;
 
+import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -16,6 +17,9 @@ public class ToolBoxBean implements Serializable {
 
     @Inject 
     private ViewEditionBean viewEditionBean;
+
+    @Inject
+    private AtelierThesBean atelierThesBean;
     
     private boolean isEditionActive;
     private boolean isAtelierActive;
@@ -70,7 +74,8 @@ public class ToolBoxBean implements Serializable {
         isEditionActive = false;
         isStatisticActive = false;
         resetColor();
-        atelierColor = "white";    
+        atelierColor = "white";
+        atelierThesBean.init();
     }
     
     private void resetColor(){

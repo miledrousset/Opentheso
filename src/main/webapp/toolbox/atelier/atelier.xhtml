@@ -2,11 +2,138 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:form>
-        <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+    <p:growl id="msgs" showDetail="true"/>
+
+    <p:wizard flowListener="#{atelierThesBean.onFlowProcess}">
+
+        <p:tab id="values" title="Les valeurs">
+
+            <p:panel header="Les données de comparaison">
+                <b:row>
+                    <b:column span="3">
+                        <h:outputText value="Délimiteur Csv :" style="font-size: 13px;" />
+                    </b:column>
+                    <b:column span="3">
+                        <b:selectOneMenu value="#{importFileBean.delimiterCsv}"
+                                         styleClass="selectOneMenu_custom"
+                                         style="width: 100%; background: none;  box-shadow: none; ">
+                            <f:selectItem itemLabel = ";"  itemValue = ";" />
+                            <f:selectItem itemLabel = ","  itemValue = "," />
+                            <f:selectItem itemLabel = "\t" itemValue = "\t" />
+                        </b:selectOneMenu>
+                    </b:column>
+                </b:row>
+
+                <p:fileUpload listener="#{atelierThesBean.loadFileCsv}" label="parcourir" mode="advanced" auto="true"
+                              update="toolBoxForm" allowTypes="/(\.|\/)(csv|txt)$/" style="font-size: 12px;" />
+
+                <br/>
+                <h:outputText value="Nombre des titres récupérées : #{atelierThesBean.values.size()}" />
+
+                <br />
+                <h:form>
+                    <p:dataTable id="datas" widgetVar="datas" var="data" value="#{atelierThesBean.values}" editable="true" style="margin-bottom:20px">
+                        <p:ajax event="rowEdit" listener="#{atelierThesBean.onRowEdit}" update="toolBoxForm:msgs" />
+                        <p:ajax event="rowEditCancel" listener="#{atelierThesBean.onRowCancel}" update="toolBoxForm:msgs" />
+
+                        <p:column headerText="Id">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{data.id}" /></f:facet>
+                                <f:facet name="input"><p:inputText id="modelInput" value="#{car.id}" style="width:100%"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="Valeur">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{data.value}" /></f:facet>
+                                <f:facet name="input"><p:inputText value="#{data.value}" style="width:100%" label="Value"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column style="width:32px">
+                            <p:rowEditor />
+                        </p:column>
+                    </p:dataTable>
+
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+                            <p:commandButton value="Ajouter une nouvelle entrée" styleClass="ui-priority-primary" process="@this" update="toolBoxForm:msgs"
+                                             action="#{atelierThesBean.onAddNew()}" oncomplete="PF('datas').addRow();"/>
+                        </div>
+                    </div>
+                </h:form>
+            </p:panel>
+
+        </p:tab>
+
+        <p:tab id="thesaurus" title="Les thesaurus">
+            <p:panel header="Liste des thesaurus">
+                <h:outputText value="Veuillez selectionez un thesaurus : " />
+                <p:dataTable id="thes" widgetVar="thes" var="thes" value="#{atelierThesBean.nodeListTheso}" 
+                             selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-bottom:20px">
+                    <p:column selectionMode="single" style="width: 16px; text-align: center" />
+                    <p:column headerText="Id">
+                        <h:outputText value="#{thes.id}" />
+                    </p:column>
+                    <p:column headerText="Valeur">
+                        <h:outputText value="#{thes.value}" />
+                    </p:column>
+                    <p:column headerText="Status">
+                        <h:outputText value="#{thes.status}" />
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </p:tab>
+
+        <p:tab id="resultat" title="Résultat">
+            <h:outputText value="Vous voulez comparer chaque ('Value') à l'ensemle des termes du thésaurus (par rechercher) " />
+            <br/>
+
+            <b:commandButton value="Comparer" actionListener="#{atelierThesBean.comparer()}" update="toolBoxForm" />
+            <br/>
             
-        </b:panel>
-    </h:form>        
+            <p:progressBar widgetVar="progressBar" ajax="true" value="#{atelierThesBean.progressValue}" 
+                           labelTemplate="{value}%" styleClass="animated" global="false" />
+            <br/>
+
+            <p:dataTable var="resultat" value="#{atelierThesBean.result}" style="margin-bottom:20px">
+                <p:column headerText="Id Orig">
+                    <h:outputText value="#{resultat.idOrigine}" />
+                </p:column>
+                <p:column headerText="PrefLabel Orig">
+                    <h:outputText value="#{resultat.prefLabelOrigine}" />
+                </p:column>
+                <p:column headerText="ID Concept">
+                    <h:outputText value="#{resultat.idConcept}" />
+                </p:column>
+                <p:column headerText="PrefLabel">
+                    <h:outputText value="#{resultat.prefLabelConcept}" />
+                </p:column>
+                <p:column headerText="AltLabel">
+                    <h:outputText value="#{resultat.altLabelConcept}" />
+                </p:column>
+                <p:column headerText="Term Generique">
+                    <h:outputText value="#{resultat.termGenerique}" />
+                </p:column>
+                <p:column headerText="Définition">
+                    <h:outputText value="#{resultat.definition}" />
+                </p:column>
+                <p:column headerText="URI Ark">
+                    <h:outputText value="#{resultat.uriArk}" />
+                </p:column>
+            </p:dataTable>
+            
+            <br/>
+            <b:commandButton value="Exporter" actionListener="#{atelierThesBean.comparer()}" update="toolBoxForm" />
+            
+
+        </p:tab>
+
+    </p:wizard>
+
+
+
 </ui:fragment>
