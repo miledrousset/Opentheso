@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -11,8 +10,8 @@ import java.util.List;
 import java.util.ArrayList;
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.FlowEvent;
 import org.primefaces.event.RowEditEvent;
 
 
@@ -23,44 +22,42 @@ public class AtelierThesBean implements Serializable {
     @Inject
     private AtelierThesService atelierThesService;
 
-    private List<Data> values;
+    private List<String> titles;
+    private List<List<String>> values;
     
     private NodeIdValue thesoSelected;
     private ArrayList<NodeIdValue> nodeListTheso;
     private ArrayList<ConceptResultNode> result;
     
-    private boolean skip;
-    private Integer progressValue, progressStep;
+    private int spanTable;
     private String delimiterCsv = ";";
+    private String selectedColumn;
 
 
     public void init() {
+        titles = new ArrayList<>();
         values = new ArrayList<>();
         result = new ArrayList<>();
         nodeListTheso = atelierThesService.searchAllThesaurus();
     }
     
     public void comparer() {
-        //progressValue = 0;
-        //progressStep = (int) 100/values.size();
-        result = atelierThesService.comparer(values, thesoSelected);
-        System.out.println(">> Final : " + result.size());
-    }
-
-    public String onFlowProcess(FlowEvent event) {
-        if (skip) {
-            skip = false;   //reset in case user goes back
-            return "confirm";
-        } else {
-            return event.getNewStep();
-        }
+        int position = titles.indexOf(selectedColumn);
+        result = atelierThesService.comparer(values, position, thesoSelected);
     }
 
     public void loadFileCsv(FileUploadEvent event) {
-        values = atelierThesService.loadCsvFile(event, delimiterCsv);
+        List<List<String>> temp = atelierThesService.loadCsvFile(event, delimiterCsv);
+        if (!CollectionUtils.isEmpty(temp)) {
+            titles = temp.get(0);
+            for (int i = 1; i < temp.size(); i++) {
+                values.add(temp.get(i));
+            }
+            spanTable = 12 / titles.size();
+        }
     }
 
-    public List<Data> getValues() {
+    public List<List<String>> getValues() {
         return values;
     }
 
@@ -72,11 +69,6 @@ public class AtelierThesBean implements Serializable {
     public void onRowCancel(RowEditEvent<Data> event) {
         FacesMessage msg = new FacesMessage("Edit Cancelled", event.getObject().getId());
         FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    public void onAddNew() {
-        Data newLigne = new Data();
-        values.add(newLigne);
     }
 
     public String getDelimiterCsv() {
@@ -103,24 +95,28 @@ public class AtelierThesBean implements Serializable {
         this.thesoSelected = thesoSelected;
     }
 
-    public Integer getProgressValue() {
-        return progressValue;
-    }
-
-    public void setProgressValue(Integer progressValue) {
-        this.progressValue = progressValue;
-    }
-
-    public Integer getProgressStep() {
-        return progressStep;
-    }
-
-    public void setProgressStep(Integer progressStep) {
-        this.progressStep = progressStep;
-    }
-
     public ArrayList<ConceptResultNode> getResult() {
         return result;
+    }
+
+    public List<String> getTitles() {
+        return titles;
+    }
+
+    public void setTitles(List<String> titles) {
+        this.titles = titles;
+    }
+    
+    public int getSpanTable() {
+        return spanTable;
+    }
+
+    public String getSelectedColumn() {
+        return selectedColumn;
+    }
+
+    public void setSelectedColumn(String selectedColumn) {
+        this.selectedColumn = selectedColumn;
     }
     
 }

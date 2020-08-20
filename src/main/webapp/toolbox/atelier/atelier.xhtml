@@ -5,64 +5,70 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:growl id="msgs" showDetail="true"/>
-
-    <p:wizard flowListener="#{atelierThesBean.onFlowProcess}" nextLabel="Suivant" backLabel="Précédent">
+    <p:wizard nextLabel="Suivant" backLabel="Précédent">
 
         <p:tab id="values" title="Entrées" titleStyleClass="tabCostum">
 
             <p:panel header="Les données de comparaison" styleClass="redColoredPanel">
-                <b:row>
-                    <b:column span="3">
-                        <h:outputText value="Délimiteur Csv :" style="font-size: 13px;" />
-                    </b:column>
-                    <b:column span="3">
-                        <b:selectOneMenu value="#{importFileBean.delimiterCsv}"
-                                         styleClass="selectOneMenu_custom"
-                                         style="width: 100%; background: none;  box-shadow: none; ">
-                            <f:selectItem itemLabel = ";"  itemValue = ";" />
-                            <f:selectItem itemLabel = ","  itemValue = "," />
-                            <f:selectItem itemLabel = "\t" itemValue = "\t" />
-                        </b:selectOneMenu>
-                    </b:column>
-                </b:row>
+                <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                    <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px" />
+                    <p:selectOneMenu value="#{atelierThesBean.delimiterCsv}" style="width:125px">
+                        <f:selectItem itemLabel=";" itemValue=";" />
+                        <f:selectItem itemLabel="," itemValue="," />
+                        <f:selectItem itemLabel="\t" itemValue="\t" />
+                    </p:selectOneMenu>
+                </h:panelGrid>
 
                 <p:fileUpload listener="#{atelierThesBean.loadFileCsv}" label="parcourir" mode="advanced" auto="true"
                               update="toolBoxForm" allowTypes="/(\.|\/)(csv|txt)$/" style="font-size: 12px;" />
 
-                <br/>
-                <h:outputText value="Nombre des titres récupérées : #{atelierThesBean.values.size()}" />
+                <p:panel header="Données chargées" style="margin-top: 20px">
 
-                <br />
-                <h:form>
-                    <p:dataTable id="datas" widgetVar="datas" var="data" value="#{atelierThesBean.values}" editable="true" style="margin-bottom:20px">
-                        <p:ajax event="rowEdit" listener="#{atelierThesBean.onRowEdit}" update="toolBoxForm:msgs" />
-                        <p:ajax event="rowEditCancel" listener="#{atelierThesBean.onRowCancel}" update="toolBoxForm:msgs" />
+                    <h:outputText value="Nombre des données récupérées : #{atelierThesBean.values.size()}" />
 
-                        <p:column headerText="Id">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{data.id}" /></f:facet>
-                                <f:facet name="input"><p:inputText id="modelInput" value="#{car.id}" style="width:100%"/></f:facet>
-                            </p:cellEditor>
-                        </p:column>
+                    <h:form style="margin-top: 15px">
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
 
-                        <p:column headerText="Valeur">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{data.value}" /></f:facet>
-                                <f:facet name="input"><p:inputText value="#{data.value}" style="width:100%" label="Value"/></f:facet>
-                            </p:cellEditor>
-                        </p:column>
+                        <b:row rendered="#{atelierThesBean.values.size() == 0}">
+                            <b:column span="12">
+                                <h:outputText  value="Aucune traduction pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
+                            </b:column>
+                        </b:row>
 
-                        <p:column style="width:32px">
-                            <p:rowEditor />
-                        </p:column>
-                    </p:dataTable>
+                        <b:row>
+                            <ui:repeat var="title" value="#{atelierThesBean.titles}">
+                                <b:column span="#{atelierThesBean.spanTable}">
+                                    <h:outputText value="#{title}"/>
+                                </b:column>
+                            </ui:repeat>
+                        </b:row>
 
-                    <p:commandButton value="Ajouter une nouvelle entrée" styleClass="button-standard" 
-                                             process="@this" update="toolBoxForm:msgs"
-                                             action="#{atelierThesBean.onAddNew()}" 
-                                             oncomplete="PF('datas').addRow();"/>
-                </h:form>
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px" 
+                                     rendered="#{atelierThesBean.values.size() > 0}"/>
+
+                        <ui:repeat var="ligne" value="#{atelierThesBean.values}">
+                            <b:row>
+                                <ui:repeat var="value" value="#{ligne}">
+                                    <b:column span="#{atelierThesBean.spanTable}">
+                                        <h:outputText value="#{value}"/>
+                                    </b:column>
+                                </ui:repeat>
+                            </b:row>
+                        </ui:repeat>
+
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+
+                    </h:form>
+
+                    <h:panelGrid columns="2" style="margin-top: 15px" cellpadding="5" rendered="#{atelierThesBean.titles.size() > 0}">
+                        <p:outputLabel for="@next" value="Colone à comparer :" style="margin-right: 10px" />
+                        <p:selectOneMenu value="#{atelierThesBean.selectedColumn}" style="font-size: 12px; background: white; border-color: #43B572">
+                            <f:selectItems value="#{atelierThesBean.titles}" var="titre"
+                                           itemLabel="#{titre}" itemValue="#{titre}"/>
+                        </p:selectOneMenu> 
+                    </h:panelGrid>
+                </p:panel>
+
             </p:panel>
 
         </p:tab>
@@ -87,50 +93,43 @@
         </p:tab>
 
         <p:tab id="resultat" title="Résultat" titleStyleClass="tabCostum">
-            <h:outputText value="Vous voulez comparer chaque ('Value') à l'ensemle des termes du thésaurus (par rechercher) " />
-            <br/>
 
-            <b:commandButton value="Comparer" actionListener="#{atelierThesBean.comparer()}" update="toolBoxForm" />
-            <br/>
+            <p:tab id="values" title="Entrées" titleStyleClass="tabCostum">
+                <h:outputText value="Vous voulez comparer chaque valeur de '#{atelierThesBean.selectedColumn}' à l'ensemle des termes du thésaurus (par rechercher) " />
 
-            <p:progressBar widgetVar="progressBar" ajax="true" value="#{atelierThesBean.progressValue}" 
-                           labelTemplate="{value}%" styleClass="animated" global="false" />
-            <br/>
+                <b:commandButton value="Comparer" actionListener="#{atelierThesBean.comparer()}" update="toolBoxForm" style="margin-top: 20px"/>
 
-            <p:dataTable id="tbl" var="resultat" value="#{atelierThesBean.result}" style="margin-bottom:20px">
-
-                <p:column headerText="Id Orig">
-                    <h:outputText value="#{resultat.idOrigine}" />
-                </p:column>
-                <p:column headerText="PrefLabel Orig">
-                    <h:outputText value="#{resultat.prefLabelOrigine}" />
-                </p:column>
-                <p:column headerText="ID Concept">
-                    <h:outputText value="#{resultat.idConcept}" />
-                </p:column>
-                <p:column headerText="PrefLabel">
-                    <h:outputText value="#{resultat.prefLabelConcept}" />
-                </p:column>
-                <p:column headerText="AltLabel">
-                    <h:outputText value="#{resultat.altLabelConcept}" />
-                </p:column>
-                <p:column headerText="Term Generique">
-                    <h:outputText value="#{resultat.termGenerique}" />
-                </p:column>
-                <p:column headerText="Définition">
-                    <h:outputText value="#{resultat.definition}" />
-                </p:column>
-                <p:column headerText="URI Ark">
-                    <h:outputText value="#{resultat.uriArk}" />
-                </p:column>
-            </p:dataTable>
-
-            <h:commandLink>
-                <p:dataExporter type="csv" target="tbl" fileName="cars" pageOnly="true" />
-            </h:commandLink>
-
-            <br/>
-
+                <p:dataTable id="tbl" var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
+                    <p:column headerText="Id Orig">
+                        <h:outputText value="#{resultat.idOrigine}" />
+                    </p:column>
+                    <p:column headerText="PrefLabel Orig">
+                        <h:outputText value="#{resultat.prefLabelOrigine}" />
+                    </p:column>
+                    <p:column headerText="ID Concept">
+                        <h:outputText value="#{resultat.idConcept}" />
+                    </p:column>
+                    <p:column headerText="PrefLabel">
+                        <h:outputText value="#{resultat.prefLabelConcept}" />
+                    </p:column>
+                    <p:column headerText="AltLabel">
+                        <h:outputText value="#{resultat.altLabelConcept}" />
+                    </p:column>
+                    <p:column headerText="Term Generique">
+                        <h:outputText value="#{resultat.termGenerique}" />
+                    </p:column>
+                    <p:column headerText="Définition">
+                        <h:outputText value="#{resultat.definition}" />
+                    </p:column>
+                    <p:column headerText="URI Ark">
+                        <h:outputText value="#{resultat.uriArk}" />
+                    </p:column>
+                </p:dataTable>
+                
+                <h:commandLink>
+                    <p:dataExporter type="csv" target="tbl" fileName="cars" pageOnly="true" />
+                </h:commandLink>
+            </p:tab>
 
         </p:tab>
 

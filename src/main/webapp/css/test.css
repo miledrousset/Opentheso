@@ -9,14 +9,6 @@
 
 
 */
-element {
-  --vert-principale: #43B572;
-  --vert-intermediaire: #226b40;
-  --vert-fonce: #143A1E;
-  --orange: #F47B2A;
-  --couleur-fonds: #FAFAFA;
-}
-
 
 @font-face {
     font-family: openthesoFont;
@@ -24,28 +16,26 @@ element {
 }
 
 .tabCostum {    
-    background: var(--vert-principale);
-    border: var(--vert-principale);
+    background: #43B572;
+    border: #43B572;
     font-family: openthesoFont;
 }
 
 .tabCostum.ui-state-highlight {    
-    background: var(--orange);
-    border: var(--orange);
+    background: #F47B2A;
+    border: #F47B2A;
     font-family: openthesoFont;
 }
 
 .ui-widget-header {
-    background: var(--vert-principale);
-    border: var(--vert-principale);
-    font-family: openthesoFont;
+    background: #43B572;
+    border: #43B572;
     color: white;
 } 
 
 .button-standard {
     background: #43B572 !important;
     border: #43B572;
-    font-family: openthesoFont;
 }
 
 button-standard:active{

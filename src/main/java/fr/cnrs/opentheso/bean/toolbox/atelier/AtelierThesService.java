@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.io.Serializable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -42,24 +43,22 @@ public class AtelierThesService implements Serializable {
     private CurrentUser currentUser;
     
     
-    public ArrayList<ConceptResultNode> comparer(List<Data> datas, NodeIdValue thesoSelected) {
+    public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
         
         ArrayList<ConceptResultNode> list = new ArrayList<>();
         ConceptHelper conceptHelper = new ConceptHelper();
         
-        for (Data data : datas) {
+        for (List<String> data : datas) {
             ArrayList<NodeSearchMini> temp = new SearchHelper().searchFullText(connect.getPoolConnexion(), 
-                    data.getValue(), languageBean.getIdLangue(), thesoSelected.getId());
-            
-            //atelierThesBean.setProgressStep(atelierThesBean.getProgressStep() + atelierThesBean.getProgressValue());
+                    data.get(position), languageBean.getIdLangue(), thesoSelected.getId());
             
             temp.forEach(nodeSearchMini -> {
                 NodeConcept concept = conceptHelper.getConcept(connect.getPoolConnexion(), nodeSearchMini.getIdConcept(), 
                         thesoSelected.getId(), languageBean.getIdLangue());
                 
                 ConceptResultNode conceptResultNode = new ConceptResultNode();
-                conceptResultNode.setIdOrigine(data.getId());
-                conceptResultNode.setPrefLabelOrigine(data.getValue());
+                conceptResultNode.setIdOrigine(data.get(0));
+                conceptResultNode.setPrefLabelOrigine(data.get(position));
                 conceptResultNode.setIdConcept(concept.getConcept().getIdConcept());
                 conceptResultNode.setPrefLabelConcept(concept.getTerm().getLexical_value());
                 //conceptResultNode.setAltLabelConcept(concept.get);
@@ -83,18 +82,15 @@ public class AtelierThesService implements Serializable {
         return definition;
     }
     
-    public List<Data> loadCsvFile(FileUploadEvent event, String delimiterCsv) {
-        List<Data> values = new ArrayList<>();
+    public List<List<String>> loadCsvFile(FileUploadEvent event, String delimiterCsv) {
+        List<List<String>> values = new ArrayList<>();
         try {
             String line;
             Reader reader = new InputStreamReader(event.getFile().getInputStream());
             BufferedReader br = new BufferedReader(reader);
             while ((line = br.readLine()) != null) {
-                String[] datas = line.split(delimiterCsv);
-                Data data = new Data();
-                data.setId(datas[0]);
-                data.setValue(datas[1]);
-                values.add(data);
+                List<String> list = Arrays.asList(line.split(delimiterCsv));
+                values.add(list);
             }
             reader.close();
         } catch (IOException e) {
