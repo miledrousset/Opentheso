@@ -22,9 +22,6 @@ public class AtelierThesBean implements Serializable {
     
     @Inject
     private AtelierThesService atelierThesService;
-    
-    @Inject
-    private Connect connect;
 
     private List<Data> values;
     
