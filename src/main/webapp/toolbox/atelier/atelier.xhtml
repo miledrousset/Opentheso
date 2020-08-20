@@ -5,14 +5,14 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:wizard nextLabel="Suivant" backLabel="Précédent">
+    <p:wizard nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}">
 
-        <p:tab id="values" title="Entrées" titleStyleClass="tabCostum">
+        <p:tab id="entre" title="Entrées" titleStyleClass="tabCostum">
 
             <p:panel header="Les données de comparaison" styleClass="redColoredPanel">
                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
                     <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px" />
-                    <p:selectOneMenu value="#{atelierThesBean.delimiterCsv}" style="width:125px">
+                    <p:selectOneMenu value="#{atelierThesBean.delimiterCsv}" style="font-size: 12px; background: white; border-color: #43B572">
                         <f:selectItem itemLabel=";" itemValue=";" />
                         <f:selectItem itemLabel="," itemValue="," />
                         <f:selectItem itemLabel="\t" itemValue="\t" />
@@ -31,7 +31,7 @@
 
                         <b:row rendered="#{atelierThesBean.values.size() == 0}">
                             <b:column span="12">
-                                <h:outputText  value="Aucune traduction pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
+                                <h:outputText  value="Aucune donnée pour le moment ..." style="font-size: 12px; color: grey; font-style: italic" />
                             </b:column>
                         </b:row>
 
@@ -67,6 +67,7 @@
                                            itemLabel="#{titre}" itemValue="#{titre}"/>
                         </p:selectOneMenu> 
                     </h:panelGrid>
+                    
                 </p:panel>
 
             </p:panel>
@@ -76,9 +77,9 @@
         <p:tab id="thesaurus" title="Les thesaurus" titleStyleClass="tabCostum">
             <p:panel header="Liste des thesaurus">
                 <h:outputText value="Veuillez selectionez un thesaurus : " />
-                <p:dataTable id="thes" widgetVar="thes" var="thes" value="#{atelierThesBean.nodeListTheso}" 
-                             selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-bottom:20px">
-                    <p:column selectionMode="single" style="width: 16px; text-align: center" />
+                <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" 
+                             selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-top: 10px">
+                    <p:column selectionMode="single" style="width: 35px; text-align: center" />
                     <p:column headerText="Id">
                         <h:outputText value="#{thes.id}" />
                     </p:column>
@@ -94,10 +95,14 @@
 
         <p:tab id="resultat" title="Résultat" titleStyleClass="tabCostum">
 
-            <p:tab id="values" title="Entrées" titleStyleClass="tabCostum">
+            <p:panel header="Résultat">
+                
                 <h:outputText value="Vous voulez comparer chaque valeur de '#{atelierThesBean.selectedColumn}' à l'ensemle des termes du thésaurus (par rechercher) " />
+                    
+                <br/>
 
-                <b:commandButton value="Comparer" actionListener="#{atelierThesBean.comparer()}" update="toolBoxForm" style="margin-top: 20px"/>
+                <b:commandButton value="Lancer la comparaison" actionListener="#{atelierThesBean.comparer()}" 
+                                 update="toolBoxForm" onclick="PF('bui').show()" style="margin-top: 10px"/>
 
                 <p:dataTable id="tbl" var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
                     <p:column headerText="Id Orig">
@@ -125,16 +130,23 @@
                         <h:outputText value="#{resultat.uriArk}" />
                     </p:column>
                 </p:dataTable>
-                
-                <h:commandLink>
-                    <p:dataExporter type="csv" target="tbl" fileName="cars" pageOnly="true" />
-                </h:commandLink>
-            </p:tab>
+
+                <b:row style="margin-top: 15px; margin-right: 0px">
+                    <p:commandButton value="Export Résultat" icon="ui-icon-valider" ajax="false"
+                                     style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
+                                     onclick="PF('pbAjax').start();" update="toolBoxForm" >
+                        <p:fileDownload value="#{atelierThesBean.exportResultat()}" />
+                    </p:commandButton>
+                </b:row>
+            </p:panel>
 
         </p:tab>
 
     </p:wizard>
 
-
+    <p:blockUI block="toolBoxForm" widgetVar="bui">
+        Chargement ...<br />
+        <p:progressBar style="height:6px" mode="indeterminate"/>
+    </p:blockUI>
 
 </ui:fragment>

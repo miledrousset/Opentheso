@@ -1,18 +1,22 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
+import java.io.ByteArrayInputStream;
 import javax.faces.view.ViewScoped;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.RowEditEvent;
+import org.primefaces.event.FlowEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 
 @Named("atelierThesBean")
@@ -44,6 +48,10 @@ public class AtelierThesBean implements Serializable {
     public void comparer() {
         int position = titles.indexOf(selectedColumn);
         result = atelierThesService.comparer(values, position, thesoSelected);
+            
+        showMessage(FacesMessage.SEVERITY_INFO, result.size() + " résultat(s) trouvées !");
+        
+        PrimeFaces.current().executeScript("PF('bui').hide();");
     }
 
     public void loadFileCsv(FileUploadEvent event) {
@@ -54,21 +62,27 @@ public class AtelierThesBean implements Serializable {
                 values.add(temp.get(i));
             }
             spanTable = 12 / titles.size();
+            showMessage(FacesMessage.SEVERITY_INFO, values.size() + " donnée(s) trouvées !");
+        } else {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucune donnée trouvées !");
         }
+    }
+    
+    public StreamedContent exportResultat() {
+
+        ExportResultatCsv exportResultatCsv = new ExportResultatCsv();
+        exportResultatCsv.createResultatFileRapport(result);
+        
+        return DefaultStreamedContent.builder()
+                .contentType("text/csv")
+                .name("Résultat.csv")
+                .stream(() -> new ByteArrayInputStream(exportResultatCsv.getOutput().toByteArray()))
+                .build();
+
     }
 
     public List<List<String>> getValues() {
         return values;
-    }
-
-    public void onRowEdit(RowEditEvent<Data> event) {
-        FacesMessage msg = new FacesMessage("Car Edited", event.getObject().getId());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    public void onRowCancel(RowEditEvent<Data> event) {
-        FacesMessage msg = new FacesMessage("Edit Cancelled", event.getObject().getId());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public String getDelimiterCsv() {
@@ -117,6 +131,32 @@ public class AtelierThesBean implements Serializable {
 
     public void setSelectedColumn(String selectedColumn) {
         this.selectedColumn = selectedColumn;
+    }
+    
+    public String onFlowProcess(FlowEvent event) {
+        if ("entre".equals(event.getOldStep())) {
+            if (CollectionUtils.isEmpty(values)) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez ajouter des données d'entrées !");
+                return event.getOldStep();
+            } else {
+                return event.getNewStep();
+            }
+        } else if ("thesaurus".equals(event.getOldStep())) {
+            if (thesoSelected == null) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionner un thesaurus !");
+                return event.getOldStep();
+            } else {
+                return event.getNewStep();
+            }
+        } else {
+            return event.getNewStep();
+        }
+    }
+    
+    private void showMessage(FacesMessage.Severity messageType, String messageValue) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
     }
     
 }
