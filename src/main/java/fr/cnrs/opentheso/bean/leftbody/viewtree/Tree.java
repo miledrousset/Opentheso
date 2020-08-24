@@ -20,6 +20,7 @@ import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.PrimeFaces;
 
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
@@ -196,11 +197,15 @@ public class Tree implements Serializable {
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
+        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').show();");
+        
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
         if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
             parent.getChildren().remove(0);
             addConceptsChild(parent);
         }
+        
+        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').hide();"); 
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
