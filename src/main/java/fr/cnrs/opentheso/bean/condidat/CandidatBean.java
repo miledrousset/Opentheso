@@ -82,7 +82,7 @@ public class CandidatBean implements Serializable {
     private List<NodeLangTheso> selectedLanguages;
     private ArrayList<NodeLangTheso> languagesOfTheso;
 
-    
+
     public void initCandidatModule() {
         isListCandidatsActivate = true;
         isRejectCandidatsActivate = true;
@@ -94,17 +94,17 @@ public class CandidatBean implements Serializable {
         getAllCandidatsByThesoAndLangue();
         getRejectCandidatByThesoAndLangue();
         tabViewIndexSelected = 0;
-        
+
         exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
         selectedExportFormat = "skos";
-        
+
         languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         selectedLanguages = new ArrayList<>();
         languagesOfTheso.forEach((nodeLang) -> {
             selectedLanguages.add(nodeLang);
         });
-        
+
     }
 
     public void getAllCandidatsByThesoAndLangue() {
@@ -116,7 +116,7 @@ public class CandidatBean implements Serializable {
             candidatList = new ArrayList<>();
         }
     }
-    
+
     public void getRejectCandidatByThesoAndLangue() {
         tabViewIndexSelected = 1;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
@@ -126,10 +126,10 @@ public class CandidatBean implements Serializable {
             rejetCadidat = new ArrayList<>();
         }
     }
-    
+
     /**
      * permet de déctercter la langue préférée d'un thésaurus
-     * @return 
+     * @return
      */
     private String getIdLang() {
         String idLang = connect.getWorkLanguage();
@@ -137,7 +137,7 @@ public class CandidatBean implements Serializable {
             idLang = roleOnThesoBean.getNodePreference().getSourceLang();
         }
         return idLang;
-    }    
+    }
 
     public void selectMyCandidats() {
         if (myCandidatsSelected) {
@@ -150,7 +150,7 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
-    
+
     public void selectMyRejectCandidats() {
         if (myCandidatsSelected) {
             rejetCadidat = rejetCadidat.stream()
@@ -174,7 +174,7 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(rejetCadidat.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
-    
+
     public void searchByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue)) {
             candidatList = candidatList.stream()
@@ -186,26 +186,26 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
-    
+
     public void showRejectCandidatSelected(CandidatDto candidatDto) throws IOException {
-        
+
         tabViewIndexSelected = 1;
-        
+
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
             return;
         }
-        
+
         isRejectCandidatsActivate = false;
         candidatSelected = candidatDto;
-        
+
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
-        
+
     }
 
     public void showCandidatSelected(CandidatDto candidatDto) throws IOException {
-        
+
         tabViewIndexSelected = 0;
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
@@ -232,12 +232,12 @@ public class CandidatBean implements Serializable {
     }
 
     public void setIsListCandidatsActivate(boolean isListCandidatsActivate) throws IOException {
-        
+
         tabViewIndexSelected = 0;
-        
+
         this.isListCandidatsActivate = true;
         isRejectCandidatsActivate = true;
-        
+
         isNewCandidatActivate = false;
         isShowCandidatActivate = false;
 
@@ -264,7 +264,7 @@ public class CandidatBean implements Serializable {
     public void setShowCandidatActivate(boolean isShowCandidatActivate) {
         this.isShowCandidatActivate = isShowCandidatActivate;
         isListCandidatsActivate = false;
-        isNewCandidatActivate = false; 
+        isNewCandidatActivate = false;
         isImportViewActivate = false;
         isExportViewActivate = false;
     }
@@ -324,13 +324,13 @@ public class CandidatBean implements Serializable {
             terme.setSource("candidat");
             terme.setStatus("D");
 
-            candidatService.saveNewTerm(connect, terme, 
+            candidatService.saveNewTerm(connect, terme,
                     candidatSelected.getIdConcepte(), candidatSelected.getUserId());
-            
-            
+
+
             /**
-             * à déplacer au moment d'insérer le candidat dans le thésaurus 
-             * 
+             * à déplacer au moment d'insérer le candidat dans le thésaurus
+             *
              */
    /*         if (conceptHelper.getNodePreference() != null) {
                 ArrayList<String> idConcepts = new ArrayList<>();
@@ -375,9 +375,9 @@ public class CandidatBean implements Serializable {
 
     }
 
-    
-    
-    
+
+
+
     public void showAllignementDialog(int pos) {
 
 /*        if (initialCandidat == null) {
@@ -436,14 +436,14 @@ public class CandidatBean implements Serializable {
             // cas où il y a un vote, on le supprime
             if (candidatService.getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                         currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT)) {
-                candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), 
+                candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                         currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT);
                 candidatSelected.setVoted(false);
             } else {
                 // cas ou il n'y a pas de vote, alors on vote
             candidatService.addVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                     currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT);
-                candidatSelected.setVoted(true);            
+                candidatSelected.setVoted(true);
             }
 
         } catch (SQLException sqle) {
@@ -459,7 +459,7 @@ public class CandidatBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm:vote");
     }
-    
+
     /**
      * permet d'ajouter un vote pour un note de candidat, c'est 1 seul vote par utilisateur
      * @param nodeNote
@@ -467,10 +467,10 @@ public class CandidatBean implements Serializable {
     public void addNoteVote(NodeNote nodeNote) {
         try {
             // cas où il y a un vote, on le supprime
-            if (candidatService.getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), 
+            if (candidatService.getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                     currentUser.getNodeUser().getIdUser(), nodeNote.getId_note()+"", VoteType.NOTE)) {
-                
-                candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), 
+
+                candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                         currentUser.getNodeUser().getIdUser(), nodeNote.getId_note()+"", VoteType.NOTE);
                 nodeNote.setVoted(false);
             } else {
@@ -513,7 +513,7 @@ public class CandidatBean implements Serializable {
      * @param value
      * @return
      */
-    
+
     public ArrayList<NodeIdValue> searchTerme2(String value) {
         ArrayList<NodeIdValue> liste = new ArrayList<>();
         SearchHelper searchHelper = new SearchHelper();
@@ -525,7 +525,7 @@ public class CandidatBean implements Serializable {
                     selectedTheso.getCurrentIdTheso());
         }
         return liste;
-    }    
+    }
 
     public void initialNewCandidat() throws IOException {
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
@@ -542,7 +542,7 @@ public class CandidatBean implements Serializable {
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
 
         domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
-        
+
         allTermes = candidatList;
 
         initialCandidat = null;
@@ -550,20 +550,20 @@ public class CandidatBean implements Serializable {
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
-    
+
     /**
      * permet de récupérer le nom d'un utilisateur d'après son ID
      * @param idUser
-     * @return 
+     * @return
      */
     public String getUserName(int idUser){
         UserHelper userHelper = new UserHelper();
         return userHelper.getNameUser(connect.getPoolConnexion(), idUser);
-       
+
     }
-    
+
     /**
-     * permet de récupérer les anciens candidats saisies dans l'ancien module 
+     * permet de récupérer les anciens candidats saisies dans l'ancien module
      * uniquement les candidats qui étatient en attente
      */
     public void getOldCandidates(){
@@ -575,8 +575,8 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, messageInfo);
         getAllCandidatsByThesoAndLangue();
     }
-    
-    
+
+
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
         PrimeFaces pf = PrimeFaces.current();
@@ -680,7 +680,7 @@ public class CandidatBean implements Serializable {
         isImportViewActivate = false;
         isExportViewActivate = false;
     }
-    
+
 
     public String getDefinition() {
         return definition;
@@ -709,7 +709,7 @@ public class CandidatBean implements Serializable {
     public boolean isExportViewActivate() {
         return isExportViewActivate;
     }
-    
+
     public void setExportViewActivate(boolean isExportViewActivate) {
         this.isExportViewActivate = isExportViewActivate;
         isImportViewActivate = false;
@@ -736,7 +736,7 @@ public class CandidatBean implements Serializable {
     public void setSelectedExportFormat(String selectedExportFormat) {
         this.selectedExportFormat = selectedExportFormat;
     }
-    
+
     public List<String> getExportFormat() {
         return exportFormat;
     }
@@ -751,5 +751,5 @@ public class CandidatBean implements Serializable {
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
     }
-    
+
 }

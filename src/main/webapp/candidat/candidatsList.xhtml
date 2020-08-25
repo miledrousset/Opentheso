@@ -170,7 +170,7 @@
             <b:column span="6">
                 <p:commandButton icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
                                  style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
-                                 onclick="#{candidatBean.setListCandidatsActivate(true)}" update="candidatForm"/>
+                                 actionListener="#{candidatBean.setListCandidatsActivate(true)}" update="candidatForm"/>
             </b:column>
         </b:row>
 
@@ -184,7 +184,7 @@
 
         <b:row>
             <b:column>
-                <h:outputText value="Import candidats en Skos" style="font-size: 14px; color: #C63632"/>
+                <h:outputText value="Import candidats en format Skos" style="font-size: 14px; color: #C63632"/>
             </b:column>
         </b:row>
 
