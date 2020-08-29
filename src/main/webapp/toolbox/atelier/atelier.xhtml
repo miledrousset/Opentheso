@@ -97,14 +97,15 @@
 
             <p:panel header="Résultat">
                 
-                <h:outputText value="Vous voulez comparer chaque valeur de '#{atelierThesBean.selectedColumn}' à l'ensemle des termes du thésaurus (par rechercher) " />
+                <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemle des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
                     
                 <br/>
 
-                <b:commandButton value="Lancer la comparaison" actionListener="#{atelierThesBean.comparer()}" 
+                <p:commandButton value="Lancer la comparaison" icon="fa-search" actionListener="#{atelierThesBean.comparer()}"
                                  update="toolBoxForm" onclick="PF('bui').show()" style="margin-top: 10px"/>
 
-                <p:dataTable id="tbl" var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
+                <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
+                             var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
                     <p:column headerText="Id Orig">
                         <h:outputText value="#{resultat.idOrigine}" />
                     </p:column>
@@ -131,7 +132,7 @@
                     </p:column>
                 </p:dataTable>
 
-                <b:row style="margin-top: 15px; margin-right: 0px">
+                <b:row style="margin-top: 15px; margin-right: 0px" rendered="#{atelierThesBean.result.size() > 0}">
                     <p:commandButton value="Export Résultat" icon="ui-icon-valider" ajax="false"
                                      style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
                                      onclick="PF('pbAjax').start();" update="toolBoxForm" >
