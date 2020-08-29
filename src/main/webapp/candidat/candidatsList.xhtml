@@ -67,7 +67,7 @@
                     <b:column span="1">
                         <h:outputText value="id"/>
                     </b:column>
-                    <b:column span="4">
+                    <b:column span="3">
                         <h:outputText value="#{langueBean.getMsg('candidat.titre')}"/>
                     </b:column>
                     <b:column span="2">
@@ -77,10 +77,13 @@
                         <h:outputText value="#{langueBean.getMsg('candidat.state')}"/>
                     </b:column>
                     <b:column span="1">
-                        <h:outputText value="votes"/>
+                        <h:outputText value="Votes"/>
                     </b:column>
                     <b:column span="1">
-                        <h:outputText value="messages"/>
+                        <h:outputText value="V. Note"/>
+                    </b:column>
+                    <b:column span="1">
+                        <h:outputText value="Messages"/>
                     </b:column>
                 </b:row>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
@@ -96,7 +99,7 @@
                         <b:column span="1" >
                             <h:outputText value="#{candidat.idConcepte}" />
                         </b:column>
-                        <b:column span="4" >
+                        <b:column span="3" >
                             <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572"
                                               actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
                         </b:column>
@@ -111,6 +114,9 @@
                             <h:outputText value="#{candidat.nbrVote}" />
                         </b:column>
                         <b:column span="1">
+                            <h:outputText value="#{candidat.nbrNoteVote}" />
+                        </b:column>
+                        <b:column span="1">
                             <h:outputText value="#{candidat.nbrParticipant}" />
                         </b:column>
                     </b:row>
@@ -121,7 +127,7 @@
     </b:panel>
 
     <p:panel visible="#{candidatBean.isExportViewActivate()}">
-        
+
         <b:row style="margin-bottom: 15px">
             <b:column>
                 <h:outputText value="Exportation des candidats" />
@@ -176,7 +182,7 @@
 
         <br/><br/>
 
-        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{progressBarView.progress}" labelTemplate="" styleClass="animated"
+        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{candidatProgressBar.progress}" labelTemplate="" styleClass="animated"
                        global="false" interval="1000" style="font-size: 13px; color: white;"/>
     </p:panel>
 
@@ -254,7 +260,7 @@
 
         <b:row >
             <b:column span="10" offset="1">
-                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" 
+                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{candidatProgressBar.progress}" 
                                labelTemplate="{value}%" styleClass="animated" global="false" 
                                style="font-size: 12px; height: 20px;"/>
             </b:column>                

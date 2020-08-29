@@ -10,12 +10,12 @@
         <p:tabView activeIndex="#{candidatBean.tabViewIndexSelected}"
                    style="background-color: #FAFAFA;">
             <p:tab title="Candidats crées" titleStyleClass="tab1">
-                <b:row rendered="#{candidatBean.isListCandidatsActivate() || candidatBean.isExportViewActivate()
-                                   || candidatBean.isImportViewActivate()}">
+                <b:row rendered="#{candidatBean.isListCandidatsActivate() || 
+                                   candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
                     <ui:include src="/candidat/candidatsList.xhtml" />
                 </b:row>
 
-                <b:row rendered="#{candidatBean.isShowCandidatActivate()}" style="padding-left: 25px; padding-right: 25px">
+                <b:row rendered="#{candidatBean.isShowCandidatActivate() || candidatBean.isNewCandidatActivate()}">
                     <p:panel>
                         <b:row>
                             <b:column span="12">

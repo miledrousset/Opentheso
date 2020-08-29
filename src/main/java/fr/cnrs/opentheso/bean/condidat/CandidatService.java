@@ -98,6 +98,8 @@ public class CandidatService implements Serializable {
                             candidatDto.getIdThesaurus()));
                     candidatDto.setNbrVote(condidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
                             candidatDto.getIdThesaurus(), VoteType.CANDIDAT.getLabel()));
+                    candidatDto.setNbrNoteVote(condidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus(), VoteType.NOTE.getLabel()));
                 } catch (SQLException ex) {
                     Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
                 }

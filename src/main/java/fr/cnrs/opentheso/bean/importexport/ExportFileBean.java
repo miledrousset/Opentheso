@@ -113,18 +113,17 @@ public class ExportFileBean implements Serializable {
             return null;
         }
 
-        int nbrCandidats = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), 
-                selectedTheso.getCurrentIdTheso()).size();
-        progressStep = (float) 100 / nbrCandidats;
+        candidatBean.setProgressBarStep(100 / candidatBean.getCandidatList().size());
 
         ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
         resources.setInfos(nodePreference, DATE_FORMAT, false, false);
         resources.exportTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference);
+        
         for (CandidatDto candidat : candidatBean.getCandidatList()) {
-            progressBar += progressStep;
+            candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
             resources.exportConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), candidat.getIdConcepte());
         }
-
+        
         return resources;
     }
     

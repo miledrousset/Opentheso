@@ -25,6 +25,7 @@ public class CandidatDto implements Serializable {
     private boolean voted;
     private boolean noteVoted;
     private int nbrVote;
+    private int nbrNoteVote;
 
     private String noteApplication;
     private List<String> defenitions;
@@ -283,6 +284,14 @@ public class CandidatDto implements Serializable {
 
     public void setNoteVoted(boolean noteVoted) {
         this.noteVoted = noteVoted;
+    }
+
+    public int getNbrNoteVote() {
+        return nbrNoteVote;
+    }
+
+    public void setNbrNoteVote(int nbrNoteVote) {
+        this.nbrNoteVote = nbrNoteVote;
     }
     
 }

@@ -72,7 +72,7 @@ public class CandidatBean implements Serializable {
     private boolean isExportViewActivate;
     private boolean isImportViewActivate;
 
-    private int tabViewIndexSelected;
+    private int tabViewIndexSelected, progressBarStep, progressBarValue;
     private String message, definition, searchValue, selectedExportFormat;
 
     private CandidatDto candidatSelected, initialCandidat;
@@ -518,11 +518,8 @@ public class CandidatBean implements Serializable {
         ArrayList<NodeIdValue> liste = new ArrayList<>();
         SearchHelper searchHelper = new SearchHelper();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = searchHelper.searchAutoCompletionForRelationIdValue(
-                    connect.getPoolConnexion(),
-                    value,
-                    selectedTheso.getCurrentLang(),
-                    selectedTheso.getCurrentIdTheso());
+            liste = searchHelper.searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(),value,
+                    selectedTheso.getCurrentLang(),selectedTheso.getCurrentIdTheso());
         }
         return liste;
     }
@@ -567,11 +564,8 @@ public class CandidatBean implements Serializable {
      * uniquement les candidats qui étatient en attente
      */
     public void getOldCandidates(){
-        String messageInfo = new CandidatService().getOldCandidates(
-                connect,
-                selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser(),
-                roleOnThesoBean.getNodePreference());
+        String messageInfo = new CandidatService().getOldCandidates(connect,selectedTheso.getCurrentIdTheso(),
+                currentUser.getNodeUser().getIdUser(),roleOnThesoBean.getNodePreference());
         showMessage(FacesMessage.SEVERITY_INFO, messageInfo);
         getAllCandidatsByThesoAndLangue();
     }
@@ -715,6 +709,9 @@ public class CandidatBean implements Serializable {
         isImportViewActivate = false;
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
+        
+        setProgressBarStep(0);
+        setProgressBarValue(0);
     }
 
     public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
@@ -750,6 +747,25 @@ public class CandidatBean implements Serializable {
         isExportViewActivate = false;
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
+        
+        setProgressBarStep(0);
+        setProgressBarValue(0);
+    }
+
+    public int getProgressBarStep() {
+        return progressBarStep;
+    }
+
+    public void setProgressBarStep(int progressBarStep) {
+        this.progressBarStep = progressBarStep;
+    }
+
+    public int getProgressBarValue() {
+        return progressBarValue;
+    }
+
+    public void setProgressBarValue(int progressBarValue) {
+        this.progressBarValue = progressBarValue;
     }
 
 }
