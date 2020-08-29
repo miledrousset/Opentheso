@@ -48,11 +48,13 @@ public class NoteBeanCandidat implements Serializable {
 
     private NodeNote selectedNodeNote;
     private String noteValueToChange;
+    private boolean visible;
 
     public NoteBeanCandidat() {
     }
 
     public void reset() {
+        visible = true;
         noteTypes = new NoteHelper().getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = candidatBean.getCandidatSelected().getLang();
@@ -144,6 +146,7 @@ public class NoteBeanCandidat implements Serializable {
             pf.ajax().update("candidatForm:listTraductionForm");
             pf.ajax().update("candidatForm");
         }
+        visible = false;
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
     }
@@ -379,4 +382,12 @@ public class NoteBeanCandidat implements Serializable {
         this.noteValueToChange = noteValueToChange;
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+    
 }
