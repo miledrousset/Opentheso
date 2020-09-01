@@ -42,7 +42,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -54,7 +53,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.servlet.ServletContext;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -86,6 +84,9 @@ public class ConceptView implements Serializable {
     
     /// pagination
     private int sizeToShowNT;
+    
+    // total de la branche
+    private int countOfBranch;
     
     
     /// Notes concept
@@ -122,6 +123,7 @@ public class ConceptView implements Serializable {
         historyNotes = new ArrayList<>();
         sizeToShowNT = 0;
         nodeCorpuses = null;
+        countOfBranch = 0;
     }
 
     /**
@@ -176,6 +178,7 @@ public class ConceptView implements Serializable {
                 selectedTheso.actionFromConceptToOn();
             }
         }
+        countOfBranch = 0;
     }
 
     /**
@@ -208,7 +211,19 @@ public class ConceptView implements Serializable {
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
+        countOfBranch = 0;
     }
+    
+    public void countTheTotalOfBranch() {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> listIdsOfBranch = conceptHelper.getIdsOfBranch(
+                connect.getPoolConnexion(),
+                nodeConcept.getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+        this.countOfBranch = listIdsOfBranch.size();
+    }
+
+
 
     private void initMap()  {
 
@@ -342,6 +357,16 @@ public class ConceptView implements Serializable {
             return jsonObject.getInt("count");
         }
     }
+
+    public int getCountOfBranch() {
+        return countOfBranch;
+    }
+
+    public void setCountOfBranch(int countOfBranch) {
+        this.countOfBranch = countOfBranch;
+    }
+
+
 
 
 
@@ -587,4 +612,6 @@ public class ConceptView implements Serializable {
     public Map getMapModel() {
         return mapModel;
     }
+    
+    
 }

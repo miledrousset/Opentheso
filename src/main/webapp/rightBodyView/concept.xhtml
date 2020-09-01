@@ -44,7 +44,7 @@
                     <b:navCommandLink value="Supprimer le concept" 
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idDeleteConcept deleteConceptForm"
-                                      action="#{editConcept.reset()}"
+                                      action="#{editConcept.reset('')}"
                                       oncomplete="PF('deleteConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>   
@@ -52,7 +52,7 @@
                                       disabled="false"                                      
                                       actionListener="#{editConcept.infosArk()}"
                                       update="idGenerateArk generateArkForm"
-                                      action="#{editConcept.reset()}"
+                                      action="#{editConcept.reset('')}"
                                       oncomplete="PF('generateArk').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>                       
@@ -120,15 +120,15 @@
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                    <b:navLink value="Renommer le concept"  update="idRenameConcept" 
-                               actionListener="#{editConcept.reset()}"
-                               onclick="PF('renameConcept').show();"
-                               style="font-size: 12px;"></b:navLink>
+                    <b:navCommandLink value="Renommer le concept"  update="idRenameConcept renameForm" 
+                               actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
+                               oncomplete="PF('renameConcept').show();"
+                               style="font-size: 12px;"/>
                 </b:dropMenu>
             </b:column>            
             <b:column span="6" colXs="6">
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
-                              title="#{conceptView.nodeConcept.concept.idConcept}" style="font-weight: bold"/>
+                              title="#{conceptView.nodeConcept.concept.idConcept}" style="font-weight: bold" />
                 <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/> 
             </b:column>
             <b:column span="2" colXs="0">
@@ -499,6 +499,38 @@
 
 
 
+        
+        <!--                                  -->        
+        <!-- Total des concepts de la branche --> 
+        <!--                                  -->      
+        <b:row >
+            <b:column span="3" colXs="3" >
+                <h:outputText value="Total de la branche"/>
+            </b:column>
+            <b:column span="1">
+                <b:navCommandLink icon-awesome="fas fa-calculator" icon-size="m"
+                                  tooltip="afficher le total des concepts de cette branche"
+                                  tooltip-delay-show="500"
+                                  actionListener="#{conceptView.countTheTotalOfBranch()}"
+                                  update="branchCount"
+                                  style="color: #F7A269; font-size: 12px;"></b:navCommandLink>
+            </b:column>
+            <b:column id="branchCount" span="8" colXs="8">
+                <h:outputText rendered="#{conceptView.countOfBranch != 0}"
+                    value="#{conceptView.countOfBranch}" title="cliquez à gauche pour lancer le calcul" 
+                    style="font-size: 12px; color: #666666" />
+            </b:column>             
+        </b:row>         
+        <p:separator styleClass="separator" style="margin-top: 5px; margin-bottom: 5px;"/>     
+        <!--           Fin                    -->        
+        <!-- Total des concepts de la branche --> 
+        <!--                                  -->          
+       
+        
+        
+        
+        
+        
 
 
 

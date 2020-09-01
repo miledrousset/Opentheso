@@ -9,42 +9,54 @@
     -->
 
     <p:dialog id="idRenameTraduction" header="modifier une traduction" widgetVar="renameTraduction" 
-              modal="true" resizable="true" position="top" width="450" style="margin-top: 150px; max-height: 500px;overflow-y:scroll " >         
+              modal="true" resizable="true" position="top" width="450" style="margin-top: 50px;" >         
 
         <h:form id="renameTraductionForm">   
-            
             <b:row >
-                <b:column span="11" offset="1" >
+                <b:column span="11"  colXs="11"  >
                     <h:outputText id="currentPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="font-size: 13px; color: black;">
+                                  style="font-size: 13px; color: #43B572; margin-left: 5px;">
                     </h:outputText >
-                    <p:spacer height="30"/>
                 </b:column>
-            </b:row>      
+            </b:row> 
+            <p:spacer/>            
+            <b:panel style="max-height: 300px;overflow-y:scroll ">
+                <b:row >
+                    <ui:repeat var="traductionToEdit" value="#{traductionBean.nodeTermTraductions}" >
+                        <b:column span="8" colXs="8" style="background: #FAFAFA">
+                            <b:inputText
+                                value="#{traductionToEdit.lexicalValue}"
+                                style="font-size: 12px;"/>                    
+                        </b:column>
+                        <b:column span="2" colXs="2" style="background: #FAFAFA">
+                            <h:outputText value="#{traductionToEdit.lang}"
+                                style="color: #43B572; font-size: 14px;"/>                    
+                        </b:column>
+                        <b:column span="1" colXs="1" style="background: #FAFAFA">
+                            <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
+                                              action="#{traductionBean.updateTraduction(
+                                                       traductionToEdit,
+                                                       currentUser.nodeUser.idUser)}"
+                                             update="formRightTab:viewTabConcept:renameTraductionForm"/>
+                        </b:column>
 
-            <b:row >
-                <ui:repeat var="traductionToEdit" value="#{traductionBean.nodeTermTraductions}" >
-                    <b:column span="8" style="background: #FAFAFA">
-                        <b:inputText
-                            value="#{traductionToEdit.lexicalValue}"
-                            style="color: #43B572; font-size: 12px;"/>                    
-                    </b:column>
-                    <b:column span="1" style="background: #FAFAFA">
-                        <h:outputText value="#{traductionToEdit.lang}"
-                            style="color: #43B572; font-size: 14px;"/>                    
-                    </b:column>
-                    <b:column span="2" style="background: #FAFAFA">
-                        <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
-                                          action="#{traductionBean.updateTraduction(
-                                                   traductionToEdit,
-                                                   currentUser.nodeUser.idUser)}"
-                                         update="formRightTab:viewTabConcept:renameTraductionForm"/>
-                    </b:column>
-
-                    <p:spacer height="20" />
-                </ui:repeat>
-            </b:row>
-
+                        <p:spacer height="20" />
+                    </ui:repeat>
+                </b:row>
+            </b:panel>
+            <b:row>
+                <b:column span="4" offset="4" colXs="8" offset-xs="2">
+                    <b:commandButton ajax="true"
+                                     id="buttonRenameAll" value="Tout modifier" 
+                                     tooltip="Valider toutes les modifications" tooltip-delay-show="500"
+                                     update="formRightTab:viewTabConcept:renameTraductionForm  formRightTab:viewTabConcept:idRenameTraduction"
+                                     class="btn btn-primary"
+                                     action="#{traductionBean.updateAllTraduction(currentUser.nodeUser.idUser)}"
+                                     oncomplete="PF('renameTraduction').hide();"
+                                     style="width:100%; font-size: 12px; color: white; background: #43B572;"/>
+                </b:column>
+            </b:row>             
+            <p:spacer/>
             <b:row>
                 <b:column span="12">
                     <b:messages autoUpdate="true"/>
