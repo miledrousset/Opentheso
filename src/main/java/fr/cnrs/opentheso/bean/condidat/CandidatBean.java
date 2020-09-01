@@ -69,6 +69,7 @@ public class CandidatBean implements Serializable {
     private boolean myCandidatsSelected;
     private boolean isShowCandidatActivate;
     private boolean isRejectCandidatsActivate;
+    private boolean isAcceptedCandidatsActivate;
     private boolean isExportViewActivate;
     private boolean isImportViewActivate;
 
@@ -77,7 +78,7 @@ public class CandidatBean implements Serializable {
 
     private CandidatDto candidatSelected, initialCandidat;
     private List<String> exportFormat;
-    private List<CandidatDto> candidatList, rejetCadidat, allTermes;
+    private List<CandidatDto> candidatList, rejetCadidat, acceptedCadidat, allTermes;
     private List<DomaineDto> domaines;
     private List<NodeLangTheso> selectedLanguages;
     private ArrayList<NodeLangTheso> languagesOfTheso;
@@ -86,6 +87,7 @@ public class CandidatBean implements Serializable {
     public void initCandidatModule() {
         isListCandidatsActivate = true;
         isRejectCandidatsActivate = true;
+        isAcceptedCandidatsActivate = true;
         isNewCandidatActivate = false;
         isShowCandidatActivate = false;
         candidatList = new ArrayList<>();
@@ -93,6 +95,7 @@ public class CandidatBean implements Serializable {
         domaines = new ArrayList<>();
         getAllCandidatsByThesoAndLangue();
         getRejectCandidatByThesoAndLangue();
+        getAcceptedCandidatByThesoAndLangue();
         tabViewIndexSelected = 0;
 
         exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
@@ -118,12 +121,22 @@ public class CandidatBean implements Serializable {
     }
 
     public void getRejectCandidatByThesoAndLangue() {
-        tabViewIndexSelected = 1;
+        tabViewIndexSelected = 2;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
             rejetCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
                     getIdLang(), 3);
         } else {
             rejetCadidat = new ArrayList<>();
+        }
+    }
+
+    public void getAcceptedCandidatByThesoAndLangue() {
+        tabViewIndexSelected = 1;
+        if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
+            acceptedCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
+                    getIdLang(), 2);
+        } else {
+            acceptedCadidat = new ArrayList<>();
         }
     }
 
@@ -175,6 +188,30 @@ public class CandidatBean implements Serializable {
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
 
+    public void selectMyAcceptedCandidats() {
+        if (myCandidatsSelected) {
+            acceptedCadidat = acceptedCadidat.stream()
+                    .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
+                    .collect(Collectors.toList());
+        } else {
+            getAcceptedCandidatByThesoAndLangue();
+        }
+        showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(acceptedCadidat.size()).append(" ")
+                .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
+
+    public void searchAcceptedCandByTermeAndAuteur() {
+        if (!StringUtils.isEmpty(searchValue)) {
+            acceptedCadidat = acceptedCadidat.stream()
+                    .filter(candidat -> candidat.getNomPref().contains(searchValue) || candidat.getUser().contains(searchValue))
+                    .collect(Collectors.toList());
+        } else {
+            getAcceptedCandidatByThesoAndLangue();
+        }
+        showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(acceptedCadidat.size()).append(" ")
+                .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
+
     public void searchByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue)) {
             candidatList = candidatList.stream()
@@ -189,7 +226,7 @@ public class CandidatBean implements Serializable {
 
     public void showRejectCandidatSelected(CandidatDto candidatDto) throws IOException {
 
-        tabViewIndexSelected = 1;
+        tabViewIndexSelected = 2;
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
@@ -197,11 +234,36 @@ public class CandidatBean implements Serializable {
         }
 
         isRejectCandidatsActivate = false;
-        candidatSelected = candidatDto;
+        getCandidatInformations(candidatDto);
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
 
+    }
+
+    public void showAcceptedCandidatSelected(CandidatDto candidatDto) throws IOException {
+
+        tabViewIndexSelected = 1;
+
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
+            return;
+        }
+
+        isAcceptedCandidatsActivate = false;
+        getCandidatInformations(candidatDto);
+
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+
+    }
+    
+    public void getCandidatInformations(CandidatDto candidatDto) {
+        candidatSelected = candidatDto;
+        candidatSelected.setLang(languageBean.getIdLangue());
+        candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
+        candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+        candidatService.getCandidatDetails(connect, candidatSelected);
     }
 
     public void showCandidatSelected(CandidatDto candidatDto) throws IOException {
@@ -237,6 +299,7 @@ public class CandidatBean implements Serializable {
 
         this.isListCandidatsActivate = true;
         isRejectCandidatsActivate = true;
+        isAcceptedCandidatsActivate = true;
 
         isNewCandidatActivate = false;
         isShowCandidatActivate = false;
@@ -688,6 +751,14 @@ public class CandidatBean implements Serializable {
         return rejetCadidat;
     }
 
+    public List<CandidatDto> getAcceptedCadidat() {
+        return acceptedCadidat;
+    }
+
+    public void setAcceptedCadidat(List<CandidatDto> acceptedCadidat) {
+        this.acceptedCadidat = acceptedCadidat;
+    }
+
     public boolean isRejectCandidatsActivate() {
         return isRejectCandidatsActivate;
     }
@@ -768,4 +839,11 @@ public class CandidatBean implements Serializable {
         this.progressBarValue = progressBarValue;
     }
 
+    public boolean isAcceptedCandidatsActivate() {
+        return isAcceptedCandidatsActivate;
+    }
+
+    public void setAcceptedCandidatsActivate(boolean isAcceptedCandidatsActivate) {
+        this.isAcceptedCandidatsActivate = isAcceptedCandidatsActivate;
+    }
 }

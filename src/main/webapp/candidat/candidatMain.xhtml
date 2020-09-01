@@ -48,6 +48,16 @@
                     </p:panel>
                 </b:row>
             </p:tab>
+            
+            <p:tab title="Candidats insérés" titleStyleClass="tab1">
+                <b:row rendered="#{candidatBean.isAcceptedCandidatsActivate()}">
+                    <ui:include src="/candidat/candidatAcceptedList.xhtml" />
+                </b:row>
+                <b:row rendered="#{!candidatBean.isAcceptedCandidatsActivate()}">
+                    <ui:include src="/candidat/rejectCandidatDetails.xhtml" />
+                </b:row>
+            </p:tab>
+            
             <p:tab title="Candidats rejetés" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isRejectCandidatsActivate()}">
                     <ui:include src="/candidat/candidatRejectesList.xhtml" />

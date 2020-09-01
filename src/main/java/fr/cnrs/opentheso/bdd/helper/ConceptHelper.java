@@ -33,8 +33,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
-import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.toolbox.statistique.CanceptStatistiqueData;
 import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
@@ -5585,6 +5585,8 @@ public class ConceptHelper {
         NoteHelper noteHelper = new NoteHelper();
         GpsHelper gpsHelper = new GpsHelper();
         ImagesHelper imagesHelper = new ImagesHelper();
+        
+        String htmlTagsRegEx = "<[^>]*>";
 
         // les relations BT, NT, RT
         ArrayList<NodeHieraRelation> nodeListRelations = relationsHelper.getAllRelationsOfConcept(ds, idConcept, idThesaurus);
@@ -5618,12 +5620,21 @@ public class ConceptHelper {
 //#### SQL #### //        
 
 //#### SQL #### //
-        nodeConceptExport.setNodeNoteTerm(noteHelper.getListNotesTermAllLang(ds, idTerm, idThesaurus));
+        ArrayList<NodeNote> noteTerm = noteHelper.getListNotesTermAllLang(ds, idTerm, idThesaurus);
+        for (NodeNote note : noteTerm) {
+            note.setLexicalvalue(note.getLexicalvalue().replaceAll(htmlTagsRegEx, ""));
+        }
+        nodeConceptExport.setNodeNoteTerm(noteTerm);
 //#### SQL #### //        
 
         //récupération des Notes du Concept
-//#### SQL #### //        
-        nodeConceptExport.setNodeNoteConcept(noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus));
+//#### SQL #### //      
+
+        ArrayList<NodeNote> noteConcept = noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus);
+        for (NodeNote note : noteConcept) {
+            note.setLexicalvalue(note.getLexicalvalue().replaceAll(htmlTagsRegEx, ""));
+        }
+        nodeConceptExport.setNodeNoteConcept(noteConcept);
 //#### SQL #### //
 
         //récupération des coordonnées GPS

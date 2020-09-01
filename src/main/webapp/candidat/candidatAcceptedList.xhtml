@@ -9,7 +9,7 @@
         <b:row style="margin-top: 20px">
             <b:column medium-screen="6">
                 <b:selectBooleanCheckbox caption="#{langueBean.getMsg('candidat.my_candidats')}" value="#{candidatBean.myCandidatsSelected}"
-                                         onclick="ajax:candidatBean.selectMyRejectCandidats()" update="candidatForm" style="font-size: 11px;"/>
+                                         onclick="ajax:candidatBean.selectMyAcceptedCandidats()" update="candidatForm" style="font-size: 11px;"/>
             </b:column>
             <b:column medium-screen="6">
                 <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
@@ -17,7 +17,7 @@
                 <b:inputText value="#{candidatBean.searchValue}">
                     <f:facet name="append">
                         <b:commandButton look="success" iconAwesome="search" icon-align="right" 
-                                         update="candidatForm" actionListener="#{candidatBean.searchRejectCandByTermeAndAuteur()}"/>
+                                         update="candidatForm" actionListener="#{candidatBean.searchAcceptedCandByTermeAndAuteur()}"/>
                     </f:facet>
                 </b:inputText>
             </b:column>
@@ -43,7 +43,7 @@
                     </b:column>  
                     <b:column span="1">
                         <h:outputText value="Messages"/>
-                    </b:column>                         
+                    </b:column>                          
                 </b:row>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
                 <b:row rendered="#{candidatBean.candidatList.size() == 0}">
@@ -55,30 +55,30 @@
                 <b:row>
 
                 </b:row>
-                <ui:repeat var="candidat" value="#{candidatBean.rejetCadidat}">
-                    <b:row style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.rejetCadidat.indexOf(candidat))}; 
+                <ui:repeat var="candidat" value="#{candidatBean.acceptedCadidat}">
+                    <b:row style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.acceptedCadidat.indexOf(candidat))};
                            padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
                         <b:column span="1" >
                             <h:outputText value="#{candidat.idConcepte}" />
-                        </b:column>                     
+                        </b:column>
                         <b:column span="4" >
-                            <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572" 
-                                              actionListener="#{candidatBean.showRejectCandidatSelected(candidat)}" />
+                            <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572"
+                                              actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
                         </b:column>
 
                         <b:column span="2" >
                             <h:outputText value="#{candidat.creationDate}" />
                         </b:column>
                         <b:column span="2">
-                            <h:outputText value="#{candidat.nbrVote}" />  
+                            <h:outputText value="#{candidat.nbrVote}" />
+                        </b:column>
+                        <b:column span="2">
+                            <h:outputText value="#{candidat.nbrNoteVote}" />
                         </b:column>
                         <b:column span="1">
-                            <h:outputText value="#{candidat.noteVoted}" />
-                        </b:column> 
-                        <b:column span="1">
                             <h:outputText value="#{candidat.nbrParticipant}" />
-                        </b:column>                         
-                    </b:row>   
+                        </b:column>
+                    </b:row>
                 </ui:repeat>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
             </b:column>
