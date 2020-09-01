@@ -1429,7 +1429,36 @@ public class NoteHelper {
             log.error("Error while getting Count of Note in Group : " + idGroup, sqle);
         }
         return count;
-    }  
+    }
+
+    public int getNbrNoteThesoAndLangAndWithoutGroup(HikariDataSource ds, String idThesaurus, String idLang) {
+
+        Connection conn;
+        Statement stmt;
+        int count = 0;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            stmt = conn.createStatement();
+            stmt.executeQuery("SELECT count(preferred_term.id_concept) " +
+                    "FROM preferred_term, note " +
+                    "WHERE preferred_term.id_thesaurus = note.id_thesaurus " +
+                    "AND (preferred_term.id_term = note.id_term or preferred_term.id_concept = note.id_concept) " +
+                    "AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
+                    "AND note.lang = '"+idLang+"' "+
+                    "AND preferred_term.id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')");
+            ResultSet resultSet = stmt.getResultSet();
+            if(resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException sqle) {
+            log.error("Error while getting Count of Note in without Group", sqle);
+        }
+        return count;
+    }
 
 }
 

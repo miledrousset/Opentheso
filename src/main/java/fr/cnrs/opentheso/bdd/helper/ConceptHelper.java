@@ -664,6 +664,35 @@ public class ConceptHelper {
     public ArrayList<NodeUri> getListConceptsOfGroup(HikariDataSource ds,
             String idThesaurus, String idGroup) {
 
+        String query = "SELECT DISTINCT concept.id_concept,"
+                + " concept.id_ark, concept.id_handle"
+                + " FROM concept, concept_group_concept"
+                + " WHERE"
+                + " concept.id_concept = concept_group_concept.idconcept AND"
+                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                + " concept_group_concept.idgroup = '" + idGroup +"'";
+
+        return getConceptDetails(ds, query, idThesaurus);
+    }
+
+    /**
+     * permet de retourner la liste des concepts sans group
+     *
+     * @param ds
+     * @param idThesaurus
+     * @return
+     */
+    public ArrayList<NodeUri> getListConceptsWithoutGroup(HikariDataSource ds, String idThesaurus) {
+
+        String query = "SELECT DISTINCT concept.id_concept, concept.id_ark, concept.id_handle FROM concept " +
+                "WHERE id_thesaurus = '"+idThesaurus+"' " +
+                "AND id_concept NOT IN (SELECT idconceptFROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
+
+        return getConceptDetails(ds, query, idThesaurus);
+    }
+
+    private ArrayList<NodeUri> getConceptDetails(HikariDataSource ds, String query, String idThesaurus) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -675,22 +704,14 @@ public class ConceptHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT DISTINCT concept.id_concept,"
-                            + " concept.id_ark, concept.id_handle"
-                            + " FROM concept, concept_group_concept"
-                            + " WHERE"
-                            + " concept.id_concept = concept_group_concept.idconcept AND"
-                            + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                            + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                            + " concept_group_concept.idgroup = '" + idGroup +"'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
                     while (resultSet.next()) {
                         NodeUri nodeUri = new NodeUri();
                         nodeUri.setIdConcept(resultSet.getString("id_concept"));
-                        nodeUri.setIdArk(resultSet.getString("id_ark"));  
-                        nodeUri.setIdHandle(resultSet.getString("id_handle"));                          
+                        nodeUri.setIdArk(resultSet.getString("id_ark"));
+                        nodeUri.setIdHandle(resultSet.getString("id_handle"));
                         nodeUris.add(nodeUri);
                     }
 
@@ -705,8 +726,8 @@ public class ConceptHelper {
             log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
         }
         return nodeUris;
-    }    
-    
+    }
+
     /**
      * permet de retourner la liste des concepts pour un group donné retour au
      * format de NodeConceptTree (informations pour construire l'arbre
@@ -754,7 +775,49 @@ public class ConceptHelper {
             log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
         }
         return count;
-    }    
+    }
+
+    /**
+     * permet de retourner le nombre des conceptes dans un thesaurus rattaché à aucun groupe
+     *
+     * @param ds
+     * @param idThesaurus
+     * @return
+     */
+    public int getCountOfConceptsWithoutGroup(HikariDataSource ds, String idThesaurus) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        int count = 0;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT count(id_concept) FROM concept " +
+                            "WHERE id_thesaurus = '"+idThesaurus+"' " +
+                            "AND id_concept NOT IN (SELECT idconceptFROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+
+                    if(resultSet.next()) {
+                        count = resultSet.getInt(1);
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
+        }
+        return count;
+    }
 
     /**
      * permet de mettre à jour la date du concept quand il y a une modification

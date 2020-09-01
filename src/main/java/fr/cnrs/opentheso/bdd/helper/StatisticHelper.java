@@ -198,6 +198,42 @@ public class StatisticHelper {
         }
         return count;
     }
+
+    public int getNbDescWithoutGroup(HikariDataSource ds, String idThesaurus) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        int count = 0;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select count(id_concept) from concept left join concept_group_concept" +
+                            " on id_concept = idconcept and id_thesaurus = idthesaurus" +
+                            " where id_thesaurus = '" +idThesaurus + "'" +
+                            " and idgroup IS NULL";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet != null) {
+                        resultSet.next();
+                        count = resultSet.getInt(1);
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting count of decriptor without group : ", sqle);
+        }
+        return count;
+    }
     
     public int getNbNonDescOfGroup(HikariDataSource ds, String idThesaurus, String idGroup, String langue) {
         Connection conn;
