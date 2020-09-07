@@ -58,10 +58,10 @@ public class EditConcept implements Serializable {
     public EditConcept() {
     }
 
-    public void reset() {
+    public void reset(String label) {
         isCreated = false;
         duplicate = false;
-        prefLabel = "";
+        prefLabel = label;
         notation = "";
         forDelete = false;
     }
@@ -202,7 +202,7 @@ public class EditConcept implements Serializable {
             }
         }
 
-        reset();
+        reset("");
     }
 
     public void cancel() {
@@ -294,7 +294,7 @@ public class EditConcept implements Serializable {
         }
         PrimeFaces.current().executeScript("PF('deleteConcept').hide();");
 
-        reset();
+        reset("");
     }
 
     /**

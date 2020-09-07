@@ -9,7 +9,7 @@
     -->
 
     <p:dialog id="idRenameSynonym" header="modifier synonyme" widgetVar="renameSynonym" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px; max-height: 500px;overflow-y:scroll " >         
+              modal="true" resizable="true" position="top" width="500" style="margin-top: 50px;" >         
 
         <h:form id="renameSynonymForm">   
 
@@ -22,53 +22,86 @@
                 </b:column>
             </b:row>      
 
-            <b:row >
-                <b:column span="7" >
-                    <ui:repeat var="synonymToEdit" value="#{synonymBean.nodeEMsForEdit}" >
-                        <b:row>
-                            <b:column span="8" style="background: #FAFAFA">
-                                <b:inputText
-                                    value="#{synonymToEdit.lexical_value}"
-                                    style="color: #43B572; font-size: 12px;"/>                    
-                            </b:column>
-                            <b:column span="2" style="background: #FAFAFA">
-                                <h:outputText value="#{synonymToEdit.lang}"
-                                              style="color: #43B572; font-size: 14px;"/>
-                            </b:column>
-                            <b:column span="2" style="background: #FAFAFA">
-                                <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
-                                                  action="#{synonymBean.updateSynonym(
-                                                            synonymToEdit,
-                                                            currentUser.nodeUser.idUser)}"
-                                                  update="formRightTab:viewTabConcept:renameSynonymForm"/>
-                            </b:column>
-                        </b:row>                            
-                    </ui:repeat>
-                </b:column>
-                <b:column span="5" >
+            <b:panel style="max-height: 300px;overflow-y:scroll ">           
+                <b:row >
+                    <b:column span="5" >
+                        <h:outputText value="Synonyme" style="color: black;font-size: 13px;"/>                    
+                    </b:column>
+                    <b:column span="2" >
+                        <h:outputText value="langue" style="color: black;font-size: 13px;"/>
+                    </b:column>
+
+                    <b:column span="3" >
+                        <h:outputText value="caché ?" style="color: black;font-size: 13px;"/>                        
+                    </b:column>                             
+
+                    <b:column span="2">
+                        <h:outputText value="valider" style="color: black;font-size: 13px;"/>
+                    </b:column>
+                </b:row>
+                <ui:repeat var="synonymToEdit" value="#{synonymBean.nodeEMsForEdit}" >
+                    <b:row>
+                        <b:column span="5" style="background: #FAFAFA">
+                            <b:inputText  value="#{synonymToEdit.lexical_value}"
+                                style="font-size: 12px; height: 25px;"/>                    
+                        </b:column>
+                        <b:column span="2" style="background: #FAFAFA">
+                            <h:outputText value="#{synonymToEdit.lang}"
+                                          style=" font-size: 14px;"/>
+                        </b:column>
+
+                        <b:column span="3" style="font-size: 12px;" >
+                            <p:toggleSwitch value="#{synonymToEdit.hiden}" style="font-size: 10px" />                            
+                        </b:column>                             
+
+                        <b:column span="2" style="background: #FAFAFA">
+                            <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
+                                              action="#{synonymBean.updateSynonym(
+                                                        synonymToEdit,
+                                                        currentUser.nodeUser.idUser)}"
+                                              update="formRightTab:viewTabConcept:renameSynonymForm"/>
+                        </b:column>
+                    </b:row>                            
+                </ui:repeat>
+            </b:panel> 
+            <b:row>
+                <b:column span="12" >
                     <b:messages autoUpdate="true"/>
-                    <b:row >
-                        <b:column span="5" offset="1" >
-                            <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonRenameForced" value="Forcer"
-                                             update="formRightTab:viewTabConcept:renameSynonymForm"
-                                             class="btn btn-primary"
-                                             action="#{synonymBean.updateSynonymForced(
-                                                       currentUser.nodeUser.idUser)}" 
-                                             style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
-                        </b:column>                        
-                        <b:column span="5" >
-                            <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonCancel" value="Annuler"
-                                             update="formRightTab:viewTabConcept:renameSynonymForm"
-                                             class="btn btn-primary"
-                                             action="#{synonymBean.cancel()}" 
-                                             icon-awesome="fas fa-undo" 
-                                             style="color: white; background: #FF7979; width:100%; font-size: 12px;"/>
-                        </b:column>                        
-                    </b:row>                    
-                </b:column>                
-
+                </b:column>                     
             </b:row>
+            <b:row >
+                <b:column span="5" offset="1" colXs="5" offset-xs="1">
+                    <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonRenameForced" value="Forcer"
+                                     update="formRightTab:viewTabConcept:renameSynonymForm"
+                                     class="btn btn-primary"
+                                     action="#{synonymBean.updateSynonymForced(
+                                               currentUser.nodeUser.idUser)}" 
+                                     style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
+                </b:column>                        
+                <b:column span="5" colXs="5">
+                    <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonCancel" value="Annuler"
+                                     update="formRightTab:viewTabConcept:renameSynonymForm"
+                                     class="btn btn-primary"
+                                     action="#{synonymBean.cancel()}" 
+                                     icon-awesome="fas fa-undo" 
+                                     style="color: white; background: #FF7979; width:100%; font-size: 12px;"/>
+                </b:column>                        
+            </b:row>
+            
+            <b:row>
+                <b:column span="4" offset="4" colXs="8" offset-xs="2">
+                    <b:commandButton rendered="#{!synonymBean.duplicate}"
+                                     id="buttonRenameAll" value="Tout modifier" 
+                                     tooltip="Valider toutes les modifications" tooltip-delay-show="500"
+                                     update="formRightTab:viewTabConcept:renameSynonymForm"
+                                     class="btn btn-primary"
+                                     action="#{synonymBean.updateAllSynonyms(
+                                                   currentUser.nodeUser.idUser)}"
 
+                                     style="width:100%; font-size: 12px;
+                                     color: white; background: #43B572;"/>
+                </b:column>
+            </b:row>              
         </h:form>
     </p:dialog> 
     <!--  </b:modal> -->    

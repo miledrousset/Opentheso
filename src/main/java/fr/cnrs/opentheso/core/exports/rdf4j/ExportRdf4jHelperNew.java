@@ -673,13 +673,13 @@ public class ExportRdf4jHelperNew {
 
         // si on ne trouve pas ni Handle, ni Ark
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
-            uri = nodePreference.getOriginalUri() + "?idc=" + nodeUri.getIdConcept()
-                        + "&idt=" + idTheso;
+            uri = nodePreference.getOriginalUri() + "/?idc=" + nodeUri.getIdConcept()
+                        + "&idt=" + idTheso; 
         } else {
-            uri = getPath() + "?idc=" + nodeUri.getIdConcept()
-                        + "&idt=" + idTheso;
-        }
-
+            uri = getPath() + "/?idc=" + nodeUri.getIdConcept()
+                        + "&idt=" + idTheso;             
+        }     
+  
                         //+ "&amp;idt=" + idTheso;
     //    uri = nodePreference.getCheminSite() + nodeUri.getIdConcept();
         return uri;

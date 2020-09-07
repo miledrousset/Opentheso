@@ -186,14 +186,13 @@ public class SynonymBean implements Serializable {
     }
 
     /**
-     * permet de supprimer un synonyme
+     * permet de modifier un synonyme
      * @param nodeEM
      * @param idUser 
      */
     public void updateSynonym (NodeEM nodeEM, int idUser) {
         FacesMessage msg;
         TermHelper termHelper = new TermHelper();
-        PrimeFaces pf = PrimeFaces.current();        
         
         if(nodeEM == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
@@ -204,42 +203,46 @@ public class SynonymBean implements Serializable {
         // save de la valeur pour une modification forcée
         this.nodeEM = nodeEM;
         
-        if (termHelper.isTermExist(connect.getPoolConnexion(),
-                nodeEM.getLexical_value(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeEM.getLang())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            duplicate = true;
-            return;
+        if(!nodeEM.getOldValue().equals(nodeEM.getLexical_value())){
+            if (termHelper.isTermExist(connect.getPoolConnexion(),
+                    nodeEM.getLexical_value(),
+                    selectedTheso.getCurrentIdTheso(),
+                    nodeEM.getLang())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                duplicate = true;
+                return;
+            }
+            if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
+                    nodeEM.getLexical_value(),
+                    selectedTheso.getCurrentIdTheso(),
+                    nodeEM.getLang())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                duplicate = true;
+                return;
+            } 
+            updateSynonymForced(idUser);
+        } else {
+            updateStatus(nodeEM, idUser);
         }
-        if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
-                nodeEM.getLexical_value(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeEM.getLang())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            duplicate = true;
-            return;
-        } 
-        updateSynonymForced(idUser);
     }    
     
     /**
-     * permet de supprimer un synonyme
+     * permet de modifier un synonyme sans controle avec doublon
      * @param idUser 
      */
     public void updateSynonymForced (int idUser) {
         FacesMessage msg;
         TermHelper termHelper = new TermHelper();
         PrimeFaces pf = PrimeFaces.current();        
-        
+             
         if (!termHelper.updateTermSynonyme(connect.getPoolConnexion(), 
                 nodeEM.getOldValue(), nodeEM.getLexical_value(),
                 conceptBean.getNodeConcept().getTerm().getId_term(),
                 nodeEM.getLang(),
                 selectedTheso.getCurrentIdTheso(),
-                nodeEM.getStatus(), idUser)){
+                nodeEM.isHiden(), idUser)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -265,7 +268,96 @@ public class SynonymBean implements Serializable {
             pf.ajax().update("formRightTab:viewTabConcept:idConceptSynonyms");
             pf.ajax().update("formRightTab:viewTabConcept:renameSynonymForm");
         }
+    }
+    
+    /**
+     * permet de modifier tous les synonymes
+     * @param idUser 
+     */
+    public void updateAllSynonyms (int idUser) {
+        FacesMessage msg;
+        TermHelper termHelper = new TermHelper();
+        
+        if(nodeEMs == null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        
+        for (NodeEM nodeEM1 : nodeEMs) {
+            // save de la valeur pour une modification forcée
+            this.nodeEM = nodeEM1;
+        
+            if(!nodeEM.getOldValue().equals(nodeEM.getLexical_value())){
+                if (termHelper.isTermExist(connect.getPoolConnexion(),
+                        nodeEM.getLexical_value(),
+                        selectedTheso.getCurrentIdTheso(),
+                        nodeEM.getLang())) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    duplicate = true;
+                    return;
+                }
+                if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
+                        nodeEM.getLexical_value(),
+                        selectedTheso.getCurrentIdTheso(),
+                        nodeEM.getLang())) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    duplicate = true;
+                    return;
+                } 
+                updateSynonymForced(idUser);
+            } else {
+                updateStatus(nodeEM, idUser);
+            }
+        }
     }      
+    
+    /**
+     * permet de modifier un synonyme sans controle avec doublon
+     * @param nodeEM
+     * @param idUser 
+     */
+    public void updateStatus (NodeEM nodeEM, int idUser) {
+        FacesMessage msg;
+        TermHelper termHelper = new TermHelper();
+        PrimeFaces pf = PrimeFaces.current();        
+        
+       
+        if (!termHelper.updateStatus(connect.getPoolConnexion(), 
+                conceptBean.getNodeConcept().getTerm().getId_term(),
+                nodeEM.getLexical_value(),                
+                nodeEM.getLang(),
+                selectedTheso.getCurrentIdTheso(),
+                nodeEM.isHiden(), idUser)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }        
+        
+        conceptBean.getConcept(
+                selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                conceptBean.getSelectedLang());
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), 
+                conceptBean.getNodeConcept().getConcept().getIdConcept());
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
+        reset();
+
+        if (pf.isAjaxRequest()) {
+            //    pf.ajax().update("messageIndex");
+            pf.ajax().update("formRightTab:viewTabConcept:idConceptSynonyms");
+            pf.ajax().update("formRightTab:viewTabConcept:renameSynonymForm");
+        }
+    }    
+    
     
     /**
      * permet de supprimer un synonyme
