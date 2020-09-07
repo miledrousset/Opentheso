@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -79,16 +80,16 @@ public class ExportRdf4jHelper {
 
         return true;
     }
-    
+
     public void exportCollections(HikariDataSource ds, String idTheso){
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<String> rootGroupList = groupHelper.getListIdOfRootGroup(ds, idTheso);
         NodeGroupLabel nodeGroupLabel;
         for (String idGroup : rootGroupList) {
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
-            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);                    
+            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
             sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
-            addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);                    
+            addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
     
@@ -106,7 +107,7 @@ public class ExportRdf4jHelper {
             addChildsGroupRecursive(ds, idTheso, idOfGroupChild, sKOSResource);
         }
     }
-    
+
     private void writeGroupInfo(HikariDataSource ds, SKOSResource sKOSResource,
             String idTheso, String idOfGroupChild) {
 
@@ -134,9 +135,9 @@ public class ExportRdf4jHelper {
 
         ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idOfGroupChild, idTheso);
 //        ArrayList<NodeUri> nodeUris = new ConceptHelper().getListIdsOfTopConceptsForExport(ds, idOfGroupChild, idTheso);
-        
+
         ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
-        
+
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
       //      addMember(ds, nodeUri.getIdConcept(), idTheso, sKOSResource);
@@ -153,16 +154,16 @@ public class ExportRdf4jHelper {
             sKOSResource.addRelation(getUriFromId(idSuperGroup), SKOSProperty.superGroup);
             superGroupHashMap.remove(idOfGroupChild);
         }
-        
+
         // ajout de la notation
         if (nodeGroupLabel.getNotation() != null && !nodeGroupLabel.getNotation().equals("null")) {
             if(!nodeGroupLabel.getNotation().isEmpty())
                 sKOSResource.addNotation(nodeGroupLabel.getNotation());
         }
         skosXmlDocument.addGroup(sKOSResource);
-    } 
+    }
 
-    
+
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////// Nouvelles fonctions ///////////////////////////////    
@@ -505,9 +506,9 @@ public class ExportRdf4jHelper {
         }        
         
         sKOSResource.addIdentifier(nodeConcept.getConcept().getIdConcept(), SKOSProperty.identifier);
-        
+
         downloadBean.setProgressBar(downloadBean.getProgressStep() + downloadBean.getProgressBar());
-        
+
         skosXmlDocument.addconcept(sKOSResource);
 
     }
@@ -994,7 +995,12 @@ public class ExportRdf4jHelper {
 
      public String getUriFromId(String id) {
         String uri;
-        uri = nodePreference.getCheminSite() + id;
+
+        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
+            uri = nodePreference.getOriginalUri() + "/" + id;
+        } else {
+            uri = getPath() + "/" + id;
+        }
         return uri;
     }
 
@@ -1042,8 +1048,13 @@ public class ExportRdf4jHelper {
         }
         // si on ne trouve pas ni Handle, ni Ark
         //    uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
-        uri = nodePreference.getCheminSite() + "?idc=" + nodeConceptExport.getConcept().getIdConcept()
+        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
+            uri = nodePreference.getOriginalUri()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept()
                         + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
+        } else {
+            uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept()
+                        + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
+        }
 //        uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
 
         return uri;
@@ -1092,8 +1103,13 @@ public class ExportRdf4jHelper {
         }
         // si on ne trouve pas ni Handle, ni Ark
 //        uri = nodePreference.getCheminSite() + nodeGroupLabel.getIdGroup();
-        uri = nodePreference.getCheminSite() + "?idg=" + nodeGroupLabel.getIdGroup()
-                    + "&idt=" + nodeGroupLabel.getIdThesaurus();
+        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
+            uri = nodePreference.getOriginalUri() + "/?idg=" + nodeGroupLabel.getIdGroup()
+                        + "&idt=" + nodeGroupLabel.getIdThesaurus();
+        } else {
+            uri = getPath() + "/?idg=" + nodeGroupLabel.getIdGroup()
+                        + "&idt=" + nodeGroupLabel.getIdThesaurus();
+        }
 
     //    uri = nodePreference.getCheminSite() + nodeGroupLabel.getIdGroup();
         return uri;
@@ -1135,9 +1151,17 @@ public class ExportRdf4jHelper {
 
         // si on ne trouve pas ni Handle, ni Ark
         //    uri = nodePreference.getCheminSite() + nodeUri.getIdConcept();
-//        uri = nodePreference.getCheminSite() + "?idg=" + nodeUri.getIdConcept()
-//                        + "&idt=" + idTheso;
-        uri = nodePreference.getCheminSite() + nodeUri.getIdConcept();
+
+        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
+            uri = nodePreference.getOriginalUri() + "/?idg=" + nodeUri.getIdConcept()
+                            + "&idt=" + idTheso;
+        } else {
+            uri = getPath() + "/?idg=" + nodeUri.getIdConcept()
+                            + "&idt=" + idTheso;
+        }
+
+
+  //      uri = nodePreference.getOriginalUri() + nodeUri.getIdConcept();
 
         return uri;
     }
@@ -1182,12 +1206,33 @@ public class ExportRdf4jHelper {
         }
 
         // si on ne trouve pas ni Handle, ni Ark
-        uri = nodePreference.getCheminSite() + "?idc=" + nodeUri.getIdConcept()
-                        + "&idt=" + idTheso;   
+        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
+            uri = nodePreference.getOriginalUri() + "/?idc=" + nodeUri.getIdConcept()
+                            + "&idt=" + idTheso;
+        } else {
+            uri = getPath() + "/?idc=" + nodeUri.getIdConcept()
+                + "&idt=" + idTheso;
+        }
+
                         //+ "&amp;idt=" + idTheso;
     //    uri = nodePreference.getCheminSite() + nodeUri.getIdConcept();
         return uri;
     }  
+
+    /**
+     * permet de retourner le Path de l'application
+     * exp:  //http://localhost:8082/opentheso2
+     * @return
+     */
+    private String getPath(){
+        if(FacesContext.getCurrentInstance() != null) {
+            String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+            path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+            return path;
+        } else
+            return "https://localhost";
+
+    }
 
     public SKOSXmlDocument getSkosXmlDocument() {
         return skosXmlDocument;

@@ -6,11 +6,25 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <b:row>
-        <b:column>
+        <b:column span="2" colXs="5">
             <b:commandButton id="addNewCandidat" value="#{langueBean.getMsg('candidat.add')}" size="sm" class="btn btn-success" 
-                             style="font-size: 13px; color: white; background: #43B572; border: #43B572; padding-left: 20px; 
+                             style="width: 100%; font-size: 13px; color: white; background: #43B572; border: #43B572; padding-left: 20px; 
                              padding-right: 20px;" ajax="true" actionListener="#{candidatBean.initialNewCandidat()}" update="candidatForm"/>
         </b:column>
+        <b:column span="3"  colXs="7">
+                <b:dropButton  tooltip="Importer/exporter les candidats" tooltip-delay-show="500" 
+                               value="Importer/exporter"  icon-size="l" iconAlign="right"
+                    style="width: 100%; background: none; border: none; box-shadow: none; font-size: 12px;"  >
+                    <b:navCommandLink value="Récupérer les candidats de l'ancienne version"
+                                      tooltip="Permet de récupérer les anciens candidats saisis dans l'ancienne version pour les inclure dans ce nouveau module, seuls les candidats en attente sont récupérés"
+                                      tooltip-delay-show="500"
+                                      style="font-size: 12px;"
+                                     iconAwesome="fa-download fas_color_orange" 
+                                     action="#{candidatBean.getOldCandidates()}"
+                                     update="candidatForm messageIndex"/>
+                
+                </b:dropButton>
+        </b:column>        
     </b:row>
 
     <b:row style="margin-top: 20px">
@@ -33,20 +47,23 @@
     <b:row style="margin-top: 20px">
         <b:column>
             <b:row style="font-size: 12px; color: #666666">
+                <b:column span="1">
+                    <h:outputText value="id"/>
+                </b:column>                  
                 <b:column span="4">
                     <h:outputText value="#{langueBean.getMsg('candidat.titre')}"/>
-                </b:column>
+                </b:column>              
                 <b:column span="2">
                     <h:outputText value="#{langueBean.getMsg('candidat.creation_date')}"/>
                 </b:column>
                 <b:column span="2">
                     <h:outputText value="#{langueBean.getMsg('candidat.state')}"/>
                 </b:column> 
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('candidat.requests')}"/>
+                <b:column span="1">
+                    <h:outputText value="votes"/>
                 </b:column>  
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('candidat.participants')}"/>
+                <b:column span="1">
+                    <h:outputText value="messages"/>
                 </b:column>                          
             </b:row>
             <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
@@ -59,20 +76,24 @@
             <ui:repeat id="candidtatsList" var="candidat" value="#{candidatBean.candidatList}">
                 <b:row style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatList.indexOf(candidat))}; 
                        padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
+                    <b:column span="1" >
+                        <h:outputText value="#{candidat.idConcepte}" />
+                    </b:column>                     
                     <b:column span="4" >
                         <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572" 
                                           actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
                     </b:column>
+                  
                     <b:column span="2" >
                         <h:outputText value="#{candidat.creationDate}" />
                     </b:column>
                     <b:column span="2">
                         <h:outputText value="#{candidat.statut}" />  
                     </b:column>
-                    <b:column span="2">
-                        <h:outputText value="#{candidat.nbrDemande}" />
+                    <b:column span="1">
+                        <h:outputText value="#{candidat.nbrVote}" />
                     </b:column> 
-                    <b:column span="2">
+                    <b:column span="1">
                         <h:outputText value="#{candidat.nbrParticipant}" />
                     </b:column>                         
                 </b:row>   

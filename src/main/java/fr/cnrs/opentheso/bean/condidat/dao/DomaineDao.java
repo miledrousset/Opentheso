@@ -21,7 +21,7 @@ public class DomaineDao extends BasicDao {
             resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 DomaineDto domaineDto = new DomaineDto();
-                domaineDto.setId(resultSet.getInt("idgroup"));
+                domaineDto.setId(resultSet.getString("idgroup"));
                 domaineDto.setName(resultSet.getString("lexicalvalue"));
                 domaines.add(domaineDto);
             }
@@ -33,21 +33,21 @@ public class DomaineDao extends BasicDao {
         return domaines;
     }
 
-    public void addNewDomaine(Connect connect, int idgroup, String idthesaurus, String idconcept) throws SQLException {
+    public void addNewDomaine(Connect connect, String idgroup, String idthesaurus, String idconcept) throws SQLException {
 
         stmt = connect.getPoolConnexion().getConnection().createStatement();
 
         executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
-                +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');");
+                +idgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
 
         stmt.close();
     }
 
-    public void updateDomaine(Connect connect, int oldIdgroup, int newIdgroup, String idthesaurus, String idconcept) throws SQLException {
+    public void updateDomaine(Connect connect, String oldIdgroup, String newIdgroup, String idthesaurus, String idconcept) throws SQLException {
 
         stmt = connect.getPoolConnexion().getConnection().createStatement();
 
-        if (newIdgroup > 0) {
+        if (!StringUtils.isEmpty(newIdgroup)) {
             executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
                     +newIdgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
         } else {

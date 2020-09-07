@@ -76,6 +76,7 @@ public class ImportTabuleIntoBDD {
         if(!conceptGroupHelper.insertGroup(ds, 
                 tabulateDocument.getId(),
                 idThesaurus,
+                "",
                 tabulateDocument.getType(),
                 "", 
                 "", false, idUser)){

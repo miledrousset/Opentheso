@@ -33,7 +33,7 @@ delete from note_historique;
 delete from permuted;
 delete from preferences;
 delete from preferred_term;
-delete from proposition;
+
 delete from term;
 delete from term_candidat;
 delete from term_historique;
@@ -56,8 +56,10 @@ delete from user_role_group;
 delete from user_group_thesaurus;
 delete from user_group_label;
 delete from routine_mail;
-
-
+delete from candidat_messages;
+delete from candidat_status;
+delete from candidat_vote;
+delete from proposition;
 
 
 -- # initialisation des séquences 

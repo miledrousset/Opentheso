@@ -23,23 +23,25 @@
                         
                         <!-- type note -->
                         <b:column span="12" >
-                            <b:selectOneMenu id="typeNote" label="Type note" value="#{noteBean.selectedTypeNote}" 
-                                             style="font-size: 12px; background: white; border-color: #43B572">
+                            <p:selectOneMenu id="typeNote" label="Type note" value="#{noteBean.selectedTypeNote}" 
+                                             style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                                
                                 <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
                                                itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
-                            </b:selectOneMenu>                                
+                            </p:selectOneMenu>                                
                         </b:column>
                         
+                        <p:spacer/>
                         
                         <!-- Langue de la note -->
                         <b:column span="12" >
-                            <b:selectOneMenu id="collection" label="Langue" value="#{noteBean.selectedLang}" 
-                                             style="font-size: 12px; background: white; border-color: #43B572">
+                            <p:selectOneMenu id="collection" label="Langue" value="#{noteBean.selectedLang}" 
+                                             style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
                                 <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                            </b:selectOneMenu>                                  
+                            </p:selectOneMenu>                                  
                         </b:column>
                         
-
+                        <p:spacer/>
 
                         <b:column span="12" >
                             <b:inputTextarea id="idNoteValue" label="texte" placeholder="tapez votre note ..."  value="#{noteBean.noteValue}" style="font-size: 12px;"/>

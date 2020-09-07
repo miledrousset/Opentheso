@@ -414,12 +414,12 @@ public class NewConcept implements Serializable {
         }
 
         // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-        if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
+    //    if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
             tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formLeftTab:tabTree:tree");
             }
-        }
+    //    }
         init();
         // sinon, on ne fait rien, l'arbre sera déplié automatiquement
         //    PrimeFaces.current().executeScript("$('.addNT1').modal('hide');"); 

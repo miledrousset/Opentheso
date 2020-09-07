@@ -10,34 +10,56 @@
 
         <h:form id="newTraductionForm" style="width: 320px; display: block; margin-left: auto; margin-right: auto;">
 
-            <b:selectOneMenu required="true" label="Langage : " value="#{traductionService.newLangage}"
-                             style="font-size: 12px;">
-                <f:selectItem itemLabel="Français" itemValue="FR" />
-                <f:selectItem itemLabel="English"  itemValue="EN" />
-                <f:selectItem itemLabel="Española" itemValue="ES" />
-                <f:selectItem itemLabel="Italiano" itemValue="IT" />
-                <f:selectItem itemLabel="Deutsche" itemValue="DE" />
-            </b:selectOneMenu>
-
-            <b:inputText value="#{traductionService.newTraduction}" required="true" 
-                         label="Traduction : " style="font-size: 12px;" />
+            <!-- Langues du thésaurus -->            
+            <b:row>
+                <b:column span="10" offset="1">
+                    <h:outputText value="Langues du thésaurus" style="font-size: 12px;" />
+                </b:column>
+            </b:row>
 
             <b:row>
-                <b:column span="6">
+                <b:column span="10" offset="1">
+                    <p:selectOneMenu id="collection" label="Langue" value="#{traductionService.newLangage}" 
+                                     style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                        <f:selectItems  value="#{traductionService.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                    </p:selectOneMenu>
+                </b:column>
+            </b:row>            
+
+            <p:spacer/>
+
+            <!-- traduction à ajouter -->  
+            <b:row>
+                <b:column span="10" offset="1">
+                    <b:inputText value="#{traductionService.newTraduction}" required="true" 
+                                 label="Traduction : " style="font-size: 12px; height: 28px;" />
+                </b:column>
+            </b:row>            
+
+            <p:spacer/>            
+
+            <b:row>
+                <b:column span="5" offset="1">
+                    <p:commandButton 
+                        icon="fas fa-undo fas 2x"  
+                        value="Retour"
+
+                        styleClass="ui-priority-primary" ajax="false"
+                        style="width: 100%; font-size: 13px; font-weight: normal; background-color: #FFC107; color: black; border: none;"
+                        class="btn btn-primary"
+                        oncomplete="PF('newTraduction').hide();"/>
+                </b:column>
+
+                <b:column span="5" >
                     <p:commandButton id="ajouterTraductionBtn" value="Ajouter" 
-                                     update="idNewTraduction newTraductionForm :candidatForm:listTraductionForm messageIndex"
+                                     update="idNewTraduction newTraductionForm :candidatForm:listTraductionForm candidatForm messageIndex"
                                      styleClass="ui-priority-primary" ajax="false"
-                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
                                      class="btn btn-primary"
                                      action="#{traductionService.addTraductionCandidat()}" 
                                      oncomplete="PF('newTraduction').hide();"/>
                 </b:column>
-                <b:column span="6">
-                    <p:commandButton value="Fermer"  styleClass="ui-priority-primary" ajax="false"
-                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; 
-                                     border: none; box-shadow: none; float: right" class="btn btn-primary"
-                                     oncomplete="PF('newTraduction').hide();"/>
-                </b:column>
+
             </b:row>
         </h:form>
     </p:dialog>   

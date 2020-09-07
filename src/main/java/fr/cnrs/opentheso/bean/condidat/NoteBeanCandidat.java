@@ -3,18 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cnrs.opentheso.bean.concept;
+package fr.cnrs.opentheso.bean.condidat;
 
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -26,20 +27,17 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
-@Named(value = "noteBean")
+@Named(value = "noteBeanCandidat")
 @SessionScoped
-public class NoteBean implements Serializable {
+public class NoteBeanCandidat implements Serializable {
 
     @Inject
     private Connect connect;
     @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-    @Inject
     private LanguageBean languageBean;
     @Inject
-    private ConceptView conceptBean;
-    @Inject
     private SelectedTheso selectedTheso;
+    @Inject CandidatBean candidatBean;
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
@@ -49,18 +47,25 @@ public class NoteBean implements Serializable {
     private String noteValue;
 
     private NodeNote selectedNodeNote;
+    private String noteValueToChange;
 
-    public NoteBean() {
+    public NoteBeanCandidat() {
     }
 
     public void reset() {
         noteTypes = new NoteHelper().getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
-        selectedLang = conceptBean.getSelectedLang();
+        selectedLang = candidatBean.getCandidatSelected().getLang();
         noteValue = "";
         selectedTypeNote = null;
+
     }
 
+    public void initSelectedNode (NodeNote nodeNote){
+        selectedNodeNote = nodeNote;
+        noteValueToChange = nodeNote.getLexicalvalue();
+    }
+    
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -127,36 +132,34 @@ public class NoteBean implements Serializable {
             default:
                 break;
         }
-
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
-
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note ajoutée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
         reset();
+        try {          
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+        } catch (IOException ex) {
+            Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("formRightTab:viewTabConcept:addNoteForm");
+            pf.ajax().update("candidatForm:listTraductionForm");
+            pf.ajax().update("candidatForm");
         }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note ajoutée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);        
     }
 
     
-    public void updateNote(NodeNote nodeNote, int idUser){
+    public void updateNote(int idUser){
         NoteHelper noteHelper = new NoteHelper();
         FacesMessage msg;        
-        if (selectedTypeNote.equalsIgnoreCase("note") || selectedTypeNote.equalsIgnoreCase("scopeNote") || selectedTypeNote.equalsIgnoreCase("historyNote")) {
+        if (selectedNodeNote.getNotetypecode().equalsIgnoreCase("note") || selectedNodeNote.getNotetypecode().equalsIgnoreCase("scopeNote") || selectedNodeNote.getNotetypecode().equalsIgnoreCase("historyNote")) {
             if (!noteHelper.updateConceptNote(connect.getPoolConnexion(),
-                    nodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                    nodeNote.getId_concept(),
-                    nodeNote.getLang(),
+                    selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
+                    selectedNodeNote.getId_concept(),
+                    selectedNodeNote.getLang(),
                     selectedTheso.getCurrentIdTheso(),
-                    nodeNote.getLexicalvalue(),
-                    nodeNote.getNotetypecode(),
+                    noteValueToChange,
+                    selectedNodeNote.getNotetypecode(),
                     idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -164,36 +167,36 @@ public class NoteBean implements Serializable {
             }
         } else {
             if (!noteHelper.updateTermNote(connect.getPoolConnexion(),
-                    nodeNote.getId_note(),
-                    nodeNote.getId_term(),
-                    nodeNote.getLang(),                    
+                    selectedNodeNote.getId_note(),
+                    selectedNodeNote.getId_term(),
+                    selectedNodeNote.getLang(),                    
                     selectedTheso.getCurrentIdTheso(),
-                    nodeNote.getLexicalvalue(),
-                    nodeNote.getNotetypecode(),
+                    noteValueToChange,
+                    selectedNodeNote.getNotetypecode(),
                     idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         }
-        
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
+        reset();
+        try {          
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+        } catch (IOException ex) {
+            Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("candidatForm:listTraductionForm");
+            pf.ajax().update("candidatForm");
+        }        
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
-        //      reset();
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("formRightTab:viewTabConcept:editNoteForm");
-        }        
+      
     }
-    
+/*    
     public ArrayList<NodeNote> nodeToEdit() {
         if (selectedTypeNote == null) {
             return null;
@@ -217,56 +220,57 @@ public class NoteBean implements Serializable {
                 return null;
         }
     }    
+    */
     
     
-    
-    public void deleteNote(NodeNote nodeNote, int idUser) {
+    public void deleteNote(int idUser) {
         NoteHelper noteHelper = new NoteHelper();
         FacesMessage msg;
 
-        if (selectedTypeNote.equalsIgnoreCase("note") || selectedTypeNote.equalsIgnoreCase("scopeNote") || selectedTypeNote.equalsIgnoreCase("historyNote")) {
+        if (selectedNodeNote.getNotetypecode().equalsIgnoreCase("note") || selectedNodeNote.getNotetypecode().equalsIgnoreCase("scopeNote") || selectedNodeNote.getNotetypecode().equalsIgnoreCase("historyNote")) {
             if (!noteHelper.deletethisNoteOfConcept(connect.getPoolConnexion(),
-                    nodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                    nodeNote.getId_concept(),
-                    nodeNote.getLang(),
+                    selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
+                    selectedNodeNote.getId_concept(),
+                    selectedNodeNote.getLang(),
                     selectedTheso.getCurrentIdTheso(),
-                    nodeNote.getNotetypecode(),
-                    nodeNote.getLexicalvalue(), idUser)) {
+                    selectedNodeNote.getNotetypecode(),
+                    noteValueToChange, idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         } else {
             if (!noteHelper.deleteThisNoteOfTerm(connect.getPoolConnexion(),
-                    nodeNote.getId_note(),
-                    nodeNote.getId_term(),
-                    nodeNote.getLang(),                    
+                    selectedNodeNote.getId_note(),
+                    selectedNodeNote.getId_term(),
+                    selectedNodeNote.getLang(),                    
                     selectedTheso.getCurrentIdTheso(),
-                    nodeNote.getNotetypecode(),
-                    nodeNote.getLexicalvalue(), idUser)) {
+                    selectedNodeNote.getNotetypecode(),
+                    noteValueToChange, idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         }
 
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
+        reset();
+        try {          
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+        } catch (IOException ex) {
+            Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("candidatForm:listTraductionForm");
+            pf.ajax().update("candidatForm");
+        }            
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
-        //      reset();
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("formRightTab:viewTabConcept:deleteNoteForm");
-        }
     }
     
+    /*
     public ArrayList<NodeNote> nodeToDelete() {
         if (selectedTypeNote == null) {
             return null;
@@ -289,13 +293,13 @@ public class NoteBean implements Serializable {
             default:
                 return null;
         }
-    }
+    }*/
 
     private boolean addConceptNote(int idUser) {
         NoteHelper noteHelper = new NoteHelper();
         return noteHelper.addConceptNote(
                 connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                candidatBean.getCandidatSelected().getIdConcepte(),
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,
@@ -306,7 +310,7 @@ public class NoteBean implements Serializable {
         NoteHelper noteHelper = new NoteHelper();
         return noteHelper.addTermNote(
                 connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getTerm().getId_term(),
+                candidatBean.getCandidatSelected().getIdTerm(),
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,
@@ -365,6 +369,14 @@ public class NoteBean implements Serializable {
 
     public void setSelectedNodeNote(NodeNote selectedNodeNote) {
         this.selectedNodeNote = selectedNodeNote;
+    }
+
+    public String getNoteValueToChange() {
+        return noteValueToChange;
+    }
+
+    public void setNoteValueToChange(String noteValueToChange) {
+        this.noteValueToChange = noteValueToChange;
     }
 
 }

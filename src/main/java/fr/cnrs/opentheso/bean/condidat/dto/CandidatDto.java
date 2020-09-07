@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.condidat.dto;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,19 +22,32 @@ public class CandidatDto implements Serializable {
     private String statut;
     private int nbrDemande;
     private int nbrParticipant;
+    private boolean voted;
+    private int nbrVote;
 
-    private String domaine;
     private String noteApplication;
-
     private List<String> defenitions;
-    private List<String> termesGenerique;
-    private List<String> termesAssocies;
-    private List<String> employePour;
+
+
     private List<String> participants;
     private List<TraductionDto> traductions;
     private List<CorpusDto> corpus;
     private List<MessageDto> messages;
-
+    
+    
+    // ajoutés par Miled 
+    private String domaine;
+    private List<NodeNote> nodeNotes;    
+    
+    //    private List<String> termesGenerique;
+    private ArrayList<NodeIdValue> termesGenerique;  
+    //private List<String> termesAssocies;    
+    private ArrayList<NodeIdValue> termesAssocies;   
+    
+    //private List<String> employePour;    
+    private String employePour;    
+    
+    
     public CandidatDto() {
         corpus = new ArrayList<>();
         messages = new ArrayList<>();
@@ -40,7 +55,7 @@ public class CandidatDto implements Serializable {
         defenitions = new ArrayList<>();
         termesGenerique = new ArrayList<>();
         termesAssocies = new ArrayList<>();
-        employePour = new ArrayList<>();
+        employePour = "";
         participants = new ArrayList<>();
     }
 
@@ -74,14 +89,6 @@ public class CandidatDto implements Serializable {
         this.domaine = domaine;
     }
 
-    public List<String> getTermesGenerique() {
-        return termesGenerique;
-    }
-
-    public void setTermesGenerique(List<String> termesGenerique) {
-        this.termesGenerique = termesGenerique;
-    }
-
     public List<String> getDefenitions() {
         return defenitions;
     }
@@ -96,22 +103,6 @@ public class CandidatDto implements Serializable {
 
     public void setNoteApplication(String noteApplication) {
         this.noteApplication = noteApplication;
-    }
-
-    public List<String> getTermesAssocies() {
-        return termesAssocies;
-    }
-
-    public void setTermesAssocies(List<String> termesAssocies) {
-        this.termesAssocies = termesAssocies;
-    }
-
-    public List<String> getEmployePour() {
-        return employePour;
-    }
-
-    public void setEmployePour(List<String> employePour) {
-        this.employePour = employePour;
     }
 
     public List<TraductionDto> getTraductions() {
@@ -233,4 +224,61 @@ public class CandidatDto implements Serializable {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+    
+///// ajoutés par Miled
+
+    public ArrayList<NodeIdValue> getTermesGenerique() {
+        return termesGenerique;
+    }
+
+    public void setTermesGenerique(ArrayList<NodeIdValue> termesGenerique) {
+        this.termesGenerique = termesGenerique;
+    }
+
+    public ArrayList<NodeIdValue> getTermesAssocies() {
+        return termesAssocies;
+    }
+
+    public void setTermesAssocies(ArrayList<NodeIdValue> termesAssocies) {
+        this.termesAssocies = termesAssocies;
+    }
+
+
+    public String getEmployePour() {
+        return employePour;
+    }
+
+    public void setEmployePour(String employePour) {
+        this.employePour = employePour;
+    }
+
+    public boolean isVoted() {
+        return voted;
+    }
+
+    public void setVoted(boolean voted) {
+        this.voted = voted;
+    }
+
+    public int getNbrVote() {
+        return nbrVote;
+    }
+
+    public void setNbrVote(int nbrVote) {
+        this.nbrVote = nbrVote;
+    }
+
+    public List<NodeNote> getNodeNotes() {
+        return nodeNotes;
+    }
+
+    public void setNodeNotes(List<NodeNote> nodeNotes) {
+        this.nodeNotes = nodeNotes;
+    }
+
+
+
+    
+    
+    
 }

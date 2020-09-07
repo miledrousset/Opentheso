@@ -1,0 +1,37 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="idEditNote" header="Modifier une note" widgetVar="editNote"
+              modal="true" resizable="false" position="top" width="360" height="200" style="margin: 10px; border: 10px" >
+
+        <h:form id="editNoteForm" style="width: 320px; display: block; margin-left: auto; margin-right: auto;">
+
+            <b:inputTextarea value="#{noteBeanCandidat.noteValueToChange}" required="true" label="texte : "
+                             style="width: 100%; resize: none; font-size: 13px; background: white;"/>
+
+            <b:row>
+                <b:column span="5" offset="1">
+                    <p:commandButton value="Modifier"
+                                     update="idEditNote editNoteForm :candidatForm:listNotesForm messageIndex"
+                                     styleClass="ui-priority-primary" ajax="false" class="btn btn-primary"
+                                     style="font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                     action="#{noteBeanCandidat.updateNote(currentUser.nodeUser.idUser)}"
+                                     oncomplete="PF('editNote').hide();"/>
+                </b:column>
+
+                <b:column span="5" >
+                    <p:commandButton value="Retour" 
+                                     icon="fas fa-undo fas 2x"                                       
+                                     styleClass="ui-priority-primary" ajax="false"
+                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #FFC107; 
+                                     border: none; box-shadow: none; float: right" class="btn btn-primary"
+                                     oncomplete="PF('editNote').hide();"/>
+                </b:column>                   
+                
+            </b:row>
+        </h:form>
+    </p:dialog>
+</ui:fragment>

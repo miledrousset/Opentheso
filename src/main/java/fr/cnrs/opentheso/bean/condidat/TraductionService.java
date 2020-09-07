@@ -1,17 +1,21 @@
 package fr.cnrs.opentheso.bean.condidat;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bean.condidat.dao.TermeDao;
 import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
-import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import java.io.IOException;
+
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 
@@ -20,10 +24,12 @@ import javax.inject.Inject;
 public class TraductionService implements Serializable {
 
     @Inject
-    private Connect connect;
+    private CandidatBean candidatBean;
 
     @Inject
-    private CandidatBean candidatBean;
+    private LanguageBean languageBean;
+    
+    @Inject private SelectedTheso selectedTheso;
 
     private String langage;
     private String traduction;
@@ -34,12 +40,22 @@ public class TraductionService implements Serializable {
     private String newLangage;
     private String newTraduction;
     
+    
+    private ArrayList<NodeLangTheso> nodeLangs;
+    private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits    
+    
+    StringBuilder messages;
 
     public TraductionService() {
         langage = null;
         traduction = null;
+        messages = new StringBuilder();
     }
 
+    /**
+     * set pour la modification d'une tradcution
+     * @param traductionDto 
+     */
     public void init(TraductionDto traductionDto) {
         langage = traductionDto.getLangue();
         traduction = traductionDto.getTraduction();
@@ -48,81 +64,113 @@ public class TraductionService implements Serializable {
         traductionOld = traduction;
     }
     
+    /**
+     * set pour une nouvelle traduction
+     */
     public void init() {
         newLangage = "";
         newTraduction = "";
+        nodeLangsFiltered = new ArrayList<>();        
+        initLanguages();
     }
+    
+    private void initLanguages(){
+        nodeLangs = selectedTheso.getNodeLangs();
 
-    public void addTraductionCandidat() throws SQLException {
+        nodeLangs.forEach((nodeLang) -> {
+            nodeLangsFiltered.add(nodeLang);
+        });
+       
+        // les langues à ignorer
+        ArrayList<String> langsToRemove = new ArrayList<>();
+        langsToRemove.add(candidatBean.getCandidatSelected().getLang());
+        for (TraductionDto traductionDto : candidatBean.getCandidatSelected().getTraductions()) {
+            langsToRemove.add(traductionDto.getLangue());
+        }
+        for (NodeLangTheso nodeLang : nodeLangs) {
+            if(langsToRemove.contains(nodeLang.getCode())) {
+                nodeLangsFiltered.remove(nodeLang);
+            }
+        }
 
+    }        
+
+    public void addTraductionCandidat(){
+        TermHelper termHelper = new TermHelper();
+        
+        if(termHelper.isTermExistIgnoreCase(candidatBean.getConnect().getPoolConnexion(),
+                newTraduction,
+                candidatBean.getCandidatSelected().getIdThesaurus(),
+                newLangage)) {
+            candidatBean.showMessage(FacesMessage.SEVERITY_ERROR,  "Un label identique existe déjà dans le thésaurus");    
+            messages.append("label existe pour :").append(candidatBean.getCandidatSelected().getIdConcepte())
+                    .append("#").append(newTraduction).append(" (").append(langage).append(")");
+            messages.append('\n');
+            
+            return;
+        }
+        TermeDao termeDao = new TermeDao();
         Term term = new Term();
         term.setStatus("D");
+        term.setSource("Candidat");
         term.setLang(newLangage);
         term.setLexical_value(newTraduction);
         term.setId_thesaurus(candidatBean.getCandidatSelected().getIdThesaurus());
-        term.setContributor(candidatBean.getCurrentUser().getNodeUser().getIdUser());
-        term.setIdUser(candidatBean.getCurrentUser().getNodeUser().getIdUser()+"");
+        term.setContributor(candidatBean.getCandidatSelected().getUserId());
+        term.setCreator(candidatBean.getCandidatSelected().getUserId());
+        term.setId_term(candidatBean.getCandidatSelected().getIdTerm());
 
-        HikariDataSource connection = connect.getPoolConnexion();
+        try {
+            termeDao.addNewTerme(candidatBean.getConnect().getPoolConnexion(), term);
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));            
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
+            
+            messages.append("erreur pour :").append(newTraduction).append(" (").append(langage).append(")");
+            messages.append('\n');
+        }
 
-        new TermHelper().addTerm(connection.getConnection(), term, candidatBean.getCandidatSelected().getIdConcepte(),
-                candidatBean.getCandidatSelected().getUserId());
-
-        refrechTraductions(connection);
-
-        connection.close();
-
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec succée");
-        candidatBean.setIsNewCandidatActivate(true);
     }
 
-    private void refrechTraductions(HikariDataSource connection) {
-        candidatBean.getCandidatSelected().setTraductions(new TermHelper().getTraductionsOfConcept(connection,
-                candidatBean.getCandidatSelected().getIdConcepte(),
-                candidatBean.getCandidatSelected().getIdThesaurus(),
-                candidatBean.getCandidatSelected().getLang())
-                .stream().map(termPref -> new TraductionDto(LanguageEnum.valueOf(termPref.getLang()).getLanguage(),
-                        termPref.getLexicalValue())).collect(Collectors.toList()));
+    /**
+     * permet de supprimer une tradcution
+     * #MR
+     */
+    public void deleteTraduction() {
+        TermeDao termeDao = new TermeDao();
+        try {
+            termeDao.deleteTermByIdTermAndLang(candidatBean.getConnect().getPoolConnexion(),
+                    candidatBean.getCandidatSelected().getIdTerm(),
+                    langage,
+                    candidatBean.getCandidatSelected().getIdThesaurus());
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));            
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
+        }
     }
 
-    public void deleteTraduction() throws SQLException {
-
-        HikariDataSource connection = connect.getPoolConnexion();
-
-        new TermeDao().deleteTermByValueAndLangAndThesaurus(connection, candidatBean.getCandidatSelected().getIdThesaurus(), langage, traduction);
-
-        refrechTraductions(connection);
-
-        connection.close();
-
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction supprimée avec succée");
-        candidatBean.setIsNewCandidatActivate(true);
-    }
-
-    public void updateTraduction() throws SQLException {
-
-        HikariDataSource connection = connect.getPoolConnexion();
-
-        new TermeDao().deleteTermByValueAndLangAndThesaurus(connection, candidatBean.getCandidatSelected().getIdThesaurus(),
-                langageOld, traductionOld);
-
-        Term term = new Term();
-        term.setStatus("D");
-        term.setLang(langage);
-        term.setLexical_value(traduction);
-        term.setId_thesaurus(candidatBean.getCandidatSelected().getIdThesaurus());
-        term.setContributor(candidatBean.getCurrentUser().getNodeUser().getIdUser());
-        term.setIdUser(candidatBean.getCurrentUser().getNodeUser().getIdUser()+"");
-
-        new TermHelper().addTerm(connection.getConnection(), term, candidatBean.getCandidatSelected().getIdConcepte(),
-                candidatBean.getCandidatSelected().getUserId());
-
-        refrechTraductions(connection);
-
-        connection.close();
-
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Traduction mise à jour avec succée !");
-        candidatBean.setIsNewCandidatActivate(true);
+    /**
+     * permet de modifier une traduction
+     * #MR
+     */
+    public void updateTraduction() {
+        TermeDao termeDao = new TermeDao();
+        try {
+            termeDao.updateIntitule(candidatBean.getConnect().getPoolConnexion(),
+                    traduction,
+                    candidatBean.getCandidatSelected().getIdTerm(),
+                    candidatBean.getCandidatSelected().getIdThesaurus(),
+                    langage);
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());            
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO,  languageBean.getMsg("candidat.traduction.msg3"));            
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
+        }        
     }
 
     public String getLangage() {
@@ -172,5 +220,18 @@ public class TraductionService implements Serializable {
     public void setNewTraduction(String newTraduction) {
         this.newTraduction = newTraduction;
     }
+
+    public ArrayList<NodeLangTheso> getNodeLangsFiltered() {
+        return nodeLangsFiltered;
+    }
+
+    public void setNodeLangsFiltered(ArrayList<NodeLangTheso> nodeLangsFiltered) {
+        this.nodeLangsFiltered = nodeLangsFiltered;
+    }
+
+    public String getMessages() {
+        return messages.toString();
+    }
+
 
 }

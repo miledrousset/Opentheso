@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/opentheso2">
-  <Resource
-    name="BeanManager"
-    auth="Container"
-    type="javax.enterprise.inject.spi.BeanManager"
-    factory="org.jboss.weld.resources.ManagerObjectFactory"
-    />
+  <Resource auth="Container" factory="org.jboss.weld.resources.ManagerObjectFactory" name="BeanManager" type="javax.enterprise.inject.spi.BeanManager"/>
 </Context>

@@ -2,14 +2,15 @@
 
 --  !!!!!!! Attention !!!!!!!!!
 --
--- pour le passage des anciennes versions vers la 4.3
+-- à appliquer uniquement pour le passage des anciennes versions vers la 20.07
 -- il faut appliquer ce script à votre BDD actuelle,
 -- il faut faire une sauvegarde avant toute opération
---
+-- pour une nouvelle installation, il faut utiliser le script (opentheso_current.sql) en créant votre BDD avant 
+
 --  !!!!!!! Attention !!!!!!!!! 
 
--- version=20.06
--- date : 22/06/2020
+-- version=20.07
+-- date : 29/07/2020
 --
 -- n'oubliez pas de définir le role suivant votre installation 
 --
@@ -17,8 +18,6 @@
 
 --- fonctions à appliquer en premier et à part depuis la version 4.4.1
  SET ROLE = opentheso;
-
-
 
 
 -- requête pour récupérer les candidat d'un thésaurus
@@ -50,11 +49,6 @@
 -- and hierarchical_relationship.role = 'BT'
 -- and concept.top_concept = true
 -- and concept.id_thesaurus = 'TH_1'
-
-
-
-
-
 
 
 
@@ -151,6 +145,78 @@ INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUE
 -- pour remettre tous les concepts dans un group en particulier 
 -- insert into concept_group_concept (idgroup,idthesaurus,idconcept) 
 -- select 'G2854', id_thesaurus, id_concept from concept where id_thesaurus = '43' 
+
+
+
+
+
+-- nouvelles tables pour le nouveau module de candidats 
+-- Table: candidat_messages
+CREATE TABLE IF NOT EXISTS public.candidat_messages
+(
+    id_message SERIAL PRIMARY KEY,
+    value text NOT NULL,
+    id_user integer,
+    id_concept character varying,
+    id_thesaurus character varying,
+    date text
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+-- Table: candidat_status
+CREATE TABLE IF NOT EXISTS public.candidat_status
+(
+    id_concept character varying NOT NULL,
+    id_status integer,
+    date date NOT NULL DEFAULT now(),
+    id_user integer,
+    id_thesaurus character varying,
+    message text,
+    id_user_admin integer,
+    CONSTRAINT candidat_status_id_concept_id_thesaurus_key UNIQUE (id_concept, id_thesaurus)
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+-- Table: candidat_vote
+CREATE TABLE IF NOT EXISTS public.candidat_vote
+(
+    id_vote SERIAL PRIMARY KEY,
+    id_user integer,
+    id_concept character varying,
+    id_thesaurus character varying,
+    CONSTRAINT candidat_vote_id_user_id_concept_id_thesaurus_key UNIQUE (id_user, id_concept, id_thesaurus)
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: status
+DROP TABLE if exists public.status;
+CREATE TABLE IF NOT EXISTS status
+(
+    id_status SERIAL PRIMARY KEY,
+    value text
+)
+WITH (
+  OIDS=FALSE
+);
+INSERT INTO status (id_status, value) VALUES (1, 'En attente'), (2, 'Inséré'), (3, 'Rejeté');
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2399,6 +2465,17 @@ create or replace function update_table_term_historique() returns void as $$
 $$language plpgsql;
 
 
+----------------------------------------------------------------------------
+-- mise à jour de la table note / ajout de la colonne id_user 
+create or replace function update_table_note_user() returns void as $$
+    begin 
+        IF NOT EXISTS (SELECT * FROM information_schema.columns WHERE table_name='note' AND column_name='id_user' ) THEN
+            execute 'Alter TABLE note ADD COLUMN id_user integer;';
+        end if;
+    end;
+$$language plpgsql;
+
+
 create or replace function create_table_external_images() returns void as $$
     begin 
         IF NOT EXISTS (SELECT * FROM information_schema.tables WHERE table_name='external_images') THEN
@@ -2479,7 +2556,7 @@ SELECT update_table_term_historique();
 SELECT update_table_preferences_original_uri();
 select update_table_user_role_group_constraint();
 select create_table_corpus();
-
+select update_table_note_user();
 
 
 -- suppression des fonctions 
@@ -2502,7 +2579,7 @@ select delete_fonction('update_table_preferences_original_uri','');
 select delete_fonction('update_table_user_role_group_constraint','');
 select delete_fonction('create_table_corpus','');
 
-
+select delete_fonction('update_table_note_user', '');
 
 
 
