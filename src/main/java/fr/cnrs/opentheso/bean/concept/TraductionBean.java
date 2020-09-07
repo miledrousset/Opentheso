@@ -182,7 +182,56 @@ public class TraductionBean implements Serializable {
             pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");
             pf.ajax().update("formRightTab:viewTabConcept:renameTraductionForm");
         }
-    }             
+    }    
+    
+    /**
+     * permet de modifier toutes les traductions du concept
+     * multiple corrections
+     * @param idUser
+     */
+    public void updateAllTraduction(int idUser) {
+        FacesMessage msg;
+        if (nodeTermTraductions == null || nodeTermTraductions.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " veuillez saisir une valeur !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+        TermHelper termHelper = new TermHelper();
+        
+        for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
+            if(!termHelper.updateTraduction(connect.getPoolConnexion(),
+                    nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getId_term(),
+                    nodeTermTraduction.getLang(),
+                    selectedTheso.getCurrentIdTheso(), idUser)) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }            
+        }
+        
+        conceptBean.getConcept(
+                selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                conceptBean.getSelectedLang());
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), 
+                conceptBean.getNodeConcept().getConcept().getIdConcept());
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
+        reset();
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");
+            pf.ajax().update("formRightTab:viewTabConcept:renameTraductionForm");
+        }
+    }        
+    
             
     
     /**
