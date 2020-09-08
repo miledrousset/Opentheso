@@ -15,7 +15,9 @@
                             style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px; "
                             class="dropdown-submenu pull-left"
                             tooltip="Actions globales sur le concept/branche en cours" tooltip-delay-show="1000">
-                    <b:navCommandLink  value="Couper/déplacer" tooltip="déplacer le concept ou la branche" tooltip-delay-show="1000"
+
+
+                    <b:navCommandLink  value="Couper/déplacer" tooltip="déplacer le concept/branche" tooltip-delay-show="1000"
                                        action="#{cutAndPaste.onStartCut(conceptView.nodeConcept)}"
                                        styleClass="buttonIconOrange"
                                        style="font-size: 12px;"
@@ -24,7 +26,7 @@
                     <b:navCommandLink  rendered="#{(cutAndPaste.isCopyOn) and
                                                    (cutAndPaste.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
                                        value="Coller #{cutAndPaste.nodeConceptDrag.term.lexical_value} commme terme spécifique" 
-                                       tooltip="déplacer le concept ou la branche sous ce concept" tooltip-delay-show="1000"
+                                       tooltip="déplacer le concept/branche sous ce concept" tooltip-delay-show="1000"
                                        actionListener="#{cutAndPaste.setDropppedConcept(conceptView.nodeConcept)}"
                                        action="#{cutAndPaste.validatePaste()}"
                                        oncomplete="PF('cutAndPaste').show();"
@@ -34,13 +36,13 @@
                     </b:navCommandLink>
                     <b:navCommandLink  rendered="#{(cutAndPaste.isCopyOn) and (!cutAndPaste.cuttedConcept.concept.topConcept)}"
                                        value="Coller #{cutAndPaste.nodeConceptDrag.term.lexical_value} à la racine" 
-                                       tooltip="déplacer le concept ou la branche à la racine comme TopTerm" tooltip-delay-show="1000"
+                                       tooltip="déplacer le concept/branche à la racine comme TopTerm" tooltip-delay-show="1000"
                                        actionListener="#{cutAndPaste.setIsDropToRoot(true)}"
                                        action="#{cutAndPaste.paste()}"
                                        styleClass="buttonIconOrange"
                                        style="font-size: 12px;"
                                        update="idCutAndPaste cutAndPasteForm">
-                    </b:navCommandLink>                    
+                    </b:navCommandLink>
                     <b:navCommandLink value="Supprimer le concept" 
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idDeleteConcept deleteConceptForm"
@@ -55,7 +57,42 @@
                                       action="#{editConcept.reset('')}"
                                       oncomplete="PF('generateArk').show();"
                                       style="font-size: 12px;">
-                    </b:navCommandLink>                       
+                    </b:navCommandLink>     
+                    
+
+                    <b:navLink/>
+                    <b:navCommandLink disabled="true"
+                                        rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
+                                       value="Copier vers un autre thésaurus" tooltip="Copier le concept/branche vers un autre thésaurus" tooltip-delay-show="1000"
+                                       action="#{copyAndPasteBetweenTheso.onStartCopy()}"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px;"
+                                       update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
+                    </b:navCommandLink>
+                    <b:navCommandLink  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
+                                       value="Annuler copie" tooltip="Annuler la copie de concept/branche vers un autre thésaurus" tooltip-delay-show="1000"
+                                       action="#{copyAndPasteBetweenTheso.reset()}"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px;"
+                                       update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
+                    </b:navCommandLink>                    
+                
+                    <b:navCommandLink rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
+                                      value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) ici !!" 
+                                      tooltip="Coller le concept/branche copier d'un autre thésaurus" tooltip-delay-show="500"
+                                      actionListener="#{copyAndPasteBetweenTheso.validatePaste()}" 
+                                      styleClass="buttonIconOrange"
+                                      style="font-size: 12px;"
+                                      update="idCopyAndPasteBetweenTheso copyAndPasteBetweenThesoForm"
+                                      oncomplete="PF('copyAndPasteBetweenTheso').show();" >
+                    </b:navCommandLink> 
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     <b:navLink/>
                     <b:navCommandLink value="Importer une liste des concepts"
                                       tooltip="Importer une liste de concepts spécifiques au format tabulé sous #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
@@ -73,7 +110,10 @@
         <ui:include src="/dialog/dragAndDrop/cutAndPaste.xhtml" />
         <ui:include src="/dialog/concept/deleteConcept.xhtml" />   
         <ui:include src="/dialog/import/listImportCsv.xhtml" />       
-        <ui:include src="/dialog/concept/generateArk.xhtml" />         
+        <ui:include src="/dialog/concept/generateArk.xhtml" /> 
+        <ui:include src="/dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />         
+       
+        
 
 
         <!-- Fil d'ariane -->
@@ -1216,7 +1256,6 @@
 
         <ui:include src="/dialog/gps/setGps.xhtml" />      
         <ui:include src="/dialog/gps/deleteGps.xhtml" />
-
     </h:panelGroup>
 
 
