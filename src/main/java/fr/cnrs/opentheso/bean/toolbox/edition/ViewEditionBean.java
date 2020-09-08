@@ -22,6 +22,8 @@ public class ViewEditionBean implements Serializable {
     // les vues
     private boolean isViewListTheso;
     private boolean isViewExportSkos;
+    private boolean isViewExportPDF;
+    private boolean isViewExportCSV;
     private boolean isViewImportSkos;
     private boolean isViewImportCsv;
 
@@ -41,6 +43,8 @@ public class ViewEditionBean implements Serializable {
         isImportStarted = false;
         isViewNewTheso = false;
         isViewModifyTheso = false;
+        isViewExportPDF = false;
+        isViewExportCSV = false;
     }
 
     public void init() {
@@ -52,7 +56,9 @@ public class ViewEditionBean implements Serializable {
         isViewImportCsv = false;
         isImportStarted = false;
         isViewNewTheso = false;
+        isViewExportPDF = false;
         isViewModifyTheso = false;
+        isViewExportCSV = false;
     }
 
     public String getNewAlternateColor() {
@@ -96,7 +102,9 @@ public class ViewEditionBean implements Serializable {
         isViewImportSkos = false;
         isViewImportCsv = false;
         isViewNewTheso = false;
+        isViewExportPDF = false;
         isViewModifyTheso = false;
+        isViewExportCSV = false;
     }
 
     public boolean isIsExportStarted() {
@@ -124,6 +132,8 @@ public class ViewEditionBean implements Serializable {
         isViewNewTheso = false;
         isViewModifyTheso = false;
         isViewImportCsv = false;
+        isViewExportPDF = false;
+        isViewExportCSV = false;
     }
 
     public boolean isIsImportStarted() {
@@ -146,6 +156,8 @@ public class ViewEditionBean implements Serializable {
         isViewImportSkos = false;
         isViewImportCsv = false;
         isViewModifyTheso = false;
+        isViewExportPDF = false;
+        isViewExportCSV = false;
     }
 
     public boolean isIsViewModifyTheso() {
@@ -159,6 +171,8 @@ public class ViewEditionBean implements Serializable {
         isViewListTheso = false;
         isViewImportSkos = false;
         isViewImportCsv = false;
+        isViewExportPDF = false;
+        isViewExportCSV = false;
     }
 
     public boolean isIsViewImportCsv() {
@@ -172,6 +186,42 @@ public class ViewEditionBean implements Serializable {
         isViewListTheso = false;
         isViewImportSkos = false;
         isViewModifyTheso = false;
+        isViewExportPDF = false;
+        isViewExportCSV = false;
+    }
+
+    public boolean isExportView() {
+        return isViewExportPDF || isViewExportCSV || isViewExportSkos;
+    }
+
+    public boolean isIsViewExportPDF() {
+        return isViewExportPDF;
+    }
+
+    public void setIsViewExportPDF(boolean isViewExportPDF) {
+        this.isViewExportPDF = isViewExportPDF;
+        isViewNewTheso = false;
+        isViewExportSkos = false;
+        isViewListTheso = false;
+        isViewImportSkos = false;
+        isViewModifyTheso = false;
+        isViewImportCsv = false;
+        isViewExportCSV = false;
+    }
+
+    public void setIsViewExportCSV(boolean isViewExportCSV) {
+        this.isViewExportCSV = isViewExportCSV;
+        isViewExportPDF = false;
+        isViewNewTheso = false;
+        isViewExportSkos = false;
+        isViewListTheso = false;
+        isViewImportSkos = false;
+        isViewModifyTheso = false;
+        isViewImportCsv = false;
+    }
+
+    public boolean isIsViewExportCSV() {
+        return isViewImportCsv;
     }
 
 }
