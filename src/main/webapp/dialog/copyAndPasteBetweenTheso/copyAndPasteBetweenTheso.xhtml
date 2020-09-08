@@ -1,0 +1,61 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:b="http://bootsfaces.net/ui">
+
+    <p:dialog id="idCopyAndPasteBetweenTheso" header="Validation copier/coller" widgetVar="copyAndPasteBetweenTheso" 
+              modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >         
+
+        <h:panelGroup id="copyAndPasteBetweenThesoForm">         
+
+            <b:row>
+                <b:column span="12">
+                    <h:outputText style="font-size: 12px;"
+                                  value="Copier : #{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value} (#{copyAndPasteBetweenTheso.nodeConceptDrag.concept.idConcept})"/>                 
+                </b:column>
+            </b:row>
+
+            <b:row>
+                <b:column span="12">
+                    <h:outputText style="font-size: 12px;"
+                                  value="du thésaurus : #{copyAndPasteBetweenTheso.idThesoOrigin}"/>                      
+                </b:column>
+            </b:row>
+
+            <b:row>
+                <b:column span="12">
+                    <h:outputText style="font-size: 12px;"
+                                  value="vers : #{conceptView.nodeConcept.term.lexical_value}"/>                      
+                </b:column>
+            </b:row>
+
+
+            <b:row>
+                <b:column span="12">
+                    <p:selectOneMenu id="basic" value="#{copyAndPasteBetweenTheso.identifierType}">
+                        <f:selectItem itemLabel="Non" itemValue="sans" />
+                        <f:selectItem itemLabel="Ark" itemValue="ark" />
+                        <f:selectItem itemLabel="Handle" itemValue="handle" />
+                    </p:selectOneMenu>                
+                </b:column>
+            </b:row>            
+
+            <b:row>
+                <b:column span="4" offset="4">
+                    <p:commandButton value="Confirmer" 
+                                     title="Coller la branche qui a été copié d'un autre thésaurus"
+                                     ajax="true"
+                                     class="btn btn-primary"
+                                     action="#{copyAndPasteBetweenTheso.paste()}"
+                                     style="width:100%; font-size: 12px;color: white; background: #43B572;" 
+                                     update="idCopyAndPasteBetweenTheso formRightTab:viewTabConcept:idConceptViewActions messageIndex"
+                                     oncomplete="PF('copyAndPasteBetweenTheso').hide();"/>                     
+                </b:column>
+            </b:row>                
+
+        </h:panelGroup>          
+    </p:dialog>  
+</ui:composition>

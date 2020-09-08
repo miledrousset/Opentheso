@@ -34,6 +34,19 @@ end
 $$language plpgsql;
 
 
+--
+-- mise a jour de la table candidat_vote (ajout de la colonne sort_by_notation)
+--
+create or replace function update_table_candidat_vote() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='candidat_vote' AND column_name='type_vote') THEN
+        execute 'ALTER TABLE candidat_vote ADD COLUMN  type_vote varchar(30)
+                ALTER TABLE candidat_vote ADD COLUMN id_note varchar(30);';
+    END IF;
+end
+$$language plpgsql;
+
+
 
 
 
