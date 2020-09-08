@@ -1447,7 +1447,7 @@ public class NoteHelper {
                     "AND (preferred_term.id_term = note.id_term or preferred_term.id_concept = note.id_concept) " +
                     "AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
                     "AND note.lang = '"+idLang+"' "+
-                    "AND preferred_term.id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')");
+                    "AND preferred_term.id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '"+idThesaurus+"')");
             ResultSet resultSet = stmt.getResultSet();
             if(resultSet.next()) {
                 count = resultSet.getInt(1);

@@ -14,8 +14,10 @@
             </b:column>
             <b:column span="3">
                 <b:selectOneMenu value="#{statistiqueBean.selectedStatistiqueTypeCode}" 
-                                 styleClass="selectOneMenu_custom" style="font-size: 12px; 
-                                 background: white; border-color: #43B572">
+                                 styleClass="selectOneMenu_custom" style="font-size: 12px;
+                                 background: white; border-color: #43B572"
+                                 onchange="ajax:statistiqueBean.inti()" update="statisticForm" >
+
                     <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.general')}" itemValue="0" />
                     <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.par_concept')}" itemValue="1" />
                     <f:facet name="append">

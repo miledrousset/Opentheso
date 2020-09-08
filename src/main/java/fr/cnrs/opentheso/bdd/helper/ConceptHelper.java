@@ -687,7 +687,7 @@ public class ConceptHelper {
 
         String query = "SELECT DISTINCT concept.id_concept, concept.id_ark, concept.id_handle FROM concept " +
                 "WHERE id_thesaurus = '"+idThesaurus+"' " +
-                "AND id_concept NOT IN (SELECT idconceptFROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
+                "AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
 
         return getConceptDetails(ds, query, idThesaurus);
     }
@@ -799,7 +799,7 @@ public class ConceptHelper {
                 try {
                     String query = "SELECT count(id_concept) FROM concept " +
                             "WHERE id_thesaurus = '"+idThesaurus+"' " +
-                            "AND id_concept NOT IN (SELECT idconceptFROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
+                            "AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
