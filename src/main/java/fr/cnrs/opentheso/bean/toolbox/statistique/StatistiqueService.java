@@ -49,10 +49,10 @@ public class StatistiqueService {
         // Ajout de la dernier ligne réservé aux concepts sans collection
         GenericStatistiqueData data = new GenericStatistiqueData();
         data.setCollection("Sans collection");
-        data.setConceptsNbr(new ConceptHelper().getCountOfConceptsWithoutGroup(connect.getPoolConnexion(), idTheso));
-        data.setNotesNbr(new NoteHelper().getNbrNoteThesoAndLangAndWithoutGroup(connect.getPoolConnexion(), idTheso, idLang));
-        data.setSynonymesNbr(new StatisticHelper().getNbDescWithoutGroup(connect.getPoolConnexion(), idTheso));
-        data.setTermesNonTraduitsNbr(getNbrTermNonTraduitWithoutGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setConceptsNbr(new ConceptHelper().getCountOfConceptsSansGroup(connect.getPoolConnexion(), idTheso));
+        data.setNotesNbr(new NoteHelper().getNbrNoteSansGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setSynonymesNbr(new StatisticHelper().getNbDesSynonimeSansGroup(connect.getPoolConnexion(), idTheso));
+        data.setTermesNonTraduitsNbr(new TermHelper().getNbrTermSansGroup(connect.getPoolConnexion(), idTheso, idLang));
         result.add(data);
 
         return result;
@@ -71,7 +71,7 @@ public class StatistiqueService {
         return nbrTermNonTraduit.get();
     }
 
-    private int getNbrTermNonTraduitWithoutGroup(HikariDataSource ds, String idTheso, String idLang) {
+    private int getNbrTermTraduitWithoutGroup(HikariDataSource ds, String idTheso, String idLang) {
         TermHelper termHelper = new TermHelper();
         ArrayList<NodeUri> concepts = new ConceptHelper().getListConceptsWithoutGroup(ds, idTheso);
         AtomicInteger nbrTermNonTraduit = new AtomicInteger();

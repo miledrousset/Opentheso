@@ -199,7 +199,7 @@ public class StatisticHelper {
         return count;
     }
 
-    public int getNbDescWithoutGroup(HikariDataSource ds, String idThesaurus) {
+    public int getNbDesSynonimeSansGroup(HikariDataSource ds, String idThesaurus) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -210,10 +210,14 @@ public class StatisticHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select count(id_concept) from concept left join concept_group_concept" +
-                            " on id_concept = idconcept and id_thesaurus = idthesaurus" +
-                            " where id_thesaurus = '" +idThesaurus + "'" +
-                            " and idgroup IS NULL";
+                    String query = "SELECT count(non_preferred_term.id_term) " +
+                            "FROM non_preferred_term, preferred_term " +
+                            "WHERE preferred_term.id_term = non_preferred_term.id_term " +
+                            "AND preferred_term.id_thesaurus = non_preferred_term.id_thesaurus " +
+                            "AND non_preferred_term.id_thesaurus = '"+idThesaurus+"' " +
+                            "AND preferred_term.id_concept NOT " +
+                                "IN (SELECT idconcept FROM concept_group_concept " +
+                                "WHERE concept_group_concept.idthesaurus = '"+idThesaurus+"')";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();

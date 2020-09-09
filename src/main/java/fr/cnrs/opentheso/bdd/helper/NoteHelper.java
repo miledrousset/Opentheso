@@ -1431,7 +1431,7 @@ public class NoteHelper {
         return count;
     }
 
-    public int getNbrNoteThesoAndLangAndWithoutGroup(HikariDataSource ds, String idThesaurus, String idLang) {
+    public int getNbrNoteDesConceptsSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
 
         Connection conn;
         Statement stmt;
@@ -1441,13 +1441,10 @@ public class NoteHelper {
             // Get connection from pool
             conn = ds.getConnection();
             stmt = conn.createStatement();
-            stmt.executeQuery("SELECT count(preferred_term.id_concept) " +
-                    "FROM preferred_term, note " +
-                    "WHERE preferred_term.id_thesaurus = note.id_thesaurus " +
-                    "AND (preferred_term.id_term = note.id_term or preferred_term.id_concept = note.id_concept) " +
-                    "AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
-                    "AND note.lang = '"+idLang+"' "+
-                    "AND preferred_term.id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '"+idThesaurus+"')");
+            stmt.executeQuery("SELECT count(note.id) FROM concept, note WHERE concept.id_concept = note.id_concept " +
+                    "AND concept.id_thesaurus = note.id_thesaurus AND concept.id_thesaurus = '"+idThesaurus+"' " +
+                    "AND note.lang = '"+idLang+"' AND concept.id_concept NOT IN (SELECT idconcept FROM concept_group_concept " +
+                    "WHERE idthesaurus = '"+idThesaurus+"')");
             ResultSet resultSet = stmt.getResultSet();
             if(resultSet.next()) {
                 count = resultSet.getInt(1);
@@ -1458,6 +1455,38 @@ public class NoteHelper {
             log.error("Error while getting Count of Note in without Group", sqle);
         }
         return count;
+    }
+
+    public int getNbrNoteDesTermsSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
+
+        Connection conn;
+        Statement stmt;
+        int count = 0;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            stmt = conn.createStatement();
+            stmt.executeQuery("SELECT count(note.id) FROM preferred_term, note WHERE preferred_term.id_term = note.id_term " +
+                    "AND preferred_term.id_thesaurus = note.id_thesaurus AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
+                    "AND note.lang = '"+idLang+"' AND preferred_term.id_concept NOT IN " +
+                    "(SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '"+idThesaurus+"')");
+            ResultSet resultSet = stmt.getResultSet();
+            if(resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException sqle) {
+            log.error("Error while getting Count of Note in without Group", sqle);
+        }
+        return count;
+    }
+
+    public int getNbrNoteSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
+        int nbrNoteConcepts = getNbrNoteDesConceptsSansGroup(ds, idThesaurus, idLang);
+        int nbrNoteTerms = getNbrNoteDesTermsSansGroup(ds, idThesaurus, idLang);
+        return nbrNoteConcepts + nbrNoteTerms;
     }
 
 }

@@ -784,7 +784,7 @@ public class ConceptHelper {
      * @param idThesaurus
      * @return
      */
-    public int getCountOfConceptsWithoutGroup(HikariDataSource ds, String idThesaurus) {
+    public int getCountOfConceptsSansGroup(HikariDataSource ds, String idThesaurus) {
 
         Connection conn;
         Statement stmt;
