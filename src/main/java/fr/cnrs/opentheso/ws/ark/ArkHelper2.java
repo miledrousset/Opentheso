@@ -36,8 +36,13 @@ public class ArkHelper2 {
         propertiesArk.setProperty("idNaan", nodePreference.getIdNaan());
         propertiesArk.setProperty("user", nodePreference.getUserArk());
         propertiesArk.setProperty("password", nodePreference.getPassArk());
-        arkClientRest.setPropertiesArk(propertiesArk);        
-        return arkClientRest.login();
+        arkClientRest.setPropertiesArk(propertiesArk);    
+        try {
+            return arkClientRest.login();
+        } catch (Exception e) {
+            return false;
+        }
+
     }
     
     public boolean isArkExistOnServer(String idArk) {
@@ -168,7 +173,10 @@ public class ArkHelper2 {
         // création de l'identifiant Ark et Handle 
         String jsonDatas = nodeJson2.getJsonString();
         if(jsonDatas == null) return false;
-        if(!arkClientRest.addArk(jsonDatas)) return false;
+        if(!arkClientRest.addArk(jsonDatas)){
+            message = message + arkClientRest.getMessage();
+            return false;
+        }
 
         idArk = arkClientRest.getIdArk();
         idHandle = arkClientRest.getIdHandle();
@@ -221,7 +229,10 @@ public class ArkHelper2 {
         String jsonDatas = nodeJson2.getJsonString();
         if(jsonDatas == null) return false;        
         
-        if(!arkClientRest.updateArk(nodeJson2.getJsonString())) return false;
+        if(!arkClientRest.updateArk(nodeJson2.getJsonString())) {
+            message = message + arkClientRest.getMessage();
+            return false;
+        }
 
         idHandle = arkClientRest.getIdHandle();
 

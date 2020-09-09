@@ -359,6 +359,100 @@ public class EditConcept implements Serializable {
         }
     }
 
+    
+    /**
+     * permet de générer les identifiants Ark pour les concepts qui n'en ont pas
+     * si un identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void generateArkForConceptWithoutArk(){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts;
+        idConcepts = conceptHelper.getAllIdConceptOfThesaurusWithoutArk(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        
+        if(roleOnThesoBean.getNodePreference() == null) return;
+        //idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        FacesMessage msg;
+        if(!conceptHelper.generateArkId(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                idConcepts)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);             
+            return;
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
+    }       
+    
+    /**
+     * permet de générer les identifiants Ark pour cette branche,
+     * si un identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void generateArkForThisBranch(){
+        if(roleOnThesoBean.getNodePreference() == null) return;        
+        if(conceptView.getNodeConcept() == null) return;
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+        
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        FacesMessage msg;
+        if(!conceptHelper.generateArkId(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                idConcepts)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);             
+            return;
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
+    }      
+    
+    /**
+     * permet de générer la totalité des identifiants Ark,
+     * si un identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void generateAllArk(){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts;
+        idConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        
+        if(roleOnThesoBean.getNodePreference() == null) return;
+        //idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        FacesMessage msg;
+        if(!conceptHelper.generateArkId(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                idConcepts)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);             
+            return;
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
+    }    
+    
+    
     public void cancelDelete() {
         forDelete = false;
     }

@@ -1382,6 +1382,7 @@ public class ConceptHelper {
 
         ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
         if (!arkHelper2.login()) {
+            message = "Erreur de connexion !!";
             return false;
         }
 
@@ -3796,7 +3797,6 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
-     * (cette fonction sert pour la génération de la table Permuté
      *
      * @param ds
      * @param idThesaurus

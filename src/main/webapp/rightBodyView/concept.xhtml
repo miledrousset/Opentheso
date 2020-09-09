@@ -57,9 +57,50 @@
                                       action="#{editConcept.reset('')}"
                                       oncomplete="PF('generateArk').show();"
                                       style="font-size: 12px;">
-                    </b:navCommandLink>     
+                    </b:navCommandLink>
                     
-
+                    
+                    
+                    
+                    
+                    
+                    <!-- partie pour générer les identifiants ARK d'un thésaurus à déplacer par la suite vers la boite à outils -->
+                    <b:navLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"/>
+                    
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="Générer les identifiants Ark manquants" 
+                        tooltip="Permet de générer les identifiants Ark pour les concepts qui n'en ont pas"
+                                      disabled="false"                                      
+                                      action="#{editConcept.generateArkForConceptWithoutArk()}"
+                                      update="messageIndex"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="Générer les identifiants Ark pour cette branche" 
+                        tooltip="Permet de générer ou mise à jour les identifiants Ark pour cette branche du thésaurus"
+                                      disabled="false"                                      
+                                      action="#{editConcept.generateArkForThisBranch()}"
+                                      update="messageIndex"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>                     
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="Générer la totalité des identifiants Ark" 
+                        tooltip="Permet de générer la totalité des identifiants Ark pour ce thésaurus"
+                                      disabled="false"                                      
+                                      action="#{editConcept.generateAllArk()}"
+                                      update="messageIndex"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>                       
+                    
+                    
+                    
+                    
+                    
+                    
+                    <!-- partie pour copier des concepts/branches d'un thésaurus à un autre -->
                     <b:navLink/>
                     <b:navCommandLink disabled="true"
                                         rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
