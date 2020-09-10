@@ -35,13 +35,16 @@ public class StatistiqueService {
             data.setNotesNbr(new NoteHelper().getNbrNoteByGroupAndThesoAndLang(connect.getPoolConnexion(),
                     group.getConceptGroup().getIdgroup(), idTheso, idLang));
 
-            data.setSynonymesNbr(new StatisticHelper().getNbDescOfGroup(connect.getPoolConnexion(), idTheso,
-                    group.getConceptGroup().getIdgroup()));
+            data.setSynonymesNbr(new StatisticHelper().getNbSynonymesByGroup(connect.getPoolConnexion(), idTheso,
+                    group.getConceptGroup().getIdgroup(), idLang));
 
             data.setConceptsNbr(new ConceptHelper().getCountOfConceptsOfGroup(connect.getPoolConnexion(), idTheso,
                     group.getConceptGroup().getIdgroup()));
 
-            data.setTermesNonTraduitsNbr(getNbrTermNonTraduit(connect.getPoolConnexion(), group, idTheso, idLang));
+            data.setTermesNonTraduitsNbr(
+                    data.getConceptsNbr() - 
+                    new StatisticHelper().getNbTradOfGroup(
+                    connect.getPoolConnexion(), idTheso, group.getConceptGroup().getIdgroup(), idLang));//getNbrTermNonTraduit(connect.getPoolConnexion(), group, idTheso, idLang));
             
             result.add(data);
         });
@@ -51,8 +54,8 @@ public class StatistiqueService {
         data.setCollection("Sans collection");
         data.setConceptsNbr(new ConceptHelper().getCountOfConceptsSansGroup(connect.getPoolConnexion(), idTheso));
         data.setNotesNbr(new NoteHelper().getNbrNoteSansGroup(connect.getPoolConnexion(), idTheso, idLang));
-        data.setSynonymesNbr(new StatisticHelper().getNbDesSynonimeSansGroup(connect.getPoolConnexion(), idTheso));
-        data.setTermesNonTraduitsNbr(new TermHelper().getNbrTermSansGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setSynonymesNbr(new StatisticHelper().getNbDesSynonimeSansGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setTermesNonTraduitsNbr(data.getConceptsNbr() - new StatisticHelper().getNbTradWithoutGroup(connect.getPoolConnexion(), idTheso, idLang));
         result.add(data);
 
         return result;

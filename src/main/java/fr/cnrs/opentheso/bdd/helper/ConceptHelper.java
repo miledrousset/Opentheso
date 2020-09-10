@@ -757,6 +757,7 @@ public class ConceptHelper {
                             + " concept.id_concept = concept_group_concept.idconcept AND"
                             + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                            + " concept.status != 'CA' AND "
                             + " concept_group_concept.idgroup = '" + idGroup + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -798,8 +799,9 @@ public class ConceptHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "SELECT count(id_concept) FROM concept " +
-                            "WHERE id_thesaurus = '"+idThesaurus+"' " +
-                            "AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
+                            " WHERE id_thesaurus = '"+idThesaurus+"' " +
+                            " AND concept.status != 'CA'" +
+                            " AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
@@ -6897,7 +6899,7 @@ public class ConceptHelper {
         int nbrConcept = 0;
         try {
             stmt = conn.createStatement();
-            stmt.executeQuery("SELECT count(*) FROM concept WHERE id_thesaurus = '"+idThesaurus+"' AND status = 'D';");
+            stmt.executeQuery("SELECT count(*) FROM concept WHERE id_thesaurus = '"+idThesaurus+"' AND status != 'CA'");
             ResultSet resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 nbrConcept = resultSet.getInt("count");
