@@ -3379,7 +3379,6 @@ public class ConceptHelper {
      * @param conn
      * @param idConcept
      * @param idThesaurus
-     * @param urlSite
      * @return
      */
     public boolean addIdHandle(Connection conn,
@@ -3402,6 +3401,40 @@ public class ConceptHelper {
         return updateHandleIdOfConcept(conn, idConcept,
                 idThesaurus, idHandle);
     }
+    
+    /**
+     * permet de générer les identifiants Handle des concepts en paramètres
+     * @param conn
+     * @param idConcepts
+     * @param idThesaurus
+     * @return
+     */
+    public boolean generateHandleId(HikariDataSource conn,
+            ArrayList<String> idConcepts,
+            String idThesaurus) {
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseHandle()) {
+            return false;
+        }
+        String privateUri;
+        HandleHelper handleHelper = new HandleHelper(nodePreference);
+        String idHandle;
+        for (String idConcept : idConcepts) {
+            privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
+            idHandle = handleHelper.addIdHandle(privateUri);
+            if (idHandle == null) {
+                message = handleHelper.getMessage();
+                return false;
+            }
+            if(!updateHandleIdOfConcept(conn, idConcept,
+                    idThesaurus, idHandle)) {
+                return false;
+            }
+        }
+        return true;
+    }    
 
     /**
      * Permet de supprimer un identifiant Handle de la table Concept et de la

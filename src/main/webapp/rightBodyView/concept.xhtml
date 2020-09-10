@@ -50,7 +50,10 @@
                                       oncomplete="PF('deleteConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>   
-                    <b:navCommandLink rendered="#{roleOnTheso.nodePreference.useArk}" value="Générer l'identifiant Ark" 
+                    <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                                      tooltip="Permet de générer ou mettre à jour l'identifiant Ark"
+                                      tooltip-delay-show="500"
+                                      value="Générer l'identifiant Ark" 
                                       disabled="false"                                      
                                       actionListener="#{editConcept.infosArk()}"
                                       update="idGenerateArk generateArkForm"
@@ -58,7 +61,17 @@
                                       oncomplete="PF('generateArk').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>
-                    
+                    <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                                      tooltip="Permet de générer ou mettre à jour l'identifiant Handle"
+                                      tooltip-delay-show="500"                                      
+                                      value="Générer l'identifiant Handle" 
+                                      disabled="false"                                      
+                                      actionListener="#{editConcept.infosHandle()}"
+                                      update="idGenerateHandle generateHandleForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('generateHandle').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>                    
                     
                     
                     
@@ -91,6 +104,38 @@
                         tooltip="Permet de générer la totalité des identifiants Ark pour ce thésaurus"
                                       disabled="false"                                      
                                       action="#{editConcept.generateAllArk()}"
+                                      update="messageIndex"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>   
+                    
+                    
+                    <!-- partie pour générer les identifiants Handle d'un thésaurus à déplacer par la suite vers la boite à outils -->
+                    <b:navLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"/>
+                    
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="Générer les identifiants Handle manquants" 
+                        tooltip="Permet de générer les identifiants Handle pour les concepts qui n'en ont pas"
+                                      disabled="false"                                      
+                                      action="#{editConcept.generateHandleForConceptWithoutHandle()}"
+                                      update="messageIndex"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="Générer les identifiants Handle pour cette branche" 
+                        tooltip="Permet de générer ou mise à jour les identifiants Handle pour cette branche du thésaurus"
+                                      disabled="false"                                      
+                                      action="#{editConcept.generateHandleForThisBranch()}"
+                                      update="messageIndex"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>                     
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="Générer la totalité des identifiants Handle" 
+                        tooltip="Permet de générer la totalité des identifiants Handle pour ce thésaurus"
+                                      disabled="false"                                      
+                                      action="#{editConcept.generateAllHandle()}"
                                       update="messageIndex"
                                       style="font-size: 12px;">
                     </b:navCommandLink>                       
@@ -152,6 +197,7 @@
         <ui:include src="/dialog/concept/deleteConcept.xhtml" />   
         <ui:include src="/dialog/import/listImportCsv.xhtml" />       
         <ui:include src="/dialog/concept/generateArk.xhtml" /> 
+        <ui:include src="/dialog/concept/generateHandle.xhtml" />         
         <ui:include src="/dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />         
        
         

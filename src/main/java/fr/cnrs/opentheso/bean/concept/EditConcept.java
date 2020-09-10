@@ -16,6 +16,8 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -323,11 +325,11 @@ public class EditConcept implements Serializable {
     
     
     
-    
-    
-    
-    
-    
+ ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////// générer les identifiants Ark    //////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////   
     
     public void infosArk() {
         String message = "Permet de générer un identifiant Ark, si l'identifiant existe, il sera mise à jour !!";
@@ -343,20 +345,7 @@ public class EditConcept implements Serializable {
         ArrayList<String> idConcepts = new ArrayList<>();
         idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        FacesMessage msg;
-        if(!conceptHelper.generateArkId(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                idConcepts)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("messageIndex");
-        }
+        generateArkIds(conceptHelper, idConcepts);
     }
 
     
@@ -372,22 +361,7 @@ public class EditConcept implements Serializable {
         if(roleOnThesoBean.getNodePreference() == null) return;
         //idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        FacesMessage msg;
-        if(!conceptHelper.generateArkId(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                idConcepts)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);             
-            return;
-        }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("messageIndex");
-        }
+        generateArkIds(conceptHelper, idConcepts);
     }       
     
     /**
@@ -404,22 +378,7 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso());
         
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        FacesMessage msg;
-        if(!conceptHelper.generateArkId(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                idConcepts)){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);             
-            return;
-        }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("messageIndex");
-        }
+        generateArkIds(conceptHelper, idConcepts);
     }      
     
     /**
@@ -434,6 +393,10 @@ public class EditConcept implements Serializable {
         if(roleOnThesoBean.getNodePreference() == null) return;
         //idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        generateArkIds(conceptHelper, idConcepts);
+    }    
+    
+    private void generateArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts){
         FacesMessage msg;
         if(!conceptHelper.generateArkId(
                 connect.getPoolConnexion(),
@@ -450,7 +413,103 @@ public class EditConcept implements Serializable {
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("messageIndex");
         }
+    }
+    
+    
+    
+    
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////// générer les identifiants Handle //////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////    
+    
+    public void infosHandle() {
+        String message = "Permet de générer un identifiant Handle, si l'identifiant existe, il sera mise à jour !!";
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
     }    
+    
+    /**
+     * permet de générer l'identifiant Handle, s'il n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void generateHandle(){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+
+        ArrayList<String> idConcepts = new ArrayList<>();
+        idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
+        generateHandleIds(conceptHelper, idConcepts);
+    }
+    
+    /**
+     * permet de générer les identifiants Handle pour les concepts qui n'en ont pas
+     * si un identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void generateHandleForConceptWithoutHandle(){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts;
+        idConcepts = conceptHelper.getAllIdConceptOfThesaurusWithoutHandle(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        
+        if(roleOnThesoBean.getNodePreference() == null) return;
+        //idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        generateHandleIds(conceptHelper, idConcepts);
+    }       
+    
+    /**
+     * permet de générer les identifiants Handle pour cette branche,
+     * si un identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void generateHandleForThisBranch(){
+        if(roleOnThesoBean.getNodePreference() == null) return;        
+        if(conceptView.getNodeConcept() == null) return;
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+        
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        generateHandleIds(conceptHelper, idConcepts);
+    }      
+    
+    /**
+     * permet de générer la totalité des identifiants Handle,
+     * si un identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void generateAllHandle(){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts;
+        idConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        
+        if(roleOnThesoBean.getNodePreference() == null) return;
+        //idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        generateHandleIds(conceptHelper, idConcepts);
+    }       
+    
+    
+    private void generateHandleIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts){
+        FacesMessage msg;
+        if (!conceptHelper.generateHandleId(
+                connect.getPoolConnexion(),
+                idConcepts,
+                selectedTheso.getCurrentIdTheso())) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Handle a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }        
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Handle a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+        }        
+    }
     
     
     public void cancelDelete() {
