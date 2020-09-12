@@ -188,33 +188,6 @@ public class TreeGroups implements Serializable {
         return true;
     }
 
-    private boolean addConceptSpecifique(TreeNode parent) {
-
-        ArrayList<NodeNT> ConceptsId = new RelationsHelper().getListNT(connect.getPoolConnexion(),
-                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
-
-        if (ConceptsId == null || ConceptsId.isEmpty()) {
-            parent.setType("file");
-            return true;
-        }
-
-        for (NodeNT nodeNT : ConceptsId) {
-            TreeNodeData data = new TreeNodeData(nodeNT.getIdConcept(), nodeNT.getTitle(),"", false,
-                    false, true, true,"concept" );
-            
-            ArrayList<NodeNT> childs = new RelationsHelper().getListNT(connect.getPoolConnexion(), nodeNT.getIdConcept(),
-                    idTheso, idLang);
-
-            if (CollectionUtils.isEmpty(childs)) {
-                new DefaultTreeNode("file", data, parent);
-            } else {
-                TreeNode document = new DefaultTreeNode(data, parent);
-                new DefaultTreeNode("DUMMY", document);
-            }
-        }
-        return true;
-    }
-
     /////// pour l'ajout d'un nouveau Group après le chargement de l'arbre
     public void addNewGroupChild(String idGroup, String idTheso, String idLang) {
 
