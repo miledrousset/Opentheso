@@ -43,13 +43,17 @@
                                        style="font-size: 12px;"
                                        update="idCutAndPaste cutAndPasteForm">
                     </b:navCommandLink>
-                    <b:navCommandLink value="Supprimer le concept" 
+                    <b:navCommandLink value="Supprimer le concept/branche" 
+                                      tooltip="Permet de supprimer le concept ou la branche complète"
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idDeleteConcept deleteConceptForm"
                                       action="#{editConcept.reset('')}"
                                       oncomplete="PF('deleteConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>   
+                    
+                    
+                    
                     <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                                       tooltip="Permet de générer ou mettre à jour l'identifiant Ark"
                                       tooltip-delay-show="500"
@@ -147,7 +151,7 @@
                     
                     <!-- partie pour copier des concepts/branches d'un thésaurus à un autre -->
                     <b:navLink/>
-                    <b:navCommandLink disabled="true"
+                    <b:navCommandLink disabled="false"
                                         rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
                                        value="Copier vers un autre thésaurus" tooltip="Copier le concept/branche vers un autre thésaurus" tooltip-delay-show="1000"
                                        action="#{copyAndPasteBetweenTheso.onStartCopy()}"

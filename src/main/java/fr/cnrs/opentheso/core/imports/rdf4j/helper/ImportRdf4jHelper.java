@@ -421,7 +421,7 @@ public class ImportRdf4jHelper {
         }
     }    
 
-    public void addConcepts(SKOSResource conceptResource, String idTheso) {
+    public void addConcept(SKOSResource conceptResource, String idTheso) {
         AddConceptsStruct acs = new AddConceptsStruct();
         acs.conceptHelper = new ConceptHelper();
         initAddConceptsStruct(acs, conceptResource, idTheso);
