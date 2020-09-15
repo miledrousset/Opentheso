@@ -19,12 +19,13 @@ import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
-import fr.cnrs.opentheso.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.skosapi.SKOSResource;
-import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
+import fr.cnrs.opentheso.skosapi.*;
+
 import java.util.HashMap;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -266,6 +267,10 @@ public class ExportRdf4jHelperNew {
         sKOSResource.setUri(getUri(nodeConcept));
         sKOSResource.setProperty(SKOSProperty.Concept);
 
+        sKOSResource.setSkosStatus(addStatut(conceptHelper.getNodeStatus(ds, idConcept, idTheso)));
+        addDiscussions(nodeConcept.getMessages(), sKOSResource);
+        addVotes(nodeConcept.getVotes(), sKOSResource);
+
         // prefLabel
         for (NodeTermTraduction traduction : nodeConcept.getNodeTermTraductions()) {
             sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.prefLabel);
@@ -324,6 +329,17 @@ public class ExportRdf4jHelperNew {
         skosXmlDocument.addconcept(sKOSResource);
     }
 
+    private SKOSStatus addStatut(NodeStatus nodeStatus) {
+        SKOSStatus skosStatus = new SKOSStatus();
+        skosStatus.setDate(nodeStatus.getDate());
+        skosStatus.setIdConcept(nodeStatus.getIdConcept());
+        skosStatus.setIdStatus(nodeStatus.getIdStatus());
+        skosStatus.setMessage(nodeStatus.getMessage());
+        skosStatus.setIdThesaurus(nodeStatus.getIdThesaurus());
+        skosStatus.setIdUser(nodeStatus.getIdUser());
+        return skosStatus;
+    }
+
     private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
         String pathFromArray = "";
         ArrayList<String> allPath = new ArrayList<>();
@@ -372,6 +388,32 @@ public class ExportRdf4jHelperNew {
             resource.addDocumentation(note.getLexicalvalue(), note.getLang(), prop);
         }
     }
+
+
+    private void addDiscussions(List<MessageDto> messages, SKOSResource resource) {
+        for (MessageDto message : messages) {
+            SKOSDiscussion skosDiscussion = new SKOSDiscussion();
+            skosDiscussion.setMsg(message.getMsg());
+            skosDiscussion.setIdUser(message.getIdUser());
+            skosDiscussion.setDate(message.getDate());
+            resource.addMessage(skosDiscussion);
+        }
+    }
+
+
+    private void addVotes(List<VoteDto> votes, SKOSResource resource) {
+        for (VoteDto vote : votes) {
+            SKOSVote skosVote = new SKOSVote();
+            skosVote.setIdNote(vote.getIdNote());
+            skosVote.setIdUser(vote.getIdUser());
+            skosVote.setIdThesaurus(vote.getIdThesaurus());
+            skosVote.setIdConcept(vote.getIdConcept());
+            skosVote.setTypeVote(vote.getTypeVote());
+            resource.addVote(skosVote);
+        }
+    }
+
+
     private void addGPSGiven(NodeGps gps, SKOSResource resource) {
         if (gps == null) {
             return;

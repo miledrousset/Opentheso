@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 
 public class MessageDto implements Serializable {
-    
+
+    private int idUser;
     private String nom;
     private String msg;
     private String date;
@@ -49,5 +50,12 @@ public class MessageDto implements Serializable {
     public String getMessageColor() {
         return mine ? "#C8EAD6" : "#FAFAFA";
     }
-    
+
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
 }

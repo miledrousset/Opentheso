@@ -62,6 +62,13 @@ public class NoteBeanCandidat implements Serializable {
         selectedTypeNote = null;
 
     }
+    
+    public void resetEditNode(NodeNote selectedNodeNote) {
+        reset();
+        noteValue = selectedNodeNote.getLexicalvalue();
+        selectedTypeNote = selectedNodeNote.getLang();
+
+    }
 
     public void initSelectedNode (NodeNote nodeNote){
         selectedNodeNote = nodeNote;

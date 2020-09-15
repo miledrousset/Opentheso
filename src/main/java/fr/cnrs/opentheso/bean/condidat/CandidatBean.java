@@ -733,6 +733,7 @@ public class CandidatBean implements Serializable {
     }
 
     public void setListCandidatsActivate(boolean isListCandidatsActivate) {
+        getAllCandidatsByThesoAndLangue();
         this.isListCandidatsActivate = isListCandidatsActivate;
         isImportViewActivate = false;
         isExportViewActivate = false;

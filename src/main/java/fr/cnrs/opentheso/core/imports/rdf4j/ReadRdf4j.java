@@ -8,6 +8,10 @@ package fr.cnrs.opentheso.core.imports.rdf4j;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import org.eclipse.rdf4j.model.IRI;
@@ -133,8 +137,6 @@ public class ReadRdf4j {
                 validProperty = false;
                 int prop = -1;
                 String type = readStruct.value.toString();
-
-              
                 
                 type = type.toUpperCase();
                 if (type.contains("ConceptScheme".toUpperCase())) {
@@ -175,7 +177,20 @@ public class ReadRdf4j {
                 }
 
             } //Labelling Properties
-            else if (readLabellingProperties(readStruct)) {
+
+            else if (readStruct.property.getLocalName().equals("note")) {
+                if (WriteRdf4j.STATUS_TAG.equals(readStruct.literal.getLanguage().get())) {
+                    readStruct.resource.setSkosStatus(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
+                } else if (WriteRdf4j.VOTE_TAG.equals(readStruct.literal.getLanguage().get())) {
+                    readStruct.resource.addVote(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
+                } else if (WriteRdf4j.DISCUSSION_TAG.equals(readStruct.literal.getLanguage().get())) {
+                    readStruct.resource.addMessage(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
+                } else {
+                    String lang = readStruct.literal.getLanguage().get();
+                    readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.note);
+                }
+
+            } else if (readLabellingProperties(readStruct)) {
                 if(readStruct.resource == null)
                     readStruct.resource = new SKOSResource();
                 //Dates
@@ -186,19 +201,23 @@ public class ReadRdf4j {
                         if (readDocumentation(readStruct)) {
                             if (readCreator(readStruct)) {
                                 if (readGPSCoordinates(readStruct)) {
-                                    if (readNotation(readStruct)) {
-                                        if (readIdentifier(readStruct)) {
-                                            if (readMatch(readStruct)) {
-                                                if (readImage(readStruct)) {
-                                                    //debug
-                                                    if (!nonReco.contains(readStruct.property.getLocalName())) {
-                                                        //System.out.println("non reconue : " + readStruct.property.getLocalName());
-                                                        nonReco.add(readStruct.property.getLocalName());
+                                    //if (readNote(readStruct)) {
+                                        if (readNotation(readStruct)) {
+                                            if (readIdentifier(readStruct)) {
+                                                if (readMatch(readStruct)) {
+                                                    if (readImage(readStruct)) {
+
+                                                            //debug
+                                                            if (!nonReco.contains(readStruct.property.getLocalName())) {
+                                                                //System.out.println("non reconue : " + readStruct.property.getLocalName());
+                                                                nonReco.add(readStruct.property.getLocalName());
+                                                            }
+
                                                     }
                                                 }
                                             }
                                         }
-                                    }
+                                    //}
                                 }
                             }
                         }
@@ -429,6 +448,16 @@ public class ReadRdf4j {
      */
     private boolean readNotation(ReadStruct readStruct) {
         if (readStruct.property.getLocalName().equals("notation")) {
+            readStruct.resource.addNotation(readStruct.literal.getLabel());
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    private boolean readNote(ReadStruct readStruct) {
+        if (readStruct.property.getLocalName().equals("note")) {
             readStruct.resource.addNotation(readStruct.literal.getLabel());
             return false;
         } else {

@@ -245,11 +245,9 @@
                                 <b:column span="1">
                                     <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
                                                       style="color: #f47b2a;"
-                                                      actionListener="#{noteBeanCandidat.initSelectedNode(note)}"  
-
-                                                      styleClass="buttonIconOrange" ajax="false"
-                                                      update="idEditNote editNoteForm messageIndex"
-                                                      oncomplete="PF('editNote').show();"/>
+                                                      actionListener="#{noteBeanCandidat.resetEditNode(note)}"  
+                                                      update="candidatForm"
+                                                      styleClass="buttonIconOrange" ajax="false"/>
                                 </b:column>
                                 <b:column span="1">
                                     <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 

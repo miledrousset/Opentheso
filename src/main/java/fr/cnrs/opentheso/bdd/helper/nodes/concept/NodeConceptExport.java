@@ -1,15 +1,19 @@
 package fr.cnrs.opentheso.bdd.helper.nodes.concept;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
 
 public class NodeConceptExport {
     
@@ -24,6 +28,8 @@ public class NodeConceptExport {
 
     //pour gérer le concept
     private Concept concept;
+
+    private NodeStatus nodeStatus = new NodeStatus();
     
     //BT termes génériques
     private ArrayList <NodeHieraRelation> nodeListOfBT;
@@ -48,6 +54,10 @@ public class NodeConceptExport {
     private ArrayList <NodeNote> nodeNoteConcept;
     
     private ArrayList <NodeAlignmentSmall> nodeAlignmentsList;
+
+    private List<MessageDto> messages = new ArrayList<>();
+
+    private List<VoteDto> votes = new ArrayList<>();
 
     private NodeGps nodeGps;
     
@@ -179,5 +189,27 @@ public class NodeConceptExport {
         this.nodeimages = nodeimages;
     }
 
-    
+    public NodeStatus getNodeStatus() {
+        return nodeStatus;
+    }
+
+    public void setNodeStatus(NodeStatus nodeStatus) {
+        this.nodeStatus = nodeStatus;
+    }
+
+    public List<MessageDto> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<MessageDto> messages) {
+        this.messages = messages;
+    }
+
+    public List<VoteDto> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(List<VoteDto> votes) {
+        this.votes = votes;
+    }
 }

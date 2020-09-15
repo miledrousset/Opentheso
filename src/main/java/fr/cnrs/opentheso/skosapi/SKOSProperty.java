@@ -76,6 +76,8 @@ public interface SKOSProperty {
     public static final int ConceptGroup = 83;
     public static final int MicroThesaurus = 84;
     public static final int Theme = 85;
+
+    public static final int message = 86;
     
  
     

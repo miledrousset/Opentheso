@@ -12,19 +12,45 @@ import java.util.List;
 public class MessageDao extends BasicDao {
 
     public void addNewMessage(HikariDataSource hikariDataSource, String msg,
-            int idUser, 
-            String idConcept, String idThesaurus) {
+            int idUser, String idConcept, String idThesaurus) {
+        addNewMessage(hikariDataSource, msg, idUser, idConcept, idThesaurus, sdf.format(new Date()));
+    }
+
+    public void addNewMessage(HikariDataSource hikariDataSource, String msg,
+                              int idUser, String idConcept, String idThesaurus, String date) {
         msg = new StringPlus().convertString(msg);
         try {
             openDataBase(hikariDataSource);
             stmt.executeUpdate(new StringBuffer("INSERT INTO candidat_messages(value, id_user, date, id_concept, id_thesaurus) ")
                     .append("VALUES ('").append(msg).append("', ").append(idUser).append(", '")
-                    .append(sdf.format(new Date())).append("', '").append(idConcept)
+                    .append(date).append("', '").append(idConcept)
                     .append("', '").append(idThesaurus).append("')").toString());
             closeDataBase();
         } catch (SQLException e) {
             LOG.error(e);
         }
+    }
+
+    public List<MessageDto> getAllMessagesByCandidat(HikariDataSource hikariDataSource, String idConcept, String idTheso) {
+        List<MessageDto> messages = new ArrayList<>();
+        try {
+            openDataBase(hikariDataSource);
+            String requet = "SELECT * FROM candidat_messages WHERE id_concept = '"+idConcept+"' AND id_thesaurus = '"+idTheso+"'";
+            stmt.executeQuery(requet);
+            resultSet = stmt.getResultSet();
+            while(resultSet.next()) {
+                MessageDto message = new MessageDto();
+                message.setMsg(resultSet.getString("value"));
+                message.setIdUser(resultSet.getInt("id_user"));
+                message.setDate(resultSet.getString("date"));
+                messages.add(message);
+            }
+            closeDataBase();
+        } catch (Exception e) {
+
+        }
+
+        return messages;
     }
 
     public List<MessageDto> getAllMessagesByCandidat(HikariDataSource hikariDataSource, String idconcept, 
