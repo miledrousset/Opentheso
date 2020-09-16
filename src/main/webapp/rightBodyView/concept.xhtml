@@ -1057,16 +1057,16 @@
                     </b:row>
                     <b:row>
                         <b:column>
-                            <p:accordionPanel styleClass="accordionMenu" activeIndex="-2">
+                            <!--<p:accordionPanel styleClass="accordionMenu" activeIndex="-2">
                                 <p:tab title="Map" titleStyleClass="titleAccordion">
                                     <leaf:mapAdvanced map="#{conceptView.mapModel}" />                    
                                 </p:tab>
                             </p:accordionPanel>
-                            
-                            <!--<p:panel header="Map" toggleable="true" closable="false" toggleSpeed="500" 
+                            -->
+                            <p:panel header="Map" toggleable="true" closable="false" toggleSpeed="500" 
                                      style="margin-top: 10px; margin-bottom: 10px">
                                     <leaf:mapAdvanced map="#{conceptView.mapModel}" />  
-                            </p:panel>-->
+                            </p:panel>
                         </b:column>
                     </b:row>
                     <b:row>
@@ -1089,7 +1089,7 @@
             </b:column>            
             <b:column span="8" colXs="8">
                 <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
-                    <b:row>
+                    <b:row rendered="#{corpus.count != 0 }">
                         <b:column >
                             <b:link href="#{corpus.uriLink}"
                                     value="#{corpus.corpusName} (#{corpus.count} notices)" icon="link" 

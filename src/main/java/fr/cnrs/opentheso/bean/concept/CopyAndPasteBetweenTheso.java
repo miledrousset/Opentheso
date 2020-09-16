@@ -189,17 +189,6 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     languageBean.getMsg("tools.copyBranch"), "Erreur de copie")); 
             } 
-    /*    
-        if (!conceptHelper.moveBranchFromConceptToConcept(connect.getPoolConnexion(),
-                nodeConceptDrag.getConcept().getIdConcept(),
-                oldBtToDelete,
-                nodeConceptDrop.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant la suppression des branches !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return false;
-        }*/
         return true;
     }
     

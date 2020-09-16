@@ -34,6 +34,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyManagementException;
@@ -277,7 +278,7 @@ public class ConceptView implements Serializable {
                 nodeCorpus.setCount(getCountOfResourcesFromHttps(nodeCorpus.getUriCount()));
             }
             if(nodeCorpus.getUriCount().contains("http://")) {
-
+                nodeCorpus.setCount(getCountOfResourcesFromHttp(nodeCorpus.getUriCount()));
             }
         }
     }
@@ -348,6 +349,43 @@ public class ConceptView implements Serializable {
         }
         return -1;
     }
+    
+    private int getCountOfResourcesFromHttp(String uri) {
+        String output;
+        String json = "";
+
+        // récupération du total des notices
+
+        try {
+            URL url = new URL(uri);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setUseCaches(false);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            int status = conn.getResponseCode();
+            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            while ((output = br.readLine()) != null) {
+                json += output;
+            }
+            return getCountFromJson(json);
+
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
+    
     private int getCountFromJson(String jsonText) {
         if(jsonText == null) return -1;
         JsonObject jsonObject;
