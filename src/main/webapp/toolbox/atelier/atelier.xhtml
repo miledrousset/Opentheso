@@ -6,6 +6,17 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:wizard nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}">
+        
+        <p:tab id="actions" title="Choix de l'action" titleStyleClass="tabCostum">
+            
+            <p:panel styleClass="redColoredPanel">
+                <p:outputLabel value="Veuillez choisir l'action que vous voullez faire : " />
+                <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
+                    <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
+                    <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
+                </p:selectOneRadio>
+            </p:panel>
+        </p:tab>
 
         <p:tab id="entre" title="Entrées" titleStyleClass="tabCostum">
 
@@ -27,36 +38,41 @@
                     <h:outputText value="Nombre des données récupérées : #{atelierThesBean.values.size()}" />
 
                     <h:form style="margin-top: 15px">
-                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
 
-                        <b:row rendered="#{atelierThesBean.values.size() == 0}">
-                            <b:column span="12">
-                                <h:outputText  value="Aucune donnée pour le moment ..." style="font-size: 12px; color: grey; font-style: italic" />
-                            </b:column>
-                        </b:row>
+                        <p:scrollPanel mode="native" style="width: 100%; max-height: 200px; border-width: 0">
+                            
+                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
 
-                        <b:row>
-                            <ui:repeat var="title" value="#{atelierThesBean.titles}">
-                                <b:column span="#{atelierThesBean.spanTable}">
-                                    <h:outputText value="#{title}"/>
+                            <b:row rendered="#{atelierThesBean.values.size() == 0}">
+                                <b:column span="12">
+                                    <h:outputText  value="Aucune donnée pour le moment ..." style="font-size: 12px; color: grey; font-style: italic" />
                                 </b:column>
-                            </ui:repeat>
-                        </b:row>
+                            </b:row>
 
-                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px" 
-                                     rendered="#{atelierThesBean.values.size() > 0}"/>
-
-                        <ui:repeat var="ligne" value="#{atelierThesBean.values}">
                             <b:row>
-                                <ui:repeat var="value" value="#{ligne}">
+                                <ui:repeat var="title" value="#{atelierThesBean.titles}">
                                     <b:column span="#{atelierThesBean.spanTable}">
-                                        <h:outputText value="#{value}"/>
+                                        <h:outputText value="#{title}"/>
                                     </b:column>
                                 </ui:repeat>
                             </b:row>
-                        </ui:repeat>
 
-                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px" 
+                                         rendered="#{atelierThesBean.values.size() > 0}"/>
+
+                            <ui:repeat var="ligne" value="#{atelierThesBean.values}">
+                                <b:row>
+                                    <ui:repeat var="value" value="#{ligne}">
+                                        <b:column span="#{atelierThesBean.spanTable}">
+                                            <h:outputText value="#{value}"/>
+                                        </b:column>
+                                    </ui:repeat>
+                                </b:row>
+                            </ui:repeat>
+
+                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                            
+                        </p:scrollPanel>
 
                     </h:form>
 
@@ -67,7 +83,7 @@
                                            itemLabel="#{titre}" itemValue="#{titre}"/>
                         </p:selectOneMenu> 
                     </h:panelGrid>
-                    
+
                 </p:panel>
 
             </p:panel>
@@ -96,41 +112,43 @@
         <p:tab id="resultat" title="Résultat" titleStyleClass="tabCostum">
 
             <p:panel header="Résultat">
-                
+
                 <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemle des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
-                    
+
                 <br/>
 
                 <p:commandButton value="Lancer la comparaison" icon="fa-search" actionListener="#{atelierThesBean.comparer()}"
                                  update="toolBoxForm" onclick="PF('bui').show()" style="margin-top: 10px"/>
 
-                <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
-                             var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
-                    <p:column headerText="Id Orig">
-                        <h:outputText value="#{resultat.idOrigine}" />
-                    </p:column>
-                    <p:column headerText="PrefLabel Orig">
-                        <h:outputText value="#{resultat.prefLabelOrigine}" />
-                    </p:column>
-                    <p:column headerText="ID Concept">
-                        <h:outputText value="#{resultat.idConcept}" />
-                    </p:column>
-                    <p:column headerText="PrefLabel">
-                        <h:outputText value="#{resultat.prefLabelConcept}" />
-                    </p:column>
-                    <p:column headerText="AltLabel">
-                        <h:outputText value="#{resultat.altLabelConcept}" />
-                    </p:column>
-                    <p:column headerText="Term Generique">
-                        <h:outputText value="#{resultat.termGenerique}" />
-                    </p:column>
-                    <p:column headerText="Définition">
-                        <h:outputText value="#{resultat.definition}" />
-                    </p:column>
-                    <p:column headerText="URI Ark">
-                        <h:outputText value="#{resultat.uriArk}" />
-                    </p:column>
-                </p:dataTable>
+                <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px; border-width: 0">
+                    <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
+                                 var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
+                        <p:column headerText="Id Orig" style="background-color: #ebedf0;">
+                            <h:outputText value="#{resultat.idOrigine}" />
+                        </p:column>
+                        <p:column headerText="PrefLabel Orig" style="background-color: #ebedf0;">
+                            <h:outputText value="#{resultat.prefLabelOrigine}" />
+                        </p:column>
+                        <p:column headerText="ID Concept">
+                            <h:outputText value="#{resultat.idConcept}" />
+                        </p:column>
+                        <p:column headerText="PrefLabel">
+                            <h:outputText value="#{resultat.prefLabelConcept}" />
+                        </p:column>
+                        <p:column headerText="AltLabel">
+                            <h:outputText value="#{resultat.altLabelConcept}" />
+                        </p:column>
+                        <p:column headerText="Term Generique">
+                            <h:outputText value="#{resultat.termGenerique}" />
+                        </p:column>
+                        <p:column headerText="Définition">
+                            <h:outputText value="#{resultat.definition}" />
+                        </p:column>
+                        <p:column headerText="URI Ark">
+                            <h:outputText value="#{resultat.uriArk}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:scrollPanel>
 
                 <b:row style="margin-top: 15px; margin-right: 0px" rendered="#{atelierThesBean.result.size() > 0}">
                     <p:commandButton value="Export Résultat" icon="ui-icon-valider" ajax="false"

@@ -25,6 +25,7 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.event.FileUploadEvent;
 
 
@@ -52,21 +53,29 @@ public class AtelierThesService implements Serializable {
             ArrayList<NodeSearchMini> temp = new SearchHelper().searchFullText(connect.getPoolConnexion(), 
                     data.get(position), languageBean.getIdLangue(), thesoSelected.getId());
             
-            temp.forEach(nodeSearchMini -> {
-                NodeConcept concept = conceptHelper.getConcept(connect.getPoolConnexion(), nodeSearchMini.getIdConcept(), 
-                        thesoSelected.getId(), languageBean.getIdLangue());
-                
+            if (!CollectionUtils.isEmpty(temp)) {
+                temp.forEach(nodeSearchMini -> {
+                    NodeConcept concept = conceptHelper.getConcept(connect.getPoolConnexion(), nodeSearchMini.getIdConcept(), 
+                            thesoSelected.getId(), languageBean.getIdLangue());
+
+                    ConceptResultNode conceptResultNode = new ConceptResultNode();
+                    conceptResultNode.setIdOrigine(data.get(0));
+                    conceptResultNode.setPrefLabelOrigine(data.get(position));
+                    conceptResultNode.setIdConcept(concept.getConcept().getIdConcept());
+                    conceptResultNode.setPrefLabelConcept(concept.getTerm().getLexical_value());
+                    //conceptResultNode.setAltLabelConcept(concept.get);
+                    conceptResultNode.setDefinition(getDefinition(concept.getNodeNotesTerm()));
+                    conceptResultNode.setUriArk(concept.getConcept().getIdArk());
+                    list.add(conceptResultNode);
+
+                });
+            } else {
                 ConceptResultNode conceptResultNode = new ConceptResultNode();
                 conceptResultNode.setIdOrigine(data.get(0));
                 conceptResultNode.setPrefLabelOrigine(data.get(position));
-                conceptResultNode.setIdConcept(concept.getConcept().getIdConcept());
-                conceptResultNode.setPrefLabelConcept(concept.getTerm().getLexical_value());
-                //conceptResultNode.setAltLabelConcept(concept.get);
-                conceptResultNode.setDefinition(getDefinition(concept.getNodeNotesTerm()));
-                conceptResultNode.setUriArk(concept.getConcept().getIdArk());
-                list.add(conceptResultNode);
-                
-            });
+                list.add(conceptResultNode);    
+            }
+            
         }
         
         return list;

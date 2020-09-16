@@ -15,6 +15,26 @@
     src: url(fonts/FreeSans.ttf);
 }
 
+.ui-radiobutton-box.ui-state-active {
+    background: #f47b2a;
+    border-color: #f47b2a;
+}
+
+.ui-state-highlight, .ui-widget-content .ui-state-highlight {
+    background: #f47b2a;
+    border-color: #f47b2a;
+}
+
+.ui-datatable .ui-state-highlight {
+    background: #f47b2a;
+    border-color: #f47b2a;
+}
+
+.ui-button, button.ui-button.ui-state-default, .ui-button.ui-state-default {
+    background: #43B572;
+    border: #43B572;
+}
+
 .tabCostum {    
     background: #43B572;
     border: #43B572;

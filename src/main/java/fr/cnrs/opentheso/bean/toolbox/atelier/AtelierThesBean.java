@@ -12,31 +12,31 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
-
 @Named("atelierThesBean")
 @ViewScoped
 public class AtelierThesBean implements Serializable {
-    
+
     @Inject
     private AtelierThesService atelierThesService;
 
     private List<String> titles;
     private List<List<String>> values;
-    
+
     private NodeIdValue thesoSelected;
     private ArrayList<NodeIdValue> nodeListTheso;
     private ArrayList<ConceptResultNode> result;
-    
+
     private int spanTable;
     private String delimiterCsv = ";";
     private String selectedColumn;
-
+    private String actionSelected;
 
     public void init() {
         titles = new ArrayList<>();
@@ -44,13 +44,13 @@ public class AtelierThesBean implements Serializable {
         result = new ArrayList<>();
         nodeListTheso = atelierThesService.searchAllThesaurus();
     }
-    
+
     public void comparer() {
         int position = titles.indexOf(selectedColumn);
         result = atelierThesService.comparer(values, position, thesoSelected);
-            
+
         showMessage(FacesMessage.SEVERITY_INFO, result.size() + " résultat(s) trouvées !");
-        
+
         PrimeFaces.current().executeScript("PF('bui').hide();");
     }
 
@@ -67,12 +67,12 @@ public class AtelierThesBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "Aucune donnée trouvées !");
         }
     }
-    
+
     public StreamedContent exportResultat() {
 
         ExportResultatCsv exportResultatCsv = new ExportResultatCsv();
         exportResultatCsv.createResultatFileRapport(result);
-        
+
         return DefaultStreamedContent.builder()
                 .contentType("text/csv")
                 .name("Résultat.csv")
@@ -120,7 +120,7 @@ public class AtelierThesBean implements Serializable {
     public void setTitles(List<String> titles) {
         this.titles = titles;
     }
-    
+
     public int getSpanTable() {
         return spanTable;
     }
@@ -132,17 +132,31 @@ public class AtelierThesBean implements Serializable {
     public void setSelectedColumn(String selectedColumn) {
         this.selectedColumn = selectedColumn;
     }
-    
+
     public String onFlowProcess(FlowEvent event) {
-        if ("entre".equals(event.getOldStep())) {
-            if (CollectionUtils.isEmpty(values)) {
+        if ("actions".equals(event.getOldStep())) {
+            if (StringUtils.isEmpty(actionSelected)) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionnez une action !");
+                return event.getOldStep();
+            } else if (!"opt1".equals(actionSelected)) {
+                showMessage(FacesMessage.SEVERITY_INFO, "Cette action n'est pas disponible pour le moment ..");
+                return event.getOldStep();
+            } else {
+                return event.getNewStep();
+            }
+        } else if ("entre".equals(event.getOldStep())) {
+            if ("actions".equals(event.getNewStep())) {
+                return event.getNewStep();
+            } else if (CollectionUtils.isEmpty(values)) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez ajouter des données d'entrées !");
                 return event.getOldStep();
             } else {
                 return event.getNewStep();
             }
         } else if ("thesaurus".equals(event.getOldStep())) {
-            if (thesoSelected == null) {
+            if ("entre".equals(event.getNewStep())) {
+                return event.getNewStep();
+            } else if (thesoSelected == null) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionner un thesaurus !");
                 return event.getOldStep();
             } else {
@@ -152,11 +166,19 @@ public class AtelierThesBean implements Serializable {
             return event.getNewStep();
         }
     }
-    
+
     private void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
     }
-    
+
+    public String getActionSelected() {
+        return actionSelected;
+    }
+
+    public void setActionSelected(String actionSelected) {
+        this.actionSelected = actionSelected;
+    }
+
 }
