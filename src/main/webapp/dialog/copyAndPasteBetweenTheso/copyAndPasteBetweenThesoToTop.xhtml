@@ -7,34 +7,43 @@
     xmlns:b="http://bootsfaces.net/ui">
 
     <p:dialog id="idCopyAndPasteBetweenThesoToTop" header="Validation copier/coller" widgetVar="copyAndPasteBetweenThesoToTop" 
-              modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >         
+              modal="true" resizable="true" position="top" width="500" style="margin-top: 50px" >         
 
         <h:panelGroup id="copyAndPasteBetweenThesoToTopForm">         
 
             <b:row>
-                <b:column span="12">
-                    <h:outputText style="font-size: 12px;"
-                                  value="Copier : #{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value} (#{copyAndPasteBetweenTheso.nodeConceptDrag.concept.idConcept})"/>                 
+                <b:column span="3">
+                    <h:outputText value="Copier : "/>                 
                 </b:column>
+                <b:column span="4">
+                    <h:outputText value="#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value} (#{copyAndPasteBetweenTheso.nodeConceptDrag.concept.idConcept})"/>                 
+                </b:column>                
             </b:row>
 
             <b:row>
-                <b:column span="12">
-                    <h:outputText style="font-size: 12px;"
-                                  value="du thésaurus : #{copyAndPasteBetweenTheso.idThesoOrigin}"/>                      
+                <b:column span="3">
+                    <h:outputText value="du thésaurus : "/>                      
                 </b:column>
-            </b:row>
+                <b:column span="4">
+                    <h:outputText value="#{copyAndPasteBetweenTheso.idThesoOrigin}"/>                      
+                </b:column>
+            </b:row>            
 
             <b:row>
-                <b:column span="12">
-                    <h:outputText style="font-size: 12px;"
-                                  value="vers : #{conceptView.nodeConcept.term.lexical_value}"/>                      
+                <b:column span="3">
+                    <h:outputText value="vers : "/>                      
                 </b:column>
-            </b:row>
-
+                <b:column span="4">
+                    <h:outputText value="la racine"/>                      
+                </b:column>
+            </b:row>            
+            <p:spacer/>
 
             <b:row>
-                <b:column span="12">
+                <b:column span="3">
+                    <h:outputText value="récupérer les identifiants : "/>                      
+                </b:column>
+                <b:column span="4">
                     <p:selectOneMenu id="basic" value="#{copyAndPasteBetweenTheso.identifierType}">
                         <f:selectItem itemLabel="Non" itemValue="sans" />
                         <f:selectItem itemLabel="Ark" itemValue="ark" />
@@ -42,7 +51,7 @@
                     </p:selectOneMenu>                
                 </b:column>
             </b:row>            
-
+            <p:spacer/>
             <b:row>
                 <b:column span="4" offset="4">
                     <p:commandButton value="Confirmer" 
@@ -55,7 +64,7 @@
                                      oncomplete="PF('copyAndPasteBetweenThesoToTop').hide();"/>                     
                 </b:column>
             </b:row>                
-
+            <p:spacer/>
         </h:panelGroup>          
     </p:dialog>  
 </ui:composition>

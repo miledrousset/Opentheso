@@ -36,7 +36,7 @@
                                        update="idGlobalActionsTree messageIndex">
                     </b:navCommandLink>                    
                 
-                    <b:navCommandLink disabled="true"
+                    <b:navCommandLink disabled="false"
                                       rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
                                       value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
                                       tooltip="Coller le concept/branche copier d'un autre thésaurus à la racine" tooltip-delay-show="500"

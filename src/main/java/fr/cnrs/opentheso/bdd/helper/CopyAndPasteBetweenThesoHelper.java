@@ -6,8 +6,6 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.concept.SynonymBean;
@@ -20,8 +18,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 /**
@@ -105,6 +101,44 @@ public class CopyAndPasteBetweenThesoHelper {
     }
 
     
+    public boolean pasteBranchToRoot(
+            HikariDataSource ds,
+            String currentIdTheso,
+
+            String fromIdTheso,
+            String fromIdConcept,
+            String identifierType,
+            int idUser,
+            NodePreference nodePreference) {
+
+        // récupération des concepts du thésaurus de départ
+        SKOSXmlDocument sKOSXmlDocument = getBranch(ds,
+                fromIdTheso, fromIdConcept);
+
+        if (sKOSXmlDocument == null) {
+            return false;
+        }
+
+        // import des concepts dans le thésaurus actuel
+        if (!addBranch(ds, sKOSXmlDocument, nodePreference, currentIdTheso, idUser, identifierType)) {
+            return false;
+        }
+
+        // relier le concept copié au concept cible
+        RelationsHelper relationsHelper = new RelationsHelper();
+        ArrayList<String> nodeBT = relationsHelper.getListIdBT(ds, fromIdConcept, currentIdTheso);
+        for (String idBT : nodeBT) {
+            if (!relationsHelper.deleteRelationBT(ds,
+                    fromIdConcept,
+                    currentIdTheso,
+                    idBT,
+                    idUser)) {
+            }
+        }
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.setTopConcept(ds, fromIdConcept, currentIdTheso);
+        return true;
+    }
 
     
 
