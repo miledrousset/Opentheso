@@ -7,6 +7,7 @@ import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
@@ -27,7 +28,7 @@ public class AtelierThesBean implements Serializable {
     private AtelierThesService atelierThesService;
 
     private List<String> titles;
-    private List<List<String>> values;
+    private List<List<String>> values = new ArrayList<>();
 
     private NodeIdValue thesoSelected;
     private ArrayList<NodeIdValue> nodeListTheso;
@@ -37,7 +38,8 @@ public class AtelierThesBean implements Serializable {
     private String delimiterCsv = ";";
     private String selectedColumn;
     private String actionSelected;
-
+    
+    @PostConstruct
     public void init() {
         titles = new ArrayList<>();
         values = new ArrayList<>();
