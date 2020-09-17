@@ -410,8 +410,10 @@ public class ExportRdf4jHelperNew {
             if (!StringUtils.isEmpty(vote.getIdNote()) && !"null".equalsIgnoreCase(vote.getIdNote())) {
                 String htmlTagsRegEx = "<[^>]*>";
                 NodeNote nodeNote = new NoteHelper().getNoteByIdNote(ds, Integer.parseInt(vote.getIdNote()));
-                String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalvalue());
-                skosVote.setValueNote(str.replaceAll(htmlTagsRegEx, ""));
+                if (nodeNote != null) {
+                    String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalvalue());
+                    skosVote.setValueNote(str.replaceAll(htmlTagsRegEx, ""));
+                }
             }
             resource.addVote(skosVote);
         }
