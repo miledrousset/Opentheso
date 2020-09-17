@@ -1338,6 +1338,45 @@ public class NoteHelper {
         return nodeNote;
     }
 
+    public NodeNote getNoteByValue(HikariDataSource ds, String noteValue) {
+
+        NodeNote nodeNote = null;
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT id, lang, notetypecode, lexicalvalue, created, modified " +
+                            "FROM note WHERE lexicalvalue = '"+noteValue+"'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        nodeNote = new NodeNote();
+                        nodeNote.setId_note(resultSet.getInt("id"));
+                        nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
+                        nodeNote.setModified(resultSet.getDate("modified"));
+                        nodeNote.setCreated(resultSet.getDate("created"));
+                        nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
+                        nodeNote.setLang(resultSet.getString("lang"));
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+        }
+        return nodeNote;
+    }
+
     public NodeNote getNoteByValueAndThesaurus(HikariDataSource ds, String value, String idThes) {
 
         NodeNote nodeNote = null;

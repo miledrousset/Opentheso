@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -83,13 +84,16 @@ public class CandidatBean implements Serializable {
     private List<NodeLangTheso> selectedLanguages;
     private ArrayList<NodeLangTheso> languagesOfTheso;
 
-
+    @PostConstruct
     public void initCandidatModule() {
         isListCandidatsActivate = true;
         isRejectCandidatsActivate = true;
         isAcceptedCandidatsActivate = true;
         isNewCandidatActivate = false;
         isShowCandidatActivate = false;
+        isImportViewActivate = false;
+        isExportViewActivate = false;
+
         candidatList = new ArrayList<>();
         allTermes = new ArrayList<>();
         domaines = new ArrayList<>();
@@ -303,6 +307,9 @@ public class CandidatBean implements Serializable {
 
         isNewCandidatActivate = false;
         isShowCandidatActivate = false;
+
+        isExportViewActivate = false;
+        isImportViewActivate = false;
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());

@@ -705,15 +705,24 @@ public class ImportRdf4jHelper {
         // For Term : definition; editorialNote; historyNote;
         for (NodeNote nodeNoteList1 : acs.nodeNotes) {
 
+            String str = formatLinkToHtmlTag(nodeNoteList1.getLexicalvalue());
+
             if (nodeNoteList1.getNotetypecode().equals("customnote") || nodeNoteList1.getNotetypecode().equals("scopeNote") || nodeNoteList1.getNotetypecode().equals("historyNote") || nodeNoteList1.getNotetypecode().equals("note")) {
                 acs.noteHelper.addConceptNote(ds, acs.concept.getIdConcept(), nodeNoteList1.getLang(),
-                        idTheso, formatLinkToHtmlTag(nodeNoteList1.getLexicalvalue()), nodeNoteList1.getNotetypecode(), idUser);
+                        idTheso, str, nodeNoteList1.getNotetypecode(), idUser);
             }
 
             if (nodeNoteList1.getNotetypecode().equals("definition") || nodeNoteList1.getNotetypecode().equals("editorialNote")) {
-
                 acs.noteHelper.addTermNote(ds, acs.nodeTerm.getIdTerm(), nodeNoteList1.getLang(),
-                        idTheso, formatLinkToHtmlTag(nodeNoteList1.getLexicalvalue()), nodeNoteList1.getNotetypecode(), idUser);
+                        idTheso, str, nodeNoteList1.getNotetypecode(), idUser);
+            }
+
+            for (VoteDto vote : acs.votes) {
+                if (vote.getIdNote() != null) {
+                    NodeNote newNote = acs.noteHelper.getNoteByValue(ds, str.replaceAll("'", "''"));
+                    vote.setIdNote(newNote.getId_note()+"");
+                    break;
+                }
             }
 
         }
@@ -852,7 +861,7 @@ public class ImportRdf4jHelper {
             if (!StringUtils.isEmpty(vote.getIdNote())) {
                 String str = formatLinkToHtmlTag(vote.getIdNote());
                 str = str.replaceAll("'", "''");
-                NodeNote nodeNote = new NoteHelper().getNoteByValueAndThesaurus(ds,str , acs.concept.getIdThesaurus());
+                NodeNote nodeNote = new NoteHelper().getNoteByValue(ds, str);
                 if (nodeNote != null ) {
                     voteDto.setIdNote(nodeNote.getId_note()+"");
                 }
