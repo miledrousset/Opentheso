@@ -5,6 +5,7 @@ public class SKOSVote {
     String idConcept;
     String idThesaurus;
     String idNote;
+    String valueNote;
     int idUser;
     String typeVote;
 
@@ -48,4 +49,11 @@ public class SKOSVote {
         this.typeVote = typeVote;
     }
 
+    public String getValueNote() {
+        return valueNote;
+    }
+
+    public void setValueNote(String valueNote) {
+        this.valueNote = valueNote;
+    }
 }

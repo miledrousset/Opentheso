@@ -125,7 +125,7 @@ public class RelationsHelper {
                 try {
                     String query = "select id_concept2,role, status from hierarchical_relationship, concept"
                             + " where hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
-                            + " and hierarchical_relationship.id_concept2 = concept.id_concept"
+                            + " and hierarchical_relationship.id_concept1 = concept.id_concept"
                             + " and hierarchical_relationship.id_thesaurus = concept.id_thesaurus"
                             + " and id_concept1 = '" + idConcept + "'"
                             + " and role = '" + "RT" + "'";
@@ -701,7 +701,7 @@ public class RelationsHelper {
                             + " concept WHERE "
                             + " concept.id_thesaurus = hierarchical_relationship.id_thesaurus"
                             + " AND "
-                            + " concept.id_concept = hierarchical_relationship.id_concept2"
+                            + " concept.id_concept = hierarchical_relationship.id_concept1"
                             + " AND"
                             + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
                             + " AND"

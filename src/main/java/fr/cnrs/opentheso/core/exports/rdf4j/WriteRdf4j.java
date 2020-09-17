@@ -284,7 +284,7 @@ public class WriteRdf4j {
 
     private void writeVotes(SKOSResource resource) {
         for (SKOSVote vote : resource.getVotes()) {
-            builder.add(SKOS.NOTE, vf.createLiteral(vote.getIdThesaurus() + DELIMINATE + vote.getIdConcept() + DELIMINATE + vote.getIdNote()
+            builder.add(SKOS.NOTE, vf.createLiteral(vote.getIdThesaurus() + DELIMINATE + vote.getIdConcept() + DELIMINATE + vote.getValueNote()
                     + DELIMINATE + vote.getIdUser() + DELIMINATE + vote.getTypeVote(), VOTE_TAG));
         }
     }

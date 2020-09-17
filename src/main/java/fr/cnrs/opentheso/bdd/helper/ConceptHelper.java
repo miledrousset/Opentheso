@@ -3517,6 +3517,18 @@ public class ConceptHelper {
         return status;
     }
 
+
+    public void addNewGroupOfConcept(HikariDataSource ds, String idconcept, String idgroup, String idthesaurus) {
+
+        try {
+            Statement stmt = ds.getConnection().createStatement();
+            stmt.executeUpdate("INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
+                    +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');");
+            stmt.close();
+        } catch (Exception ex) {
+        }
+    }
+
     /**
      * Cette fonction permet d'insérrer un Concept dans la table Concept avec un
      * idConcept existant (Import) avec Rollback
@@ -5718,7 +5730,7 @@ public class ConceptHelper {
         return nodeConceptExport;
     }
 
-    private String formatLinkTag(String initialStr) {
+    public static String formatLinkTag(String initialStr) {
         Pattern MY_PATTERN = Pattern.compile("<a(.*?)a>");
         Matcher m = MY_PATTERN.matcher(initialStr);
         while (m.find()) {

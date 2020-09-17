@@ -44,6 +44,7 @@ import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
 import fr.cnrs.opentheso.skosapi.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -99,6 +100,7 @@ public class ImportRdf4jHelper {
         ConceptHelper conceptHelper;
         SKOSResource conceptResource;
         NodeStatus status;
+        String collectionToAdd;
         // pour intégrer les coordonnées GPS 
         NodeGps nodeGps = new NodeGps();
         GpsHelper gpsHelper = new GpsHelper();
@@ -716,6 +718,10 @@ public class ImportRdf4jHelper {
 
         }
 
+        if (!StringUtils.isEmpty(acs.collectionToAdd)) {
+            new ConceptHelper().addNewGroupOfConcept(ds, acs.concept.getIdConcept(), acs.collectionToAdd, idTheso);
+        }
+
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
             acs.alignmentHelper.addNewAlignment(ds, nodeAlignment);
         }
@@ -749,10 +755,6 @@ public class ImportRdf4jHelper {
             acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, "", "", imageUri, idUser);
         }
 
-        for (VoteDto vote : acs.votes) {
-            new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
-        }
-
         for (MessageDto message : acs.messages) {
             new MessageDao().addNewMessage(ds, message.getMsg(), message.getIdUser(), acs.concept.getIdConcept(),
                     idTheso, message.getDate());
@@ -760,6 +762,10 @@ public class ImportRdf4jHelper {
 
         new CandidatDao().setStatutForCandidat(ds, Integer.parseInt(acs.status.getIdStatus()), acs.status.getIdConcept(),
                 idTheso, acs.status.getIdUser(), acs.status.getDate());
+
+        for (VoteDto vote : acs.votes) {
+            new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
+        }
 
 
         // initialisation des variables
@@ -840,9 +846,20 @@ public class ImportRdf4jHelper {
         for (SKOSVote vote : acs.conceptResource.getVotes()) {
             VoteDto voteDto = new VoteDto();
             voteDto.setTypeVote(vote.getTypeVote());
-            voteDto.setIdNote(vote.getIdNote());
             voteDto.setIdUser(vote.getIdUser());
             voteDto.setIdConcept(vote.getIdConcept());
+
+            if (!StringUtils.isEmpty(vote.getIdNote())) {
+                String str = formatLinkToHtmlTag(vote.getIdNote());
+                str = str.replaceAll("'", "''");
+                NodeNote nodeNote = new NoteHelper().getNoteByValueAndThesaurus(ds,str , acs.concept.getIdThesaurus());
+                if (nodeNote != null ) {
+                    voteDto.setIdNote(nodeNote.getId_note()+"");
+                }
+            } else {
+                voteDto.setIdNote(null);
+            }
+
             acs.votes.add(voteDto);
         }
     }
@@ -1034,9 +1051,9 @@ public class ImportRdf4jHelper {
             } else if (prop == SKOSProperty.topConceptOf) {
                 acs.isTopConcept = true;
 
-            }
-
-            if (hasTopConcceptList.contains(acs.conceptResource.getUri())) {
+            } else if (prop == SKOSProperty.memberOf) {
+                acs.collectionToAdd = getIdFromUri(relation.getTargetUri());
+            } if (hasTopConcceptList.contains(acs.conceptResource.getUri())) {
                 acs.isTopConcept = true;
             }
     /*        String uri = acs.conceptResource.getUri();

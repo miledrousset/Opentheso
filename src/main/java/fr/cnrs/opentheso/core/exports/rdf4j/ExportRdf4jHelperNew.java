@@ -4,10 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.util.ArrayList;
 
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.*;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
@@ -25,6 +22,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
 import fr.cnrs.opentheso.skosapi.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -269,7 +267,7 @@ public class ExportRdf4jHelperNew {
 
         sKOSResource.setSkosStatus(addStatut(conceptHelper.getNodeStatus(ds, idConcept, idTheso)));
         addDiscussions(nodeConcept.getMessages(), sKOSResource);
-        addVotes(nodeConcept.getVotes(), sKOSResource);
+        addVotes(nodeConcept.getVotes(), sKOSResource, ds);
 
         // prefLabel
         for (NodeTermTraduction traduction : nodeConcept.getNodeTermTraductions()) {
@@ -401,7 +399,7 @@ public class ExportRdf4jHelperNew {
     }
 
 
-    private void addVotes(List<VoteDto> votes, SKOSResource resource) {
+    private void addVotes(List<VoteDto> votes, SKOSResource resource, HikariDataSource ds) {
         for (VoteDto vote : votes) {
             SKOSVote skosVote = new SKOSVote();
             skosVote.setIdNote(vote.getIdNote());
@@ -409,6 +407,12 @@ public class ExportRdf4jHelperNew {
             skosVote.setIdThesaurus(vote.getIdThesaurus());
             skosVote.setIdConcept(vote.getIdConcept());
             skosVote.setTypeVote(vote.getTypeVote());
+            if (!StringUtils.isEmpty(vote.getIdNote()) && !"null".equalsIgnoreCase(vote.getIdNote())) {
+                String htmlTagsRegEx = "<[^>]*>";
+                NodeNote nodeNote = new NoteHelper().getNoteByIdNote(ds, Integer.parseInt(vote.getIdNote()));
+                String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalvalue());
+                skosVote.setValueNote(str.replaceAll(htmlTagsRegEx, ""));
+            }
             resource.addVote(skosVote);
         }
     }
