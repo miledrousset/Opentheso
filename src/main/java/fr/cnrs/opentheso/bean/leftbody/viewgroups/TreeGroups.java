@@ -21,6 +21,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
@@ -45,15 +46,12 @@ import org.primefaces.model.TreeNode;
 
 public class TreeGroups implements Serializable {
 
-    @Inject
-    private Connect connect;
-    @Inject
-    private RightBodySetting rightBodySetting;
-    @Inject
-    ConceptView conceptView;    
-    @Inject
-    GroupView groupView;
+    @Inject private Connect connect;
+    @Inject private RightBodySetting rightBodySetting;
+    @Inject ConceptView conceptView;    
+    @Inject GroupView groupView;
     @Inject private LeftBodySetting leftBodySetting;
+    @Inject private SelectedTheso selectedTheso;
     
 
     private DataService dataService;
@@ -176,7 +174,7 @@ public class TreeGroups implements Serializable {
                 idTheso,
                 idLang,
                 ((TreeNodeData) parent.getData()).getNodeId(),
-                false);
+                selectedTheso.isSortByNotation());
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {
             parent.setType("group");
             return true;
@@ -200,7 +198,7 @@ public class TreeGroups implements Serializable {
             data = new TreeNodeData(
                     nodeGroup.getId(),
                     nodeGroup.getValue(),
-                    "",
+                    nodeGroup.getNotation(),
                     false,//isgroup
                     false,//isSubGroup
                     true,//isConcept

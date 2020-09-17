@@ -144,9 +144,13 @@ public class SynonymBean implements Serializable {
         FacesMessage msg;
         TermHelper termHelper = new TermHelper();
         PrimeFaces pf = PrimeFaces.current();        
+        String idTerm = new TermHelper().getIdTermOfConcept(
+                connect.getPoolConnexion(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
         
         if (!termHelper.addNonPreferredTerm(connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getTerm().getId_term(),
+                idTerm,
                 value,
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),

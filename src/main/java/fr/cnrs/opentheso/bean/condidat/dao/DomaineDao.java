@@ -1,6 +1,9 @@
 package fr.cnrs.opentheso.bean.condidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import org.apache.commons.lang3.StringUtils;
@@ -34,14 +37,17 @@ public class DomaineDao extends BasicDao {
     }
 
     public void addNewDomaine(Connect connect, String idgroup, String idthesaurus, String idconcept) throws SQLException {
-
         stmt = connect.getPoolConnexion().getConnection().createStatement();
-
         executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
                 +idgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
-
         stmt.close();
     }
+    
+    public void deleteAllDomaine(Connect connect, String idthesaurus, String idconcept) throws SQLException {
+        stmt = connect.getPoolConnexion().getConnection().createStatement();
+        executDeleteRequest(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idconcept+"'  AND idthesaurus = '"+idthesaurus+"'");
+        stmt.close();
+    }    
 
     public void updateDomaine(Connect connect, String oldIdgroup, String newIdgroup, String idthesaurus, String idconcept) throws SQLException {
 
@@ -58,8 +64,21 @@ public class DomaineDao extends BasicDao {
         stmt.close();
     }
 
-    public String getDomaineCandidatByConceptAndThesaurusAndLang(HikariDataSource hikariDataSource, String idconcept,
+    public ArrayList<NodeIdValue> getDomaineCandidatByConceptAndThesaurusAndLang(HikariDataSource hikariDataSource, String idconcept,
                                                               String idThesaurus, String lang) {
+        
+        GroupHelper groupHelper = new GroupHelper();
+        ArrayList<NodeGroup> nodeGroups = groupHelper.getListGroupOfConcept(hikariDataSource, idThesaurus, idconcept, lang);
+        
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        for (NodeGroup nodeGroup : nodeGroups) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setValue(nodeGroup.getLexicalValue());
+            nodeIdValue.setId(nodeGroup.getConceptGroup().getIdgroup());
+            nodeIdValues.add(nodeIdValue);
+        }
+        return nodeIdValues;
+        /*
         String domaine = null;
         try {
             openDataBase(hikariDataSource);
@@ -77,7 +96,7 @@ public class DomaineDao extends BasicDao {
         } catch (SQLException e) {
             LOG.error(e);
         }
-        return domaine;
+        return domaine;*/
     }
     
 }

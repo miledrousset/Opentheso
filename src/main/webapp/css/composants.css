@@ -1,0 +1,68 @@
+/*
+    colors Opentheso :
+        #43B572 vert (couleur principale)
+        #226b40 vert intermédiaire
+        #143a1e vert foncé
+        #f47b2a orange
+
+        #FAFAFA blanc (couleur de fonds)
+
+
+*/
+
+@font-face {
+    font-family: openthesoFont;
+    src: url(fonts/FreeSans.ttf);
+}
+
+.ui-radiobutton-box.ui-state-active {
+    background: #f47b2a;
+    border-color: #f47b2a;
+}
+
+.ui-state-highlight, .ui-widget-content .ui-state-highlight {
+    background: #f47b2a;
+    border-color: #f47b2a;
+}
+
+.ui-datatable .ui-state-highlight {
+    background: #f47b2a;
+    border-color: #f47b2a;
+}
+
+.ui-button, button.ui-button.ui-state-default, .ui-button.ui-state-default {
+    background: #43B572;
+    border: #43B572;
+}
+
+.tabCostum {    
+    background: #43B572;
+    border: #43B572;
+    font-family: openthesoFont;
+    font-size: small;
+}
+
+.tabCostum.ui-state-highlight {    
+    background: #F47B2A;
+    border: #F47B2A;
+    font-family: openthesoFont;
+}
+
+.ui-widget-header {
+    background: #43B572;
+    border: #43B572;
+    color: white;
+} 
+
+.button-standard {
+    background: #43B572 !important;
+    border: #43B572;
+}
+
+button-standard:active{
+    background: #F47B2A;
+}
+
+button-standard:focus{
+    background: #F47B2A;
+}

@@ -6,6 +6,7 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.CopyAndPasteBetweenThesoHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -172,9 +173,9 @@ public class CopyAndPasteBetweenTheso implements Serializable {
      * @return 
      */
     private boolean copyToConcept(){
-        // cas de déplacement d'un concept à concept
+        // cas de déplacement d'un concept/branche d'un autre thésaurus vers un concept
         FacesMessage msg;
-/*
+
         CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper = new CopyAndPasteBetweenThesoHelper();
         
             if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(connect.getPoolConnexion(),
@@ -182,33 +183,36 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     idThesoOrigin,
                     nodeConceptDrag.getConcept().getIdConcept(),
-                    
-                    
-                    
-            //        currentUser.getNodeUser().getIdUser(),
-            //        roleOnThesoBean.getNodePreference(),
-                    identifierType)) {
+                    identifierType, 
+                    currentUser.getNodeUser().getIdUser(),
+                    roleOnThesoBean.getNodePreference())) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     languageBean.getMsg("tools.copyBranch"), "Erreur de copie")); 
-            }      */  
-        
-     /*   if (!conceptHelper.moveBranchFromConceptToConcept(connect.getPoolConnexion(),
-                nodeConceptDrag.getConcept().getIdConcept(),
-                oldBtToDelete,
-                nodeConceptDrop.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant la suppression des branches !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return false;
-        }*/
+            } 
         return true;
     }
     
     private boolean copyToRoot(){
         FacesMessage msg;
+        // cas de déplacement d'un concept/branche d'un autre thésaurus à la racine
+        CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper = new CopyAndPasteBetweenThesoHelper();
+        
+            if(!copyAndPasteBetweenThesoHelper.pasteBranchToRoot(connect.getPoolConnexion(),
+                    selectedTheso.getCurrentIdTheso(),
+
+                    idThesoOrigin,
+                    nodeConceptDrag.getConcept().getIdConcept(),
+                    identifierType, 
+                    currentUser.getNodeUser().getIdUser(),
+                    roleOnThesoBean.getNodePreference())) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    languageBean.getMsg("tools.copyBranch"), "Erreur de copie")); 
+            } 
+        return true;        
+        /*
+        
         ConceptHelper conceptHelper = new ConceptHelper();         
-        ArrayList<String> oldBtToDelete = new ArrayList<>();
+        ArrayList<String> oldBtToDelete = new ArrayList<>();*/
 /*
         // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
         if (oldBtToDelete.isEmpty()) {
@@ -233,7 +237,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                 return false;
             }
         }*/
-        return true;
+  //      return true;
     }
 
     private void reloadConcept(){
