@@ -5,7 +5,6 @@
  */
 package fr.cnrs.opentheso.core.exports.csv;
 
-import fr.cnrs.opentheso.skosapi.SKOSCreator;
 import fr.cnrs.opentheso.skosapi.SKOSDate;
 import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
@@ -22,12 +21,15 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 
 
 public class WriteCSV {
 
-    private String seperate;
+    private final String delim_multi_datas = "##";
+    
+    private char seperate;
     private BufferedWriter writer;
     private ByteArrayOutputStream output;
 
@@ -37,7 +39,7 @@ public class WriteCSV {
      * @param xmlDocument
      * @param langs
      */
-    public WriteCSV(SKOSXmlDocument xmlDocument, List<String> langs, String seperate) {
+    public WriteCSV(SKOSXmlDocument xmlDocument, List<String> langs, char seperate) {
 
         try {
             this.seperate = seperate;
@@ -107,7 +109,7 @@ public class WriteCSV {
                 .append(type).append(seperate) ;//rdf:type
         
         for (String lang : langs) {
-            stringBuffer.append(getLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.prefLabel)).append(seperate); //skos:prefLabel
+            stringBuffer.append(getPrefLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.prefLabel)).append(seperate); //skos:prefLabel
         }
         
         for (String lang : langs) {
@@ -132,7 +134,7 @@ public class WriteCSV {
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch)).append(seperate) //closeMatch
                 .append(getLatValue(skosResource.getGPSCoordinates())).append(seperate)//geo:lat
                 .append(getLongValue(skosResource.getGPSCoordinates())).append(seperate)//geo:long
-                .append(getMemberValue(skosResource.getCreatorList())).append(seperate)//skos:member
+                .append(getMemberValue(skosResource.getRelationsList())).append(seperate)//skos:member
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.created)).append(seperate)//sdct:created
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.modified)).append(seperate);//dct:modified
         writer.write(stringBuffer.toString());
@@ -141,6 +143,7 @@ public class WriteCSV {
 
     private String getLatValue(SKOSGPSCoordinates coordinates) {
         if (coordinates != null) {
+            if(coordinates.getLat() == null) return "";
             return coordinates.getLat();
         }
         return "";
@@ -148,38 +151,33 @@ public class WriteCSV {
 
     private String getLongValue(SKOSGPSCoordinates coordinates) {
         if (coordinates != null) {
+            if(coordinates.getLon() == null) return "";
             return coordinates.getLon();
         }
         return "";
     }
 
-    private String getMemberValue(List<SKOSCreator> creators) {
-        if (!CollectionUtils.isEmpty(creators)) {
-            return creators.get(0).getCreator();
-        }
-        return "";
+    private String getMemberValue(ArrayList<SKOSRelation> sKOSRelations) {
+        
+        return sKOSRelations.stream()
+                .filter(sKOSRelation -> sKOSRelation.getProperty() == SKOSProperty.memberOf)
+                .map(sKOSRelation -> sKOSRelation.getTargetUri())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     private String getRelationGivenValue(List<SKOSRelation> relations, int propertie) {
-        String value = "";
-        for (SKOSRelation relation : relations) {
-            if (relation.getProperty() == propertie) {
-                value = relation.getTargetUri();
-                break;
-            }
-        }
-        return value;
+        
+        return relations.stream()
+                .filter(relation -> relation.getProperty() == propertie)
+                .map(relation -> relation.getTargetUri())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     private String getAlligementValue(List<SKOSMatch> matchs, int propertie) {
-        String value = "";
-        for (SKOSMatch date : matchs) {
-            if (date.getProperty() == propertie) {
-                value = date.getValue();
-                break;
-            }
-        }
-        return value;
+        return matchs.stream()
+                .filter(alignment -> alignment.getProperty() == propertie)
+                .map(alignment -> alignment.getValue())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     public String getNotation(List<SKOSNotation> notations) {
@@ -200,7 +198,7 @@ public class WriteCSV {
         return value;
     }
 
-    private String getLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
+    private String getPrefLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
         String value = "";
         for (SKOSLabel label : labels) {
             if (label.getProperty() == propertie && label.getLanguage().equals(lang)) {
@@ -209,17 +207,22 @@ public class WriteCSV {
             }
         }
         return value;
+    }    
+    
+    private String getLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
+        
+        return labels.stream()
+                .filter(label -> label.getProperty() == propertie && label.getLanguage().equals(lang))
+                .map(label -> label.getLabel())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     private String getDocumentationValue(ArrayList<SKOSDocumentation> documentations, String lang, int propertie) {
-        String value = "";
-        for (SKOSDocumentation document : documentations) {
-            if (document.getProperty() == propertie && document.getLanguage().equals(lang)) {
-                value = document.getText();
-                break;
-            }
-        }
-        return value;
+        
+        return documentations.stream()
+                .filter(document -> document.getProperty() == propertie && document.getLanguage().equals(lang))
+                .map(document -> document.getText())
+                .collect(Collectors.joining(delim_multi_datas));
     }
 
     public ByteArrayOutputStream getOutput() {

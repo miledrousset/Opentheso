@@ -9,14 +9,14 @@
     -->
 
     <p:dialog id="idEditNote" header="modifier une note" widgetVar="editNote" 
-              modal="true" resizable="true" position="top" width="450" style="margin-top: 150px; max-height: 500px;overflow-y:scroll " >         
+              modal="true" resizable="true" position="top" width="450" style="margin-top: 50px; max-height: 500px;overflow-y:scroll " >         
 
         <h:form id="editNoteForm">   
 
             <b:row >
-                <b:column span="11" offset="1" >
+                <b:column span="11" offset="1"  colXs="11" offset-xs="1" >
                     <h:outputText id="currentPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="font-size: 13px; color: black;">
+                                  style="font-size: 13px; color: #43B572;">
                     </h:outputText >
                     <p:spacer height="30"/>
                 </b:column>
@@ -24,12 +24,12 @@
 
             <b:row >
                 <ui:repeat var="noteToEdit" value="#{noteBean.nodeToEdit()}" >
-                    <b:column span="10" style="background: #FAFAFA">
+                    <b:column span="10" colXs="10" style="background: #FAFAFA">
                         <b:inputTextarea rendered="#{noteToEdit.lexicalvalue != ''}"
                                          value="#{noteToEdit.lexicalvalue}"
-                                         style="color: #43B572; font-size: 12px;"/>                    
+                                         style="font-size: 12px;"/>                    
                     </b:column>
-                    <b:column span="2" style="background: #FAFAFA">
+                    <b:column span="2" colXs="1" style="background: #FAFAFA">
                         <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
                                           action="#{noteBean.updateNote(
                                                     noteToEdit,
@@ -41,7 +41,7 @@
                 </ui:repeat>
             </b:row>
             <b:row>
-                <b:column span="12">
+                <b:column span="12" colXs="12">
                     <b:messages autoUpdate="true"/>
                 </b:column>
             </b:row> 

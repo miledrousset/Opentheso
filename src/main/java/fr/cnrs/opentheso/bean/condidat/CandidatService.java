@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
@@ -174,8 +175,20 @@ public class CandidatService implements Serializable {
             throws SQLException {
 
         //update domaine
+        DomaineDao domaineDao = new DomaineDao();
+        domaineDao.deleteAllDomaine(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
+        
+        for (NodeIdValue collection : candidatSelected.getCollections()) {
+            new DomaineDao().addNewDomaine(
+                    connect, collection.getId(),
+                    candidatSelected.getIdThesaurus(),
+                    candidatSelected.getIdConcepte());            
+        }
+    /*    if(initialCandidat.getDomaine() != null) {
+
+        }
         if (initialCandidat == null || (StringUtils.isEmpty(initialCandidat.getDomaine())
-                && !StringUtils.isEmpty(candidatSelected.getDomaine()))) {
+                || (!StringUtils.isEmpty(candidatSelected.getDomaine())))) {
             new DomaineDao().addNewDomaine(connect, getDomaineId(allDomaines, candidatSelected.getDomaine()),
                     candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
 
@@ -183,7 +196,7 @@ public class CandidatService implements Serializable {
             new DomaineDao().updateDomaine(connect, getDomaineId(allDomaines, initialCandidat.getDomaine()),
                     getDomaineId(allDomaines, candidatSelected.getDomaine()),
                     candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
-        }
+        }*/
 
         // gestion des relations
         RelationDao relationDao = new RelationDao();
@@ -300,7 +313,7 @@ public class CandidatService implements Serializable {
             CandidatDao candidatDao = new CandidatDao();
             RelationDao relationDao = new RelationDao();
 
-            candidatSelected.setDomaine(new DomaineDao().getDomaineCandidatByConceptAndThesaurusAndLang(connection,
+            candidatSelected.setCollections(new DomaineDao().getDomaineCandidatByConceptAndThesaurusAndLang(connection,
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 
             candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(connection,

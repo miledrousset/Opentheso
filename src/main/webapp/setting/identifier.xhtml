@@ -37,7 +37,8 @@
                                 <h:outputText value="Serveur Ark" />
                             </b:column>
                             <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="height: 25px;font-size: 12px;"/>
+                                <b:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="height: 25px;font-size: 12px;"
+                                             tooltip="L'adresse du serveur distant qui permet de générer les identifiants ARK " tooltip-delay-show="500"/>
                             </b:column>                
                         </b:row>
                         
@@ -47,9 +48,22 @@
                                 <h:outputText value="Uri Ark" />
                             </b:column>
                             <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.uriArk}" style="height: 25px;font-size: 12px;"/>
+                                <b:inputText value="#{preferenceBean.nodePreference.uriArk}" style="height: 25px;font-size: 12px;"
+                                             tooltip="L'URI ARK qui doit précéder chaque identifiant, cette URI est interpétée par le serveur ARK ci-dessus " tooltip-delay-show="500"/>
                             </b:column>                
-                        </b:row>                        
+                        </b:row>
+                        
+                        <!-- Url local du serveur qui héberge le thésaurus -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3">
+                                <h:outputText value="Url du site local" />
+                            </b:column>
+                            <b:column span="8">
+                                <b:inputText value="#{preferenceBean.nodePreference.cheminSite}" style="height: 25px;font-size: 12px;"
+                                             tooltip="L'URI local du serveur qui héberge le thésaurus, elle sert à générer les identifiants ARK, c'est l'URL qui sera en face de chaque identifiant ARK"
+                                             tooltip-delay-show="500"/>
+                            </b:column>                
+                        </b:row>                         
 
                         <!-- Naan Ark -->
                         <b:row style="margin-left: 30px; font-size: 12px;">

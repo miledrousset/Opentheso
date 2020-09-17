@@ -21,6 +21,7 @@ import fr.cnrs.opentheso.bdd.datas.ConceptGroup;
 import fr.cnrs.opentheso.bdd.datas.ConceptGroupLabel;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGroupType;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeMetaData;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
@@ -2310,6 +2311,65 @@ public class GroupHelper {
 
         return nodeAutoCompletionList;
     }
+    
+    /**
+     * Cette fonction permet de récupérer la liste des domaines pour
+     * l'autocomplétion
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param text
+     * @param idLang
+     * @return Objet class Concept
+     */
+    public ArrayList<NodeIdValue> searchGroup(HikariDataSource ds,
+            String idThesaurus, String idLang, String text) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        text = new StringPlus().convertString(text);
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT concept_group_label.idgroup,"
+                            + " concept_group_label.lexicalvalue FROM concept_group_label"
+                            + " WHERE "
+                            + " concept_group_label.idthesaurus = '" + idThesaurus + "'"
+                            + " AND concept_group_label.lang = '" + idLang + "'"
+                            + " AND unaccent_string(concept_group_label.lexicalvalue) ILIKE unaccent_string('%" + text + "%')"
+                            + " ORDER BY concept_group_label.lexicalvalue ASC LIMIT 40";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+
+                    while (resultSet.next()) {
+                        if (resultSet.getRow() != 0) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setValue(resultSet.getString("lexicalvalue"));
+                            nodeIdValue.setId(resultSet.getString("idgroup"));
+                            nodeIdValues.add(nodeIdValue);
+                        }
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List of autocompletion of collection : " + text, sqle);
+        }
+
+        return nodeIdValues;
+    }    
 
     /**
      * Cette fonction permet de récupérer la liste des domaines sauf celui en

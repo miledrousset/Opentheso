@@ -151,9 +151,9 @@ public class ExportRdf4jHelperNew {
         NodeGroupLabel nodeGroupLabel;
         for (String idGroup : rootGroupList) {
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
-            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);                    
+            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
             sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
-            addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);                    
+            addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
     private void addChildsGroupRecursive(HikariDataSource ds,
@@ -198,9 +198,9 @@ public class ExportRdf4jHelperNew {
 
         ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idOfGroupChild, idTheso);
 //        ArrayList<NodeUri> nodeUris = new ConceptHelper().getListIdsOfTopConceptsForExport(ds, idOfGroupChild, idTheso);
-        
+
         ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
-        
+
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
       //      addMember(ds, nodeUri.getIdConcept(), idTheso, sKOSResource);
@@ -217,14 +217,14 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addRelation(getUriFromId(idSuperGroup), SKOSProperty.superGroup);
             superGroupHashMap.remove(idOfGroupChild);
         }
-        
+
         // ajout de la notation
         if (nodeGroupLabel.getNotation() != null && !nodeGroupLabel.getNotation().equals("null")) {
             if(!nodeGroupLabel.getNotation().isEmpty())
                 sKOSResource.addNotation(nodeGroupLabel.getNotation());
         }
         skosXmlDocument.addGroup(sKOSResource);
-    } 
+    }
     private void addMember(HikariDataSource ds,
             String id, String idThesaurus, SKOSResource resource) {
 
@@ -235,8 +235,8 @@ public class ExportRdf4jHelperNew {
             resource.addRelation(getUriFromNodeUri(idChildren.getUri(), idThesaurus), SKOSProperty.member);
             addMember(ds, idChildren.getUri().getIdConcept(), idThesaurus, resource);
         }
-    }    
-    
+    }
+
 
     /**
      * permet d'ajouter un concept à l'export en cours
@@ -251,16 +251,16 @@ public class ExportRdf4jHelperNew {
         ConceptHelper conceptHelper = new ConceptHelper();
         NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, false);
 
-        
+
         if (nodeConcept == null) {
             messages = messages + ("Erreur concept non exporté importé: " + idConcept + "\n");
             return;
         }
-        
+
         if(nodeConcept.getNodeListOfBT().isEmpty() ){
             sKOSResource.addRelation(getUriFromId(idTheso), SKOSProperty.topConceptOf);
         }
-        
+
         //    concept.setUri(getUriFromId(idConcept));
         sKOSResource.setUri(getUri(nodeConcept));
         sKOSResource.setProperty(SKOSProperty.Concept);
@@ -721,10 +721,10 @@ public class ExportRdf4jHelperNew {
 
         // si on ne trouve pas ni Handle, ni Ark
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
-            uri = nodePreference.getOriginalUri() + "?idc=" + nodeUri.getIdConcept()
+            uri = nodePreference.getOriginalUri() + "/?idc=" + nodeUri.getIdConcept()
                         + "&idt=" + idTheso;
         } else {
-            uri = getPath() + "?idc=" + nodeUri.getIdConcept()
+            uri = getPath() + "/?idc=" + nodeUri.getIdConcept()
                         + "&idt=" + idTheso;
         }
 

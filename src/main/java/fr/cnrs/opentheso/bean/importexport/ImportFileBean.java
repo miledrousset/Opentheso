@@ -698,7 +698,7 @@ public class ImportFileBean implements Serializable {
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
                 progressStep++;
                 progress = progressStep / total * 100;
-                importRdf4jHelper.addConcepts(sKOSResource, idTheso);
+                importRdf4jHelper.addConcept(sKOSResource, idTheso);
             }
             importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
             importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);

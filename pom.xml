@@ -4,7 +4,7 @@
 
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>20.07</version>
+    <version>20.09</version>
     <packaging>war</packaging>
 
     <name>opentheso2</name>
@@ -29,14 +29,7 @@
             <version>2.25.1</version>
         </dependency>
         
-        <!-- Pour le webservices de ARK de la MOM à ne plus utiliser 
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.19.4</version>
-            <type>jar</type>
-        </dependency>
-        -->
+        <!-- Pour le webservices de ARK de la MOM-->
 
         <dependency>
             <groupId>org.glassfish</groupId>

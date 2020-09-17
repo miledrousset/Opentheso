@@ -156,14 +156,14 @@ public class TermHelper {
      * @param idLang
      * @param oldValue
      * @param idTheso
-     * @param status
+     * @param isHidden
      * @param idUser
      * @return
      */
     public boolean updateTermSynonyme(HikariDataSource ds,
             String oldValue, String newValue,
             String idTerm, String idLang,
-            String idTheso, String status, int idUser) {
+            String idTheso, boolean isHidden, int idUser) {
 
         Connection conn = null;
         Statement stmt;
@@ -178,6 +178,7 @@ public class TermHelper {
                 try {
                     String query = "UPDATE non_preferred_term set"
                             + " lexical_value = '" + newValue + "',"
+                            + " hiden = " + isHidden + ","
                             + " modified = current_date "
                             + " WHERE lang ='" + idLang + "'"
                             + " AND id_thesaurus = '" + idTheso + "'"
@@ -185,7 +186,7 @@ public class TermHelper {
                             + " AND lexical_value = '" + oldValue + "'";
 
                     stmt.executeUpdate(query);
-                    if (addNonPreferredTermHistorique(conn, idTerm, newValue, idLang, idTheso, "", status, false, "update", idUser)) {
+                    if (addNonPreferredTermHistorique(conn, idTerm, newValue, idLang, idTheso, "", "", isHidden, "update", idUser)) {
                         conn.commit();
                         isPassed = true;
                     } else {
@@ -210,6 +211,67 @@ public class TermHelper {
         }
         return isPassed;
     }
+    
+    /**
+     * Permet de modifier le status du synonyme (caché ou non)
+     *
+     * @param ds
+     * @param idTerm
+     * @param value
+     * @param idLang
+     * @param idTheso
+     * @param isHidden
+     * @param idUser
+     * @return
+     */
+    public boolean updateStatus(HikariDataSource ds,
+            String idTerm, String value, String idLang,
+            String idTheso, boolean isHidden, int idUser) {
+
+        Connection conn = null;
+        Statement stmt;
+        boolean isPassed = false;
+        value = (new StringPlus().convertString(value));        
+        try {
+            conn = ds.getConnection();
+            conn.setAutoCommit(false);
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "UPDATE non_preferred_term set"
+                            + " hiden = " + isHidden + ","
+                            + " modified = current_date "
+                            + " WHERE lang ='" + idLang + "'"
+                            + " AND id_thesaurus = '" + idTheso + "'"
+                            + " AND id_term = '" + idTerm + "'" 
+                            + " AND lexical_value = '" + value + "'";
+
+                    stmt.executeUpdate(query);
+                    if (addNonPreferredTermHistorique(conn, idTerm, value, idLang, idTheso, "", "", isHidden, "update", idUser)) {
+                        conn.commit();
+                        isPassed = true;
+                    } else {
+                        conn.rollback();
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            Logger.getLogger(TermHelper.class.getName()).log(Level.SEVERE, null, sqle);
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(TermHelper.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return isPassed;
+    }    
 
     /**
      * Cette fonction permet de supprimer un Terme Non descripteur ou synonyme

@@ -144,7 +144,8 @@ public class ExportFileBean implements Serializable {
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
             exportRdf4jHelper = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedGroups());
-            WriteCSV writeCsv = new WriteCSV(exportRdf4jHelper.getSkosXmlDocument(), langs, viewExportBean.getCsvDelimiter());
+            char separateur = "\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+            WriteCSV writeCsv = new WriteCSV(exportRdf4jHelper.getSkosXmlDocument(), langs, separateur);
 
             return DefaultStreamedContent.builder().contentType("text/csv")
                     .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")

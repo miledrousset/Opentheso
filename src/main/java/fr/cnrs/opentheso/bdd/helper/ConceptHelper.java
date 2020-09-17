@@ -1389,6 +1389,7 @@ public class ConceptHelper {
 
         ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
         if (!arkHelper2.login()) {
+            message = "Erreur de connexion !!";
             return false;
         }
 
@@ -3402,6 +3403,40 @@ public class ConceptHelper {
         return updateHandleIdOfConcept(conn, idConcept,
                 idThesaurus, idHandle);
     }
+    
+    /**
+     * permet de générer les identifiants Handle des concepts en paramètres
+     * @param conn
+     * @param idConcepts
+     * @param idThesaurus
+     * @return
+     */
+    public boolean generateHandleId(HikariDataSource conn,
+            ArrayList<String> idConcepts,
+            String idThesaurus) {
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseHandle()) {
+            return false;
+        }
+        String privateUri;
+        HandleHelper handleHelper = new HandleHelper(nodePreference);
+        String idHandle;
+        for (String idConcept : idConcepts) {
+            privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
+            idHandle = handleHelper.addIdHandle(privateUri);
+            if (idHandle == null) {
+                message = handleHelper.getMessage();
+                return false;
+            }
+            if(!updateHandleIdOfConcept(conn, idConcept,
+                    idThesaurus, idHandle)) {
+                return false;
+            }
+        }
+        return true;
+    }    
 
     /**
      * Permet de supprimer un identifiant Handle de la table Concept et de la
@@ -3854,7 +3889,6 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
-     * (cette fonction sert pour la génération de la table Permuté
      *
      * @param ds
      * @param idThesaurus

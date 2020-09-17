@@ -38,7 +38,7 @@ public class CandidatDto implements Serializable {
     
     
     // ajoutés par Miled 
-    private String domaine;
+    private ArrayList<NodeIdValue> collections;
     private List<NodeNote> nodeNotes;    
     
     //    private List<String> termesGenerique;
@@ -59,6 +59,7 @@ public class CandidatDto implements Serializable {
         termesAssocies = new ArrayList<>();
         employePour = "";
         participants = new ArrayList<>();
+        collections = new ArrayList<>();
     }
 
     public CandidatDto(String nomPref) {
@@ -73,7 +74,7 @@ public class CandidatDto implements Serializable {
         this.userId = source.getUserId();
         this.user = source.getUser();
         this.nomPref = source.getNomPref();
-        this.domaine = source.getDomaine();
+        this.collections = source.getCollections();
         this.termesGenerique = source.getTermesGenerique();
         this.defenitions = source.getDefenitions();
         this.noteApplication = source.getNoteApplication();
@@ -83,13 +84,14 @@ public class CandidatDto implements Serializable {
         this.traductions = source.getTraductions();
     }
 
-    public String getDomaine() {
-        return domaine;
+    public ArrayList<NodeIdValue> getCollections() {
+        return collections;
     }
 
-    public void setDomaine(String domaine) {
-        this.domaine = domaine;
+    public void setCollections(ArrayList<NodeIdValue> collections) {
+        this.collections = collections;
     }
+
 
     public List<String> getDefenitions() {
         return defenitions;
