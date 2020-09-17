@@ -755,7 +755,7 @@ public class ImportFileBean implements Serializable {
 
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
                 candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
-                importRdf4jHelper.addConcepts(sKOSResource, selectedTheso.getCurrentIdTheso());
+                importRdf4jHelper.addConcept(sKOSResource, selectedTheso.getCurrentIdTheso());
             }
             
         } catch (Exception e) {
