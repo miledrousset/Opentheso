@@ -8,7 +8,6 @@ package fr.cnrs.opentheso.bean.condidat;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class NoteBeanCandidat implements Serializable {
     @Inject
     private Connect connect;
     @Inject
-    private LanguageBean languageBean;
+    private NoteBeanCandidat noteBeanCandidat;
     @Inject
     private SelectedTheso selectedTheso;
     @Inject CandidatBean candidatBean;
@@ -263,6 +262,9 @@ public class NoteBeanCandidat implements Serializable {
             }
         }
 
+        noteHelper.deleteVoteByNoteId(connect.getPoolConnexion(), selectedNodeNote.getId_note(), selectedTheso.getCurrentIdTheso(),
+                selectedNodeNote.getId_concept());
+
         reset();
         try {          
             candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
@@ -272,9 +274,10 @@ public class NoteBeanCandidat implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("candidatForm:listTraductionForm");
-            pf.ajax().update("candidatForm");
-        }            
+            pf.ajax().update("candidatForm:listNotesForm");
+        }
+
+        noteBeanCandidat.setVisible(false);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);

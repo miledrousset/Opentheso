@@ -300,6 +300,23 @@ public class NoteHelper {
             }
         return status;
     }
+
+
+    public void deleteVoteByNoteId(HikariDataSource ds, int idNote, String idThesaurus, String idConcept) {
+        Connection conn;
+        Statement stmt;
+        try {
+            conn = ds.getConnection();
+            stmt = conn.createStatement();
+            stmt.executeUpdate("DELETE FROM candidat_vote WHERE id_concept = '"+idConcept
+                    +"' AND id_thesaurus = '"+idThesaurus+"' AND id_note = '"+idNote+"'");
+            stmt.close();
+            conn.close();
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting candidat_vote of id_note : " + idNote, sqle);
+        }
+    }
     
    /**
     *  déprécié
