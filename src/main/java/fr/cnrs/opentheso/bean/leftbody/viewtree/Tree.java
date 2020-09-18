@@ -239,6 +239,26 @@ public class Tree implements Serializable {
         ArrayList<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
 
+        /*for (Path thisPath : paths) {
+            for (String idC : thisPath.getPath()) {
+
+                if (root.getChildCount() == 1 && root.getChildren().get(0).getData().toString().equals("DUMMY")) {
+                    root.getChildren().remove(0);
+                    addConceptsChild(root);
+                }
+
+                for (TreeNode treeNode : root.getChildren()) {
+                    if (((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idC)) {
+                        treeNode.setSelected(true);
+                    }
+                }
+
+            }
+        }*/
+
+        //findNode(root, paths.get())
+
+
         if (root == null) {
             initialise(idTheso, idLang);
         }
@@ -280,6 +300,20 @@ public class Tree implements Serializable {
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
+    }
+
+
+
+    TreeNode treeNodeFound = null;
+    private void findNode (TreeNode node, String selectedNodeName){
+        TreeNode treeNodeFound = null;
+        List<TreeNode> subChild = node.getChildren();
+        for (TreeNode treeNode : subChild) {
+            if(treeNode.getData().equals(selectedNodeName)){
+                treeNodeFound = treeNode;
+            }
+            findNode(treeNode, selectedNodeName);
+        }
     }
     
     /**
