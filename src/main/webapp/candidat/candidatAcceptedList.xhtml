@@ -8,13 +8,13 @@
     <b:panel style="padding: 10px">
         <b:row style="margin-top: 20px">
             <b:column medium-screen="6">
-                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('candidat.my_candidats')}" value="#{candidatBean.myCandidatsSelected}"
+                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('candidat.my_candidats')}" value="#{candidatBean.myCandidatsSelected2}"
                                          onclick="ajax:candidatBean.selectMyAcceptedCandidats()" update="candidatForm" style="font-size: 11px;"/>
             </b:column>
             <b:column medium-screen="6">
                 <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
                               text-align: right; vertical-align: central" value="#{langueBean.getMsg('candidat.search')}"/>
-                <b:inputText value="#{candidatBean.searchValue}">
+                <b:inputText value="#{candidatBean.searchValue2}">
                     <f:facet name="append">
                         <b:commandButton look="success" iconAwesome="search" icon-align="right" 
                                          update="candidatForm" actionListener="#{candidatBean.searchAcceptedCandByTermeAndAuteur()}"/>

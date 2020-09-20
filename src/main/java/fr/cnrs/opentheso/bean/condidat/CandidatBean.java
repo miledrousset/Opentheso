@@ -66,17 +66,14 @@ public class CandidatBean implements Serializable {
 
     private final CandidatService candidatService = new CandidatService();
 
-    private boolean isListCandidatsActivate;
-    private boolean isNewCandidatActivate;
-    private boolean myCandidatsSelected;
-    private boolean isShowCandidatActivate;
-    private boolean isRejectCandidatsActivate;
-    private boolean isAcceptedCandidatsActivate;
-    private boolean isExportViewActivate;
-    private boolean isImportViewActivate;
+    private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate;
+    private boolean isRejectCandidatsActivate, isAcceptedCandidatsActivate, isExportViewActivate, isImportViewActivate;
+    private boolean myCandidatsSelected1, myCandidatsSelected2, myCandidatsSelected3;
 
     private int tabViewIndexSelected, progressBarStep, progressBarValue;
-    private String message, definition, searchValue, selectedExportFormat;
+
+    private String message, definition, selectedExportFormat;
+    private String searchValue1, searchValue2, searchValue3;
 
     private CandidatDto candidatSelected, initialCandidat;
     private List<String> exportFormat;
@@ -84,6 +81,17 @@ public class CandidatBean implements Serializable {
     private List<DomaineDto> domaines;
     private List<NodeLangTheso> selectedLanguages;
     private ArrayList<NodeLangTheso> languagesOfTheso;
+
+
+    private String test;
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
 
     @PostConstruct
     public void initCandidatModule() {
@@ -158,7 +166,7 @@ public class CandidatBean implements Serializable {
     }
 
     public void selectMyCandidats() {
-        if (myCandidatsSelected) {
+        if (myCandidatsSelected1) {
             candidatList = candidatList.stream()
                     .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
                     .collect(Collectors.toList());
@@ -170,7 +178,7 @@ public class CandidatBean implements Serializable {
     }
 
     public void selectMyRejectCandidats() {
-        if (myCandidatsSelected) {
+        if (myCandidatsSelected3) {
             rejetCadidat = rejetCadidat.stream()
                     .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
                     .collect(Collectors.toList());
@@ -182,9 +190,9 @@ public class CandidatBean implements Serializable {
     }
 
     public void searchRejectCandByTermeAndAuteur() {
-        if (!StringUtils.isEmpty(searchValue)) {
+        if (!StringUtils.isEmpty(searchValue3)) {
             rejetCadidat = rejetCadidat.stream()
-                    .filter(candidat -> candidat.getNomPref().contains(searchValue) || candidat.getUser().contains(searchValue))
+                    .filter(candidat -> candidat.getNomPref().contains(searchValue3) || candidat.getUser().contains(searchValue3))
                     .collect(Collectors.toList());
         } else {
             getRejectCandidatByThesoAndLangue();
@@ -194,7 +202,7 @@ public class CandidatBean implements Serializable {
     }
 
     public void selectMyAcceptedCandidats() {
-        if (myCandidatsSelected) {
+        if (myCandidatsSelected2) {
             acceptedCadidat = acceptedCadidat.stream()
                     .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
                     .collect(Collectors.toList());
@@ -206,9 +214,9 @@ public class CandidatBean implements Serializable {
     }
 
     public void searchAcceptedCandByTermeAndAuteur() {
-        if (!StringUtils.isEmpty(searchValue)) {
+        if (!StringUtils.isEmpty(searchValue2)) {
             acceptedCadidat = acceptedCadidat.stream()
-                    .filter(candidat -> candidat.getNomPref().contains(searchValue) || candidat.getUser().contains(searchValue))
+                    .filter(candidat -> candidat.getNomPref().contains(searchValue2) || candidat.getUser().contains(searchValue2))
                     .collect(Collectors.toList());
         } else {
             getAcceptedCandidatByThesoAndLangue();
@@ -218,9 +226,9 @@ public class CandidatBean implements Serializable {
     }
 
     public void searchByTermeAndAuteur() {
-        if (!StringUtils.isEmpty(searchValue)) {
+        if (!StringUtils.isEmpty(searchValue1)) {
             candidatList = candidatList.stream()
-                    .filter(candidat -> candidat.getNomPref().contains(searchValue) || candidat.getUser().contains(searchValue))
+                    .filter(candidat -> candidat.getNomPref().contains(searchValue1) || candidat.getUser().contains(searchValue1))
                     .collect(Collectors.toList());
         } else {
             getAllCandidatsByThesoAndLangue();
@@ -690,20 +698,52 @@ public class CandidatBean implements Serializable {
         this.connect = connect;
     }
 
-    public boolean isMyCandidatsSelected() {
-        return myCandidatsSelected;
+    public boolean isMyCandidatsSelected1() {
+        return myCandidatsSelected1;
     }
 
-    public void setMyCandidatsSelected(boolean myCandidatsSelected) {
-        this.myCandidatsSelected = myCandidatsSelected;
+    public void setMyCandidatsSelected1(boolean myCandidatsSelected1) {
+        this.myCandidatsSelected1 = myCandidatsSelected1;
     }
 
-    public String getSearchValue() {
-        return searchValue;
+    public boolean isMyCandidatsSelected2() {
+        return myCandidatsSelected2;
     }
 
-    public void setSearchValue(String searchValue) {
-        this.searchValue = searchValue;
+    public void setMyCandidatsSelected2(boolean myCandidatsSelected2) {
+        this.myCandidatsSelected2 = myCandidatsSelected2;
+    }
+
+    public boolean isMyCandidatsSelected3() {
+        return myCandidatsSelected3;
+    }
+
+    public void setMyCandidatsSelected3(boolean myCandidatsSelected3) {
+        this.myCandidatsSelected3 = myCandidatsSelected3;
+    }
+
+    public String getSearchValue1() {
+        return searchValue1;
+    }
+
+    public void setSearchValue1(String searchValue1) {
+        this.searchValue1 = searchValue1;
+    }
+
+    public String getSearchValue2() {
+        return searchValue2;
+    }
+
+    public void setSearchValue2(String searchValue2) {
+        this.searchValue2 = searchValue2;
+    }
+
+    public String getSearchValue3() {
+        return searchValue3;
+    }
+
+    public void setSearchValue3(String searchValue3) {
+        this.searchValue3 = searchValue3;
     }
 
     public CandidatDto getCandidatSelected() {
