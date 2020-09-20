@@ -231,37 +231,17 @@ public class Tree implements Serializable {
      * @param idTheso
      * @param idLang #MR
      */
-    public void expandTreeToPath(
-            String idConcept,
-            String idTheso,
-            String idLang) {
+    public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
 
         ArrayList<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
 
-        /*for (Path thisPath : paths) {
-            for (String idC : thisPath.getPath()) {
-
-                if (root.getChildCount() == 1 && root.getChildren().get(0).getData().toString().equals("DUMMY")) {
-                    root.getChildren().remove(0);
-                    addConceptsChild(root);
-                }
-
-                for (TreeNode treeNode : root.getChildren()) {
-                    if (((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idC)) {
-                        treeNode.setSelected(true);
-                    }
-                }
-
-            }
-        }*/
-
-        //findNode(root, paths.get())
-
-
         if (root == null) {
             initialise(idTheso, idLang);
         }
+
+        // deselectionner et fermer toutes les noeds de l'arbres
+        initialiserEtatNoeuds(root);
 
         // cas de changement de langue pendant la navigation dans les concepts
         // il faut reconstruire l'arbre dès le début
@@ -302,17 +282,20 @@ public class Tree implements Serializable {
         leftBodySetting.setIndex("0");
     }
 
+    // deselectionner et fermer toutes les noeds de l'arbres
+    private void initialiserEtatNoeuds(TreeNode nodeRoot) {
+        for (TreeNode node : nodeRoot.getChildren()) {
+            try {
+                TreeNodeData treeNodeData = (TreeNodeData) node.getData();
+                node.setExpanded(false);
+                node.setSelected(false);
 
+                if (!treeNodeData.isIsConcept()) {
+                    initialiserEtatNoeuds (node);
+                }
+            } catch (Exception ex) {
 
-    TreeNode treeNodeFound = null;
-    private void findNode (TreeNode node, String selectedNodeName){
-        TreeNode treeNodeFound = null;
-        List<TreeNode> subChild = node.getChildren();
-        for (TreeNode treeNode : subChild) {
-            if(treeNode.getData().equals(selectedNodeName)){
-                treeNodeFound = treeNode;
             }
-            findNode(treeNode, selectedNodeName);
         }
     }
     
