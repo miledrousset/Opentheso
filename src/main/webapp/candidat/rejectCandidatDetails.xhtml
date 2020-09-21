@@ -36,16 +36,6 @@
                     </b:column>
                 </b:row>
 
-                <!-- collection -->
-                <b:row style="margin-top: 10px">
-                    <b:column span="4">
-                        <h:outputText value="#{langueBean.getMsg('candidat.domaine')} : " style="font-weight: bold;"/>
-                    </b:column>
-                    <b:column span="8" >
-                        <h:outputText value="#{candidatBean.candidatSelected.domaine}" style="font-size: 13px;"/>
-                    </b:column>
-                </b:row>
-
                 <!-- pour les Employé -->   
                 <b:row style="margin-top: 10px;">
                     <b:column span="4">
@@ -54,7 +44,20 @@
                     <b:column span="8">
                         <h:outputText value="#{candidatBean.candidatSelected.employePour}" />
                     </b:column>
-                </b:row>  
+                </b:row>
+
+                <!-- collection -->
+                <b:row style="margin-top: 10px">
+                    <b:column>
+                        <p:dataList value="#{candidatBean.candidatSelected.collections}" var="collection" type="ordered"
+                                    emptyMessage="Aucune collection n'est disponible ...">
+                            <f:facet name="header">
+                                #{langueBean.getMsg('candidat.domaine')}
+                            </f:facet>
+                            #{collection.value}
+                        </p:dataList>
+                    </b:column>
+                </b:row>
 
                 <!-- pour les relations BT -->    
                 <b:row style="margin-top: 10px">
@@ -115,7 +118,7 @@
 
                 <b:row style="background-color: #FFFFFF; margin-left: 10px; margin-right: 10px">
                     <b:column>
-                        <p:scrollPanel style="max-height: 940px; border: #FAFAFA; background-color: #FFFFFF;">
+                        <p:scrollPanel mode="native" style="max-height: 940px; border: #FAFAFA; background-color: #FFFFFF;">
 
                             <ui:repeat var="msg" value="#{candidatBean.candidatSelected.messages}">
 

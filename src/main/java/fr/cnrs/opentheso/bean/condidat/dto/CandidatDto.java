@@ -17,6 +17,7 @@ public class CandidatDto implements Serializable {
     private String user;
     private int userId;
 
+    private String domaine;
     private String nomPref;
     private Date creationDate;
     private String statut;
@@ -29,8 +30,6 @@ public class CandidatDto implements Serializable {
 
     private String noteApplication;
     private List<String> defenitions;
-
-
     private List<String> participants;
     private List<TraductionDto> traductions;
     private List<CorpusDto> corpus;
@@ -82,6 +81,15 @@ public class CandidatDto implements Serializable {
         this.corpus = source.getCorpus();
         this.messages = source.getMessages();
         this.traductions = source.getTraductions();
+        this.domaine = domaine;
+    }
+
+    public String getDomaine() {
+        return domaine;
+    }
+
+    public void setDomaine(String domaine) {
+        this.domaine = domaine;
     }
 
     public ArrayList<NodeIdValue> getCollections() {
