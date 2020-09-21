@@ -10,9 +10,6 @@ import fr.cnrs.opentheso.bean.leftbody.DataService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
-
-import javax.faces.context.FacesContext;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
@@ -25,15 +22,14 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
-import javax.annotation.PostConstruct;
+
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.primefaces.event.NodeCollapseEvent;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -46,26 +42,26 @@ import org.primefaces.model.TreeNode;
 
 public class TreeGroups implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject ConceptView conceptView;    
-    @Inject GroupView groupView;
-    @Inject private LeftBodySetting leftBodySetting;
-    @Inject private SelectedTheso selectedTheso;
-    
+    @Inject
+    private Connect connect;
+    @Inject
+    private RightBodySetting rightBodySetting;
+    @Inject
+    ConceptView conceptView;
+    @Inject
+    GroupView groupView;
+    @Inject
+    private LeftBodySetting leftBodySetting;
+    @Inject
+    private SelectedTheso selectedTheso;
+
 
     private DataService dataService;
 
-    private TreeNode selectedNode;
-    private TreeNode root;
+    private TreeNode root, selectedNode;
 
-    private String idTheso;
-    private String idLang;
+    private String idTheso, idLang;
 
-    @PostConstruct
-    public void init() {
-//      initialise("th44", "fr");
-    }
 
     public void reset() {
         root = null;
@@ -82,16 +78,12 @@ public class TreeGroups implements Serializable {
     }
 
     private boolean addFirstNodes() {
-        GroupHelper groupHelper = new GroupHelper();
-        TreeNodeData data;
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(
-                connect.getPoolConnexion(),
-                idTheso,
-                idLang);
+        List<NodeGroup> racineNode = new GroupHelper().getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang);
+
         for (NodeGroup nodeGroup : racineNode) {
-            data = new TreeNodeData(
+            TreeNodeData data = new TreeNodeData(
                     nodeGroup.getConceptGroup().getIdgroup(),
                     nodeGroup.getLexicalValue(),
                     nodeGroup.getConceptGroup().getNotation(),
@@ -123,20 +115,22 @@ public class TreeGroups implements Serializable {
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
+
+        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').show();");
+
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
         if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
             parent.getChildren().remove(0);
             addGroupsChild(parent);
             addConceptsChild(parent);
         }
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Expanded", event.getTreeNode().toString());
-        FacesContext.getCurrentInstance().addMessage(null, message);
+
+        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').hide();");
     }
 
     private boolean addGroupsChild(TreeNode parent) {
-        GroupHelper groupHelper = new GroupHelper();
-        TreeNodeData data;
-        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(
+
+        ArrayList<NodeGroup> listeSubGroup = new GroupHelper().getListChildsOfGroup(
                 connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 idTheso,
@@ -145,8 +139,9 @@ public class TreeGroups implements Serializable {
             parent.setType("group");
             return true;
         }
+
         for (NodeGroup nodeGroup : listeSubGroup) {
-            data = new TreeNodeData(
+            TreeNodeData data = new TreeNodeData(
                     nodeGroup.getConceptGroup().getIdgroup(),
                     nodeGroup.getLexicalValue(),
                     nodeGroup.getConceptGroup().getNotation(),
@@ -189,7 +184,7 @@ public class TreeGroups implements Serializable {
                         false,//isgroup
                         false,//isSubGroup
                         true,//isConcept
-                        false,//isTopConcept                    
+                        false,//isTopConcept
                         "concept"
                 );
                 dataService.addNodeWithoutChild("file", data, parent);
@@ -202,7 +197,7 @@ public class TreeGroups implements Serializable {
                     false,//isgroup
                     false,//isSubGroup
                     true,//isConcept
-                    false,//isTopConcept                    
+                    false,//isTopConcept
                     "concept"
             );
             dataService.addNodeWithoutChild("file", data, parent);
@@ -213,19 +208,19 @@ public class TreeGroups implements Serializable {
 
     /////// pour l'ajout d'un nouveau Group après le chargement de l'arbre
     public void addNewGroupChild(String idGroup, String idTheso, String idLang) {
-        GroupHelper groupHelper = new GroupHelper();
-        TreeNodeData data;
-        
-        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
-        if(nodeGroup == null) return;
-        
+
+        NodeGroup nodeGroup = new GroupHelper().getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        if (nodeGroup == null) {
+            return;
+        }
+
         String label;
         if (nodeGroup.getLexicalValue().isEmpty()) {
             label = "(" + idGroup + ")";
         } else
             label = nodeGroup.getLexicalValue();
-        
-        data = new TreeNodeData(
+
+        TreeNodeData data = new TreeNodeData(
                 idGroup,
                 label,
                 nodeGroup.getConceptGroup().getNotation(),
@@ -238,22 +233,16 @@ public class TreeGroups implements Serializable {
         dataService.addNodeWithoutChild("group", data, root);
     }
 
-    public void onNodeCollapse(NodeCollapseEvent event) {
-        /*      FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Collapsed", event.getTreeNode().toString());
-        FacesContext.getCurrentInstance().addMessage(null, message);
-         */
-    }
-
     public void selectThisGroup(String idGroup) {
         rightBodySetting.setShowGroupToOn();
         groupView.getGroup(idTheso, idGroup, idLang);
-        rightBodySetting.setIndex("1");  
+        rightBodySetting.setIndex("1");
         leftBodySetting.setIndex("2");
-        if(selectedNode != null)
+        if (selectedNode != null) {
             selectedNode.setSelected(false);
-        
-    }    
-    
+        }
+    }
+
     public void onNodeSelect(NodeSelectEvent event) {
         if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
             rightBodySetting.setShowConceptToOn();
@@ -264,26 +253,7 @@ public class TreeGroups implements Serializable {
         if (((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup()) {
             rightBodySetting.setShowGroupToOn();
             groupView.getGroup(idTheso, ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-            rightBodySetting.setIndex("1");            
+            rightBodySetting.setIndex("1");
         }
-
-
-        /// test pour modifier le label du node, il suffit de renommer le node et ca marche automatiquement
-        /// ((TreeNodeData)selectedNode.getData()).setName("name2");
-        ///
-
-        /*    externalResources.loadImages(idTheso, ((TreeNodeData)selectedNode.getData()).getNodeId());
-        MyTreeNode myTreeNode = new MyTreeNode(3, ((TreeNodeData)selectedNode.getData()).getNodeId(),
-                idTheso,
-                idLang,
-                "", "", "", null, null, null);
-        selectedTerme.majTerme(myTreeNode);
-        newTreeBean.setSelectedNode(myTreeNode);*/
     }
-
-    public void onNodeUnselect(NodeUnselectEvent event) {
-        /*    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Unselected", event.getTreeNode().toString());
-        FacesContext.getCurrentInstance().addMessage(null, message);*/
-    }
-
 }
