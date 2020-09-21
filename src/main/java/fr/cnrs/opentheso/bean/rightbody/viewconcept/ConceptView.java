@@ -34,6 +34,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyManagementException;
@@ -42,7 +43,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -54,7 +54,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.servlet.ServletContext;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -86,6 +85,9 @@ public class ConceptView implements Serializable {
     
     /// pagination
     private int sizeToShowNT;
+    
+    // total de la branche
+    private int countOfBranch;
     
     
     /// Notes concept
@@ -122,6 +124,7 @@ public class ConceptView implements Serializable {
         historyNotes = new ArrayList<>();
         sizeToShowNT = 0;
         nodeCorpuses = null;
+        countOfBranch = 0;
     }
 
     /**
@@ -176,6 +179,7 @@ public class ConceptView implements Serializable {
                 selectedTheso.actionFromConceptToOn();
             }
         }
+        countOfBranch = 0;
     }
 
     /**
@@ -208,7 +212,19 @@ public class ConceptView implements Serializable {
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
+        countOfBranch = 0;
     }
+    
+    public void countTheTotalOfBranch() {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> listIdsOfBranch = conceptHelper.getIdsOfBranch(
+                connect.getPoolConnexion(),
+                nodeConcept.getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+        this.countOfBranch = listIdsOfBranch.size();
+    }
+
+
 
     private void initMap()  {
 
@@ -262,7 +278,7 @@ public class ConceptView implements Serializable {
                 nodeCorpus.setCount(getCountOfResourcesFromHttps(nodeCorpus.getUriCount()));
             }
             if(nodeCorpus.getUriCount().contains("http://")) {
-
+                nodeCorpus.setCount(getCountOfResourcesFromHttp(nodeCorpus.getUriCount()));
             }
         }
     }
@@ -333,6 +349,43 @@ public class ConceptView implements Serializable {
         }
         return -1;
     }
+    
+    private int getCountOfResourcesFromHttp(String uri) {
+        String output;
+        String json = "";
+
+        // récupération du total des notices
+
+        try {
+            URL url = new URL(uri);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setUseCaches(false);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            int status = conn.getResponseCode();
+            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            while ((output = br.readLine()) != null) {
+                json += output;
+            }
+            return getCountFromJson(json);
+
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
+    
     private int getCountFromJson(String jsonText) {
         if(jsonText == null) return -1;
         JsonObject jsonObject;
@@ -342,6 +395,16 @@ public class ConceptView implements Serializable {
             return jsonObject.getInt("count");
         }
     }
+
+    public int getCountOfBranch() {
+        return countOfBranch;
+    }
+
+    public void setCountOfBranch(int countOfBranch) {
+        this.countOfBranch = countOfBranch;
+    }
+
+
 
 
 
@@ -587,4 +650,6 @@ public class ConceptView implements Serializable {
     public Map getMapModel() {
         return mapModel;
     }
+    
+    
 }

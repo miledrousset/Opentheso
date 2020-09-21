@@ -16,7 +16,7 @@
             <b:row >
                 <b:column span="11" offset="1" >
                     <h:outputText id="currentPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="font-size: 13px; color: black;">
+                                  style="font-size: 13px; color: #43B572;">
                     </h:outputText >
                     <p:spacer height="30"/>
                 </b:column>
@@ -27,7 +27,7 @@
                     <b:column span="8" offset="1" style="background: #FAFAFA">
                         <h:outputText rendered="#{noteToDelete.lexicalvalue != ''}"
                                       value="#{noteToDelete.lexicalvalue}"
-                                      style="color: #43B572"/>                    
+                                      />                    
                     </b:column>
                     <b:column span="2" style="background: #FAFAFA">
                         <b:navCommandLink icon-awesome="fas fa-trash-alt" style="color: #FF7979"

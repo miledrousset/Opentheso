@@ -19,7 +19,6 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -40,7 +39,6 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.PrimeFaces;
-import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.TreeNode;
 
@@ -693,7 +691,7 @@ public class ImportFileBean implements Serializable {
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
                 progressStep++;
                 progress = progressStep / total * 100;
-                importRdf4jHelper.addConcepts(sKOSResource, idTheso);
+                importRdf4jHelper.addConcept(sKOSResource, idTheso);
             }
             importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
             importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);

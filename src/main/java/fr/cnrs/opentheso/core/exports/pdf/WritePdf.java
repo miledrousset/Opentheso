@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.skosapi.SKOSResource;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -100,7 +101,7 @@ public class WritePdf {
         this.idToNameHashMap = new HashMap<>();
         this.xmlDocument = xmlDocument;
         document = new Document();
-        if (!codeLang2.equals("")) {
+        if (!StringUtils.isEmpty(codeLang2)) {
             document.setPageSize(PageSize.LETTER.rotate());
         }
         try {
@@ -119,11 +120,9 @@ public class WritePdf {
         }
         try {
 
-            if (codeLang2.equals("")) {
+            if (!StringUtils.isEmpty(codeLang2)) {
                 for (Paragraph paragraph : paragraphList) {
-
                     document.add(paragraph);
-
                 }
 
             } else {
@@ -339,9 +338,9 @@ public class WritePdf {
             cell1.setBorderWidth(Rectangle.NO_BORDER);
             table.addCell(cell1);
 
-            if (!codeLang2.equals("")) {
+            if (!StringUtils.isEmpty(codeLang2)) {
                 for (SKOSLabel label : thesaurus.getLabelsList()) {
-                    if (label.getLanguage().equals(codeLang2)) {
+                    if (codeLang2.equals(label.getLanguage())) {
                         String labelValue = label.getLabel();
                         if (label.getProperty() == SKOSProperty.prefLabel) {
                             cell2.addElement(new Paragraph(labelValue + " (" + codeLang2 + ")", titleFont));

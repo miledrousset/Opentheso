@@ -222,14 +222,17 @@ public class NewConcept implements Serializable {
         duplicate = false;
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le top concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
+
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("formRightTab:viewTabConcept:conceptView");
+    //        pf.ajax().update("formLeftTab:tabTree:idAddTopConcept");
+    //        pf.ajax().update("formLeftTab:tabTree:idGlobalActionsTree");
         }
 
+        PrimeFaces.current().executeScript("PF('addTopConcept').hide();");        
         //   if(tree.getSelectedNode() == null) return;
         // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
         //    if( !((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)){
@@ -242,6 +245,7 @@ public class NewConcept implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("formLeftTab:tabTree:tree");
         }
+        init();
         // cas où l'arbre est déjà déplié ou c'est un concept sans fils
         /*    if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
             tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);

@@ -71,13 +71,15 @@ public class SelectedTheso implements Serializable {
     private boolean isUriRequest = false;
 
     private String thesoName;
-
+    private boolean sortByNotation;
+    
     public SelectedTheso() {
     }
 
     @PostConstruct
     public void initializing() {
         roleOnThesoBean.showListTheso();
+        sortByNotation = false;
     }
 
     public void init() {
@@ -107,6 +109,7 @@ public class SelectedTheso implements Serializable {
      * l'application
      */
     public void setSelectedTheso() {
+
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -149,6 +152,7 @@ public class SelectedTheso implements Serializable {
             }
             return;
         }
+        sortByNotation = false;
         startNewTheso(null);
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
@@ -167,7 +171,6 @@ public class SelectedTheso implements Serializable {
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
-        PrimeFaces pf = PrimeFaces.current();
 
         candidatBean.initCandidatModule();
 
@@ -269,6 +272,7 @@ public class SelectedTheso implements Serializable {
 
     /**
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
+     * @return 
      */
     public String preRenderView() {
         if (idThesoFromUri == null) {
@@ -389,5 +393,14 @@ public class SelectedTheso implements Serializable {
     public void setSelectedIdTheso(String selectedIdTheso) {
         this.selectedIdTheso = selectedIdTheso;
     }
+
+    public boolean isSortByNotation() {
+        return sortByNotation;
+    }
+
+    public void setSortByNotation(boolean sortByNotation) {
+        this.sortByNotation = sortByNotation;
+    }
+
 
 }

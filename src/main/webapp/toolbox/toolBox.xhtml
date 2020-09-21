@@ -30,6 +30,7 @@
                         <b:column span="11" offset="1">
                             <b:navCommandLink value="Statistique" style="color: #{toolBoxBean.statisticColor}"
                                               action="#{toolBoxBean.setIsStatisticActive(true)}"
+                                              actionListener="#{statistiqueBean.inti()}"
                                               update="toolBoxForm"/>
                         </b:column>
                     </b:row>

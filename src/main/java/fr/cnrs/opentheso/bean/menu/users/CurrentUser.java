@@ -62,6 +62,8 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         nodeUser = null;
 
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
 

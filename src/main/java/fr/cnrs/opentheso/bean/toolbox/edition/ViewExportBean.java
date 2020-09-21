@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
@@ -13,17 +8,17 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.importexport.ExportFileBean;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -35,9 +30,15 @@ public class ViewExportBean implements Serializable {
 
     @Inject
     private SelectedTheso selectedTheso;
+    
     @Inject
     private Connect connect;
-    @Inject private ExportFileBean downloadBean; 
+    
+    @Inject
+    private ExportFileBean downloadBean;
+
+    @Inject
+    private LanguageBean languageBean;
 
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<NodeGroup> groupList;
@@ -50,13 +51,14 @@ public class ViewExportBean implements Serializable {
     private boolean exportUriHandle = false;
     private NodeIdValue nodeIdValueOfTheso;
 
-    private ArrayList<String> exportFormat;
-    private String selectedExportFormat;
-
-    public ViewExportBean() {
-    }
-
-    public void init(NodeIdValue nodeIdValueOfTheso) {
+    private List<String> exportFormat;
+    private List<String> types;
+    private String selectedExportFormat, typeSelected, formatFile, csvDelimiter;
+    
+    
+    public void init(NodeIdValue nodeIdValueOfTheso, String format) {
+        
+        this.formatFile = format;
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
@@ -68,11 +70,10 @@ public class ViewExportBean implements Serializable {
             idLang = connect.getWorkLanguage();
         }
 
-        GroupHelper groupHelper = new GroupHelper();
-        groupList = groupHelper.getListConceptGroup(
-                connect.getPoolConnexion(),
-                nodeIdValueOfTheso.getId(),
-                idLang);
+        types = Arrays.asList("Hiérarchique", "Alphabétique");
+        typeSelected = types.get(0);
+
+        groupList = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
 
         selectedLanguages = new ArrayList<>();
         for (NodeLangTheso nodeLang : languagesOfTheso) {
@@ -84,23 +85,43 @@ public class ViewExportBean implements Serializable {
             selectedGroups.add(nodeGroup);
         }
 
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
-        nodePreference = preferencesHelper.getThesaurusPreferences(
-                connect.getPoolConnexion(),
-                nodeIdValueOfTheso.getId());
+        nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+
         exportUriArk = false;
         exportUriHandle = false;
 
-        exportFormat = new ArrayList<>();
-        exportFormat.add("skos");
-        exportFormat.add("json");
-        exportFormat.add("jsonLd");
-        exportFormat.add("turtle");
+        exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
         selectedExportFormat = "skos";
 
-        downloadBean.init();
+        downloadBean.setProgressBar(0);
+        downloadBean.setProgressStep(0); 
+    }
+    
+    public String getExportButtonLabel() {
+        if (isPdfExport()) {
+            return languageBean.getMsg("edit.exportpdf");
+        } else if (isRdfExport())  {
+            return "Export RDF";
+        } else {
+            return languageBean.getMsg("edit.exportcsv");
+        }
     }
 
+    public boolean isPdfExport() {
+        return "PDF".equals(formatFile);
+    }
+
+    public boolean isRdfExport() {
+        return "RDF".equals(formatFile);
+    }
+
+    public boolean isCsvExport() {
+        return "CSV".equals(formatFile);
+    }
+    
+    public String getFormat() {
+        return formatFile;
+    } 
 
     public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
         return languagesOfTheso;
@@ -166,7 +187,7 @@ public class ViewExportBean implements Serializable {
         this.nodePreference = nodePreference;
     }
 
-    public ArrayList<String> getExportFormat() {
+    public List<String> getExportFormat() {
         return exportFormat;
     }
 
@@ -182,6 +203,28 @@ public class ViewExportBean implements Serializable {
         this.selectedExportFormat = selectedExportFormat;
     }
 
+    public List<String> getTypes() {
+        return types;
+    }
 
+    public void setTypes(List<String> types) {
+        this.types = types;
+    }
+
+    public String getTypeSelected() {
+        return typeSelected;
+    }
+
+    public void setTypeSelected(String typeSelected) {
+        this.typeSelected = typeSelected;
+    }
+
+    public String getCsvDelimiter() {
+        return csvDelimiter;
+    }
+
+    public void setCsvDelimiter(String csvDelimiter) {
+        this.csvDelimiter = csvDelimiter;
+    }
 
 }

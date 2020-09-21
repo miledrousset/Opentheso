@@ -45,9 +45,18 @@
         </b:row>
         <b:row>
             <b:column span="8" >
-                <p:autoComplete value="#{candidatBean.candidatSelected.domaine}" style="width: 100%;"
-                                completeMethod="#{candidatBean.searchDomaineName}" scrollHeight="150"
-                                inputStyle="width: 100%; height: 28px;box-shadow: none;"/>
+                <p:autoComplete value="#{candidatBean.candidatSelected.collections}"
+                                multiple="true"
+                                var="values"
+                                forceSelection="true"
+                                completeMethod="#{candidatBean.searchCollection}"                                  
+                                minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue"
+                                scrollHeight="300" inputStyle=" height: 28px;box-shadow: none;" 
+                                style="width: 100%;">
+                    <p:column style="font-size: 12px;">
+                        <h:outputText title="#{values.id}" value="#{values.value}"/>
+                    </p:column>                
+                </p:autoComplete> 
             </b:column>
         </b:row>
 

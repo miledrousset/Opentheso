@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.condidat;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
@@ -337,7 +338,21 @@ public class CandidatBean implements Serializable {
 
     }
 
-    public List<String> searchDomaineName(String enteredValue) {
+    public ArrayList<NodeIdValue> searchCollection(String enteredValue) {
+        
+        ArrayList<NodeIdValue> nodeIdValues = null;
+        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
+            nodeIdValues = new GroupHelper().searchGroup(
+                    connect.getPoolConnexion(),
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(),
+                    enteredValue);
+        }
+        return nodeIdValues;        
+        /*
+        
+        GroupHelper groupHelper = new GroupHelper();
+        groupHelper.get
         if ("%".equals(enteredValue)) {
             return domaines.stream().map(domaineDto -> domaineDto.getName()).collect(Collectors.toList());
         } else {
@@ -348,7 +363,7 @@ public class CandidatBean implements Serializable {
                 }
             }
             return matches;
-        }
+        }*/
     }
 
     //// ajouté par Miled

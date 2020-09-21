@@ -21,6 +21,7 @@ import fr.cnrs.opentheso.bdd.datas.ConceptGroup;
 import fr.cnrs.opentheso.bdd.datas.ConceptGroupLabel;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGroupType;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeMetaData;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
@@ -30,6 +31,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 
+import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import org.apache.commons.logging.Log;
@@ -520,9 +523,7 @@ public class GroupHelper {
     /**
      *
      * @param conn
-     * @param idConcept
      * @param idThesaurus
-     * @param urlSite
      * @param nodeMetaData
      * @return
      */
@@ -2310,6 +2311,65 @@ public class GroupHelper {
 
         return nodeAutoCompletionList;
     }
+    
+    /**
+     * Cette fonction permet de récupérer la liste des domaines pour
+     * l'autocomplétion
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param text
+     * @param idLang
+     * @return Objet class Concept
+     */
+    public ArrayList<NodeIdValue> searchGroup(HikariDataSource ds,
+            String idThesaurus, String idLang, String text) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        text = new StringPlus().convertString(text);
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT concept_group_label.idgroup,"
+                            + " concept_group_label.lexicalvalue FROM concept_group_label"
+                            + " WHERE "
+                            + " concept_group_label.idthesaurus = '" + idThesaurus + "'"
+                            + " AND concept_group_label.lang = '" + idLang + "'"
+                            + " AND unaccent_string(concept_group_label.lexicalvalue) ILIKE unaccent_string('%" + text + "%')"
+                            + " ORDER BY concept_group_label.lexicalvalue ASC LIMIT 40";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+
+                    while (resultSet.next()) {
+                        if (resultSet.getRow() != 0) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setValue(resultSet.getString("lexicalvalue"));
+                            nodeIdValue.setId(resultSet.getString("idgroup"));
+                            nodeIdValues.add(nodeIdValue);
+                        }
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List of autocompletion of collection : " + text, sqle);
+        }
+
+        return nodeIdValues;
+    }    
 
     /**
      * Cette fonction permet de récupérer la liste des domaines sauf celui en
@@ -3670,6 +3730,57 @@ public class GroupHelper {
     }
 
 
+     public ArrayList<String> getListOfGroupByTheo(Connection conn, String idThesaurus) {
 
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList tabIdConceptGroup = null;
+
+        try {
+            // Get connection from pool
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select idgroup from concept_group where idthesaurus = '" + idThesaurus + "'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    tabIdConceptGroup = new ArrayList();
+                    while (resultSet.next()) {
+                        tabIdConceptGroup.add(resultSet.getString("idgroup"));
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List Id or Groups of thesaurus : " + idThesaurus, sqle);
+        }
+        return tabIdConceptGroup;
+    }
+
+    public ArrayList<DomaineDto> getAllGroupsByThesaurusAndLang(Connect connect, String idThesaurus, String lang) {
+        ArrayList<DomaineDto> domaines = new ArrayList<>();
+        try {
+            Statement stmt = connect.getPoolConnexion().getConnection().createStatement();
+            stmt.executeQuery("SELECT idgroup, lexicalvalue FROM concept_group_label where idthesaurus = '"
+                    + idThesaurus+"' AND lang = '"+lang.toLowerCase()+"'");
+            ResultSet resultSet = stmt.getResultSet();
+            while (resultSet.next()) {
+                DomaineDto domaineDto = new DomaineDto();
+                domaineDto.setId(resultSet.getString("idgroup"));
+                domaineDto.setName(resultSet.getString("lexicalvalue"));
+                domaines.add(domaineDto);
+            }
+            resultSet.close();
+            stmt.close();
+        } catch (SQLException e) {
+            log.error(e);
+        }
+        return domaines;
+    }
    
 }
