@@ -24,7 +24,8 @@
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" 
                                    disabled="false"
                                    value="#{langueBean.getMsg('candidat.titre')}"
-                                   action="#{indexSetting.setIsCandidateActive(true)}"
+                                   action="#{indexSetting.setIsCandidateActive(true)}" 
+                                   actionListener="#{candidatBean.initCandidatModule()}"
                                    style="color: #{indexSetting.candidateColor}"
                                    update="containerIndex"  />
 

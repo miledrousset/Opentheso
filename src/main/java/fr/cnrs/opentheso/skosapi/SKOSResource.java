@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
 
 /**
  *
@@ -17,6 +18,9 @@ public class SKOSResource {
     private String identifier;
     private SKOSdc sdc;
     private int property;
+    private SKOSStatus skosStatus;
+    private ArrayList<SKOSDiscussion> messages;
+    private ArrayList<SKOSVote> votes;
     private ArrayList<SKOSLabel> labelsList;
     private ArrayList<SKOSRelation> relationsList;
     private ArrayList<SKOSDocumentation> documentationsList;
@@ -36,6 +40,7 @@ public class SKOSResource {
      *
      */
     public SKOSResource() {
+        skosStatus = new SKOSStatus();
         labelsList = new ArrayList<>();
         relationsList = new ArrayList<>();
         documentationsList = new ArrayList<>();
@@ -45,11 +50,13 @@ public class SKOSResource {
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
         imageUris = new ArrayList<>();
-
+        messages = new ArrayList<>();
+        votes = new ArrayList<>();
     }
 
     public SKOSResource(String uri, int property) {
 
+        skosStatus = new SKOSStatus();
         labelsList = new ArrayList<>();
         relationsList = new ArrayList<>();
         documentationsList = new ArrayList<>();
@@ -58,7 +65,9 @@ public class SKOSResource {
         GPSCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
-        imageUris = new ArrayList<>();        
+        imageUris = new ArrayList<>();
+        messages = new ArrayList<>();
+        votes = new ArrayList<>();
 
         this.property = property;
         this.uri = uri;
@@ -849,5 +858,61 @@ public class SKOSResource {
         StringPlus stringPlus = new StringPlus();
         uri = stringPlus.normalizeStringForIdentifier(uri);
         return uri;
+    }
+
+    public SKOSStatus getSkosStatus() {
+        return skosStatus;
+    }
+
+    public void setSkosStatus(String[] statusDatas) {
+        skosStatus = new SKOSStatus();
+        skosStatus.setIdStatus(statusDatas[0]);
+        skosStatus.setMessage(statusDatas[1]);
+        skosStatus.setIdUser(statusDatas[2]);
+        skosStatus.setDate(statusDatas[3]);
+        skosStatus.setIdConcept(identifier);
+        skosStatus.setIdThesaurus(uri.substring(uri.indexOf("idt=")+4, uri.length()));
+    }
+
+    public void setSkosStatus(SKOSStatus skosStatus) {
+        this.skosStatus = skosStatus;
+    }
+
+    public ArrayList<SKOSDiscussion> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(ArrayList<SKOSDiscussion> messages) {
+        this.messages = messages;
+    }
+
+    public void addMessage(String[] voteDatas) {
+        SKOSDiscussion skosDiscussion = new SKOSDiscussion();
+        skosDiscussion.setDate(voteDatas[0]);
+        skosDiscussion.setIdUser(voteDatas[1] != null ? Integer.parseInt(voteDatas[1]) : null);
+        skosDiscussion.setMsg(voteDatas[2]);
+        messages.add(skosDiscussion);
+    }
+
+    public void addMessage(SKOSDiscussion skosDiscussion) {
+        messages.add(skosDiscussion);
+    }
+
+    public ArrayList<SKOSVote> getVotes() {
+        return votes;
+    }
+
+    public void addVote(String[] voteDatas) {
+        SKOSVote skosVote = new SKOSVote();
+        skosVote.setIdThesaurus(voteDatas[0]);
+        skosVote.setIdConcept(voteDatas[1]);
+        skosVote.setIdNote(voteDatas[2]);
+        skosVote.setIdUser(voteDatas[3] != null ? Integer.parseInt(voteDatas[3]) : null);
+        skosVote.setTypeVote(voteDatas[4]);
+        votes.add(skosVote);
+    }
+
+    public void addVote(SKOSVote skosVote) {
+        votes.add(skosVote);
     }
 }

@@ -11,8 +11,8 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-//import fr.cnrs.opentheso.SelectedBeans.SelectedTerme;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.ConceptGroupLabel;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
@@ -34,23 +34,23 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 
-import fr.cnrs.opentheso.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.skosapi.SKOSResource;
-import fr.cnrs.opentheso.skosapi.SKOSCreator;
-import fr.cnrs.opentheso.skosapi.SKOSDate;
-import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
-import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
-import fr.cnrs.opentheso.skosapi.SKOSLabel;
-import fr.cnrs.opentheso.skosapi.SKOSMatch;
-import fr.cnrs.opentheso.skosapi.SKOSNotation;
-import fr.cnrs.opentheso.skosapi.SKOSRelation;
-import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
+import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
+import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
+import fr.cnrs.opentheso.skosapi.*;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -99,6 +99,8 @@ public class ImportRdf4jHelper {
         Concept concept;
         ConceptHelper conceptHelper;
         SKOSResource conceptResource;
+        NodeStatus status;
+        String collectionToAdd;
         // pour intégrer les coordonnées GPS 
         NodeGps nodeGps = new NodeGps();
         GpsHelper gpsHelper = new GpsHelper();
@@ -120,6 +122,8 @@ public class ImportRdf4jHelper {
         boolean isTopConcept = false;
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         ImagesHelper imagesHelper = new ImagesHelper();
+        List<VoteDto> votes = new ArrayList<>();
+        List<MessageDto> messages = new ArrayList<>();
         
         ArrayList<String> nodeImages = new ArrayList<>();
         Term term = new Term();
@@ -426,6 +430,7 @@ public class ImportRdf4jHelper {
         acs.conceptHelper = new ConceptHelper();
         initAddConceptsStruct(acs, conceptResource, idTheso);
         addRelation(acs, idTheso);
+        acs.concept.setStatus("CA");
 
         // envoie du concept à la BDD 
         addConceptToBdd(acs, idTheso);
@@ -466,22 +471,24 @@ public class ImportRdf4jHelper {
         String idConcept = getOriginalId(conceptResource.getUri());
         acs.concept.setIdConcept(idConcept);
 
+
         // option cochée
-        if (selectedIdentifier.equalsIgnoreCase("ark")) {
+        if ("ark".equalsIgnoreCase(selectedIdentifier)) {
             acs.concept.setIdArk(getIdArkFromUri(conceptResource.getUri()));
         }
-        if (selectedIdentifier.equalsIgnoreCase("handle")) {
+        if ("handle".equalsIgnoreCase(selectedIdentifier)) {
             acs.concept.setIdHandle(getIdHandleFromUri(conceptResource.getUri()));
         }
 
         acs.concept.setIdThesaurus(idTheso);
-        
-        addNotation(acs);
+
         addGPSCoordinates(acs);
         addLabel(acs);
         addDocumentation(acs);
         addDate(acs);
-
+        addMessages(acs);
+        addVotes(acs);
+        addStatut(acs, conceptResource.getSkosStatus(), idTheso, idConcept);
         addAlignment(acs, idTheso);
         addImages(acs);
 
@@ -503,14 +510,24 @@ public class ImportRdf4jHelper {
         acs.nodeTerm.setStatus("");
         acs.nodeTerm.setCreated(acs.concept.getCreated());
         acs.nodeTerm.setModified(acs.concept.getModified());
-    }    
+    }
+
+    private void addStatut(AddConceptsStruct acs, SKOSStatus skosStatus, String idTheso, String idConcept) {
+        acs.status = new NodeStatus();
+        acs.status.setIdThesaurus(idTheso);
+        acs.status.setIdConcept(idConcept);
+        acs.status.setMessage(skosStatus.getMessage());
+        acs.status.setIdStatus(skosStatus.getIdStatus());
+    }
     
     private void addConceptToBdd(AddConceptsStruct acs, String idTheso) {
         if (!acs.conceptHelper.insertConceptInTable(ds, acs.concept, idUser)) {
             System.out.println("Erreur sur le Concept = " + acs.concept.getIdConcept());
-        }           
-        
+        }
         acs.termHelper.insertTerm(ds, acs.nodeTerm, idUser);
+
+        acs.conceptHelper.setNodeStatus(ds, acs.status.getIdConcept(), acs.status.getIdThesaurus(), acs.status.getIdStatus(),
+                new Date().toString(), idUser, acs.status.getMessage());
 
         RelationsHelper relationsHelper = new RelationsHelper();
 
@@ -688,16 +705,30 @@ public class ImportRdf4jHelper {
         // For Term : definition; editorialNote; historyNote;
         for (NodeNote nodeNoteList1 : acs.nodeNotes) {
 
+            String str = formatLinkToHtmlTag(nodeNoteList1.getLexicalvalue());
+
             if (nodeNoteList1.getNotetypecode().equals("customnote") || nodeNoteList1.getNotetypecode().equals("scopeNote") || nodeNoteList1.getNotetypecode().equals("historyNote") || nodeNoteList1.getNotetypecode().equals("note")) {
                 acs.noteHelper.addConceptNote(ds, acs.concept.getIdConcept(), nodeNoteList1.getLang(),
-                        idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(), idUser);
+                        idTheso, str, nodeNoteList1.getNotetypecode(), idUser);
             }
 
             if (nodeNoteList1.getNotetypecode().equals("definition") || nodeNoteList1.getNotetypecode().equals("editorialNote")) {
                 acs.noteHelper.addTermNote(ds, acs.nodeTerm.getIdTerm(), nodeNoteList1.getLang(),
-                        idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(), idUser);
+                        idTheso, str, nodeNoteList1.getNotetypecode(), idUser);
             }
 
+            for (VoteDto vote : acs.votes) {
+                if (vote.getIdNote() != null) {
+                    NodeNote newNote = acs.noteHelper.getNoteByValue(ds, str.replaceAll("'", "''"));
+                    vote.setIdNote(newNote.getId_note()+"");
+                    break;
+                }
+            }
+
+        }
+
+        if (!StringUtils.isEmpty(acs.collectionToAdd)) {
+            new ConceptHelper().addNewGroupOfConcept(ds, acs.concept.getIdConcept(), acs.collectionToAdd, idTheso);
         }
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
@@ -733,6 +764,18 @@ public class ImportRdf4jHelper {
             acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, "", "", imageUri, idUser);
         }
 
+        for (MessageDto message : acs.messages) {
+            new MessageDao().addNewMessage(ds, message.getMsg(), message.getIdUser(), acs.concept.getIdConcept(),
+                    idTheso, message.getDate());
+        }
+
+        new CandidatDao().setStatutForCandidat(ds, Integer.parseInt(acs.status.getIdStatus()), acs.status.getIdConcept(),
+                idTheso, acs.status.getIdUser(), acs.status.getDate());
+
+        for (VoteDto vote : acs.votes) {
+            new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
+        }
+
 
         // initialisation des variables
         acs.concept = new Concept();
@@ -748,6 +791,19 @@ public class ImportRdf4jHelper {
         acs.nodeImages = new ArrayList<>();
     }
 
+    private String formatLinkToHtmlTag(String str) {
+        Pattern MY_PATTERN = Pattern.compile("[a-zA-Z]+ \\(http(.*?)\\)");
+        Matcher m = MY_PATTERN.matcher(str);
+        while (m.find()) {
+            String brut = m.group();
+            String titre = brut.substring(0, brut.indexOf('(') - 1);
+            String value = brut.substring(brut.indexOf('(') + 1, brut.indexOf(')'));
+
+            String link = "<a href='" + value + "'>" + titre + "</a>";
+            str = str.replace(brut, link);
+        }
+        return str;
+    }
 
 
     private void addAlignment(AddConceptsStruct acs, String idTheso) {
@@ -783,14 +839,37 @@ public class ImportRdf4jHelper {
             nodeAlignment.setAlignement_id_type(id_type);
             acs.nodeAlignments.add(nodeAlignment);
         }
-    }    
-    
-    private void addNotation(AddConceptsStruct acs) {
-        acs.concept.setNotation("");
-        for (SKOSNotation notation : acs.conceptResource.getNotationList()) {
-            if (notation.getNotation() != null) {
-                acs.concept.setNotation(notation.getNotation());
+    }
+
+    private void addMessages(AddConceptsStruct acs) {
+        for (SKOSDiscussion discussion : acs.conceptResource.getMessages()) {
+            MessageDto messageDto = new MessageDto();
+            messageDto.setDate(discussion.getDate());
+            messageDto.setIdUser(discussion.getIdUser());
+            messageDto.setMsg(discussion.getMsg());
+            acs.messages.add(messageDto);
+        }
+    }
+
+    private void addVotes(AddConceptsStruct acs) {
+        for (SKOSVote vote : acs.conceptResource.getVotes()) {
+            VoteDto voteDto = new VoteDto();
+            voteDto.setTypeVote(vote.getTypeVote());
+            voteDto.setIdUser(vote.getIdUser());
+            voteDto.setIdConcept(vote.getIdConcept());
+
+            if (!StringUtils.isEmpty(vote.getIdNote())) {
+                String str = formatLinkToHtmlTag(vote.getIdNote());
+                str = str.replaceAll("'", "''");
+                NodeNote nodeNote = new NoteHelper().getNoteByValue(ds, str);
+                if (nodeNote != null ) {
+                    voteDto.setIdNote(nodeNote.getId_note()+"");
+                }
+            } else {
+                voteDto.setIdNote(null);
             }
+
+            acs.votes.add(voteDto);
         }
     }
     
@@ -981,9 +1060,9 @@ public class ImportRdf4jHelper {
             } else if (prop == SKOSProperty.topConceptOf) {
                 acs.isTopConcept = true;
 
-            }
-
-            if (hasTopConcceptList.contains(acs.conceptResource.getUri())) {
+            } else if (prop == SKOSProperty.memberOf) {
+                acs.collectionToAdd = getIdFromUri(relation.getTargetUri());
+            } if (hasTopConcceptList.contains(acs.conceptResource.getUri())) {
                 acs.isTopConcept = true;
             }
     /*        String uri = acs.conceptResource.getUri();

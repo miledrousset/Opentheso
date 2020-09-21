@@ -7,17 +7,8 @@ package fr.cnrs.opentheso.core.exports.rdf4j;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import fr.cnrs.opentheso.skosapi.SKOSCreator;
-import fr.cnrs.opentheso.skosapi.SKOSDate;
-import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
-import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
-import fr.cnrs.opentheso.skosapi.SKOSLabel;
-import fr.cnrs.opentheso.skosapi.SKOSMatch;
-import fr.cnrs.opentheso.skosapi.SKOSNotation;
-import fr.cnrs.opentheso.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.skosapi.SKOSRelation;
-import fr.cnrs.opentheso.skosapi.SKOSResource;
-import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+
+import fr.cnrs.opentheso.skosapi.*;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
@@ -35,6 +26,12 @@ import org.eclipse.rdf4j.model.vocabulary.SKOS;
  * @author Quincy
  */
 public class WriteRdf4j {
+
+
+    public final static String DELIMINATE = "##";
+    public final static String STATUS_TAG = "status";
+    public final static String DISCUSSION_TAG = "message";
+    public final static String VOTE_TAG = "vote";
 
     private static Model model;
     private static ModelBuilder builder;
@@ -88,6 +85,9 @@ public class WriteRdf4j {
             writeDocumentation(concept);
             writeGPS(concept);
             writeImageUri(concept);
+            writeStatusCandidat(concept);
+            writeDiscussions(concept);
+            writeVotes(concept);
         }
 
     }
@@ -275,6 +275,20 @@ public class WriteRdf4j {
         }
     }
 
+
+    private void writeDiscussions(SKOSResource resource) {
+        for (SKOSDiscussion discussion : resource.getMessages()) {
+            builder.add(SKOS.NOTE, vf.createLiteral(discussion.getDate() + DELIMINATE + discussion.getIdUser() + DELIMINATE + discussion.getMsg(), DISCUSSION_TAG));
+        }
+    }
+
+    private void writeVotes(SKOSResource resource) {
+        for (SKOSVote vote : resource.getVotes()) {
+            builder.add(SKOS.NOTE, vf.createLiteral(vote.getIdThesaurus() + DELIMINATE + vote.getIdConcept() + DELIMINATE + vote.getValueNote()
+                    + DELIMINATE + vote.getIdUser() + DELIMINATE + vote.getTypeVote(), VOTE_TAG));
+        }
+    }
+
     private void writeLabel(SKOSResource resource) {
         int prop;
         for (SKOSLabel label : resource.getLabelsList()) {
@@ -328,6 +342,12 @@ public class WriteRdf4j {
             }
         }
     }
+
+    private void writeStatusCandidat(SKOSResource resource) {
+        builder.add(SKOS.NOTE, vf.createLiteral(resource.getSkosStatus().getIdStatus() + DELIMINATE + resource.getSkosStatus().getMessage()
+                + DELIMINATE + resource.getSkosStatus().getIdUser() + DELIMINATE + resource.getSkosStatus().getDate(), STATUS_TAG));
+    }
+    
 
     private void writeRelation(SKOSResource resource) {
         int prop;

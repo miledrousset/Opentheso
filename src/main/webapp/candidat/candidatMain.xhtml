@@ -5,42 +5,69 @@
              xmlns:p="http://primefaces.org/ui">
 
     <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
-            style="margin-top: -20px; border-left: 20px; border-right: 20px;  background-color: #FAFAFA; padding: 50px">
+            style="margin-top: -20px; border-left: 20px; border-right: 20px; background-color: #FAFAFA; padding: 50px">
 
-        <b:row rendered="#{candidatBean.isIsListCandidatsActivate()}">
-            <ui:include src="/candidat/candidatsList.xhtml" />
-        </b:row>
+        <p:tabView activeIndex="#{candidatBean.tabViewIndexSelected}"
+                   style="background-color: #FAFAFA;">
+            <p:tab title="Candidats crées" titleStyleClass="tab1">
+                <b:row rendered="#{candidatBean.isListCandidatsActivate() || 
+                                   candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
+                    <ui:include src="/candidat/candidatsList.xhtml" />
+                </b:row>
 
-        <b:row rendered="#{!candidatBean.isIsListCandidatsActivate()}" style="padding-left: 25px; padding-right: 25px">
-            <b:row>
-                <b:column span="12">
-                    <b:navCommandLink value="#{langueBean.getMsg('candidat.return')}" 
-                                      update="candidatForm" ajax="false" style="color: #F47B2A" 
-                                      action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
-                                      actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
-                </b:column>
-            </b:row>
-            <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px">
-                <b:column medium-screen="6">
-                    <ui:include src="/candidat/candidatDetails.xhtml" />
-                </b:column>
-                <b:column medium-screen="6" style="vertical-align: top;" rendered="#{!candidatBean.isIsNewCandidatActivate()}">
-                    <ui:include src="/candidat/candidatDiscussion.xhtml" />
-                </b:column>
-            </b:row>
-            <p:spacer/>
-            <b:row rendered="#{(currentUser.nodeUser != null) and 
-                                        (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and (!candidatBean.isIsNewCandidatActivate())}">
-                <b:column span="12" style="align-content: center">
-                    <b:commandButton value="#{langueBean.getMsg('candidat.submit')}" 
-                              style="background: #F47B2A; border-color: #F47B2A; display: block; 
-                              margin-left: auto; margin-right: auto; margin-top: 10px; color: white" look="primary" size="l" 
-                              update="idProcessCandidate processCandidateForm"
-                              oncomplete="PF('processCandidate').show();"
-                              actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"/>
-                </b:column>
-            </b:row>
-        </b:row>
+                <b:row rendered="#{candidatBean.isShowCandidatActivate() || candidatBean.isNewCandidatActivate()}">
+                    <p:panel>
+                        <b:row>
+                            <b:column span="12">
+                                <b:navCommandLink value="#{langueBean.getMsg('candidat.return')}" 
+                                                  update="candidatForm" ajax="false" style="color: #F47B2A" 
+                                                  action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
+                                                  actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
+                            </b:column>
+                        </b:row>
+                        <b:row style="margin-top: 20px">
+                            <b:column medium-screen="6">
+                                <ui:include src="/candidat/candidatDetails.xhtml" />
+                            </b:column>
+                            <b:column medium-screen="6" style="vertical-align: top;" rendered="#{!candidatBean.isNewCandidatActivate()}">
+                                <ui:include src="/candidat/candidatDiscussion.xhtml" />
+                            </b:column>
+                        </b:row>
+                        <p:spacer/>
+                        <b:row rendered="#{(currentUser.nodeUser != null) and 
+                                           (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and (candidatBean.isShowCandidatActivate())}">
+                            <b:column span="12" style="align-content: center">
+                                <b:commandButton value="#{langueBean.getMsg('candidat.submit')}" 
+                                                 style="background: #F47B2A; border-color: #F47B2A; display: block; 
+                                                 margin-left: auto; margin-right: auto; margin-top: 10px; color: white" look="primary" size="l" 
+                                                 update="idProcessCandidate processCandidateForm"
+                                                 oncomplete="PF('processCandidate').show();"
+                                                 actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"/>
+                            </b:column>
+                        </b:row>
+                    </p:panel>
+                </b:row>
+            </p:tab>
+            
+            <p:tab title="Candidats insérés" titleStyleClass="tab1">
+                <b:row rendered="#{candidatBean.isAcceptedCandidatsActivate()}">
+                    <ui:include src="/candidat/candidatAcceptedList.xhtml" />
+                </b:row>
+                <b:row rendered="#{!candidatBean.isAcceptedCandidatsActivate()}">
+                    <ui:include src="/candidat/rejectCandidatDetails.xhtml" />
+                </b:row>
+            </p:tab>
+            
+            <p:tab title="Candidats rejetés" titleStyleClass="tab1">
+                <b:row rendered="#{candidatBean.isRejectCandidatsActivate()}">
+                    <ui:include src="/candidat/candidatRejectesList.xhtml" />
+                </b:row>
+                <b:row rendered="#{!candidatBean.isRejectCandidatsActivate()}">
+                    <ui:include src="/candidat/rejectCandidatDetails.xhtml" />
+                </b:row>
+            </p:tab>
+        </p:tabView>
+
     </h:form>   
     
 
@@ -55,15 +82,11 @@
     <ui:include src="/candidat/dialog/participantsList.xhtml" /> 
     <ui:include src="/candidat/dialog/envoyerInvitation.xhtml" />
     <ui:include src="/candidat/dialog/processCandidate.xhtml" />  
-    
-    
+
+
     <ui:include src="/dialog/alignment/addAlignment.xhtml" />
     <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />
     <ui:include src="/dialog/alignment/deleteAlignment.xhtml" />
     <ui:include src="/dialog/alignment/updateAlignment.xhtml" />
     
-  
-    
-
-
 </ui:fragment>

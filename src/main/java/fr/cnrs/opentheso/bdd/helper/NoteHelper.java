@@ -300,6 +300,23 @@ public class NoteHelper {
             }
         return status;
     }
+
+
+    public void deleteVoteByNoteId(HikariDataSource ds, int idNote, String idThesaurus, String idConcept) {
+        Connection conn;
+        Statement stmt;
+        try {
+            conn = ds.getConnection();
+            stmt = conn.createStatement();
+            stmt.executeUpdate("DELETE FROM candidat_vote WHERE id_concept = '"+idConcept
+                    +"' AND id_thesaurus = '"+idThesaurus+"' AND id_note = '"+idNote+"'");
+            stmt.close();
+            conn.close();
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting candidat_vote of id_note : " + idNote, sqle);
+        }
+    }
     
    /**
     *  déprécié
@@ -1297,6 +1314,121 @@ public class NoteHelper {
             log.error("Error while getting Notes of Concept : " + idConcept, sqle);
         }
         return nodeNotes;
+    }
+
+    public NodeNote getNoteByIdNote(HikariDataSource ds, int idNote) {
+
+        NodeNote nodeNote = null;
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT note.id, note.lang, note.notetypecode, note.lexicalvalue, note.created, " +
+                            "note.modified FROM note WHERE  note.id = " + idNote;
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        nodeNote = new NodeNote();
+                        nodeNote.setId_note(resultSet.getInt("id"));
+                        nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
+                        nodeNote.setModified(resultSet.getDate("modified"));
+                        nodeNote.setCreated(resultSet.getDate("created"));
+                        nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
+                        nodeNote.setLang(resultSet.getString("lang"));
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+        }
+        return nodeNote;
+    }
+
+    public NodeNote getNoteByValue(HikariDataSource ds, String noteValue) {
+
+        NodeNote nodeNote = null;
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT id, lang, notetypecode, lexicalvalue, created, modified " +
+                            "FROM note WHERE lexicalvalue = '"+noteValue+"'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        nodeNote = new NodeNote();
+                        nodeNote.setId_note(resultSet.getInt("id"));
+                        nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
+                        nodeNote.setModified(resultSet.getDate("modified"));
+                        nodeNote.setCreated(resultSet.getDate("created"));
+                        nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
+                        nodeNote.setLang(resultSet.getString("lang"));
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+        }
+        return nodeNote;
+    }
+
+    public NodeNote getNoteByValueAndThesaurus(HikariDataSource ds, String value, String idThes) {
+
+        NodeNote nodeNote = null;
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    stmt.executeQuery("SELECT id, lang, notetypecode, lexicalvalue, created, modified FROM note " +
+                            "WHERE lexicalvalue = '"+value+"' AND id_thesaurus = '"+idThes+"'");
+                    resultSet = stmt.getResultSet();
+                    if (resultSet.next()) {
+                        nodeNote = new NodeNote();
+                        nodeNote.setId_note(resultSet.getInt("id"));
+                        nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
+                        nodeNote.setModified(resultSet.getDate("modified"));
+                        nodeNote.setCreated(resultSet.getDate("created"));
+                        nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
+                        nodeNote.setLang(resultSet.getString("lang"));
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+        }
+        return nodeNote;
     }
     
     /**

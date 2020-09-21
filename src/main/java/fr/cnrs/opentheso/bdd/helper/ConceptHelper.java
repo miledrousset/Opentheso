@@ -33,13 +33,22 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
-import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
+import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
+import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
+import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
+import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.CanceptStatistiqueData;
 import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -3623,6 +3632,18 @@ public class ConceptHelper {
         return status;
     }
 
+
+    public void addNewGroupOfConcept(HikariDataSource ds, String idconcept, String idgroup, String idthesaurus) {
+
+        try {
+            Statement stmt = ds.getConnection().createStatement();
+            stmt.executeUpdate("INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
+                    +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');");
+            stmt.close();
+        } catch (Exception ex) {
+        }
+    }
+
     /**
      * Cette fonction permet d'insérrer un Concept dans la table Concept avec un
      * idConcept existant (Import) avec Rollback
@@ -3695,6 +3716,52 @@ public class ConceptHelper {
         }
         return status;
     }
+
+
+    public NodeStatus getNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus) {
+        NodeStatus nodeStatus = new NodeStatus();
+        Statement stmt;
+        try {
+            Connection conn = ds.getConnection();
+            stmt = conn.createStatement();
+
+            String query = "SELECT * FROM candidat_status WHERE id_concept = '"+idConcept+"';";
+            stmt.executeQuery(query);
+            ResultSet resultSet = stmt.getResultSet();
+            resultSet.next();
+            if (resultSet.getRow() != 0) {
+                nodeStatus.setIdConcept(resultSet.getString("id_concept"));
+                nodeStatus.setIdStatus(resultSet.getString("id_status"));
+                nodeStatus.setDate(resultSet.getString("date"));
+                nodeStatus.setIdUser(resultSet.getString("id_user"));
+                nodeStatus.setIdThesaurus(resultSet.getString("id_thesaurus"));
+                nodeStatus.setMessage(resultSet.getString("message"));
+            }
+            resultSet.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception ex) {
+        }
+        return nodeStatus;
+    }
+
+    public void setNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus, String idStatus, String date,
+                               int idUser, String message) {
+        try {
+            Connection conn = ds.getConnection();
+            conn.setAutoCommit(false);
+            // Get connection from pool
+            String query;
+            Statement stmt = conn.createStatement();
+            query = "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus, message) VALUES ('"
+                    +idConcept+"', '"+idStatus+"', '"+date+"', "+idUser+", '"+idThesaurus+"', '"+message+"');";
+            stmt.executeUpdate(query);
+            stmt.close();
+            conn.commit();
+            conn.close();
+        } catch (Exception sqle) { }
+    }
+
 
     /**
      * deprecated by Miled Cette fonction permet d'insérrer un Concept dans la
@@ -5693,6 +5760,8 @@ public class ConceptHelper {
         NoteHelper noteHelper = new NoteHelper();
         GpsHelper gpsHelper = new GpsHelper();
         ImagesHelper imagesHelper = new ImagesHelper();
+        
+        String htmlTagsRegEx = "<[^>]*>";
 
         // les relations BT, NT, RT
         ArrayList<NodeHieraRelation> nodeListRelations = relationsHelper.getAllRelationsOfConcept(ds, idConcept, idThesaurus);
@@ -5726,12 +5795,23 @@ public class ConceptHelper {
 //#### SQL #### //        
 
 //#### SQL #### //
-        nodeConceptExport.setNodeNoteTerm(noteHelper.getListNotesTermAllLang(ds, idTerm, idThesaurus));
+        ArrayList<NodeNote> noteTerm = noteHelper.getListNotesTermAllLang(ds, idTerm, idThesaurus);
+        for (NodeNote note : noteTerm) {
+            String str = formatLinkTag(note.getLexicalvalue());
+            note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+        }
+        nodeConceptExport.setNodeNoteTerm(noteTerm);
 //#### SQL #### //        
 
         //récupération des Notes du Concept
-//#### SQL #### //        
-        nodeConceptExport.setNodeNoteConcept(noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus));
+//#### SQL #### //      
+
+        ArrayList<NodeNote> noteConcept = noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus);
+        for (NodeNote note : noteConcept) {
+            String str = formatLinkTag(note.getLexicalvalue());
+            note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+        }
+        nodeConceptExport.setNodeNoteConcept(noteConcept);
 //#### SQL #### //
 
         //récupération des coordonnées GPS
@@ -5751,7 +5831,23 @@ public class ConceptHelper {
             }
             nodeConceptExport.setNodeimages(imagesUri);
         }
+
+        nodeConceptExport.setMessages(new MessageDao().getAllMessagesByCandidat(ds, idConcept, idThesaurus));
+        nodeConceptExport.setVotes(new CandidatDao().getAllVotesByCandidat(ds, idConcept, idThesaurus));
+
         return nodeConceptExport;
+    }
+
+    public static String formatLinkTag(String initialStr) {
+        Pattern MY_PATTERN = Pattern.compile("<a(.*?)a>");
+        Matcher m = MY_PATTERN.matcher(initialStr);
+        while (m.find()) {
+            String link = "<a" + m.group(1) + "a>";
+            ArrayList<HTMLLinkElement> result = new HtmlLinkExtraction().extractHTMLLinks(link);
+            initialStr = initialStr.replace(link, result.get(0).getLinkElement()
+                    + " (" + result.get(0).getLinkAddress() + ")");
+        }
+        return initialStr;
     }
 
     public ArrayList<NodeFusion> getConceptFusion(HikariDataSource ds,

@@ -143,3 +143,24 @@ margin-right: -1px;
   margin-left: -1px;
   margin-right: 0;
 }
+
+.tab1 {
+    background-color: #43B572 !important;
+    color: white;
+}
+
+.tab1:active {
+    background-color: #F47B2A !important;
+    color: white;
+}
+
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+    background-color: #F47B2A !important;
+    color: white;
+}
+
+.ui-widget-header {
+    color: white;
+    background: #43B572;
+    background-color: #43B572;
+}

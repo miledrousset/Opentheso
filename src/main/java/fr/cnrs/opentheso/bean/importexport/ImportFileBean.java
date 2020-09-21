@@ -19,9 +19,11 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.bean.condidat.CandidatBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
@@ -40,7 +42,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -57,6 +58,12 @@ public class ImportFileBean implements Serializable {
     @Inject private ViewEditionBean viewEditionBean;    
     @Inject private ConceptView conceptView;
     @Inject private Tree tree;    
+
+    @Inject
+    private CandidatBean candidatBean;
+    
+    @Inject
+    private SelectedTheso selectedTheso;
     
     
     private double progress = 0;
@@ -718,6 +725,43 @@ public class ImportFileBean implements Serializable {
                 error.append(e.toString());
         } finally {
             showError();
+        }
+    }
+
+    /**
+     * permet d'importer les candidats chargé en SKOS 
+     */
+    public void addSkosCandidatToBDD() {
+        
+        int idGroup; 
+        if(selectedUserProject == null || selectedUserProject.isEmpty()) {
+            idGroup = -1;
+        } else
+            idGroup = Integer.parseInt(selectedUserProject);
+        
+        try {
+            
+            candidatBean.setProgressBarStep(0);
+            candidatBean.setProgressBarValue(0);
+            
+            ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
+            importRdf4jHelper.setInfos(connect.getPoolConnexion(), formatDate, 
+                    currentUser.getNodeUser().getIdUser(), idGroup, connect.getWorkLanguage());
+
+            importRdf4jHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+            importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);
+            
+            candidatBean.setProgressBarStep(100 / sKOSXmlDocument.getConceptList().size());
+
+            for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
+                candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
+                importRdf4jHelper.addConcept(sKOSResource, selectedTheso.getCurrentIdTheso());
+            }
+            
+        } catch (Exception e) {
+                
+        } finally {
+            
         }
     }    
     
