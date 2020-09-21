@@ -272,6 +272,7 @@ public class SelectedTheso implements Serializable {
 
     /**
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
+     * @return 
      */
     public String preRenderView() {
         if (idThesoFromUri == null) {
