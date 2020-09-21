@@ -109,7 +109,10 @@ public class AtelierThesService implements Serializable {
     }
     
     public ArrayList<NodeIdValue> searchAllThesaurus() {
-        if(currentUser.getNodeUser() == null) return new ArrayList<>();
+
+        if(currentUser.getNodeUser() == null)
+            return new ArrayList<>();
+
         List<String> authorizedTheso;
         if (currentUser.getNodeUser().isIsSuperAdmin()) {
             authorizedTheso = new ThesaurusHelper().getAllIdOfThesaurus(connect.getPoolConnexion(), true);

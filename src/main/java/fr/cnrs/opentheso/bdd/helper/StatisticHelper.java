@@ -198,6 +198,89 @@ public class StatisticHelper {
         }
         return count;
     }
+
+    public int getNbSynonymesByGroup(HikariDataSource ds, String idThesaurus, String idGroup, String idLang) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        int count = 0;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT count(non_preferred_term.id_term)" +
+                            " FROM concept_group_concept, preferred_term, non_preferred_term" +
+                            " WHERE" +
+                            " concept_group_concept.idconcept = preferred_term.id_concept" +
+                            " AND concept_group_concept.idthesaurus = preferred_term.id_thesaurus" +
+                            " AND preferred_term.id_term = non_preferred_term.id_term " +
+                            " AND preferred_term.id_thesaurus = non_preferred_term.id_thesaurus " +
+                            " AND non_preferred_term.lang = '" + idLang + "'" +
+                            " AND non_preferred_term.id_thesaurus = '" + idThesaurus + "'" +
+                            " and concept_group_concept.idgroup = '" + idGroup + "'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet != null) {
+                        resultSet.next();
+                        count = resultSet.getInt(1);
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting count of Synonyms of group : ", sqle);
+        }
+        return count;
+    }    
+    
+    public int getNbDesSynonimeSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        int count = 0;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT count(non_preferred_term.id_term) " +
+                            "FROM non_preferred_term, preferred_term " +
+                            "WHERE preferred_term.id_term = non_preferred_term.id_term " +
+                            "AND preferred_term.id_thesaurus = non_preferred_term.id_thesaurus " +
+                            " AND non_preferred_term.lang = '" + idLang + "'" +
+                            "AND non_preferred_term.id_thesaurus = '"+idThesaurus+"' " +
+                            "AND preferred_term.id_concept NOT " +
+                                "IN (SELECT idconcept FROM concept_group_concept " +
+                                "WHERE concept_group_concept.idthesaurus = '"+idThesaurus+"')";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet != null) {
+                        resultSet.next();
+                        count = resultSet.getInt(1);
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting count of decriptor without group : ", sqle);
+        }
+        return count;
+    }
     
     public int getNbNonDescOfGroup(HikariDataSource ds, String idThesaurus, String idGroup, String langue) {
         Connection conn;
@@ -258,11 +341,15 @@ public class StatisticHelper {
                 try {
                     //modification de la requête SQL #jm
                     String query="SELECT count(distinct term.id_term) FROM term INNER JOIN "
-                            + "(SELECT preferred_term.id_concept,"
-                            + "preferred_term.id_term FROM preferred_term "
-                            + "WHERE preferred_term.id_concept IN "
+                            + " (SELECT preferred_term.id_concept,"
+                            + " preferred_term.id_term FROM preferred_term, concept "
+                            + " WHERE"
+                            + " concept.id_concept = preferred_term.id_concept and "
+                            + " concept.id_thesaurus = preferred_term.id_thesaurus and "
+                            + " concept.status != 'CA' and "      
+                            + " preferred_term.id_concept IN "
                             + "(SELECT idconcept FROM concept_group_concept "
-                            + "WHERE idgroup='"+idGroup+"' AND idthesaurus='"+idThesaurus+"'))"
+                            + " WHERE idgroup='"+idGroup+"' AND idthesaurus='"+idThesaurus+"'))"
                             + " as Tabl ON Tabl.id_term=term.id_term WHERE term.lang='"+langue+"' AND id_thesaurus='"+idThesaurus+"'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -283,6 +370,50 @@ public class StatisticHelper {
         }
         return count;
     }
+    
+    public int getNbTradWithoutGroup(HikariDataSource ds, String idThesaurus, String idLang) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        int count = 0;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    //modification de la requête SQL #jm
+                    String query="SELECT count(term.id_term)" +
+                            " FROM term INNER JOIN " +
+                            " (SELECT preferred_term.id_concept, preferred_term.id_term " +
+                            " FROM preferred_term, concept" +
+                            "   WHERE " +
+                            " 	concept.id_concept = preferred_term.id_concept and " +
+                            "  	concept.id_thesaurus = preferred_term.id_thesaurus and " +
+                            " 	concept.status != 'CA' and " +
+                            "	preferred_term.id_concept NOT IN " +
+                            "    (SELECT idconcept FROM concept_group_concept " +
+                            "      WHERE idthesaurus='" + idThesaurus + "'))" +
+                            " as Tabl ON Tabl.id_term=term.id_term WHERE term.lang='" + idLang + "' AND id_thesaurus='" + idThesaurus + "'";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet != null) {
+                        resultSet.next();
+                        count = resultSet.getInt(1);
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting count of traduction without group : " + idThesaurus, sqle);
+        }
+        return count;
+    }    
     
     public int getNbDefinitionNoteOfGroup(HikariDataSource ds, String idThesaurus, String langue, String idGroup) {
         Connection conn;

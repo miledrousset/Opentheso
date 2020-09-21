@@ -96,6 +96,43 @@ public class TermHelper {
         }
         return existe;
     }
+
+    public int getNbrTermSansGroup(HikariDataSource ds, String idThesaurus, String lang) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        int count = 0;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT count(term.id_term) FROM term INNER JOIN " +
+                            "(SELECT preferred_term.id_concept,preferred_term.id_term FROM preferred_term " +
+                            "WHERE preferred_term.id_concept NOT IN (SELECT idconcept FROM concept_group_concept " +
+                            "WHERE idthesaurus='"+idThesaurus+"')) AS Tabl ON Tabl.id_term=term.id_term " +
+                            "WHERE term.lang='"+lang+"' AND id_thesaurus='"+idThesaurus+"';";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet != null) {
+                        resultSet.next();
+                        count = resultSet.getInt(1);
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting count of decriptor without group : ", sqle);
+        }
+        return count;
+    }
     
     /**
      * Cette fonction permet de savoir si le synonyme est un parfait doublon ou non
