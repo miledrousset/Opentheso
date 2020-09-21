@@ -124,7 +124,7 @@ public class CopyAndPasteBetweenThesoHelper {
             return false;
         }
 
-        // relier le concept copié au concept cible
+        // nettoyer le concept copié 
         RelationsHelper relationsHelper = new RelationsHelper();
         ArrayList<String> nodeBT = relationsHelper.getListIdBT(ds, fromIdConcept, currentIdTheso);
         for (String idBT : nodeBT) {
@@ -135,6 +135,8 @@ public class CopyAndPasteBetweenThesoHelper {
                     idUser)) {
             }
         }
+        
+        // Passer la branche en TopTerm
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.setTopConcept(ds, fromIdConcept, currentIdTheso);
         return true;

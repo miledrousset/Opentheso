@@ -171,7 +171,6 @@ public class ConceptView implements Serializable {
                     idLang);
                 PrimeFaces pf = PrimeFaces.current();;
                 if (pf.isAjaxRequest()) {
-//                    pf.ajax().update("formLeftTab");
                     pf.ajax().update("formLeftTab:tabTree:tree");
                     pf.ajax().update("formSearch:languageSelect");
                     pf.executeScript("srollToSelected()");

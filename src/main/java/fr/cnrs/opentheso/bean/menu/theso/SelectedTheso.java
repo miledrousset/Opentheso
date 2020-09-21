@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bean.condidat.CandidatBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
@@ -37,6 +38,10 @@ public class SelectedTheso implements Serializable {
 
     @Inject
     private TreeGroups treeGroups;
+
+    @Inject
+    private TreeConcepts treeConcepts;
+
     @Inject
     private Tree tree;
     @Inject
@@ -235,6 +240,7 @@ public class SelectedTheso implements Serializable {
 
         // initialisation de l'arbre des groupes
         treeGroups.initialise(selectedIdTheso, selectedLang);
+        treeConcepts.initialise(selectedIdTheso, selectedLang);
         tree.initialise(selectedIdTheso, selectedLang);
         listIndex.reset();
         conceptBean.init();
@@ -255,6 +261,7 @@ public class SelectedTheso implements Serializable {
 
         // initialisation de l'arbre des groupes
         treeGroups.initialise(selectedIdTheso, selectedLang);
+        treeConcepts.initialise(selectedIdTheso, selectedLang);
         tree.initialise(selectedIdTheso, selectedLang);
         if (!isActionFromConcept) {
             conceptBean.init();
@@ -272,6 +279,7 @@ public class SelectedTheso implements Serializable {
 
     /**
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
+     * @return 
      */
     public String preRenderView() {
         if (idThesoFromUri == null) {

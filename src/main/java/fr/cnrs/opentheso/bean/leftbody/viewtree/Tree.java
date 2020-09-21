@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
@@ -22,16 +17,13 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.PrimeFaces;
 
-import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -60,11 +52,6 @@ public class Tree implements Serializable {
     private String idLang;
 
     ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
-
-    @PostConstruct
-    public void init() {
-//      initialise("th44", "fr");
-    }
 
     public void reset() {
         root = null;
@@ -97,13 +84,6 @@ public class Tree implements Serializable {
     private boolean addFirstNodes() {
         ConceptHelper conceptHelper = new ConceptHelper();
         TreeNodeData data;
-        //    String label;
-
-
-        // liste des Tops termes ou concepts de premier niveau
-        /* ArrayList<String> idTopConcepts = conceptHelper.getAllTopTermOfThesaurus(
-                connect.getPoolConnexion(),
-                idTheso); */
 
         // la liste est triée par alphabétique ou notation
         ArrayList<NodeConceptTree> nodeConceptTrees
@@ -111,10 +91,6 @@ public class Tree implements Serializable {
                         idTheso, idLang, selectedTheso.isSortByNotation());
 
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
-            /* label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(), idTopConcept, idTheso, idLang);
-            if (label == null || label.isEmpty()) {
-                label = "(" + idTopConcept + ")";
-            }*/
             data = new TreeNodeData(
                     nodeConceptTree.getIdConcept(),
                     nodeConceptTree.getTitle(),
@@ -132,28 +108,6 @@ public class Tree implements Serializable {
             }
         }
 
-        /*    
-        for (String idTopConcept : idTopConcepts) {
-            label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(), idTopConcept, idTheso, idLang);
-            if (label == null || label.isEmpty()) {
-                label = "(" + idTopConcept + ")";
-            }
-            data = new TreeNodeData(
-                    idTopConcept,
-                    label,
-                    "",
-                    false,//isgroup
-                    false,//isSubGroup
-                    false,//isConcept
-                    true,//isTopConcept
-                    "topTerm"
-            );
-            if (conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso, idTopConcept)) {
-                dataService.addNodeWithChild("concept", data, root);
-            } else {
-                dataService.addNodeWithoutChild("file", data, root);
-            }
-        }*/
         return true;
     }
 
@@ -242,19 +196,15 @@ public class Tree implements Serializable {
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
+        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').show();");
+        
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
         if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
             parent.getChildren().remove(0);
             addConceptsChild(parent);
         }
-        /*     FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Expanded", event.getTreeNode().toString());
-        FacesContext.getCurrentInstance().addMessage(null, message);*/
-    }
-
-    public void onNodeCollapse(NodeCollapseEvent event) {
-        /*      FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Collapsed", event.getTreeNode().toString());
-        FacesContext.getCurrentInstance().addMessage(null, message);
-         */
+        
+        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').hide();"); 
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
@@ -273,11 +223,6 @@ public class Tree implements Serializable {
         rightBodySetting.setIndex("0");
     }
 
-    public void onNodeUnselect(NodeUnselectEvent event) {
-        /*    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Unselected", event.getTreeNode().toString());
-        FacesContext.getCurrentInstance().addMessage(null, message);*/
-    }
-
     /**
      * permet de déplier l'arbre suivant le Path ou les paths en paramètre
      *
@@ -285,10 +230,7 @@ public class Tree implements Serializable {
      * @param idTheso
      * @param idLang #MR
      */
-    public void expandTreeToPath(
-            String idConcept,
-            String idTheso,
-            String idLang) {
+    public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
 
         ArrayList<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
@@ -296,6 +238,9 @@ public class Tree implements Serializable {
         if (root == null) {
             initialise(idTheso, idLang);
         }
+
+        // deselectionner et fermer toutes les noeds de l'arbres
+        initialiserEtatNoeuds(root);
 
         // cas de changement de langue pendant la navigation dans les concepts
         // il faut reconstruire l'arbre dès le début
@@ -334,6 +279,23 @@ public class Tree implements Serializable {
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
+    }
+
+    // deselectionner et fermer toutes les noeds de l'arbres
+    private void initialiserEtatNoeuds(TreeNode nodeRoot) {
+        for (TreeNode node : nodeRoot.getChildren()) {
+            try {
+                TreeNodeData treeNodeData = (TreeNodeData) node.getData();
+                node.setExpanded(false);
+                node.setSelected(false);
+
+                if (!treeNodeData.isIsConcept()) {
+                    initialiserEtatNoeuds (node);
+                }
+            } catch (Exception ex) {
+
+            }
+        }
     }
     
     /**
@@ -386,17 +348,8 @@ public class Tree implements Serializable {
         }
         leftBodySetting.setIndex("0");
     }
-    
-    
 
-    /**
-     * permet de trouver le noeud dans la liste des enfants suivant
-     * l'identifiant du concept elle retourne le noeud trouvé
-     *
-     * @param treeNode
-     * @param idConcept
-     * @return
-     */
+
     private TreeNode selectChildNode(TreeNode treeNodeParent, String idConceptChildToFind) {
         // test si les fils ne sont pas construits
         if (treeNodeParent.getChildCount() == 1 && treeNodeParent.getChildren().get(0).getData().toString().equals("DUMMY")) {

@@ -29,7 +29,7 @@ public class DataService {
         else
             document = new DefaultTreeNode(typeDocument, data, parentNode);
         
-        TreeNode documentDummy = new DefaultTreeNode("DUMMY", document);
+        new DefaultTreeNode("DUMMY", document);
     }
     
     public void addNodeWithoutChild(String typeDocument, TreeNodeData data, TreeNode parentNode){

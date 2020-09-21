@@ -35,16 +35,28 @@ public class StatistiqueService {
             data.setNotesNbr(new NoteHelper().getNbrNoteByGroupAndThesoAndLang(connect.getPoolConnexion(),
                     group.getConceptGroup().getIdgroup(), idTheso, idLang));
 
-            data.setSynonymesNbr(new StatisticHelper().getNbDescOfGroup(connect.getPoolConnexion(), idTheso,
-                    group.getConceptGroup().getIdgroup()));
+            data.setSynonymesNbr(new StatisticHelper().getNbSynonymesByGroup(connect.getPoolConnexion(), idTheso,
+                    group.getConceptGroup().getIdgroup(), idLang));
 
             data.setConceptsNbr(new ConceptHelper().getCountOfConceptsOfGroup(connect.getPoolConnexion(), idTheso,
                     group.getConceptGroup().getIdgroup()));
 
-            data.setTermesNonTraduitsNbr(getNbrTermNonTraduit(connect.getPoolConnexion(), group, idTheso, idLang));
+            data.setTermesNonTraduitsNbr(
+                    data.getConceptsNbr() - 
+                    new StatisticHelper().getNbTradOfGroup(
+                    connect.getPoolConnexion(), idTheso, group.getConceptGroup().getIdgroup(), idLang));//getNbrTermNonTraduit(connect.getPoolConnexion(), group, idTheso, idLang));
             
             result.add(data);
         });
+
+        // Ajout de la dernier ligne réservé aux concepts sans collection
+        GenericStatistiqueData data = new GenericStatistiqueData();
+        data.setCollection("Sans collection");
+        data.setConceptsNbr(new ConceptHelper().getCountOfConceptsSansGroup(connect.getPoolConnexion(), idTheso));
+        data.setNotesNbr(new NoteHelper().getNbrNoteSansGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setSynonymesNbr(new StatisticHelper().getNbDesSynonimeSansGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setTermesNonTraduitsNbr(data.getConceptsNbr() - new StatisticHelper().getNbTradWithoutGroup(connect.getPoolConnexion(), idTheso, idLang));
+        result.add(data);
 
         return result;
 
@@ -53,6 +65,18 @@ public class StatistiqueService {
     private int getNbrTermNonTraduit(HikariDataSource ds, NodeGroup group, String idTheso, String idLang) {
         TermHelper termHelper = new TermHelper();
         ArrayList<NodeUri> concepts = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, group.getConceptGroup().getIdgroup());
+        AtomicInteger nbrTermNonTraduit = new AtomicInteger();
+        concepts.forEach(concept -> {
+            if(!termHelper.isTraductionExistOfConcept(ds, concept.getIdConcept(), idTheso, idLang)) {
+                nbrTermNonTraduit.getAndIncrement();
+            }
+        });
+        return nbrTermNonTraduit.get();
+    }
+
+    private int getNbrTermTraduitWithoutGroup(HikariDataSource ds, String idTheso, String idLang) {
+        TermHelper termHelper = new TermHelper();
+        ArrayList<NodeUri> concepts = new ConceptHelper().getListConceptsWithoutGroup(ds, idTheso);
         AtomicInteger nbrTermNonTraduit = new AtomicInteger();
         concepts.forEach(concept -> {
             if(!termHelper.isTraductionExistOfConcept(ds, concept.getIdConcept(), idTheso, idLang)) {
