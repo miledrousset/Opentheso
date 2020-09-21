@@ -81,32 +81,13 @@ public class CandidatDao extends BasicDao {
      * @throws SQLException 
      */
     public List<CandidatDto> searchCandidatsByStatus(HikariDataSource hikariDataSource, String idThesaurus,
-            String lang, int statut) throws SQLException {
+            String lang, int etat, String statut) throws SQLException {
 
         List<CandidatDto> temps = new ArrayList<>();
 
         openDataBase(hikariDataSource);
         
-        stmt.executeQuery(new StringBuffer("SELECT DISTINCT term.lang, term.id_term,")
-                .append(" term.lexical_value, con.id_concept,")
-                .append(" con.id_thesaurus, con.created,")
-                .append(" users.username, term.contributor")              
-
-                .append(" FROM preferred_term preTer, concept con, term, users, candidat_status")
-                .append(" WHERE") 
-                .append(" con.id_concept = candidat_status.id_concept")
-                .append(" and con.id_thesaurus = candidat_status.id_thesaurus")
-                .append(" and con.id_concept = preTer.id_concept") 
-                .append(" AND term.id_term = preTer.id_term") 
-                .append(" AND con.id_thesaurus = preTer.id_thesaurus")                 
-                .append(" AND preTer.id_thesaurus = term.id_thesaurus")  
-                .append(" AND con.status = 'CA'")  
-                .append(" AND users.id_user = term.contributor")  
-                  
-                .append(" AND term.lang = '").append(lang).append("' ")
-                .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
-                .append(" and candidat_status.id_status = " + statut)               
-                .append(" ORDER BY term.lexical_value ASC").toString());     
+        stmt.executeQuery(createRequest(lang, idThesaurus, etat, statut));
 
         resultSet = stmt.getResultSet();
 
@@ -124,7 +105,38 @@ public class CandidatDao extends BasicDao {
 
         closeDataBase();
         return temps;
-    }    
+    }
+
+    private String createRequest(String lang, String idThesaurus, int etat, String statut) {
+
+        StringBuffer request = new StringBuffer("SELECT DISTINCT term.lang, term.id_term,")
+                .append(" term.lexical_value, con.id_concept,")
+                .append(" con.id_thesaurus, con.created,")
+                .append(" users.username, term.contributor")
+
+                .append(" FROM preferred_term preTer, concept con, term, users, candidat_status")
+                .append(" WHERE con.id_concept = candidat_status.id_concept")
+                .append(" AND con.id_thesaurus = candidat_status.id_thesaurus")
+                .append(" AND con.id_concept = preTer.id_concept")
+                .append(" AND term.id_term = preTer.id_term")
+                .append(" AND con.id_thesaurus = preTer.id_thesaurus")
+                .append(" AND preTer.id_thesaurus = term.id_thesaurus");
+
+        if ("CA".equals(statut)) {
+            request.append(" AND con.status = 'CA'");
+        } else {
+            request.append(" AND con.status <> 'CA'");
+        }
+
+        request.append(" AND users.id_user = term.contributor")
+                .append(" AND candidat_status.id_status = " + etat)
+                .append(" AND term.lang = '").append(lang).append("' ")
+                .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
+                .append(" ORDER BY term.lexical_value ASC");
+
+        return request.toString();
+
+    }
 
     public String searchCondidatStatus(HikariDataSource hikariDataSource, String idCouncepte,
             String idThesaurus) throws SQLException {

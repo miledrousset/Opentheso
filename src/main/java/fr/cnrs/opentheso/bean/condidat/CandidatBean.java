@@ -127,7 +127,7 @@ public class CandidatBean implements Serializable {
         tabViewIndexSelected = 0;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
             candidatList = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
-                    getIdLang(), 1);
+                    getIdLang(), 1, "CA");
         } else {
             candidatList = new ArrayList<>();
         }
@@ -137,7 +137,7 @@ public class CandidatBean implements Serializable {
         tabViewIndexSelected = 2;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
             rejetCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
-                    getIdLang(), 3);
+                    getIdLang(), 3, "CA");
         } else {
             rejetCadidat = new ArrayList<>();
         }
@@ -147,7 +147,7 @@ public class CandidatBean implements Serializable {
         tabViewIndexSelected = 1;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
             acceptedCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
-                    getIdLang(), 2);
+                    getIdLang(), 2, null);
         } else {
             acceptedCadidat = new ArrayList<>();
         }
