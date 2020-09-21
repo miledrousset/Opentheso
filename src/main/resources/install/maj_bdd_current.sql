@@ -203,7 +203,8 @@ CREATE TABLE IF NOT EXISTS public.candidat_vote
     id_user integer,
     id_concept character varying,
     id_thesaurus character varying,
-    CONSTRAINT candidat_vote_id_user_id_concept_id_thesaurus_key UNIQUE (id_user, id_concept, id_thesaurus)
+    type_vote character varying(30),
+    id_note character varying(30)
 )
 WITH (
   OIDS=FALSE

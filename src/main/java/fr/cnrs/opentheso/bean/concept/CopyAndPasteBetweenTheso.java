@@ -174,8 +174,6 @@ public class CopyAndPasteBetweenTheso implements Serializable {
      */
     private boolean copyToConcept(){
         // cas de déplacement d'un concept/branche d'un autre thésaurus vers un concept
-        FacesMessage msg;
-
         CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper = new CopyAndPasteBetweenThesoHelper();
         
             if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(connect.getPoolConnexion(),
@@ -193,7 +191,6 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     }
     
     private boolean copyToRoot(){
-        FacesMessage msg;
         // cas de déplacement d'un concept/branche d'un autre thésaurus à la racine
         CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper = new CopyAndPasteBetweenThesoHelper();
         
