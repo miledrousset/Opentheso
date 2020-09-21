@@ -20,6 +20,19 @@
  SET ROLE = opentheso;
 
 
+
+-- requête pour detecter les relations en boucle qui sont interdites
+-- select * from hierarchical_relationship where id_concept1 = id_concept2 and id_thesaurus = 'TH_1' and role = 'BT';
+-- select * from hierarchical_relationship where id_concept1 = id_concept2 and id_thesaurus = 'TH_1' and role = 'NT';
+-- select * from hierarchical_relationship where id_concept1 = id_concept2 and id_thesaurus = 'TH_1' and role = 'RT';
+
+
+
+
+
+
+
+
 -- requête pour récupérer les candidat d'un thésaurus
 --select term_candidat.lexical_value, concept_candidat.status, concept_candidat.id_thesaurus
 --from concept_candidat, concept_term_candidat, term_candidat
@@ -190,7 +203,8 @@ CREATE TABLE IF NOT EXISTS public.candidat_vote
     id_user integer,
     id_concept character varying,
     id_thesaurus character varying,
-    CONSTRAINT candidat_vote_id_user_id_concept_id_thesaurus_key UNIQUE (id_user, id_concept, id_thesaurus)
+    type_vote character varying(30),
+    id_note character varying(30)
 )
 WITH (
   OIDS=FALSE

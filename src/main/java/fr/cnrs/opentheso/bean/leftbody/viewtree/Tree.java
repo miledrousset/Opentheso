@@ -50,7 +50,6 @@ public class Tree implements Serializable {
 
     private String idTheso;
     private String idLang;
-    private boolean isSortedByNotation;
 
     ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
@@ -58,7 +57,6 @@ public class Tree implements Serializable {
         root = null;
         selectedNode = null;
         rightBodySetting.init();
-        isSortedByNotation = false;
     }
 
     public void initialise(String idTheso, String idLang) {
@@ -90,7 +88,7 @@ public class Tree implements Serializable {
         // la liste est triée par alphabétique ou notation
         ArrayList<NodeConceptTree> nodeConceptTrees
                 = conceptHelper.getListOfTopConcepts(connect.getPoolConnexion(),
-                        idTheso, idLang, isSortedByNotation);
+                        idTheso, idLang, selectedTheso.isSortByNotation());
 
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
             data = new TreeNodeData(
@@ -134,12 +132,13 @@ public class Tree implements Serializable {
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 idTheso);*/
 
+      
         ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConcepts(
                 connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 idTheso,
                 selectedTheso.getCurrentLang(),
-                isSortedByNotation);        
+                selectedTheso.isSortByNotation());        
         
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
             if (nodeConceptTree.getIdConcept() == null) continue;

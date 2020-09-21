@@ -15,6 +15,7 @@ public class NodeIdValue implements Comparable{
     private String id;
     private String value;
     private boolean Status;
+    private String notation;
 
     public NodeIdValue() {
     }
@@ -41,6 +42,14 @@ public class NodeIdValue implements Comparable{
 
     public void setStatus(boolean Status) {
         this.Status = Status;
+    }
+
+    public void setNotation(String notation) {
+        this.notation = notation;
+    }
+
+    public String getNotation() {
+        return notation;
     }
     
     @Override

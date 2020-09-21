@@ -384,34 +384,51 @@ public final class ArkClientRest {
     private boolean setForUpdate(){
         if(jsonArk == null) return false;
     //    System.out.println("avant la lecture : " + jsonArk);
-        JsonReader reader = Json.createReader(new StringReader(jsonArk));
-        JsonObject jsonObject = reader.readObject();
-        reader.close();
-
-        if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ok")) {
-            idArk = jsonObject.getJsonObject("result").getString("ark");
-            idHandle = jsonObject.getJsonObject("result").getString("handle");
-            Uri = jsonObject.getJsonObject("result").getString("urlTarget");
-            token = jsonObject.getJsonString("token").getString();
-            return true;
+        JsonReader reader;
+        try {
+            reader = Json.createReader(new StringReader(jsonArk));
+            JsonObject jsonObject = reader.readObject();
+            reader.close();  
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ok")) {
+                idArk = jsonObject.getJsonObject("result").getString("ark");
+                idHandle = jsonObject.getJsonObject("result").getString("handle");
+                Uri = jsonObject.getJsonObject("result").getString("urlTarget");
+                token = jsonObject.getJsonString("token").getString();
+                return true;
+            }
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ERROR")) {
+                message = jsonObject.getJsonString("description").getString();
+                token = jsonObject.getJsonString("token").getString();
+                return false;
+            }        
+        } catch (Exception e) {
         }
         message = "Erreur lors de la lecture du Json";
-        return false;
+        return false;           
     }
     
     private boolean setForGet(){
         if(jsonArk == null) return false;
     //    System.out.println("avant la lecture : " + jsonArk);
-        JsonReader reader = Json.createReader(new StringReader(jsonArk));
-        JsonObject jsonObject = reader.readObject();
-        reader.close();
+        JsonReader reader;
+        try {
+            reader = Json.createReader(new StringReader(jsonArk));
+            JsonObject jsonObject = reader.readObject();
+            reader.close();
 
-        if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ok")) {
-            idArk = jsonObject.getJsonObject("result").getString("ark");
-            idHandle = jsonObject.getJsonObject("result").getString("handle");
-            Uri = jsonObject.getJsonObject("result").getString("urlTarget");
-            token = jsonObject.getJsonString("token").getString();
-            return true;
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ok")) {
+                idArk = jsonObject.getJsonObject("result").getString("ark");
+                idHandle = jsonObject.getJsonObject("result").getString("handle");
+                Uri = jsonObject.getJsonObject("result").getString("urlTarget");
+                token = jsonObject.getJsonString("token").getString();
+                return true;
+            }
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ERROR")) {
+                message = jsonObject.getJsonString("description").getString();
+                token = jsonObject.getJsonString("token").getString();
+                return false;
+            }               
+        } catch (Exception e) {
         }
         message = "Erreur lors de la lecture du Json";
         return false;
@@ -419,27 +436,33 @@ public final class ArkClientRest {
 
     private boolean setIdArkHandle(){
         if(jsonArk == null) return false;
-        JsonReader reader = Json.createReader(new StringReader(jsonArk));
-        JsonObject jsonObject = reader.readObject();
-        
-       // JsonArray jsonArray = jsonObject.asJsonArray();
-        reader.close();
+        JsonReader reader;
+        try {
+            reader = Json.createReader(new StringReader(jsonArk));
+            JsonObject jsonObject = reader.readObject();
 
-        JsonObject jo = jsonObject.getJsonObject("result");
-        
-        JsonString values = jo.getJsonString("ark");
-        if(values == null)
-            idArk = null;
-        else
-            idArk = values.getString().trim();        
-        
-        
-        values = jo.getJsonString("handle");
-        if(values == null)
-            idHandle = null;
-        else
-            idHandle = values.getString().trim();        
+           // JsonArray jsonArray = jsonObject.asJsonArray();
+            reader.close();
 
+            JsonObject jo = jsonObject.getJsonObject("result");
+
+            JsonString values = jo.getJsonString("ark");
+            if(values == null)
+                idArk = null;
+            else
+                idArk = values.getString().trim();        
+
+
+            values = jo.getJsonString("handle");
+            if(values == null)
+                idHandle = null;
+            else
+                idHandle = values.getString().trim();        
+            token = jsonObject.getString("token");
+        } catch (Exception e) {
+            message = e.toString();
+            return false;
+        }
         return true;        
     }
 

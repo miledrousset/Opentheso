@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
@@ -86,7 +85,8 @@ public class ExportRdf4jHelperNew {
      * @param idTheso
      * @return 
      */
-    public void exportTheso(HikariDataSource ds, String idTheso) {
+    public void exportTheso(HikariDataSource ds, String idTheso, NodePreference nodePreference) {
+        this.nodePreference = nodePreference;
         NodeThesaurus nodeThesaurus = new ThesaurusHelper().getNodeThesaurus(ds, idTheso);
         String uri = getUriFromId(nodeThesaurus.getIdThesaurus());
         SKOSResource conceptScheme = new SKOSResource(uri, SKOSProperty.ConceptScheme);
@@ -134,7 +134,18 @@ public class ExportRdf4jHelperNew {
         });
         skosXmlDocument.setConceptScheme(conceptScheme);
     }
-    
+
+    public void exportSelectedCollections(HikariDataSource ds, String idTheso, List<NodeGroup> selectedGroups){
+        GroupHelper groupHelper = new GroupHelper();
+        NodeGroupLabel nodeGroupLabel;
+        for (NodeGroup group : selectedGroups) {
+            nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, group.getConceptGroup().getIdgroup(), idTheso);
+            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
+            sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+            addChildsGroupRecursive(ds, idTheso, group.getConceptGroup().getIdgroup(), sKOSResource);
+        }
+    }
+
     public void exportCollections(HikariDataSource ds, String idTheso){
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<String> rootGroupList = groupHelper.getListIdOfRootGroup(ds, idTheso);
@@ -455,8 +466,8 @@ public class ExportRdf4jHelperNew {
     //////////////////////////////////////////////////////////////////////////// 
     public String getUriFromId(String id) {
         String uri;
-        
-        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {     
+
+        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
             uri = nodePreference.getOriginalUri() + "/" + id;
         } else {
             uri = getPath() + "/" + id;
@@ -513,7 +524,7 @@ public class ExportRdf4jHelperNew {
                         + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         } else {
             uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept()
-                        + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();            
+                        + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         }
 //        uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
 
@@ -524,7 +535,6 @@ public class ExportRdf4jHelperNew {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriFromGroup(NodeGroupLabel nodeGroupLabel) {
@@ -579,7 +589,6 @@ public class ExportRdf4jHelperNew {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriGroupFromNodeUri(NodeUri nodeUri, String idTheso) {
@@ -619,7 +628,7 @@ public class ExportRdf4jHelperNew {
         } else {
             uri = getPath() + "/?idg=" + nodeUri.getIdConcept()
                             + "&idt=" + idTheso;
-        }  
+        }
 
         return uri;
     }
@@ -628,7 +637,6 @@ public class ExportRdf4jHelperNew {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriFromNodeUri(NodeUri nodeUri, String idTheso) {
@@ -665,29 +673,29 @@ public class ExportRdf4jHelperNew {
 
         // si on ne trouve pas ni Handle, ni Ark
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
-            uri = nodePreference.getOriginalUri() + "?idc=" + nodeUri.getIdConcept()
-                        + "&idt=" + idTheso; 
+            uri = nodePreference.getOriginalUri() + "/?idc=" + nodeUri.getIdConcept()
+                        + "&idt=" + idTheso;
         } else {
-            uri = getPath() + "?idc=" + nodeUri.getIdConcept()
-                        + "&idt=" + idTheso;             
-        }     
-  
+            uri = getPath() + "/?idc=" + nodeUri.getIdConcept()
+                        + "&idt=" + idTheso;
+        }
+
                         //+ "&amp;idt=" + idTheso;
     //    uri = nodePreference.getCheminSite() + nodeUri.getIdConcept();
         return uri;
     }
 
     /**
-     * permet de retourner le Path de l'application 
-     * exp:  //http://localhost:8082/opentheso2  
-     * @return 
+     * permet de retourner le Path de l'application
+     * exp:  //http://localhost:8082/opentheso2
+     * @return
      */
     private String getPath(){
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
         return path;
-    }    
-    
+    }
+
     public SKOSXmlDocument getSkosXmlDocument() {
         return skosXmlDocument;
     }
