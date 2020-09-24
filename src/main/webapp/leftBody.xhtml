@@ -5,6 +5,33 @@
 
 
     <b:form id="formLeftTab">
+        
+        <b:row id="sortOption">
+            <!-- Option de tri -->
+            <b:column span="1" offset="11" colXs="0" offset-sm="10" offset-xs="0"
+                      style="margin-top: -20px; font-size: 12px; color: #43B572">
+
+                <b:dropMenu value=""  style="font-size: 12px; " >
+                    <b:navCommandLink iconAwesome="fas fa-sort-alpha-down" value="tri alphabétique"
+                                      actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="false"
+                                      action="#{selectedTheso.reloadSelectedTheso()}"
+                                      style="font-size: 12px"
+                                      active="#{!selectedTheso.sortByNotation}"
+                                      update="containerIndex candidatForm formMenu formLeftTab">
+                    </b:navCommandLink>
+                    <b:navCommandLink iconAwesome="fas fa-sort-amount-down-alt" value="tri par notation"
+                                      actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="false"
+                                      action="#{selectedTheso.reloadSelectedTheso()}"
+                                      style="font-size: 12px;"
+                                      active="#{selectedTheso.sortByNotation}"
+                                      update="containerIndex candidatForm formMenu formLeftTab">
+                    </b:navCommandLink>
+                </b:dropMenu>
+            </b:column>
+        </b:row>
+
+        <!-- Trees -->        
+        
         <b:row>
             <b:column span="12" col-xs="0">
                 <b:tabView activeIndex="#{leftBodySetting.index}" content-style="margin-left:-14px; margin-right:-14px;font-size: 12px;">
