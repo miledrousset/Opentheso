@@ -430,8 +430,8 @@ public class ImportRdf4jHelper {
         acs.conceptHelper = new ConceptHelper();
         initAddConceptsStruct(acs, conceptResource, idTheso);
         addRelation(acs, idTheso);
-        acs.concept.setStatus("CA");
-
+        //acs.concept.setStatus("CA");
+        acs.concept.setStatus("DE");
         // envoie du concept à la BDD 
         addConceptToBdd(acs, idTheso);
  /*       if (!isConceptEmpty(acs.nodeTermTraductionList)) {
@@ -481,7 +481,7 @@ public class ImportRdf4jHelper {
         }
 
         acs.concept.setIdThesaurus(idTheso);
-
+        addNotation(acs);
         addGPSCoordinates(acs);
         addLabel(acs);
         addDocumentation(acs);
@@ -526,8 +526,7 @@ public class ImportRdf4jHelper {
         }
         acs.termHelper.insertTerm(ds, acs.nodeTerm, idUser);
 
-        acs.conceptHelper.setNodeStatus(ds, acs.status.getIdConcept(), acs.status.getIdThesaurus(), acs.status.getIdStatus(),
-                new Date().toString(), idUser, acs.status.getMessage());
+
 
         RelationsHelper relationsHelper = new RelationsHelper();
 
@@ -764,16 +763,19 @@ public class ImportRdf4jHelper {
             acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, "", "", imageUri, idUser);
         }
 
-        for (MessageDto message : acs.messages) {
-            new MessageDao().addNewMessage(ds, message.getMsg(), message.getIdUser(), acs.concept.getIdConcept(),
-                    idTheso, message.getDate());
-        }
+        if(acs.status.getIdStatus() != null) {
+            acs.conceptHelper.setNodeStatus(ds, acs.status.getIdConcept(), acs.status.getIdThesaurus(), acs.status.getIdStatus(),
+                    new Date().toString(), idUser, acs.status.getMessage());            
+            for (MessageDto message : acs.messages) {
+                new MessageDao().addNewMessage(ds, message.getMsg(), message.getIdUser(), acs.concept.getIdConcept(),
+                        idTheso, message.getDate());
+            }
+            new CandidatDao().setStatutForCandidat(ds, Integer.parseInt(acs.status.getIdStatus()), acs.status.getIdConcept(),
+                    idTheso, acs.status.getIdUser(), acs.status.getDate());
 
-        new CandidatDao().setStatutForCandidat(ds, Integer.parseInt(acs.status.getIdStatus()), acs.status.getIdConcept(),
-                idTheso, acs.status.getIdUser(), acs.status.getDate());
-
-        for (VoteDto vote : acs.votes) {
-            new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
+            for (VoteDto vote : acs.votes) {
+                new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
+            }
         }
 
 
@@ -872,6 +874,15 @@ public class ImportRdf4jHelper {
             acs.votes.add(voteDto);
         }
     }
+
+    private void addNotation(AddConceptsStruct acs) {
+        acs.concept.setNotation("");
+        for (SKOSNotation notation : acs.conceptResource.getNotationList()) {
+            if (notation.getNotation() != null) {
+                acs.concept.setNotation(notation.getNotation());
+            }
+        }
+    }    
     
     private void addImages(AddConceptsStruct acs) {
         for (String imageUri : acs.conceptResource.getImageUris()) {

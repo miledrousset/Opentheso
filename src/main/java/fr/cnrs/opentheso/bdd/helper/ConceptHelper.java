@@ -3633,15 +3633,33 @@ public class ConceptHelper {
     }
 
 
-    public void addNewGroupOfConcept(HikariDataSource ds, String idconcept, String idgroup, String idthesaurus) {
-
+    public boolean addNewGroupOfConcept(HikariDataSource ds, String idconcept, String idgroup, String idthesaurus) {
+        Statement stmt;
+        boolean status = false;
         try {
-            Statement stmt = ds.getConnection().createStatement();
-            stmt.executeUpdate("INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
-                    +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');");
-            stmt.close();
-        } catch (Exception ex) {
+            Connection conn = ds.getConnection();
+            try {
+                conn.setAutoCommit(false);
+                stmt = conn.createStatement();
+                try {
+                    String query = "INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
+                    +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');";
+
+                    stmt.executeUpdate(query);
+                    status = true;
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
+                log.error("Error while adding Concept to Group : " + idgroup, sqle);
+            }
         }
+        return status;
     }
 
     /**
@@ -3675,6 +3693,9 @@ public class ConceptHelper {
         if (concept.getIdHandle() == null) {
             concept.setIdHandle("");
         }
+        if (concept.getNotation()== null) {
+            concept.setNotation("");
+        }        
 
         try {
             Connection conn = ds.getConnection();
@@ -3719,47 +3740,70 @@ public class ConceptHelper {
 
 
     public NodeStatus getNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus) {
-        NodeStatus nodeStatus = new NodeStatus();
+        
         Statement stmt;
+        boolean status = false;        
+        NodeStatus nodeStatus = new NodeStatus();        
         try {
             Connection conn = ds.getConnection();
-            stmt = conn.createStatement();
-
-            String query = "SELECT * FROM candidat_status WHERE id_concept = '"+idConcept+"';";
-            stmt.executeQuery(query);
-            ResultSet resultSet = stmt.getResultSet();
-            resultSet.next();
-            if (resultSet.getRow() != 0) {
-                nodeStatus.setIdConcept(resultSet.getString("id_concept"));
-                nodeStatus.setIdStatus(resultSet.getString("id_status"));
-                nodeStatus.setDate(resultSet.getString("date"));
-                nodeStatus.setIdUser(resultSet.getString("id_user"));
-                nodeStatus.setIdThesaurus(resultSet.getString("id_thesaurus"));
-                nodeStatus.setMessage(resultSet.getString("message"));
-            }
-            resultSet.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception ex) {
-        }
-        return nodeStatus;
-    }
-
-    public void setNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus, String idStatus, String date,
-                               int idUser, String message) {
-        try {
-            Connection conn = ds.getConnection();
-            conn.setAutoCommit(false);
             // Get connection from pool
             String query;
-            Statement stmt = conn.createStatement();
-            query = "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus, message) VALUES ('"
+            try {
+                stmt = conn.createStatement();
+                try {
+                    query = "SELECT * FROM candidat_status WHERE id_concept = '"+idConcept+"';";
+                    stmt.executeQuery(query);
+                    ResultSet resultSet = stmt.getResultSet();
+                    if (resultSet.next()) {
+                        nodeStatus.setIdConcept(resultSet.getString("id_concept"));
+                        nodeStatus.setIdStatus(resultSet.getString("id_status"));
+                        nodeStatus.setDate(resultSet.getString("date"));
+                        nodeStatus.setIdUser(resultSet.getString("id_user"));
+                        nodeStatus.setIdThesaurus(resultSet.getString("id_thesaurus"));
+                        nodeStatus.setMessage(resultSet.getString("message"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting NodeStatus  du Concept : " + idConcept, sqle);
+        }
+        return nodeStatus;     
+    }
+
+    public boolean setNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus, String idStatus, String date,
+                               int idUser, String message) {
+        Statement stmt;
+        boolean status = false;        
+        try {
+            Connection conn = ds.getConnection();
+            // Get connection from pool
+            String query;
+            try {
+                stmt = conn.createStatement();
+                try {
+                    query = "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus, message) VALUES ('"
                     +idConcept+"', '"+idStatus+"', '"+date+"', "+idUser+", '"+idThesaurus+"', '"+message+"');";
-            stmt.executeUpdate(query);
-            stmt.close();
-            conn.commit();
-            conn.close();
-        } catch (Exception sqle) { }
+                    stmt.executeUpdate(query);
+                    status = true;
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
+                log.error("Error while setNodeStatus du Concept : " + idConcept, sqle);
+            } else {
+                status = true;
+            }
+        }
+        return status;
     }
 
 
