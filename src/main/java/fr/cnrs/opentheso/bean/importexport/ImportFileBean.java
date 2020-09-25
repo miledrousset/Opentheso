@@ -72,7 +72,7 @@ public class ImportFileBean implements Serializable {
     private int typeImport;
     private String selectedIdentifier ="sans";
     private String prefixHandle;
-    
+    private boolean isCandidatImport;
     
     // import CSV
     private char delimiterCsv = ',';
@@ -445,26 +445,29 @@ public class ImportFileBean implements Serializable {
      * @param event
      */
     public void loadFileSkos(FileUploadEvent event) {
+
+        isCandidatImport = Boolean.parseBoolean((String) event.getComponent().getAttributes().get("isCandidatImport"));
+
         error = new StringBuffer();
         info = "";
         warning = "";
         switch (typeImport) {
             case 0:
-                loadSkos(event);
+                loadSkos(event, isCandidatImport);
                 break;
             case 1:
-                loadJsonLd(event);
+                loadJsonLd(event, isCandidatImport);
                 break;
             case 2:
-                loadTurtle(event);
+                loadTurtle(event, isCandidatImport);
                 break;
             case 3:
-                loadJson(event);
+                loadJson(event, isCandidatImport);
                 break;                
         }
     }    
 
-    private void loadSkos(FileUploadEvent event) {
+    private void loadSkos(FileUploadEvent event, Boolean isCandidatImport) {
         progress = 0;
 
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
@@ -484,7 +487,7 @@ public class ImportFileBean implements Serializable {
                 }
                 ReadRdf4j readRdf4j = null;
                 try {
-                    readRdf4j = new ReadRdf4j(is, 0);
+                    readRdf4j = new ReadRdf4j(is, 0, isCandidatImport);
                 } catch (IOException ex) {
                     error.append(System.getProperty("line.separator"));
                     error.append(ex.getMessage());
@@ -518,7 +521,7 @@ public class ImportFileBean implements Serializable {
         }
     }
     
-    private void loadJsonLd(FileUploadEvent event) {
+    private void loadJsonLd(FileUploadEvent event, boolean isCandidatImport) {
         progress = 0;
 
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
@@ -538,7 +541,7 @@ public class ImportFileBean implements Serializable {
                 }
                 ReadRdf4j readRdf4j;
                 try {
-                    readRdf4j = new ReadRdf4j(is, 1);
+                    readRdf4j = new ReadRdf4j(is, 1, isCandidatImport);
                     warning = readRdf4j.getMessage();
                     sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
                     total = sKOSXmlDocument.getConceptList().size() ;
@@ -563,7 +566,7 @@ public class ImportFileBean implements Serializable {
         }
     }
     
-    private void loadJson(FileUploadEvent event) {
+    private void loadJson(FileUploadEvent event, boolean isCandidatImport) {
 
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
@@ -582,7 +585,7 @@ public class ImportFileBean implements Serializable {
                 }
                 ReadRdf4j readRdf4j;
                 try {
-                    readRdf4j = new ReadRdf4j(is, 3);
+                    readRdf4j = new ReadRdf4j(is, 3, isCandidatImport);
                     warning = readRdf4j.getMessage();
                     sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
                     total = sKOSXmlDocument.getConceptList().size();
@@ -608,7 +611,7 @@ public class ImportFileBean implements Serializable {
         }
     }  
 
-    private void loadTurtle(FileUploadEvent event) {
+    private void loadTurtle(FileUploadEvent event, boolean isCandidatImport) {
 
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
@@ -627,7 +630,7 @@ public class ImportFileBean implements Serializable {
                 }
                 ReadRdf4j readRdf4j;
                 try {
-                    readRdf4j = new ReadRdf4j(is, 2);
+                    readRdf4j = new ReadRdf4j(is, 2, isCandidatImport);
                     warning = readRdf4j.getMessage();
                     sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
                     total = sKOSXmlDocument.getConceptList().size();
@@ -698,8 +701,9 @@ public class ImportFileBean implements Serializable {
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
                 progressStep++;
                 progress = progressStep / total * 100;
-                importRdf4jHelper.addConcept(sKOSResource, idTheso);
+                importRdf4jHelper.addConcept(sKOSResource, idTheso, isCandidatImport);
             }
+
             importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
             importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);
             
@@ -755,7 +759,7 @@ public class ImportFileBean implements Serializable {
 
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
                 candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
-                importRdf4jHelper.addConcept(sKOSResource, selectedTheso.getCurrentIdTheso());
+                importRdf4jHelper.addConcept(sKOSResource, selectedTheso.getCurrentIdTheso(), isCandidatImport);
             }
             
         } catch (Exception e) {

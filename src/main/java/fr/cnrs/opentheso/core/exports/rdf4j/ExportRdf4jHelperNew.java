@@ -245,11 +245,11 @@ public class ExportRdf4jHelperNew {
      * @param idTheso
      * @param idConcept
      */
-    public void exportConcept(HikariDataSource ds, String idTheso, String idConcept) {
+    public void exportConcept(HikariDataSource ds, String idTheso, String idConcept, boolean isCandidatExport) {
         SKOSResource sKOSResource = new SKOSResource();
 
         ConceptHelper conceptHelper = new ConceptHelper();
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, false);
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, false, isCandidatExport);
 
 
         if (nodeConcept == null) {

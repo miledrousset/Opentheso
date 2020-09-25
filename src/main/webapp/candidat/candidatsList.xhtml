@@ -211,7 +211,9 @@
             <b:column span="12" > 
                 <p:fileUpload listener="#{importFileBean.loadFileSkos}" label="parcourir" mode="advanced" auto="true"
                               allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/" update="viewImportSkosForm importButton" 
-                              style="font-size: 12px;" />  
+                              style="font-size: 12px;" >
+                    <f:attribute name="isCandidatImport" value="true" />
+                </p:fileUpload>
             </b:column>
         </b:row> 
 

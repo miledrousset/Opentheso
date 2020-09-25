@@ -127,7 +127,9 @@
                               mode="advanced" auto="true"
                               allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
                               update="skosLoad importButton" disabled="#{importFileBean.loadDone}"
-                              style="font-size: 12px;" />  
+                                  style="font-size: 12px;">
+                        <f:attribute name="isCandidatImport" value="false" />
+                    </p:fileUpload>
                 </b:column>
             </b:row> 
 
@@ -162,14 +164,13 @@
                 <b:column span="2" offset="2" > 
                     <p:commandButton id="buttonImportSkos" class="btn btn-success" widgetVar="buttonImportSkos"
                                      icon="fas fa-check-circle fas 2x"
-                                     update="toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm"
+                                     update="formMenu toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm"
                                      onclick="PF('pbAjax').start(); PF('buttonImportSkos').disable();"
                                      style="width: 100%; background-color: #5CB85C; border: none;"
                                      actionListener="#{importFileBean.addSkosThesoToBDD()}"
                                      ajax="true"
                                      value="Importer"
-                                     disabled="#{!importFileBean.loadDone}">
-                    </p:commandButton>                       
+                                     disabled="#{!importFileBean.loadDone}"/>
                 </b:column> 
             </b:row>
         </h:panelGroup>
