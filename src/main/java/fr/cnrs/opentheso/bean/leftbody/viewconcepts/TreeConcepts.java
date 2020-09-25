@@ -103,7 +103,7 @@ public class TreeConcepts implements Serializable {
 
     public void onNodeExpand(NodeExpandEvent event) {
 
-        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').show();");
+        PrimeFaces.current().executeScript("$(\"body\").css(\"cursor\", \"progress\");");
         
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
         if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
@@ -113,7 +113,7 @@ public class TreeConcepts implements Serializable {
         }
 
         addConceptSpecifique(parent);
-        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').hide();");    
+        PrimeFaces.current().executeScript("$(\"body\").css(\"cursor\", \"default\");");
     }
 
     private boolean addGroupsChild(TreeNode parent) {

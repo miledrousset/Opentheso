@@ -196,7 +196,7 @@ public class Tree implements Serializable {
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
-        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').show();");
+        PrimeFaces.current().executeScript("$(\"body\").css(\"cursor\", \"progress\");");
         
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
         if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
@@ -204,7 +204,7 @@ public class Tree implements Serializable {
             addConceptsChild(parent);
         }
         
-        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').hide();"); 
+        PrimeFaces.current().executeScript("$(\"body\").css(\"cursor\", \"default\");");
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
