@@ -265,9 +265,11 @@ public class ExportRdf4jHelperNew {
         sKOSResource.setUri(getUri(nodeConcept));
         sKOSResource.setProperty(SKOSProperty.Concept);
 
-        sKOSResource.setSkosStatus(addStatut(conceptHelper.getNodeStatus(ds, idConcept, idTheso)));
-        addDiscussions(nodeConcept.getMessages(), sKOSResource);
-        addVotes(nodeConcept.getVotes(), sKOSResource, ds);
+        if (isCandidatExport) {
+            sKOSResource.setSkosStatus(addStatut(conceptHelper.getNodeStatus(ds, idConcept, idTheso)));
+            addDiscussions(nodeConcept.getMessages(), sKOSResource);
+            addVotes(nodeConcept.getVotes(), sKOSResource, ds);
+        }
 
         // prefLabel
         for (NodeTermTraduction traduction : nodeConcept.getNodeTermTraductions()) {

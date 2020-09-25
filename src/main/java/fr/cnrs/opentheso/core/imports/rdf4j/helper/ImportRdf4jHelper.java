@@ -434,8 +434,9 @@ public class ImportRdf4jHelper {
         if (isCandidatImport) {
             acs.concept.setStatus("CA");
         }
+        //acs.concept.setStatus("DE");
 
-        // envoie du concept à la BDD 
+        // envoie du concept à la BDD
         addConceptToBdd(acs, idTheso, isCandidatImport);
  /*       if (!isConceptEmpty(acs.nodeTermTraductionList)) {
             if (acs.idGrps.isEmpty()) {
@@ -483,7 +484,7 @@ public class ImportRdf4jHelper {
         }
 
         acs.concept.setIdThesaurus(idTheso);
-
+        addNotation(acs);
         addGPSCoordinates(acs);
         addLabel(acs);
         addDocumentation(acs);
@@ -794,8 +795,12 @@ public class ImportRdf4jHelper {
                         idTheso, message.getDate());
             }
 
-            new CandidatDao().setStatutForCandidat(ds, Integer.parseInt(acs.status.getIdStatus()), acs.status.getIdConcept(),
-                    idTheso, acs.status.getIdUser(), acs.status.getDate());
+            int status = 1;
+            try {
+                status = Integer.parseInt(acs.status.getIdStatus());
+            } catch (Exception ex) { }
+            new CandidatDao().setStatutForCandidat(ds, status, acs.status.getIdConcept(), idTheso,
+                    acs.status.getIdUser(), acs.status.getDate());
 
             for (VoteDto vote : acs.votes) {
                 new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
@@ -898,7 +903,16 @@ public class ImportRdf4jHelper {
             acs.votes.add(voteDto);
         }
     }
-    
+
+    private void addNotation(AddConceptsStruct acs) {
+        acs.concept.setNotation("");
+        for (SKOSNotation notation : acs.conceptResource.getNotationList()) {
+            if (notation.getNotation() != null) {
+                acs.concept.setNotation(notation.getNotation());
+            }
+        }
+    }
+
     private void addImages(AddConceptsStruct acs) {
         for (String imageUri : acs.conceptResource.getImageUris()) {
             if (imageUri != null && (!imageUri.isEmpty())) {
