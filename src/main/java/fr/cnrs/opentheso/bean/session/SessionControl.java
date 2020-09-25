@@ -35,16 +35,16 @@ public class SessionControl implements Serializable {
         if (currentUser.getNodeUser() != null) {
             //Déconnexion de l'utilisateur
             currentUser.disconnect();
-
-            //Vider le cache
-            clearComponent();
-            FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-            PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
-
-            // Rafraîchissement de la page
-            ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-            ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
         }
+
+        //Vider le cache
+        clearComponent();
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
+
+        // Rafraîchissement de la page
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 
     public void clearComponent() {
