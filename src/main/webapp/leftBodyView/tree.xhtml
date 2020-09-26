@@ -14,12 +14,11 @@
          <b:column span="12">
             <p:tree id="tree" value="#{tree.root}"  dynamic="true" var="nodetree" selectionMode="single"  selection="#{tree.selectedNode}"
                     style="width: auto; border: none; font-size: 12px;  min-height: 700px; max-height: 800px;overflow-y:scroll" animate="true"
-                    styleClass="tree_custom"
+                    styleClass="tree_custom" disabled="#{tree.noedSelected}"
                     draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
                     widgetVar="treeWidget">
-                <p:ajax event="expand"  listener="#{tree.onNodeExpand}" />
-            <!--    <p:ajax event="collapse" listener="# {tree.onNodeCollapse}" /> -->
-                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle"/>
+                <p:ajax event="expand"  listener="#{tree.onNodeExpand}" update="tree" />
+                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle tree"/>
 
                 <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" />
                 
