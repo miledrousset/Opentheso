@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
@@ -46,6 +47,7 @@ public class TreeConcepts implements Serializable {
 
     @Inject
     GroupView groupView;
+    @Inject private SelectedTheso selectedTheso;
 
     @Inject
     private LeftBodySetting leftBodySetting;
@@ -141,9 +143,15 @@ public class TreeConcepts implements Serializable {
 
     private boolean addConceptsChild(TreeNode parent) {
 
-        ArrayList<NodeIdValue> listeConceptsOfGroup = new ConceptHelper().getListConceptsOfGroup(connect.getPoolConnexion(),
-                idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), false);
-
+        // déséctivé par Miled 
+/*        ArrayList<NodeIdValue> listeConceptsOfGroup = new ConceptHelper().getListConceptsOfGroup(connect.getPoolConnexion(),
+                idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), false);*/
+        
+        // il faut ici récupérer les Topterms de la collection #MR        
+        ArrayList<NodeIdValue> listeConceptsOfGroup = new ConceptHelper().getListTopConceptsOfGroup(
+                connect.getPoolConnexion(),
+                idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), selectedTheso.isSortByNotation());
+        
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {
             parent.setType("group");
             return true;

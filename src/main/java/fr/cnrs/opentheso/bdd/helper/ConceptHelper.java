@@ -580,6 +580,114 @@ public class ConceptHelper {
     }
 
     /**
+     * permet de retourner la liste des Top concepts pour un group donné retour au
+     * format de NodeIdValue (informations pour construire l'arbre
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @param idGroup
+     * @param isSortByNotation
+     * @return
+     * #MR
+     */
+    public ArrayList<NodeIdValue> getListTopConceptsOfGroup(HikariDataSource ds,
+            String idThesaurus, String idLang, String idGroup, boolean isSortByNotation) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        //ArrayList<String> tabIdConcept = new ArrayList<>();
+
+        ArrayList<NodeIdValue> tabIdValues = new ArrayList<>();
+
+        String lexicalValue;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                String query;
+                try {
+                    if (isSortByNotation) {
+                        ArrayList<NodeIdValue> tabIdConcepts = new ArrayList<>();
+                        query = "SELECT DISTINCT concept.id_concept, concept.notation"
+                                + " FROM concept, concept_group_concept"
+                                + " WHERE"
+                                + " concept.id_concept = concept_group_concept.idconcept AND"
+                                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                                + " concept.status != 'CA' and"
+                                + " concept.top_concept = true and"
+                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
+                        stmt.executeQuery(query);
+                        resultSet = stmt.getResultSet();
+
+                        while (resultSet.next()) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setId(resultSet.getString("id_concept"));
+                            nodeIdValue.setNotation(resultSet.getString("notation"));
+                            tabIdConcepts.add(nodeIdValue);
+                        }
+                        for (NodeIdValue nodeIdValue1 : tabIdConcepts) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            lexicalValue = getLexicalValueOfConcept(ds, nodeIdValue1.getId(), idThesaurus, idLang);
+                            if (lexicalValue == null || lexicalValue.isEmpty()) {
+                                nodeIdValue.setValue("__" + nodeIdValue1.getId());
+                            } else {
+                                nodeIdValue.setValue(lexicalValue);
+                            }
+                            nodeIdValue.setId(nodeIdValue1.getId());
+                            nodeIdValue.setNotation(nodeIdValue1.getNotation());
+                            tabIdValues.add(nodeIdValue);
+                        }
+                    } else {
+                        ArrayList<String> tabIdConcepts = new ArrayList<>();
+                        query = "SELECT DISTINCT concept.id_concept, concept.notation"
+                                + " FROM concept, concept_group_concept"
+                                + " WHERE"
+                                + " concept.id_concept = concept_group_concept.idconcept AND"
+                                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                                + " concept.status != 'CA' and"
+                                + " concept.top_concept = true and"
+                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
+                        stmt.executeQuery(query);
+                        resultSet = stmt.getResultSet();
+
+                        while (resultSet.next()) {
+                            tabIdConcepts.add(resultSet.getString("id_concept"));
+                        }
+                        for (String idConcept : tabIdConcepts) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            lexicalValue = getLexicalValueOfConcept(ds, idConcept, idThesaurus, idLang);
+                            if (lexicalValue == null || lexicalValue.isEmpty()) {
+                                nodeIdValue.setValue("__" + idConcept);
+                            } else {
+                                nodeIdValue.setValue(lexicalValue);
+                            }
+                            nodeIdValue.setId(idConcept);
+                            tabIdValues.add(nodeIdValue);
+                        }
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
+        }
+        if (!isSortByNotation) {
+            Collections.sort(tabIdValues);
+        }
+
+        return tabIdValues;
+    }    
+    
+    /**
      * permet de retourner la liste des concepts pour un group donné retour au
      * format de NodeConceptTree (informations pour construire l'arbre
      *
@@ -5320,7 +5428,7 @@ public class ConceptHelper {
      * @param idThesaurus
      * @return Objet class NodeConceptTree
      */
-    public ArrayList<String> getListIdsOfTopConcepts(HikariDataSource ds,
+    public ArrayList<String> getListIdsOfTopConceptsByGroup(HikariDataSource ds,
             String idGroup, String idThesaurus) {
 
         Connection conn;
