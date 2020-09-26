@@ -761,6 +761,11 @@ public class ImportFileBean implements Serializable {
                 candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
                 importRdf4jHelper.addConcept(sKOSResource, selectedTheso.getCurrentIdTheso(), isCandidatImport);
             }
+
+            if (isCandidatImport) {
+                candidatBean.getAllCandidatsByThesoAndLangue();
+                candidatBean.setIsListCandidatsActivate(true);
+            }
             
         } catch (Exception e) {
                 

@@ -162,7 +162,7 @@
             <b:column span="6">
                 <p:commandButton value="Exporter" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
                                  class="btn btn-success" style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
-                                 onclick="PF('pbAjax').start();" update="viewExportCandidats">
+                                 onclick="PF('pbAjax').start();" update="viewExportCandidats candidatForm">
                     <p:fileDownload value="#{exportFileBean.exportCandidatsEnSkos()}" />
                 </p:commandButton>
             </b:column>
@@ -238,7 +238,7 @@
                 <b:column span="2" offset="3">
                     <p:commandButton id="buttonImportSkos" class="btn btn-success" widgetVar="buttonImportSkos"
                                      icon="fas fa-check-circle fas 2x" ajax="true" value="Importer" disabled="#{!importFileBean.loadDone}"
-                                     update="toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm"
+                                     update="toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm candidatForm"
                                      onclick="PF('pbAjax').start(); PF('buttonImportSkos').disable();"
                                      style="width: 100%; background-color: #5CB85C; border: none;"
                                      actionListener="#{importFileBean.addSkosCandidatToBDD()}"/>
