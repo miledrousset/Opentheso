@@ -127,16 +127,12 @@ public class TreeGroups implements Serializable {
             pf.ajax().update("messageIndex");
         } else {
             noedSelected = true;
-            PrimeFaces.current().executeScript("$(\"body\").css(\"cursor\", \"progress\");");
-
             DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
             if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
                 parent.getChildren().remove(0);
                 addGroupsChild(parent);
                 addConceptsChild(parent);
             }
-
-            PrimeFaces.current().executeScript("$(\"body\").css(\"cursor\", \"default\");");
             noedSelected = false;
         }
     }
