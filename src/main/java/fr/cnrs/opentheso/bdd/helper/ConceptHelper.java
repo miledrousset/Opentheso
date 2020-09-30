@@ -4735,7 +4735,7 @@ public class ConceptHelper {
 
         ArrayList<String> listIdsOfConceptChildren = conceptHelper.getListChildrenOfConcept(ds, idConcept, idThesaurus);
 
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idThesaurus, false);
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idThesaurus, false, false);
 
         //    System.out.println("IdConcept = " + idConcept);
         /// attention il y a un problème ici, il faut vérifier pourquoi nous avons un Concept Null
@@ -4747,7 +4747,7 @@ public class ConceptHelper {
         nodeConceptExports.add(nodeConcept);
 
         for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
-            nodeConcept = conceptHelper.getConceptForExport(ds, listIdsOfConceptChildren1, idThesaurus, false);
+            nodeConcept = conceptHelper.getConceptForExport(ds, listIdsOfConceptChildren1, idThesaurus, false, false);
             nodeConceptExports.add(nodeConcept);
             if (!nodeConcept.getNodeListOfNT().isEmpty()) {
                 for (int j = 0; j < nodeConcept.getNodeListOfNT().size(); j++) {
@@ -5902,7 +5902,7 @@ public class ConceptHelper {
      * @return Objet class NodeConcept #MR optimisation le 23/11/2018
      */
     public NodeConceptExport getConceptForExport(HikariDataSource ds,
-            String idConcept, String idThesaurus, boolean isArkActive) {
+            String idConcept, String idThesaurus, boolean isArkActive, boolean isCandidatExport) {
 
         NodeConceptExport nodeConceptExport = new NodeConceptExport();
         AlignmentHelper alignmentHelper = new AlignmentHelper();
@@ -5948,9 +5948,11 @@ public class ConceptHelper {
 
 //#### SQL #### //
         ArrayList<NodeNote> noteTerm = noteHelper.getListNotesTermAllLang(ds, idTerm, idThesaurus);
-        for (NodeNote note : noteTerm) {
-            String str = formatLinkTag(note.getLexicalvalue());
-            note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+        if (isCandidatExport) {
+            for (NodeNote note : noteTerm) {
+                String str = formatLinkTag(note.getLexicalvalue());
+                note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+            }
         }
         nodeConceptExport.setNodeNoteTerm(noteTerm);
 //#### SQL #### //        
@@ -5959,9 +5961,11 @@ public class ConceptHelper {
 //#### SQL #### //      
 
         ArrayList<NodeNote> noteConcept = noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus);
-        for (NodeNote note : noteConcept) {
-            String str = formatLinkTag(note.getLexicalvalue());
-            note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+        if (isCandidatExport) {
+            for (NodeNote note : noteConcept) {
+                String str = formatLinkTag(note.getLexicalvalue());
+                note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+            }
         }
         nodeConceptExport.setNodeNoteConcept(noteConcept);
 //#### SQL #### //
@@ -5984,8 +5988,10 @@ public class ConceptHelper {
             nodeConceptExport.setNodeimages(imagesUri);
         }
 
-        nodeConceptExport.setMessages(new MessageDao().getAllMessagesByCandidat(ds, idConcept, idThesaurus));
-        nodeConceptExport.setVotes(new CandidatDao().getAllVotesByCandidat(ds, idConcept, idThesaurus));
+        if (isCandidatExport) {
+            nodeConceptExport.setMessages(new MessageDao().getAllMessagesByCandidat(ds, idConcept, idThesaurus));
+            nodeConceptExport.setVotes(new CandidatDao().getAllVotesByCandidat(ds, idConcept, idThesaurus));
+        }
 
         return nodeConceptExport;
     }

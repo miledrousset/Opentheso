@@ -297,7 +297,7 @@ public class ExportRdf4jHelper {
         idTheso = idThesaurus;
         ConceptHelper conceptHelper = new ConceptHelper();
         SKOSResource sKOSResource = new SKOSResource();
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idThesaurus, false);
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idThesaurus, false, false);
 
         if (nodeConcept == null) {
             return;
@@ -436,7 +436,7 @@ public class ExportRdf4jHelper {
     private void writeConceptInfo(ConceptHelper conceptHelper, SKOSResource sKOSResource,
             String idThesaurus, String idOfConceptChildren, ExportFileBean downloadBean, List<NodeLangTheso> selectedLanguages) {
 
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idOfConceptChildren, idThesaurus, false);
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idOfConceptChildren, idThesaurus, false, false);
 
         if (nodeConcept == null) {
             return;
@@ -516,7 +516,7 @@ public class ExportRdf4jHelper {
     private void writeConceptInfo(ConceptHelper conceptHelper, SKOSResource sKOSResource,
             String idThesaurus, String idOfConceptChildren) {
 
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idOfConceptChildren, idThesaurus, false);
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idOfConceptChildren, idThesaurus, false, false);
 
         if (nodeConcept == null) {
             return;
@@ -1064,7 +1064,6 @@ public class ExportRdf4jHelper {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriFromGroup(NodeGroupLabel nodeGroupLabel) {
@@ -1119,7 +1118,6 @@ public class ExportRdf4jHelper {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriGroupFromNodeUri(NodeUri nodeUri, String idTheso) {
@@ -1170,7 +1168,6 @@ public class ExportRdf4jHelper {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * : si renseigné sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUriFromNodeUri(NodeUri nodeUri, String idTheso) {

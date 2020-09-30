@@ -232,8 +232,7 @@ public class AgrovocHelper {
     /**
      * récupération des traductions
      *
-     * @param jsonDatas
-     * @param entity
+     * @param xmlDatas
      * @param languages
      * @return
      */
@@ -250,7 +249,7 @@ public class AgrovocHelper {
         SKOSXmlDocument sxd;
         try {
             inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
-            ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0); /// read XML SKOS
+            ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false); /// read XML SKOS
             sxd = readRdf4j.getsKOSXmlDocument();
 
             for (SKOSResource resource : sxd.getConceptList()) {
@@ -303,7 +302,6 @@ public class AgrovocHelper {
      * permet de récupérer les images de Wikidata
      *
      * @param jsonDatas
-     * @param entity
      * @return
      */
     private ArrayList<SelectedResource> getImages(String jsonDatas) {

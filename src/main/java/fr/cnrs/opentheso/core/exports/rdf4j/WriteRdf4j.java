@@ -344,7 +344,7 @@ public class WriteRdf4j {
     }
 
     private void writeStatusCandidat(SKOSResource resource) {
-        if(resource.getSkosStatus().getMessage() != null){
+        if(resource.getSkosStatus() != null){
             builder.add(SKOS.NOTE, vf.createLiteral(resource.getSkosStatus().getIdStatus() + DELIMINATE + resource.getSkosStatus().getMessage()
                     + DELIMINATE + resource.getSkosStatus().getIdUser() + DELIMINATE + resource.getSkosStatus().getDate(), STATUS_TAG));
         }

@@ -10,11 +10,17 @@
 
     <b:row>
         <b:column span="12">   
-            <p:tree id="treeGroups" value="#{treeGroups.root}"  dynamic="true" var="node" selectionMode="single"  selection="#{treeGroups.selectedNode}"
-                    style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll" >
-                <p:ajax event="expand"  listener="#{treeGroups.onNodeExpand}" />
+            <p:tree id="treeGroups" value="#{treeGroups.root}" dynamic="true" var="node" selectionMode="single" selection="#{treeGroups.selectedNode}"
+                    style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll"
+                    disabled="#{treeGroups.noedSelected}">
+
+                <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}" update="treeGroups"
+                        onstart="$(document.body).css({'cursor' : 'wait'});"
+                        oncomplete="$(document.body).css({'cursor' : 'default'});"/>
+                <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle treeGroups"
+                        onstart="$(document.body).css({'cursor' : 'wait'});"
+                        oncomplete="$(document.body).css({'cursor' : 'default'});"/>
                 <p:ajax event="collapse" listener="#{treeGroups.onNodeCollapse}" />
-                <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle"/>
                 <p:ajax event="unselect" listener="#{treeGroups.onNodeUnselect}" />
 
                 <p:treeNode  expandedIcon="far fa-object-group" collapsedIcon="fas fa-object-group" >
