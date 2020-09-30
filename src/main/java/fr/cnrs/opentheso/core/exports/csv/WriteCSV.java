@@ -85,14 +85,18 @@ public class WriteCSV {
             xmlDocument.getGroupList().forEach(groupe -> {
                 try {
                     writeResource(groupe, "skos:Collection", langs);
-                } catch (Exception e){ }
+                } catch (IOException e){ 
+                    System.err.println(e.toString());
+                }
             });
 
             // write all concepts
             xmlDocument.getConceptList().forEach(concept -> {
                 try {
                     writeResource(concept, "skos:Concept", langs);
-                } catch (Exception e){ }
+                } catch (IOException e){
+                    System.err.println(e.toString());                    
+                }
             });
 
             //close the writer

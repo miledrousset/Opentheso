@@ -300,6 +300,7 @@ public class ExportFileBean implements Serializable {
 
         //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
         ExportRdf4jHelperNew datas = getThesorusDatas(idTheso, selectedGroups);
+        if(datas == null) return null;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
             Rio.write(new WriteRdf4j(datas.getSkosXmlDocument()).getModel(), out, format);
             

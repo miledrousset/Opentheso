@@ -348,10 +348,17 @@ public class CsvImportHelper {
             message = message + "\n" + "Identifiant Groupe manquant";
             return false;
         }
-        groupHelper.insertGroup(ds, idGroup,
-                idTheso, "", "C",
-                conceptObject.getNotation(),
-                "", false, idUser);
+        
+        // création d'une sous collection en cas d'appertenance à une collection supérieure
+        if(!conceptObject.getMembers().isEmpty()) {
+            for (String idFatherGroup : conceptObject.getMembers()) {
+                groupHelper.addSubGroup(ds, idFatherGroup, idGroup, idTheso);
+            }
+        } 
+            groupHelper.insertGroup(ds, idGroup,
+                    idTheso, "", "C",
+                    conceptObject.getNotation(),
+                    "", false, idUser);        
 
         ConceptGroupLabel conceptGroupLabel = new ConceptGroupLabel();
         for (CsvReadHelper.Label label : conceptObject.getPrefLabels()) {
