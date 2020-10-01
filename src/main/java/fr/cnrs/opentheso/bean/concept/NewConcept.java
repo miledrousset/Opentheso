@@ -81,6 +81,7 @@ public class NewConcept implements Serializable {
         duplicate = false;
         prefLabel = null;
         idNewConcept = null;
+        notation = null;
         if(conceptBean.getNodeConcept() != null) {
             for (NodeGroup nodeGroup : conceptBean.getNodeConcept().getNodeConceptGroup()) {
                 idGroup = nodeGroup.getConceptGroup().getIdgroup();

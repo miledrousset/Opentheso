@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
@@ -21,6 +22,8 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -46,6 +49,7 @@ public class TreeConcepts implements Serializable {
 
     @Inject
     GroupView groupView;
+    @Inject private SelectedTheso selectedTheso;
 
     @Inject
     private LeftBodySetting leftBodySetting;
@@ -55,6 +59,8 @@ public class TreeConcepts implements Serializable {
     private TreeNode root, selectedNode;
 
     private String idTheso, idLang;
+
+    private boolean noedSelected;
 
 
     public void reset() {
@@ -103,17 +109,22 @@ public class TreeConcepts implements Serializable {
 
     public void onNodeExpand(NodeExpandEvent event) {
 
-        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').show();");
-        
-        DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
-        if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
-            parent.getChildren().remove(0);
-            addGroupsChild(parent);
-            addConceptsChild(parent);
+        if (noedSelected) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                    "Un noeud est en cours de chargement !"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+        } else {
+            noedSelected = true;
+            DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
+            if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+                parent.getChildren().remove(0);
+                addGroupsChild(parent);
+                addConceptsChild(parent);
+            }
+            addConceptSpecifique(parent);
+            noedSelected = false;
         }
-
-        addConceptSpecifique(parent);
-        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').hide();");    
     }
 
     private boolean addGroupsChild(TreeNode parent) {
@@ -141,9 +152,15 @@ public class TreeConcepts implements Serializable {
 
     private boolean addConceptsChild(TreeNode parent) {
 
-        ArrayList<NodeIdValue> listeConceptsOfGroup = new ConceptHelper().getListConceptsOfGroup(connect.getPoolConnexion(),
-                idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), false);
-
+        // déséctivé par Miled 
+/*        ArrayList<NodeIdValue> listeConceptsOfGroup = new ConceptHelper().getListConceptsOfGroup(connect.getPoolConnexion(),
+                idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), false);*/
+        
+        // il faut ici récupérer les Topterms de la collection #MR        
+        ArrayList<NodeIdValue> listeConceptsOfGroup = new ConceptHelper().getListTopConceptsOfGroup(
+                connect.getPoolConnexion(),
+                idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), selectedTheso.isSortByNotation());
+        
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {
             parent.setType("group");
             return true;
@@ -194,16 +211,36 @@ public class TreeConcepts implements Serializable {
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
-        if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
-            rightBodySetting.setShowConceptToOn();
-            conceptView.getConceptForTree(idTheso,
-                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-            rightBodySetting.setIndex("0");
+
+        if (noedSelected) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                    "Un noeud est en cours de chargement !"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+        } else {
+            noedSelected = true;
+
+            if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
+                rightBodySetting.setShowConceptToOn();
+                conceptView.getConceptForTree(idTheso,
+                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+                rightBodySetting.setIndex("0");
+            }
+            if (((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup()) {
+                rightBodySetting.setShowGroupToOn();
+                groupView.getGroup(idTheso, ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+                rightBodySetting.setIndex("1");
+            }
+
+            noedSelected = false;
         }
-        if (((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup()) {
-            rightBodySetting.setShowGroupToOn();
-            groupView.getGroup(idTheso, ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-            rightBodySetting.setIndex("1");
-        }
+    }
+
+    public boolean isNoedSelected() {
+        return noedSelected;
+    }
+
+    public void setNoedSelected(boolean noedSelected) {
+        this.noedSelected = noedSelected;
     }
 }

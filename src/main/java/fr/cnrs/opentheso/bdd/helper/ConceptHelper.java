@@ -580,6 +580,114 @@ public class ConceptHelper {
     }
 
     /**
+     * permet de retourner la liste des Top concepts pour un group donné retour au
+     * format de NodeIdValue (informations pour construire l'arbre
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @param idGroup
+     * @param isSortByNotation
+     * @return
+     * #MR
+     */
+    public ArrayList<NodeIdValue> getListTopConceptsOfGroup(HikariDataSource ds,
+            String idThesaurus, String idLang, String idGroup, boolean isSortByNotation) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        //ArrayList<String> tabIdConcept = new ArrayList<>();
+
+        ArrayList<NodeIdValue> tabIdValues = new ArrayList<>();
+
+        String lexicalValue;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                String query;
+                try {
+                    if (isSortByNotation) {
+                        ArrayList<NodeIdValue> tabIdConcepts = new ArrayList<>();
+                        query = "SELECT DISTINCT concept.id_concept, concept.notation"
+                                + " FROM concept, concept_group_concept"
+                                + " WHERE"
+                                + " concept.id_concept = concept_group_concept.idconcept AND"
+                                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                                + " concept.status != 'CA' and"
+                                + " concept.top_concept = true and"
+                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
+                        stmt.executeQuery(query);
+                        resultSet = stmt.getResultSet();
+
+                        while (resultSet.next()) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setId(resultSet.getString("id_concept"));
+                            nodeIdValue.setNotation(resultSet.getString("notation"));
+                            tabIdConcepts.add(nodeIdValue);
+                        }
+                        for (NodeIdValue nodeIdValue1 : tabIdConcepts) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            lexicalValue = getLexicalValueOfConcept(ds, nodeIdValue1.getId(), idThesaurus, idLang);
+                            if (lexicalValue == null || lexicalValue.isEmpty()) {
+                                nodeIdValue.setValue("__" + nodeIdValue1.getId());
+                            } else {
+                                nodeIdValue.setValue(lexicalValue);
+                            }
+                            nodeIdValue.setId(nodeIdValue1.getId());
+                            nodeIdValue.setNotation(nodeIdValue1.getNotation());
+                            tabIdValues.add(nodeIdValue);
+                        }
+                    } else {
+                        ArrayList<String> tabIdConcepts = new ArrayList<>();
+                        query = "SELECT DISTINCT concept.id_concept, concept.notation"
+                                + " FROM concept, concept_group_concept"
+                                + " WHERE"
+                                + " concept.id_concept = concept_group_concept.idconcept AND"
+                                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                                + " concept.status != 'CA' and"
+                                + " concept.top_concept = true and"
+                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
+                        stmt.executeQuery(query);
+                        resultSet = stmt.getResultSet();
+
+                        while (resultSet.next()) {
+                            tabIdConcepts.add(resultSet.getString("id_concept"));
+                        }
+                        for (String idConcept : tabIdConcepts) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            lexicalValue = getLexicalValueOfConcept(ds, idConcept, idThesaurus, idLang);
+                            if (lexicalValue == null || lexicalValue.isEmpty()) {
+                                nodeIdValue.setValue("__" + idConcept);
+                            } else {
+                                nodeIdValue.setValue(lexicalValue);
+                            }
+                            nodeIdValue.setId(idConcept);
+                            tabIdValues.add(nodeIdValue);
+                        }
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
+        }
+        if (!isSortByNotation) {
+            Collections.sort(tabIdValues);
+        }
+
+        return tabIdValues;
+    }    
+    
+    /**
      * permet de retourner la liste des concepts pour un group donné retour au
      * format de NodeConceptTree (informations pour construire l'arbre
      *
@@ -832,7 +940,7 @@ public class ConceptHelper {
                     String query = "SELECT count(id_concept) FROM concept " +
                             " WHERE id_thesaurus = '"+idThesaurus+"' " +
                             " AND concept.status != 'CA'" +
-                            " AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
+                            " AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '"+idThesaurus+"')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
@@ -3633,15 +3741,33 @@ public class ConceptHelper {
     }
 
 
-    public void addNewGroupOfConcept(HikariDataSource ds, String idconcept, String idgroup, String idthesaurus) {
-
+    public boolean addNewGroupOfConcept(HikariDataSource ds, String idconcept, String idgroup, String idthesaurus) {
+        Statement stmt;
+        boolean status = false;
         try {
-            Statement stmt = ds.getConnection().createStatement();
-            stmt.executeUpdate("INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
-                    +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');");
-            stmt.close();
-        } catch (Exception ex) {
+            Connection conn = ds.getConnection();
+            try {
+                conn.setAutoCommit(false);
+                stmt = conn.createStatement();
+                try {
+                    String query = "INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
+                    +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');";
+
+                    stmt.executeUpdate(query);
+                    status = true;
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
+                log.error("Error while adding Concept to Group : " + idgroup, sqle);
+            }
         }
+        return status;
     }
 
     /**
@@ -3675,6 +3801,9 @@ public class ConceptHelper {
         if (concept.getIdHandle() == null) {
             concept.setIdHandle("");
         }
+        if (concept.getNotation()== null) {
+            concept.setNotation("");
+        }        
 
         try {
             Connection conn = ds.getConnection();
@@ -3719,47 +3848,70 @@ public class ConceptHelper {
 
 
     public NodeStatus getNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus) {
-        NodeStatus nodeStatus = new NodeStatus();
+        
         Statement stmt;
+        boolean status = false;        
+        NodeStatus nodeStatus = new NodeStatus();        
         try {
             Connection conn = ds.getConnection();
-            stmt = conn.createStatement();
-
-            String query = "SELECT * FROM candidat_status WHERE id_concept = '"+idConcept+"';";
-            stmt.executeQuery(query);
-            ResultSet resultSet = stmt.getResultSet();
-            resultSet.next();
-            if (resultSet.getRow() != 0) {
-                nodeStatus.setIdConcept(resultSet.getString("id_concept"));
-                nodeStatus.setIdStatus(resultSet.getString("id_status"));
-                nodeStatus.setDate(resultSet.getString("date"));
-                nodeStatus.setIdUser(resultSet.getString("id_user"));
-                nodeStatus.setIdThesaurus(resultSet.getString("id_thesaurus"));
-                nodeStatus.setMessage(resultSet.getString("message"));
-            }
-            resultSet.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception ex) {
-        }
-        return nodeStatus;
-    }
-
-    public void setNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus, String idStatus, String date,
-                               int idUser, String message) {
-        try {
-            Connection conn = ds.getConnection();
-            conn.setAutoCommit(false);
             // Get connection from pool
             String query;
-            Statement stmt = conn.createStatement();
-            query = "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus, message) VALUES ('"
+            try {
+                stmt = conn.createStatement();
+                try {
+                    query = "SELECT * FROM candidat_status WHERE id_concept = '"+idConcept+"';";
+                    stmt.executeQuery(query);
+                    ResultSet resultSet = stmt.getResultSet();
+                    if (resultSet.next()) {
+                        nodeStatus.setIdConcept(resultSet.getString("id_concept"));
+                        nodeStatus.setIdStatus(resultSet.getString("id_status"));
+                        nodeStatus.setDate(resultSet.getString("date"));
+                        nodeStatus.setIdUser(resultSet.getString("id_user"));
+                        nodeStatus.setIdThesaurus(resultSet.getString("id_thesaurus"));
+                        nodeStatus.setMessage(resultSet.getString("message"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting NodeStatus  du Concept : " + idConcept, sqle);
+        }
+        return nodeStatus;     
+    }
+
+    public boolean setNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus, String idStatus, String date,
+                               int idUser, String message) {
+        Statement stmt;
+        boolean status = false;        
+        try {
+            Connection conn = ds.getConnection();
+            // Get connection from pool
+            String query;
+            try {
+                stmt = conn.createStatement();
+                try {
+                    query = "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus, message) VALUES ('"
                     +idConcept+"', '"+idStatus+"', '"+date+"', "+idUser+", '"+idThesaurus+"', '"+message+"');";
-            stmt.executeUpdate(query);
-            stmt.close();
-            conn.commit();
-            conn.close();
-        } catch (Exception sqle) { }
+                    stmt.executeUpdate(query);
+                    status = true;
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
+                log.error("Error while setNodeStatus du Concept : " + idConcept, sqle);
+            } else {
+                status = true;
+            }
+        }
+        return status;
     }
 
 
@@ -4583,7 +4735,7 @@ public class ConceptHelper {
 
         ArrayList<String> listIdsOfConceptChildren = conceptHelper.getListChildrenOfConcept(ds, idConcept, idThesaurus);
 
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idThesaurus, false);
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idThesaurus, false, false);
 
         //    System.out.println("IdConcept = " + idConcept);
         /// attention il y a un problème ici, il faut vérifier pourquoi nous avons un Concept Null
@@ -4595,7 +4747,7 @@ public class ConceptHelper {
         nodeConceptExports.add(nodeConcept);
 
         for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
-            nodeConcept = conceptHelper.getConceptForExport(ds, listIdsOfConceptChildren1, idThesaurus, false);
+            nodeConcept = conceptHelper.getConceptForExport(ds, listIdsOfConceptChildren1, idThesaurus, false, false);
             nodeConceptExports.add(nodeConcept);
             if (!nodeConcept.getNodeListOfNT().isEmpty()) {
                 for (int j = 0; j < nodeConcept.getNodeListOfNT().size(); j++) {
@@ -5276,7 +5428,7 @@ public class ConceptHelper {
      * @param idThesaurus
      * @return Objet class NodeConceptTree
      */
-    public ArrayList<String> getListIdsOfTopConcepts(HikariDataSource ds,
+    public ArrayList<String> getListIdsOfTopConceptsByGroup(HikariDataSource ds,
             String idGroup, String idThesaurus) {
 
         Connection conn;
@@ -5750,7 +5902,7 @@ public class ConceptHelper {
      * @return Objet class NodeConcept #MR optimisation le 23/11/2018
      */
     public NodeConceptExport getConceptForExport(HikariDataSource ds,
-            String idConcept, String idThesaurus, boolean isArkActive) {
+            String idConcept, String idThesaurus, boolean isArkActive, boolean isCandidatExport) {
 
         NodeConceptExport nodeConceptExport = new NodeConceptExport();
         AlignmentHelper alignmentHelper = new AlignmentHelper();
@@ -5796,9 +5948,11 @@ public class ConceptHelper {
 
 //#### SQL #### //
         ArrayList<NodeNote> noteTerm = noteHelper.getListNotesTermAllLang(ds, idTerm, idThesaurus);
-        for (NodeNote note : noteTerm) {
-            String str = formatLinkTag(note.getLexicalvalue());
-            note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+        if (isCandidatExport) {
+            for (NodeNote note : noteTerm) {
+                String str = formatLinkTag(note.getLexicalvalue());
+                note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+            }
         }
         nodeConceptExport.setNodeNoteTerm(noteTerm);
 //#### SQL #### //        
@@ -5807,9 +5961,11 @@ public class ConceptHelper {
 //#### SQL #### //      
 
         ArrayList<NodeNote> noteConcept = noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus);
-        for (NodeNote note : noteConcept) {
-            String str = formatLinkTag(note.getLexicalvalue());
-            note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+        if (isCandidatExport) {
+            for (NodeNote note : noteConcept) {
+                String str = formatLinkTag(note.getLexicalvalue());
+                note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
+            }
         }
         nodeConceptExport.setNodeNoteConcept(noteConcept);
 //#### SQL #### //
@@ -5832,8 +5988,10 @@ public class ConceptHelper {
             nodeConceptExport.setNodeimages(imagesUri);
         }
 
-        nodeConceptExport.setMessages(new MessageDao().getAllMessagesByCandidat(ds, idConcept, idThesaurus));
-        nodeConceptExport.setVotes(new CandidatDao().getAllVotesByCandidat(ds, idConcept, idThesaurus));
+        if (isCandidatExport) {
+            nodeConceptExport.setMessages(new MessageDao().getAllMessagesByCandidat(ds, idConcept, idThesaurus));
+            nodeConceptExport.setVotes(new CandidatDao().getAllVotesByCandidat(ds, idConcept, idThesaurus));
+        }
 
         return nodeConceptExport;
     }

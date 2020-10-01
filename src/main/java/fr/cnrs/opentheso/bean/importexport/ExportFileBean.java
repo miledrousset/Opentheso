@@ -92,7 +92,7 @@ public class ExportFileBean implements Serializable {
         }
 
         //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
-        ExportRdf4jHelperNew datas = getCandidatsDatas();
+        ExportRdf4jHelperNew datas = getCandidatsDatas(true);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(new WriteRdf4j(datas.getSkosXmlDocument()).getModel(), out, format);
             
@@ -104,7 +104,7 @@ public class ExportFileBean implements Serializable {
     }
 
     
-    private ExportRdf4jHelperNew getCandidatsDatas() {
+    private ExportRdf4jHelperNew getCandidatsDatas(boolean isCandidatExport) {
 
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), 
                 selectedTheso.getCurrentIdTheso());
@@ -121,7 +121,7 @@ public class ExportFileBean implements Serializable {
         
         for (CandidatDto candidat : candidatBean.getCandidatList()) {
             candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
-            resources.exportConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), candidat.getIdConcepte());
+            resources.exportConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), candidat.getIdConcepte(), isCandidatExport);
         }
         
         return resources;
@@ -178,7 +178,7 @@ public class ExportFileBean implements Serializable {
         ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         for (String idConcept : allConcepts) {
             progressBar += progressStep;
-            resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept);
+            resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
         }
 
         return resources;
@@ -300,6 +300,7 @@ public class ExportFileBean implements Serializable {
 
         //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
         ExportRdf4jHelperNew datas = getThesorusDatas(idTheso, selectedGroups);
+        if(datas == null) return null;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
             Rio.write(new WriteRdf4j(datas.getSkosXmlDocument()).getModel(), out, format);
             

@@ -18,6 +18,8 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.PrimeFaces;
@@ -50,6 +52,7 @@ public class Tree implements Serializable {
 
     private String idTheso;
     private String idLang;
+    private boolean noedSelected;
 
     ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
@@ -195,32 +198,55 @@ public class Tree implements Serializable {
 
     }
 
+    public boolean isNoedSelected() {
+        return noedSelected;
+    }
+
+    public void setNoedSelected(boolean noedSelected) {
+        this.noedSelected = noedSelected;
+    }
+
     public void onNodeExpand(NodeExpandEvent event) {
-        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').show();");
-        
-        DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
-        if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
-            parent.getChildren().remove(0);
-            addConceptsChild(parent);
+
+        if (noedSelected) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                    "Un noeud est en cours de chargement !"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+        } else {
+            noedSelected = true;
+            DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
+            if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+                parent.getChildren().remove(0);
+                addConceptsChild(parent);
+            }
+            noedSelected = false;
         }
-        
-        PrimeFaces.current().executeScript("PF('loadingThesTreeBlock').hide();"); 
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
-        if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
-            rightBodySetting.setShowConceptToOn();
-            conceptBean.getConceptForTree(idTheso,
-                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-        }
-        if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {
-            rightBodySetting.setShowConceptToOn();
+        if (noedSelected) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                    "Un noeud est en cours de chargement !"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+        } else {
+            noedSelected = true;
+            if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
+                rightBodySetting.setShowConceptToOn();
+                conceptBean.getConceptForTree(idTheso,
+                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+            }
+            if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {
+                rightBodySetting.setShowConceptToOn();
 
-            conceptBean.getConceptForTree(idTheso,
-                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+                conceptBean.getConceptForTree(idTheso,
+                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+            }
+
+            rightBodySetting.setIndex("0");
+            noedSelected = false;
         }
-        
-        rightBodySetting.setIndex("0");
     }
 
     /**

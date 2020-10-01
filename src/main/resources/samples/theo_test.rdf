@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcterms="http://purl.org/dc/terms/"
+	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+	xmlns:iso-thes="http://purl.org/iso25964/skos-thes#"
+	xmlns:opentheso="http://purl.org/umu/uneskos#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+	<skos:prefLabel xml:lang="fr">theso_test</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">teso_test_en</skos:prefLabel>
+	<skos:hasTopConcept rdf:resource="http://localhost:8082/opentheso2/?idc=47606&amp;idt=th22"/>
+	<skos:hasTopConcept rdf:resource="http://localhost:8082/opentheso2/?idc=47607&amp;idt=th22"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:creator>admin</dcterms:creator>
+	<dcterms:contributor>admin</dcterms:contributor>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idg=G392&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">collection1</skos:prefLabel>
+	<skos:notation>COL1</skos:notation>
+	<iso-thes:microThesaurusOf rdf:resource="http://localhost:8082/opentheso2/?idg=G392&amp;idt=th22"/>
+	<skos:member rdf:resource="http://localhost:8082/opentheso2/?idc=47606&amp;idt=th22"/>
+	<skos:member rdf:resource="http://localhost:8082/opentheso2/?idc=47608&amp;idt=th22"/>
+	<skos:member rdf:resource="http://localhost:8082/opentheso2/?idc=47609&amp;idt=th22"/>
+	<skos:member rdf:resource="http://localhost:8082/opentheso2/?idc=47612&amp;idt=th22"/>
+	<skos:member rdf:resource="http://localhost:8082/opentheso2/?idc=47613&amp;idt=th22"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idc=47609&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">concept2</skos:prefLabel>
+	<skos:broader rdf:resource="http://localhost:8082/opentheso2/?idc=47606&amp;idt=th22"/>
+	<skos:inScheme rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8082/opentheso2/?idg=G392&amp;idt=th22"/>
+	<skos:notation>C2</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:identifier>47609</dcterms:identifier>
+	<dcterms:description>47606##47609</dcterms:description>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idc=47608&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">concept1</skos:prefLabel>
+	<skos:broader rdf:resource="http://localhost:8082/opentheso2/?idc=47606&amp;idt=th22"/>
+	<skos:inScheme rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8082/opentheso2/?idg=G392&amp;idt=th22"/>
+	<skos:notation>C1</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:identifier>47608</dcterms:identifier>
+	<dcterms:description>47606##47608</dcterms:description>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idc=47606&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">topTerm1</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<skos:narrower rdf:resource="http://localhost:8082/opentheso2/?idc=47608&amp;idt=th22"/>
+	<skos:narrower rdf:resource="http://localhost:8082/opentheso2/?idc=47609&amp;idt=th22"/>
+	<skos:narrower rdf:resource="http://localhost:8082/opentheso2/?idc=47612&amp;idt=th22"/>
+	<skos:narrower rdf:resource="http://localhost:8082/opentheso2/?idc=47613&amp;idt=th22"/>
+	<skos:inScheme rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8082/opentheso2/?idg=G392&amp;idt=th22"/>
+	<skos:notation>T1</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:identifier>47606</dcterms:identifier>
+	<dcterms:description>47606</dcterms:description>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idc=47610&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">concept11</skos:prefLabel>
+	<skos:broader rdf:resource="http://localhost:8082/opentheso2/?idc=47607&amp;idt=th22"/>
+	<skos:inScheme rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<skos:notation>C11</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:identifier>47610</dcterms:identifier>
+	<dcterms:description>47607##47610</dcterms:description>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idc=47607&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">topTerm2</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<skos:narrower rdf:resource="http://localhost:8082/opentheso2/?idc=47610&amp;idt=th22"/>
+	<skos:narrower rdf:resource="http://localhost:8082/opentheso2/?idc=47611&amp;idt=th22"/>
+	<skos:inScheme rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:identifier>47607</dcterms:identifier>
+	<dcterms:description>47607</dcterms:description>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idc=47611&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">concept22</skos:prefLabel>
+	<skos:broader rdf:resource="http://localhost:8082/opentheso2/?idc=47607&amp;idt=th22"/>
+	<skos:inScheme rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:identifier>47611</dcterms:identifier>
+	<dcterms:description>47607##47611</dcterms:description>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idc=47613&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Gastronomie</skos:prefLabel>
+	<skos:related rdf:resource="http://localhost:8082/opentheso2/?idc=47612&amp;idt=th22"/>
+	<skos:broader rdf:resource="http://localhost:8082/opentheso2/?idc=47606&amp;idt=th22"/>
+	<skos:inScheme rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8082/opentheso2/?idg=G392&amp;idt=th22"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:identifier>47613</dcterms:identifier>
+	<dcterms:description>47606##47613</dcterms:description>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8082/opentheso2/?idc=47612&amp;idt=th22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="en">Lyon</skos:prefLabel>
+	<skos:prefLabel xml:lang="fr">Lyon</skos:prefLabel>
+	<skos:hiddenLabel xml:lang="fr">bonne bouffe</skos:hiddenLabel>
+	<skos:altLabel xml:lang="fr">ville de la gastronomie</skos:altLabel>
+	<skos:related rdf:resource="http://localhost:8082/opentheso2/?idc=47613&amp;idt=th22"/>
+	<skos:broader rdf:resource="http://localhost:8082/opentheso2/?idc=47606&amp;idt=th22"/>
+	<skos:inScheme rdf:resource="http://localhost:8082/opentheso2/th22"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8082/opentheso2/?idg=G392&amp;idt=th22"/>
+	<skos:exactMatch rdf:resource="http://www.wikidata.org/entity/Q456"/>
+	<skos:exactMatch rdf:resource="https://www.geonames.org/2996944"/>
+	<skos:notation>L1</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-09-24</dcterms:modified>
+	<dcterms:identifier>47612</dcterms:identifier>
+	<dcterms:description>47606##47612</dcterms:description>
+	<skos:note xml:lang="fr">note</skos:note>
+	<skos:definition xml:lang="en">commune in the metropolis of Lyon, France (Wikidata)</skos:definition>
+	<skos:definition xml:lang="en">def_en</skos:definition>
+	<skos:definition xml:lang="fr">commune française de la métropole de Lyon (chef-lieu) (Wikidata)</skos:definition>
+	<skos:definition xml:lang="fr">definition</skos:definition>
+	<skos:historyNote xml:lang="fr">note historique</skos:historyNote>
+	<geo:lat rdf:datatype="http://www.w3.org/2001/XMLSchema#double">45.74846</geo:lat>
+	<geo:long rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4.84671</geo:long>
+	<foaf:Image>https://commons.wikimedia.org/wiki/Special:FilePath/01. Panorama de Lyon pris depuis le toit de la Basilique de Fourvière.jpg</foaf:Image>
+</rdf:Description>
+
+</rdf:RDF>

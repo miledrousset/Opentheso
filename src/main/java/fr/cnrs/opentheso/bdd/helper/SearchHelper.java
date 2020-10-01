@@ -193,9 +193,11 @@ public class SearchHelper {
         ResultSet resultSet;
         StringPlus stringPlus = new StringPlus();
 
-        ArrayList<String> listIds = null;
+        ArrayList<String> listIds = new ArrayList<>();
+        if(value == null) return listIds;        
         value = stringPlus.convertString(value);
         value = stringPlus.unaccentLowerString(value);
+
 
         String preparedValuePT = " and f_unaccent(lower(term.lexical_value)) like '%" + value + "%'";
         String preparedValueNPT = " and f_unaccent(lower(non_preferred_term.lexical_value)) like '%" + value + "%'";
@@ -217,7 +219,7 @@ public class SearchHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    listIds = new ArrayList<>();
+
                     query = "SELECT preferred_term.id_concept, term.lexical_value "
                             + " FROM term, preferred_term, concept WHERE "
                             + " concept.id_concept = preferred_term.id_concept"

@@ -147,7 +147,7 @@ public class ThesaurusDatas {
         
         ArrayList<String> listTopConcept;
         for (NodeGroup nodeGroup : selectedGroups) {
-            listTopConcept = new ConceptHelper().getListIdsOfTopConcepts(ds, nodeGroup.getConceptGroup().getIdgroup(), idThesaurus);
+            listTopConcept = new ConceptHelper().getListIdsOfTopConceptsByGroup(ds, nodeGroup.getConceptGroup().getIdgroup(), idThesaurus);
             // récupération de tous les concepts
             for (String idTop : listTopConcept) {
                 new ConceptHelper().exportAllConcepts(ds, idTop,

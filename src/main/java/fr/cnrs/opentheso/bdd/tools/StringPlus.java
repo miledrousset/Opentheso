@@ -15,6 +15,7 @@ public class StringPlus {
      */
     public String unaccentLowerString(String s) 
     {
+        if(s == null) return s;
         s = Normalizer.normalize(s, Normalizer.Form.NFD);
         s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         return s.toLowerCase();

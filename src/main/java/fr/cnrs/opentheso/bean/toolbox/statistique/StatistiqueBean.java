@@ -198,7 +198,7 @@ public class StatistiqueBean implements Serializable {
         resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
         ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         for (String idConcept : allConcepts) {
-            resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept);
+            resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
         }
 
         return resources;

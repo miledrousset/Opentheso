@@ -50,7 +50,7 @@ public class ReadRdf4j {
      * @param type 0 pour skos 1 pour jsonld 2 pour turtle
      * @throws java.io.IOException
      */
-    public ReadRdf4j(InputStream is, int type) throws IOException {
+    public ReadRdf4j(InputStream is, int type, boolean isCandidatImport) throws IOException {
         sKOSXmlDocument = new SKOSXmlDocument();
         switch (type) {
             case 0:
@@ -66,7 +66,7 @@ public class ReadRdf4j {
                 laodJsonModel(is);
                 break;                
         }
-        readModel();
+        readModel(isCandidatImport);
     }
     
     
@@ -115,7 +115,7 @@ public class ReadRdf4j {
      * Permet de lire un fichier RDF précédament charger avec la fonction
      * laodModel() les données sont stoqué dans la variable thesaurus
      */
-    private void readModel() {
+    private void readModel(boolean isCandidatImport) {
 
         ReadStruct readStruct = new ReadStruct();
         readStruct.resource = null;
@@ -177,8 +177,7 @@ public class ReadRdf4j {
                 }
 
             } //Labelling Properties
-
-            else if (readStruct.property.getLocalName().equals("note")) {
+            else if (readStruct.property.getLocalName().equals("note") && isCandidatImport) {
                 if (WriteRdf4j.STATUS_TAG.equals(readStruct.literal.getLanguage().get())) {
                     readStruct.resource.setSkosStatus(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
                 } else if (WriteRdf4j.VOTE_TAG.equals(readStruct.literal.getLanguage().get())) {
@@ -190,10 +189,14 @@ public class ReadRdf4j {
                     readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.note);
                 }
 
-            } else if (readLabellingProperties(readStruct)) {
+            }
+            else if (readLabellingProperties(readStruct)) {
                 if(readStruct.resource == null)
                     readStruct.resource = new SKOSResource();
                 //Dates
+                if (!isCandidatImport) {
+                    readNote(readStruct);
+                }
                 if (readDate(readStruct)) {
                     //Semantic Relationships
                     if (readRelationships(readStruct)) {
@@ -201,7 +204,6 @@ public class ReadRdf4j {
                         if (readDocumentation(readStruct)) {
                             if (readCreator(readStruct)) {
                                 if (readGPSCoordinates(readStruct)) {
-                                    //if (readNote(readStruct)) {
                                         if (readNotation(readStruct)) {
                                             if (readIdentifier(readStruct)) {
                                                 if (readMatch(readStruct)) {
@@ -217,7 +219,6 @@ public class ReadRdf4j {
                                                 }
                                             }
                                         }
-                                    //}
                                 }
                             }
                         }

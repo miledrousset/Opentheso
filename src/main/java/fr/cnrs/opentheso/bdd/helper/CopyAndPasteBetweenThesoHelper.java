@@ -196,7 +196,7 @@ public class CopyAndPasteBetweenThesoHelper {
         importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);
         try {
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
-                importRdf4jHelper.addConcept(sKOSResource, idTheso);
+                importRdf4jHelper.addConcept(sKOSResource, idTheso, false);
             }
             return true;
         } catch (Exception e) {
