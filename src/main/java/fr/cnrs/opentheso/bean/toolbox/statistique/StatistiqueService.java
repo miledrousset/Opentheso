@@ -27,9 +27,8 @@ public class StatistiqueService {
         ArrayList<NodeGroup> listGroup = groupHelper.getListConceptGroup(connect.getPoolConnexion(), idTheso, idLang);
 
         listGroup.stream().forEach(group -> {
-
             GenericStatistiqueData data = new GenericStatistiqueData();
-            
+
             data.setCollection(group.getLexicalValue());
 
             data.setNotesNbr(new NoteHelper().getNbrNoteByGroupAndThesoAndLang(connect.getPoolConnexion(),
@@ -45,7 +44,7 @@ public class StatistiqueService {
                     data.getConceptsNbr() - 
                     new StatisticHelper().getNbTradOfGroup(
                     connect.getPoolConnexion(), idTheso, group.getConceptGroup().getIdgroup(), idLang));//getNbrTermNonTraduit(connect.getPoolConnexion(), group, idTheso, idLang));
-            
+
             result.add(data);
         });
 

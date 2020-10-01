@@ -940,7 +940,7 @@ public class ConceptHelper {
                     String query = "SELECT count(id_concept) FROM concept " +
                             " WHERE id_thesaurus = '"+idThesaurus+"' " +
                             " AND concept.status != 'CA'" +
-                            " AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
+                            " AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '"+idThesaurus+"')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
