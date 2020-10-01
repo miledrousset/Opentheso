@@ -32,7 +32,7 @@ public class CurrentUser implements Serializable {
     @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private IndexSetting indexSetting;
-    
+
     private NodeUser nodeUser;
     private String username;
     private String password;    
@@ -135,7 +135,7 @@ public class CurrentUser implements Serializable {
             pf.ajax().update("formMenu");;
             
         }
-        
+
         
         /*   if (nodeUser.isPasstomodify()) {
             return "changePass.xhtml?faces-redirect=true";// nouvelle pass web pour changer le motpasstemp
