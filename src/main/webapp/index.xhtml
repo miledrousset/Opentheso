@@ -12,9 +12,41 @@
                 <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexical_value != ''}"
                               value="#{conceptView.nodeConcept.term.lexical_value}"/>
                 <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexical_value == ''}"
-                              value="Opentheso"/>
-            </title>  
+                              value="#{seoBean.title}"/>
+            </title>
+            
+            <meta name="description" content="C'est un gestionnaire de thesaurus multilingue, développé par la plateforme Technologique WST (Web Sémantique et Thesauri) située à la MOM en partenariat avec le GDS-FRANTIQ"/>
         </h:panelGroup>
+        
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "url": "http://opentheso2.mom.fr",
+                "name": "OpenTheso",
+                "legalName" : "OpenTheso",
+                "logo": "http://opentheso2.mom.fr/opentheso2/images/logo_Opentheso.png",
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "7 rue Raulin",
+                    "addressLocality": "Lyon",
+                    "addressRegion": "Rhone Alpes",
+                    "postalCode": "69007",
+                    "addressCountry": "Lyon"
+                },
+                "contactPoint": [
+                    {
+                        "@context": "https://schema.org",
+                        "@type" : "ContactPoint",
+                        "telephone" : "",
+                        "contactType" : "technical support",
+                        "contactOption" : "TollFree",
+                        "areaServed" : "FR",
+                        "availableLanguage" : ["English","French"]
+                    }
+                ]
+            }
+        </script>
 
         <link rel="icon" href="images/icon_opentheso2.png" />
         <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" />

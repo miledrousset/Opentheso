@@ -15,12 +15,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
  * @author miledrousset
  */
+@Ignore
 public class getOldCandidateTest {
     
     public getOldCandidateTest() {
