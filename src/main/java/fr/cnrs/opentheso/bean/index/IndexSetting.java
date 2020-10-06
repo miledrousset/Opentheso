@@ -35,6 +35,8 @@ public class IndexSetting implements Serializable {
 
     // si un concept est sélectionné
     private boolean isValueSelected;
+
+    private boolean isConceptDiagramSelected;
     
     
     
@@ -217,4 +219,11 @@ public class IndexSetting implements Serializable {
         this.toolBoxColor = toolBoxColor;
     }
 
+    public boolean isConceptDiagramSelected() {
+        return isConceptDiagramSelected;
+    }
+
+    public void setConceptDiagramSelected(boolean conceptDiagramSelected) {
+        isConceptDiagramSelected = conceptDiagramSelected;
+    }
 }

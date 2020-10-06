@@ -1,0 +1,39 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <!--<p:diagram style="height:600px" value="#{diagramBasicView.model}" var="el">
+        <f:facet name="element">
+            <p:commandLink actionListener="#{diagramBasicView.onElementClicked}" update="@form" value="#{el.actionElementLabelText}">
+                <f:attribute name="element" value="#{el}"/>
+            </p:commandLink>
+        </f:facet>
+    </p:diagram>-->
+
+
+sss
+    <style type="text/css">
+        .ui-diagram-element {
+            width:5em;
+            height:5em;
+            line-height:5em;
+            text-align: center;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
+            border-radius: 5em;
+            border: 1px solid #404a4e;
+            background-color: #404a4e;
+            color: #cccccc;
+        }
+
+        .ui-diagram-element:hover {
+            background-color: #20282b;
+        }
+    </style>
+
+
+    <p:diagram value="#{diagramHierarchicalView.model}" style="height:600px" styleClass="ui-widget-content" />
+
+</ui:fragment>

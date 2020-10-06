@@ -4,6 +4,9 @@
              xmlns:f="http://java.sun.com/jsf/core">
 
 
+    <ui:include  src="/rightBodyView/conceptsDiagram.xhtml" />
+
+
     <b:form id="formRightTab"> 
         <b:row rendered="#{indexSetting.isValueSelected}">
             <b:column span="12">
@@ -28,6 +31,10 @@
         
         <b:row rendered="#{!indexSetting.isValueSelected}">
             <ui:include  src="/rightBodyView/thesoHome.xhtml" />
+        </b:row>
+
+        <b:row rendered="#{indexSetting.isConceptDiagramSelected}">
+            <ui:include  src="/rightBodyView/conceptsDiagram.xhtml" />
         </b:row>
         
     </b:form>
