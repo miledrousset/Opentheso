@@ -5,35 +5,23 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <!--<p:diagram style="height:600px" value="#{diagramBasicView.model}" var="el">
-        <f:facet name="element">
-            <p:commandLink actionListener="#{diagramBasicView.onElementClicked}" update="@form" value="#{el.actionElementLabelText}">
-                <f:attribute name="element" value="#{el}"/>
-            </p:commandLink>
-        </f:facet>
-    </p:diagram>-->
-
-
-sss
     <style type="text/css">
-        .ui-diagram-element {
-            width:5em;
-            height:5em;
-            line-height:5em;
+        .ui-diagram-element {   
+            width:10em; 
+            height:3em;     
+            line-height:3em;
             text-align: center;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
-            border-radius: 5em;
-            border: 1px solid #404a4e;
-            background-color: #404a4e;
-            color: #cccccc;
-        }
-
-        .ui-diagram-element:hover {
-            background-color: #20282b;
+            border-radius: 3px;
+            border: 1px solid transparent;
+            background-color: #43B572;
+            color: #ffffff;
         }
     </style>
 
 
-    <p:diagram value="#{diagramHierarchicalView.model}" style="height:600px" styleClass="ui-widget-content" />
+    <p:diagram id="diagram" value="#{conceptsDiagramBean.model}" 
+               style="height:600px" styleClass="ui-widget-content" />
+
 
 </ui:fragment>

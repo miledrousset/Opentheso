@@ -37,7 +37,7 @@ public class IndexSetting implements Serializable {
     private boolean isValueSelected;
 
     private boolean isConceptDiagramSelected;
-    
+
     
     
 ////// variables pour les vues du menu

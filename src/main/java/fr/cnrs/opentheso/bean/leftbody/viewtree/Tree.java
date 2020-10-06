@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
+import fr.cnrs.opentheso.bean.diagram.ConceptsDiagramBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import java.io.Serializable;
@@ -44,6 +45,9 @@ public class Tree implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private RoleOnThesoBean roleOnThesoBean;
+
+    @Inject
+    private ConceptsDiagramBean basicView;
 
     private DataService dataService;
 
@@ -243,6 +247,8 @@ public class Tree implements Serializable {
                 conceptBean.getConceptForTree(idTheso,
                         ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
             }
+
+            basicView.init(((TreeNodeData) selectedNode.getData()).getNodeId(), idTheso, idLang);
 
             rightBodySetting.setIndex("0");
             noedSelected = false;
