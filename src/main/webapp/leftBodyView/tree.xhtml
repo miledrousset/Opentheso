@@ -21,7 +21,7 @@
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});" />
                 <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle tree"
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
+                        onstart="$(document.body).css({'cursor' : 'wait'}); PF('bui').show();"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
 
                 <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" />

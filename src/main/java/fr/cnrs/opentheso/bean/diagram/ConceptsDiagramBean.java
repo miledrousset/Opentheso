@@ -15,6 +15,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.PrimeFaces;
 
 import org.primefaces.model.diagram.Connection;
 import org.primefaces.model.diagram.DefaultDiagramModel;
@@ -67,6 +68,8 @@ public class ConceptsDiagramBean {
         if (!CollectionUtils.isEmpty(childs)) {
             addChilds(root, childs, idTheso, 3, 20, true);
         }
+        
+        PrimeFaces.current().executeScript("PF('bui').hide();");
     }
 
     private void addChilds (Element elementParent, ArrayList<NodeConceptTree> childs, String idTheso, int posX, int posY, boolean isTop) {

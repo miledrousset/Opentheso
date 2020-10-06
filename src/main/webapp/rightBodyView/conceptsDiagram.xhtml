@@ -1,9 +1,11 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-             xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:blockUI block="formRightTab" widgetVar="bui">
+        Recherche des données...<br />
+        <p:progressBar style="height:6px" mode="indeterminate"/>
+    </p:blockUI>
 
     <style type="text/css">
         .ui-diagram-element {   
@@ -20,7 +22,7 @@
     </style>
 
 
-    <p:diagram id="diagram" value="#{conceptsDiagramBean.model}" 
+    <p:diagram value="#{conceptsDiagramBean.model}" 
                style="height:600px" styleClass="ui-widget-content" />
 
 
