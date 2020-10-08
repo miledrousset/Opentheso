@@ -56,7 +56,7 @@ public class SKOSResource {
 
     public SKOSResource(String uri, int property) {
 
-        skosStatus = new SKOSStatus();
+        skosStatus = null;
         labelsList = new ArrayList<>();
         relationsList = new ArrayList<>();
         documentationsList = new ArrayList<>();
