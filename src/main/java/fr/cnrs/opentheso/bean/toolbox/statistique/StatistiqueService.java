@@ -28,10 +28,10 @@ public class StatistiqueService {
 
         listGroup.stream().forEach(group -> {
             GenericStatistiqueData data = new GenericStatistiqueData();
-
+            data.setIdCollection(group.getConceptGroup().getIdgroup());
             data.setCollection(group.getLexicalValue());
 
-            data.setNotesNbr(new NoteHelper().getNbrNoteByGroupAndThesoAndLang(connect.getPoolConnexion(),
+            data.setNotesNbr(new NoteHelper().getNbrNoteByGroup(connect.getPoolConnexion(),
                     group.getConceptGroup().getIdgroup(), idTheso, idLang));
 
             data.setSynonymesNbr(new StatisticHelper().getNbSynonymesByGroup(connect.getPoolConnexion(), idTheso,

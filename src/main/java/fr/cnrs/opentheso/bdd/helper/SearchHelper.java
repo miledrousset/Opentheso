@@ -401,7 +401,7 @@ public class SearchHelper {
                         nodeSearchMini.setAltLabel(resultSet.getString("npt"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
                         nodeSearchMini.setIsAltLabel(true);
-                        if (value.trim().equalsIgnoreCase(resultSet.getString("npt"))) {
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("npt")) && !nodeSearchMinis.isEmpty()) {
                             if (nodeSearchMinis.get(0).getPrefLabel().equalsIgnoreCase(value.trim())) {
                                 nodeSearchMinis.add(1, nodeSearchMini);
                             } else {

@@ -222,7 +222,7 @@
                                 <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(statistiqueBean.genericStatistiques.indexOf(stat))}; 
                                        padding-top: 5px">
                                     <b:column span="4" >
-                                        <h:outputText style="margin-left: 10px" value="#{stat.collection}"/>
+                                        <h:outputText style="margin-left: 10px" value="#{stat.collection} (#{stat.idCollection})"/>
                                     </b:column>
                                     <b:column span="2" >
                                         <h:outputText value="#{stat.conceptsNbr}"/>
