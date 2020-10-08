@@ -66,7 +66,7 @@ public class ConceptsDiagramBean {
         connector.setHoverPaintStyle("{strokeStyle:'#F47B2A'}");
 
         if (!CollectionUtils.isEmpty(childs)) {
-            addChilds(root, childs, idTheso, 3, 20, true);
+            addChilds(root, childs, idTheso, 3, 5, true);
         }
         
         PrimeFaces.current().executeScript("PF('bui').hide();");
