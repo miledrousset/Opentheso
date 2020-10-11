@@ -1,22 +1,20 @@
 package fr.cnrs.opentheso.bean.diagram;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.primefaces.PrimeFaces;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.diagram.Connection;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.DiagramModel;
@@ -25,6 +23,7 @@ import org.primefaces.model.diagram.connector.StraightConnector;
 import org.primefaces.model.diagram.endpoint.DotEndPoint;
 import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
+
 
 @Named("conceptsDiagramBean")
 @RequestScoped
@@ -39,6 +38,7 @@ public class ConceptsDiagramBean {
     private ConceptHelper conceptHelper;
     private DefaultDiagramModel model;
     private StraightConnector connector;
+    private HashMap<Integer, Integer> positions;
 
     
     public void init(String conceptId, String idTheso, String idLang) {
@@ -54,7 +54,7 @@ public class ConceptsDiagramBean {
         ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(connect.getPoolConnexion(),
                 conceptId, idTheso, selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
         
-        int positionX = childs.size() * 11 / 2;
+        int positionX = 3 + (childs.size() * 13 / 2) - 7;
         
         Element root = new Element(nodeConcept.getTerm().getLexical_value(), positionX + "em", "5em");
         root.addEndPoint(createEndPoint(EndPointAnchor.BOTTOM));
@@ -64,6 +64,9 @@ public class ConceptsDiagramBean {
         connector = new StraightConnector();
         connector.setPaintStyle("{strokeStyle:'#F47B2A', lineWidth:2}");
         connector.setHoverPaintStyle("{strokeStyle:'#F47B2A'}");
+
+        positions = new HashMap<>();
+        positions.put(1, 1);
 
         if (!CollectionUtils.isEmpty(childs)) {
             addChilds(root, childs, idTheso, 3, 5, true);
@@ -78,12 +81,12 @@ public class ConceptsDiagramBean {
         int positionX = posX == 3 ? 3 : posX;
         int positionY = posY + 10;
 
-        for (int i = 0; i < childs.size(); i++) {
+        for (int niveau = 0; niveau < childs.size(); niveau++) {
 
-            if (childs.get(i).getIdConcept() == null) continue;
+            if (childs.get(niveau).getIdConcept() == null) continue;
 
-            String label = childs.get(i).getTitle().isEmpty() ? "(" + childs.get(i).getIdConcept() + ")" :
-                    childs.get(i).getTitle();
+            String label = childs.get(niveau).getTitle().isEmpty() ? "(" + childs.get(niveau).getIdConcept() + ")" :
+                    childs.get(niveau).getTitle();
 
             Element child = new Element(label, positionX + "em", positionY + "em");
             child.addEndPoint(createEndPoint(EndPointAnchor.TOP));
@@ -91,48 +94,29 @@ public class ConceptsDiagramBean {
             model.addElement(child);
             model.connect(new Connection(elementParent.getEndPoints().get(isTop ? 0 : 1), child.getEndPoints().get(0), connector));
 
+            positionX += step;
+
             ArrayList<NodeConceptTree> childsConcept = conceptHelper.getListConcepts(connect.getPoolConnexion(),
-                    childs.get(i).getIdConcept(), idTheso, selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
+                    childs.get(niveau).getIdConcept(), idTheso, selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
 
             if (!CollectionUtils.isEmpty(childsConcept)) {
                 child.addEndPoint(createEndPoint(EndPointAnchor.BOTTOM));
                 int childPosX = 3;
-                if (i > 0) {
+                int positionTemp = 0;
+
+                for (int pos = 0; pos < niveau; pos++) {
                     ArrayList<NodeConceptTree> tmp = conceptHelper.getListConcepts(connect.getPoolConnexion(),
-                            childs.get(i-1).getIdConcept(), idTheso, selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
-                    childPosX = positionX + tmp.size() * step + step;
+                            childs.get(pos).getIdConcept(), idTheso, selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
+                    positionTemp += tmp.size();
+                }
+
+                if (positionTemp > 0) {
+                    childPosX = positionTemp * step + 3;
                 }
                 addChilds (child, childsConcept, idTheso, childPosX, positionY, false);
             }
-
-            positionX += step;
         }
     }
-    
-    private void addGroupsChildOfGroup(TreeNodeData treeNodeParent, Element elementPArent,
-            String idTheso, String idLang) {
-        
-        ArrayList<NodeGroup> listeSubGroup = new GroupHelper().getListChildsOfGroup(connect.getPoolConnexion(),
-                treeNodeParent.getNodeId(), idTheso, idLang);
-
-        if (listeSubGroup == null) {
-            return;
-        }
-
-        for (NodeGroup nodeGroup : listeSubGroup) {
-            Element group = new Element(nodeGroup.getLexicalValue());
-            group.addEndPoint(createEndPoint(EndPointAnchor.BOTTOM));
-            model.addElement(group);
-            model.connect(new Connection(elementPArent.getEndPoints().get(0), 
-                    group.getEndPoints().get(0), connector));
-
-            if (nodeGroup.isIsHaveChildren()) {
-                //String groupId = ((TreeNodeData) parent.getData()).getNodeId();
-                //addConceptsChildOfGroup(groupId, idTheso, idLang);
-            } 
-        }
-    }
-    
     
 
     private EndPoint createEndPoint(EndPointAnchor anchor) {
