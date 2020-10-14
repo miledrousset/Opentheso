@@ -29,7 +29,18 @@
 
 
 
-
+-- permet de retrouver les concepts qui n'ont pas de realtion associative RT
+--
+-- select id_concept from concept 
+-- where 
+-- concept.id_thesaurus = 'th1'
+-- and 
+-- concept.id_concept NOT IN (
+--	select id_concept1 from hierarchical_relationship 
+-- 	where 
+--	hierarchical_relationship.id_thesaurus = 'th1'
+-- 	and
+--	hierarchical_relationship.role = 'RT')
 
 
 

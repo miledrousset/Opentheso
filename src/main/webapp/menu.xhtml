@@ -75,23 +75,25 @@
                         <!-- Relaod Theso -->
                         <b:navCommandLink  tooltip="Recharger le thésaurus"
                                            tooltip-delay-show="500"
-                                          icon-awesome="fas fa-sync" icon-size="l" style="margin-right: -10px; color: #C63632"
+                                          icon-awesome="fas fa-sync" icon-size="l" style=" color: #C63632"
                                           ajax="true" action="#{selectedTheso.reloadSelectedTheso()}" 
                                           update="containerIndex candidatForm formMenu formLeftTab" />     
                         
 
                         <!--Not connected-->
-                        <b:navCommandLink rendered="#{currentUser.nodeUser == null}" value="Connexion" icon-awesome="key"
+                        <b:navCommandLink rendered="#{currentUser.nodeUser == null}"
+                                          tooltip="Se connecter" icon-awesome="key"  icon-size="l"
+                                         
                                           oncomplete="PF('login').show();"
                                           styleClass="buttonIconOrange"
                                           update="idLogin loginForm"/>
 
                         <!--is connected-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{currentUser.nodeUser.name} !! cliquer pour se déconnecter"
-                                          icon-awesome="sign-out-alt" icon-size="lg" style="color: #C63632"
+                                          icon-awesome="sign-out-alt" icon-size="lg" style="color: #C63632;"
                                           ajax="true" action="#{currentUser.disconnect()}"/>              
-
-
+                        
+                        
                         <!-- Langues -->
                         <b:dropMenu value="#{langueBean.idLangue}"  style="font-size: 12px; margin-right: -10px;" >
                             <b:navCommandLink iconAwesome="flag fas_custom_flag" value="fr" action="#{langueBean.changeLangue('fr')}" ajax="false"

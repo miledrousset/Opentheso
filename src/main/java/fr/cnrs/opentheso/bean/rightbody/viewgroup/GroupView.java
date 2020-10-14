@@ -57,6 +57,7 @@ public class GroupView implements Serializable {
         count = 0;
         nodeGroup = null;
         nodeGroupType = null;
+        nodeGroupTraductions = null;
     }
 
     /**

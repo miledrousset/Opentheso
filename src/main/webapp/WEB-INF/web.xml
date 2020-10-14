@@ -58,7 +58,7 @@
     </servlet-mapping>    
     
 
-    
+    <!-- Attention !!! la gestion du timeout de la session se trouve dans le fichier de conf preference.properties (timeout_nbr_minute=)-->
     
     
     

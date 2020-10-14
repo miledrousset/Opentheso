@@ -87,7 +87,16 @@ begin
 end
 $$language plpgsql;
 
-
+--
+-- mise a jour de la table candidat_status(ajout de la colonne id_user_admin)
+--
+create or replace function update_table_candidat_status() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='candidat_status' AND column_name='id_user_admin') THEN
+        execute 'ALTER TABLE candidat_status ADD COLUMN  id_user_admin integer;';
+    END IF;
+end
+$$language plpgsql;
 
 
 
@@ -97,7 +106,7 @@ $$language plpgsql;
 ----------------------------------------------------------------------------
 SELECT update_table_preferences_sortbynotation();
 SELECT update_table_candidat_vote();
-
+SELECT update_table_candidat_status();
 
 
 ----------------------------------------------------------------------------
@@ -105,7 +114,7 @@ SELECT update_table_candidat_vote();
 ----------------------------------------------------------------------------
 SELECT delete_fonction('update_table_preferences_sortbynotation','');
 SELECT delete_fonction('update_table_candidat_vote','');
-
+SELECT delete_fonction('update_table_candidat_status','');
 
 
 

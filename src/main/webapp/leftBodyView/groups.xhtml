@@ -17,7 +17,7 @@
                 <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}" 
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
-                <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle"
+                <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabGroups:idGlobalActionsGroup"
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
 

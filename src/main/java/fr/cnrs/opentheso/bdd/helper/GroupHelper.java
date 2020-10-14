@@ -819,9 +819,45 @@ public class GroupHelper {
         return status;
     }
     
+    /**
+     * permet de supprimer l'appartenance des concepts à ce groupe/ collection
+     * @param ds
+     * @param idGroup
+     * @param idTheso
+     * @return 
+     * #MR
+     */
+    public boolean removeConceptsFromThisGroup(HikariDataSource ds, String idGroup, String idTheso){
+        boolean status = false;
+        Connection conn;
+        Statement stmt;
+
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "delete from concept_group_concept where "
+                            + "idgroup = '" + idGroup + "'"
+                            + " and idthesaurus = '" + idTheso + "'";
+                    stmt.executeUpdate(query);
+                    status = true;
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting all relations of groupe-concept of group : " + idGroup, sqle);
+        }
+        return status;        
+    }
+    
     
     /**
-     * Cette fonction permet de supprimer un groupe et ses traductions
+     * Cette fonction permet de supprimer un groupe et ses traductions (subGroup)
      *
      * @param conn
      * @param idGroup

@@ -9,7 +9,7 @@
 
         <p:tabView activeIndex="#{candidatBean.tabViewIndexSelected}"
                    style="background-color: #FAFAFA;">
-            <p:tab title="Candidats crées" titleStyleClass="tab1">
+            <p:tab title="Liste de candidats" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isListCandidatsActivate() || 
                                    candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
                     <ui:include src="/candidat/candidatsList.xhtml" />
