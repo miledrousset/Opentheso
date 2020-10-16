@@ -59,14 +59,15 @@
             </b:column>
             <b:column span="1" colXs="2"
                       style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
-                <b:selectBooleanCheckbox caption="Note" value="#{searchBean.withNote}" tooltip="rechercher dans les notes" 
+                <b:selectBooleanCheckbox caption="Note" value="#{searchBean.withNote}" tooltip="rechercher uniquement dans les notes" 
                                          onclick="ajax:searchBean.activateWithNote()"
                                          update="formSearch"
                                          style="margin-top: 2px;"/>
             </b:column>
             <b:column span="1" colXs="2"
                       style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
-                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}" tooltip="rechercher dans les identifiants"
+                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
+                                         tooltip="rechercher dans les identifiants (Id, Ark, Handle, Notation)"
                                          onclick="ajax:searchBean.activateWithId()"
                                          update="formSearch"
                                          style="margin-top: 2px;"/>

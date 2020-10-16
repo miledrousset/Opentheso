@@ -473,15 +473,26 @@ public class SearchHelper {
                             + "	or"
                             + "	f_unaccent(lower(lexical_value)) like '% " + value + "'"
                             + "	or"
+                            
+                            
+                            // pour les tirets pour trouver victor exp: saint-victor
                             + "	f_unaccent(lower(lexical_value)) like '" + value + "-%'"
                             + "	or"
-                            
-                            // ajouter récemment par MR
-                            + "	f_unaccent(lower(lexical_value)) like '%" + value + "-%'"
-                            
+                            + "	f_unaccent(lower(lexical_value)) like '%-" + value + "-%'"
+                            + "	or"                            
+                            + "	f_unaccent(lower(lexical_value)) like '%-" + value + "'"  
                             + "	or"
-                            + "	f_unaccent(lower(lexical_value)) like '%-" + value + "%'"                            
+                            
+                            // pour les sous_tirets pour trouver victor exp: saint_victor
+                            + "	f_unaccent(lower(lexical_value)) like '" + value + "\\_%'"
                             + "	or"
+                            + "	f_unaccent(lower(lexical_value)) like '%\\_" + value + "\\_%'"
+                            + "	or"                            
+                            + "	f_unaccent(lower(lexical_value)) like '%\\_" + value + "'" 
+                            + "	or"
+                            
+                            
+
                             + "	f_unaccent(lower(lexical_value)) like '%''" + value + "'"
                             + "	)"
                             + " order by lexical_value";
@@ -1031,7 +1042,8 @@ public class SearchHelper {
                             + " and status != 'CA'"
                             + " and (concept.id_concept = '" + value + "'"
                             + " or concept.id_ark = '" + value + "'"
-                            + " or concept.id_handle = '" + value + "')";
+                            + " or concept.id_handle = '" + value + "'"
+                            + " or concept.notation = '" + value + "')";
 
                     resultSet = stmt.executeQuery(query);
                     idConcepts = new ArrayList<>();

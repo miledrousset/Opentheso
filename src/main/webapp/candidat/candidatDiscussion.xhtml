@@ -5,9 +5,16 @@
              xmlns:p="http://primefaces.org/ui">
 
     <b:row style="font-weight: bold;">
-        <b:column>
+        <b:column span="2">
             <h:outputLabel value="#{langueBean.getMsg('candidat.discussion')}" style=" margin-left: 10px"/>
         </b:column>
+        <b:column span="1" style=" margin-left: 5px">
+            <b:navCommandLink  tooltip="Recharger les messages "
+                               tooltip-delay-show="500"
+                              icon-awesome="fas fa-sync" icon-size="l" style=" color: #43B572"
+                              action="#{discussionService.reloadMessage()}" 
+                              update="candidatForm:rowMessages candidatForm:rowValue messageIndex " />                
+        </b:column>        
     </b:row>
 
     <b:row id="rowMessages" style="background-color: #FFFFFF; margin-left: 10px; margin-right: 10px">

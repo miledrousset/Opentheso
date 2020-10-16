@@ -188,9 +188,9 @@
                 </dependency>
         -->
         <dependency>
-            <artifactId>junit</artifactId>
             <groupId>junit</groupId>
-            <version>4.13</version>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -230,10 +230,11 @@
             <version>1.2</version>
         </dependency>
     </dependencies>
-    
+
 
 
     <build>
+       
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -282,4 +283,31 @@
             </plugin>
         </plugins>
     </build>
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>    
+
 </project>
