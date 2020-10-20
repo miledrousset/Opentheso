@@ -7,6 +7,14 @@
 
     <!-- Actions sur l'arbre -->
     <ui:include src="/leftBodyView/globalActionsTree.xhtml"/>
+
+    <b:row>
+        <b:column span="12">
+            <a href="testGraphe.html" target="_blank">Go Go Go !!!</a>
+            <b:commandButton look="success" iconAwesome="search" icon-align="right" value="OK"
+                             update="containerIndex" actionListener="#{tree.setDiagramVisisble(true)}"/>
+        </b:column>
+    </b:row>
         
     
     <!-- Arbre du thésaurus -->

@@ -3,7 +3,7 @@
              xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui">
 
-    <b:row>
+    <b:row rendered="#{!tree.diagramVisisble}">
         <p:blockUI block="thesaurusTreeBlock" widgetVar="loadingThesTreeBlock">
             Chargement ...
         </p:blockUI>
@@ -20,6 +20,19 @@
                 <ui:include src="rightBody.xhtml" />
             </b:panel>
         </b:column>
+    </b:row>
+
+    <b:row rendered="#{tree.diagramVisisble}">
+        <b:row>
+            <b:column span="12">
+                <b:navCommandLink value="Retour" update="containerIndex" ajax="false" 
+                                  style="color: #F47B2A" 
+                                  actionListener="#{tree.setDiagramVisisble(false)}" />
+            </b:column>
+        </b:row>
+        <iframe id="iframeId" scrolling="auto" width="100%" height="600" 
+                frameborder="0" allowfullscreen="true" style="overflow:hidden" 
+                src="http://localhost:8080/opentheso2/testGraphe.html"/>
     </b:row>
 
 

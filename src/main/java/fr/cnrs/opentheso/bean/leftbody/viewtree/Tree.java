@@ -36,7 +36,6 @@ import org.primefaces.model.TreeNode;
  */
 @Named(value = "tree")
 @SessionScoped
-
 public class Tree implements Serializable {
 
     @Inject private Connect connect;
@@ -46,9 +45,6 @@ public class Tree implements Serializable {
     @Inject private SelectedTheso selectedTheso;
     @Inject private RoleOnThesoBean roleOnThesoBean;
 
-    @Inject
-    private ConceptsDiagramBean basicView;
-
     private DataService dataService;
 
     private TreeNode selectedNode; // le neoud sélectionné par clique
@@ -56,7 +52,10 @@ public class Tree implements Serializable {
 
     private String idTheso;
     private String idLang;
-    private boolean noedSelected;
+    private boolean noedSelected, diagramVisisble;
+    
+    public static String idThesoSelected, idLangSelected;
+    public static TreeNodeData treeNodeDataSelect;
 
     ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
@@ -248,10 +247,12 @@ public class Tree implements Serializable {
                         ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
             }
 
-            basicView.init(((TreeNodeData) selectedNode.getData()).getNodeId(), idTheso, idLang);
-
             rightBodySetting.setIndex("0");
             noedSelected = false;
+            
+            treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
+            idThesoSelected = idTheso;
+            idLangSelected = idLang;
         }
     }
 
@@ -399,4 +400,11 @@ public class Tree implements Serializable {
         return null;
     }
 
+    public boolean isDiagramVisisble() {
+        return diagramVisisble;
+    }
+
+    public void setDiagramVisisble(boolean diagramVisisble) {
+        this.diagramVisisble = diagramVisisble;
+    }
 }
