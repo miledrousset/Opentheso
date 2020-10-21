@@ -57,7 +57,9 @@ public class GraphGroup {
     }
     
     private String getConceptDetails(NodeConceptTree nodeConceptTree) {
-        return "{\"id\": \"" + nodeConceptTree.getIdConcept() + "\", \"name\": \"" + nodeConceptTree.getTitle()+ "\"}";
+        return "{\"id\": \"" + nodeConceptTree.getIdConcept() 
+                + "\", \"name\": \"" + nodeConceptTree.getTitle()
+                + "\", \"isHaveChildren\": \"" + nodeConceptTree.isHaveChildren() + "\"}";
     }
     
 }
