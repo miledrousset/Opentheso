@@ -439,7 +439,7 @@ public class RestRDFHelper {
         
         
         // recherche de toutes les valeurs
-        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(ds, value, lang, idTheso);
+        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(ds, value, lang, group, idTheso);
         
         if(nodeAutoCompletion == null || nodeAutoCompletion.isEmpty())
             return null;

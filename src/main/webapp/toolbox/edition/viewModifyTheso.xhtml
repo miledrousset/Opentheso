@@ -29,7 +29,7 @@
             </b:column> 
 
             <!-- Changement de status Public/Privé -->
-            <b:column id="columnStatus" span="2" tooltip="Pour changer le status du thésaurus Public/Privé" tooltip-delay-show="1000">
+            <b:column id="columnStatus" span="2" tooltip="Pour changer le statut du thésaurus Public/Privé" tooltip-delay-show="1000">
                 <p:toggleSwitch  label="Public/Privé" id="toggleThesoStatus" value="#{editThesoBean.isPrivateTheso}" style="font-size: 12px">
                     <p:ajax listener="#{editThesoBean.changeStatus()}" update="columnStatus toolBoxForm toolBoxForm:listThesoForm" />
                 </p:toggleSwitch>

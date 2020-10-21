@@ -77,6 +77,8 @@ public class CandidatDao extends BasicDao {
      * @param hikariDataSource
      * @param idThesaurus
      * @param lang
+     * @param etat
+     * @param statut
      * @return
      * @throws SQLException 
      */
@@ -106,6 +108,45 @@ public class CandidatDao extends BasicDao {
         closeDataBase();
         return temps;
     }
+    
+   /**
+     * permet de récupérer la liste des candidats qui sont en attente
+     * @param hikariDataSource
+     * @param value
+     * @param idThesaurus
+     * @param lang
+     * @param etat
+     * @param statut
+     * @return
+     * @throws SQLException 
+     */
+    public List<CandidatDto> searchCandidatsByValue(HikariDataSource hikariDataSource,
+            String value, String idThesaurus,
+            String lang, int etat, String statut) throws SQLException {
+
+        List<CandidatDto> temps = new ArrayList<>();
+
+        openDataBase(hikariDataSource);
+        
+        stmt.executeQuery(createRequestSearchValue(lang, value, idThesaurus, etat, statut));
+
+        resultSet = stmt.getResultSet();
+
+        while (resultSet.next()) {
+            CandidatDto candidatDto = new CandidatDto();
+            candidatDto.setIdTerm(resultSet.getString("id_term"));
+            candidatDto.setNomPref(resultSet.getString("lexical_value"));
+            candidatDto.setIdConcepte(resultSet.getString("id_concept"));
+            candidatDto.setIdThesaurus(resultSet.getString("id_thesaurus"));
+            candidatDto.setCreationDate(resultSet.getDate("created"));
+            candidatDto.setUser(resultSet.getString("username"));
+            candidatDto.setUserId(resultSet.getInt("contributor"));
+            temps.add(candidatDto);
+        }
+
+        closeDataBase();
+        return temps;
+    }    
 
     private String createRequest(String lang, String idThesaurus, int etat, String statut) {
 
@@ -129,9 +170,44 @@ public class CandidatDao extends BasicDao {
         }
 
         request.append(" AND users.id_user = term.contributor")
-                .append(" AND candidat_status.id_status = " + etat)
+                .append(" AND candidat_status.id_status = ").append(etat)
                 .append(" AND term.lang = '").append(lang).append("' ")
                 .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
+                .append(" ORDER BY term.lexical_value ASC");
+
+        return request.toString();
+
+    }    
+    
+    private String createRequestSearchValue(String lang, String value, String idThesaurus, int etat, String statut) {
+        StringPlus stringPlus = new StringPlus();
+        value = stringPlus.convertString(value);
+        value = stringPlus.unaccentLowerString(value);
+        
+        StringBuffer request = new StringBuffer("SELECT DISTINCT term.lang, term.id_term,")
+                .append(" term.lexical_value, con.id_concept,")
+                .append(" con.id_thesaurus, con.created,")
+                .append(" users.username, term.contributor")
+
+                .append(" FROM preferred_term preTer, concept con, term, users, candidat_status")
+                .append(" WHERE con.id_concept = candidat_status.id_concept")
+                .append(" AND con.id_thesaurus = candidat_status.id_thesaurus")
+                .append(" AND con.id_concept = preTer.id_concept")
+                .append(" AND term.id_term = preTer.id_term")
+                .append(" AND con.id_thesaurus = preTer.id_thesaurus")
+                .append(" AND preTer.id_thesaurus = term.id_thesaurus");
+
+        if ("CA".equals(statut)) {
+            request.append(" AND con.status = 'CA'");
+        } else {
+            request.append(" AND con.status <> 'CA'");
+        }
+
+        request.append(" AND users.id_user = term.contributor")
+                .append(" AND candidat_status.id_status = ").append(etat)
+                .append(" AND term.lang = '").append(lang).append("' ")
+                .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
+                .append(" AND f_unaccent(lower(term.lexical_value)) like '%").append(value).append("%'")
                 .append(" ORDER BY term.lexical_value ASC");
 
         return request.toString();

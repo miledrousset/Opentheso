@@ -918,7 +918,7 @@ public class ConceptHelper {
     }
 
     /**
-     * permet de retourner le nombre des conceptes dans un thesaurus rattaché à aucun groupe
+     * permet de retourner le nombre des concepts dans un thesaurus rattaché à aucun groupe
      *
      * @param ds
      * @param idThesaurus
