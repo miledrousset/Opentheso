@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript" src="javascript/go.js"/></script>
+        <script type="text/javascript" src="javascript/go.js"></script>
         <script type="text/javascript" src="javascript/jquery-3.5.1.min.js"></script>
 
         <script type="text/javascript">
@@ -13,6 +13,7 @@
             function init() {
                 if (window.goSamples)
                     goSamples();
+
                 var $ = go.GraphObject.make;
 
                 myDiagram = $(go.Diagram, "myDiagramDiv", {
@@ -41,13 +42,10 @@
                         "Auto",
                         { name: "PANEL" },
                         $(go.Shape, "RoundedRectangle",
-                        { fill: "whitesmoke", stroke: "black" },
-                        new go.Binding("fill", "rootdistance", function(dist) {
-                            return blues[Math.min(blues.length - 1, dist)];
-                        })),
+                            {fill: "#43B572", stroke: "#43B572"}),
                         $(go.TextBlock,
-                        { font: "11pt sans-serif", margin: 5 },
-                        new go.Binding("text", "key"))
+                            { font: "11pt sans-serif", margin: 5 },
+                            new go.Binding("text", "key"))
                     ),
 
                     $("TreeExpanderButton", {
@@ -67,7 +65,7 @@
         
                 myDiagram.linkTemplate = $(go.Link,  // the whole link panel
                     { routing: go.Link.Orthogonal, corner: 5, selectable: false },
-                    $(go.Shape, { strokeWidth: 3, stroke: '#424242' }));  // the gray link shape
+                    $(go.Shape, { strokeWidth: 3, stroke: '#f47b2a' }));  // the gray link shape
 
                 var request = new XMLHttpRequest();
                 request.open('GET', 'http://localhost:8080/opentheso2/api/graph/firstElement', true);
