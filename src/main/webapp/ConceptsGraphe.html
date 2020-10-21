@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="javascript/go.js"/></script>
+        <script type="text/javascript" src="javascript/jquery-3.5.1.min.js"></script>
+        
+        <script type="text/javascript">
+            var response;
+            var thesSelected;
+            var lang;
+            var conceptIdSelected;
+
+            function init() {
+                if (window.goSamples)
+                    goSamples();
+                var $ = go.GraphObject.make;
+
+                myDiagram = $(go.Diagram, "myDiagramDiv", {
+                    initialContentAlignment: go.Spot.Center,
+                    layout: $(go.ForceDirectedLayout),
+                    "commandHandler.copiesTree": true,
+                    "commandHandler.deletesTree": true,
+                    "draggingTool.dragsTree": true,
+                    "undoManager.isEnabled": true
+                });
+
+                myDiagram.nodeTemplate =
+                        $(go.Node,
+                                "Spot", {
+                                    selectionObjectName: "PANEL",
+                                    isTreeExpanded: false,
+                                    isTreeLeaf: false
+                                },
+                                $(go.Panel, "Auto", {name: "PANEL"},
+                                        $(go.Shape, "Circle", {fill: "whitesmoke", stroke: "black"},
+                                                new go.Binding("fill", "rootdistance", '#E1F5FE')),
+                                        $(go.TextBlock, {font: "12pt sans-serif", margin: 5},
+                                                new go.Binding("text", "key"))),
+                                $("TreeExpanderButton", {
+                                    name: 'TREEBUTTON',
+                                    width: 20, height: 20,
+                                    alignment: go.Spot.TopRight,
+                                    alignmentFocus: go.Spot.Center,
+                                    click: function (e, obj) {
+                                        var node = obj.part;
+                                        if (node === null)
+                                            return;
+                                        e.handled = true;
+                                        expandNode(node);
+                                    }
+                                }
+                                )
+                                );
+
+                var request = new XMLHttpRequest();
+                request.open('GET', 'http://localhost:8080/opentheso2/api/graph/firstElement', true);
+                request.onload = function () {
+                    response = JSON.parse(this.response);
+                    if (request.status === 200) {
+
+                        thesSelected = response.idTheso;
+                        lang = response.lang;
+                        conceptIdSelected = response.id;
+
+                        myDiagram.model = new go.TreeModel([
+                            {key: response.name, color: '#FF22FF', everExpanded: false}
+                        ]);
+                    } else {
+                        console.log('error')
+                    }
+                };
+
+                request.send();
+            }
+
+            function expandNode(node) {
+
+                var diagram = node.diagram;
+                diagram.startTransaction("CollapseExpandTree");
+                var data = node.data;
+                conceptIdSelected = node.data.key;
+
+                if (!data.everExpanded) {
+                    diagram.model.setDataProperty(data, "everExpanded", true);
+                    var numchildren = createSubTree(data);
+                    if (numchildren === 0) {
+                        node.findObject('TREEBUTTON').visible = false;
+                    }
+                }
+                if (node.isTreeExpanded) {
+                    diagram.commandHandler.collapseTree(node);
+                } else {
+                    diagram.commandHandler.expandTree(node);
+                }
+                diagram.commitTransaction("CollapseExpandTree");
+                myDiagram.zoomToFit();
+            }
+
+            function createSubTree(parentdata) {
+
+                var parent = myDiagram.findNodeForData(parentdata);
+
+                $(document).ready(function () {
+                    $.ajax({
+                        url: 'http://localhost:8080/opentheso2/api/graph/' + thesSelected + '/' + conceptIdSelected + '/' + lang
+                    }).then(function (data) {
+                        response = data;
+                        if (Array.isArray(response)) {
+                            for (var i = 0; i < response.length; i++) {
+                                var childdata = {
+                                    key: response[i].name,
+                                    parent: parentdata.key
+                                };
+                                myDiagram.model.addNodeData(childdata);
+                                var child = myDiagram.findNodeForData(childdata);
+                                child.location = parent.location;
+                            }
+                        }
+                        conceptIdSelected = null;
+
+                    });
+                });
+
+                return response.length;
+            }
+        </script>
+    </head>
+
+    <body onload="init()">
+        <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"/>
+    </body>
+
+</html>

@@ -25,14 +25,14 @@
     <b:row rendered="#{tree.diagramVisisble}">
         <b:row>
             <b:column span="12">
-                <b:navCommandLink value="Retour" update="containerIndex" ajax="false" 
+                <b:navCommandLink value="Retour" update="containerIndex" ajax="true" 
                                   style="color: #F47B2A" 
-                                  actionListener="#{tree.setDiagramVisisble(false)}" />
+                                  actionListener="#{tree.showDiagram(false)}" />
             </b:column>
         </b:row>
         <iframe id="iframeId" scrolling="auto" width="100%" height="600" 
                 frameborder="0" allowfullscreen="true" style="overflow:hidden" 
-                src="http://localhost:8080/opentheso2/testGraphe.html"/>
+                src="#{request.contextPath}/ConceptsGraphe.html"/>
     </b:row>
 
 

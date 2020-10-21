@@ -1,11 +1,8 @@
 package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
-import fr.cnrs.opentheso.bean.diagram.ConceptsDiagramBean;
+
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
@@ -17,14 +14,21 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
+import java.io.IOException;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.primefaces.PrimeFaces;
+import javax.servlet.http.HttpServletRequest;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -370,7 +374,8 @@ public class Tree implements Serializable {
                     return;
                 }
                 // compare le dernier élément au concept en cours, si oui, on expand pas, sinon, erreur ...
-                if (!((TreeNodeData) treeNodeParent.getData()).getNodeId().equalsIgnoreCase(thisPath.getPath().get(thisPath.getPath().size() - 1))) {
+                if (!((TreeNodeData) treeNodeParent.getData()).getNodeId()
+                        .equalsIgnoreCase(thisPath.getPath().get(thisPath.getPath().size() - 1))) {
                     treeNodeParent.setExpanded(true);
                 }
             }
@@ -406,5 +411,19 @@ public class Tree implements Serializable {
 
     public void setDiagramVisisble(boolean diagramVisisble) {
         this.diagramVisisble = diagramVisisble;
+    }
+    
+    public void showDiagram(boolean status) throws IOException {
+        if (treeNodeDataSelect == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                    "", "Vous devez selectioner un élement de l'arbre"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+            return;
+        } 
+        diagramVisisble = status;
+
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 }
