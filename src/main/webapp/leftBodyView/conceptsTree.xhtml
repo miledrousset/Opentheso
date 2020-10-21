@@ -14,10 +14,8 @@
                 <p:ajax event="select" listener="#{treeConcepts.onNodeSelect}" update="formRightTab indexTitle"
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
-                <p:ajax event="collapse" listener="#{treeConcepts.onNodeCollapse}" />
-                <p:ajax event="unselect" listener="#{treeConcepts.onNodeUnselect}" />
 
-                <p:treeNode  expandedIcon="far fa-object-group" collapsedIcon="fas fa-object-group" >
+                <p:treeNode  expandedIcon="far fa-folder-open fa_custom_open fa-1x" collapsedIcon="far fa-folder fa_custom_collapse fa-1x" >
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>
                     <h:outputText title="#{node.nodeId}" value="#{node.name}" style="font-size: 12px"/>
                 </p:treeNode>
