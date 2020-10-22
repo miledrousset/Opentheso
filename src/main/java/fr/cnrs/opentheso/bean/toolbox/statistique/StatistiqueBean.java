@@ -48,10 +48,10 @@ public class StatistiqueBean implements Serializable {
     private int nbrCanceptByThes;
     private Date dateDebut, dateFin, derniereModification;
     private NodeLangTheso selectedLanguage;
-    private CanceptStatistiqueData canceptStatistiqueSelected;
+    private ConceptStatisticData canceptStatistiqueSelected;
 
     private List<GenericStatistiqueData> genericStatistiques;
-    private List<CanceptStatistiqueData> canceptStatistiques;
+    private List<ConceptStatisticData> conceptStatistic;
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<DomaineDto> groupList;
 
@@ -62,7 +62,7 @@ public class StatistiqueBean implements Serializable {
         conceptTypeVisible = false;
 
         genericStatistiques = new ArrayList<>();
-        canceptStatistiques = new ArrayList<>();
+        conceptStatistic = new ArrayList<>();
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir un Thesorus avant !");
@@ -72,6 +72,14 @@ public class StatistiqueBean implements Serializable {
         initChamps();
     }
 
+    public void clearFilter(){
+        dateDebut = null;
+        dateFin = null;
+        selectedCollection = "";
+        conceptStatistic = new ArrayList<>();
+        genericStatistiques = new ArrayList<>();
+    }
+    
     private void initChamps() {
         languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso());
@@ -83,7 +91,7 @@ public class StatistiqueBean implements Serializable {
     public void onSelectStatType() {
         
         genericStatistiques = new ArrayList<>();
-        canceptStatistiques = new ArrayList<>();
+        conceptStatistic = new ArrayList<>();
 
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir un Thesorus avant !");
@@ -130,7 +138,7 @@ public class StatistiqueBean implements Serializable {
     }
 
     public void onSelectLanguageType() throws SQLException {
-
+        clearFilter();
         selectLanguageVisible = true;
 
         if ("0".equals(selectedStatistiqueTypeCode)) {
@@ -155,12 +163,11 @@ public class StatistiqueBean implements Serializable {
     }
     
     public boolean isExportVisible() {
-        return !CollectionUtils.isEmpty(genericStatistiques) || !CollectionUtils.isEmpty(canceptStatistiques);
+        return !CollectionUtils.isEmpty(genericStatistiques) || !CollectionUtils.isEmpty(conceptStatistic);
     }
 
-    public void getStatisitiquesParConcept() {
-
-        canceptStatistiques = new StatistiqueService().searchAllConceptsByThesaurus(this, 
+    public void getStatisticByConcept() {
+        conceptStatistic = new StatistiqueService().searchAllConceptsByThesaurus(this, 
                 connect, selectedTheso.getCurrentIdTheso(),
                 selectedLanguage.getCode(), dateDebut, dateFin, 
                 searchGroupIdFromLabel(selectedCollection), nbrResultat);
@@ -174,7 +181,7 @@ public class StatistiqueBean implements Serializable {
         if (genericTypeVisible) {
             statistiquesRapportCSV.createGenericStatitistiquesRapport(genericStatistiques);
         } else {
-            statistiquesRapportCSV.createConceptsStatitistiquesRapport(canceptStatistiques);
+            statistiquesRapportCSV.createConceptsStatitistiquesRapport(conceptStatistic);
         }
 
         return DefaultStreamedContent.builder()
@@ -204,7 +211,7 @@ public class StatistiqueBean implements Serializable {
         return resources;
     }
     
-    public void setConceptSelected(CanceptStatistiqueData canceptStatistiqueSelected) {
+    public void setConceptSelected(ConceptStatisticData canceptStatistiqueSelected) {
         this.canceptStatistiqueSelected = canceptStatistiqueSelected;
     }
 
@@ -286,12 +293,12 @@ public class StatistiqueBean implements Serializable {
         this.genericStatistiques = genericStatistiques;
     }
 
-    public List<CanceptStatistiqueData> getCanceptStatistiques() {
-        return canceptStatistiques;
+    public List<ConceptStatisticData> getCanceptStatistiques() {
+        return conceptStatistic;
     }
 
-    public void setCanceptStatistiques(List<CanceptStatistiqueData> canceptStatistiques) {
-        this.canceptStatistiques = canceptStatistiques;
+    public void setCanceptStatistiques(List<ConceptStatisticData> canceptStatistiques) {
+        this.conceptStatistic = canceptStatistiques;
     }
 
     public String getSelectedCollection() {
@@ -314,7 +321,7 @@ public class StatistiqueBean implements Serializable {
         this.nbrResultat = nbrResultat;
     }
 
-    public CanceptStatistiqueData getCanceptStatistiqueSelected() {
+    public ConceptStatisticData getCanceptStatistiqueSelected() {
         return canceptStatistiqueSelected;
     }
 

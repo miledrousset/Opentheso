@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.core.exports.csv;
 
-import fr.cnrs.opentheso.bean.toolbox.statistique.CanceptStatistiqueData;
+import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
 import fr.cnrs.opentheso.bean.toolbox.statistique.GenericStatistiqueData;
 import java.io.ByteArrayOutputStream;
 import java.io.BufferedWriter;
@@ -55,7 +55,7 @@ public class StatistiquesRapportCSV {
         }
     }
     
-    public void createConceptsStatitistiquesRapport(List<CanceptStatistiqueData> datas) {
+    public void createConceptsStatitistiquesRapport(List<ConceptStatisticData> datas) {
 
         try {
             // create a writer

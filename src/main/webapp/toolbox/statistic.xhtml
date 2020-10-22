@@ -48,11 +48,19 @@
                 </b:selectOneMenu>
             </b:column>
         </b:row>
-
+               
         <p:separator styleClass="separator" style="margin-top: 10px;" rendered="#{statistiqueBean.conceptTypeVisible || statistiqueBean.genericTypeVisible}"/>
 
         <b:row rendered="#{statistiqueBean.conceptTypeVisible}">
-
+            <b:column span="1" offset="11">
+                <b:navCommandLink iconAwesome="fas fa-broom" icon-size="l" icon-align="right"
+                                  style="color: #f47b2a;"
+                                  tooltip="Effecer tous les filtres et le résultat" tooltip-delay-show="1000"
+                                 update="toolBoxForm toolBoxForm:statisticForm" 
+                                 actionListener="#{statistiqueBean.clearFilter()}"/>                
+            </b:column>
+        </b:row>         
+        <b:row rendered="#{statistiqueBean.conceptTypeVisible}">
             <p:accordionPanel activeIndex="null">
                 <p:tab title="#{langueBean.getMsg('statistique.filter_nbr_result')}">
                     <b:row>
@@ -62,6 +70,7 @@
                         <b:column span="3">
                             <b:selectOneMenu value="#{statistiqueBean.nbrResultat}" 
                                              styleClass="selectOneMenu_custom" style="font-size: 12px;">
+                                <f:selectItem itemLabel="50" itemValue="50" />
                                 <f:selectItem itemLabel="100" itemValue="100" />
                                 <f:selectItem itemLabel="200" itemValue="200" />
                                 <f:selectItem itemLabel="500" itemValue="200" />
@@ -98,15 +107,15 @@
                 <b:column>
                     <b:commandButton value="#{langueBean.getMsg('statistique.validate')}" look="success" iconAwesome="thumbs-up"
                                      style="margin-top: 10px; float: right" update="toolBoxForm toolBoxForm:statisticForm" 
-                                     onclick="PF('bui').show()" actionListener="#{statistiqueBean.getStatisitiquesParConcept()}"/>
+                                     onclick="PF('bui').show()" actionListener="#{statistiqueBean.getStatisticByConcept()}"/>
                 </b:column>
             </b:row>
 
             <b:row style="font-size: 12px; color: #666666; margin-top: 10px;">
-                <b:column span="2" style="font-weight: bold;">
+                <b:column span="1" style="font-weight: bold;">
                     <h:outputText value="#{langueBean.getMsg('statistique.id')}"/>
                 </b:column>
-                <b:column span="2" style="font-weight: bold;">
+                <b:column span="3" style="font-weight: bold;">
                     <h:outputText value="#{langueBean.getMsg('statistique.label')}"/>
                 </b:column>
                 <b:column span="2" style="font-weight: bold;">
@@ -127,41 +136,43 @@
             </b:row>
 
             <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-
-            <p:scrollPanel mode="native" style="width:100%; height:290px" 
-                           rendered="#{statistiqueBean.canceptStatistiques.size() > 0}">
-                <ui:repeat var="stat" value="#{statistiqueBean.canceptStatistiques}">
-                    <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(statistiqueBean.canceptStatistiques.indexOf(stat))}; 
-                           padding-top: 5px">
-                        <b:column span="2" >
-                            <h:outputText value="#{stat.idConcept}"/>
-                        </b:column>
-                        <b:column span="2" >
-                            <h:outputText value="#{stat.label}"/>
-                        </b:column>  
-                        <b:column span="2" >
-                            <h:outputText value="#{stat.type}"/>
-                        </b:column>
-                        <b:column span="2" >
-                            <h:outputText value="#{stat.dateCreation}"/>
-                        </b:column>  
-                        <b:column span="2" >
-                            <h:outputText value="#{stat.dateModification}"/>
-                        </b:column> 
-                        <b:column span="1" >
-                            <h:outputText value="#{stat.utilisateur}"/>
-                        </b:column>
-                        <b:column span="1" >
-                            <b:navCommandLink iconAwesome="fa-info-circle" icon-size="lg"
-                                              oncomplete="PF('conceptDdetail').show();" style="color: #f47b2a;"
-                                              actionListener="#{statistiqueBean.setConceptSelected(stat)}"
-                                              styleClass="buttonIconOrange" ajax="false"
-                                              update="toolBoxForm"/> 
-                        </b:column>
-                    </b:row>   
-                </ui:repeat>
-            </p:scrollPanel>
-
+            <b:row style="font-size: 12px; color: #666666; margin-top: 10px;">
+                <b:column span="12">
+                    <p:scrollPanel mode="native" style=" height:290px" 
+                                   rendered="#{statistiqueBean.canceptStatistiques.size() > 0}">
+                        <ui:repeat var="stat" value="#{statistiqueBean.canceptStatistiques}">
+                            <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(statistiqueBean.canceptStatistiques.indexOf(stat))}; 
+                                   padding-top: 5px">
+                                <b:column span="1" >
+                                    <h:outputText value="#{stat.idConcept}"/>
+                                </b:column>
+                                <b:column span="3" >
+                                    <h:outputText value="#{stat.label}"/>
+                                </b:column>  
+                                <b:column span="2" >
+                                    <h:outputText value="#{stat.type}"/>
+                                </b:column>
+                                <b:column span="2" >
+                                    <h:outputText value="#{stat.dateCreation}"/>
+                                </b:column>  
+                                <b:column span="2" >
+                                    <h:outputText value="#{stat.dateModification}"/>
+                                </b:column> 
+                                <b:column span="1" >
+                                    <h:outputText value="#{stat.utilisateur}"/>
+                                </b:column>
+                                <b:column span="1" >
+                                    <b:navCommandLink iconAwesome="fa-info-circle" icon-size="lg"
+                                                      oncomplete="PF('conceptDdetail').show();" style="color: #f47b2a;"
+                                                      actionListener="#{statistiqueBean.setConceptSelected(stat)}"
+                                                      styleClass="buttonIconOrange" ajax="false"
+                                                      update="toolBoxForm"/> 
+                                </b:column>
+                            </b:row>   
+                        </ui:repeat>
+                    </p:scrollPanel>
+                </b:column>
+            </b:row>
         </b:row>
 
         <b:row rendered="#{statistiqueBean.genericTypeVisible}">

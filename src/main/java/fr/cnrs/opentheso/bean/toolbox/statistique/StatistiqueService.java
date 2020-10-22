@@ -85,10 +85,10 @@ public class StatistiqueService {
         return nbrTermNonTraduit.get();
     }
 
-    public List<CanceptStatistiqueData> searchAllConceptsByThesaurus(StatistiqueBean statistiqueBean, Connect connect,
+    public List<ConceptStatisticData> searchAllConceptsByThesaurus(StatistiqueBean statistiqueBean, Connect connect,
                          String idTheso, String idLang, Date dateDebut, Date dateFin, String collectionId, String nbrResultat) {
 
-        List<CanceptStatistiqueData> result = new ArrayList<>();
+        List<ConceptStatisticData> result = new ArrayList<>();
 
         if (dateDebut == null && dateFin != null) {
             statistiqueBean.showMessage(FacesMessage.SEVERITY_ERROR, "Il faut préciser la date de fin !");
@@ -107,12 +107,32 @@ public class StatistiqueService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         String debut = dateDebut == null ? null : formatter.format(dateDebut); 
         String fin = dateFin == null ? null : formatter.format(dateFin); 
-
+        int limit;
         try {
-            result = new ConceptHelper().searchAllCondidats(connect.getPoolConnexion(), idTheso, 
-                    idLang, debut, fin, collectionId, nbrResultat);
+            limit = Integer.parseInt(nbrResultat);
+        } catch (Exception e) {
+            limit = 100;
+        }
+        if(dateDebut == null || dateFin == null) {
+            if(collectionId == null || collectionId.isEmpty()) {
+                result = new StatisticHelper().getStatConcept(connect.getPoolConnexion(), idTheso, idLang, limit);                 
+            } else {
+                result = new StatisticHelper().getStatConceptLimitCollection(connect.getPoolConnexion(), idTheso, collectionId, idLang, limit);
+            }
+        } else {
+            result = new StatisticHelper().getStatConceptByDateAndCollection(
+                    connect.getPoolConnexion(), idTheso, collectionId, idLang,
+                    debut, fin, limit);
+        }
+       
+        
+            // désactivé par Miled, la focntion ne renvoie pas le bon résultat 
+   /*         result = new ConceptHelper().searchAllCondidats(connect.getPoolConnexion(), idTheso, 
+                    idLang, debut, fin, collectionId, nbrResultat);*/
 
-            TermHelper termHelper = new TermHelper();
+
+
+        /*    TermHelper termHelper = new TermHelper();
 
             result.forEach(concept -> {
                 
@@ -126,11 +146,8 @@ public class StatistiqueService {
                 } else {
                     concept.setType("skos:altLabel");
                 }
-            });
+            });*/
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         return result;
     }
