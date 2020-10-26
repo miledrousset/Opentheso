@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.bean.diagram.ConceptsDiagramBean;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -22,11 +23,9 @@ import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeExpandEvent;
@@ -48,6 +47,9 @@ public class Tree implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private RoleOnThesoBean roleOnThesoBean;
+    
+    @Inject 
+    private ConceptsDiagramBean conceptsDiagramBean;
 
     private DataService dataService;
 
@@ -58,8 +60,7 @@ public class Tree implements Serializable {
     private String idLang;
     private boolean noedSelected, diagramVisisble;
     
-    public static String idThesoSelected, idLangSelected;
-    public static TreeNodeData treeNodeDataSelect;
+    private TreeNodeData treeNodeDataSelect;
 
     ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
@@ -255,8 +256,6 @@ public class Tree implements Serializable {
             noedSelected = false;
             
             treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
-            idThesoSelected = idTheso;
-            idLangSelected = idLang;
         }
     }
 
@@ -421,9 +420,9 @@ public class Tree implements Serializable {
             pf.ajax().update("messageIndex");
             return;
         } 
+        
         diagramVisisble = status;
-
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+        
+        conceptsDiagramBean.init(treeNodeDataSelect.getNodeId(), idTheso, idLang);
     }
 }

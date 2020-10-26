@@ -1,5 +1,5 @@
 package fr.cnrs.opentheso.ws;
-
+/*
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
@@ -63,3 +63,4 @@ public class GraphGroup {
     }
     
 }
+*/

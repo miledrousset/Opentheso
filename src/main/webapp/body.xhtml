@@ -30,9 +30,7 @@
                                   actionListener="#{tree.showDiagram(false)}" />
             </b:column>
         </b:row>
-        <iframe id="iframeId" scrolling="auto" width="100%" height="600" 
-                frameborder="0" allowfullscreen="true" style="overflow:hidden" 
-                src="#{request.contextPath}/ConceptsGraphe.html"/>
+        <ui:include src="/rightBodyView/conceptsDiagram.xhtml" />
     </b:row>
 
 
