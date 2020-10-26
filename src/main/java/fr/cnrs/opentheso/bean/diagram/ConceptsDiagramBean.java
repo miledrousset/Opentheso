@@ -19,8 +19,10 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.diagram.Connection;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.DiagramModel;
@@ -51,7 +53,6 @@ public class ConceptsDiagramBean implements Serializable {
     private DefaultDiagramModel model;
     private StraightConnector connector;
 
-    private List<Element> treeElements; 
     private Map<TextInBox, List> elementsTreeMap;
     private DefaultTreeForTreeLayout<TextInBox> defaultTreeForTreeLayout;
     
@@ -73,6 +74,7 @@ public class ConceptsDiagramBean implements Serializable {
         
         drowDiagram();
     }
+    
 
     private void drowDiagram() {
 
@@ -91,7 +93,6 @@ public class ConceptsDiagramBean implements Serializable {
         TextInBoxTreePane panel = new TextInBoxTreePane(treeLayout);
         
         List<ElementDiagram> elements = panel.calculePositions();
-        
         
         model = new DefaultDiagramModel();
         model.setMaxConnections(-1);
@@ -119,6 +120,11 @@ public class ConceptsDiagramBean implements Serializable {
                 model.connect(new Connection(elementParent.getEndPoints().get(
                         elementParent.getEndPoints().size() > 1 ? 1 : 0), elementDiagram.getEndPoints().get(0), connector));
             }
+        }
+        
+        if (!StringUtils.isEmpty(elementIdSelected)) {
+            Element elementParent = model.findElement(elementIdSelected);
+            elementParent.setStyleClass("ui-diagram-element-selected");
         }
 
     }
@@ -180,9 +186,26 @@ public class ConceptsDiagramBean implements Serializable {
     public void onElementClicked() {
         String id = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("elementId");
         elementIdSelected = id.substring(8, id.length());
+        
+        DefaultConfiguration<TextInBox> configuration = new DefaultConfiguration<>(
+                GAP_BETWEEN_LEVELS, GAP_BETWEEN_NODES);
 
-        Element elementParent = model.findElement(elementIdSelected);
-        elementParent.setStyleClass("ui-diagram-element-selected");
+        TextInBoxNodeExtentProvider nodeExtentProvider = new TextInBoxNodeExtentProvider();
+
+        TreeLayout<TextInBox> treeLayout = new TreeLayout<>(defaultTreeForTreeLayout,
+                nodeExtentProvider, configuration);
+
+        TextInBoxTreePane panel = new TextInBoxTreePane(treeLayout);
+        
+        List<ElementDiagram> elements = panel.calculePositions();
+        for (ElementDiagram elementDiagram : elements) {
+            Element temp = model.findElement(elementDiagram.name);
+            if (elementIdSelected.equals(elementDiagram.name)) {
+                temp.setStyleClass("ui-diagram-element-selected");
+            } else {
+                temp.setStyleClass("ui-diagram-element");
+            }
+        }
 
         PrimeFaces.current().ajax().update("diagram");
     }
@@ -196,8 +219,10 @@ public class ConceptsDiagramBean implements Serializable {
                 idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
         
         if (CollectionUtils.isEmpty(childs)) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, 
-                    "", "Le concept '" + elementIdSelected + "' n'a pas d'enfant !"));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_INFO, "", "Le concept '" + elementIdSelected + "' n'a pas d'enfant !"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
             return;
         }
 
@@ -244,15 +269,48 @@ public class ConceptsDiagramBean implements Serializable {
 
     public void closeNoeud() {
 
-        String idConcept = conceptHelper.getConceptIdFromPrefLabel(connect.getPoolConnexion(), elementIdSelected,
-                selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
+        TextInBox elementToDelete = getElementFromTree(elementIdSelected);
 
-        ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(connect.getPoolConnexion(),
-                idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
+        Map<TextInBox, List> elementsTreeMapTemp = new HashMap<>();
+        DefaultTreeForTreeLayout<TextInBox> treeTemp = new DefaultTreeForTreeLayout<>(defaultTreeForTreeLayout.getRoot());
 
-        for (NodeConceptTree nodeConceptTree : childs) {
-            model.removeElement(model.findElement(nodeConceptTree.getTitle()));
+
+        TextInBox elementParent = defaultTreeForTreeLayout.getRoot();
+
+        if (elementToDelete.text.equalsIgnoreCase(elementParent.text)) {
+            defaultTreeForTreeLayout = treeTemp;
+            elementsTreeMap = elementsTreeMapTemp;
         }
+
+
+        List<TextInBox> childs = defaultTreeForTreeLayout.getChildrenList(elementParent);
+        deleteConstractTree(treeTemp, elementsTreeMapTemp, childs, elementParent, elementToDelete);
+
+        defaultTreeForTreeLayout = treeTemp;
+        elementsTreeMap = elementsTreeMapTemp;
+
+        drowDiagram();
     }
+
+    private void deleteConstractTree(DefaultTreeForTreeLayout<TextInBox> treeTemp, Map<TextInBox, List> elementsTreeMapTemp,
+                                     List<TextInBox> childs, TextInBox elementParent, TextInBox elementToDelete) {
+
+        childs.forEach(child -> {
+
+            treeTemp.addChild(elementParent, child);
+
+            if (!elementToDelete.text.equalsIgnoreCase(child.text)) {
+
+                List<TextInBox> childsTmp = defaultTreeForTreeLayout.getChildrenList(child);
+
+                if (!CollectionUtils.isEmpty(childsTmp)) {
+                    deleteConstractTree(treeTemp, elementsTreeMapTemp, childsTmp, child, elementToDelete);
+                }
+            }
+        });
+
+        elementsTreeMapTemp.put(elementParent, childs);
+    }
+    
 
 }

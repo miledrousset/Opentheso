@@ -1,0 +1,69 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:b="http://bootsfaces.net/ui">
+
+    <style type="text/css">
+        .ui-diagram-element {
+            width:10em;
+            height:3em;
+            line-height:3em;
+            text-align: center;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
+            border-radius: 3px;
+            border: 1px solid transparent;
+            background-color: #43B572;
+            color: #ffffff;
+        }
+        
+        .ui-diagram-element-selected {
+            width:10em;
+            height:3em;
+            line-height:3em;
+            text-align: center;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
+            border-radius: 3px;
+            border: 1px solid transparent;
+            background-color: #F47B2A;
+            color: #ffffff;
+        }
+    </style>
+
+    
+    <div style="z-index: 1; position: absolute;">
+        <h:form>
+            <b:row>
+                <b:column>
+                    <b:commandButton value="Charger un element" size="sm" class="btn btn-success"
+                                     style="font-size: 13px; color: white; background: #43B572; border: #43B572; padding-left: 20px;
+                                     padding-right: 20px;" ajax="true" actionListener="#{conceptsDiagramBean.chargerNoeud()}" update="diagram"/>
+                </b:column>
+            </b:row>
+            <b:row style="margin-top: 5px">
+                <b:column span="2" colXs="5">
+                    <b:commandButton value="Fermer un element" size="sm" class="btn btn-success"
+                                     style="font-size: 13px; color: white; background: #43B572; border: #43B572; padding-left: 20px;
+                                     padding-right: 20px;" ajax="true" actionListener="#{conceptsDiagramBean.closeNoeud()}" update="diagram"/>
+                </b:column>
+            </b:row>
+        </h:form>
+    </div>
+    
+    <p:diagram id="diagram" value="#{conceptsDiagramBean.model}" style="height:600px; position: relative;" />
+    
+
+    <p:remoteCommand name="elementClicked" actionListener="#{conceptsDiagramBean.onElementClicked}"/>
+
+    <script type="text/javascript">
+        $(document).on('click',
+                '.ui-diagram > .ui-diagram-element',
+                function (info) {
+                    elementClicked([{
+                            name: 'elementId',
+                            value: info.target.id
+                        }]);
+                });
+    </script>
+
+</ui:fragment>
