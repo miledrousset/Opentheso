@@ -22,15 +22,15 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import org.primefaces.PrimeFaces;
-import org.primefaces.model.TreeNode;
 import org.primefaces.model.diagram.Connection;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.DiagramModel;
 import org.primefaces.model.diagram.Element;
-import org.primefaces.model.diagram.connector.StraightConnector;
+import org.primefaces.model.diagram.connector.FlowChartConnector;
 import org.primefaces.model.diagram.endpoint.DotEndPoint;
 import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
+import org.primefaces.model.diagram.overlay.ArrowOverlay;
 
 
 @Named("conceptsDiagramBean")
@@ -51,7 +51,6 @@ public class ConceptsDiagramBean implements Serializable {
     private String elementIdSelected;
     private ConceptHelper conceptHelper;
     private DefaultDiagramModel model;
-    private StraightConnector connector;
 
     private Map<TextInBox, List> elementsTreeMap;
     private DefaultTreeForTreeLayout<TextInBox> defaultTreeForTreeLayout;
@@ -62,13 +61,10 @@ public class ConceptsDiagramBean implements Serializable {
         conceptHelper = new ConceptHelper();
 
         NodeConcept nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), conceptId, idTheso, idLang);
-
-        connector = new StraightConnector();
-        connector.setPaintStyle("{strokeStyle:'#F47B2A', lineWidth:2}");
-        connector.setHoverPaintStyle("{strokeStyle:'#F47B2A'}");
         
         TextInBox root = new TextInBox(nodeConcept.getTerm().getLexical_value(), 
                 WIDTH_ELEMENT, HEIGHT_ELEMENT);
+        
         elementsTreeMap = new HashMap<>();
         defaultTreeForTreeLayout = new DefaultTreeForTreeLayout<>(root);
         
@@ -79,8 +75,14 @@ public class ConceptsDiagramBean implements Serializable {
     private void drowDiagram() {
 
         model = new DefaultDiagramModel();
+        model.clearElements();
+        model.clear();
         model.setMaxConnections(-1);
         model.setConnectionsDetachable(false);
+        
+        FlowChartConnector connector = new FlowChartConnector();
+        connector.setPaintStyle("{strokeStyle:'#C7B097',lineWidth:3}");
+        model.setDefaultConnector(connector);
         
         DefaultConfiguration<TextInBox> configuration = new DefaultConfiguration<>(
                 GAP_BETWEEN_LEVELS, GAP_BETWEEN_NODES);
@@ -93,10 +95,6 @@ public class ConceptsDiagramBean implements Serializable {
         TextInBoxTreePane panel = new TextInBoxTreePane(treeLayout);
         
         List<ElementDiagram> elements = panel.calculePositions();
-        
-        model = new DefaultDiagramModel();
-        model.setMaxConnections(-1);
-        model.setConnectionsDetachable(false);
         
         for (ElementDiagram element : elements) {
             Element root = new Element(element.name, element.x + "em", element.y + "em");
@@ -117,16 +115,25 @@ public class ConceptsDiagramBean implements Serializable {
             if (!isRoot(panel, element.name)) {
                 Element elementParent = model.findElement(getParentElement(element.name).text);
                 Element elementDiagram = model.findElement(element.name);
-                model.connect(new Connection(elementParent.getEndPoints().get(
-                        elementParent.getEndPoints().size() > 1 ? 1 : 0), elementDiagram.getEndPoints().get(0), connector));
+                model.connect(createConnection(elementParent.getEndPoints().get(
+                        elementParent.getEndPoints().size() > 1 ? 1 : 0), elementDiagram.getEndPoints().get(0)));
             }
         }
         
         if (!StringUtils.isEmpty(elementIdSelected)) {
             Element elementParent = model.findElement(elementIdSelected);
-            elementParent.setStyleClass("ui-diagram-element-selected");
+            if (elementParent != null) {
+                elementParent.setStyleClass("ui-diagram-element-selected");
+            }
         }
 
+    }
+    
+    private Connection createConnection(EndPoint from, EndPoint to) {
+        Connection conn = new Connection(from, to);
+        conn.getOverlays().add(new ArrowOverlay(20, 20, 1, 1));
+         
+        return conn;
     }
 
     private TextInBox getParentElement(String nameChild) {
@@ -212,33 +219,44 @@ public class ConceptsDiagramBean implements Serializable {
 
     public void chargerNoeud() {
 
-        String idConcept = conceptHelper.getConceptIdFromPrefLabel(connect.getPoolConnexion(), elementIdSelected,
-                selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
-
-        ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(connect.getPoolConnexion(),
-                idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
-        
-        if (CollectionUtils.isEmpty(childs)) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_INFO, "", "Le concept '" + elementIdSelected + "' n'a pas d'enfant !"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
-            return;
-        }
-
-        List<TextInBox> textInBoxes = new ArrayList<>();
-
         TextInBox parentElement = getElementFromTree(elementIdSelected);
 
-        for (NodeConceptTree child : childs) {
-            TextInBox childElement = new TextInBox(child.getTitle(), WIDTH_ELEMENT, HEIGHT_ELEMENT);
-            textInBoxes.add(childElement);
-            defaultTreeForTreeLayout.addChild(parentElement, childElement);
+        if (parentElement != null) {
+            List<TextInBox> temp = defaultTreeForTreeLayout.getChildrenList(parentElement);
+            if (!CollectionUtils.isEmpty(temp)) {
+                showMessage(FacesMessage.SEVERITY_INFO, "Le concept '" + elementIdSelected + "' est déjà été chargé !");
+                return;
+            }
+
+            String idConcept = conceptHelper.getConceptIdFromPrefLabel(connect.getPoolConnexion(), elementIdSelected,
+                    selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
+
+            ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(connect.getPoolConnexion(),
+                    idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
+
+            if (CollectionUtils.isEmpty(childs)) {
+                showMessage(FacesMessage.SEVERITY_INFO, "Le concept '" + elementIdSelected + "' n'a pas d'enfant !");
+                return;
+            }
+
+            List<TextInBox> textInBoxes = new ArrayList<>();
+
+            for (NodeConceptTree child : childs) {
+                TextInBox childElement = new TextInBox(child.getTitle(), WIDTH_ELEMENT, HEIGHT_ELEMENT);
+                textInBoxes.add(childElement);
+                defaultTreeForTreeLayout.addChild(parentElement, childElement);
+            }
+
+            elementsTreeMap.put(parentElement, textInBoxes);
+
+            drowDiagram();
         }
+    }
 
-        elementsTreeMap.put(parentElement, textInBoxes);
-
-        drowDiagram();
+    private void showMessage(FacesMessage.Severity type, String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(type, "", message));
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
     }
 
     private TextInBox getElementFromTree(String elementName) {
@@ -271,25 +289,27 @@ public class ConceptsDiagramBean implements Serializable {
 
         TextInBox elementToDelete = getElementFromTree(elementIdSelected);
 
-        Map<TextInBox, List> elementsTreeMapTemp = new HashMap<>();
-        DefaultTreeForTreeLayout<TextInBox> treeTemp = new DefaultTreeForTreeLayout<>(defaultTreeForTreeLayout.getRoot());
+        if (elementToDelete != null) {
+            Map<TextInBox, List> elementsTreeMapTemp = new HashMap<>();
+            DefaultTreeForTreeLayout<TextInBox> treeTemp = new DefaultTreeForTreeLayout<>(defaultTreeForTreeLayout.getRoot());
 
 
-        TextInBox elementParent = defaultTreeForTreeLayout.getRoot();
+            TextInBox elementParent = defaultTreeForTreeLayout.getRoot();
 
-        if (elementToDelete.text.equalsIgnoreCase(elementParent.text)) {
+            if (elementToDelete.text.equalsIgnoreCase(elementParent.text)) {
+                defaultTreeForTreeLayout = treeTemp;
+                elementsTreeMap = elementsTreeMapTemp;
+            }
+
+
+            List<TextInBox> childs = defaultTreeForTreeLayout.getChildrenList(elementParent);
+            deleteConstractTree(treeTemp, elementsTreeMapTemp, childs, elementParent, elementToDelete);
+
             defaultTreeForTreeLayout = treeTemp;
             elementsTreeMap = elementsTreeMapTemp;
+
+            drowDiagram();
         }
-
-
-        List<TextInBox> childs = defaultTreeForTreeLayout.getChildrenList(elementParent);
-        deleteConstractTree(treeTemp, elementsTreeMapTemp, childs, elementParent, elementToDelete);
-
-        defaultTreeForTreeLayout = treeTemp;
-        elementsTreeMap = elementsTreeMapTemp;
-
-        drowDiagram();
     }
 
     private void deleteConstractTree(DefaultTreeForTreeLayout<TextInBox> treeTemp, Map<TextInBox, List> elementsTreeMapTemp,
