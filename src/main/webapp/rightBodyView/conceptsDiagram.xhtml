@@ -4,7 +4,58 @@
              xmlns:h="http://java.sun.com/jsf/html"
              xmlns:b="http://bootsfaces.net/ui">
 
-    <b:panel>
+    <b:row style="margin-top: 5px; margin-bottom: 5px">
+        <b:column>
+            <span>Zoom : </span>
+            <select id='zooming' onchange="zoomings(this);">
+                <option value="10%">10%</option>
+                <option value="20%">20%</option>
+                <option value="30%">30%</option>
+                <option value="40%">40%</option>
+                <option value="50%">50%</option>
+                <option value="60%">60%</option>
+                <option value="70%">70%</option>
+                <option value="80%">80%</option>
+                <option value="90%">90%</option>
+                <option value="100%" selected="selected">100%</option>
+                <option value="120%">120%</option>
+                <option value="150%">150%</option>
+                <option value="200%">200%</option>
+            </select>
+        </b:column>
+    </b:row>
+
+    <p:panel id="diagramPanel" header="Concept : #{tree.treeNodeDataSelect.name}" >
+
+        <script type="text/javascript">
+
+            var scrollPosition_X = 0;
+            var scrollPosition_Y = 0;
+
+            function zoomings(optionSel) {
+                var OptionSelected = optionSel.selectedIndex;
+                var val = optionSel.options[OptionSelected].text;
+                var div = document.getElementById("diagramPanel");
+                div.style.zoom = val;
+            }
+
+            function initScrollPosition() {
+                var elmnt = document.getElementById("diagram");
+                scrollPosition_X = elmnt.scrollLeft;
+                scrollPosition_Y = elmnt.scrollTop;
+                console.log("intit : " + scrollPosition_X + " / " + scrollPosition_Y);
+                return false;
+            }
+
+            function setScrollPosition() {
+                var elmnt = document.getElementById("diagram");
+                elmnt.scrollLeft = scrollPosition_X;
+                elmnt.scrollTop = scrollPosition_Y;
+                console.log("intit : " + scrollPosition_X + " / " + scrollPosition_Y);
+                return false;
+            }
+        </script>
+
         <style type="text/css">
             .ui-diagram-element {
                 width:10em;
@@ -33,33 +84,212 @@
             }
         </style>
 
-
-        <div style="z-index: 1; position: absolute;">
-            <h:form>
-                <b:row style="margin-left: 7px">
-                    <p:commandButton icon="fa fa-plus" style="margin-right:20px;" title="Charger un element"
-                              ajax="true" actionListener="#{conceptsDiagramBean.chargerNoeud()}" update="diagram"/>
-
-                    <p:commandButton icon="fa fa-minus" style="margin-right:20px;" title="Fermer un element"
-                              ajax="true" actionListener="#{conceptsDiagramBean.closeNoeud()}" update="diagram"/>
-                </b:row>
-            </h:form>
-        </div>
-
         <p:diagram id="diagram" value="#{conceptsDiagramBean.model}" style="height:600px; position: relative;" />
 
-
         <p:remoteCommand name="elementClicked" actionListener="#{conceptsDiagramBean.onElementClicked}"/>
+        <p:remoteCommand name="closeElement" actionListener="#{conceptsDiagramBean.closeNoeud}"/>
 
         <script type="text/javascript">
             $(document).on('click',
                     '.ui-diagram > .ui-diagram-element',
                     function (info) {
+                        initScrollPosition();
                         elementClicked([{
                                 name: 'elementId',
                                 value: info.target.id
                             }]);
                     });
         </script>
-    </b:panel>
+
+
+        <style type="text/css">
+            .contextmenu{
+                display: none;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                position: absolute;
+                background-color: #f9f9f9;
+                width: auto;
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                border-radius: 5px;
+                z-index: 1;
+                font-family: Arial,Sans-serif;
+                font-size: 14px;
+            }
+            .contextmenu::after {
+                content:' ';
+                border-bottom: 6px solid white;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                height: 0;
+                position: absolute;
+                left: 16px ;
+                top: -6px;
+            }
+            .contextmenu li a {
+                display: block;
+                padding: 6px;
+                color: black;
+                text-decoration: none;
+            }
+            .contextmenu li i {
+                margin-left:10px;
+                margin-right:8px;
+            }
+            .contextmenu li:hover a {
+                color: white;
+                background-color: #39c;
+            }
+            ul.contextmenu li.contextmenu-title a{
+                color: #999;
+            }
+            .contextmenu > li.disabled a {
+                pointer-events: none;
+                color: #aaa;
+            }
+            .contextmenu-title {
+                font-weight: bold;
+                pointer-events: none;
+            }
+            .contextmenu-divider{
+                border-top: 1px solid #d7d3d7;
+                border-bottom: 1px solid #ffffff;
+                height: 0;
+                padding: 0;
+                pointer-events: none;
+            }
+            .fa-times
+            {
+                color:red;
+            }
+        </style>
+
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function ()
+            {
+                $("#diagramPanel").bind("contextmenu", function (event)
+                {
+                    event.preventDefault();
+                    var offsets = $('#diagramPanel').offset();
+                    var infoTop = offsets.top;
+                    var infoLeft = offsets.left;
+                    var posLeft;
+                    var posTop;
+                    /*Get window size:*/
+                    var winWidth = $("#diagramPanel").width();
+                    var winHeight = $("#diagramPanel").height();
+                    var infoRight = winWidth + infoLeft;
+                    var infoBottom = winHeight + infoTop;
+                    /*Get pointer position:*/
+                    var posX = event.pageX;
+                    var posY = event.pageY;
+                    /*Get contextmenu size:*/
+                    var menuWidth = $(".contextmenu").width();
+                    var menuHeight = $(".contextmenu").height();
+                    var contextRight = posX + menuWidth;
+                    var contextBottom = posY + menuHeight;
+                    /*Prevent page overflow:*/
+                    posLeft = posX;
+                    posTop = posY;
+                    if (contextRight > infoRight)
+                    {
+                        posLeft -= (contextRight - infoRight) + 10;
+                    }
+                    if (contextBottom > infoBottom)
+                    {
+                        posTop -= (contextBottom - infoBottom) + 10;
+                    }
+                    $(".contextmenu")
+                            .appendTo("#diagramPanel")
+                            .css({"left": posLeft + "px", "top": posTop + "px"})
+                            .show();
+                }).bind("click", function (event)
+                {
+                    $(".contextmenu").hide();
+                });
+                $(".contextmenu").click(function (event)
+                {
+                    if (event.target.text)
+                    {
+                        var menuClicked = event.target.text;
+                        switch (menuClicked) {
+                            case 'Fermer':
+                                closeElement();
+                                break;
+                            case 'Informations':
+                              PF('conceptDdetail').show();
+                              break;
+                        }
+                    }
+                });
+            }, false);
+        </script>
+
+        <ul class="contextmenu">
+            <li class="contextmenu-title"><a href="#">Menu</a></li>
+            <li id="cut"><a href="#"><i class="fa fa-scissors"></i>Informations</a></li>
+            <li class="contextmenu-divider"><a href="#"></a></li>
+            <li id="delete"><a href="#"><i class="fa fa-times"></i>Fermer</a></li>
+        </ul>
+        
+        <h:commandButton id="hdnBtn" actionListener="#{personBean.method}" style="display: none;" />
+
+    </p:panel>
+    
+    <p:dialog header="Détail du concept 'CONCEPT_DETAIL'" 
+              widgetVar="conceptDdetail" modal="true" resizable="true" position="top" width="400" 
+              style="margin-top: 50px" >         
+
+        <h:form id="conceptDdetailForm">  
+
+            <b:row>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: right; font-weight: bold;" value="Id concept : "/>
+                </b:column>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: left;" value="ID_CONCEPT"/>
+                </b:column>
+            </b:row>
+
+            <b:row style="margin-top: 5px">
+                <b:column medium-screen="6">
+                    <h:outputText style="float: right; font-weight: bold;" value="Type : "/>
+                </b:column>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: left;" value="TYPE"/>
+                </b:column>
+            </b:row>
+
+            <b:row style="margin-top: 5px">
+                <b:column medium-screen="6">
+                    <h:outputText style="float: right; font-weight: bold;" value="Utilisateur : "/>
+                </b:column>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: left;" value="Utilisateur"/>
+                </b:column>
+            </b:row>
+
+            <b:row style="margin-top: 5px">
+                <b:column medium-screen="6">
+                    <h:outputText style="float: right; font-weight: bold;" value="Date de création : "/>
+                </b:column>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: left;" value="DATE_CREATION"/>
+                </b:column>
+            </b:row>
+
+            <b:row style="margin-top: 5px">
+                <b:column medium-screen="6">
+                    <h:outputText style="float: right; font-weight: bold;" value="Date de modification : "/>
+                </b:column>
+                <b:column medium-screen="6">
+                    <h:outputText style="float: left;" value="DATE_MODIFICATION"/>
+                </b:column>
+            </b:row>
+
+        </h:form>
+    </p:dialog>
+
 </ui:fragment>

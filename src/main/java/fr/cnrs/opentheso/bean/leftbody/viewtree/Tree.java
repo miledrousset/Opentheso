@@ -425,4 +425,12 @@ public class Tree implements Serializable {
         
         conceptsDiagramBean.init(treeNodeDataSelect.getNodeId(), idTheso, idLang);
     }
+
+    public TreeNodeData getTreeNodeDataSelect() {
+        return treeNodeDataSelect;
+    }
+
+    public void setTreeNodeDataSelect(TreeNodeData treeNodeDataSelect) {
+        this.treeNodeDataSelect = treeNodeDataSelect;
+    }
 }
