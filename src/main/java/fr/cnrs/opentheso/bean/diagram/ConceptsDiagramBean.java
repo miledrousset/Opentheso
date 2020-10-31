@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.diagram;
 
-import com.sun.faces.component.visit.FullVisitContext;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
@@ -10,20 +9,6 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import org.abego.treelayout.TreeLayout;
 import org.abego.treelayout.util.DefaultConfiguration;
 import org.abego.treelayout.util.DefaultTreeForTreeLayout;
-
-import java.io.Serializable;
-import java.util.*;
-
-import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIViewRoot;
-import javax.faces.component.visit.VisitCallback;
-import javax.faces.component.visit.VisitContext;
-import javax.faces.component.visit.VisitResult;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,11 +24,19 @@ import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.overlay.ArrowOverlay;
 
+import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.util.*;
+
 
 @Named("conceptsDiagramBean")
 @SessionScoped
 public class ConceptsDiagramBean implements Serializable {
-    
+
     private final int GAP_BETWEEN_LEVELS = 4;
     private final int GAP_BETWEEN_NODES = 1;
     private final int HEIGHT_ELEMENT = 20;
@@ -59,25 +52,26 @@ public class ConceptsDiagramBean implements Serializable {
     private ConceptHelper conceptHelper;
     private DefaultDiagramModel model;
 
+    private List<ElementDiagram> elements;
     private Map<TextInBox, List> elementsTreeMap;
     private DefaultTreeForTreeLayout<TextInBox> defaultTreeForTreeLayout;
-    
+
 
     public void init(String conceptId, String idTheso, String idLang) {
 
         conceptHelper = new ConceptHelper();
 
         NodeConcept nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), conceptId, idTheso, idLang);
-        
-        TextInBox root = new TextInBox(nodeConcept.getTerm().getLexical_value(), 
+
+        TextInBox root = new TextInBox(nodeConcept.getTerm().getLexical_value(),
                 WIDTH_ELEMENT, HEIGHT_ELEMENT);
-        
+
         elementsTreeMap = new HashMap<>();
         defaultTreeForTreeLayout = new DefaultTreeForTreeLayout<>(root);
-        
+
         drowDiagram();
     }
-    
+
 
     private void drowDiagram() {
 
@@ -86,11 +80,11 @@ public class ConceptsDiagramBean implements Serializable {
         model.clear();
         model.setMaxConnections(-1);
         model.setConnectionsDetachable(false);
-        
+
         FlowChartConnector connector = new FlowChartConnector();
         connector.setPaintStyle("{strokeStyle:'#C7B097',lineWidth:3}");
         model.setDefaultConnector(connector);
-        
+
         DefaultConfiguration<TextInBox> configuration = new DefaultConfiguration<>(
                 GAP_BETWEEN_LEVELS, GAP_BETWEEN_NODES);
 
@@ -101,17 +95,17 @@ public class ConceptsDiagramBean implements Serializable {
 
         TextInBoxTreePane panel = new TextInBoxTreePane(treeLayout);
 
-        List<ElementDiagram> elements = panel.calculePositions();
+        elements = panel.calculePositions();
 
-        for (ElementDiagram element : elements) {
-            Element root = new Element(element.name, element.x + "em", element.y + "em");
-            root.setId(element.name);
-            
-            if (isRoot(panel, element.name)) {
+        for (int i = 0; i < elements.size(); i++) {
+            Element root = new Element(elements.get(i).name, elements.get(i).x + "em", elements.get(i).y + "em");
+            root.setId(i+"");
+
+            if (isRoot(panel, elements.get(i).name)) {
                 root.addEndPoint(createEndPoint(EndPointAnchor.BOTTOM));
             } else {
                 root.addEndPoint(createEndPoint(EndPointAnchor.TOP));
-                if (hasChilds(panel, element.name)) {
+                if (hasChilds(panel, elements.get(i).name)) {
                     root.addEndPoint(createEndPoint(EndPointAnchor.BOTTOM));
                 }
             }
@@ -119,17 +113,21 @@ public class ConceptsDiagramBean implements Serializable {
         }
 
 
-        for (ElementDiagram element : elements) {
-            if (!isRoot(panel, element.name)) {
-                Element elementParent = model.findElement(getParentElement(element.name).text);
-                Element elementDiagram = model.findElement(element.name);
-                model.connect(createConnection(elementParent.getEndPoints().get(
-                        elementParent.getEndPoints().size() > 1 ? 1 : 0), elementDiagram.getEndPoints().get(0)));
+        elements.forEach(element -> {
+            try {
+                if (!isRoot(panel, element.name)) {
+                    Element elementParent = findElement(getParentElement(element.name).text);
+                    Element elementDiagram = findElement(element.name);
+                    model.connect(createConnection(elementParent.getEndPoints().get(
+                            elementParent.getEndPoints().size() > 1 ? 1 : 0), elementDiagram.getEndPoints().get(0)));
+                }
+            } catch (Exception e) {
+
             }
-        }
-        
+        });
+
         if (!StringUtils.isEmpty(elementSelected)) {
-            Element elementParent = model.findElement(elementSelected);
+            Element elementParent = findElement(elementSelected);
             if (elementParent != null) {
                 elementParent.setStyleClass("ui-diagram-element-selected");
             }
@@ -139,11 +137,26 @@ public class ConceptsDiagramBean implements Serializable {
         PrimeFaces.current().executeScript("setScrollPosition();");
 
     }
-    
+
+    public Element findElement(String name) {
+        Element elementSearch = null;
+
+        if (!CollectionUtils.isEmpty(model.getElements())) {
+            for(int i = 0; i < model.getElements().size(); ++i) {
+                Element el = (Element) this.model.getElements().get(i);
+                if (el.getData().equals(name)) {
+                    elementSearch = el;
+                    break;
+                }
+            }
+        }
+        return elementSearch;
+    }
+
     private Connection createConnection(EndPoint from, EndPoint to) {
         Connection conn = new Connection(from, to);
         conn.getOverlays().add(new ArrowOverlay(20, 20, 1, 1));
-         
+
         return conn;
     }
 
@@ -165,23 +178,23 @@ public class ConceptsDiagramBean implements Serializable {
         }
         return parentElement;
     }
-    
+
     private boolean isRoot(TextInBoxTreePane panel, String elementDiagramName) {
-        
+
         if (panel.getTreeLayout().getTree().getRoot() == null) {
             return false;
         }
-        
+
         return panel.getTreeLayout().getTree().getRoot().text.equals(elementDiagramName);
     }
-    
+
     private boolean hasChilds(TextInBoxTreePane panel, String elementName) {
         TextInBox textInBox = panel.findElementInTree(elementName);
-        
+
         if (textInBox == null) return false;
-        
+
         Iterable<TextInBox> iterable = panel.getTreeLayout().getTree().getChildren(textInBox);
-        
+
         if (iterable instanceof Collection<?>) {
             return !((Collection<?>)iterable).isEmpty();
         } else {
@@ -203,28 +216,17 @@ public class ConceptsDiagramBean implements Serializable {
 
     public void onElementClicked() {
         String str = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("elementId");
-        elementSelected = str.substring(8, str.length());
-        
-        DefaultConfiguration<TextInBox> configuration = new DefaultConfiguration<>(
-                GAP_BETWEEN_LEVELS, GAP_BETWEEN_NODES);
+        elementSelected = str.substring(8);
+        elementSelected = elements.get(Integer.parseInt(elementSelected)).name;
+
+        DefaultConfiguration<TextInBox> configuration = new DefaultConfiguration<>(GAP_BETWEEN_LEVELS, GAP_BETWEEN_NODES);
 
         TextInBoxNodeExtentProvider nodeExtentProvider = new TextInBoxNodeExtentProvider();
 
-        TreeLayout<TextInBox> treeLayout = new TreeLayout<>(defaultTreeForTreeLayout,
-                nodeExtentProvider, configuration);
+        TreeLayout<TextInBox> treeLayout = new TreeLayout<>(defaultTreeForTreeLayout, nodeExtentProvider, configuration);
 
         TextInBoxTreePane panel = new TextInBoxTreePane(treeLayout);
 
-        List<ElementDiagram> elements = panel.calculePositions();
-        for (ElementDiagram elementDiagram : elements) {
-            Element temp = model.findElement(elementDiagram.name);
-            if (elementSelected.equals(elementDiagram.name)) {
-                temp.setStyleClass("ui-diagram-element-selected");
-            } else {
-                temp.setStyleClass("ui-diagram-element");
-            }
-        }
-        
         chargerNoeud();
     }
 
@@ -233,9 +235,10 @@ public class ConceptsDiagramBean implements Serializable {
         TextInBox parentElement = getElementFromTree(elementSelected);
 
         if (parentElement != null) {
-            
+
             List<TextInBox> temp = defaultTreeForTreeLayout.getChildrenList(parentElement);
             if (!CollectionUtils.isEmpty(temp)) {
+                drowDiagram();
                 return;
             }
 
@@ -247,6 +250,7 @@ public class ConceptsDiagramBean implements Serializable {
 
             if (CollectionUtils.isEmpty(childs)) {
                 showMessage(FacesMessage.SEVERITY_INFO, "Le concept '" + elementSelected + "' n'a pas d'enfant !");
+                drowDiagram();
                 return;
             }
 
@@ -261,7 +265,6 @@ public class ConceptsDiagramBean implements Serializable {
             elementsTreeMap.put(parentElement, textInBoxes);
 
             drowDiagram();
-           
         }
     }
 
@@ -302,9 +305,9 @@ public class ConceptsDiagramBean implements Serializable {
         TextInBox elementToDelete = getElementFromTree(elementSelected);
 
         if (elementToDelete != null) {
-            
+
             PrimeFaces.current().executeScript("initScrollPosition();");
-            
+
             Map<TextInBox, List> elementsTreeMapTemp = new HashMap<>();
             DefaultTreeForTreeLayout<TextInBox> treeTemp = new DefaultTreeForTreeLayout<>(defaultTreeForTreeLayout.getRoot());
 
@@ -315,7 +318,6 @@ public class ConceptsDiagramBean implements Serializable {
                 defaultTreeForTreeLayout = treeTemp;
                 elementsTreeMap = elementsTreeMapTemp;
             }
-
 
             List<TextInBox> childs = defaultTreeForTreeLayout.getChildrenList(elementParent);
             deleteConstractTree(treeTemp, elementsTreeMapTemp, childs, elementParent, elementToDelete);
@@ -331,13 +333,9 @@ public class ConceptsDiagramBean implements Serializable {
                                      List<TextInBox> childs, TextInBox elementParent, TextInBox elementToDelete) {
 
         childs.forEach(child -> {
-
             treeTemp.addChild(elementParent, child);
-
             if (!elementToDelete.text.equalsIgnoreCase(child.text)) {
-
                 List<TextInBox> childsTmp = defaultTreeForTreeLayout.getChildrenList(child);
-
                 if (!CollectionUtils.isEmpty(childsTmp)) {
                     deleteConstractTree(treeTemp, elementsTreeMapTemp, childsTmp, child, elementToDelete);
                 }
@@ -347,28 +345,6 @@ public class ConceptsDiagramBean implements Serializable {
         elementsTreeMapTemp.put(elementParent, childs);
     }
 
-    public UIComponent findComponent(final String id) {
-
-        FacesContext context = FacesContext.getCurrentInstance();
-        UIViewRoot root = context.getViewRoot();
-        final UIComponent[] found = new UIComponent[1];
-
-        root.visitTree(new FullVisitContext(context), new VisitCallback() {
-            @Override
-            public VisitResult visit(VisitContext context, UIComponent component) {
-                if (component != null
-                    && component.getId() != null
-                    && component.getId().equals(id)) {
-                    found[0] = component;
-                    return VisitResult.COMPLETE;
-                }
-                return VisitResult.ACCEPT;
-            }
-        });
-
-        return found[0];
-    }
-
     public String getElementSelected() {
         return elementSelected;
     }
@@ -376,5 +352,5 @@ public class ConceptsDiagramBean implements Serializable {
     public void setElementSelected(String elementSelected) {
         this.elementSelected = elementSelected;
     }
-    
+
 }

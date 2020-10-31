@@ -3,6 +3,75 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://java.sun.com/jsf/html"
              xmlns:b="http://bootsfaces.net/ui">
+    
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function ()
+        {
+            $("#diagramPanel").bind("contextmenu", function (event)
+            {
+                event.preventDefault();
+                var offsets = $('#diagramPanel').offset();
+                var infoTop = offsets.top;
+                var infoLeft = offsets.left;
+                var posLeft;
+                var posTop;
+                /*Get window size:*/
+                var winWidth = $("#diagramPanel").width();
+                var winHeight = $("#diagramPanel").height();
+                var infoRight = winWidth + infoLeft;
+                var infoBottom = winHeight + infoTop;
+                /*Get pointer position:*/
+                var posX = event.pageX;
+                var posY = event.pageY;
+                /*Get contextmenu size:*/
+                var menuWidth = $(".contextmenu").width();
+                var menuHeight = $(".contextmenu").height();
+                var contextRight = posX + menuWidth;
+                var contextBottom = posY + menuHeight;
+                /*Prevent page overflow:*/
+                posLeft = posX;
+                posTop = posY;
+                if (contextRight > infoRight)
+                {
+                    posLeft -= (contextRight - infoRight) + 10;
+                }
+                if (contextBottom > infoBottom)
+                {
+                    posTop -= (contextBottom - infoBottom) + 10;
+                }
+                $(".contextmenu")
+                    .appendTo("#diagramPanel")
+                    .css({"left": posLeft + "px", "top": posTop + "px"})
+                    .show();
+            }).bind("click", function (event)
+            {
+                $(".contextmenu").hide();
+            });
+            $(".contextmenu").click(function (event)
+            {
+                if (event.target.text)
+                {
+                    var menuClicked = event.target.text;
+                    switch (menuClicked) {
+                        case 'Fermer':
+                            initScrollPosition();
+                            closeElement();
+                            break;
+                        case 'Informations':
+                            PF('conceptDdetail').show();
+                            break;
+                    }
+                }
+            });
+        }, false);
+    </script>
+
+    <ul class="contextmenu">
+        <li class="contextmenu-title"><a href="#">Menu</a></li>
+        <li id="cut"><a href="#"><i class="fa fa-scissors"></i>Informations</a></li>
+        <li class="contextmenu-divider"><a href="#"></a></li>
+        <li id="delete"><a href="#"><i class="fa fa-times"></i>Fermer</a></li>
+    </ul>
 
     <b:row style="margin-top: 5px; margin-bottom: 5px">
         <b:column>
@@ -24,7 +93,7 @@
             </select>
         </b:column>
     </b:row>
-
+    
     <p:panel id="diagramPanel" header="Concept : #{tree.treeNodeDataSelect.name}" >
 
         <script type="text/javascript">
@@ -90,15 +159,15 @@
         <p:remoteCommand name="closeElement" actionListener="#{conceptsDiagramBean.closeNoeud}"/>
 
         <script type="text/javascript">
-            $(document).on('click',
-                    '.ui-diagram > .ui-diagram-element',
-                    function (info) {
-                        initScrollPosition();
-                        elementClicked([{
-                                name: 'elementId',
-                                value: info.target.id
-                            }]);
-                    });
+            $(document).on('click', '.ui-diagram > .ui-diagram-element',
+                function (info) {
+                    initScrollPosition();
+                    elementClicked([{
+                        name: 'elementId',
+                        value: info.target.id
+                    }]);
+                }
+            );
         </script>
 
 
@@ -165,76 +234,6 @@
                 color:red;
             }
         </style>
-
-        <script type="text/javascript">
-            document.addEventListener("DOMContentLoaded", function ()
-            {
-                $("#diagramPanel").bind("contextmenu", function (event)
-                {
-                    event.preventDefault();
-                    var offsets = $('#diagramPanel').offset();
-                    var infoTop = offsets.top;
-                    var infoLeft = offsets.left;
-                    var posLeft;
-                    var posTop;
-                    /*Get window size:*/
-                    var winWidth = $("#diagramPanel").width();
-                    var winHeight = $("#diagramPanel").height();
-                    var infoRight = winWidth + infoLeft;
-                    var infoBottom = winHeight + infoTop;
-                    /*Get pointer position:*/
-                    var posX = event.pageX;
-                    var posY = event.pageY;
-                    /*Get contextmenu size:*/
-                    var menuWidth = $(".contextmenu").width();
-                    var menuHeight = $(".contextmenu").height();
-                    var contextRight = posX + menuWidth;
-                    var contextBottom = posY + menuHeight;
-                    /*Prevent page overflow:*/
-                    posLeft = posX;
-                    posTop = posY;
-                    if (contextRight > infoRight)
-                    {
-                        posLeft -= (contextRight - infoRight) + 10;
-                    }
-                    if (contextBottom > infoBottom)
-                    {
-                        posTop -= (contextBottom - infoBottom) + 10;
-                    }
-                    $(".contextmenu")
-                            .appendTo("#diagramPanel")
-                            .css({"left": posLeft + "px", "top": posTop + "px"})
-                            .show();
-                }).bind("click", function (event)
-                {
-                    $(".contextmenu").hide();
-                });
-                $(".contextmenu").click(function (event)
-                {
-                    if (event.target.text)
-                    {
-                        var menuClicked = event.target.text;
-                        switch (menuClicked) {
-                            case 'Fermer':
-                                closeElement();
-                                break;
-                            case 'Informations':
-                              PF('conceptDdetail').show();
-                              break;
-                        }
-                    }
-                });
-            }, false);
-        </script>
-
-        <ul class="contextmenu">
-            <li class="contextmenu-title"><a href="#">Menu</a></li>
-            <li id="cut"><a href="#"><i class="fa fa-scissors"></i>Informations</a></li>
-            <li class="contextmenu-divider"><a href="#"></a></li>
-            <li id="delete"><a href="#"><i class="fa fa-times"></i>Fermer</a></li>
-        </ul>
-        
-        <h:commandButton id="hdnBtn" actionListener="#{personBean.method}" style="display: none;" />
 
     </p:panel>
     
