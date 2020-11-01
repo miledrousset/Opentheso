@@ -6358,7 +6358,7 @@ public class ConceptHelper {
                         "FROM preferred_term, term " +
                         "WHERE term.id_thesaurus = '"+idThesaurus+"' " +
                         "AND term.id_term = preferred_term.id_term " +
-                        "AND term.lexical_value = '"+prefLabel+"' " +
+                        "AND term.lexical_value like '%"+prefLabel+"%' " +
                         "AND lang = '"+lang+"';";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
