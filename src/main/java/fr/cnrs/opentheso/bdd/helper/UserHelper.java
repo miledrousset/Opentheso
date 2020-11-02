@@ -495,6 +495,61 @@ public class UserHelper {
         return nodeUserGroups;
     }
     
+    /**
+     * retourne la liste de tous les projets où l'utilisateur a des droits Admin dessus
+     * @param ds
+     * @param idUser
+     * @return 
+     */
+    public ArrayList<NodeUserGroup> getProjectsOfUserAsAdmin(
+            HikariDataSource ds, int idUser) {
+        ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        try {
+            conn = ds.getConnection();
+
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT" +
+                                " user_group_label.id_group, user_group_label.label_group" +
+                                " FROM" +
+                                " user_role_group, user_group_label" +
+                                " WHERE" +
+                                " user_role_group.id_group = user_group_label.id_group" +
+                                " AND" +
+                                " user_role_group.id_user = " + idUser +
+                                " AND" +
+                                " user_role_group.id_role = 2" +
+                                " order by label_group";
+                    resultSet = stmt.executeQuery(query);
+                    while (resultSet.next()) {
+                        NodeUserGroup nodeUserGroup = new NodeUserGroup();
+                        nodeUserGroup.setGroupName(resultSet.getString("label_group"));
+                        nodeUserGroup.setIdGroup(resultSet.getInt("id_group"));
+                        nodeUserGroups.add(nodeUserGroup);
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeUserGroups;
+    }        
+    
+    /**
+     * retourne la liste de tous les projets où l'utilisateur a des droits
+     * @param ds
+     * @param idUser
+     * @return 
+     */
     public ArrayList<NodeUserGroup> getProjectsOfUser(
             HikariDataSource ds, int idUser) {
         ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
@@ -752,6 +807,53 @@ public class UserHelper {
         }
         return nodeUserGroupThesauruses;
     }
+    
+    /**
+     * cette fonction permet de retourner la liste des thésaurus où l'utilisateur a des droits admin l
+     * l'utilisateur peut faire partie de plusieurs groupes, donc on
+     * retourne la liste de tous ces thésaurus de différents groupes
+     *
+     * @param ds
+     * @param idUser
+     * @return #MR
+     */
+    public List<String> getThesaurusOfUserAsAdmin(HikariDataSource ds, int idUser) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        List<String> nodeUserGroupThesauruses = new ArrayList<>();
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT" +
+                                " user_group_thesaurus.id_thesaurus" +
+                                " FROM " +
+                                " user_group_thesaurus, user_role_group" +
+                                " WHERE " +
+                                " user_role_group.id_group = user_group_thesaurus.id_group" +
+                                " AND" +
+                                " user_role_group.id_user =  " + idUser +
+                                " AND" +
+                                " user_role_group.id_role = 2" +
+                                " order by id_thesaurus;";
+                    resultSet = stmt.executeQuery(query);
+
+                    while (resultSet.next()) {
+                        nodeUserGroupThesauruses.add(resultSet.getString("id_thesaurus"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeUserGroupThesauruses;
+    }    
 
     /**
      * cette fonction permet de retourner la liste des thésaurus et les groupes

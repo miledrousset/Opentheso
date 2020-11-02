@@ -68,7 +68,7 @@ public class NewThesoBean implements Serializable {
         if (currentUser.getNodeUser().isIsSuperAdmin()) {
             nodeProjects = userHelper.getAllProject(connect.getPoolConnexion());
         } else {
-            nodeProjects = userHelper.getProjectsOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            nodeProjects = userHelper.getProjectsOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
             for (NodeUserGroup nodeUserProject : nodeProjects) {
                 selectedProject = "" + nodeUserProject.getIdGroup();
             }

@@ -15,7 +15,7 @@
         </b:row>
 
         <p:panel header="Types" rendered="#{viewExportBean.isPdfExport()}" toggleable="true" closable="false" toggleSpeed="500"
-                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+                 closeSpeed="500" style="margin-bottom:20px" collapsed="false">
             <p:dataTable id="listType" var="type" value="#{viewExportBean.types}"
                          selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0">
                 <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
@@ -23,12 +23,44 @@
                     <h:outputText value="#{type}" />
                 </p:column>
             </p:dataTable>
+            <p:spacer/>    
+            <b:row >
+                <b:column span="2" >
+                    <h:outputText value="Langue 1:"/>
+                </b:column>
+                <b:column span="2" >
+                    <p:selectOneMenu value="#{viewExportBean.selectedLang1_PDF}" 
+                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                        <f:selectItems  value="#{viewExportBean.languagesOfTheso}" 
+                                        actionListener="#{viewExportBean.selectedLang1_PDF}" var="langs" itemLabel="#{langs.value}" itemValue="#{langs.code}"/>
+                    </p:selectOneMenu>
+                </b:column>
+            </b:row>
+            <b:row> 
+                <b:column span="2" >
+                    <h:outputText value="Langue 2:" />
+                </b:column>
+                <b:column span="2" >
+                    <p:selectOneMenu value="#{viewExportBean.selectedLang2_PDF}"
+                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                        <f:selectItem itemLabel="..." itemValue=""/>
+                        <f:selectItems  value="#{viewExportBean.languagesOfTheso}" var="langs2" itemLabel="#{langs2.value}" itemValue="#{langs2.code}"/>
+
+                    </p:selectOneMenu>
+                </b:column>                
+            </b:row>             
+
+
         </p:panel>
 
-        <p:panel header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500" 
+        <p:panel visible="false" header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500" 
                  closeSpeed="500" style="margin-bottom:20px" collapsed="true">
-            <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}"
+            <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}" 
                          selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllLangsSelect}" process="@this" partialSubmit="true" />
+                
                 <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
                 <p:column headerText="Code" width="60">
                     <h:outputText value="#{langue.code}" />
@@ -39,10 +71,12 @@
             </p:dataTable>
         </p:panel>
 
-        <p:panel header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500" 
+        <p:panel visible="false" header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500" 
                  closeSpeed="500" style="margin-bottom:20px" collapsed="true">
             <p:dataTable id="listGroupe" var="groupOfTheso" value="#{viewExportBean.groupList}" style=";margin-bottom:0"
                          selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}">
+                <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllGroupsSelect}" process="@this" partialSubmit="true" />
+                
                 <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
                 <p:column headerText="Id" width="200" styleClass="styleText2">
                     <h:outputText value="#{groupOfTheso.conceptGroup.idgroup}" />
@@ -54,8 +88,8 @@
         </p:panel>
 
         <b:row rendered="#{viewExportBean.isRdfExport()}">
-            <b:column span="2" offset="7">
-                <h:outputText value="Format de sortie :" />
+            <b:column span="3" offset="6">
+                <h:outputText value="Format de sortie SKOS:" />
             </b:column>
             <b:column span="2" >
                 <p:selectOneMenu value="#{viewExportBean.selectedExportFormat}"

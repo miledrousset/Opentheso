@@ -6,13 +6,16 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import java.io.Serializable;
+import java.util.ArrayList;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -35,7 +38,9 @@ public class CurrentUser implements Serializable {
 
     private NodeUser nodeUser;
     private String username;
-    private String password;    
+    private String password;
+    
+    private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;  
 
     public CurrentUser() {
     }
@@ -156,6 +161,7 @@ public class CurrentUser implements Serializable {
             return;
         }
         roleOnThesoBean.showListTheso();
+        initAllAuthorizedProjectAsAdmin();
 //        addAuthorizedThesoToHM();
 /*        listeUser = null;
         listeGroupsOfUser = null;
@@ -181,6 +187,21 @@ public class CurrentUser implements Serializable {
             //       initVue();
         }
     }
+    
+    /**
+     * permet de savoir si l'utilisateur est admin au moins sur un projet
+     * pour contôler la partie import et export
+     * @return 
+     */
+    private void initAllAuthorizedProjectAsAdmin(){
+        UserHelper userHelper = new UserHelper();
+        ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdminTemp = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
+        allAuthorizedProjectAsAdmin = new ArrayList<>();
+        for (NodeUserRoleGroup nodeUserRoleGroup : allAuthorizedProjectAsAdminTemp) {
+            if(nodeUserRoleGroup.isIsAdmin())
+                allAuthorizedProjectAsAdmin.add(nodeUserRoleGroup);
+        }
+    }
 
     public void forgotPassword() {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Default user name: BootsFaces");
@@ -196,5 +217,14 @@ public class CurrentUser implements Serializable {
     public void setNodeUser(NodeUser nodeUser) {
         this.nodeUser = nodeUser;
     }
+
+    public ArrayList<NodeUserRoleGroup> getAllAuthorizedProjectAsAdmin() {
+        return allAuthorizedProjectAsAdmin;
+    }
+
+    public void setAllAuthorizedProjectAsAdmin(ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin) {
+        this.allAuthorizedProjectAsAdmin = allAuthorizedProjectAsAdmin;
+    }
+
 
 }

@@ -37,7 +37,8 @@
                                     profileForm"                                    
                                    style="color: #{indexSetting.profileColor}">                                   
                         </b:navCommandLink>
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}"
+                        <b:navCommandLink rendered="#{(currentUser.nodeUser != null) and 
+                                                      (currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin)}" 
                                           action="#{indexSetting.setIsToolBoxActive(true)}"
                                           actionListener="#{toolBoxBean.reset()}"
                                           update="containerIndex formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
@@ -45,7 +46,8 @@
                                           value="Boite à outils" icon-align="right"
                                           style="color: #{indexSetting.toolBoxColor}">
                         </b:navCommandLink>
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}"
+                        <b:navCommandLink rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso != null)
+                                        and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
                                    value="Paramètres" 
                                    action="#{indexSetting.setIsSettingActive(true)}"
                                    actionListener="#{settingAndToolsBean.reset()}"

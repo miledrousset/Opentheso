@@ -16,6 +16,7 @@ import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
+import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
@@ -62,11 +63,10 @@ public class ExportFileBean implements Serializable {
     private int sizeOfTheso;
     private float progressBar, progressStep;
 
-    private List<String> langs;
+//    private List<String> langs;
     private ExportRdf4jHelperNew exportRdf4jHelper;
-    
-    
-    public StreamedContent exportCandidatsEnSkos()  {
+
+    public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
 
         RDFFormat format = null;
@@ -95,7 +95,7 @@ public class ExportFileBean implements Serializable {
         ExportRdf4jHelperNew datas = getCandidatsDatas(true);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(new WriteRdf4j(datas.getSkosXmlDocument()).getModel(), out, format);
-            
+
         return DefaultStreamedContent.builder()
                 .contentType("application/xml")
                 .name("candidats" + extention)
@@ -103,10 +103,9 @@ public class ExportFileBean implements Serializable {
                 .build();
     }
 
-    
     private ExportRdf4jHelperNew getCandidatsDatas(boolean isCandidatExport) {
 
-        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), 
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso());
 
         if (nodePreference == null) {
@@ -118,24 +117,24 @@ public class ExportFileBean implements Serializable {
         ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
         resources.setInfos(nodePreference, DATE_FORMAT, false, false);
         resources.exportTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference);
-        
+
         for (CandidatDto candidat : candidatBean.getCandidatList()) {
             candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
             resources.exportConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), candidat.getIdConcepte(), isCandidatExport);
         }
-        
+
         return resources;
     }
-    
-    
+
     public StreamedContent exportThesorus() {
 
         initProgressBar();
-
+    //    langs = viewExportBean.getSelectedLanguages().stream().map(lang -> lang.getCode()).collect(Collectors.toList());
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
-            exportRdf4jHelper = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedGroups());
-            WritePdf writePdf = new WritePdf(exportRdf4jHelper.getSkosXmlDocument(), langs.get(0),
-                    langs.size() > 1 ? langs.get(1) : null, viewExportBean
+            SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
+                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
+            WritePdf writePdf = new WritePdf(skosxd, viewExportBean.getSelectedLang1_PDF(),
+                    viewExportBean.getSelectedLang2_PDF(), viewExportBean
                     .getTypes().indexOf(viewExportBean.getTypeSelected()));
             return DefaultStreamedContent.builder().contentType("application/pdf")
                     .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
@@ -143,9 +142,10 @@ public class ExportFileBean implements Serializable {
                     .build();
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-            exportRdf4jHelper = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedGroups());
-            char separateur = "\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
-            WriteCSV writeCsv = new WriteCSV(exportRdf4jHelper.getSkosXmlDocument(), langs, separateur);
+            SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
+                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
+            char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+            WriteCSV writeCsv = new WriteCSV(skosxd, viewExportBean.getSelectedLanguages(), separateur);
 
             return DefaultStreamedContent.builder().contentType("text/csv")
                     .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
@@ -153,14 +153,65 @@ public class ExportFileBean implements Serializable {
                     .build();
         } else {
             return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedLanguages(),
-                    viewExportBean.getSelectedGroups(), viewExportBean.getNodePreference(), viewExportBean.getSelectedExportFormat());
+                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedExportFormat());
         }
-
     }
 
-    private ExportRdf4jHelperNew getThesorusDatas(String idTheso, List<NodeGroup> selectedGroups) {
+    /**
+     * permet d'exporter un thésaurus complet au format RDF avec filtres : - des
+     * langues choisies - des groupes choisis
+     *
+     * @param idTheso
+     * @param selectedLanguages
+     * @param selectedGroups
+     * @param nodePreference
+     * @param type
+     * @return
+     */
+    private StreamedContent thesoToRdf(String idTheso, List<NodeLangTheso> selectedLanguages,
+            List<NodeGroup> selectedGroups, String type) {
 
-        langs = viewExportBean.getSelectedLanguages().stream().map(lang -> lang.getCode()).collect(Collectors.toList());
+        initProgressBar();
+
+        RDFFormat format = null;
+        String extention = ".xml";
+
+        switch (type.toLowerCase()) {
+            case "rdf":
+                format = RDFFormat.RDFXML;
+                extention = ".rdf";
+                break;
+            case "jsonld":
+                format = RDFFormat.JSONLD;
+                extention = ".json";
+                break;
+            case "turtle":
+                format = RDFFormat.TURTLE;
+                extention = ".ttl";
+                break;
+            case "json":
+                format = RDFFormat.RDFJSON;
+                extention = ".json";
+                break;
+        }
+
+        //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
+        // ExportRdf4jHelperNew datas = getThesorusDatas(idTheso, selectedGroups, selectedLanguages);
+        SKOSXmlDocument datas = getThesorusDatas(idTheso, selectedGroups, selectedLanguages);
+        if (datas == null) {
+            return null;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Rio.write(new WriteRdf4j(datas).getModel(), out, format);
+
+        return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
+                .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
+    }
+
+    private SKOSXmlDocument getThesorusDatas(String idTheso, List<NodeGroup> selectedGroups, List<NodeLangTheso> selectedLanguages) {
+
+        
+//viewExportBean.getSelectedLanguages().stream().map(lang -> lang.getCode()).collect(Collectors.toList());
 
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
 
@@ -168,20 +219,21 @@ public class ExportFileBean implements Serializable {
             return null;
         }
 
-        sizeOfTheso = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso).size();
+        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);        
+        sizeOfTheso = allConcepts.size();
         progressStep = (float) 100 / sizeOfTheso;
 
         ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
         resources.setInfos(nodePreference, DATE_FORMAT, false, false);
         resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
         resources.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
-        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+
         for (String idConcept : allConcepts) {
             progressBar += progressStep;
             resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
         }
 
-        return resources;
+        return resources.getSkosXmlDocument();
     }
 
     public float getProgressBar() {
@@ -258,54 +310,6 @@ public class ExportFileBean implements Serializable {
                 .stream(() -> new ByteArrayInputStream(out.toByteArray()))
                 .build();
         return file;
-    }
-
-    /**
-     * permet d'exporter un thésaurus complet au format RDF avec filtres : - des
-     * langues choisies - des groupes choisis
-     *
-     * @param idTheso
-     * @param selectedLanguages
-     * @param selectedGroups
-     * @param nodePreference
-     * @param type
-     * @return
-     */
-    public StreamedContent thesoToRdf(String idTheso, List<NodeLangTheso> selectedLanguages,
-            List<NodeGroup> selectedGroups, NodePreference nodePreference, String type) {
-
-        initProgressBar();
-
-        RDFFormat format = null;
-        String extention = "xml";
-
-        switch (type.toLowerCase()) {
-            case "skos":
-                format = RDFFormat.RDFXML;
-                extention = ".rdf";
-                break;
-            case "jsonld":
-                format = RDFFormat.JSONLD;
-                extention = ".json";
-                break;
-            case "turtle":
-                format = RDFFormat.TURTLE;
-                extention = ".ttl";
-                break;
-            case "json":
-                format = RDFFormat.RDFJSON;
-                extention = ".json";
-                break;
-        }
-
-        //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
-        ExportRdf4jHelperNew datas = getThesorusDatas(idTheso, selectedGroups);
-        if(datas == null) return null;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Rio.write(new WriteRdf4j(datas.getSkosXmlDocument()).getModel(), out, format);
-            
-        return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
-                    .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
     }
 
 }
