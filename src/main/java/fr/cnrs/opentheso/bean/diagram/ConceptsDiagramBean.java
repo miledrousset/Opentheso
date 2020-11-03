@@ -119,7 +119,14 @@ public class ConceptsDiagramBean implements Serializable {
                 root.addEndPoint(createEndPoint(EndPointAnchor.BOTTOM));
             } else {
                 root.addEndPoint(createEndPoint(EndPointAnchor.TOP));
-                if (hasChilds(panel, elements.get(i).name)) {
+
+                String idConcept = conceptHelper.getConceptIdFromPrefLabel(connect.getPoolConnexion(), elements.get(i).name,
+                        selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
+
+                ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(connect.getPoolConnexion(),
+                        idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
+
+                if (!CollectionUtils.isEmpty(childs)) {
                     root.addEndPoint(createEndPoint(EndPointAnchor.BOTTOM));
                 }
             }

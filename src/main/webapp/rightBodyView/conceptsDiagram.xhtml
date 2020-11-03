@@ -4,127 +4,29 @@
              xmlns:h="http://java.sun.com/jsf/html"
              xmlns:b="http://bootsfaces.net/ui">
     
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function ()
-        {
-            $("#diagramPanel").bind("contextmenu", function (event)
-            {
-                event.preventDefault();
-                var offsets = $('#diagramPanel').offset();
-                var infoTop = offsets.top;
-                var infoLeft = offsets.left;
-                var posLeft;
-                var posTop;
-                /*Get window size:*/
-                var winWidth = $("#diagramPanel").width();
-                var winHeight = $("#diagramPanel").height();
-                var infoRight = winWidth + infoLeft;
-                var infoBottom = winHeight + infoTop;
-                /*Get pointer position:*/
-                var posX = event.pageX;
-                var posY = event.pageY;
-                /*Get contextmenu size:*/
-                var menuWidth = $(".contextmenu").width();
-                var menuHeight = $(".contextmenu").height();
-                var contextRight = posX + menuWidth;
-                var contextBottom = posY + menuHeight;
-                /*Prevent page overflow:*/
-                posLeft = posX;
-                posTop = posY;
-                if (contextRight > infoRight)
-                {
-                    posLeft -= (contextRight - infoRight) + 10;
-                }
-                if (contextBottom > infoBottom)
-                {
-                    posTop -= (contextBottom - infoBottom) + 10;
-                }
-                $(".contextmenu")
-                    .appendTo("#diagramPanel")
-                    .css({"left": posLeft + "px", "top": posTop + "px"})
-                    .show();
-            }).bind("click", function (event)
-            {
-                $(".contextmenu").hide();
-            });
-            $(".contextmenu").click(function (event)
-            {
-                if (event.target.text)
-                {
-                    var menuClicked = event.target.text;
-                    switch (menuClicked) {
-                        case 'Fermer':
-                            initScrollPosition();
-                            closeElement();
-                            break;
-                        case 'Informations':
-                            PF('conceptDdetail').show();
-                            break;
-                    }
-                }
-            });
-        }, false);
-    </script>
-
-    <ul class="contextmenu">
-        <li class="contextmenu-title"><a href="#">Menu</a></li>
-        <li id="cut"><a href="#"><i class="fa fa-scissors"></i>Informations</a></li>
-        <li class="contextmenu-divider"><a href="#"></a></li>
-        <li id="delete"><a href="#"><i class="fa fa-times"></i>Fermer</a></li>
-    </ul>
-
-    <b:row style="margin-top: 5px; margin-bottom: 5px">
-        <b:column>
-            <span>Zoom : </span>
-            <select id='zooming' onchange="zoomings(this);">
-                <option value="10%">10%</option>
-                <option value="20%">20%</option>
-                <option value="30%">30%</option>
-                <option value="40%">40%</option>
-                <option value="50%">50%</option>
-                <option value="60%">60%</option>
-                <option value="70%">70%</option>
-                <option value="80%">80%</option>
-                <option value="90%">90%</option>
-                <option value="100%" selected="selected">100%</option>
-                <option value="120%">120%</option>
-                <option value="150%">150%</option>
-                <option value="200%">200%</option>
-            </select>
+    <!-- Debut du panel du zoom -->
+    <b:row style="margin-right: 30px">
+        <b:column medium-screen="9">
+            <h:outputText style="float: right; font-weight: bold;" value="Zoom : "/>
+        </b:column>
+        <b:column medium-screen="3" style="margin-top: 10px">
+            <input id="zoom" type="range" class="circleRange" min="0" max="200" value="100" step="10" 
+                   style="color: #F47B2A; width: 300px; -webkit-appearance: none; -moz-appearance: none; 
+                   background: #43B572; outline: none; height: 3px;"/>
         </b:column>
     </b:row>
-    
-    <p:panel id="diagramPanel" header="Concept : #{tree.treeNodeDataSelect.name}" >
 
-        <script type="text/javascript">
+    <script type="text/javascript">
+        const selectElement = document.getElementById('zoom');
+        selectElement.addEventListener('change', (event) => {
+            zoomings(selectElement.value + "%")
+        });
+    </script>
+    <!-- Fin du menu contextuelle -->
 
-            var scrollPosition_X = 0;
-            var scrollPosition_Y = 0;
+    <p:panel id="diagramPanel" style="margin-top: 10px">
 
-            function zoomings(optionSel) {
-                var OptionSelected = optionSel.selectedIndex;
-                var val = optionSel.options[OptionSelected].text;
-                var div = document.getElementById("diagramPanel");
-                div.style.zoom = val;
-            }
-
-            function initScrollPosition() {
-                var elmnt = document.getElementById("diagram");
-                scrollPosition_X = elmnt.scrollLeft;
-                scrollPosition_Y = elmnt.scrollTop;
-                console.log("intit : " + scrollPosition_X + " / " + scrollPosition_Y);
-                return false;
-            }
-
-            function setScrollPosition() {
-                var elmnt = document.getElementById("diagram");
-                elmnt.scrollLeft = scrollPosition_X;
-                elmnt.scrollTop = scrollPosition_Y;
-                console.log("intit : " + scrollPosition_X + " / " + scrollPosition_Y);
-                return false;
-            }
-        </script>
-
+        <!-- Debut du Diagram -->
         <style type="text/css">
             .ui-diagram-element {
                 width:10em;
@@ -160,15 +62,117 @@
 
         <script type="text/javascript">
             $(document).on('click', '.ui-diagram > .ui-diagram-element',
-                function (info) {
-                    initScrollPosition();
-                    elementClicked([{
+                    function (info) {
+                        initScrollPosition();
+                        elementClicked([{
+                                name: 'elementId',
+                                value: info.target.id
+                            }]);
+                    }
+            );
+
+            $(document).dblclick(function (info) {
+                initScrollPosition();
+                closeElement([{
                         name: 'elementId',
                         value: info.target.id
                     }]);
-                }
-            );
+            });
         </script>
+
+        <script type="text/javascript">
+
+            var scrollPosition_X = 0;
+            var scrollPosition_Y = 0;
+
+            function zoomings(optionSel) {
+                console.log("optionSel : " + optionSel)
+                var div = document.getElementById("diagramPanel");
+                div.style.zoom = optionSel;
+            }
+
+            function initScrollPosition() {
+                var elmnt = document.getElementById("diagram");
+                scrollPosition_X = elmnt.scrollLeft;
+                scrollPosition_Y = elmnt.scrollTop;
+                console.log("intit : " + scrollPosition_X + " / " + scrollPosition_Y);
+                return false;
+            }
+
+            function setScrollPosition() {
+                var elmnt = document.getElementById("diagram");
+                elmnt.scrollLeft = scrollPosition_X;
+                elmnt.scrollTop = scrollPosition_Y;
+                console.log("intit : " + scrollPosition_X + " / " + scrollPosition_Y);
+                return false;
+            }
+        </script>
+        <!-- Fin du Diagram -->
+
+        <!-- Debut du menu contextuelle -->
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function ()
+            {
+                $("#diagramPanel").bind("contextmenu", function (event)
+                {
+                    event.preventDefault();
+                    var offsets = $('#diagramPanel').offset();
+                    var infoTop = offsets.top;
+                    var infoLeft = offsets.left;
+                    var posLeft;
+                    var posTop;
+                    /*Get window size:*/
+                    var winWidth = $("#diagramPanel").width();
+                    var winHeight = $("#diagramPanel").height();
+                    var infoRight = winWidth + infoLeft;
+                    var infoBottom = winHeight + infoTop;
+                    /*Get pointer position:*/
+                    var posX = event.pageX;
+                    var posY = event.pageY;
+                    /*Get contextmenu size:*/
+                    var menuWidth = $(".contextmenu").width();
+                    var menuHeight = $(".contextmenu").height();
+                    var contextRight = posX + menuWidth;
+                    var contextBottom = posY + menuHeight;
+                    /*Prevent page overflow:*/
+                    posLeft = posX;
+                    posTop = posY;
+                    if (contextRight > infoRight)
+                    {
+                        posLeft -= (contextRight - infoRight) + 10;
+                    }
+                    if (contextBottom > infoBottom)
+                    {
+                        posTop -= (contextBottom - infoBottom) + 10;
+                    }
+                    $(".contextmenu")
+                            .appendTo("#diagramPanel")
+                            .css({"left": posLeft + "px", "top": posTop + "px"})
+                            .show();
+                }).bind("click", function (event)
+                {
+                    $(".contextmenu").hide();
+                });
+                $(".contextmenu").click(function (event)
+                {
+                    if (event.target.text)
+                    {
+                        var menuClicked = event.target.text;
+                        switch (menuClicked) {
+                            case 'Informations':
+                                PF('conceptDdetail').show();
+                                break;
+                        }
+                    }
+                });
+            }, false);
+        </script>
+
+        <ul class="contextmenu">
+            <li class="contextmenu-title"><a href="#">Menu</a></li>
+            <li class="contextmenu-divider"><a href="#"></a></li>
+            <li id="cut"><a href="#"><i class="fa fa-info-circle"></i>Informations</a></li>
+        </ul>
 
 
         <style type="text/css">
@@ -234,9 +238,10 @@
                 color:red;
             }
         </style>
-
+         <!-- Fin du menu contextuelle -->
     </p:panel>
-    
+
+    <!-- Boite de dialogue pour les informations du concept -->
     <p:dialog id="dialogDiagram" header="Détail du concept '#{conceptsDiagramBean.nodeConceptSelected.term.lexical_value}'"
               widgetVar="conceptDdetail" modal="true" resizable="true" position="top" width="400" 
               style="margin-top: 50px" >         
