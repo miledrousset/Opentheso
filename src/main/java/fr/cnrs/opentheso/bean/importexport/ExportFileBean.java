@@ -63,6 +63,7 @@ public class ExportFileBean implements Serializable {
     private int sizeOfTheso;
     private float progressBar, progressStep;
 
+
 //    private List<String> langs;
     private ExportRdf4jHelperNew exportRdf4jHelper;
 
@@ -210,9 +211,6 @@ public class ExportFileBean implements Serializable {
 
     private SKOSXmlDocument getThesorusDatas(String idTheso, List<NodeGroup> selectedGroups, List<NodeLangTheso> selectedLanguages) {
 
-        
-//viewExportBean.getSelectedLanguages().stream().map(lang -> lang.getCode()).collect(Collectors.toList());
-
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
 
         if (nodePreference == null) {
@@ -232,7 +230,7 @@ public class ExportFileBean implements Serializable {
             progressBar += progressStep;
             resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
         }
-
+        viewExportBean.setExportDone(true);
         return resources.getSkosXmlDocument();
     }
 

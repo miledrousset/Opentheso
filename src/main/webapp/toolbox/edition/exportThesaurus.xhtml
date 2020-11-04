@@ -122,7 +122,7 @@
             <b:column span="6">
                 <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
                                  class="btn btn-success" style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
-                                 onclick="PF('pbAjax').start();" update="viewExportThesaurus" >
+                                   update="viewExportThesaurus" >
                     <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                 </p:commandButton>
             </b:column>

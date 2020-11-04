@@ -11,7 +11,6 @@
                 <!-- gestion du menu -->
                 <b:navBar brandImg="images/logo_Opentheso.png" brand-img-style="marginheight:34px;width: 139px;margin-top: -8px;"
                           brandHref="index.xhtml" fluid="true">
-
                     
                     <b:navbarLinks pull="left" rendered="#{currentUser.nodeUser != null}">
                         <b:navCommandLink 
@@ -92,7 +91,7 @@
 
                         <!--is connected-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{currentUser.nodeUser.name} !! cliquer pour se déconnecter"
-                                          icon-awesome="sign-out-alt" icon-size="lg" style="color: #C63632;"
+                                          icon-awesome="sign-out-alt" icon-size="l" style="color: #C63632;"
                                           ajax="true" action="#{currentUser.disconnect()}"/>              
                         
                         
@@ -120,16 +119,9 @@
                             </b:navCommandLink>   
                         </b:dropMenu> 
                     </b:navbarLinks>
-
-
-           
                 </b:navBar>                
             </b:column>
         </b:row>
-        
-
-        
-        
     </b:form>
 
     <ui:include src="dialog/login/login.xhtml" />    

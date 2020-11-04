@@ -63,7 +63,8 @@ public class ViewExportBean implements Serializable {
     // pour le format PDF
     private String selectedLang1_PDF; // pour comparer entre 2 langues maxi pour le PDF
     private String selectedLang2_PDF;
-    
+        
+    private boolean exportDone;
     
     
     
@@ -75,6 +76,7 @@ public class ViewExportBean implements Serializable {
         
         isAllGroupsSelected = true;
         isAllLangsSelected = true;
+        exportDone = false;
         
         this.formatFile = format;
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
@@ -295,6 +297,14 @@ public class ViewExportBean implements Serializable {
 
     public void setSelectedLang2_PDF(String selectedLang2_PDF) {
         this.selectedLang2_PDF = selectedLang2_PDF;
+    }
+
+    public boolean isExportDone() {
+        return exportDone;
+    }
+
+    public void setExportDone(boolean exportDone) {
+        this.exportDone = exportDone;
     }
 
 
