@@ -22,7 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -63,9 +62,6 @@ public class ExportFileBean implements Serializable {
     private int sizeOfTheso;
     private float progressBar, progressStep;
 
-    private boolean exportOn;
-//    private List<String> langs;
-    private ExportRdf4jHelperNew exportRdf4jHelper;
 
     public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
@@ -92,7 +88,6 @@ public class ExportFileBean implements Serializable {
                 break;
         }
 
-        //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
         ExportRdf4jHelperNew datas = getCandidatsDatas(true);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(new WriteRdf4j(datas.getSkosXmlDocument()).getModel(), out, format);
@@ -130,13 +125,13 @@ public class ExportFileBean implements Serializable {
     public StreamedContent exportThesorus() {
 
         initProgressBar();
-    //    langs = viewExportBean.getSelectedLanguages().stream().map(lang -> lang.getCode()).collect(Collectors.toList());
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
             SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                     viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
-            WritePdf writePdf = new WritePdf(skosxd, viewExportBean.getSelectedLang1_PDF(),
-                    viewExportBean.getSelectedLang2_PDF(), viewExportBean
-                    .getTypes().indexOf(viewExportBean.getTypeSelected()));
+            WritePdf writePdf = new WritePdf(skosxd, 
+                    viewExportBean.getSelectedLang1_PDF(),
+                    viewExportBean.getSelectedLang2_PDF(), 
+                    viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected()));
             return DefaultStreamedContent.builder().contentType("application/pdf")
                     .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
                     .stream(() -> new ByteArrayInputStream(writePdf.getOutput().toByteArray()))
@@ -144,7 +139,8 @@ public class ExportFileBean implements Serializable {
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
             SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
+                    viewExportBean.getSelectedGroups(),
+                    viewExportBean.getSelectedLanguages());
             char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
             WriteCSV writeCsv = new WriteCSV(skosxd, viewExportBean.getSelectedLanguages(), separateur);
 
@@ -165,7 +161,6 @@ public class ExportFileBean implements Serializable {
      * @param idTheso
      * @param selectedLanguages
      * @param selectedGroups
-     * @param nodePreference
      * @param type
      * @return
      */
@@ -196,8 +191,6 @@ public class ExportFileBean implements Serializable {
                 break;
         }
 
-        //    WriteRdf4j writeRdf4j = loadExportHelper(idTheso, selectedLanguages, selectedGroups, nodePreference);
-        // ExportRdf4jHelperNew datas = getThesorusDatas(idTheso, selectedGroups, selectedLanguages);
         SKOSXmlDocument datas = getThesorusDatas(idTheso, selectedGroups, selectedLanguages);
         if (datas == null) {
             return null;
@@ -301,7 +294,6 @@ public class ExportFileBean implements Serializable {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, format);
-        //    StreamedContent file = new ByteArrayContent(out.toByteArray(), "application/xml", idTheso + "_" + idConcept + "_" + extention);
         StreamedContent file = DefaultStreamedContent.builder()
                 .contentType("application/xml")
                 .name(idTheso + "_" + idConcept + "_" + extention)
