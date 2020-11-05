@@ -63,7 +63,7 @@ public class ExportFileBean implements Serializable {
     private int sizeOfTheso;
     private float progressBar, progressStep;
 
-
+    private boolean exportOn;
 //    private List<String> langs;
     private ExportRdf4jHelperNew exportRdf4jHelper;
 

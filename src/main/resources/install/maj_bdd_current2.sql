@@ -98,7 +98,17 @@ begin
 end
 $$language plpgsql;
 
-
+--
+-- mise a jour de la table info (ajout de la colonne googleanalytics)
+--
+create or replace function update_table_info() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='info' AND column_name='googleanalytics') THEN
+        execute 'ALTER TABLE info ADD COLUMN  googleanalytics character varying;
+                 INSERT INTO public.info (version_opentheso, version_bdd, googleanalytics) VALUES ('''', '''', '''');';
+    END IF;
+end
+$$language plpgsql;
 
 
 ----------------------------------------------------------------------------
@@ -107,6 +117,7 @@ $$language plpgsql;
 SELECT update_table_preferences_sortbynotation();
 SELECT update_table_candidat_vote();
 SELECT update_table_candidat_status();
+SELECT update_table_info();
 
 
 ----------------------------------------------------------------------------
@@ -115,7 +126,7 @@ SELECT update_table_candidat_status();
 SELECT delete_fonction('update_table_preferences_sortbynotation','');
 SELECT delete_fonction('update_table_candidat_vote','');
 SELECT delete_fonction('update_table_candidat_status','');
-
+SELECT delete_fonction('update_table_info','');
 
 
 

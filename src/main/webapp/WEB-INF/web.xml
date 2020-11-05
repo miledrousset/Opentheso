@@ -61,12 +61,12 @@
     <!-- Attention !!! la gestion du timeout de la session se trouve dans le fichier de conf preferences.properties (timeout_nbr_minute=30)
     il faut veuillez à ce que le chiffre en dessous soit plus grand que celui dans le fichier de conf (preferences.properties)
     -->
-    <session-config>
+<!--    <session-config>
         <session-timeout>
             31
         </session-timeout>
     </session-config>
-    
+    -->
     
 
 

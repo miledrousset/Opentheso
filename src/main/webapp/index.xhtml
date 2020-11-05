@@ -12,12 +12,17 @@
                 <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexical_value != ''}"
                               value="#{conceptView.nodeConcept.term.lexical_value}"/>
                 <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexical_value == ''}"
-                              value="#{seoBean.title}"/>
+                              value="#{Opentheso}"/>
             </title>
             
             <meta name="description" content="C'est un gestionnaire de thesaurus multilingue, développé par la plateforme Technologique WST (Web Sémantique et Thesauri) située à la MOM en partenariat avec le GDS-FRANTIQ"/>
         </h:panelGroup>
-        
+
+
+        <!--Code Google Analytics, l'intégration ou la modification est gérée dans l'appli -->
+        <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
+            
+            
         <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
@@ -126,5 +131,6 @@
         </b:container>
 
     </h:body>
+    
 </html>
 
