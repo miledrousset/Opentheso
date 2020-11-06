@@ -69,8 +69,8 @@ public class ViewExportBean implements Serializable {
     
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
-        nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId()); 
-    //    selectedLang1_PDF = new NodeLangTheso();
+        nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+
         selectedLang1_PDF = nodePreference.getSourceLang();
         selectedLang2_PDF = null;
         
@@ -306,10 +306,5 @@ public class ViewExportBean implements Serializable {
     public void setExportDone(boolean exportDone) {
         this.exportDone = exportDone;
     }
-
-
-
-
-
 
 }
