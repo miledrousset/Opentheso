@@ -80,10 +80,13 @@ public class SearchBean implements Serializable {
     }
     
     public List<NodeSearchMini> completTermFullText(String value) {
+
         isSelectedItem = false;
         searchSelected = new NodeSearchMini();
         SearchHelper searchHelper = new SearchHelper();
         listResultAutoComplete = new ArrayList<>();
+        if(selectedTheso == null) return listResultAutoComplete;
+        
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
             if(exactMatch) {
                 listResultAutoComplete = searchHelper.searchExactMatch(connect.getPoolConnexion(),
@@ -101,6 +104,8 @@ public class SearchBean implements Serializable {
             }
         }
         searchValue = value;
+        if(listResultAutoComplete == null) 
+            listResultAutoComplete = new ArrayList<>();
         return listResultAutoComplete;
     }    
 

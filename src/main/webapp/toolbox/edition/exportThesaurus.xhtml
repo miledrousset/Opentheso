@@ -15,7 +15,7 @@
         </b:row>
 
         <p:panel header="Types" rendered="#{viewExportBean.isPdfExport()}" toggleable="true" closable="false" toggleSpeed="500"
-                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+                 closeSpeed="500" style="margin-bottom:20px" collapsed="false">
             <p:dataTable id="listType" var="type" value="#{viewExportBean.types}"
                          selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0">
                 <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
@@ -23,12 +23,44 @@
                     <h:outputText value="#{type}" />
                 </p:column>
             </p:dataTable>
+            <p:spacer/>
+            <b:row >
+                <b:column span="2" >
+                    <h:outputText value="Langue 1:"/>
+                </b:column>
+                <b:column span="2" >
+                    <p:selectOneMenu value="#{viewExportBean.selectedLang1_PDF}"
+                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                        <f:selectItems  value="#{viewExportBean.languagesOfTheso}"
+                                        actionListener="#{viewExportBean.selectedLang1_PDF}" var="langs" itemLabel="#{langs.value}" itemValue="#{langs.code}"/>
+                    </p:selectOneMenu>
+                </b:column>
+            </b:row>
+            <b:row>
+                <b:column span="2" >
+                    <h:outputText value="Langue 2:" />
+                </b:column>
+                <b:column span="2" >
+                    <p:selectOneMenu value="#{viewExportBean.selectedLang2_PDF}"
+                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                        <f:selectItem itemLabel="..." itemValue=""/>
+                        <f:selectItems  value="#{viewExportBean.languagesOfTheso}" var="langs2" itemLabel="#{langs2.value}" itemValue="#{langs2.code}"/>
+
+                    </p:selectOneMenu>
+                </b:column>
+            </b:row>
+
+
         </p:panel>
 
-        <p:panel header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500" 
+        <p:panel visible="false" header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
                  closeSpeed="500" style="margin-bottom:20px" collapsed="true">
             <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}"
                          selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllLangsSelect}" process="@this" partialSubmit="true" />
+
                 <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
                 <p:column headerText="Code" width="60">
                     <h:outputText value="#{langue.code}" />
@@ -39,10 +71,12 @@
             </p:dataTable>
         </p:panel>
 
-        <p:panel header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500" 
+        <p:panel visible="false" header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500"
                  closeSpeed="500" style="margin-bottom:20px" collapsed="true">
             <p:dataTable id="listGroupe" var="groupOfTheso" value="#{viewExportBean.groupList}" style=";margin-bottom:0"
                          selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}">
+                <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllGroupsSelect}" process="@this" partialSubmit="true" />
+
                 <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
                 <p:column headerText="Id" width="200" styleClass="styleText2">
                     <h:outputText value="#{groupOfTheso.conceptGroup.idgroup}" />
@@ -54,8 +88,8 @@
         </p:panel>
 
         <b:row rendered="#{viewExportBean.isRdfExport()}">
-            <b:column span="2" offset="7">
-                <h:outputText value="Format de sortie :" />
+            <b:column span="3" offset="6">
+                <h:outputText value="Format de sortie SKOS:" />
             </b:column>
             <b:column span="2" >
                 <p:selectOneMenu value="#{viewExportBean.selectedExportFormat}"
@@ -66,13 +100,13 @@
                 </p:selectOneMenu>
             </b:column>
         </b:row>
-        
+
         <b:row rendered="#{viewExportBean.isCsvExport()}" style="margin-left: 30px; margin-right: 30px;">
             <b:column span="2">
                 <h:outputText value="Délimiteur Csv :" style="font-size: 12px;" />
             </b:column>
             <b:column span="3">
-                <p:selectOneMenu value="#{viewExportBean.csvDelimiter}" 
+                <p:selectOneMenu value="#{viewExportBean.csvDelimiter}"
                                  styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                  style="width: 100%; background: none;  box-shadow: none; ">
                     <f:selectItem itemLabel=";" itemValue=";" />
@@ -86,13 +120,14 @@
 
         <b:row>
             <b:column span="6">
-                <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
-                                 class="btn btn-success" style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
-                                 onclick="PF('pbAjax').start();" update="viewExportThesaurus" >
+                <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" ajax="false"
+                                 onclick="PrimeFaces.monitorDownload(start, stop);"
+                                 icon="pi pi-arrow-down" class="btn btn-success"
+                                 style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;">
                     <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                 </p:commandButton>
             </b:column>
-            
+
             <b:column span="6">
                 <p:commandButton icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
                                  style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
@@ -101,11 +136,81 @@
             </b:column>
         </b:row>
 
-        <br/><br/>
+        <script type="text/javascript">
+            function start() {
+                PF('statusDialog').show();
+            }
 
-        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{progressBarView.progress}" labelTemplate="" styleClass="animated"
-                       global="false" interval="1000" style="font-size: 13px; color: white;"/>
+            function stop() {
+                PF('statusDialog').hide();
+            }
+        </script>
 
+
+        <p:dialog modal="true" widgetVar="statusDialog" header="     Création du fichier     " draggable="false" closable="false" resizable="false"
+                  style="width: 400px">
+
+            <div id='laodingDiv' class="loader" >Loading...</div>
+
+            <style type="text/css">
+                .loader,
+                .loader:before,
+                .loader:after {
+                  border-radius: 50%;
+                  width: 2.5em;
+                  height: 2.5em;
+                  -webkit-animation-fill-mode: both;
+                  animation-fill-mode: both;
+                  -webkit-animation: load7 1.8s infinite ease-in-out;
+                  animation: load7 1.8s infinite ease-in-out;
+                }
+                .loader {
+                  color: #f47b2a;
+                  font-size: 10px;
+                  margin: 80px auto;
+                  position: relative;
+                  text-indent: -9999em;
+                  -webkit-transform: translateZ(0);
+                  -ms-transform: translateZ(0);
+                  transform: translateZ(0);
+                  -webkit-animation-delay: -0.16s;
+                  animation-delay: -0.16s;
+                }
+                .loader:before,
+                .loader:after {
+                  content: '';
+                  position: absolute;
+                  top: 0;
+                }
+                .loader:before {
+                  left: -3.5em;
+                  -webkit-animation-delay: -0.32s;
+                  animation-delay: -0.32s;
+                }
+                .loader:after {
+                  left: 3.5em;
+                }
+                @-webkit-keyframes load7 {
+                  0%,
+                  80%,
+                  100% {
+                    box-shadow: 0 2.5em 0 -1.3em;
+                  }
+                  40% {
+                    box-shadow: 0 2.5em 0 0;
+                  }
+                }
+                @keyframes load7 {
+                  0%,
+                  80%,
+                  100% {
+                    box-shadow: 0 2.5em 0 -1.3em;
+                  }
+                  40% {
+                    box-shadow: 0 2.5em 0 0;
+                  }
+                }
+            </style>
+        </p:dialog>
     </h:panelGroup>
-
 </ui:fragment>

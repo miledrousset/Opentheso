@@ -70,7 +70,7 @@
     </script>
     <!-- Fin du zoom -->
 
-    <p:panel style="margin-top: 10px">
+    <p:panel id="diagramZone" style="margin-top: 10px">
 
         <!-- Debut du Diagram -->
         <style type="text/css">
@@ -149,17 +149,17 @@
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function ()
             {
-                $("#diagramPanel").bind("contextmenu", function (event)
+                $("#diagramZone").bind("contextmenu", function (event)
                 {
                     event.preventDefault();
-                    var offsets = $('#diagramPanel').offset();
+                    var offsets = $('#diagramZone').offset();
                     var infoTop = offsets.top;
                     var infoLeft = offsets.left;
                     var posLeft;
                     var posTop;
                     /*Get window size:*/
-                    var winWidth = $("#diagramPanel").width();
-                    var winHeight = $("#diagramPanel").height();
+                    var winWidth = $("#diagramZone").width();
+                    var winHeight = $("#diagramZone").height();
                     var infoRight = winWidth + infoLeft;
                     var infoBottom = winHeight + infoTop;
                     /*Get pointer position:*/
@@ -182,7 +182,7 @@
                         posTop -= (contextBottom - infoBottom) + 10;
                     }
                     $(".contextmenu")
-                            .appendTo("#diagramPanel")
+                            .appendTo("#diagramZone")
                             .css({"left": posLeft + "px", "top": posTop + "px"})
                             .show();
                 }).bind("click", function (event)

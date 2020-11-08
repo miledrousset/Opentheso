@@ -38,10 +38,9 @@ import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
 import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
-import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
-import fr.cnrs.opentheso.bean.toolbox.statistique.CanceptStatistiqueData;
+import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
 import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
@@ -918,7 +917,7 @@ public class ConceptHelper {
     }
 
     /**
-     * permet de retourner le nombre des conceptes dans un thesaurus rattaché à aucun groupe
+     * permet de retourner le nombre des concepts dans un thesaurus rattaché à aucun groupe
      *
      * @param ds
      * @param idThesaurus
@@ -7248,10 +7247,10 @@ public class ConceptHelper {
     }
 
 
-    public List<CanceptStatistiqueData> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus, String lang,
+    public List<ConceptStatisticData> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus, String lang,
             String dateDebut, String dateFin, String collectionId, String nbrResultat) throws SQLException {
 
-        List<CanceptStatistiqueData> temps = new ArrayList<>();
+        List<ConceptStatisticData> temps = new ArrayList<>();
 
         Statement stmt = hikariDataSource.getConnection().createStatement();
 
@@ -7284,7 +7283,7 @@ public class ConceptHelper {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         while (resultSet.next()) {
-            CanceptStatistiqueData concept = new CanceptStatistiqueData();
+            ConceptStatisticData concept = new ConceptStatisticData();
             concept.setIdConcept(resultSet.getString("id_concept"));
             concept.setDateCreation(formatter.format(resultSet.getDate("created")));
             concept.setDateModification(formatter.format(resultSet.getDate("modified")));

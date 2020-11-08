@@ -17,7 +17,7 @@ Creator Miled Rousset
 /* #MR */
 
 .fa_custom_open {
-    color: #42a068 !important;
+    color: #f47b2a !important;
     font-size: 12px !important;
 }
 .fa_custom_collapse {
@@ -25,22 +25,22 @@ Creator Miled Rousset
     font-size: 12px !important;
 }
 .fa_custom_file{
-    color: #f47b2a !important;
+    color: #164A78 !important;
     font-size: 12px !important;
 }
 
 
 /*Tree Groups */
 .far_custom_open {
-    color: #42a068 !important;
+    color: #143a1e  !important;
     font-size: 12px !important;    
 }
 .far_custom_collapse {
-    color:  #f47b2a !important;
+    color:  #143a1e !important;
     font-size: 12px !important;    
 }
 .far_custom_file{
-    color: #f47b2a !important;
+    color: #164A78 !important;
     font-size: 12px !important;    
 }
 

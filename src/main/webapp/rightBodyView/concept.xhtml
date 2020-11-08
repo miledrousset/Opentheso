@@ -159,14 +159,6 @@
                                        style="font-size: 12px;"
                                        update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
                     </b:navCommandLink>
-                    <b:navCommandLink  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
-                                       value="Annuler copie" tooltip="Annuler la copie de concept/branche vers un autre thésaurus" tooltip-delay-show="1000"
-                                       action="#{copyAndPasteBetweenTheso.reset()}"
-                                       styleClass="buttonIconOrange"
-                                       style="font-size: 12px;"
-                                       update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
-                    </b:navCommandLink>                    
-                
                     <b:navCommandLink rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
                                       value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) ici !!" 
                                       tooltip="Coller le concept/branche copier d'un autre thésaurus" tooltip-delay-show="500"
@@ -177,6 +169,13 @@
                                       update="idCopyAndPasteBetweenTheso copyAndPasteBetweenThesoForm"
                                       oncomplete="PF('copyAndPasteBetweenTheso').show();" >
                     </b:navCommandLink> 
+                    <b:navCommandLink  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
+                                       value="Annuler copie" tooltip="Annuler la copie de concept/branche vers un autre thésaurus" tooltip-delay-show="1000"
+                                       action="#{copyAndPasteBetweenTheso.reset()}"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px;"
+                                       update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
+                    </b:navCommandLink>                      
                     
                     
                     
@@ -185,7 +184,7 @@
                     
                     
                     <b:navLink/>
-                    <b:navCommandLink value="Importer une liste des concepts"
+                    <b:navCommandLink value="Importer une liste tabulée"
                                       tooltip="Importer une liste de concepts spécifiques au format tabulé sous #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idListImportCsv listImportCsvForm"
@@ -263,7 +262,7 @@
                               title="#{conceptView.nodeConcept.concept.idConcept}" style="font-weight: bold" />
                 <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/> 
             </b:column>
-            <b:column span="2" colXs="0">
+            <b:column span="2" colXs="0" rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}">
                 <b:commandButton icon-awesome="fa-sitemap" icon-size="s" 
                                  action="#{tree.expandTreeToPath(
                                            conceptView.nodeConcept.concept.idConcept,
@@ -280,7 +279,7 @@
         <!-- ligne Collection -->
         <b:row id="idConceptGroupRow" >
             <b:column span="3" colXs="4">
-                <h:outputText value="Groupe" title="Group"/>
+                <h:outputText value="Groupe/collection" title="Groupe/collection"/>
             </b:column>
             <b:column span="1">
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
@@ -426,7 +425,7 @@
                                       oncomplete="PF('deleteNarrowerLink').show();"
                                       update="idDeleteNarrowerLink deleteNarrowerLinkForm"
                                       style="font-size: 12px;"></b:navCommandLink>
-                    <b:navCommandLink value="changer les relations" 
+                    <b:navCommandLink value="Changer les relations" 
                                       tooltip="pour changer le type de relations entre le concept et ses spécifiques"
                                       actionListener="#{narrowerBean.initForChangeRelations()}"
                                       oncomplete="PF('changeRelation').show();"
@@ -1025,7 +1024,7 @@
                                       update="idSetGps setGpsForm"
                                       style="font-size: 12px;"></b:navCommandLink>
                     <b:navCommandLink value="supprimer les coordonnées" 
-                                      actionListener="#{traductionBean.reset()}"
+                                      actionListener="#{gpsBean.reset()}"
                                       oncomplete="PF('deleteGps').show();"
                                       update="idDeleteGps deleteGpsForm"
                                       style="font-size: 12px;"></b:navCommandLink>

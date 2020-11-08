@@ -227,9 +227,16 @@ public class CandidatBean implements Serializable {
 
     public void searchByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue1)) {
+            
+            candidatList = candidatService.searchCandidats(connect, searchValue1,
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(),
+                    1, "CA");
+            /// désactivé par Miled pour permettre de rechercher un candidat sur le serveur et non pas dans le vecteur
+            /*
             candidatList = candidatList.stream()
                     .filter(candidat -> candidat.getNomPref().contains(searchValue1) || candidat.getUser().contains(searchValue1))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList());*/
         } else {
             getAllCandidatsByThesoAndLangue();
         }

@@ -194,9 +194,10 @@ public class ReadRdf4j {
                 if(readStruct.resource == null)
                     readStruct.resource = new SKOSResource();
                 //Dates
+              /* désactivé par Miled (pose problèe avec les notations  
                 if (!isCandidatImport) {
                     readNote(readStruct);
-                }
+                }*/
                 if (readDate(readStruct)) {
                     //Semantic Relationships
                     if (readRelationships(readStruct)) {

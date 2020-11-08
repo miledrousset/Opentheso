@@ -6,6 +6,7 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
 import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
+import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -37,11 +38,18 @@ public class ViewEditorHomeBean implements Serializable {
     private String colorOfHtmlButton;
     private String colorOfTextButton;    
 
-
+    private boolean isInEditingHomePage;       
+    
+    private String codeGoogleAnalitics;
+    private boolean isInEditingGoogleAnalytics;    
+    
     public void reset(){
         isInEditing = false;
         isViewPlainText = false;
         text = null;
+        codeGoogleAnalitics = null;
+        isInEditingGoogleAnalytics = false;
+        isInEditingHomePage = false;
     }
     
     public void initText() {
@@ -54,10 +62,34 @@ public class ViewEditorHomeBean implements Serializable {
                 connect.getPoolConnexion(), lang);
         isInEditing = true;
         isViewPlainText = false;
+        isInEditingGoogleAnalytics = false;
+        isInEditingHomePage = true;
         
         colorOfHtmlButton = "#F49F66;";
         colorOfTextButton = "#8C8C8C;";          
     }
+    
+    public void initGoogleAnalytics() {
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        codeGoogleAnalitics = preferencesHelper.getCodeGoogleAnalytics(
+                connect.getPoolConnexion());
+        isInEditing = true;
+        isViewPlainText = false;
+        isInEditingGoogleAnalytics = true;
+        isInEditingHomePage = false;        
+    }
+    
+    public void updateGoogleAnalytics() {
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        
+        preferencesHelper.setCodeGoogleAnalytics(
+                connect.getPoolConnexion(),codeGoogleAnalitics);
+        isInEditing = false;
+        isViewPlainText = false;
+        isInEditingGoogleAnalytics = false;
+        isInEditingHomePage = false;        
+    }    
+    
 
     public String getHomePage(String idLang){
         HtmlPageHelper copyrightHelper = new HtmlPageHelper();
@@ -91,6 +123,8 @@ public class ViewEditorHomeBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         isInEditing = false;
         isViewPlainText = false;
+        isInEditingHomePage = false; 
+        isInEditingGoogleAnalytics = false;        
     }
     
    
@@ -143,6 +177,30 @@ public class ViewEditorHomeBean implements Serializable {
 
     public void setColorOfTextButton(String colorOfTextButton) {
         this.colorOfTextButton = colorOfTextButton;
+    }
+
+    public boolean isIsInEditingGoogleAnalytics() {
+        return isInEditingGoogleAnalytics;
+    }
+
+    public void setIsInEditingGoogleAnalytics(boolean isInEditingGoogleAnalytics) {
+        this.isInEditingGoogleAnalytics = isInEditingGoogleAnalytics;
+    }
+
+    public String getCodeGoogleAnalitics() {
+        return codeGoogleAnalitics;
+    }
+
+    public void setCodeGoogleAnalitics(String codeGoogleAnalitics) {
+        this.codeGoogleAnalitics = codeGoogleAnalitics;
+    }
+
+    public boolean isIsInEditingHomePage() {
+        return isInEditingHomePage;
+    }
+
+    public void setIsInEditingHomePage(boolean isInEditingHomePage) {
+        this.isInEditingHomePage = isInEditingHomePage;
     }
 
 

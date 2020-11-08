@@ -176,7 +176,7 @@ public class SelectedTheso implements Serializable {
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
-
+            treeGroups.reset();
         candidatBean.initCandidatModule();
 
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {

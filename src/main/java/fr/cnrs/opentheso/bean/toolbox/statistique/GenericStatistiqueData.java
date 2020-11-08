@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.toolbox.statistique;
 
 public class GenericStatistiqueData {
     
+    private String idCollection;
     private String collection;
     private int conceptsNbr;
     private int synonymesNbr;
@@ -35,7 +36,7 @@ public class GenericStatistiqueData {
 
     public int getTermesNonTraduitsNbr() {
         return termesNonTraduitsNbr;
-    }
+    } 
 
     public void setTermesNonTraduitsNbr(int termesNonTraduitsNbr) {
         this.termesNonTraduitsNbr = termesNonTraduitsNbr;
@@ -47,6 +48,14 @@ public class GenericStatistiqueData {
 
     public void setNotesNbr(int notesNbr) {
         this.notesNbr = notesNbr;
+    }
+
+    public String getIdCollection() {
+        return idCollection;
+    }
+
+    public void setIdCollection(String idCollection) {
+        this.idCollection = idCollection;
     }
 
 }

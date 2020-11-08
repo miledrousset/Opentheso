@@ -53,7 +53,14 @@ public class RoleOnThesoBean implements Serializable {
 
     //liste des thesaurus public suivant les droits de l'utilisateur
     private Map<String, String> listTheso;
+    //liste des thesaurus For export or management avec droits admin pour l'utilisateur en cours
+    private Map<String, String> listThesoAsAdmin;    
+    
+    // la liste des thésaurus autorisés pour l'utilisateur où il est au minimun manager pour pouvoir les modifier
     private ArrayList<NodeIdValue> nodeListTheso;
+    
+    // la liste des thésaurus autorisés pour l'utilisateur où il est admin pour avoir le droit de les exporter
+    private ArrayList<NodeIdValue> nodeListThesoAsAdmin;    
 
     //thesaurus à gérer
     private Thesaurus thesoInfos;
@@ -64,7 +71,9 @@ public class RoleOnThesoBean implements Serializable {
     private boolean isContributorOnThisTheso = false;
 
     private List<String> authorizedTheso;
-
+    
+    private List<String> authorizedThesoAsAdmin;
+    
     private NodePreference nodePreference;
 
     private NodeUserRoleGroup nodeUserRoleGroup;
@@ -147,12 +156,15 @@ public class RoleOnThesoBean implements Serializable {
         if (currentUser.getNodeUser().isIsSuperAdmin()) {
             boolean withPrivateTheso = true;
             authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), withPrivateTheso);
+            authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), withPrivateTheso);
 
         } else {
             authorizedTheso = currentUserHelper.getThesaurusOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            authorizedThesoAsAdmin = currentUserHelper.getThesaurusOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());         
         }
         addAuthorizedThesoToHM();
-
+        initAuthorizedThesoAsAdmin();
+        
         // permet de définir le role de l'utilisateur sur le group
         if (authorizedTheso.isEmpty()) {
             setUserRoleGroup();
@@ -161,6 +173,48 @@ public class RoleOnThesoBean implements Serializable {
         }
     }
 
+    
+    // on ajoute les thésaurus où l'utilisateur a le droit admin dessus
+    private void initAuthorizedThesoAsAdmin() {
+        if (authorizedThesoAsAdmin == null) {
+            return;
+        }
+        nodeListThesoAsAdmin = new ArrayList<>();
+        HashMap<String, String> authorizedThesoAsAdminHM = new LinkedHashMap();
+        
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        String title;
+        String lang = connect.getWorkLanguage().toLowerCase();
+
+        // ajout de code qui permet de charger une liste de thésaurus avec le nom en utilisant la langue préférée dans les préférences du thésaurus.
+        // pour éviter d'afficher des Id quand on a un mélange des thésaurus avec des langues sources différentes.
+        String preferredIdLangOfTheso;
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        for (String idTheso1 : authorizedThesoAsAdmin) {
+            preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1);
+            if (preferredIdLangOfTheso == null) {
+                preferredIdLangOfTheso = lang;
+            }
+
+            title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso1, preferredIdLangOfTheso);
+            if (title == null) {
+                authorizedThesoAsAdminHM.put("" + "(" + idTheso1 + ")", idTheso1);
+            } else {
+                authorizedThesoAsAdminHM.put(title + " (" + idTheso1 + ")", idTheso1);
+            }
+            // nouvel objet pour récupérer la liste des thésaurus autorisée pour l'utilisateur en cours
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setId(idTheso1);
+            nodeIdValue.setValue(title);
+            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso1));
+            nodeListThesoAsAdmin.add(nodeIdValue);
+            
+        }
+               
+        this.listThesoAsAdmin = authorizedThesoAsAdminHM;
+    }    
+            
+            
     // on ajoute les titres + id, sinon l'identifiant du thésauurus
     private void addAuthorizedThesoToHM() {
         if (authorizedTheso == null) {
@@ -430,12 +484,28 @@ public class RoleOnThesoBean implements Serializable {
         this.listTheso = listTheso;
     }
 
+    public Map<String, String> getListThesoAsAdmin() {
+        return listThesoAsAdmin;
+    }
+
+    public void setListThesoAsAdmin(Map<String, String> listThesoAsAdmin) {
+        this.listThesoAsAdmin = listThesoAsAdmin;
+    }
+
     public List<String> getAuthorizedTheso() {
         return authorizedTheso;
     }
 
     public void setAuthorizedTheso(List<String> authorizedTheso) {
         this.authorizedTheso = authorizedTheso;
+    }
+
+    public List<String> getAuthorizedThesoAsAdmin() {
+        return authorizedThesoAsAdmin;
+    }
+
+    public void setAuthorizedThesoAsAdmin(List<String> authorizedThesoAsAdmin) {
+        this.authorizedThesoAsAdmin = authorizedThesoAsAdmin;
     }
 
     public NodePreference getNodePreference() {
@@ -468,6 +538,14 @@ public class RoleOnThesoBean implements Serializable {
 
     public void setNodeListTheso(ArrayList<NodeIdValue> nodeListTheso) {
         this.nodeListTheso = nodeListTheso;
+    }
+
+    public ArrayList<NodeIdValue> getNodeListThesoAsAdmin() {
+        return nodeListThesoAsAdmin;
+    }
+
+    public void setNodeListThesoAsAdmin(ArrayList<NodeIdValue> nodeListThesoAsAdmin) {
+        this.nodeListThesoAsAdmin = nodeListThesoAsAdmin;
     }
 
 }

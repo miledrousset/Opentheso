@@ -6,20 +6,6 @@
 
     <h:form id="homePageForm">
 
-
-        <b:row rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin) and !(viewEditorHomeBean.isInEditing)}">
-            <b:column span="2" offset="10">
-                <b:commandButton 
-                    value="Modifier" 
-                    update="homePageForm"
-                    class="btn btn-primary"
-                    action="#{viewEditorHomeBean.initText()}"
-                    style="width:100%; font-size: 12px;
-                    color: white; background: #43B572;"/>
-            </b:column>
-        </b:row>
-        
-        
         <!-- vue pulic non connectée -->
         <b:panel rendered="#{!(viewEditorHomeBean.isInEditing)}"
                  style="font-size: 12px; border-color: #43B572;">
@@ -28,19 +14,71 @@
                     <h:outputText  value="Opentheso version : #{ManagerGroupsUsers.getOpenthesoVersionFromWar()}"/>
                 </b:column>                
             </b:row> 
-            <b:row >
-                <b:column span="12">
-                    <h:outputText value="#{viewEditorHomeBean.getHomePage(connect.workLanguage)}" escape="false"/>
+
+            <b:row rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin) and !(viewEditorHomeBean.isInEditing)}">
+                <b:column span="1" offset="10" style="margin-top: 10px;">
+
+                    <b:dropMenu icon-awesome="fas fa-edit" icon-size="lg"  value="" iconAlign="right"
+                                style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                        <b:navCommandLink value="Modifier la page d'accueil"  update="homePageForm" 
+                                          action="#{viewEditorHomeBean.initText()}"
+                                          style="font-size: 12px;"/>
+                        
+                        <b:navCommandLink value="Code Google Analytics"  update="homePageForm" tooltip="Ajouter le code Javascript pour Google Analytics" 
+                                          action="#{viewEditorHomeBean.initGoogleAnalytics()}"
+                                          style="font-size: 12px;"/>                        
+                    </b:dropMenu>                
+
+                </b:column>
+            </b:row>  
+            
+            <b:row style="font-size: 12px;" >
+                <b:column span="12" style="font-size: 12px;">
+                    <b:jumbotron  style="background-color: #FFFFFF; font-size: 12px;">
+                        <h:outputText value="#{viewEditorHomeBean.getHomePage(connect.workLanguage)}" escape="false"/>
+                    </b:jumbotron>
                 </b:column>                
             </b:row>
-            
         </b:panel>
+        
+        
+        <!-- vue connectée pour Google Analytics -->
+        <h:panelGroup id="homePageEditionAnalytics" rendered="#{(viewEditorHomeBean.isInEditingGoogleAnalytics)}" >
 
+            <b:row >
+                <b:column span="12" style="margin-left: 20px;">
+                    <b:inputTextarea value="#{viewEditorHomeBean.codeGoogleAnalitics}" style="min-height: 300px;"/>
+                </b:column>
+            </b:row>
+
+            <b:row>
+                <b:column span="2" offset="8" >
+                    <b:commandButton id="buttonCancelA" value="cancel"
+                                     update="homePageForm"
+                                     style="width: 100%; background: #8C8C8C; font-size: 12px;"
+                                     class="btn btn-primary"
+                                     action="#{viewEditorHomeBean.reset()}"/>
+                </b:column>                 
+                <b:column span="2">
+                    <b:commandButton 
+                        look="danger"
+                        value="Enregistrer" 
+                        update="homePageForm"
+                        class="btn btn-primary"
+                        style="width: 100%;font-size: 12px;"
+                        action="#{viewEditorHomeBean.updateGoogleAnalytics()}"
+                        />
+                </b:column>
+            </b:row>
+            <b:column span="6" >
+                <b:messages autoUpdate="true"/>
+            </b:column>
+        </h:panelGroup>          
         
         
         
         <!-- vue connectée pour édition -->
-        <h:panelGroup id="homePageEdition" rendered="#{(viewEditorHomeBean.isInEditing)}" >
+        <h:panelGroup id="homePageEdition" rendered="#{(viewEditorHomeBean.isInEditingHomePage)}" >
             <b:row>
                 <b:column span="2" offset="8">
                     <b:commandButton 
@@ -52,7 +90,7 @@
                 </b:column>
                 <b:column span="2" >
                     <b:commandButton 
-                        value="Vue plain texte" 
+                        value="Vue plein texte" 
                         class="btn btn-primary"
                         update="homePageForm"
                         action="#{viewEditorHomeBean.setViewPlainTextTo(true)}"
@@ -62,19 +100,19 @@
 
             <b:row id="viewEditor" rendered="#{!viewEditorHomeBean.isViewPlainText}">
                 <b:column span="12" style="margin-left: 20px;">
-                    <p:textEditor widgetVar="editor1" value="#{viewEditorHomeBean.text}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
+                    <p:textEditor widgetVar="editor1" value="#{viewEditorHomeBean.text}" secure="false" height="600" style="margin-bottom:5px; margin-right: 5px"/>
                 </b:column>
             </b:row>
             <b:row id="viewPlainText" rendered="#{viewEditorHomeBean.isViewPlainText}">
                 <b:column span="12" style="margin-left: 20px;">
-                    <b:inputTextarea value="#{viewEditorHomeBean.text}"/>
+                    <b:inputTextarea value="#{viewEditorHomeBean.text}" style="min-height: 600px;"/>
                 </b:column>
             </b:row>
 
             <b:row>
                 <b:column span="2" offset="8" >
                     <b:commandButton id="buttonCancel" value="cancel"
-                                    update="homePageForm"
+                                     update="homePageForm"
                                      style="width: 100%; background: #8C8C8C; font-size: 12px;"
                                      class="btn btn-primary"
                                      action="#{viewEditorHomeBean.reset()}"/>

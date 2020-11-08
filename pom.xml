@@ -4,7 +4,7 @@
 
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>20.09</version>
+    <version>20.11</version>
     <packaging>war</packaging>
 
     <name>opentheso2</name>
@@ -188,9 +188,9 @@
                 </dependency>
         -->
         <dependency>
-            <artifactId>junit</artifactId>
             <groupId>junit</groupId>
-            <version>4.13</version>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -236,10 +236,11 @@
             <version>1.0.3</version>
         </dependency>
     </dependencies>
-    
+
 
 
     <build>
+       
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -288,4 +289,31 @@
             </plugin>
         </plugins>
     </build>
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>    
+
 </project>

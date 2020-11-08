@@ -5,16 +5,24 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddGroup" header="Ajouter un groupe/collection" widgetVar="addGroup" 
+    <p:dialog id="idAddSubGroup" header="Ajouter un sous-groupe/collection" widgetVar="addSubGroup" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
-        <h:form id="addGroupForm"
+        <h:form id="addSubGroupForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
             <b:row>
                 <b:column span="6" style="margin-left: 5px;">
                     <b:row>
-
+                        <b:column span="3">
+                            <h:outputText value="Sous : " />
+                        </b:column>                         
+                        <b:column span="9">
+                            <h:outputText  title="Ajouter un sous-groupe/collection sous :" value="#{treeGroups.selectedNode.data}" style="font-size: 14px; color: #43B572"/>
+                        </b:column>                        
+                    </b:row>
+                    <p:spacer/>
+                    <b:row>
                         <b:column span="12">
-                            <b:inputText placeholder="new group ..." value="#{addGroupBean.titleGroup}"/>
+                            <b:inputText placeholder="new sub group ..." value="#{addGroupBean.titleGroup}"/>
                         </b:column>                        
                         
                         <b:column span="12" >
@@ -29,7 +37,6 @@
                                          ajax="true" autocomplete="false"  style="font-size: 12px;">
                             </b:inputText>
                         </b:column>
-                            
                     </b:row>
                 </b:column>
 
@@ -40,7 +47,7 @@
                             <b:commandLink icon-awesome="fas fa-exclamation-circle"
                                            style="font-size: 17px; color: #FF7979"
                                            action="#{addGroupBean.infos}"
-                                           update="addGroupForm"/>
+                                           update="addSubGroupForm"/>
                         </b:column>
                     </b:row>
                     <b:row>
@@ -53,12 +60,13 @@
 
             <b:row style="margin-bottom: 10px;">
                 <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="Valider"  update="addGroupForm" 
+                    <b:commandButton id="buttonSubmit" value="Valider"  update="addSubGroupForm" 
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
                                      color: white; background: #43B572; border: none; box-shadow: none;"
                                      class="btn btn-primary"
-                                     action="#{addGroupBean.addGroup(
+                                     action="#{addGroupBean.addSubGroup(
+                                               treeGroups.selectedNodeId,
                                                selectedTheso.currentIdTheso,
                                                selectedTheso.currentLang,
                                                currentUser.nodeUser.idUser)}"/>

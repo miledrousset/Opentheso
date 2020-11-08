@@ -22,6 +22,77 @@ import fr.cnrs.opentheso.bdd.tools.StringPlus;
 public class PreferencesHelper {
     
     /**
+     * permet de retourner le code JavaScript de GoogleAnalytics
+     * @param ds
+     * @return 
+     */
+    public String getCodeGoogleAnalytics(HikariDataSource ds) {
+        String codeAnalytics = null;
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT googleanalytics FROM info" ;
+                    resultSet = stmt.executeQuery(query);
+
+                    if (resultSet.next()) {
+                        codeAnalytics = resultSet.getString("googleanalytics");
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return codeAnalytics;
+    } 
+    
+    /**
+     * Permet de mettre à jour le code javaScript de GoogleAnalytics 
+     * @param ds
+     * @param codeJavaScript
+     * @return 
+     */
+    public boolean setCodeGoogleAnalytics(HikariDataSource ds, String codeJavaScript){
+        Connection conn;
+        Statement stmt;
+        boolean status= false;
+        StringPlus stringPlus = new StringPlus();
+        codeJavaScript = stringPlus.addQuotes(codeJavaScript);
+
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "update info set googleanalytics = '" + codeJavaScript + "'";
+                    stmt.executeUpdate(query);
+                    status = true;
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;        
+    }     
+    
+    /**
      * permet de retourner les préferences d'un thésaurus 
      * @param ds
      * @param idThesaurus

@@ -82,6 +82,7 @@ public class ExportRdf4jHelperNew {
      *
      * @param ds
      * @param idTheso
+     * @param nodePreference
      * @return 
      */
     public void exportTheso(HikariDataSource ds, String idTheso, NodePreference nodePreference) {
@@ -283,7 +284,7 @@ public class ExportRdf4jHelperNew {
                 sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.altLabel);
             }
         }
-        ArrayList<NodeNote> nodeNotes = nodeConcept.getNodeNoteConcept();
+        ArrayList<NodeNote> nodeNotes = new ArrayList<>();//nodeConcept.getNodeNoteConcept();
         nodeNotes.addAll(nodeConcept.getNodeNoteTerm());
         nodeNotes.addAll(nodeConcept.getNodeNoteConcept());        
         addNoteGiven(nodeNotes, sKOSResource);

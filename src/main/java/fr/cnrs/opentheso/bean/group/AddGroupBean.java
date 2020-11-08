@@ -68,9 +68,8 @@ public class AddGroupBean implements Serializable {
      * @param idTheso
      * @param idLang
      * @param idUser
-     * @return
      */
-    public String addGroup(
+    public void addGroup(
             String idTheso,
             String idLang,
             int idUser) {
@@ -79,14 +78,14 @@ public class AddGroupBean implements Serializable {
             // erreur de préférences de thésaurusa
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return null;
+            return;
         }
 
         NodeGroup nodeGroup = new NodeGroup();
         if (titleGroup.isEmpty()) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     languageBean.getMsg("error") + " :", languageBean.getMsg("theso.error7")));
-            return null;
+            return;
         }
 
         nodeGroup.setLexicalValue(titleGroup);
@@ -109,9 +108,9 @@ public class AddGroupBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :",
                             titleGroup + " " + languageBean.getMsg("group.errorCreate")));
-            return null;
+            return;
         }
-        treeGroups.addNewGroupChild(idGroup, idTheso, idLang);
+        treeGroups.addNewGroupToTree(idGroup, idTheso, idLang);
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info") + " :",
                 titleGroup + " " + languageBean.getMsg("theso.info1.2")));
@@ -123,10 +122,9 @@ public class AddGroupBean implements Serializable {
     //        pf.ajax().update("formLeftTab:tabTree:tree");
             pf.ajax().update("formLeftTab:tabGroups:treeGroups");
         }
-
-        return idGroup;
     }
 
+    
     /**
      * permet d'ajouter un sous groupe avec un type défini, le groupe père doit
      * exister.Le sous-groupe prend le même type que le père On ajoute aussi la
@@ -135,44 +133,77 @@ public class AddGroupBean implements Serializable {
      * @param idGroupFather
      * @param idTheso
      * @param idLang
-     * @param codeTypeGroupFather
-     * @param titleGroupSubGroup
-     * @param notation
      * @param idUser
-     * @return
      */
-    public boolean addSubGroup(
+    public void addSubGroup(
             String idGroupFather,
             String idTheso,
             String idLang,
-            String codeTypeGroupFather,
-            String titleGroupSubGroup,
-            String notation,
             int idUser) {
         // typeDom = "";
         //si on a bien selectioner un group
         //  String idGroup = tree.getSelectedTerme().getIdC();
-        GroupHelper groupHelper = new GroupHelper();
-
-        if (groupHelper.isIdOfGroup(connect.getPoolConnexion(), idGroupFather, idTheso)) {
-            String idSubGroup = addGroup(
-                    idTheso,
-                    idLang,
-                    idUser);
-            if (idSubGroup == null) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :",
-                                titleGroupSubGroup + " " + languageBean.getMsg("group.errorCreate")));
-                return false;
-            }
-            if (!groupHelper.addSubGroup(connect.getPoolConnexion(), idGroupFather, idSubGroup, idTheso)) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :",
-                                titleGroupSubGroup + " " + languageBean.getMsg("group.errorCreate")));
-                return false;
-            }
+        
+        
+        if (roleOnThesoBean.getNodePreference() == null) {
+            // erreur de préférences de thésaurusa
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }        
+        if(idGroupFather == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                            "Id groupe Parent null "));
+            return;
+        } 
+        if (titleGroup.isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    languageBean.getMsg("error") + " :", "Un label est obligatoire"));
+            return;
         }
-        return true;
+        NodeGroup nodeGroup = new NodeGroup();        
+        nodeGroup.setLexicalValue(titleGroup);
+        nodeGroup.setIdLang(idLang);
+        nodeGroup.getConceptGroup().setIdthesaurus(idTheso);
+        nodeGroup.getConceptGroup().setNotation(notation);
+
+        if (selectedGroupType == null || selectedGroupType.isEmpty()) {
+            selectedGroupType = "C";
+        }
+        nodeGroup.getConceptGroup().setIdtypecode(selectedGroupType);
+
+        GroupHelper groupHelper = new GroupHelper();
+        groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+
+        String idSubGroup = groupHelper.addGroup(connect.getPoolConnexion(),
+                nodeGroup,
+                idUser);
+        if (idSubGroup == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :",
+                            titleGroup + " " + languageBean.getMsg("group.errorCreate")));
+            return;
+        }        
+
+        if (!groupHelper.addSubGroup(connect.getPoolConnexion(), idGroupFather, idSubGroup, idTheso)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :",
+                            titleGroup + " " + languageBean.getMsg("group.errorCreate")));
+            return;
+        }
+        treeGroups.addNewSubGroupToTree(treeGroups.getSelectedNode(), idSubGroup, idTheso, idLang);        
+        
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info") + " :",
+                titleGroup + " " + languageBean.getMsg("theso.info1.2")));
+
+        PrimeFaces.current().executeScript("PF('addSubGroup').hide();");
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+    //        pf.ajax().update("formLeftTab:tabTree:tree");
+            pf.ajax().update("formLeftTab:tabGroups:treeGroups");
+        }        
     }
 
     public String getSelectedGroupType() {

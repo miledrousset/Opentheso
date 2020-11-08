@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
+import org.primefaces.event.ToggleSelectEvent;
 
 /**
  *
@@ -55,8 +56,27 @@ public class ViewExportBean implements Serializable {
     private List<String> types;
     private String selectedExportFormat, typeSelected, formatFile, csvDelimiter;
     
+    // ajouté par Miled
+    private boolean isAllGroupsSelected; 
+    private boolean isAllLangsSelected;     
+    
+    // pour le format PDF
+    private String selectedLang1_PDF; // pour comparer entre 2 langues maxi pour le PDF
+    private String selectedLang2_PDF;
+        
+    private boolean exportDone;
+    
+    
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
+        nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+
+        selectedLang1_PDF = nodePreference.getSourceLang();
+        selectedLang2_PDF = null;
+        
+        isAllGroupsSelected = true;
+        isAllLangsSelected = true;
+        exportDone = false;
         
         this.formatFile = format;
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
@@ -85,17 +105,33 @@ public class ViewExportBean implements Serializable {
             selectedGroups.add(nodeGroup);
         }
 
-        nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+ //       nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
 
         exportUriArk = false;
         exportUriHandle = false;
 
-        exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
-        selectedExportFormat = "skos";
+        exportFormat = Arrays.asList("rdf", "json", "jsonLd", "turtle");
+        selectedExportFormat = "rdf";
 
         downloadBean.setProgressBar(0);
         downloadBean.setProgressStep(0); 
     }
+    
+    /**
+     * permet capter si toutes les options sont sélectionnées 
+     * @param event 
+     */
+    public void onAllGroupsSelect(ToggleSelectEvent event) {
+        isAllGroupsSelected =event.isSelected();
+    }    
+    
+    /**
+     * permet capter si toutes les options sont sélectionnées 
+     * @param event 
+     */    
+    public void onAllLangsSelect(ToggleSelectEvent event) {
+        isAllLangsSelected = event.isSelected();
+    }     
     
     public String getExportButtonLabel() {
         if (isPdfExport()) {
@@ -107,6 +143,10 @@ public class ViewExportBean implements Serializable {
         }
     }
 
+    public void test(){
+        String test = "";
+    }
+    
     public boolean isPdfExport() {
         return "PDF".equals(formatFile);
     }
@@ -225,6 +265,46 @@ public class ViewExportBean implements Serializable {
 
     public void setCsvDelimiter(String csvDelimiter) {
         this.csvDelimiter = csvDelimiter;
+    }
+
+    public boolean isIsAllGroupsSelected() {
+        return isAllGroupsSelected;
+    }
+
+    public void setIsAllGroupsSelected(boolean isAllGroupsSelected) {
+        this.isAllGroupsSelected = isAllGroupsSelected;
+    }
+
+    public boolean isIsAllLangsSelected() {
+        return isAllLangsSelected;
+    }
+
+    public void setIsAllLangsSelected(boolean isAllLangsSelected) {
+        this.isAllLangsSelected = isAllLangsSelected;
+    }
+
+    public String getSelectedLang1_PDF() {
+        return selectedLang1_PDF;
+    }
+
+    public void setSelectedLang1_PDF(String selectedLang1_PDF) {
+        this.selectedLang1_PDF = selectedLang1_PDF;
+    }
+
+    public String getSelectedLang2_PDF() {
+        return selectedLang2_PDF;
+    }
+
+    public void setSelectedLang2_PDF(String selectedLang2_PDF) {
+        this.selectedLang2_PDF = selectedLang2_PDF;
+    }
+
+    public boolean isExportDone() {
+        return exportDone;
+    }
+
+    public void setExportDone(boolean exportDone) {
+        this.exportDone = exportDone;
     }
 
 }

@@ -9,16 +9,24 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
+import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -29,14 +37,12 @@ import org.primefaces.PrimeFaces;
 
 public class RemoveConceptAndChildFromGroupBean implements Serializable {
 
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private ConceptView conceptView;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private ConceptView conceptView;
+    @Inject private TreeGroups treeGroups;
+    @Inject private GroupView groupView;    
 
     private ArrayList <NodeGroup> nodeGroups;
     
@@ -90,6 +96,52 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
             pf.ajax().update("formRightTab:viewTabConcept:idConceptGroupRow");            
         }
     }
+    
+    public void deleteGroup(String idGroup, int idUser){
+        FacesMessage msg;
+//        PrimeFaces pf = PrimeFaces.current();
+        try {
+            GroupHelper groupHelper = new GroupHelper();
+            
+            Connection conn = connect.getPoolConnexion().getConnection();
+            conn.setAutoCommit(false);
+            if(!groupHelper.deleteConceptGroupRollBack(conn, idGroup, selectedTheso.getCurrentIdTheso(), idUser)) {
+                conn.rollback();
+                conn.close();
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de la collection !!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+//                if (pf.isAjaxRequest()) {
+//                    pf.ajax().update("messageIndex");          
+//                }
+                return;
+            }
+            conn.commit();
+            conn.close();
+            if(!groupHelper.removeConceptsFromThisGroup(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso())){
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de l'appartenance des concepts à la collection !!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);                
+            }
+
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "La collection a bien été supprimée");
+            FacesContext.getCurrentInstance().addMessage(null, msg);            
+        } catch (SQLException ex) {
+            Logger.getLogger(RemoveConceptAndChildFromGroupBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        PrimeFaces pf = PrimeFaces.current();
+        if (treeGroups.getSelectedNode() != null) {
+            TreeNode parent = treeGroups.getSelectedNode().getParent();
+            if (parent != null) {
+                parent.getChildren().remove(treeGroups.getSelectedNode());
+
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("formLeftTab:tabGroups:treeGroups");
+                }
+            }
+        }
+        groupView.init();
+     
+    }
+    
 
     public ArrayList<NodeGroup> getNodeGroups() {
         return nodeGroups;
