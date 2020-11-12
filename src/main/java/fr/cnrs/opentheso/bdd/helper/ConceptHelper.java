@@ -6353,12 +6353,13 @@ public class ConceptHelper {
             try {
                 stmt = conn.createStatement();
                 try {
+                    String str = prefLabel.replaceAll("\'", "%");
                     String query = "SELECT DISTINCT(preferred_term.id_concept) " +
                         "FROM preferred_term, term " +
                         "WHERE term.id_thesaurus = '"+idThesaurus+"' " +
                         "AND term.id_term = preferred_term.id_term " +
-                        "AND term.lexical_value like '%"+prefLabel+"%' " +
-                        "AND lang = '"+lang+"';";
+                        "AND term.lexical_value like '%"+str+"%' " +
+                        "AND lang = '"+lang+"'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
