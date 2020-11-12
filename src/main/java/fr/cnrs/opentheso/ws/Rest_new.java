@@ -1880,6 +1880,87 @@ public class Rest_new {
         }
         return datas;
     }
+    
+    /**
+     * Pour retourner un thesaurus complet à partir de son identifiant
+     *
+     * @param uri
+     * @return
+     */
+    @Path("all/theso")
+    @GET
+    @Produces("application/rdf+xml;charset=UTF-8")
+    public Response getAllTheso(@Context UriInfo uri) {
+        String idTheso = null;
+        String format = null;
+        String datas;
+
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("id")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("format")) {
+                    format = valeur;
+                }
+            }
+        }
+
+        if (idTheso == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if (format == null) {
+            format = "rdf";
+        }
+        switch (format) {
+            case "rdf": {
+                format = "application/rdf+xml";
+                datas = getAllTheso__(idTheso, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+            }
+            case "jsonld":
+                format = "application/ld+json";
+                datas = getAllTheso__(idTheso, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+            case "turtle":
+                format = "text/turtle";
+                datas = getAllTheso__(idTheso, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+            case "json":
+                format = "application/json";
+                datas = getAllTheso__(idTheso, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+    }
+
+    private String getAllTheso__(String idtheso, String format) {
+        HikariDataSource ds = connect();
+        String datas;
+        if (ds == null) {
+            return null;
+        }
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+        datas = restRDFHelper.getTheso(ds, idtheso, format);
+       
+        ds.close();
+        if (datas == null) {
+            return null;
+        }
+        return datas;
+    }    
 
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 

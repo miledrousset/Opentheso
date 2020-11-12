@@ -646,6 +646,60 @@ public class RestRDFHelper {
     }      
     
     /**
+     * Fonction qui permet de récupérer un thésaurus entier
+     *
+     * @param ds
+     * @param idTheso
+     * @param format
+     * @return skos
+     */
+    public String getTheso(HikariDataSource ds,
+            String idTheso, String format) {
+
+        RDFFormat rDFFormat = getRDFFormat(format);
+        WriteRdf4j writeRdf4j = getTheso__(ds, idTheso);
+        if(writeRdf4j == null) return null;
+
+        ByteArrayOutputStream out;
+        out = new ByteArrayOutputStream();
+        Rio.write(writeRdf4j.getModel(), out, rDFFormat);
+        return out.toString();
+    }    
+    
+    /**
+     * Fonction qui permet de récupérer une branche complète en partant d'un
+     * concept et en allant jusqu'à la racine (vers le haut)
+     *
+     * @param ds
+     * @param idTheso
+     * @return skos
+     */
+    private WriteRdf4j getTheso__(
+            HikariDataSource ds, String idTheso) {
+
+        if(idTheso == null) {
+            return null;
+        }
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if (nodePreference == null) {
+            return null;
+        }
+        
+        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
+        exportRdf4jHelper.setNodePreference(nodePreference);
+        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+
+        ConceptHelper conceptHelper = new ConceptHelper();        
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);   
+        allConcepts.forEach(idConcept -> {
+            exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
+        });
+
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        return writeRdf4j;
+    }      
+    
+    /**
      * Permet de retourner un group au format défini en passant par un identifiant Ark
      * utilisé pour la négociation de contenu
      * 
