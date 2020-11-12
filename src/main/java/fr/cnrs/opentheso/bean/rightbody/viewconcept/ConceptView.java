@@ -238,7 +238,7 @@ public class ConceptView implements Serializable {
         mapModel.setHeight("250px");
         mapModel.setCenter(place);
         mapModel.setZoom(13);
-        mapModel.setAttribution("OpenTheso");
+        mapModel.setAttribution(nodeConcept.getTerm().getLexical_value());
         mapModel.setMiniMap(false);
         mapModel.setLayerControl(false);
         mapModel.setDraggingEnabled(true);
@@ -252,6 +252,26 @@ public class ConceptView implements Serializable {
         if(nodeConcept != null) {
             for (NodeCorpus nodeCorpuse : nodeCorpuses) {
                 // recherche par Id
+                if(nodeCorpuse.getUriCount().contains("##id##")){
+                    if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                        nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                    }
+                }
+                if(nodeCorpuse.getUriLink().contains("##id##")){
+                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                }
+                
+                // recherche par value
+                if(nodeCorpuse.getUriCount().contains("##value##")){
+                    if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                        nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    }
+                }                
+                if(nodeCorpuse.getUriLink().contains("##value##")){
+                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                }
+                setCorpusCount(nodeCorpuse);
+            /*    // recherche par Id
                 if(nodeCorpuse.getUriLink().contains("##id##")){
                     nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
 
@@ -265,7 +285,8 @@ public class ConceptView implements Serializable {
                     nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
                     nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
                     setCorpusCount(nodeCorpuse);
-                }
+                }  */              
+                
             }
         }
     }

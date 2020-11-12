@@ -7,6 +7,10 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
     <h:head>
+        
+        <!--Code Google Analytics, l'intégration ou la modification est gérée dans l'appli -->
+        <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>        
+        
         <h:panelGroup id="indexTitle" >
             <title>
                 <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexical_value != ''}"
@@ -19,8 +23,7 @@
         </h:panelGroup>
 
 
-        <!--Code Google Analytics, l'intégration ou la modification est gérée dans l'appli -->
-        <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
+
             
             
         <script type="application/ld+json">

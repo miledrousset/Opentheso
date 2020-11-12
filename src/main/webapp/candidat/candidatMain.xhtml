@@ -9,7 +9,7 @@
 
         <p:tabView activeIndex="#{candidatBean.tabViewIndexSelected}"
                    style="background-color: #FAFAFA;">
-            <p:tab title="Liste de candidats" titleStyleClass="tab1">
+            <p:tab title="Suggestions" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isListCandidatsActivate() || 
                                    candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
                     <ui:include src="/candidat/candidatsList.xhtml" />
@@ -49,7 +49,7 @@
                 </b:row>
             </p:tab>
             
-            <p:tab title="Candidats insérés" titleStyleClass="tab1">
+            <p:tab title="Concepts insérés" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isAcceptedCandidatsActivate()}">
                     <ui:include src="/candidat/candidatAcceptedList.xhtml" />
                 </b:row>
@@ -58,7 +58,7 @@
                 </b:row>
             </p:tab>
             
-            <p:tab title="Candidats rejetés" titleStyleClass="tab1">
+            <p:tab title="Concepts rejetés" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isRejectCandidatsActivate()}">
                     <ui:include src="/candidat/candidatRejectesList.xhtml" />
                 </b:row>

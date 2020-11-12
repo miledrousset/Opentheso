@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import java.io.ByteArrayInputStream;
 import javax.faces.view.ViewScoped;
 
@@ -46,7 +47,14 @@ public class AtelierThesBean implements Serializable {
         result = new ArrayList<>();
         nodeListTheso = atelierThesService.searchAllThesaurus();
     }
-
+    
+    public void clearAll() {
+        titles = new ArrayList<>();
+        values = new ArrayList<>();
+        result = new ArrayList<>();
+        nodeListTheso = atelierThesService.searchAllThesaurus();   
+    }
+    
     public void comparer() {
         int position = titles.indexOf(selectedColumn);
         result = atelierThesService.comparer(values, position, thesoSelected);
@@ -57,6 +65,7 @@ public class AtelierThesBean implements Serializable {
     }
 
     public void loadFileCsv(FileUploadEvent event) {
+        clearAll();
         List<List<String>> temp = atelierThesService.loadCsvFile(event, delimiterCsv);
         if (!CollectionUtils.isEmpty(temp)) {
             titles = temp.get(0);

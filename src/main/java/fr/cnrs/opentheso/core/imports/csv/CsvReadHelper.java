@@ -56,10 +56,89 @@ public class CsvReadHelper {
         return !langs.isEmpty(); 
     }
     
+    
+    /**
+     * permet de lire un fichier CSV complet pour changer un thésaurus
+     * @param in
+     * @return 
+     */
     public boolean readFile(Reader in){
         try {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().parse(in);
+            String uri1;
+  //          boolean first = true;
+            
+            for (CSVRecord record : records) {
+//                if(first) {
+//                    // set the Uri
+//                    try {
+//                        uri = record.get("URI");
+//                        uri = uri.substring(0, uri.lastIndexOf("/"));
+//                    } catch (Exception e) {
+//                        //System.err.println("");
+//                    }
+//                    first = false;
+//                }
+                ConceptObject conceptObject = new ConceptObject();
+                
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                // puis on génère un nouvel identifiant
+                try {
+                    uri1 = record.get("URI");
+                    conceptObject.setIdConcept(getId(uri1));
+                } catch (Exception e) {
+                    //message = message + " Erreur à la ligne :" + record.toString(); //System.err.println("");
+                }
+
+                
+                // on récupère les labels
+                conceptObject = getLabels(conceptObject, record);
+                
+                // on récupère les notes
+                conceptObject = getNotes(conceptObject, record);
+ 
+                // on récupère le type
+                conceptObject.setType(getType(record));
+                
+                // on récupère la notation
+                conceptObject.setNotation(getNotation(record));
+
+                // on récupère les relations (BT, NT, RT)
+                conceptObject = getRelations(conceptObject, record);
+                
+                // on récupère les alignements 
+                conceptObject = getAlignments(conceptObject, record);
+                
+                // on récupère la localisation
+                conceptObject = getGeoLocalisation(conceptObject, record);
+                
+                // on récupère les membres (l'appartenance du concept à un groupe, collection ...
+                conceptObject = getMembers(conceptObject, record);
+                
+                // on récupère la date
+                conceptObject = getDates(conceptObject, record);
+                
+                conceptObjects.add(conceptObject);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }    
+    
+    
+    /**
+     * permet de lire une liste en CSV, la première colonne n'est pas obligatoire 
+     * pour charger une liste de concepts
+     * @param in
+     * @return 
+     */
+    public boolean readListFile(Reader in){
+        try {
+            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withTrim().parse(in);
             String uri1;
   //          boolean first = true;
             
@@ -130,7 +209,7 @@ public class CsvReadHelper {
     private String getId(String uri) {
         String id;
 
-        if(uri == null) return null;
+        if(uri == null || uri.isEmpty()) return null;
     
         if (uri.contains("idg=")) {
             if (uri.contains("&")) {

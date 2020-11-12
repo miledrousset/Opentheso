@@ -377,10 +377,11 @@ public class SearchHelper {
      * @param value
      * @param idLang
      * @param idThesaurus
+     * @param limit
      * @return
      */
     public ArrayList<NodeSearchMini> searchFullText(HikariDataSource ds,
-            String value, String idLang, String idThesaurus) {
+            String value, String idLang, String idThesaurus, int limit) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -418,7 +419,7 @@ public class SearchHelper {
                             + preparedValuePT
                             + " and term.id_thesaurus = '" + idThesaurus + "'"
                             + lang
-                            + " order by term.lexical_value limit 150";
+                            + " order by term.lexical_value limit " + limit;
 
                     resultSet = stmt.executeQuery(query);
                     while (resultSet.next()) {
@@ -448,7 +449,7 @@ public class SearchHelper {
                             + preparedValueNPT
                             + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                             + langSynonyme
-                            + " order by non_preferred_term.lexical_value limit 100";
+                            + " order by non_preferred_term.lexical_value limit " + limit;
 
                     resultSet = stmt.executeQuery(query);
 
