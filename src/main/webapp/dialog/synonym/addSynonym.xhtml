@@ -39,7 +39,9 @@
                         <!-- Valeur -->
                         <b:column span="12" >
                             <b:inputText id="idTraductionValue" label="Synonyme" placeholder="tapez une valeur ..."  
-                                         value="#{synonymBean.value}" style="font-size: 12px;"/>
+                                         value="#{synonymBean.value}" style="font-size: 12px;">
+                                <b:focus rendered="true" />
+                            </b:inputText>
                         </b:column>                             
                     </b:row>
                 </b:column>

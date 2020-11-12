@@ -58,8 +58,8 @@ public class TextInBoxTreePane extends JComponent {
         
         ElementDiagram element = new ElementDiagram();
         element.name = textInBox.text;
-        element.x = (int) (box.x + ARC_SIZE / 2) / 3;
-        element.y = (int) (box.y + 12 + 1) / 3;
+        element.x = (int) box.x + ARC_SIZE / 2;
+        element.y = (int) box.y + 12 + 1;
         
         return element;
     }

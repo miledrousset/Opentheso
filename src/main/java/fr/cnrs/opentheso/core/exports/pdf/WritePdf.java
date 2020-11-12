@@ -101,7 +101,7 @@ public class WritePdf {
         this.idToNameHashMap = new HashMap<>();
         this.xmlDocument = xmlDocument;
         document = new Document();
-        if (!StringUtils.isEmpty(codeLang2)) {
+        if (codeLang2 != null && !codeLang2.equals("")) {
             document.setPageSize(PageSize.LETTER.rotate());
         }
         try {
@@ -120,9 +120,11 @@ public class WritePdf {
         }
         try {
 
-            if (!StringUtils.isEmpty(codeLang2)) {
+            if (codeLang2 != null && codeLang2.equals("")) {
                 for (Paragraph paragraph : paragraphList) {
+
                     document.add(paragraph);
+
                 }
 
             } else {
@@ -338,9 +340,9 @@ public class WritePdf {
             cell1.setBorderWidth(Rectangle.NO_BORDER);
             table.addCell(cell1);
 
-            if (!StringUtils.isEmpty(codeLang2)) {
+            if (codeLang2 != null && !codeLang2.equals("")) {
                 for (SKOSLabel label : thesaurus.getLabelsList()) {
-                    if (codeLang2.equals(label.getLanguage())) {
+                    if (label.getLanguage().equals(codeLang2)) {
                         String labelValue = label.getLabel();
                         if (label.getProperty() == SKOSProperty.prefLabel) {
                             cell2.addElement(new Paragraph(labelValue + " (" + codeLang2 + ")", titleFont));
@@ -621,5 +623,4 @@ public class WritePdf {
         uri = stringPlus.normalizeStringForIdentifier(uri);
         return uri;
     }
-
 }

@@ -10,21 +10,38 @@
                style="font-size: 12px; " >
             <b:column span="2" offset="10">
 
-                <!-- ajout de TopTermes et des collections -->
-                <!-- ajout de TopTermes et des collections -->
+                <!-- ajout des collections et sous collections -->
                 <b:dropMenu icon-awesome="fa-plus-circle" icon-size="l"  value=""
                             style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px; "
                             class="dropdown-submenu pull-left">
 
-                    <b:navCommandLink  value="Add group/collection"
+                    <b:navCommandLink  value="Ajouter un groupe/collection"
                                        action="#{addGroupBean.init()}"
                                        oncomplete="PF('addGroup').show();"
                                        update="idAddGroup addGroupForm"
                                        styleClass="buttonIconOrange"
                                        style="font-size: 12px; ">
-                    </b:navCommandLink>     
+                    </b:navCommandLink> 
+                    <b:navCommandLink  rendered="#{treeGroups.isGroupNode and treeGroups.selectedNode != null}"
+                        value="Ajouter un sous-group/collection"
+                                       action="#{addGroupBean.init()}"
+                                       oncomplete="PF('addSubGroup').show();"
+                                       update="idAddSubGroup addSubGroupForm"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px; ">
+                    </b:navCommandLink>    
+                    <b:navCommandLink  rendered="#{treeGroups.isGroupNode and treeGroups.selectedNode != null and !treeGroups.isThisGroupHaveSubGroup}"
+                        value="Supprimer group/collection"
+                                       action="#{addGroupBean.init()}"
+                                       oncomplete="PF('deleteGroup').show();"
+                                       update="idDeleteGroup deleteGroupForm"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px; ">
+                    </b:navCommandLink>                     
                 </b:dropMenu>        
                 <ui:include src="/dialog/group/addGroup.xhtml" />
+                <ui:include src="/dialog/group/addSubGroup.xhtml" />
+                <ui:include src="/dialog/group/deleteGroup.xhtml" />                
             </b:column>
         </b:row> 
     </h:panelGroup>        

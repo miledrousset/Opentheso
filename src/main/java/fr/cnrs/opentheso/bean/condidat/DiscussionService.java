@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.condidat;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bean.concept.SynonymBean;
 import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -8,11 +9,15 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.utils.EmailUtils;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.*;
 
@@ -81,25 +86,26 @@ public class DiscussionService implements Serializable {
         messageDto.setNom(candidatBean.getCurrentUser().getUsername().toUpperCase());
         messageDto.setMsg(candidatBean.getMessage());
         
-        HikariDataSource connection = connect.getPoolConnexion();
-        
         MessageDao messageDao = new MessageDao();
-        messageDao.addNewMessage(connection, 
+        messageDao.addNewMessage(connect.getPoolConnexion(), 
                 candidatBean.getMessage(), 
                 candidatBean.getCurrentUser().getNodeUser().getIdUser(), 
                 candidatBean.getCandidatSelected().getIdConcepte(), 
                 candidatBean.getCandidatSelected().getIdThesaurus());
 
-        candidatBean.getCandidatSelected().setMessages(messageDao.getAllMessagesByCandidat(
-                connection, 
-                candidatBean.getCandidatSelected().getIdConcepte(), 
-                candidatBean.getCandidatSelected().getIdThesaurus(), 
-                candidatBean.getCurrentUser().getNodeUser().getIdUser()));
+        reloadMessage();
       
         candidatBean.setMessage("");
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, langueBean.getMsg("candidat.send_message.msg2"));
-        
-        connection.close();
+    }
+    
+    public void reloadMessage(){
+        MessageDao messageDao = new MessageDao();
+        candidatBean.getCandidatSelected().setMessages(messageDao.getAllMessagesByCandidat(
+                connect.getPoolConnexion(), 
+                candidatBean.getCandidatSelected().getIdConcepte(), 
+                candidatBean.getCandidatSelected().getIdThesaurus(), 
+                candidatBean.getCurrentUser().getNodeUser().getIdUser()));   
     }
 
     public void sendInvitation() {

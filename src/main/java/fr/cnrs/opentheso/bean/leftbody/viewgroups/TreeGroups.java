@@ -71,6 +71,7 @@ public class TreeGroups implements Serializable {
         root = null;
         selectedNode = null;
         rightBodySetting.init();
+        noedSelected = false;
     }
 
     public void initialise(String idTheso, String idLang) {
@@ -79,6 +80,7 @@ public class TreeGroups implements Serializable {
         dataService = new DataService();
         root = dataService.createRoot();
         addFirstNodes();
+        noedSelected = false;
     }
 
     private boolean addFirstNodes() {
@@ -215,8 +217,46 @@ public class TreeGroups implements Serializable {
         return true;
     }
 
-    /////// pour l'ajout d'un nouveau Group après le chargement de l'arbre
-    public void addNewGroupChild(String idGroup, String idTheso, String idLang) {
+    /**
+     * pour l'ajout d'un nouveau Group après le chargement de l'arbre
+     * @param idGroup
+     * @param idTheso
+     * @param idLang 
+     */
+    public void addNewGroupToTree(String idGroup, String idTheso, String idLang) {
+
+        NodeGroup nodeGroup = new GroupHelper().getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        if (nodeGroup == null) {
+            return;
+        }
+
+        String label;
+        if (nodeGroup.getLexicalValue().isEmpty()) {
+            label = "(" + idGroup + ")";
+        } else
+            label = nodeGroup.getLexicalValue();
+
+        TreeNodeData data = new TreeNodeData(
+                idGroup,
+                label,
+                nodeGroup.getConceptGroup().getNotation(),
+                true,//isgroup
+                false,//isSubGroup
+                false,//isConcept
+                false,//isTopConcept
+                "group"
+        );
+        dataService.addNodeWithoutChild("group", data, root);
+    }
+    
+    /**
+     * pour l'ajout d'un nouveau Group après le chargement de l'arbre
+     * @param parent
+     * @param idGroup
+     * @param idTheso
+     * @param idLang 
+     */
+    public void addNewSubGroupToTree(TreeNode parent, String idGroup, String idTheso, String idLang) {
 
         NodeGroup nodeGroup = new GroupHelper().getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
         if (nodeGroup == null) {
@@ -234,13 +274,13 @@ public class TreeGroups implements Serializable {
                 label,
                 nodeGroup.getConceptGroup().getNotation(),
                 false,//isgroup
-                false,//isSubGroup
-                true,//isConcept
+                true,//isSubGroup
+                false,//isConcept
                 false,//isTopConcept
                 "group"
         );
-        dataService.addNodeWithoutChild("group", data, root);
-    }
+        dataService.addNodeWithoutChild("group", data, parent);
+    }    
 
     public void selectThisGroup(String idGroup) {
         rightBodySetting.setShowGroupToOn();
@@ -274,6 +314,36 @@ public class TreeGroups implements Serializable {
             noedSelected = false;
         }
     }
+    
+    public String getNodeLabel(){
+        if(selectedNode == null) return null;
+        return ((TreeNodeData) selectedNode.getData()).getName();
+    }
+    
+    public String getSelectedNodeId(){
+        if(selectedNode == null) return null;
+        return ((TreeNodeData) selectedNode.getData()).getNodeId();
+    }    
+    
+    public boolean isIsGroupNode(){
+        if(selectedNode == null) return false;
+        return ((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup();
+    }    
+    
+    /**
+     * permet de savoir si le groupe/collection a un sous group/collection
+     * @return 
+     */
+    public boolean isIsThisGroupHaveSubGroup(){
+        if(selectedNode == null) return false;
+        GroupHelper groupHelper = new GroupHelper();
+        return groupHelper.isHaveSubGroup(connect.getPoolConnexion(),
+                idTheso,
+                ((TreeNodeData) selectedNode.getData()).getNodeId());
+    }       
+    
+    
+    
 
     public boolean isNoedSelected() {
         return noedSelected;

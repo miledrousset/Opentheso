@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.helper.nodes.statistic.NodeStatConcept;
+import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,6 +28,229 @@ public class StatisticHelper {
     public void setNombreConcept(int nombreConcept) {
         this.nombreConcept = nombreConcept;
     }
+    
+    /**
+     * méthode pour récupérer tous les concepts modifiés triés par date décroissant
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @param limit
+     * @return 
+     * #MR
+     */
+    public List<ConceptStatisticData> getStatConcept(
+            HikariDataSource ds,
+            String idThesaurus, String idLang, int limit) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        List<ConceptStatisticData> conceptStatisticDatas = new ArrayList<>();
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT concept.id_concept, term.lexical_value, concept.created, concept.modified, users.username"
+                            + " from concept, preferred_term, term, users"
+                            + " where "
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and"
+                            + " concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
+                            + " preferred_term.id_thesaurus = term.id_thesaurus"
+                            + " and"
+                            + " preferred_term.id_term = term.id_term"
+                            + " and"
+                            + " term.contributor = users.id_user"
+                            + " and"
+                            + " term.id_thesaurus = '" + idThesaurus + "'"
+                            + " and"
+                            + " term.lang = '" + idLang + "'"
+                            + " ORDER BY concept.modified DESC LIMIT " + limit;                    
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                     while (resultSet.next()) {
+                        ConceptStatisticData conceptStatisticData = new ConceptStatisticData();
+                        conceptStatisticData.setIdConcept(resultSet.getString("id_concept"));
+                        conceptStatisticData.setLabel(resultSet.getString("lexical_value"));                         
+                        conceptStatisticData.setDateCreation(resultSet.getString("created"));
+                        conceptStatisticData.setDateModification(resultSet.getString("modified")); 
+                        conceptStatisticData.setUtilisateur(resultSet.getString("username")); 
+                        conceptStatisticData.setType("skos:prefLabel");
+                        conceptStatisticDatas.add(conceptStatisticData);
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List statistic of Concept in thesaurus : " + idThesaurus, sqle);
+        }
+        return conceptStatisticDatas;
+    }
+    
+    /**
+     * méthode pour récupérer tous les concepts modifiés triés par date décroissant
+     * avec filtre par collection
+     * @param ds
+     * @param idThesaurus
+     * @param idGroup
+     * @param idLang
+     * @param limit
+     * @return 
+     * #MR
+     */
+    public List<ConceptStatisticData> getStatConceptLimitCollection(
+            HikariDataSource ds,
+            String idThesaurus, String idGroup, String idLang, int limit) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        List<ConceptStatisticData> conceptStatisticDatas = new ArrayList<>();
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT concept.id_concept, term.lexical_value, concept.created, concept.modified, users.username"
+                            + " from concept, concept_group_concept, preferred_term, term, users"
+                            + " where "
+                            + " concept.id_concept = concept_group_concept.idconcept"
+                            + " and"
+                            + " concept.id_thesaurus = concept_group_concept.idthesaurus"
+                            + " and"                            
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and"
+                            + " concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
+                            + " preferred_term.id_thesaurus = term.id_thesaurus"
+                            + " and"
+                            + " preferred_term.id_term = term.id_term"
+                            + " and"
+                            + " term.contributor = users.id_user"
+                            + " and"
+                            + " term.id_thesaurus = '" + idThesaurus + "'"
+                            + " and"
+                            + " term.lang = '" + idLang + "'"
+                            + " and"
+                            + " concept_group_concept.idgroup = '" + idGroup + "'"
+                            + " ORDER BY concept.modified DESC LIMIT " + limit;                    
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                     while (resultSet.next()) {
+                        ConceptStatisticData conceptStatisticData = new ConceptStatisticData();
+                        conceptStatisticData.setIdConcept(resultSet.getString("id_concept"));
+                        conceptStatisticData.setLabel(resultSet.getString("lexical_value"));                         
+                        conceptStatisticData.setDateCreation(resultSet.getString("created"));
+                        conceptStatisticData.setDateModification(resultSet.getString("modified")); 
+                        conceptStatisticData.setUtilisateur(resultSet.getString("username")); 
+                        conceptStatisticData.setType("skos:prefLabel");
+                        conceptStatisticDatas.add(conceptStatisticData);
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List statistic of Concept in thesaurus : " + idThesaurus, sqle);
+        }
+        return conceptStatisticDatas;
+    }    
+    
+    /**
+     * méthode pour récupérer tous les concepts modifiés triés par date décroissant
+     * avec filtre par collection et par date debut et fin
+     * @param ds
+     * @param idThesaurus
+     * @param idGroup
+     * @param idLang
+     * @param dateDebut
+     * @param datefin
+     * @param limit
+     * @return 
+     * #MR
+     */
+    public List<ConceptStatisticData> getStatConceptByDateAndCollection(
+            HikariDataSource ds,
+            String idThesaurus, String idGroup, String idLang,
+            String dateDebut, String datefin, int limit) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        List<ConceptStatisticData> conceptStatisticDatas = new ArrayList<>();
+        String groupFilter = "";
+        if(idGroup!= null && !idGroup.isEmpty()) {
+            groupFilter = " and concept_group_concept.idgroup = '" + idGroup + "'";
+        }
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT concept.id_concept, term.lexical_value, concept.created, concept.modified, users.username"
+                            + " from concept, concept_group_concept, preferred_term, term, users"
+                            + " where "
+                            + " concept.id_concept = concept_group_concept.idconcept"
+                            + " and"
+                            + " concept.id_thesaurus = concept_group_concept.idthesaurus"
+                            + " and"                            
+                            + " concept.id_concept = preferred_term.id_concept"
+                            + " and"
+                            + " concept.id_thesaurus = preferred_term.id_thesaurus"
+                            + " and"
+                            + " preferred_term.id_thesaurus = term.id_thesaurus"
+                            + " and"
+                            + " preferred_term.id_term = term.id_term"
+                            + " and"
+                            + " term.contributor = users.id_user"
+                            + " and"
+                            + " term.id_thesaurus = '" + idThesaurus + "'"
+                            + " and"
+                            + " term.lang = '" + idLang + "'"
+                            + " and"
+                            + " concept.modified <= '" + datefin + "'"
+                            + " and"
+                            + " concept.modified >= '" + dateDebut + "'"
+                            + groupFilter
+                            
+                            + " ORDER BY concept.modified DESC LIMIT " + limit;                    
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                     while (resultSet.next()) {
+                        ConceptStatisticData conceptStatisticData = new ConceptStatisticData();
+                        conceptStatisticData.setIdConcept(resultSet.getString("id_concept"));
+                        conceptStatisticData.setLabel(resultSet.getString("lexical_value"));                         
+                        conceptStatisticData.setDateCreation(resultSet.getString("created"));
+                        conceptStatisticData.setDateModification(resultSet.getString("modified")); 
+                        conceptStatisticData.setUtilisateur(resultSet.getString("username")); 
+                        conceptStatisticData.setType("skos:prefLabel");
+                        conceptStatisticDatas.add(conceptStatisticData);
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List statistic of Concept in thesaurus : " + idThesaurus, sqle);
+        }
+        return conceptStatisticDatas;
+    }      
+
+    
     
     /*
     select count(concept.id_concept)
@@ -462,9 +687,9 @@ public class StatisticHelper {
      * @param langue
      * @param limit
      * @return 
-     * #MR
+     * #MR déprécié
      */
-    public ArrayList<NodeStatConcept> getStatConcept(HikariDataSource ds,
+/*    public ArrayList<NodeStatConcept> getStatConcept(HikariDataSource ds,
             String idThesaurus, String langue, int limit) {
         Connection conn;
         Statement stmt;
@@ -513,7 +738,7 @@ public class StatisticHelper {
             log.error("Error while getting List statistic of Concept in thesaurus : " + idThesaurus, sqle);
         }
         return list;
-    }
+    }*/
     
     public ArrayList<NodeStatConcept> getStatConceptCreat(HikariDataSource ds, String begin, String end, String idThesaurus, String langue,int limit) {
         Connection conn;
@@ -638,7 +863,6 @@ public class StatisticHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeStatConcept> list = new ArrayList<>();
-
         try {
             // Get connection from pool
             conn = ds.getConnection();

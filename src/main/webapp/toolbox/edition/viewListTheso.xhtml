@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui">
     
     <h:form id="listThesoForm">
-        <b:row>
+        <b:row rendered="#{currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin}">
             <b:column span="3" offset="1">
 
                 <b:dropButton  tooltip="Importer un thésaurus" tooltip-delay-show="1000" 
@@ -63,7 +63,7 @@
 
 
                 <!-- la boucle pour les thésaurus autorisés -->
-                <ui:repeat id="listThesoActions" var="listTheso" value="#{roleOnTheso.nodeListTheso}">
+                <ui:repeat id="listThesoActions" var="listTheso" value="#{roleOnTheso.nodeListThesoAsAdmin}">
                     <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
                         <b:column span="4" >
                             <h:outputText value="#{listTheso.value} (#{listTheso.id})"/>
@@ -86,7 +86,7 @@
                             <b:dropMenu  
                                 icon-awesome="fas fa-file-export" icon-size="lg"  value="" iconAlign="right"
                                 style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px;" contentStyle="font-size: 12px;">
-                                <b:navCommandLink value="RDF_Skos" ajax="false"
+                                <b:navCommandLink value="Skos" ajax="false"
                                                   tooltip="Exporter le thésaurus au format Skos" tooltip-delay-show="1000"
                                                   actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
                                                   action="#{viewEditionBean.setIsViewExportSkos(true)}"
@@ -101,7 +101,7 @@
                                 
                                 <b:navCommandLink value="CSV" ajax="false" tooltip="Exporter le thésaurus au format CSV" tooltip-delay-show="1000"
                                                   actionListener="#{viewExportBean.init(listTheso, 'CSV')}"
-                                                  action="#{viewEditionBean.setIsViewExportPDF(true)}"
+                                                  action="#{viewEditionBean.setIsViewExportCSV(true)}"
                                                   update="toolBoxForm"
                                                   style="font-size: 12px;"/>
                             </b:dropMenu> 

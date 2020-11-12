@@ -5,6 +5,7 @@
  */
 package fr.cnrs.opentheso.core.exports.csv;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.skosapi.SKOSDate;
 import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
@@ -37,10 +38,13 @@ public class WriteCSV {
      * export un thésaurus en format csv
      *
      * @param xmlDocument
-     * @param langs
+     * @param selectedLanguages
+     * @param seperate
      */
-    public WriteCSV(SKOSXmlDocument xmlDocument, List<String> langs, char seperate) {
-
+    public WriteCSV(SKOSXmlDocument xmlDocument, List<NodeLangTheso> selectedLanguages, char seperate) {
+        if(selectedLanguages == null || selectedLanguages.isEmpty()) {
+            return;
+        }
         try {
             this.seperate = seperate;
             // create a writer
@@ -48,26 +52,50 @@ public class WriteCSV {
             writer = new BufferedWriter(new OutputStreamWriter(output));
 
             // write header record
+            //URI rdf:type
             StringBuilder header = new StringBuilder();
             header.append("URI").append(seperate)
                     .append("rdf:type").append(seperate);
 
+            List<String> langs = selectedLanguages.stream().map(lang -> lang.getCode()).collect(Collectors.toList());
+
+            //skos:prefLabel
             langs.forEach((lang) -> {
                 header.append("skos:prefLabel@").append(lang).append(seperate);
             });
 
+            //skos:altLabel
             langs.forEach((lang) -> {
                 header.append("skos:altLabel@").append(lang).append(seperate);
             });
+            
+            //skos:hiddenLabel
+            langs.forEach((lang) -> {
+                header.append("skos:hiddenLabel@").append(lang).append(seperate);
+            });
 
-            header.append("skos:hiddenLabel@").append(langs.get(0)).append(seperate);
-
+            //skos:definition
             langs.forEach((lang) -> {
                 header.append("skos:definition@").append(lang).append(seperate);
             });
-
-            header.append("skos:scopeNote@").append(langs.get(0)).append(seperate)
-                    .append("skos:notation").append(seperate)
+            
+            //skos:scopeNote
+            langs.forEach((lang) -> {
+                header.append("skos:scopeNote@").append(lang).append(seperate);
+            });
+            
+            //skos:note
+            langs.forEach((lang) -> {
+                header.append("skos:note@").append(lang).append(seperate);
+            });     
+            
+            //skos:historyNote
+            langs.forEach((lang) -> {
+                header.append("skos:historyNote@").append(lang).append(seperate);
+            });  
+            
+            
+            header.append("skos:notation").append(seperate)
                     .append("skos:narrower").append(seperate)
                     .append("skos:broader").append(seperate)
                     .append("skos:related").append(seperate)
@@ -109,19 +137,27 @@ public class WriteCSV {
 
     private void writeResource(SKOSResource skosResource, String type, List<String> langs) throws IOException {
         StringBuilder stringBuffer = new StringBuilder();
+        
+        //URI rdf:type        
         stringBuffer.append(skosResource.getUri()).append(seperate) //URI
                 .append(type).append(seperate) ;//rdf:type
         
+        //skos:prefLabel
         for (String lang : langs) {
             stringBuffer.append(getPrefLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.prefLabel)).append(seperate); //skos:prefLabel
         }
         
+        //skos:altLabel
         for (String lang : langs) {
-            stringBuffer.append(getLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.altLabel)).append(seperate);  //skos:altLabel
+            stringBuffer.append(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.altLabel)).append(seperate);  //skos:altLabel
         }
         
-        stringBuffer.append(getLabelValue(skosResource.getLabelsList(), langs.get(0), SKOSProperty.hiddenLabel)).append(seperate);//hiddenLabel
-        
+        //skos:hiddenLabel
+        for (String lang : langs) {
+            stringBuffer.append(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.hiddenLabel)).append(seperate);//hiddenLabel
+        }        
+
+        //skos:definition
         for (String lang : langs) {
             String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.definition);
             def = def.replaceAll("amp;", "");
@@ -129,7 +165,42 @@ public class WriteCSV {
             stringBuffer.append(def).append(seperate);//definition
         }
         
-        stringBuffer.append(getDocumentationValue(skosResource.getDocumentationsList(), langs.get(0), SKOSProperty.scopeNote)).append(seperate)//scopeNote
+        //skos:scopeNote
+        for (String lang : langs) {
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.scopeNote);
+            def = def.replaceAll("amp;", "");
+            def = def.replaceAll(";", ",");
+            stringBuffer.append(def).append(seperate);//scopeNote
+        }        
+        
+        //skos:note
+        for (String lang : langs) {
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.note);
+            def = def.replaceAll("amp;", "");
+            def = def.replaceAll(";", ",");
+            stringBuffer.append(def).append(seperate);//note
+        }
+        
+        //skos:historyNote
+        for (String lang : langs) {
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.historyNote);
+            def = def.replaceAll("amp;", "");
+            def = def.replaceAll(";", ",");
+            stringBuffer.append(def).append(seperate);//historyNote
+        }        
+        
+        //        skos:notation
+        //        skos:narrower
+        //        skos:broader
+        //        skos:related
+        //        skos:exactMatch
+        //        skos:closeMatch
+        //        geo:lat
+        //        geo:long
+        //        skos:member
+        //        dct:created
+        //        dct:modified
+        stringBuffer
                 .append(getNotation(skosResource.getNotationList())).append(seperate) //notation
                 .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.narrower)).append(seperate) //narrower
                 .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.broader)).append(seperate) //broader
@@ -213,7 +284,7 @@ public class WriteCSV {
         return value;
     }    
     
-    private String getLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
+    private String getAltLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
         
         return labels.stream()
                 .filter(label -> label.getProperty() == propertie && label.getLanguage().equals(lang))

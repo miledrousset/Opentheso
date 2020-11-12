@@ -23,19 +23,21 @@
         <!-- vue pulic non connectée -->
         <b:panel  rendered="#{!(viewEditorThesoHomeBean.isInEditing)}" 
                   style="font-size: 12px; border: none ">
-            <b:row >
-                <b:column span="12">
-                    <h:outputText value="total des concepts de " style="font-size: 12px;"/>
-                    <h:outputText value="#{selectedTheso.thesoName} : " style="font-size: 12px; font-weight: bold"/>  
-                    <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" style="font-size: 12px; color: #C63632; font-weight: bold"/>                    
-                </b:column>                
-            </b:row>
-            <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>             
-            <b:row >
-                <b:column span="12">
-                    <h:outputText escape="false" value="#{viewEditorThesoHomeBean.getThesoHomePage()}" />
-                </b:column>                
-            </b:row>
+            <b:jumbotron  style="background-color: #FFFFFF; font-size: 12px;">
+                <b:row >
+                    <b:column span="12">
+                        <h:outputText value="total des concepts de " style="font-size: 12px;"/>
+                        <h:outputText value="#{selectedTheso.thesoName} : " style="font-size: 12px; font-weight: bold"/>  
+                        <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" style="font-size: 12px; color: #C63632; font-weight: bold"/>                    
+                    </b:column>                
+                </b:row>
+                <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>             
+                <b:row >
+                    <b:column span="12">
+                        <h:outputText escape="false" value="#{viewEditorThesoHomeBean.getThesoHomePage()}" />
+                    </b:column>                
+                </b:row>
+            </b:jumbotron>
         </b:panel>
         
         <!-- vue connectée pour édition -->
@@ -51,7 +53,7 @@
                 </b:column>
                 <b:column span="2" >
                     <b:commandButton 
-                        value="Vue plain texte" 
+                        value="Vue plein texte" 
                         class="btn btn-primary"
                         update="formRightTab thesoHomePageForm"
                         action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"

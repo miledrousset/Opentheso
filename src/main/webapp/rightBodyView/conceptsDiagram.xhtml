@@ -10,21 +10,67 @@
             <h:outputText style="float: right; font-weight: bold;" value="Zoom : "/>
         </b:column>
         <b:column medium-screen="3" style="margin-top: 10px">
-            <input id="zoom" type="range" class="circleRange" min="0" max="200" value="100" step="10" 
-                   style="color: #F47B2A; width: 300px; -webkit-appearance: none; -moz-appearance: none; 
+            <input id="zoom" type="range" class="circleRange" min="0.1" max="1" value="1" step="0.1"
+                   style="color: #F47B2A; width: 300px; -webkit-appearance: none; -moz-appearance: none;
                    background: #43B572; outline: none; height: 3px;"/>
         </b:column>
     </b:row>
+    
+    <style type="text/css">
+        .diagramPanel {
+            transform-origin: 0 0;
+            width: 100%;
+            height:600px;
+        }
+    </style>
 
     <script type="text/javascript">
-        const selectElement = document.getElementById('zoom');
+        const selectElement = document.querySelector('.circleRange');
         selectElement.addEventListener('change', (event) => {
-            zoomings(selectElement.value + "%")
+            setZoom();
         });
+        
+        function setZoom() {
+            const div = document.querySelector('.diagramPanel');
+            div.style.transform = 'scale(' + selectElement.value + ')';
+            div.style.transform_origin= '0 0';
+            console.log(selectElement.value);
+            if (selectElement.value === '1') {
+                div.style.width = '100%';
+                div.style.length = '100%';
+            } else if (selectElement.value === '0.9') {
+                div.style.width= '112%';
+                div.style.length= '112%';
+            } else if (selectElement.value === '0.8') {
+                div.style.width= '126%';
+                div.style.length= '126%';
+            } else if (selectElement.value === '0.7') {
+                div.style.width= '143%';
+                div.style.length= '143%';
+            } else if (selectElement.value === '0.6') {
+                div.style.width= '165%';
+                div.style.length= '165%';
+            } else if (selectElement.value === '0.5') {
+                div.style.width= '200%';
+                div.style.length= '200%';
+            } else if (selectElement.value === '0.4') {
+                div.style.width= '250%';
+                div.style.length= '250%';
+            } else if (selectElement.value === '0.3') {
+                div.style.width= '330%';
+                div.style.length= '330%';
+            } else if (selectElement.value === '0.2') {
+                div.style.width= '370%';
+                div.style.length= '370%';
+            }else if (selectElement.value === '0.1') {
+                div.style.width= '400%';
+                div.style.length= '400%';
+            }
+        }
     </script>
-    <!-- Fin du menu contextuelle -->
+    <!-- Fin du zoom -->
 
-    <p:panel id="diagramPanel" style="margin-top: 10px">
+    <p:panel id="diagramZone" style="margin-top: 10px">
 
         <!-- Debut du Diagram -->
         <style type="text/css">
@@ -55,7 +101,7 @@
             }
         </style>
 
-        <p:diagram id="diagram" value="#{conceptsDiagramBean.model}" style="height:600px; position: relative;" />
+        <p:diagram id="diagram" class="diagramPanel" value="#{conceptsDiagramBean.model}" style="height:600px;" />
 
         <p:remoteCommand name="elementClicked" actionListener="#{conceptsDiagramBean.onElementClicked}"/>
         <p:remoteCommand name="closeElement" actionListener="#{conceptsDiagramBean.closeNoeud}"/>
@@ -78,24 +124,14 @@
                         value: info.target.id
                     }]);
             });
-        </script>
-
-        <script type="text/javascript">
 
             var scrollPosition_X = 0;
             var scrollPosition_Y = 0;
-
-            function zoomings(optionSel) {
-                console.log("optionSel : " + optionSel)
-                var div = document.getElementById("diagramPanel");
-                div.style.zoom = optionSel;
-            }
 
             function initScrollPosition() {
                 var elmnt = document.getElementById("diagram");
                 scrollPosition_X = elmnt.scrollLeft;
                 scrollPosition_Y = elmnt.scrollTop;
-                console.log("intit : " + scrollPosition_X + " / " + scrollPosition_Y);
                 return false;
             }
 
@@ -103,7 +139,7 @@
                 var elmnt = document.getElementById("diagram");
                 elmnt.scrollLeft = scrollPosition_X;
                 elmnt.scrollTop = scrollPosition_Y;
-                console.log("intit : " + scrollPosition_X + " / " + scrollPosition_Y);
+                setZoom();
                 return false;
             }
         </script>
@@ -113,17 +149,17 @@
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function ()
             {
-                $("#diagramPanel").bind("contextmenu", function (event)
+                $("#diagramZone").bind("contextmenu", function (event)
                 {
                     event.preventDefault();
-                    var offsets = $('#diagramPanel').offset();
+                    var offsets = $('#diagramZone').offset();
                     var infoTop = offsets.top;
                     var infoLeft = offsets.left;
                     var posLeft;
                     var posTop;
                     /*Get window size:*/
-                    var winWidth = $("#diagramPanel").width();
-                    var winHeight = $("#diagramPanel").height();
+                    var winWidth = $("#diagramZone").width();
+                    var winHeight = $("#diagramZone").height();
                     var infoRight = winWidth + infoLeft;
                     var infoBottom = winHeight + infoTop;
                     /*Get pointer position:*/
@@ -146,7 +182,7 @@
                         posTop -= (contextBottom - infoBottom) + 10;
                     }
                     $(".contextmenu")
-                            .appendTo("#diagramPanel")
+                            .appendTo("#diagramZone")
                             .css({"left": posLeft + "px", "top": posTop + "px"})
                             .show();
                 }).bind("click", function (event)

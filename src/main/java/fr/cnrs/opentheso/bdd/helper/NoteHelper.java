@@ -1529,28 +1529,14 @@ public class NoteHelper {
         }
     }
     
-    public int getNbrNoteByGroupAndThesoAndLang(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
+    
+    
+    private int getNbrNoteByGroupTypeConcept(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
 
         Connection conn;
         Statement stmt;
         int count = 0;
-
-        /*
-SELECT count (note.id)
-FROM preferred_term, note, concept
-WHERE preferred_term.id_term = note.id_term 
-AND preferred_term.id_thesaurus = note.id_thesaurus 
-AND concept.id_thesaurus = preferred_term.id_thesaurus 
-AND concept.id_concept = preferred_term.id_concept
-AND preferred_term.id_thesaurus = 'TH_1'
-AND note.lang = 'fr' 
-AND preferred_term.id_concept 
-IN
-     (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = 'TH_1' and concept_group_concept.idgroup='2')        
-        */
-        
-        
-        
+ 
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -1559,14 +1545,15 @@ IN
             // ajouté par Miled pour test et optimisation 
             stmt.executeQuery("SELECT count (note.id)" 
                 + " FROM preferred_term, note, concept"
-                + " WHERE preferred_term.id_term = note.id_term "
+                + " WHERE preferred_term.id_concept = note.id_concept "
                 + " AND preferred_term.id_thesaurus = note.id_thesaurus" 
                 + " AND concept.id_thesaurus = preferred_term.id_thesaurus" 
                 + " AND concept.id_concept = preferred_term.id_concept"
                 + " AND preferred_term.id_thesaurus = '"+ idThesaurus+ "'"
                 + " AND note.lang = '" +idLang + "' "
                 + " AND preferred_term.id_concept "
-                + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus +"' and concept_group_concept.idgroup='" + idGroup +"')");             
+                + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus +"'"
+                + " and concept_group_concept.idgroup='" + idGroup +"')");             
             /*stmt.executeQuery("SELECT count(preferred_term.id_concept) " +
                               "FROM preferred_term, note " +
                               "WHERE preferred_term.id_thesaurus = note.id_thesaurus " +
@@ -1590,6 +1577,53 @@ IN
         }
         return count;
     }
+    
+    private int getNbrNoteByGroupTypeTerm(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
+
+        Connection conn;
+        Statement stmt;
+        int count = 0;
+ 
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            stmt = conn.createStatement();
+            
+            // ajouté par Miled pour test et optimisation 
+            stmt.executeQuery("SELECT count (note.id)" 
+                + " FROM preferred_term, note, concept"
+                + " WHERE preferred_term.id_term = note.id_term "
+                + " AND preferred_term.id_thesaurus = note.id_thesaurus" 
+                + " AND concept.id_thesaurus = preferred_term.id_thesaurus" 
+                + " AND concept.id_concept = preferred_term.id_concept"
+                + " AND preferred_term.id_thesaurus = '"+ idThesaurus+ "'"
+                + " AND note.lang = '" +idLang + "' "
+                + " AND preferred_term.id_concept "
+                + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus +"'"
+                + " and concept_group_concept.idgroup='" + idGroup +"')");             
+            /*stmt.executeQuery("SELECT count(preferred_term.id_concept) " +
+                              "FROM preferred_term, note " +
+                              "WHERE preferred_term.id_thesaurus = note.id_thesaurus " +
+                              "AND (preferred_term.id_term = note.id_term or preferred_term.id_concept = note.id_concept) " +
+                              "AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
+                              "AND preferred_term.id_concept IN (SELECT concept.id_concept " +
+                                             "FROM concept, concept_group_concept " +
+                                             "WHERE concept.id_concept = concept_group_concept.idconcept " +
+                                             "AND concept.id_thesaurus = concept_group_concept.idthesaurus " +
+                                             "AND concept.id_thesaurus = '"+idThesaurus+"' " +
+                                             "AND concept_group_concept.idgroup = '"+idGroup+"') " +
+                              "AND note.lang = '"+idLang+"'");*/
+            ResultSet resultSet = stmt.getResultSet();
+            if(resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException sqle) {
+            log.error("Error while getting Count of Note in Group : " + idGroup, sqle);
+        }
+        return count;
+    }    
 
     private int getNbrNoteDesConceptsSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
 
@@ -1643,11 +1677,32 @@ IN
         return count;
     }
 
+    /**
+     * permet de retourner le nombre de notes (type concept et terme) pour les concepts qui n'ont pas de collection
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @return 
+     */
     public int getNbrNoteSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
         int nbrNoteConcepts = getNbrNoteDesConceptsSansGroup(ds, idThesaurus, idLang);
         int nbrNoteTerms = getNbrNoteDesTermsSansGroup(ds, idThesaurus, idLang);
         return nbrNoteConcepts + nbrNoteTerms;
     }
+    
+    /**
+     * permet de retourner le nombre de notes (type concept et terme) pour les concepts qui appartiennent à ce groupe
+     * @param ds
+     * @param idThesaurus
+     * @param idGroup
+     * @param idLang
+     * @return 
+     */
+    public int getNbrNoteByGroup(HikariDataSource ds, String idGroup, String idThesaurus,  String idLang) {
+        int nbrNoteConcepts = getNbrNoteByGroupTypeConcept(ds, idGroup, idThesaurus, idLang);
+        int nbrNoteTerms = getNbrNoteByGroupTypeTerm(ds,idGroup, idThesaurus, idLang);
+        return nbrNoteConcepts + nbrNoteTerms;
+    }    
 
 }
 

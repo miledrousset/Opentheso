@@ -62,6 +62,12 @@ public class PreferenceBean implements Serializable {
             uriType = "ark";
         
     }
+    
+    public String getGoogleAnalytics() {
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        return preferencesHelper.getCodeGoogleAnalytics(
+                connect.getPoolConnexion());
+    }
 
     public void savePreference() {
         setUriType();

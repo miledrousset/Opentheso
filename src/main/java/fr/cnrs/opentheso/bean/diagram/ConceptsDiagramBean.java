@@ -37,10 +37,11 @@ import java.util.*;
 @SessionScoped
 public class ConceptsDiagramBean implements Serializable {
 
-    private final int GAP_BETWEEN_LEVELS = 4;
-    private final int GAP_BETWEEN_NODES = 1;
     private final int HEIGHT_ELEMENT = 20;
     private final int WIDTH_ELEMENT = 40;
+    
+    private final float GAP_BETWEEN_NODES = 4.1f;
+    private final float GAP_BETWEEN_LEVELS = 5;
 
     @Inject
     private Connect connect;
@@ -99,8 +100,7 @@ public class ConceptsDiagramBean implements Serializable {
         connector.setPaintStyle("{strokeStyle:'#C7B097',lineWidth:3}");
         model.setDefaultConnector(connector);
 
-        DefaultConfiguration<TextInBox> configuration = new DefaultConfiguration<>(
-                GAP_BETWEEN_LEVELS, GAP_BETWEEN_NODES);
+        DefaultConfiguration<TextInBox> configuration = new DefaultConfiguration<>(0, 0);
 
         TextInBoxNodeExtentProvider nodeExtentProvider = new TextInBoxNodeExtentProvider();
 
@@ -112,7 +112,7 @@ public class ConceptsDiagramBean implements Serializable {
         elements = panel.calculePositions();
 
         for (int i = 0; i < elements.size(); i++) {
-            Element root = new Element(elements.get(i).name, elements.get(i).x + "em", elements.get(i).y + "em");
+            Element root = new Element(elements.get(i).name, (elements.get(i).x * GAP_BETWEEN_NODES) + "px", (elements.get(i).y * GAP_BETWEEN_LEVELS) + "px");
             root.setId(i+"");
 
             if (isRoot(panel, elements.get(i).name)) {

@@ -66,7 +66,7 @@ public class NotationBean implements Serializable {
             if(conceptHelper.isNotationExist(connect.getPoolConnexion(),
                     idTheso,
                     notation)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "La notation existe déjà dans le thésaurus !!");
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La notation existe déjà dans le thésaurus !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("messageIndex");

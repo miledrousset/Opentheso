@@ -4,7 +4,7 @@
 
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>20.09</version>
+    <version>20.11</version>
     <packaging>war</packaging>
 
     <name>opentheso2</name>
@@ -188,9 +188,9 @@
                 </dependency>
         -->
         <dependency>
-            <artifactId>junit</artifactId>
             <groupId>junit</groupId>
-            <version>4.13</version>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -236,59 +236,8 @@
             <version>1.0.3</version>
         </dependency>
     </dependencies>
-    
-    
-<!-- @Firas, ce code ne marche pas de mon côté, je l'ai remplacé par celui en bas 
-      <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>9</source>
-                    <target>9</target>
-                    <compilerArguments>
-                        <endorseddirs>${endorsed.dir}</endorseddirs>
-                    </compilerArguments>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${endorsed.dir}</outputDirectory>
-                            <silent>true</silent>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>javax</groupId>
-                                    <artifactId>javaee-endorsed-api</artifactId>
-                                    <version>7.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>    
--->
+
+
 
     <build>
        
@@ -339,7 +288,10 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>    
+
+
+
     
     <pluginRepositories>
         <pluginRepository>
@@ -366,4 +318,5 @@
             </snapshots>
         </repository>
     </repositories>    
+
 </project>

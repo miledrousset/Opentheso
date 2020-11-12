@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.skosapi.*;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
@@ -344,7 +345,7 @@ public class WriteRdf4j {
     }
 
     private void writeStatusCandidat(SKOSResource resource) {
-        if(resource.getSkosStatus() != null){
+        if(resource.getSkosStatus() != null && !StringUtils.isEmpty(resource.getSkosStatus().getIdStatus())){
             builder.add(SKOS.NOTE, vf.createLiteral(resource.getSkosStatus().getIdStatus() + DELIMINATE + resource.getSkosStatus().getMessage()
                     + DELIMINATE + resource.getSkosStatus().getIdUser() + DELIMINATE + resource.getSkosStatus().getDate(), STATUS_TAG));
         }

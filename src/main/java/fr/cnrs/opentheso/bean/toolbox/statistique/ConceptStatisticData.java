@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.toolbox.statistique;
 
 
-public class CanceptStatistiqueData {
+public class ConceptStatisticData {
     
     private String idConcept;
     private String label;

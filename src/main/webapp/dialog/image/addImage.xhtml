@@ -4,7 +4,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog id="idAddImage" header="Ajouter un synonyme" widgetVar="addImage" 
+    <p:dialog id="idAddImage" header="Ajouter une image" widgetVar="addImage" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
         <h:form id="addImageForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
@@ -20,7 +20,7 @@
 
                         <!-- Valeur -->
                         <b:column span="12" >
-                            <b:inputText id="idImage" label="URI de l'image" placeholder="tapez une URL ..."  
+                            <b:inputText id="idImage" label="URI de l'image" placeholder="tapez une URI ..."  
                                          value="#{imageBean.uri}" style="font-size: 12px;"/>
                         </b:column>
                         <!-- Copyright -->

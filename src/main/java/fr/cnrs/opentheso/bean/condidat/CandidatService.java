@@ -81,6 +81,8 @@ public class CandidatService implements Serializable {
      * @param connect
      * @param idThesaurus
      * @param lang
+     * @param etat
+     * @param statut
      * @return 
      */
     public List<CandidatDto> getCandidatsByStatus(Connect connect, String idThesaurus, String lang, int etat, String statut) {
@@ -115,6 +117,51 @@ public class CandidatService implements Serializable {
         }
         return temps;
     }    
+    
+    /**
+     * permet de chercher des candidats
+     * @param connect
+     * @param value
+     * @param idThesaurus
+     * @param lang
+     * @param etat
+     * @param statut
+     * @return 
+     * #MR
+     */
+    public List<CandidatDto> searchCandidats(Connect connect, String value,
+            String idThesaurus, String lang, int etat, String statut) {
+        List<CandidatDto> temps = new ArrayList<>();
+        HikariDataSource ds = connect.getPoolConnexion();
+        try {
+            CandidatDao condidatDao = new CandidatDao();
+            temps = condidatDao.searchCandidatsByValue(ds, value, idThesaurus, lang, etat, statut);
+            temps.forEach(candidatDto -> {
+                try {
+                    candidatDto.setStatut(condidatDao.searchCondidatStatus(ds, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus()));
+                    candidatDto.setNbrParticipant(condidatDao.searchParticipantCount(ds, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus()));
+                    candidatDto.setNbrDemande(condidatDao.searchDemandeCount(ds, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus()));
+                    candidatDto.setNbrVote(condidatDao.searchVoteCount(ds, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus(), VoteType.CANDIDAT.getLabel()));
+                    candidatDto.setNbrNoteVote(condidatDao.searchVoteCount(ds, candidatDto.getIdConcepte(),
+                            candidatDto.getIdThesaurus(), VoteType.NOTE.getLabel()));
+                } catch (SQLException ex) {
+                    Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            ds.close();
+        } catch (SQLException sqle) {
+            LOG.error(sqle);
+            System.err.println("Error >>> " + sqle);
+            if (!ds.isClosed()) {
+                ds.close();
+            }
+        }
+        return temps;
+    }      
     
     public String getCandidatID(Connect connect) {
         int id = 0;
