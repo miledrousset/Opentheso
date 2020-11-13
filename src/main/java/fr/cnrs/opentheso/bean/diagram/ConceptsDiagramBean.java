@@ -37,11 +37,11 @@ import java.util.*;
 @SessionScoped
 public class ConceptsDiagramBean implements Serializable {
 
-    private final int HEIGHT_ELEMENT = 20;
+    private final int HEIGHT_ELEMENT = 15;
     private final int WIDTH_ELEMENT = 40;
     
-    private final float GAP_BETWEEN_NODES = 4.1f;
-    private final float GAP_BETWEEN_LEVELS = 5;
+    private final float GAP_BETWEEN_NODES = 3.1f;
+    private final float GAP_BETWEEN_LEVELS = 4;
 
     @Inject
     private Connect connect;
@@ -97,7 +97,7 @@ public class ConceptsDiagramBean implements Serializable {
         model.setConnectionsDetachable(false);
 
         FlowChartConnector connector = new FlowChartConnector();
-        connector.setPaintStyle("{strokeStyle:'#C7B097',lineWidth:3}");
+        connector.setPaintStyle("{strokeStyle:'#C7B097',lineWidth:1}");
         model.setDefaultConnector(connector);
 
         DefaultConfiguration<TextInBox> configuration = new DefaultConfiguration<>(0, 0);
@@ -188,7 +188,7 @@ public class ConceptsDiagramBean implements Serializable {
      */
     private Connection createConnection(EndPoint from, EndPoint to) {
         Connection conn = new Connection(from, to);
-        conn.getOverlays().add(new ArrowOverlay(20, 20, 1, 1));
+        conn.getOverlays().add(new ArrowOverlay(10, 10, 1, 1));
 
         return conn;
     }
