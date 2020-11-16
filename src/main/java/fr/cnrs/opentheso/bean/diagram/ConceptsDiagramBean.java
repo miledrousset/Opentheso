@@ -112,7 +112,7 @@ public class ConceptsDiagramBean implements Serializable {
         elements = panel.calculePositions();
 
         for (int i = 0; i < elements.size(); i++) {
-            Element root = new Element(elements.get(i).name, (elements.get(i).x * GAP_BETWEEN_NODES) + "px", (elements.get(i).y * GAP_BETWEEN_LEVELS) + "px");
+            Element root = new Element(elements.get(i).name, (elements.get(i).x * GAP_BETWEEN_NODES) + "px", ((elements.get(i).y - 10) * GAP_BETWEEN_LEVELS) + "px");
             root.setId(i+"");
 
             if (isRoot(panel, elements.get(i).name)) {
