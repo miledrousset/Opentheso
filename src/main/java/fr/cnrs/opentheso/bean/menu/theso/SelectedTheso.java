@@ -157,6 +157,9 @@ public class SelectedTheso implements Serializable {
             }
             return;
         }
+        
+        tree.setDiagramVisisble(false);
+        
         sortByNotation = false;
         startNewTheso(null);
         indexSetting.setIsSelectedTheso(true);

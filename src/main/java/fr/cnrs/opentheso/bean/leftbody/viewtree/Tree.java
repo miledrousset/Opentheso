@@ -416,7 +416,7 @@ public class Tree implements Serializable {
     
     public void showDiagram(boolean status) throws IOException {
         if (treeNodeDataSelect == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "", "Vous devez selectioner un élement de l'arbre"));
             PrimeFaces pf = PrimeFaces.current();
             pf.ajax().update("messageIndex");

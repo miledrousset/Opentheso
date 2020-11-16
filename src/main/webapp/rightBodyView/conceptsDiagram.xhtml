@@ -3,19 +3,32 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://java.sun.com/jsf/html"
              xmlns:b="http://bootsfaces.net/ui">
-    
-    <!-- Debut du panel du zoom -->
-    <b:row style="margin-right: 30px">
-        <b:column medium-screen="9">
-            <h:outputText style="float: right; font-weight: bold;" value="Zoom : "/>
+
+    <b:row style="margin-top: 20px">
+        <b:column medium-screen="6">
+            <b:row>
+                <b:column style="margin-left: 10px">
+                    <b:navCommandLink value="⬅ Retour" update="containerIndex" ajax="true" 
+                                      style="color: #F47B2A"  />
+                </b:column>
+            </b:row>
         </b:column>
-        <b:column medium-screen="3" style="margin-top: 10px">
-            <input id="zoom" type="range" class="circleRange" min="0.1" max="1" value="1" step="0.1"
-                   style="color: #F47B2A; width: 300px; -webkit-appearance: none; -moz-appearance: none;
-                   background: #43B572; outline: none; height: 3px;"/>
+        
+        <b:column medium-screen="6">
+            <!-- Debut du panel du zoom -->
+            <b:row style="text-align: right; vertical-align: central">
+                <b:column medium-screen="5">
+                    <h:outputText id="zomeText" style="float: right; font-weight: bold;" value="Zoom : 100%"/>
+                </b:column>
+                <b:column medium-screen="7" style="margin-top: 10px">
+                    <input id="zoom" type="range" class="circleRange" min="0.1" max="1" value="1" step="0.1"
+                           style="color: #F47B2A; width: 300px; -webkit-appearance: none; -moz-appearance: none;
+                           background: #43B572; outline: none; height: 3px;"/>
+                </b:column>
+            </b:row>
         </b:column>
     </b:row>
-    
+
     <style type="text/css">
         .diagramPanel {
             transform-origin: 0 0;
@@ -29,42 +42,52 @@
         selectElement.addEventListener('change', (event) => {
             setZoom();
         });
-        
+
         function setZoom() {
             const div = document.querySelector('.diagramPanel');
             div.style.transform = 'scale(' + selectElement.value + ')';
-            div.style.transform_origin= '0 0';
-            console.log(selectElement.value);
+            div.style.transform_origin = '0 0';
+            
             if (selectElement.value === '1') {
                 div.style.width = '100%';
                 div.style.length = '100%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 100%";
             } else if (selectElement.value === '0.9') {
-                div.style.width= '112%';
-                div.style.length= '112%';
+                div.style.width = '112%';
+                div.style.length = '112%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 110%";
             } else if (selectElement.value === '0.8') {
-                div.style.width= '126%';
-                div.style.length= '126%';
+                div.style.width = '126%';
+                div.style.length = '126%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 120%";
             } else if (selectElement.value === '0.7') {
-                div.style.width= '143%';
-                div.style.length= '143%';
+                div.style.width = '143%';
+                div.style.length = '143%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 130%";
             } else if (selectElement.value === '0.6') {
-                div.style.width= '165%';
-                div.style.length= '165%';
+                div.style.width = '165%';
+                div.style.length = '165%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 140%";
             } else if (selectElement.value === '0.5') {
-                div.style.width= '200%';
-                div.style.length= '200%';
+                div.style.width = '200%';
+                div.style.length = '200%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 150%";
             } else if (selectElement.value === '0.4') {
-                div.style.width= '250%';
-                div.style.length= '250%';
+                div.style.width = '250%';
+                div.style.length = '250%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 160%";
             } else if (selectElement.value === '0.3') {
-                div.style.width= '330%';
-                div.style.length= '330%';
+                div.style.width = '330%';
+                div.style.length = '330%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 170%";
             } else if (selectElement.value === '0.2') {
-                div.style.width= '370%';
-                div.style.length= '370%';
-            }else if (selectElement.value === '0.1') {
-                div.style.width= '400%';
-                div.style.length= '400%';
+                div.style.width = '370%';
+                div.style.length = '370%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 180%";
+            } else if (selectElement.value === '0.1') {
+                div.style.width = '400%';
+                div.style.length = '400%';
+                document.getElementById("zomeText").innerHTML = "Zoom : 190%";
             }
         }
     </script>
@@ -136,10 +159,10 @@
                 return false;
             }
 
-            function setScrollPosition() {
+            function setScrollPosition(width, heigth) {
                 var elmnt = document.getElementById("diagram");
-                elmnt.scrollLeft = scrollPosition_X;
-                elmnt.scrollTop = scrollPosition_Y;
+                elmnt.scrollLeft = width - (document.getElementById('diagram').offsetWidth / 2);
+                elmnt.scrollTop = heigth;
                 setZoom();
                 return false;
             }
@@ -275,7 +298,7 @@
                 color:red;
             }
         </style>
-         <!-- Fin du menu contextuelle -->
+        <!-- Fin du menu contextuelle -->
     </p:panel>
 
     <!-- Boite de dialogue pour les informations du concept -->

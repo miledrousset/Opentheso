@@ -147,16 +147,25 @@ public class ConceptsDiagramBean implements Serializable {
             }
         });
 
+        Element elementToCenter = null;
         if (!StringUtils.isEmpty(elementSelected)) {
             Element elementParent = findElement(elementSelected);
             if (elementParent != null) {
+                elementToCenter = elementParent;
                 elementParent.setStyleClass("ui-diagram-element-selected");
             }
         }
 
         PrimeFaces.current().ajax().update("diagram");
         PrimeFaces.current().ajax().update("dialogDiagram");
-        PrimeFaces.current().executeScript("setScrollPosition();");
+
+        float posX = 0;
+        float posY = 0;
+        try {
+            posX = Float.parseFloat(elementToCenter.getX().replace("px", ""));
+            posY = Float.parseFloat(elementToCenter.getY().replace("px", ""));
+        } catch (Exception ex) { }
+        PrimeFaces.current().executeScript("setScrollPosition("+posX+", "+posY+");");
 
     }
 
@@ -188,7 +197,7 @@ public class ConceptsDiagramBean implements Serializable {
      */
     private Connection createConnection(EndPoint from, EndPoint to) {
         Connection conn = new Connection(from, to);
-        conn.getOverlays().add(new ArrowOverlay(10, 10, 1, 1));
+        conn.getOverlays().add(new ArrowOverlay(8, 8, 1, 1));
 
         return conn;
     }
@@ -260,6 +269,7 @@ public class ConceptsDiagramBean implements Serializable {
      */
     private EndPoint createEndPoint(EndPointAnchor anchor) {
         DotEndPoint endPoint = new DotEndPoint(anchor);
+        endPoint.setRadius(4);
         endPoint.setStyle("{fillStyle:'#404a4e'}");
         endPoint.setHoverStyle("{fillStyle:'#20282b'}");
 
