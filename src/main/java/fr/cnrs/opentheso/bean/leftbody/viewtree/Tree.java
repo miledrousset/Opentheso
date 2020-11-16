@@ -266,7 +266,7 @@ public class Tree implements Serializable {
         }
 
         // deselectionner et fermer toutes les noeds de l'arbres
-        initialiserEtatNoeuds(root);
+//        initialiserEtatNoeuds(root);
 
         // cas de changement de langue pendant la navigation dans les concepts
         // il faut reconstruire l'arbre dès le début
