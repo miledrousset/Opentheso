@@ -123,6 +123,8 @@ public class AlignmentBean implements Serializable {
     private String alignementResult = null;
     private boolean error;
 
+    private String alertWikidata;
+    
     //les alignements existants
     private ArrayList <NodeAlignment> existingAlignments;    
     
@@ -1578,6 +1580,14 @@ public class AlignmentBean implements Serializable {
         } else {
             isNameAlignment = false;
         }
+        if(selectedAlignement.equalsIgnoreCase("wikidata")) {
+            alertWikidata = "!!! Attention à la casse !!!!";
+            PrimeFaces pf = PrimeFaces.current();         
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "!!! Attention respectez la casse !!!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);      
+        }
+        else
+            alertWikidata = "";
         /*        PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
@@ -1786,6 +1796,14 @@ public class AlignmentBean implements Serializable {
 
     public void setViewAddNewSource(boolean viewAddNewSource) {
         this.viewAddNewSource = viewAddNewSource;
+    }
+
+    public String getAlertWikidata() {
+        return alertWikidata;
+    }
+
+    public void setAlertWikidata(String alertWikidata) {
+        this.alertWikidata = alertWikidata;
     }
     
     

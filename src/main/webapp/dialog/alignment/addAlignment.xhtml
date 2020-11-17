@@ -143,7 +143,7 @@
                                     <b:column span="4" style="font-size: 12px; margin-top: -5px; ">
                                         <p:selectOneMenu id="console" value="#{alignmentBean.selectedAlignement}"
                                                          style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
-                                                         
+                                                         title="#{alignmentBean.alertWikidata}"
                                                          panelStyle="font-size: 12px; background: red; border: none; box-shadow: none;">
                                             <f:selectItems  value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>                                
                                             <p:ajax event="change" listener="#{alignmentBean.actionChoix()}"  update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"/>
