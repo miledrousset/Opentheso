@@ -722,6 +722,62 @@ public class NoteHelper {
     }
 
     /**
+     * Cette fonction permet de retourner la définition d'un terme
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return ArrayList des notes sous forme de Class NodeNote
+     */
+    public ArrayList<String> getDefinition(HikariDataSource ds,
+            String idConcept, String idThesaurus, String idLang) {
+
+        ArrayList<String> listDefinitions = new ArrayList<>();
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select lexicalvalue from note, preferred_term" +
+                            " where" +
+                            " preferred_term.id_thesaurus = note.id_thesaurus" +
+                            " and" +
+                            " preferred_term.id_term = note.id_term" +
+                            " and" +
+                            " note.notetypecode = 'definition'" +
+                            " and" +
+                            " preferred_term.id_thesaurus = '" + idThesaurus + "'" +
+                            " and " +
+                            " note.lang = '" + idLang + "'" +
+                            " and" +
+                            " preferred_term.id_concept = '" + idConcept + "'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        listDefinitions.add(resultSet.getString("lexicalvalue"));
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting definition of concept : " + idConcept, sqle);
+        }
+        return listDefinitions;
+    }
+    
+
+    /**
      * Cette fonction permet d'ajouter une Note Ã  un concept instert dans la
      * table Note
      *

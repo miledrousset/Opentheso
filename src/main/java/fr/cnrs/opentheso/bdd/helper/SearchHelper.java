@@ -57,10 +57,11 @@ public class SearchHelper {
      * @param idLang
      * @param idGroup
      * @param idTheso
+     * @param withNotes
      * @return
      */
     public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(HikariDataSource ds,
-            String value, String idLang, String idGroup, String idTheso) {
+            String value, String idLang, String idGroup, String idTheso, boolean withNotes) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -105,8 +106,10 @@ public class SearchHelper {
                     + " f_unaccent(lower(non_preferred_term.lexical_value)) like '%''" + value1 + "%'"                     
                     + ")";            
         }
-
-
+        NoteHelper noteHelper = null;
+        if(withNotes) {
+            noteHelper = new NoteHelper();
+        }
 
         String query;
         try {
@@ -115,7 +118,7 @@ public class SearchHelper {
                 stmt = conn.createStatement();
                 try {
                     if(idGroup != null && !idGroup.isEmpty()) {
-                        query = "select term.lexical_value, concept.id_concept, concept.id_ark, concept.id_handle "
+                        query = "select term.lexical_value, term.lang, concept.id_concept, concept.id_ark, concept.id_handle "
                                 + " from concept, concept_group_concept, preferred_term, term " 
                                 + " where"
                                 + " concept.id_concept = concept_group_concept.idconcept" 
@@ -134,7 +137,7 @@ public class SearchHelper {
                                 + multiValuesPT
                                 + " limit 100";
                     } else {
-                        query = "select term.lexical_value,"
+                        query = "select term.lexical_value, term.lang,"
                                 + " concept.id_concept, concept.id_ark, concept.id_handle"
                                 + " from term, preferred_term, concept where"
                                 + " concept.id_concept = preferred_term.id_concept"
@@ -160,13 +163,16 @@ public class SearchHelper {
                         } else {
                             nodeAutoCompletions.add(nodeAutoCompletion);
                         }                        
+                        if(withNotes)
+                            if(noteHelper != null)
+                                nodeAutoCompletion.setDefinition(noteHelper.getDefinition(ds, nodeAutoCompletion.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
                     }
 
                     /**
                      * recherche de Synonymes
                      */
                     if(idGroup != null && !idGroup.isEmpty()) {
-                         query = "select non_preferred_term.lexical_value, concept.id_concept, concept.id_ark, concept.id_handle " 
+                         query = "select non_preferred_term.lexical_value, non_preferred_term.lang, concept.id_concept, concept.id_ark, concept.id_handle " 
                                 + " from concept, concept_group_concept, preferred_term, non_preferred_term" 
                                 + " where" 
                                 + " concept.id_concept = concept_group_concept.idconcept" 
@@ -185,7 +191,7 @@ public class SearchHelper {
                                 + multiValuesNPT
                                 + " limit 100";                                  
                     } else {
-                        query = "select non_preferred_term.lexical_value," 
+                        query = "select non_preferred_term.lexical_value, non_preferred_term.lang, " 
                                 + " concept.id_concept, concept.id_ark, concept.id_handle" 
                                 + " from non_preferred_term, preferred_term, concept" 
                                 + " where" 
@@ -213,6 +219,9 @@ public class SearchHelper {
                         } else {
                             nodeAutoCompletions.add(nodeAutoCompletion);
                         }
+                        if(withNotes)
+                            if(noteHelper != null)
+                                nodeAutoCompletion.setDefinition(noteHelper.getDefinition(ds, nodeAutoCompletion.getIdConcept(), idTheso, resultSet.getString("lang")).toString());
                     }
 
                 } finally {

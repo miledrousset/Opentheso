@@ -1325,12 +1325,12 @@ public class AlignmentBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);        
         
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("idConceptAlignment");
-            pf.ajax().update("idConceptTraductions");
-            pf.ajax().update("idConceptImages");
-            pf.ajax().update("idConceptGps");
-            pf.ajax().update("candidatForm");
-            pf.ajax().update("formRightTab");
+            pf.ajax().update("formRightTab:viewTabConcept:idConceptAlignment");
+            pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");
+            pf.ajax().update("formRightTab:viewTabConcept:idConceptImages");
+            pf.ajax().update("formRightTab:viewTabConcept:idConceptGps");
+    //        pf.ajax().update("candidatForm");
+     //       pf.ajax().update("formRightTab");
         }         
         
         isViewResult = true;

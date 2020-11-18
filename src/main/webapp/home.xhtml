@@ -10,11 +10,11 @@
         <b:panel rendered="#{!(viewEditorHomeBean.isInEditing)}"
                  style="border-color: #43B572;">
             
-            <b:row >
-                <b:column span="1" >
+            <b:row  style="margin-top: -10px;">
+                <b:column span="1"  col-md="1" colSm="1" col-xs="2">
                     <p:graphicImage value="images/panda.png" height="45"/>
                 </b:column>
-                <b:column span="3" style="margin-left: -40px; margin-bottom: 20px;">
+                <b:column span="3" colXs="8" style="margin-left: -20px; margin-top: 10px; font-size: 12px;">
                     <b:row >
                         <b:column span="12">
                             <h:outputText  value="Opentheso version : #{ManagerGroupsUsers.getOpenthesoVersionFromWar()}"/>
@@ -22,7 +22,7 @@
                     </b:row> 
                     <b:row >
                         <b:column span="12">
-                            <h:outputText  value="Copyright ©CNRS" style="font-size: 12px;"/>
+                            <h:outputText  value="Copyright ©CNRS" style="font-size: 11px;"/>
                         </b:column>                
                     </b:row>                             
                 </b:column>

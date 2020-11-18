@@ -34,7 +34,15 @@ public class JsonHelper {
         builder.add("uri", uri);
         builder.add("label", value);
         jab.add(builder);
+    }
         
+    public void addJsonDataFull(String uri, String value, String definition, boolean isAltLabel) {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("uri", uri);
+        builder.add("label", value);
+        builder.add("isAltLabel", isAltLabel);
+        builder.add("definition", definition);        
+        jab.add(builder);
     }
 
     public JsonArray getBuilder() {
