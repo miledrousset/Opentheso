@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.*;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -134,7 +135,7 @@ public class ExportRdf4jHelperNew {
         });
         skosXmlDocument.setConceptScheme(conceptScheme);
     }
-
+    
     public void exportSelectedCollections(HikariDataSource ds, String idTheso, List<NodeGroup> selectedGroups){
         GroupHelper groupHelper = new GroupHelper();
         NodeGroupLabel nodeGroupLabel;
@@ -143,6 +144,19 @@ public class ExportRdf4jHelperNew {
             SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
             sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
             addChildsGroupRecursive(ds, idTheso, group.getConceptGroup().getIdgroup(), sKOSResource);
+        }
+    }
+
+    public void exportFacettes(HikariDataSource ds, String idTheso){
+        
+        ArrayList<NodeFacet> facets = new FacetHelper().getAllFacetsDetailsOfThesaurus(ds, idTheso, null);
+        
+        for (NodeFacet facet : facets) {
+            SKOSResource sKOSResource = new SKOSResource("http://www.w3.org/2004/02/skos/core#Facet?idFacet="+facet.getIdFacet(), SKOSProperty.FACET);
+            sKOSResource.addLabel(facet.getLexicalValue(), facet.getLang(), SKOSProperty.prefLabel);
+            sKOSResource.addDate(facet.getCreated(), SKOSProperty.created);
+            sKOSResource.addDate(facet.getModified(), SKOSProperty.modified);
+            skosXmlDocument.addFacet(sKOSResource);
         }
     }
 
@@ -308,6 +322,16 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addRelation(getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.memberOf);
         }
         sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
+
+        FacetHelper facetHelper = new FacetHelper();
+        List<String> idFacettes = facetHelper.getIdFacetsAssociatedToConceptParent(ds, idConcept, idTheso);
+        for (String idFacette : idFacettes) {
+            int prop = SKOSProperty.FACET;
+            if (facetHelper.isConceptParentInFacet(ds, idFacette, idConcept)) {
+                prop = SKOSProperty.TOP_FACET;
+            }
+            sKOSResource.addRelation("http://www.w3.org/2004/02/skos/core#Facet?idFacet="+idFacette, prop);
+        }
 
         ArrayList<String> first = new ArrayList<>();
         first.add(idConcept);

@@ -30,6 +30,7 @@ public class SKOSXmlDocument {
     private SKOSResource conceptScheme;
     private ArrayList<SKOSResource> groupList;
     private ArrayList<SKOSResource> conceptList;
+    private ArrayList<SKOSResource> facetList;
     private String title;
     
     // c'est un tableau qui contient les équivalences entre les URI et l'identifiant des concepts
@@ -42,11 +43,16 @@ public class SKOSXmlDocument {
     public SKOSXmlDocument() {
         groupList = new ArrayList<>();
         conceptList = new ArrayList<>();
+        facetList = new ArrayList<>();
         equivalenceUriArkHandle = new HashMap();
     }
 
     public void addGroup(SKOSResource r) {
         groupList.add(r);
+    }
+
+    public void addFacet(SKOSResource r) {
+        facetList.add(r);
     }
 
     public void addconcept(SKOSResource r) {
@@ -67,6 +73,14 @@ public class SKOSXmlDocument {
 
     public void setConceptScheme(SKOSResource conceptScheme) {
         this.conceptScheme = conceptScheme;
+    }
+
+    public ArrayList<SKOSResource> getFacetList() {
+        return facetList;
+    }
+
+    public void setFacetList(ArrayList<SKOSResource> facetList) {
+        this.facetList = facetList;
     }
 
     /**

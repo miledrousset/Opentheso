@@ -68,6 +68,7 @@ public class WriteRdf4j {
     private void writeModel() {
         writeConceptScheme();
         writeGroup();
+        writeFacet();
         writeConcept();
     }
 
@@ -91,6 +92,15 @@ public class WriteRdf4j {
             writeVotes(concept);
         }
 
+    }
+
+    private void writeFacet() {
+        for (SKOSResource facet : xmlDocument.getFacetList()) {
+            builder.subject(vf.createIRI(facet.getUri()));
+            builder.add(RDF.TYPE, SKOS.COLLECTION);
+            writeLabel(facet);
+            writeDate(facet);
+        }
     }
 
     private void writeGroup() {
@@ -418,7 +428,13 @@ public class WriteRdf4j {
                 /// unesco properties for Groups or Collections    
                 case SKOSProperty.memberOf:
                     builder.add("opentheso:memberOf", uri);
-                    break;     
+                    break;
+                case SKOSProperty.TOP_FACET:
+                    builder.add("opentheso:topFacet", uri);
+                    break;
+                case SKOSProperty.FACET:
+                    builder.add("opentheso:facet", uri);
+                    break;
             }
 
         }

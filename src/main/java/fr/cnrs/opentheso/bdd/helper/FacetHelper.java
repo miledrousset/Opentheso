@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -754,8 +755,12 @@ public class FacetHelper {
                             + " thesaurus_array, node_label WHERE"
                             + " thesaurus_array.facet_id = node_label.facet_id AND"
                             + " thesaurus_array.id_thesaurus = node_label.id_thesaurus"
-                            + " and node_label.lang = '" + idLang + "'"
                             + " and node_label.id_thesaurus = '" + idThesaurus + "'";
+                    
+                    if (idLang != null) {
+                        query = query + " and node_label.lang = '" + idLang + "'";
+                    }
+                    
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()){
@@ -777,7 +782,190 @@ public class FacetHelper {
             log.error("Error while getting All Facet of Thesaurus : " + idThesaurus, sqle);
         }
         return nodeFacetlist;
-    }    
+    }  
     
+    /**
+     * Cette fonction permet de retourner toutes les Facettes d'un thésaurus
+     * sous forme de NodeFacet
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @return ArrayList de NodeFacet
+     */
+    public ArrayList<NodeFacet> getAllFacetsDetailsOfThesaurus(HikariDataSource ds,
+            String idThesaurus, String idLang) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+
+        ArrayList<NodeFacet> nodeFacetlist = new ArrayList();
+        
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    stmt.executeQuery("SELECT * FROM  node_label WHERE node_label.id_thesaurus = '"+
+                            idThesaurus+"'");
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()){
+                        NodeFacet nodeFacet = new NodeFacet();
+                        nodeFacet.setIdFacet(resultSet.getInt("facet_id"));
+                        nodeFacet.setIdThesaurus(resultSet.getString("id_thesaurus"));
+                        nodeFacet.setLexicalValue(resultSet.getString("lexical_value"));
+                        nodeFacet.setCreated(resultSet.getString("created"));
+                        nodeFacet.setModified(resultSet.getString("modified"));
+                        nodeFacet.setLang(resultSet.getString("lang"));
+                        nodeFacetlist.add(nodeFacet);
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting All Facet of Thesaurus : " + idThesaurus, sqle);
+        }
+        return nodeFacetlist;
+    }
+
+
+    public List<String> getIdFacetsAssociatedToConceptParent(HikariDataSource ds, String idConcepte, String idThesaurus) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<String> listFacettes = new ArrayList<>();
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    stmt.executeQuery("SELECT id_facette FROM concept_facette WHERE id_thesaurus = '"
+                            +idThesaurus+"' AND id_concept = '"+idConcepte+"'");
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        listFacettes.add(resultSet.getString("id_facette"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting All facettes names associeted to concept : " + idThesaurus, sqle);
+        }
+        return listFacettes;
+    }
+    
+    public List<String> getFacettesAssociatedToConceptParent(HikariDataSource ds,
+            String idConcepte, String idThesaurus, String lang) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<String> listFacettes = new ArrayList<>();
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT lexical_value "
+                            + "FROM node_label node, thesaurus_array the "
+                            + "WHERE node.id_thesaurus = '" + idThesaurus + "' "
+                            + "AND node.lang = '"+ lang +"' "
+                            + "AND node.facet_id = the.facet_id "
+                            + "AND the.id_concept_parent = '"+ idConcepte +"'";
+                    
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        listFacettes.add(resultSet.getString("lexical_value"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting All facettes names associeted to concept : " + idThesaurus, sqle);
+        }
+        return listFacettes;
+    }
+    
+    public List<String> getConceptAssocietedToFacette(HikariDataSource ds,
+            String facetteName, String idThesaurus, String lang, String idConceptParent) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        ArrayList<String> listConceptsTerme = new ArrayList<>();
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    stmt.executeQuery("SELECT fac.id_concept "
+                            + "FROM node_label node, concept_facette fac "
+                            + "WHERE node.facet_id = fac.id_facette "
+                            + "AND node.lang = '"+lang+"' "
+                            + "AND node.id_thesaurus = '"+idThesaurus+"' "
+                            + "AND node.lexical_value = '" + facetteName + "' "
+                            + "AND fac.id_concept != '" + idConceptParent + "' ");
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        listConceptsTerme.add(resultSet.getString("id_concept"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting concepts names associeted to facette : " + idThesaurus, sqle);
+        }
+        return listConceptsTerme;
+    }
+
+    public boolean isConceptParentInFacet(HikariDataSource ds, String idFacet, String idConcept) {
+        boolean isExist = false;
+        try {
+            Connection conn = ds.getConnection();
+            try {
+                Statement stmt = conn.createStatement();
+                try {
+                    stmt.executeQuery("SELECT facet_id FROM thesaurus_array WHERE id_concept_parent = '"+
+                            idConcept+"' AND facet_id = " + idFacet);
+                    ResultSet resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        isExist = true;
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {}
+        return isExist;
+    }
     
 }

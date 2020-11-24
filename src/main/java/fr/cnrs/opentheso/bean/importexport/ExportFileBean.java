@@ -210,7 +210,7 @@ public class ExportFileBean implements Serializable {
             return null;
         }
 
-        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);        
+        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         sizeOfTheso = allConcepts.size();
         progressStep = (float) 100 / sizeOfTheso;
 
@@ -218,6 +218,7 @@ public class ExportFileBean implements Serializable {
         resources.setInfos(nodePreference, DATE_FORMAT, false, false);
         resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
         resources.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
+        resources.exportFacettes(connect.getPoolConnexion(), idTheso);
 
         for (String idConcept : allConcepts) {
             progressBar += progressStep;
