@@ -501,7 +501,7 @@ public class GpsHelper {
     }
     
     /**
-     * Change l'id d'un concept dans la table concept_orphan
+     * Change l'id d'un concept dans la table 
      *
      * @param conn
      * @param idTheso

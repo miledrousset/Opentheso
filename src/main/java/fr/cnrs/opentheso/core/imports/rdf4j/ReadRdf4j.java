@@ -8,8 +8,6 @@ package fr.cnrs.opentheso.core.imports.rdf4j;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
@@ -209,12 +207,15 @@ public class ReadRdf4j {
                                             if (readIdentifier(readStruct)) {
                                                 if (readMatch(readStruct)) {
                                                     if (readImage(readStruct)) {
-
-                                                            //debug
-                                                            if (!nonReco.contains(readStruct.property.getLocalName())) {
-                                                                //System.out.println("non reconue : " + readStruct.property.getLocalName());
-                                                                nonReco.add(readStruct.property.getLocalName());
+                                                        if (readReplaces(readStruct)) { // pour le concepts dépréciés
+                                                            if (readConceptStatus(readStruct)) { // pour le reconnaitre le status du concept
+                                                                //debug
+                                                                if (!nonReco.contains(readStruct.property.getLocalName())) {
+                                                                    //System.out.println("non reconue : " + readStruct.property.getLocalName());
+                                                                    nonReco.add(readStruct.property.getLocalName());
+                                                                }
                                                             }
+                                                        }
 
                                                     }
                                                 }
@@ -277,7 +278,42 @@ public class ReadRdf4j {
         }
 
     }
+    
+    /**
+     * lit les balise de Relationships
+     *
+     * @param readStruct
+     * @return false si on a lus une balise de Relationships true sinon
+     */
+    private boolean readReplaces(ReadStruct readStruct) {
+        if (readStruct.property.getLocalName().equals("replaces")) {
+            readStruct.resource.addReplaces(readStruct.value.toString(), SKOSProperty.replaces);
+            return false;
+        } else if (readStruct.property.getLocalName().equals("isReplacedBy")) {
+            readStruct.resource.addReplaces(readStruct.value.toString(), SKOSProperty.isReplacedBy);
+            return false;
+        } else {
+            return true;
+        }
+    } 
+    
+    /**
+     * lit les balise de Relationships
+     *
+     * @param readStruct
+     * @return false si on a lus une balise de Relationships true sinon
+     */
+    private boolean readConceptStatus(ReadStruct readStruct) {
+        if (readStruct.property.getLocalName().equals("deprecated")) {
+            readStruct.resource.setStatus(SKOSProperty.deprecated);
+            return false;
+        } else {
+            return true;
+        }
+    }     
 
+        
+        
     /**
      * lit les balise de Relationships
      *
@@ -468,14 +504,14 @@ public class ReadRdf4j {
     }
     
     /**
-     * lit les balise de Notation
+     * lit les balise de image Foaf
      *
      * @param readStruct
      * @return false si on a lus une balise de Notation true sinon
      */
     private boolean readImage(ReadStruct readStruct) {
         if (readStruct.property.getLocalName().equalsIgnoreCase("Image")) {
-            readStruct.resource.addImageUri(readStruct.literal.getLabel());
+            readStruct.resource.addImageUri(readStruct.value.stringValue());
             return false;
         } else {
             return true;

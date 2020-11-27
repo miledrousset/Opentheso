@@ -67,6 +67,7 @@ public class TreeConcepts implements Serializable {
         root = null;
         selectedNode = null;
         rightBodySetting.init();
+        noedSelected = false;
     }
 
     public void initialise(String idTheso, String idLang) {
@@ -75,6 +76,7 @@ public class TreeConcepts implements Serializable {
         dataService = new DataService();
         root = dataService.createRoot();
         addFirstNodes();
+        noedSelected = false;
     }
 
     private boolean addFirstNodes() {

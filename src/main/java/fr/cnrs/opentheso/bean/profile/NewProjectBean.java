@@ -48,9 +48,14 @@ public class NewProjectBean implements Serializable {
             listeProjectOfUser = userHelper.getAllProject(connect.getPoolConnexion());
             return;
         }
-        listeProjectOfUser = userHelper.getProjectsOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());        
+        listeProjectOfUser = userHelper.getProjectsOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());        
     }   
     
+    /**
+     * permet de créer un nouveau projet de regroupement de thésaurus, 
+     * si l'utilisateur est SuperAdmin, le projet n'aura pas d'utilisateur pas défaut,
+     * si l'utilisateur est Admin, il aura les droits admin dessus par défaut
+     */
     public void addNewProject(){
         FacesMessage msg;
         
@@ -58,16 +63,47 @@ public class NewProjectBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un label est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
-        }           
+        }
+
+        
         UserHelper userHelper = new UserHelper();
-        if(!userHelper.createUserGroup(
+        
+        if(userHelper.isUserGroupExist(
+                connect.getPoolConnexion(),
+                projectName)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ce nom de projet existe déjà !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;             
+        }        
+        if(!userHelper.addNewProject(
                 connect.getPoolConnexion(),
                 projectName)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
-
+        
+        // on vérifie si l'utilisateur en cours est un Admin 
+        if(!currentUser.getNodeUser().isIsSuperAdmin()){
+            if(currentUser.getAllAuthorizedProjectAsAdmin() != null && currentUser.getAllAuthorizedProjectAsAdmin().size() > 0) {
+                // on donne le droit admin pour l'utilisateur courant sur ce groupe
+                int projectId = userHelper.getThisProjectId(connect.getPoolConnexion(), projectName);
+                if(projectId == -1) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur interne BDD !!!");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    return;   
+                }
+                if(!userHelper.addUserRoleOnGroup(
+                        connect.getPoolConnexion(),
+                        currentUser.getNodeUser().getIdUser(),
+                        2,
+                        projectId)) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    return;             
+                }
+            }
+        }
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Projet créé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         myProjectBean.init();
@@ -87,6 +123,15 @@ public class NewProjectBean implements Serializable {
             return;              
         }
         UserHelper userHelper = new UserHelper();
+        
+        if(userHelper.isUserGroupExist(
+                connect.getPoolConnexion(),
+                nodeUserGroup.getGroupName())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ce nom de projet existe déjà !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            init();
+            return;             
+        }          
         if(!userHelper.updateProject(
                 connect.getPoolConnexion(),
                 nodeUserGroup.getGroupName(),
@@ -108,6 +153,31 @@ public class NewProjectBean implements Serializable {
         }
     }      
     
+    /**
+     * permet de supprimer un Groupe/projet
+     *
+     * @param nodeUserGroup
+     */
+    public void deleteProject(NodeUserGroup nodeUserGroup) {
+        FacesMessage msg;
+        UserHelper userHelper = new UserHelper();
+        if (!userHelper.deleteProjectGroup(connect.getPoolConnexion(), nodeUserGroup.getIdGroup())) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur :", nodeUserGroup.getGroupName()));
+            return;
+        }
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Suppression OK :", nodeUserGroup.getGroupName()));
+        myProjectBean.init();        
+        init();
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            //    pf.ajax().update("messageIndex");
+            pf.ajax().update("profileForm:myProjectForm");
+            pf.ajax().update("profileForm:modifyProjectForm");
+            pf.ajax().update("profileForm:selectProjects");
+        }        
+    }    
     
     public String getProjectName() {
         return projectName;

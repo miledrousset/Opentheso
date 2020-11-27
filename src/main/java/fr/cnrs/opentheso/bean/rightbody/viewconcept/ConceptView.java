@@ -152,7 +152,6 @@ public class ConceptView implements Serializable {
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
 
-
         // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
 

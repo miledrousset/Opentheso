@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>font-awesome</artifactId>
-            <version>5.12.0</version>
+            <version>5.15.1</version>
         </dependency>         
         
         <!-- CDI beans inject dependency -->
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-model</artifactId>
-            <version>3.0.1</version>
+            <version>3.4.4</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -162,8 +162,8 @@
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-runtime</artifactId>
-            <version>3.0.1</version>
-            <type>jar</type>
+            <version>3.4.4</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>com.ibm.icu</groupId>

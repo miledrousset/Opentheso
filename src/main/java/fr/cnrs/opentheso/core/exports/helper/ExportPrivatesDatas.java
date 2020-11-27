@@ -14,12 +14,10 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Concept_Candidat;
-import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Concept_Fusion;
 import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Concept_Group_Historique;
 import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Concept_Group_Label_Historique;
 import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Concept_Historique;
 import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Concept_Term_Candidat;
-import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Concept_orphan;
 import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Hierarchical_Relationship_Historique;
 import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Images;
 import fr.cnrs.opentheso.core.exports.privatesdatas.LineOfData;
@@ -252,10 +250,7 @@ public class ExportPrivatesDatas {
                         if (resultSet.getString("table_name").equalsIgnoreCase("term_candidat")) {
                             tablesprivate.add(resultSet.getString("table_name"));
                         }
-                        if (resultSet.getString("table_name").equalsIgnoreCase("concept_orphan")) {
-                            tablesprivate.add(resultSet.getString("table_name"));
-                        }
-                        if (resultSet.getString("table_name").equalsIgnoreCase("concept_fusion")) {
+                        if (resultSet.getString("table_name").equalsIgnoreCase("concept_replacedby")) {
                             tablesprivate.add(resultSet.getString("table_name"));
                         }
                         if (resultSet.getString("table_name").equalsIgnoreCase("images")) {
@@ -523,72 +518,7 @@ public class ExportPrivatesDatas {
         return listTermeCandidat;
     }
 
-    public ArrayList<Concept_orphan> getConceptOrphelin(HikariDataSource ds) {
-        ResultSet resultSet;
-        Connection conn;
-        Statement stmt;
-        ArrayList<Concept_orphan> listConceptOrphan = new ArrayList<>();
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT * FROM concept_orphan";
-                    resultSet = stmt.executeQuery(query);
-                    while (resultSet.next()) {
-                        Concept_orphan concept_orphan1 = new Concept_orphan();
 
-                        concept_orphan1.setId_concept(resultSet.getString("id_concept"));
-                        concept_orphan1.setId_thesaurus(resultSet.getString("id_thesaurus"));
-
-                        listConceptOrphan.add(concept_orphan1);
-                    }
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Table.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listConceptOrphan;
-    }
-
-    public ArrayList<Concept_Fusion> getconceptFusion(HikariDataSource ds) {
-        ResultSet resultSet;
-        Connection conn;
-        Statement stmt;
-        ArrayList<Concept_Fusion> listConceptFusion = new ArrayList<>();
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT * FROM concept_fusion";
-                    resultSet = stmt.executeQuery(query);
-                    while (resultSet.next()) {
-                        Concept_Fusion conceptFusion1 = new Concept_Fusion();
-
-                        conceptFusion1.setId_concept1(resultSet.getString("id_concept1"));
-                        conceptFusion1.setId_concept2(resultSet.getString("id_concept2"));
-                        conceptFusion1.setId_thesaurus(resultSet.getString("id_thesaurus"));
-                        conceptFusion1.setModified(resultSet.getDate("modified"));
-                        conceptFusion1.setId_user(resultSet.getInt("id_user"));
-
-                        listConceptFusion.add(conceptFusion1);
-                    }
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Table.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listConceptFusion;
-    }
 
     public ArrayList<Images> getImages(HikariDataSource ds) {
         ResultSet resultSet;

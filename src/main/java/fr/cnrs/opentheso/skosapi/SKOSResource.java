@@ -18,6 +18,14 @@ public class SKOSResource {
     private String identifier;
     private SKOSdc sdc;
     private int property;
+    
+    /// le status du concept : CA=candidat, DEP=déprécié, autre=concept
+    private int status; 
+
+    private ArrayList<SKOSReplaces> sKOSReplaces;
+    
+    
+    
     private SKOSStatus skosStatus;
     private ArrayList<SKOSDiscussion> messages;
     private ArrayList<SKOSVote> votes;
@@ -52,6 +60,8 @@ public class SKOSResource {
         imageUris = new ArrayList<>();
         messages = new ArrayList<>();
         votes = new ArrayList<>();
+        status = 80;
+        sKOSReplaces = new ArrayList<>();
     }
 
     public SKOSResource(String uri, int property) {
@@ -68,7 +78,9 @@ public class SKOSResource {
         imageUris = new ArrayList<>();
         messages = new ArrayList<>();
         votes = new ArrayList<>();
-
+        status = 80;
+        sKOSReplaces = new ArrayList<>();  
+        
         this.property = property;
         this.uri = uri;
     }
@@ -192,6 +204,21 @@ public class SKOSResource {
     }
 
     /**
+     * Méthode d'ajout des relations pour les concepts dépréciés 
+     *
+     * @param uri un String URI
+     * @param prop un int SKOSProperty
+     */
+    public void addReplaces(String uri, int prop) {
+        try {
+            SKOSReplaces sKOSReplace = new SKOSReplaces(uri, prop);
+            sKOSReplaces.add(sKOSReplace);
+        } catch (Exception e) {
+            e.getMessage();
+        }
+    }    
+    
+    /**
      * Méthode d'ajout des relations à la ressource, dans une ArrayList
      *
      * @param uri un String URI
@@ -301,6 +328,16 @@ public class SKOSResource {
     public void addImageUri(String uri) {
         this.imageUris.add(uri);
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+
 
 
     /**
@@ -915,4 +952,15 @@ public class SKOSResource {
     public void addVote(SKOSVote skosVote) {
         votes.add(skosVote);
     }
+
+    public ArrayList<SKOSReplaces> getsKOSReplaces() {
+        return sKOSReplaces;
+    }
+
+    public void setsKOSReplaces(ArrayList<SKOSReplaces> sKOSReplaces) {
+        this.sKOSReplaces = sKOSReplaces;
+    }
+
+    
+    
 }

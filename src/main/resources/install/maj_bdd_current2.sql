@@ -122,6 +122,13 @@ begin
 end
 $$language plpgsql;
 
+-- Table: concept_orphan à supprimer, elle n'est plus utile
+DROP TABLE if exists public.concept_orphan;
+
+-- Renommer la table concept_fusion pour gérer les concepts dépréciés 
+ALTER TABLE if exists concept_fusion RENAME TO concept_replacedby;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------

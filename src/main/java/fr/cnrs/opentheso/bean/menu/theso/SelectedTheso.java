@@ -292,6 +292,7 @@ public class SelectedTheso implements Serializable {
         if (idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (idConceptFromUri == null || idConceptFromUri.isEmpty()) {
                 // accès au même thésaurus, on l'ignore 
+                initIdsFromUri();
                 return "";
             }
             if (currentLang == null) {
@@ -322,11 +323,12 @@ public class SelectedTheso implements Serializable {
                 }
             }
         }
+
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsThesoActive(true);
-        rightBodySetting.setShowConceptToOn();
+  //      rightBodySetting.setShowConceptToOn();
         rightBodySetting.setIndex("0");
-        indexSetting.setIsValueSelected(true);
+  //      indexSetting.setIsValueSelected(true);
 
         // ne marche pas
         PrimeFaces pf = PrimeFaces.current();

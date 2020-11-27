@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author antonio.perez
  */
-public class Concept_Fusion {
+public class conceptReplacedby {
     String id_concept1;
     String id_concept2;
     String id_thesaurus;

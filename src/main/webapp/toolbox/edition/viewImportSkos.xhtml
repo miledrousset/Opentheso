@@ -164,13 +164,14 @@
                 <b:column span="2" offset="2" > 
                     <p:commandButton id="buttonImportSkos" class="btn btn-success" widgetVar="buttonImportSkos"
                                      icon="fas fa-check-circle fas 2x"
-                                     update="formMenu toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm"
+                                     update="toolBoxForm toolBoxForm:listThesoForm"
                                      onclick="PF('pbAjax').start(); PF('buttonImportSkos').disable();"
                                      style="width: 100%; background-color: #5CB85C; border: none;"
                                      actionListener="#{importFileBean.addSkosThesoToBDD()}"
                                      ajax="true"
                                      value="Importer"
-                                     disabled="#{!importFileBean.loadDone}"/>
+                                     disabled="#{!importFileBean.loadDone}"
+                                      />
                 </b:column> 
             </b:row>
         </h:panelGroup>

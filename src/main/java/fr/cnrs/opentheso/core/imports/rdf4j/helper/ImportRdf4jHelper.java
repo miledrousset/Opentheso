@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.GpsHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
@@ -32,6 +33,8 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
@@ -97,6 +100,7 @@ public class ImportRdf4jHelper {
     class AddConceptsStruct {
 
         Concept concept;
+        String conceptStatus = "";
         ConceptHelper conceptHelper;
         SKOSResource conceptResource;
         NodeStatus status;
@@ -115,6 +119,14 @@ public class ImportRdf4jHelper {
         ArrayList<HierarchicalRelationship> hierarchicalRelationships = new ArrayList<>();
         // ajout des relations Groups
         ArrayList<String> idGrps = new ArrayList<>();
+        
+        /// objects pour les concepts dépréciés
+        //concepts à utiliser pour un concept déprécié
+        private ArrayList <NodeIdValue> replacedBy = new ArrayList<>();
+
+        // les concepts dépréciés qui sont reliés à ce concept
+        private ArrayList <NodeIdValue> replaces = new ArrayList<>();         
+        
         // ajout des alignements 
         ArrayList<NodeAlignment> nodeAlignments = new ArrayList<>();
         TermHelper termHelper = new TermHelper();
@@ -473,7 +485,9 @@ public class ImportRdf4jHelper {
 
         String idConcept = getOriginalId(conceptResource.getUri());
         acs.concept.setIdConcept(idConcept);
-
+        if(conceptResource.getStatus() == SKOSProperty.deprecated) {
+            acs.conceptStatus = "dep";
+        }
 
         // option cochée
         if ("ark".equalsIgnoreCase(selectedIdentifier)) {
@@ -489,6 +503,7 @@ public class ImportRdf4jHelper {
         addLabel(acs);
         addDocumentation(acs);
         addDate(acs);
+        addReplaces(acs);
 
         if (isCandidatImport) {
             addMessages(acs);
@@ -744,7 +759,12 @@ public class ImportRdf4jHelper {
                             idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(), idUser);
                 }
 
-                if (nodeNoteList1.getNotetypecode().equals("definition") || nodeNoteList1.getNotetypecode().equals("historyNote") || nodeNoteList1.getNotetypecode().equals("editorialNote")) {
+                if (nodeNoteList1.getNotetypecode().equals("definition")
+                        || nodeNoteList1.getNotetypecode().equals("historyNote")
+                        || nodeNoteList1.getNotetypecode().equals("editorialNote")
+                        || nodeNoteList1.getNotetypecode().equals("changeNote")
+                        || nodeNoteList1.getNotetypecode().equals("example")
+                        ) {
                     acs.noteHelper.addTermNote(ds, acs.nodeTerm.getIdTerm(), nodeNoteList1.getLang(),
                             idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(), idUser);
                 }
@@ -806,6 +826,14 @@ public class ImportRdf4jHelper {
                 new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
             }
         }
+        
+        DeprecateHelper deprecateHelper = new DeprecateHelper();
+        if(acs.conceptStatus.equalsIgnoreCase("dep"))
+            deprecateHelper.deprecateConcept(ds, acs.concept.getIdConcept(), idTheso, idUser);
+        /// ajout des relations de concepts dépréciés
+        for (NodeIdValue nodeIdValue : acs.replacedBy) {
+            deprecateHelper.addReplacedBy(ds, acs.concept.getIdConcept(), idTheso, nodeIdValue.getId(), idUser);
+        }
 
 
         // initialisation des variables
@@ -820,6 +848,10 @@ public class ImportRdf4jHelper {
         acs.isTopConcept = false;
         acs.nodeGps = new NodeGps();
         acs.nodeImages = new ArrayList<>();
+        acs.replacedBy = new ArrayList<>();
+        acs.replaces = new ArrayList<>();
+        acs.conceptStatus = "";
+        
     }
 
     private String formatLinkToHtmlTag(String str) {
@@ -1022,6 +1054,26 @@ public class ImportRdf4jHelper {
         }
     }
 
+    private void addReplaces(AddConceptsStruct acs) {
+        int prop;
+        for (SKOSReplaces replace : acs.conceptResource.getsKOSReplaces()) {
+            prop = replace.getProperty();
+            switch (prop) {
+                case SKOSProperty.isReplacedBy:
+                    NodeIdValue nodeIdValue = new NodeIdValue();
+                    nodeIdValue.setId(getIdFromUri(replace.getTargetUri()));
+                    acs.replacedBy.add(nodeIdValue);
+                    break;
+                case SKOSProperty.replaces:
+                    NodeIdValue nodeIdValue2 = new NodeIdValue();
+                    nodeIdValue2.setId(getIdFromUri(replace.getTargetUri()));
+                    acs.replaces.add(nodeIdValue2);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }    
  
     private void addRelation(AddConceptsStruct acs, String idTheso) {
         HierarchicalRelationship hierarchicalRelationship;
