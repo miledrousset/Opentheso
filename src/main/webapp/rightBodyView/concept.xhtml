@@ -326,7 +326,7 @@
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                     <b:navCommandLink value="Remplacer par"  update="idReplaceBy replaceByForm"
-                               action="#{relatedBean.reset()}"
+                               action="#{relatedBean.reset()}" 
                                actionListener="#{editConcept.reset('')}"
                                oncomplete="PF('replaceBy').show();"
                                style="font-size: 12px;"/>
@@ -345,12 +345,12 @@
             <b:column id="idConceptDeprecatedColumn" span="8" colXs="8" rendered="#{conceptView.nodeConcept.replacedBy.size() != 0}">
                 <ui:repeat   var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status">
                     <b:navCommandLink rendered="#{replace.value != ''}"
-                                      value="#{replace.value}"
+                                      value="#{replace.value}" tooltip="#{replace.id}" tooltip-delay-show="1000"
                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
                                       update="formRightTab:viewTabConcept:conceptView indexTitle"
                                       style="color: #C63632;"></b:navCommandLink>  
                     <b:navCommandLink rendered="#{replace.value == ''}"
-                                      value="(#{replace.id})"
+                                      value="(#{replace.id})" 
                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
                                       update="formLeftTab formRightTab indexTitle"
                                       style="color: #C63632;"></b:navCommandLink>                                        
@@ -371,7 +371,7 @@
             <b:column id="idConceptReplaceColumn" span="8" colXs="8" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
                 <ui:repeat   var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status">
                     <b:navCommandLink rendered="#{replaces.value != ''}"
-                                      value="#{replaces.value}"
+                                      value="#{replaces.value}" tooltip="#{replaces.id}" tooltip-delay-show="1000"
                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
                                       update="formRightTab:viewTabConcept:conceptView indexTitle"
                                       style="color: #f47b2a;"></b:navCommandLink>  

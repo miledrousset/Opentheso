@@ -1052,6 +1052,68 @@ public class RelationsHelper {
         }
         return status;
     }
+    
+    /**
+     * Cette fonction permet de rajouter une relation associative entre deux
+     * concepts
+     *
+     * @param ds
+     * @param idConcept1
+     * @param idConcept2
+     * @param idThesaurus
+     * @param idUser
+     * @return boolean
+     */
+    public boolean addRelationRT(HikariDataSource ds,
+            String idConcept1, String idThesaurus,
+            String idConcept2, int idUser) {
+
+        Connection conn;
+        Statement stmt;
+        boolean status = false;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    if (!addRelationHistorique(conn, idConcept1, idThesaurus, idConcept2, "RT", idUser, "ADD")) {
+                        return false;
+                    }
+
+                    String query = "Insert into hierarchical_relationship"
+                            + "(id_concept1, id_thesaurus, role, id_concept2)"
+                            + " values ("
+                            + "'" + idConcept1 + "'"
+                            + ",'" + idThesaurus + "'"
+                            + ",'RT'"
+                            + ",'" + idConcept2 + "')";
+
+                    stmt.executeUpdate(query);
+                    query = "Insert into hierarchical_relationship"
+                            + "(id_concept1, id_thesaurus, role, id_concept2)"
+                            + " values ("
+                            + "'" + idConcept2 + "'"
+                            + ",'" + idThesaurus + "'"
+                            + ",'RT'"
+                            + ",'" + idConcept1 + "')";
+                    stmt.executeUpdate(query);
+                    status = true;
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            if (sqle.getSQLState().equalsIgnoreCase("23505")) {
+                status = true;
+            } else {
+                log.error("Error while adding relation RT of Concept : " + idConcept1, sqle);                
+            }
+        }
+        return status;
+    }    
 
     /**
      * Cette fonction permet de rajouter une relation terme gÃ©nÃ©rique Ã  un

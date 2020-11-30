@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
+import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -57,6 +58,8 @@ public class EditConcept implements Serializable {
     private boolean duplicate;
     private boolean forDelete;
     
+    private boolean isReplacedByRTrelation;
+    
     // dépréciation
     private ArrayList<NodeIdValue> nodeReplaceBy;
 
@@ -69,6 +72,7 @@ public class EditConcept implements Serializable {
         prefLabel = label;
         notation = "";
         forDelete = false;
+        isReplacedByRTrelation = false;
         
         nodeReplaceBy = conceptView.getNodeConcept().getReplacedBy();
     }
@@ -354,6 +358,14 @@ public class EditConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
         }
+        if(isReplacedByRTrelation) {
+            RelationsHelper relationsHelper = new RelationsHelper();
+            if(conceptView.getNodeConcept().getReplacedBy() != null && !conceptView.getNodeConcept().getReplacedBy().isEmpty())
+                for (NodeIdValue nodeIdValue : nodeReplaceBy) {
+                    relationsHelper.addRelationRT(connect.getPoolConnexion(), idConcept, idTheso, nodeIdValue.getId(), idUser);                    
+                }
+        }
+        
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
@@ -673,6 +685,14 @@ public class EditConcept implements Serializable {
 
     public void setNodeReplaceBy(ArrayList<NodeIdValue> nodeReplaceBy) {
         this.nodeReplaceBy = nodeReplaceBy;
+    }
+
+    public boolean isIsReplacedByRTrelation() {
+        return isReplacedByRTrelation;
+    }
+
+    public void setIsReplacedByRTrelation(boolean isReplacedByRTrelation) {
+        this.isReplacedByRTrelation = isReplacedByRTrelation;
     }
 
 }

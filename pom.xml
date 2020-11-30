@@ -4,7 +4,7 @@
 
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>20.11</version>
+    <version>20.12</version>
     <packaging>war</packaging>
 
     <name>opentheso2</name>
