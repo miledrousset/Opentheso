@@ -402,6 +402,8 @@ public class ReadRdf4j {
      */
     private boolean readLabellingProperties(ReadStruct readStruct) {
         if(readStruct.literal == null) return true;
+        if(readStruct.resource == null) return true;
+        
         String lang = "fr"; 
         // si aucune langue n'est précisée, on applique la langue par défaut
         if(readStruct.literal.getLanguage().isPresent()) {
