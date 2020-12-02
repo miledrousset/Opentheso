@@ -20,6 +20,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -48,6 +49,7 @@ public class NoteBeanCandidat implements Serializable {
     private NodeNote selectedNodeNote;
     private String noteValueToChange;
     private boolean visible;
+    private boolean isEditMode;
 
     public NoteBeanCandidat() {
     }
@@ -59,14 +61,15 @@ public class NoteBeanCandidat implements Serializable {
         selectedLang = candidatBean.getCandidatSelected().getLang();
         noteValue = "";
         selectedTypeNote = null;
-
+        isEditMode = false;
     }
     
     public void resetEditNode(NodeNote selectedNodeNote) {
         reset();
         noteValue = selectedNodeNote.getLexicalvalue();
         selectedTypeNote = selectedNodeNote.getLang();
-
+        this.selectedNodeNote = selectedNodeNote;
+        isEditMode = true;
     }
 
     public void initSelectedNode (NodeNote nodeNote){
@@ -79,6 +82,11 @@ public class NoteBeanCandidat implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
+    private String removeParagraphTags(String rawNote){
+        rawNote = rawNote.replaceAll("<p>", "");
+        rawNote = rawNote.replaceAll("</p>", "\n");
+        return rawNote;
+    }    
     /**
      * permet d'ajouter un nouveau concept si le groupe = null, on ajoute un
      * concept sans groupe si l'id du concept est fourni, il faut controler s'il
@@ -87,12 +95,19 @@ public class NoteBeanCandidat implements Serializable {
      * @param idUser
      */
     public void addNewNote(int idUser) {
+        if(isEditMode) {
+            updateNote(idUser);
+            return;
+        }
+            
         FacesMessage msg;
         if (noteValue == null || noteValue.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne doit pas être vide !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        noteValue = removeParagraphTags(noteValue);
+        noteValue = StringEscapeUtils.unescapeXml(noteValue);        
 
         switch (selectedTypeNote) {
             case "note":
@@ -141,6 +156,7 @@ public class NoteBeanCandidat implements Serializable {
                 break;
         }
         reset();
+
         try {          
             candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
         } catch (IOException ex) {
@@ -160,14 +176,16 @@ public class NoteBeanCandidat implements Serializable {
     
     public void updateNote(int idUser){
         NoteHelper noteHelper = new NoteHelper();
+     
         FacesMessage msg;        
-        if (selectedNodeNote.getNotetypecode().equalsIgnoreCase("note") || selectedNodeNote.getNotetypecode().equalsIgnoreCase("scopeNote") || selectedNodeNote.getNotetypecode().equalsIgnoreCase("historyNote")) {
+        if (selectedNodeNote.getNotetypecode().equalsIgnoreCase("note") ||
+                selectedNodeNote.getNotetypecode().equalsIgnoreCase("scopeNote")) {
             if (!noteHelper.updateConceptNote(connect.getPoolConnexion(),
                     selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                     selectedNodeNote.getId_concept(),
                     selectedNodeNote.getLang(),
                     selectedTheso.getCurrentIdTheso(),
-                    noteValueToChange,
+                    noteValue,
                     selectedNodeNote.getNotetypecode(),
                     idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
@@ -180,7 +198,7 @@ public class NoteBeanCandidat implements Serializable {
                     selectedNodeNote.getId_term(),
                     selectedNodeNote.getLang(),                    
                     selectedTheso.getCurrentIdTheso(),
-                    noteValueToChange,
+                    noteValue,
                     selectedNodeNote.getNotetypecode(),
                     idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
@@ -189,18 +207,19 @@ public class NoteBeanCandidat implements Serializable {
             }
         }
         reset();
+        setVisible(false);
         try {          
             candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
         } catch (IOException ex) {
             Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        PrimeFaces pf = PrimeFaces.current();
+    /*    PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("candidatForm:listTraductionForm");
             pf.ajax().update("candidatForm");
         }        
-
+*/
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
       
@@ -398,6 +417,14 @@ public class NoteBeanCandidat implements Serializable {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public boolean isIsEditMode() {
+        return isEditMode;
+    }
+
+    public void setIsEditMode(boolean isEditMode) {
+        this.isEditMode = isEditMode;
     }
     
 }

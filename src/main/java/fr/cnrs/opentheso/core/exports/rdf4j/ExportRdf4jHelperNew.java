@@ -121,6 +121,7 @@ public class ExportRdf4jHelperNew {
             if (modified != null) {
                 conceptScheme.addDate(modified, SKOSProperty.modified);
             }
+            conceptScheme.setThesaurus(thesaurus);
         }
 
         //liste top concept

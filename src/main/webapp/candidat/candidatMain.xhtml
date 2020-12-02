@@ -7,7 +7,7 @@
     <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
             style="margin-top: -20px; border-left: 20px; border-right: 20px; background-color: #FAFAFA; padding: 50px">
 
-        <p:tabView activeIndex="#{candidatBean.tabViewIndexSelected}"
+        <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
                    style="background-color: #FAFAFA;">
             <p:tab title="Suggestions" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isListCandidatsActivate() || 
@@ -15,8 +15,8 @@
                     <ui:include src="/candidat/candidatsList.xhtml" />
                 </b:row>
 
-                <b:row rendered="#{candidatBean.isShowCandidatActivate() || candidatBean.isNewCandidatActivate()}">
-                    <p:panel>
+                <b:row  rendered="#{candidatBean.isShowCandidatActivate() || candidatBean.isNewCandidatActivate()}">
+                    <p:panel >
                         <b:row>
                             <b:column span="12">
                                 <b:navCommandLink value="#{langueBean.getMsg('candidat.return')}" 

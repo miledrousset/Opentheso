@@ -1250,6 +1250,7 @@ public class ThesaurusHelper {
 
         thesaurus.setContributor(new StringPlus().convertString(thesaurus.getContributor()));
         thesaurus.setCoverage(new StringPlus().convertString(thesaurus.getCoverage()));
+        thesaurus.setCreator(new StringPlus().convertString(thesaurus.getCreator()));        
         thesaurus.setDescription(new StringPlus().convertString(thesaurus.getDescription()));
         thesaurus.setFormat(new StringPlus().convertString(thesaurus.getFormat()));
         thesaurus.setPublisher(new StringPlus().convertString(thesaurus.getPublisher()));

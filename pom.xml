@@ -17,6 +17,12 @@
     <dependencies>
         
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>        
+        
+        <dependency>
             <groupId>com.github.themrleon</groupId>
             <artifactId>JSF2Leaf</artifactId>
             <version>1.0</version>

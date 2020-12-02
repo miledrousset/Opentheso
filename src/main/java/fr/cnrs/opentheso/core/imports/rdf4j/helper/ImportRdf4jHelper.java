@@ -171,9 +171,10 @@ public class ImportRdf4jHelper {
      * @throws java.sql.SQLException
      */
     public String addThesaurus() throws SQLException {
-        Thesaurus thesaurus = new Thesaurus();
+
 
         SKOSResource conceptScheme = skosXmlDocument.getConceptScheme();
+        Thesaurus thesaurus = conceptScheme.getThesaurus();
         if (conceptScheme == null) {
             message.append("Erreur SKOS !!! manque balise conceptSheme");
             return null;

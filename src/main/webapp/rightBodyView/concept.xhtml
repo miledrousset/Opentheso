@@ -52,7 +52,7 @@
                                       style="font-size: 12px;">
                     </b:navCommandLink>   
                     <b:navCommandLink rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
-                                      value="Déprécié le concept" 
+                                      value="Déprécier le concept" 
                                       tooltip="Permet de déprécier le concept"
                                       update="idDeprecateConcept deprecateConceptForm"
                                       action="#{editConcept.reset('')}"
@@ -60,7 +60,7 @@
                                       style="font-size: 12px;">
                     </b:navCommandLink>  
                     <b:navCommandLink rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
-                                      value="Approuvé le concept" 
+                                      value="Approuver le concept" 
                                       tooltip="Permet d'approuver le concept, il ne sera plus déprécié"
                                       update="idApproveConcept approveConceptForm"
                                       action="#{editConcept.reset('')}"
@@ -235,9 +235,10 @@
             </b:row>  
             <b:row rendered="#{conceptView.nodeConcept.replacedBy.size() > 0}">
                 <b:column span="12" colXs="12" style="color: white">
-                    <h:outputText value="A été remplacé par: " title="Preferred Term" />
-                    <ui:repeat var="replace" value="#{conceptView.nodeConcept.replacedBy}" >
-                        <h:outputText value="#{replace.value} " title="#{replace.id}"/>
+                    <h:outputText value="A été remplacé par : " title="Preferred Term" />
+                    <ui:repeat var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status" >
+                        <h:outputText value=" #{replace.value}" title="#{replace.id}"/>
+                        <h:outputText rendered="#{!status.last}" value=", " style="color: white"/>                        
                     </ui:repeat>
                  </b:column>
             </b:row>              
@@ -787,7 +788,7 @@
                 <p:commandButton
                     icon="fas fa-plus-circle fa-s" 
                     actionListener="#{noteBean.reset()}"                    
-                    update="idAddNote"
+                    update="idAddNote addNoteForm"
                     oncomplete="PF('addNote').show();"
                     title="ajouter une note"
                     style="margin-left: -5px; font-size: 12px"
@@ -821,7 +822,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="note" value="#{conceptView.notes}" >
-                        <h:outputText value="#{note.lexicalvalue}"  style="font-size: 12px;color: #666666" /> 
+                        <h:outputText value="#{note.lexicalvalue}"  style="font-size: 12px;color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -852,7 +853,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="changeNote" value="#{conceptView.changeNotes}" >
-                        <h:outputText value="#{changeNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{changeNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -883,7 +884,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="def" value="#{conceptView.definitions}" >
-                        <h:outputText value="#{def.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{def.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -914,7 +915,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="editorialNote" value="#{conceptView.editorialNotes}" >
-                        <h:outputText value="#{editorialNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{editorialNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -945,7 +946,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="example" value="#{conceptView.examples}" >
-                        <h:outputText value="#{example.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{example.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -976,7 +977,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="historyNote" value="#{conceptView.historyNotes}" >
-                        <h:outputText value="#{historyNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{historyNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -1007,7 +1008,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="scopeNote" value="#{conceptView.scopeNotes}" >
-                        <h:outputText value="#{scopeNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{scopeNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 

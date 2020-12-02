@@ -5,6 +5,9 @@
  */
 package fr.cnrs.opentheso.core.imports.rdf4j;
 
+import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.bdd.tools.FileUtilities;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,6 +49,7 @@ public class ReadRdf4j {
      *
      * @param is
      * @param type 0 pour skos 1 pour jsonld 2 pour turtle
+     * @param isCandidatImport
      * @throws java.io.IOException
      */
     public ReadRdf4j(InputStream is, int type, boolean isCandidatImport) throws IOException {
@@ -404,6 +408,55 @@ public class ReadRdf4j {
             lang = readStruct.literal.getLanguage().get();
         }
             
+        ///// récupération des informations sur le thésaurus DC-Terms
+        if(SKOSProperty.ConceptScheme == readStruct.resource.getProperty()){
+            // remplir un tableau de dublin-core pour les métas-données 
+            switch (readStruct.property.getLocalName()) {
+                case "title":
+                    readStruct.resource.getThesaurus().setTitle(readStruct.literal.getLabel());
+                    readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.prefLabel);
+                    break;
+                case "creator":
+                    readStruct.resource.getThesaurus().setCreator(readStruct.literal.getLabel());
+                    break;
+                case "contributor":
+                    readStruct.resource.getThesaurus().setContributor(readStruct.literal.getLabel());
+                    break;  
+                case "publisher":
+                    readStruct.resource.getThesaurus().setPublisher(readStruct.literal.getLabel());
+                    break;  
+                case "description":
+                    readStruct.resource.getThesaurus().setDescription(readStruct.literal.getLabel());
+                    break;  
+                case "type":
+                    readStruct.resource.getThesaurus().setType(readStruct.literal.getLabel());
+                    break;
+                case "rights":
+                    readStruct.resource.getThesaurus().setRights(readStruct.literal.getLabel());
+                    break;   
+                case "subject":
+                    readStruct.resource.getThesaurus().setSubject(readStruct.literal.getLabel());
+                    break;                      
+                case "coverage":
+                    readStruct.resource.getThesaurus().setCoverage(readStruct.literal.getLabel());
+                    break;    
+                case "language":
+                    readStruct.resource.getThesaurus().setLanguage(readStruct.literal.getLabel());
+                    break; 
+                case "relation":
+                    readStruct.resource.getThesaurus().setRelation(readStruct.literal.getLabel());
+                    break;                     
+                case "source":
+                    readStruct.resource.getThesaurus().setSource(readStruct.literal.getLabel());
+                    break;
+                case "created":
+                    readStruct.resource.getThesaurus().setCreated(new FileUtilities().getDateFromString(readStruct.literal.getLabel()));
+                    break;     
+                case "modified":
+                    readStruct.resource.getThesaurus().setModified(new FileUtilities().getDateFromString(readStruct.literal.getLabel()));
+                    break;                      
+            }            
+        }
             
         if (readStruct.property.getLocalName().equals("prefLabel")) {
             readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.prefLabel);

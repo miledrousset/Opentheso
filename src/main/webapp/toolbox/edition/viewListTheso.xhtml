@@ -109,7 +109,7 @@
 
                         <b:column span="2">
                             <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg"
-                                             actionListener="#{deleteThesoBean.confirmDelete(listTheso)}"
+                                              actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
                                              update="toolBoxForm:idConfirmDelete toolBoxForm:confirmDeleteForm"
                                              oncomplete="PF('confirmDelete').show();"
                                              style="color: #f47b2a; "/>

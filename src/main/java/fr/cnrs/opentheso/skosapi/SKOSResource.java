@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.skosapi;
 
+import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -43,7 +44,10 @@ public class SKOSResource {
     
     // images
     private ArrayList<String> imageUris;
-
+    
+    // pour les labels et le DC du thésaurus
+    private Thesaurus thesaurus;
+    
     /**
      *
      */
@@ -62,6 +66,7 @@ public class SKOSResource {
         votes = new ArrayList<>();
         status = 80;
         sKOSReplaces = new ArrayList<>();
+        thesaurus = new Thesaurus();
     }
 
     public SKOSResource(String uri, int property) {
@@ -80,6 +85,7 @@ public class SKOSResource {
         votes = new ArrayList<>();
         status = 80;
         sKOSReplaces = new ArrayList<>();  
+        thesaurus = new Thesaurus();       
         
         this.property = property;
         this.uri = uri;
@@ -120,6 +126,16 @@ public class SKOSResource {
     public ArrayList<SKOSNotation> getNotationList() {
         return notationList;
     }
+
+    public Thesaurus getThesaurus() {
+        return thesaurus;
+    }
+
+    public void setThesaurus(Thesaurus thesaurus) {
+        this.thesaurus = thesaurus;
+    }
+
+
 
     /**
      *
