@@ -3,8 +3,8 @@
              xmlns:b="http://bootsfaces.net/ui"
              xmlns:f="http://java.sun.com/jsf/core">
 
+    <b:form id="formRightTab">
 
-    <b:form id="formRightTab"> 
         <b:row rendered="#{indexSetting.isValueSelected}">
             <b:column span="12">
                 <b:tabView activeIndex="#{rightBodySetting.index}"  >
@@ -24,12 +24,12 @@
                 </b:tabView>
             </b:column>
         </b:row>
-        
-        
+
+
         <b:row rendered="#{!indexSetting.isValueSelected}">
             <ui:include  src="/rightBodyView/thesoHome.xhtml" />
         </b:row>
-        
+
     </b:form>
 
 

@@ -6110,6 +6110,46 @@ public class ConceptHelper {
         }
         return idConcept;
     }
+    
+    public String getConceptIdFromPrefLabel(HikariDataSource ds, String prefLabel, 
+            String idThesaurus, String lang) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        String idConcept = null;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String str = prefLabel.replaceAll("\'", "%");
+                    String query = "SELECT DISTINCT(preferred_term.id_concept) " +
+                        "FROM preferred_term, term " +
+                        "WHERE term.id_thesaurus = '"+idThesaurus+"' " +
+                        "AND term.id_term = preferred_term.id_term " +
+                        "AND term.lexical_value like '%"+str+"%' " +
+                        "AND lang = '"+lang+"'";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet.next()) {
+                        idConcept = resultSet.getString("id_concept");
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting idConcept of idTerm : " + idConcept, sqle);
+        }
+        return idConcept;
+    }
 
     /**
      * Cette fonction permet de savoir si un concept a des fils ou non suivant

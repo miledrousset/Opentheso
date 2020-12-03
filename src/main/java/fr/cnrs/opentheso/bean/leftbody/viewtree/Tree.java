@@ -1,29 +1,35 @@
 package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
+
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.bean.diagram.ConceptsDiagramBean;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
+import java.io.IOException;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.primefaces.PrimeFaces;
+import javax.servlet.http.HttpServletRequest;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -35,7 +41,6 @@ import org.primefaces.model.TreeNode;
  */
 @Named(value = "tree")
 @SessionScoped
-
 public class Tree implements Serializable {
 
     @Inject private Connect connect;
@@ -44,6 +49,9 @@ public class Tree implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private RoleOnThesoBean roleOnThesoBean;
+    
+    @Inject 
+    private ConceptsDiagramBean conceptsDiagramBean;
 
     private DataService dataService;
 
@@ -52,7 +60,9 @@ public class Tree implements Serializable {
 
     private String idTheso;
     private String idLang;
-    private boolean noedSelected;
+    private boolean noedSelected, diagramVisisble;
+    
+    private TreeNodeData treeNodeDataSelect;
 
     ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
@@ -246,6 +256,8 @@ public class Tree implements Serializable {
 
             rightBodySetting.setIndex("0");
             noedSelected = false;
+            
+            treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
         }
     }
 
@@ -363,7 +375,8 @@ public class Tree implements Serializable {
                     return;
                 }
                 // compare le dernier élément au concept en cours, si oui, on expand pas, sinon, erreur ...
-                if (!((TreeNodeData) treeNodeParent.getData()).getNodeId().equalsIgnoreCase(thisPath.getPath().get(thisPath.getPath().size() - 1))) {
+                if (!((TreeNodeData) treeNodeParent.getData()).getNodeId()
+                        .equalsIgnoreCase(thisPath.getPath().get(thisPath.getPath().size() - 1))) {
                     treeNodeParent.setExpanded(true);
                 }
             }
@@ -393,4 +406,36 @@ public class Tree implements Serializable {
         return null;
     }
 
+    public boolean isDiagramVisisble() {
+        return diagramVisisble;
+    }
+
+    public void setDiagramVisisble(boolean diagramVisisble) {
+        this.diagramVisisble = diagramVisisble;
+    }
+    
+    public void showDiagram(boolean status) throws IOException {
+        if (treeNodeDataSelect == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "", "Vous devez selectioner un élement de l'arbre"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+            return;
+        } 
+        
+        diagramVisisble = status;
+        
+        conceptsDiagramBean.init(treeNodeDataSelect.getNodeId(), idTheso, idLang);
+        
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+    }
+
+    public TreeNodeData getTreeNodeDataSelect() {
+        return treeNodeDataSelect;
+    }
+
+    public void setTreeNodeDataSelect(TreeNodeData treeNodeDataSelect) {
+        this.treeNodeDataSelect = treeNodeDataSelect;
+    }
 }

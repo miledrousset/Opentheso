@@ -14,7 +14,7 @@
                     style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll"
                     disabled="#{treeGroups.noedSelected}">
 
-                <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}" 
+                <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
                 <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabGroups:idGlobalActionsGroup"

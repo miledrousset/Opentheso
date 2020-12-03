@@ -235,6 +235,12 @@
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.abego.treelayout</groupId>
+            <artifactId>org.abego.treelayout.core</artifactId>
+            <version>1.0.3</version>
+        </dependency>
     </dependencies>
 
 
@@ -288,7 +294,10 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>    
+
+
+
     
     <pluginRepositories>
         <pluginRepository>
