@@ -1,0 +1,79 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <!--    <b:modal id="idRenameConcept"  class="renameConcept" title="Renommer le concept" close-on-escape="false" backdrop="false"
+                 style="font-size: 12px;">
+    -->
+
+    <p:dialog id="idApproveConcept" header="Approuver le concept" widgetVar="approveConcept" 
+              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >         
+
+        <h:form id="approveConceptForm">           
+            <b:row >
+                <b:column span="12" >
+                    <h:outputText id="currentPrefLabelToDelete" value="#{conceptView.nodeConcept.term.lexical_value}"
+                                  style="font-size: 14px; margin-left: 20px; color: #C63632;">
+                    </h:outputText >
+                </b:column>
+            </b:row> 
+           
+            <p:spacer/>
+            
+            
+            <!-- Liste des concepts qui remplacent ce concept --> 
+            <h:panelGroup id="TabRelationWithReplacedBy" rendered="#{conceptView.nodeConcept.replacedBy.size() > 0}">
+                <b:row style="margin-left: 10px; "> 
+                    <b:column span="11">
+                        <h:outputText value="Ce concept est remplacé par: " style="font-size: 12px;" />
+                    </b:column>
+                </b:row>            
+                <b:row> 
+                    <b:column span="12">
+                        <b:panel>
+                            <p:dataTable id="isRaplacedBy" 
+                                         value="#{conceptView.nodeConcept.replacedBy}" var="replacedBy"  scrollable="true" resizableColumns="true" scrollHeight="450"
+                                 style="font-size: 12px;">
+                                <p:column width="30%" headerText="idConcept">
+                                    <h:outputText value="#{replacedBy.id}" style="font-size: 12px;" />
+                                </p:column>
+                                <p:column width="70%" headerText="label" >
+                                    <h:outputText value="#{replacedBy.value}" style="font-size: 12px;" />
+                                </p:column>                              
+                            </p:dataTable>  
+                            
+                            <!-- Création d'un relation associative avec les concepts qui remplacent ce concept --> 
+                            <b:row style="margin-top: 10px; "> 
+                                <b:column span="12">
+                                    <p:selectBooleanCheckbox value="#{editConcept.isReplacedByRTrelation}" 
+                                            itemLabel="Garder en relation associative (RT) ?"
+                                            title="Ajouter une relation associative (RT) avec les concepts qui le remplace?"/>
+                                </b:column>                    
+                            </b:row>                              
+                        </b:panel>
+                    </b:column>
+                </b:row>             
+
+
+
+            </h:panelGroup>
+            
+            <p:separator/>
+            <b:row style="margin-bottom: 20px;">
+                <b:column span="4" offset="4" >
+                    <b:commandButton value="Approuver" update="approveConceptForm formRightTab messageIndex"
+                                     class="btn btn-primary"
+                                     action="#{editConcept.approveConcept(
+                                               conceptView.nodeConcept.concept.idConcept,
+                                               selectedTheso.currentIdTheso,
+                                               currentUser.nodeUser.idUser)}"
+                                     style="width:100%; font-size: 12px;color: white; background: #43B572;"
+                                     oncomplete="PF('approveConcept').hide();"/>
+                </b:column>
+            </b:row>
+        </h:form>
+    </p:dialog> 
+    <!--  </b:modal> -->    
+</ui:fragment>

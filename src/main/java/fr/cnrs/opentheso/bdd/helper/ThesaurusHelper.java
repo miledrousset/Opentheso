@@ -1250,6 +1250,7 @@ public class ThesaurusHelper {
 
         thesaurus.setContributor(new StringPlus().convertString(thesaurus.getContributor()));
         thesaurus.setCoverage(new StringPlus().convertString(thesaurus.getCoverage()));
+        thesaurus.setCreator(new StringPlus().convertString(thesaurus.getCreator()));        
         thesaurus.setDescription(new StringPlus().convertString(thesaurus.getDescription()));
         thesaurus.setFormat(new StringPlus().convertString(thesaurus.getFormat()));
         thesaurus.setPublisher(new StringPlus().convertString(thesaurus.getPublisher()));
@@ -1369,9 +1370,8 @@ public class ThesaurusHelper {
                             + "delete from concept_term_candidat where id_thesaurus = '" + idThesaurus + "';"
                             + "delete from term_candidat where id_thesaurus = '" + idThesaurus + "';"
                             + "delete from alignement where internal_id_thesaurus = '" + idThesaurus + "';"
-                            + "delete from concept_orphan where id_thesaurus = '" + idThesaurus + "';"
                             + "delete from proposition where id_thesaurus = '" + idThesaurus + "';"
-                            + "delete from concept_fusion where id_thesaurus = '" + idThesaurus + "';"
+                            + "delete from concept_replacedby where id_thesaurus = '" + idThesaurus + "';"
                             + "delete from gps where id_theso = '" + idThesaurus + "';"
                             + "delete from thesaurus_alignement_source where id_thesaurus = '" + idThesaurus + "';"
                             + "delete from concept_group_concept where idthesaurus = '" + idThesaurus + "';"

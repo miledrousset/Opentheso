@@ -80,12 +80,11 @@ public class ToolsHelper {
      * @param idThesaurus
      * @return
      */
-    public boolean orphanReplace(HikariDataSource ds,
+/*    public boolean orphanReplace(HikariDataSource ds,
             String idThesaurus) {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
-        OrphanHelper orphanHelper = new OrphanHelper();
         GroupHelper groupHelper = new GroupHelper();
         
         // récupération de tous les Id concepts du thésaurus
@@ -129,7 +128,7 @@ public class ToolsHelper {
             }
         }
         return true;
-    }
+    }*/
 
     /**
      * Fonction qui permet de restructurer le thésaurus en ajoutant les NT et les BT qui manquent
@@ -144,7 +143,6 @@ public class ToolsHelper {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
-        OrphanHelper orphanHelper = new OrphanHelper();
         ArrayList<String> idBT;
         ArrayList<String> idConcept1WhereIsNT;
 
@@ -160,13 +158,7 @@ public class ToolsHelper {
                 if (idBT.isEmpty() && idConcept1WhereIsNT.isEmpty()) {
                     if (!conceptHelper.isTopConcept(ds, idConcept, idThesaurus)) {
                         // le concept est orphelin
-                        if (!orphanHelper.isOrphanExist(ds, idConcept, idThesaurus)) {
-                            if (!orphanHelper.addNewOrphan(conn, idConcept, idThesaurus)) {
-                                conn.rollback();
-                                conn.close();
-                                return false;
-                            }
-                        }
+                        conceptHelper.setTopConcept(ds, idConcept, idThesaurus);
                     }
                 } else {
                     if (!(idBT.containsAll(idConcept1WhereIsNT))) {
@@ -437,41 +429,6 @@ public class ToolsHelper {
         return true;
     }
     
-
-    /**
-     * Fonction qui permet de repérer les termes orphelins et les ranger dans
-     * les orphelins.
-     *
-     * @param ds
-     * @param idThesaurus
-     * @return
-     */
-    public boolean orphanDetect(HikariDataSource ds,
-            String idThesaurus) {
-
-        ConceptHelper conceptHelper = new ConceptHelper();
-        RelationsHelper relationsHelper = new RelationsHelper();
-        OrphanHelper orphanHelper = new OrphanHelper();
-
-        // récupération de tous les Id concepts du thésaurus
-        ArrayList<String> tabIdConcept = conceptHelper.getAllIdConceptOfThesaurus(ds, idThesaurus);
-        for (String idConcept : tabIdConcept) {
-
-            // si le concept n'a pas de relation BT
-            if(!relationsHelper.isConceptHaveRelationBT(ds, idConcept, idThesaurus)) {
-                // si ce concept n'est pas TopTerme, alors il est orphelin 
-                if (!conceptHelper.isTopConcept(ds, idConcept, idThesaurus)) {
-                    // si le concept n'est pas dans la liste des orphelins, alors on l'ajoute
-                    if (!orphanHelper.isOrphanExist(ds, idConcept, idThesaurus)) {
-                        orphanHelper.addNewOrphan(ds, idConcept, idThesaurus);
-                    }
-                }
-            }
-        }
-
-        return true;
-    }    
-
 
     /**
      * Permet de supprimer les Groupes qui sont orphelins, cas où un concept qui

@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
@@ -60,6 +61,12 @@ public class NodeConceptExport {
     private List<VoteDto> votes = new ArrayList<>();
 
     private NodeGps nodeGps;
+    
+    //concepts à utiliser pour un concept déprécié
+    private ArrayList <NodeHieraRelation> replacedBy;
+    
+    // les concepts dépréciés qui sont reliés à ce concept
+    private ArrayList <NodeHieraRelation> replaces;       
     
     //images (permet de gérer plusieurs images
     private ArrayList<String> nodeimages;    
@@ -212,4 +219,21 @@ public class NodeConceptExport {
     public void setVotes(List<VoteDto> votes) {
         this.votes = votes;
     }
+
+    public ArrayList<NodeHieraRelation> getReplacedBy() {
+        return replacedBy;
+    }
+
+    public void setReplacedBy(ArrayList<NodeHieraRelation> replacedBy) {
+        this.replacedBy = replacedBy;
+    }
+
+    public ArrayList<NodeHieraRelation> getReplaces() {
+        return replaces;
+    }
+
+    public void setReplaces(ArrayList<NodeHieraRelation> replaces) {
+        this.replaces = replaces;
+    }
+    
 }

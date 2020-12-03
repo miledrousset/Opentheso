@@ -5,7 +5,10 @@ import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
@@ -46,12 +49,16 @@ public class AtelierThesService implements Serializable {
     
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
         
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), thesoSelected.getId());
+        
         ArrayList<ConceptResultNode> list = new ArrayList<>();
         ConceptHelper conceptHelper = new ConceptHelper();
-        
+        int limit = 5;
         for (List<String> data : datas) {
+            if(data.get(position) == null || data.get(position).isEmpty()) continue;
             ArrayList<NodeSearchMini> temp = new SearchHelper().searchFullText(connect.getPoolConnexion(), 
-                    data.get(position), languageBean.getIdLangue(), thesoSelected.getId());
+                    data.get(position), languageBean.getIdLangue(), thesoSelected.getId(), limit);
             
             if (!CollectionUtils.isEmpty(temp)) {
                 temp.forEach(nodeSearchMini -> {
@@ -59,13 +66,36 @@ public class AtelierThesService implements Serializable {
                             thesoSelected.getId(), languageBean.getIdLangue());
 
                     ConceptResultNode conceptResultNode = new ConceptResultNode();
-                    conceptResultNode.setIdOrigine(data.get(0));
+                    if(data.size() == 1) 
+                        conceptResultNode.setIdOrigine("");
+                    else
+                        conceptResultNode.setIdOrigine(data.get(0));
                     conceptResultNode.setPrefLabelOrigine(data.get(position));
                     conceptResultNode.setIdConcept(concept.getConcept().getIdConcept());
                     conceptResultNode.setPrefLabelConcept(concept.getTerm().getLexical_value());
-                    //conceptResultNode.setAltLabelConcept(concept.get);
+
+                    if(concept.getNodeEM() == null || concept.getNodeEM().isEmpty())
+                        conceptResultNode.setAltLabelConcept("");
+                    else {
+                        for (NodeEM nodeEM : concept.getNodeEM()) {
+                            if(conceptResultNode.getAltLabelConcept() == null)
+                                conceptResultNode.setAltLabelConcept(nodeEM.getLexical_value());
+                            else 
+                                conceptResultNode.setAltLabelConcept(conceptResultNode.getAltLabelConcept() + " ## " + nodeEM.getLexical_value());
+                        }                        
+                    }
+                    for (NodeBT nodeBT : concept.getNodeBT()) {
+                        if(conceptResultNode.getTermGenerique() == null)
+                            conceptResultNode.setTermGenerique(nodeBT.getTitle());
+                        else 
+                            conceptResultNode.setTermGenerique(conceptResultNode.getTermGenerique() + " ## " + nodeBT.getTitle());
+                    }                    
+                    
                     conceptResultNode.setDefinition(getDefinition(concept.getNodeNotesTerm()));
-                    conceptResultNode.setUriArk(concept.getConcept().getIdArk());
+                    if(concept.getConcept().getIdArk()!= null && !concept.getConcept().getIdArk().isEmpty()) {
+                        conceptResultNode.setUriArk(nodePreference.getUriArk() + concept.getConcept().getIdArk());
+                    } else
+                        conceptResultNode.setUriArk("");
                     list.add(conceptResultNode);
 
                 });

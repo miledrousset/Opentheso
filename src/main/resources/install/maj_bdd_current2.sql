@@ -111,6 +111,24 @@ end
 $$language plpgsql;
 
 
+--
+-- mise a jour de la table corpus_link (ajout de la colonne active)
+--
+create or replace function update_table_corpus_link() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='corpus_link' AND column_name='active') THEN
+        execute 'ALTER TABLE corpus_link ADD COLUMN  active boolean DEFAULT false;';
+    END IF;
+end
+$$language plpgsql;
+
+-- Table: concept_orphan à supprimer, elle n'est plus utile
+DROP TABLE if exists public.concept_orphan;
+
+-- Renommer la table concept_fusion pour gérer les concepts dépréciés 
+ALTER TABLE if exists concept_fusion RENAME TO concept_replacedby;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -118,6 +136,7 @@ SELECT update_table_preferences_sortbynotation();
 SELECT update_table_candidat_vote();
 SELECT update_table_candidat_status();
 SELECT update_table_info();
+SELECT update_table_corpus_link();
 
 
 ----------------------------------------------------------------------------
@@ -127,7 +146,7 @@ SELECT delete_fonction('update_table_preferences_sortbynotation','');
 SELECT delete_fonction('update_table_candidat_vote','');
 SELECT delete_fonction('update_table_candidat_status','');
 SELECT delete_fonction('update_table_info','');
-
+SELECT delete_fonction('update_table_corpus_link','');
 
 
 

@@ -7,6 +7,10 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
     <h:head>
+        
+        <!--Code Google Analytics, l'intégration ou la modification est gérée dans l'appli -->
+        <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>        
+        
         <h:panelGroup id="indexTitle" >
             <title>
                 <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexical_value != ''}"
@@ -19,8 +23,7 @@
         </h:panelGroup>
 
 
-        <!--Code Google Analytics, l'intégration ou la modification est gérée dans l'appli -->
-        <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
+
             
             
         <script type="application/ld+json">
@@ -94,8 +97,12 @@
 
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
         <h:outputStylesheet name="fa/font-awesome.css" library="primefaces"/>
-        <h:outputStylesheet name="font-awesome/5.12.0/css/all.min-jsf.css" library="webjars"/>
-        <h:outputStylesheet name="font-awesome/5.12.0/css/v4-shims.min-jsf.css" library="webjars"/>
+       
+        <!--
+        <h:outputStylesheet name="font-awesome/5.15.1/css/all.min-jsf.css" library="webjars"/>
+        <h:outputStylesheet name="font-awesome/5.15.1/css/v4-shims.min-jsf.css" library="webjars"/>
+        -->
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.1/css/all-jsf.css" />
 
         <b:container id="containerIndex" >
             <ui:include src="menu.xhtml" />

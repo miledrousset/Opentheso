@@ -678,7 +678,7 @@ public class ManagerGroupsUsers implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :", "Ce projet existe déjà"));
             return false;
         }
-        if (!userHelper.createUserGroup(connect.getPoolConnexion(), groupAdded)) {
+        if (!userHelper.addNewProject(connect.getPoolConnexion(), groupAdded)) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :", "Erreur BDD"));
             return false;
         }

@@ -6,7 +6,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddNote" header="Ajout de note" widgetVar="addNote" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 50px" >        
         <h:form id="addNoteForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
             <b:row>
@@ -42,13 +42,8 @@
                         </b:column>
                         
                         <p:spacer/>
-
-                        <b:column span="12" >
-                            <b:inputTextarea id="idNoteValue" label="texte" placeholder="tapez votre note ..."  value="#{noteBean.noteValue}" style="font-size: 12px;"/>
-                        </b:column>                             
                     </b:row>
                 </b:column>
-
 
                 <b:column span="5" style-class="message2">
                     <b:row>
@@ -66,8 +61,23 @@
                     </b:row>                        
                 </b:column>
             </b:row>
-
-            <b:row style="margin-bottom: 10px;">
+            <p:spacer/>
+            <b:row>
+                <b:column span="12">
+                    <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" 
+                                  secure="false" height="200" style="font-size: 12px; color: black" placeholder="Ajouter votre note">
+                        <f:facet name="toolbar" >
+                            <span class="ql-formats" >
+                                <button class="ql-link" title="Ajouter un lien"></button>
+                                <button class="ql-unlink" title="Supprimer un lien"></button>
+                            </span>
+                        </f:facet>
+                    </p:textEditor>                    
+                    
+                </b:column>
+            </b:row>
+            <p:spacer/>
+            <b:row >
                 <b:column span="4" offset="8" >
                     <b:commandButton id="buttonSubmit" value="Valider"  update="addNoteForm" 
                                      style="width:100%; font-size: 13px; 

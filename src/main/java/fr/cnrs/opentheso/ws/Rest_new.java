@@ -1095,7 +1095,6 @@ public class Rest_new {
      */
 ///////////////////////////////////////////////////// 
 ////////////////////////////////////////////////////
-
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
     /*
@@ -1588,6 +1587,7 @@ public class Rest_new {
         String idLang = "";
         String idTheso = null;
         String group = "";
+        String format = null;
 
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
             for (String valeur : e.getValue()) {
@@ -1600,6 +1600,9 @@ public class Rest_new {
                 if (e.getKey().equalsIgnoreCase("group")) {
                     group = valeur;
                 }
+                if (e.getKey().equalsIgnoreCase("format")) {
+                    format = valeur;
+                }
             }
         }
         if (idTheso == null) {
@@ -1609,7 +1612,13 @@ public class Rest_new {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
 
-        String datas = getAutocompleteDatas(idTheso, idLang, group, value);
+        String datas;
+        if (format != null && format.equalsIgnoreCase("full")) {
+            datas = getAutocompleteDatas(idTheso, idLang, group, value, true);
+        } else {
+            datas = getAutocompleteDatas(idTheso, idLang, group, value, false);
+        }
+
         if (datas == null) {
             return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
@@ -1621,9 +1630,11 @@ public class Rest_new {
      * Omeka-S Permet de rechercher une valeur en filtrant par theso et par
      * langue retourne une liste des valeurs (prefLabel + Uri) pour les
      * programmes qui font de l'autocompletion exp :
-     * http://193.48.140.131:8083/opentheso/api/autocomplete?theso=TH_1&value=vase&lang=fr&group=6
+     * http://localhost:8080/opentheso/api/autocomplete?theso=TH_1&value=vase&lang=fr&group=6
+     * le format : pour définir s'il faut renvoyer plus des données (définition
+     * ....)
      *
-     * @param uri JSON+Ld
+     * @param uri JSON
      * @return
      */
     @Path("/autocomplete")
@@ -1634,6 +1645,7 @@ public class Rest_new {
         String value = null;
         String idTheso = null;
         String group = "";
+        String format = null;
 
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
             for (String valeur : e.getValue()) {
@@ -1649,6 +1661,9 @@ public class Rest_new {
                 if (e.getKey().equalsIgnoreCase("group")) {
                     group = valeur;
                 }
+                if (e.getKey().equalsIgnoreCase("format")) {
+                    format = valeur;
+                }
             }
         }
         if (value == null) {
@@ -1658,7 +1673,13 @@ public class Rest_new {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
 
-        String datas = getAutocompleteDatas(idTheso, idLang, group, value);
+        String datas;
+        if (format != null && format.equalsIgnoreCase("full")) {
+            datas = getAutocompleteDatas(idTheso, idLang, group, value, true);
+        } else {
+            datas = getAutocompleteDatas(idTheso, idLang, group, value, false);
+        }
+
         if (datas == null) {
             return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
@@ -1667,14 +1688,14 @@ public class Rest_new {
 
     private String getAutocompleteDatas(String idTheso,
             String idLang, String group,
-            String value) {
+            String value, boolean withNotes) {
         HikariDataSource ds = connect();
         if (ds == null) {
             return null;
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.findAutocompleteConcepts(ds,
-                idTheso, idLang, group, value);
+                idTheso, idLang, group, value, withNotes);
         ds.close();
         if (datas == null) {
             return null;
@@ -1701,6 +1722,7 @@ public class Rest_new {
      * remontant la branche par les BT (termes génériques)
      * http://localhost:8082/opentheso2/api/expansion/concept?id=30&theso=th1&way=down
      * http://localhost:8082/opentheso2/api/expansion/concept?id=30&theso=th1&way=down&format=json
+     *
      * @param uri
      * @return
      */
@@ -1726,13 +1748,13 @@ public class Rest_new {
                 }
                 if (e.getKey().equalsIgnoreCase("format")) {
                     format = valeur;
-                }                
+                }
             }
         }
         if (idTheso == null || idConcept == null) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        
+
         if (format == null) {
             format = "rdf";
         }
@@ -1778,7 +1800,8 @@ public class Rest_new {
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
                 return null;
-            }   RestRDFHelper restRDFHelper = new RestRDFHelper();
+            }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
             // sens de récupération des concepts vers le haut
             if (way.equalsIgnoreCase("top")) {
                 datas = restRDFHelper.brancheOfConceptsTop(ds,
@@ -1881,6 +1904,87 @@ public class Rest_new {
         return datas;
     }
 
+    /**
+     * Pour retourner un thesaurus complet à partir de son identifiant
+     *
+     * @param uri
+     * @return
+     */
+    @Path("all/theso")
+    @GET
+    @Produces("application/rdf+xml;charset=UTF-8")
+    public Response getAllTheso(@Context UriInfo uri) {
+        String idTheso = null;
+        String format = null;
+        String datas;
+
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("id")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("format")) {
+                    format = valeur;
+                }
+            }
+        }
+
+        if (idTheso == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if (format == null) {
+            format = "rdf";
+        }
+        switch (format) {
+            case "rdf": {
+                format = "application/rdf+xml";
+                datas = getAllTheso__(idTheso, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+            }
+            case "jsonld":
+                format = "application/ld+json";
+                datas = getAllTheso__(idTheso, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+            case "turtle":
+                format = "text/turtle";
+                datas = getAllTheso__(idTheso, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+            case "json":
+                format = "application/json";
+                datas = getAllTheso__(idTheso, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+    }
+
+    private String getAllTheso__(String idtheso, String format) {
+        HikariDataSource ds = connect();
+        String datas;
+        if (ds == null) {
+            return null;
+        }
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+        datas = restRDFHelper.getTheso(ds, idtheso, format);
+
+        ds.close();
+        if (datas == null) {
+            return null;
+        }
+        return datas;
+    }
+
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
     /*
@@ -1894,7 +1998,7 @@ public class Rest_new {
      * https://pactols.frantiq.fr/opentheso/api/info/list?theso=all
      * https://pactols.frantiq.fr/opentheso/api/info/list?theso=th1&group=all
      * https://pactols.frantiq.fr/opentheso/api/info/list?theso=th1&topconcept=all
-     * 
+     *
      * @param uri
      * @return
      */
@@ -1905,7 +2009,7 @@ public class Rest_new {
         String idTheso = null;
         String group = null;
         String topconcept = null;
-        
+
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
             for (String valeur : e.getValue()) {
                 if (e.getKey().equalsIgnoreCase("theso")) {
@@ -1922,7 +2026,7 @@ public class Rest_new {
                     if (!topconcept.trim().equalsIgnoreCase("all")) {
                         topconcept = null;
                     }
-                }                
+                }
             }
         }
 
@@ -1941,10 +2045,12 @@ public class Rest_new {
                 }
                 datas = getlistAllPublicTheso__(ds);
             } else {
-                if(group != null && group.equalsIgnoreCase("all"))
+                if (group != null && group.equalsIgnoreCase("all")) {
                     datas = getlistAllGroupOfTheso__(ds, idTheso);
-                if(topconcept != null && topconcept.equalsIgnoreCase("all"))
-                    datas = getlistAllTopConceptOfTheso__(ds, idTheso);                
+                }
+                if (topconcept != null && topconcept.equalsIgnoreCase("all")) {
+                    datas = getlistAllTopConceptOfTheso__(ds, idTheso);
+                }
             }
         }
 
@@ -2021,13 +2127,13 @@ public class Rest_new {
             return null;
         }
     }
-    
+
     private String getlistAllTopConceptOfTheso__(HikariDataSource ds, String idTheso) {
         ConceptHelper conceptHelper = new ConceptHelper();
         TermHelper termHelper = new TermHelper();
-        
+
         List<String> listIdTopConceptOfTheso = conceptHelper.getAllTopTermOfThesaurus(ds, idTheso);
-       
+
         ArrayList<NodeTermTraduction> nodeTermTraductions;
 
         String datasJson;
@@ -2056,7 +2162,7 @@ public class Rest_new {
         } else {
             return null;
         }
-    }    
+    }
 
     /**
      * Pour retourner la liste des langues d'un thésaurus

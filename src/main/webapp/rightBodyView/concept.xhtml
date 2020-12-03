@@ -51,6 +51,23 @@
                                       oncomplete="PF('deleteConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>   
+                    <b:navCommandLink rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
+                                      value="Déprécier le concept" 
+                                      tooltip="Permet de déprécier le concept"
+                                      update="idDeprecateConcept deprecateConceptForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('deprecateConcept').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>  
+                    <b:navCommandLink rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
+                                      value="Approuver le concept" 
+                                      tooltip="Permet d'approuver le concept, il ne sera plus déprécié"
+                                      update="idApproveConcept approveConceptForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('approveConcept').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>                      
+
                     
                     
                     
@@ -199,14 +216,37 @@
         <ui:include src="/dialog/dragAndDrop/dragAndDrop.xhtml" />
         <ui:include src="/dialog/dragAndDrop/cutAndPaste.xhtml" />
         <ui:include src="/dialog/concept/deleteConcept.xhtml" />   
+        <ui:include src="/dialog/concept/deprecateConcept.xhtml" />    
+        <ui:include src="/dialog/concept/approveConcept.xhtml" />         
         <ui:include src="/dialog/import/listImportCsv.xhtml" />       
         <ui:include src="/dialog/concept/generateArk.xhtml" /> 
         <ui:include src="/dialog/concept/generateHandle.xhtml" />         
         <ui:include src="/dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />         
        
         
-
-
+        <!-- Partie pour distinguer les concepts dépréciés -->
+        <p:spacer rendered="#{conceptView.nodeConcept.concept.isDeprecated}"/>
+        <p:panel id="idDeprecated" rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
+                  style="background-color: #C63632;">
+            <b:row>
+                <b:column span="12" colXs="12" style="color: white">
+                    <h:outputText value="Ce concept a été déprécié. Ne plus l'utiliser pour l'indexation !" />
+                </b:column>
+            </b:row>  
+            <b:row rendered="#{conceptView.nodeConcept.replacedBy.size() > 0}">
+                <b:column span="12" colXs="12" style="color: white">
+                    <h:outputText value="A été remplacé par : " title="Preferred Term" />
+                    <ui:repeat var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status" >
+                        <h:outputText value=" #{replace.value}" title="#{replace.id}"/>
+                        <h:outputText rendered="#{!status.last}" value=", " style="color: white"/>                        
+                    </ui:repeat>
+                 </b:column>
+            </b:row>              
+        </p:panel>
+        <p:spacer rendered="#{conceptView.nodeConcept.concept.isDeprecated}"/>
+        
+        
+        
         <!-- Fil d'ariane -->
         <b:row style=" margin-bottom: 10px;">
             <b:column span="12">
@@ -240,8 +280,8 @@
                                  styleClass="buttonIconOrange"/>                
             </b:column>
         </b:row>
-
-
+        
+        
         <!-- ligne PrefLabel -->
         <b:row id="idPrefLabelRow">
             <b:column span="3" colXs="4">
@@ -275,6 +315,82 @@
                                  styleClass="buttonIconOrange" tooltip="replacer dans l'arbre" tooltip-delay-show="1000" />
             </b:column>            
         </b:row>
+        
+        
+        <!-- ligne concepts qui remplacent le concept déprécié -->
+        <b:row id="idDeprecatedLabel" rendered="#{conceptView.nodeConcept.concept.isDeprecated}">
+            <b:column span="3" colXs="4" style="background-color: #C63632; color: white">
+                <h:outputText value="Remplacé par" title="IS REPLACED BY" />
+            </b:column>
+            <b:column span="1" >
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="Remplacer par"  update="idReplaceBy replaceByForm"
+                               action="#{relatedBean.reset()}" 
+                               actionListener="#{editConcept.reset('')}"
+                               oncomplete="PF('replaceBy').show();"
+                               style="font-size: 12px;"/>
+                    <b:navCommandLink value="Supprimer replacer par"  update="idDeleteReplaceBy deleteReplaceByForm"
+                               action="#{relatedBean.reset()}"
+                               actionListener="#{editConcept.reset('')}"
+                               oncomplete="PF('deleteReplaceBy').show();"
+                               style="font-size: 12px;"/>                    
+                </b:dropMenu>
+            </b:column>            
+            <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.replacedBy.size() == 0}">
+                <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+            </b:column>
+
+
+            <b:column id="idConceptDeprecatedColumn" span="8" colXs="8" rendered="#{conceptView.nodeConcept.replacedBy.size() != 0}">
+                <ui:repeat   var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status">
+                    <b:navCommandLink rendered="#{replace.value != ''}"
+                                      value="#{replace.value}" tooltip="#{replace.id}" tooltip-delay-show="1000"
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
+                                      update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                      style="color: #C63632;"></b:navCommandLink>  
+                    <b:navCommandLink rendered="#{replace.value == ''}"
+                                      value="(#{replace.id})" 
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
+                                      update="formLeftTab formRightTab indexTitle"
+                                      style="color: #C63632;"></b:navCommandLink>                                        
+
+                    <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
+                </ui:repeat>
+            </b:column>
+            <p:spacer/>
+        </b:row>     
+        
+        <!-- ligne qui rappelle les concepts déprécés qui sont remplacés par ce concept -->
+        <b:row id="idRelaceLabel" rendered="#{conceptView.nodeConcept.replaces.size() > 0}">
+            <b:column span="3" colXs="4" style="background-color: #f47b2a; color: white">
+                <h:outputText value="Remplace " title="Remplace ces concepts dépréciés" />
+            </b:column>
+            <b:column span="1" >
+            </b:column>              
+            <b:column id="idConceptReplaceColumn" span="8" colXs="8" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
+                <ui:repeat   var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status">
+                    <b:navCommandLink rendered="#{replaces.value != ''}"
+                                      value="#{replaces.value}" tooltip="#{replaces.id}" tooltip-delay-show="1000"
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
+                                      update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                      style="color: #f47b2a;"></b:navCommandLink>  
+                    <b:navCommandLink rendered="#{replaces.value == ''}"
+                                      value="(#{replaces.id})"
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
+                                      update="formLeftTab formRightTab indexTitle"
+                                      style="color: #C63632;"></b:navCommandLink>                                        
+
+                    <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
+                </ui:repeat>
+            </b:column>
+            <p:spacer/>
+        </b:row>         
+        
+        
+        
+        
 
         <!-- ligne Collection -->
         <b:row id="idConceptGroupRow" >
@@ -322,7 +438,7 @@
                                       update="formLeftTab formRightTab indexTitle"
                                       style="color: #43B572;"></b:navCommandLink>  
                     <b:navCommandLink rendered="#{domaine.lexicalValue == ''}"
-                                      value="#{domaine.lexicalValue}"
+                                      value="(#{domaine.conceptGroup.idgroup})"
                                       action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
                                       update="formLeftTab formRightTab indexTitle"
                                       style="color: #43B572;"></b:navCommandLink>                                        
@@ -672,7 +788,7 @@
                 <p:commandButton
                     icon="fas fa-plus-circle fa-s" 
                     actionListener="#{noteBean.reset()}"                    
-                    update="idAddNote"
+                    update="idAddNote addNoteForm"
                     oncomplete="PF('addNote').show();"
                     title="ajouter une note"
                     style="margin-left: -5px; font-size: 12px"
@@ -706,7 +822,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="note" value="#{conceptView.notes}" >
-                        <h:outputText value="#{note.lexicalvalue}"  style="font-size: 12px;color: #666666" /> 
+                        <h:outputText value="#{note.lexicalvalue}"  style="font-size: 12px;color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -737,7 +853,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="changeNote" value="#{conceptView.changeNotes}" >
-                        <h:outputText value="#{changeNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{changeNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -768,7 +884,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="def" value="#{conceptView.definitions}" >
-                        <h:outputText value="#{def.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{def.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -799,7 +915,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="editorialNote" value="#{conceptView.editorialNotes}" >
-                        <h:outputText value="#{editorialNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{editorialNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -830,7 +946,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="example" value="#{conceptView.examples}" >
-                        <h:outputText value="#{example.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{example.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -861,7 +977,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="historyNote" value="#{conceptView.historyNotes}" >
-                        <h:outputText value="#{historyNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{historyNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -892,7 +1008,7 @@
                 </b:column>
                 <b:column span="8" colXs="8">
                     <ui:repeat var="scopeNote" value="#{conceptView.scopeNotes}" >
-                        <h:outputText value="#{scopeNote.lexicalvalue}"  style="font-size: 12px; color: #666666"/> 
+                        <h:outputText value="#{scopeNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/> 
                         <br/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
@@ -939,8 +1055,10 @@
 
                     <p:imageSwitch effect="fade" id="fadeEffect">
                         <ui:repeat var="images" value="#{conceptView.nodeConcept.nodeimages}" >
+                            
                             <p:graphicImage value="#{images.uri}" 
                                             title="#{images.copyRight}"
+                                            url="#{images.uri}" 
                                             alt="#{images.uri}"
                                             height="130px"
                                             style="cursor: pointer;"/>
@@ -1175,7 +1293,7 @@
 
 
 
-        <!-- ligne Identifiants -->        
+        <!-- ligne Identifiants pérennes -->        
         <b:row >
             <b:column span="12" colXs="12">
                 <h:outputText value="Identifiant / Lien permament" />
@@ -1220,59 +1338,65 @@
                         value="#{conceptView.nodeConcept.concept.idConcept}" icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
             </b:column>
         </b:row >
-        <b:row >
-            <b:column span="4" colXs="4">
-                <h:outputText value="Uri d'origine" style="margin-left: 5px;"/>
-            </b:column>
+        
+        <!--Panel de séparation des identifiants pérennes permet de les masquer-->
+        <!--<<h:panelGroup rendered="# {conceptView.nodeConcept.concept.idConcept == 'ddd'}"> -->
+        <h:panelGroup>        
+            <b:row contentDisabled="true">
+                <b:column span="4" colXs="4">
+                    <h:outputText value="Uri d'origine" style="margin-left: 5px;"/>
+                </b:column>
 
-            <!-- Cas d'uri de type Ark -->
-            <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
-                <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
-                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" icon="link" 
-                        target="_blank"
-                        icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-            </b:column>     
-            
-            <!-- Cas d'uri de type Handle -->
-            <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
-                <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
-                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}" icon="link" 
-                        target="_blank"
-                        icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-            </b:column>
-            
-            <!-- Cas d'uri interne -->            
-            <b:column span="8" colXs="8" rendered="#{!roleOnTheso.nodePreference.originalUriIsHandle and !roleOnTheso.nodePreference.originalUriIsArk}">
-                <b:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
-                        value="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
-                        icon="link" 
-                        target="_blank"
-                        icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-            </b:column>            
-        </b:row >        
+                <!-- Cas d'uri de type Ark -->
+                <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
+                    <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
+                            value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" icon="link" 
+                            target="_blank"
+                            icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                </b:column>     
 
-        <b:row rendered="#{conceptView.nodeConcept.concept.idArk != ''}">
-            <b:column span="4" colXs="4">
-                <h:outputText value="IdArk" style="margin-left: 5px;"/>
-            </b:column>
-            <b:column span="8" colXs="8">
-                <b:link href="#{roleOnTheso.nodePreference.uriArk}#{conceptView.nodeConcept.concept.idArk}"
-                        value="#{roleOnTheso.nodePreference.uriArk}#{conceptView.nodeConcept.concept.idArk}"
-                        target="_blank"
-                        icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-            </b:column>
-        </b:row >
-        <b:row rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
-            <b:column span="4" colXs="4">
-                <h:outputText value="IdHandle" style="margin-left: 5px;"/>
-            </b:column>
-            <b:column span="8" colXs="8">
-                <b:link href="https://hdl.handle.net/#{conceptView.nodeConcept.concept.idHandle}"
-                        value="https://hdl.handle.net/#{conceptView.nodeConcept.concept.idHandle}"
-                        target="_blank"
-                        icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
-            </b:column>
-        </b:row >         
+                <!-- Cas d'uri de type Handle -->
+                <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
+                    <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
+                            value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}" icon="link" 
+                            target="_blank"
+                            icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                </b:column>
+
+                <!-- Cas d'uri interne -->            
+                <b:column span="8" colXs="8" rendered="#{!roleOnTheso.nodePreference.originalUriIsHandle and !roleOnTheso.nodePreference.originalUriIsArk}">
+                    <b:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
+                            value="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
+                            icon="link" 
+                            target="_blank"
+                            icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                </b:column>            
+            </b:row >        
+
+            <b:row rendered="#{conceptView.nodeConcept.concept.idArk != ''}">
+                <b:column span="4" colXs="4">
+                    <h:outputText value="IdArk" style="margin-left: 5px;"/>
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <b:link href="#{roleOnTheso.nodePreference.uriArk}#{conceptView.nodeConcept.concept.idArk}"
+                            value="#{roleOnTheso.nodePreference.uriArk}#{conceptView.nodeConcept.concept.idArk}"
+                            target="_blank"
+                            icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                </b:column>
+            </b:row >
+            <b:row rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
+                <b:column span="4" colXs="4">
+                    <h:outputText value="IdHandle" style="margin-left: 5px;"/>
+                </b:column>
+                <b:column span="8" colXs="8">
+                    <b:link href="https://hdl.handle.net/#{conceptView.nodeConcept.concept.idHandle}"
+                            value="https://hdl.handle.net/#{conceptView.nodeConcept.concept.idHandle}"
+                            target="_blank"
+                            icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
+                </b:column>
+            </b:row >
+        
+        </h:panelGroup>
 
         <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 5px; "/>
 
@@ -1303,7 +1427,8 @@
         <!-- Dialogues -->        
         <ui:include src="/dialog/concept/addNT.xhtml" /> 
         <ui:include src="/dialog/concept/renameConcept.xhtml" /> 
-
+        <ui:include src="/dialog/concept/replaceBy.xhtml" />
+        <ui:include src="/dialog/concept/deleteReplaceBy.xhtml" />        
 
         <ui:include src="/dialog/synonym/addSynonym.xhtml" />        
         <ui:include src="/dialog/synonym/deleteSynonym.xhtml" /> 

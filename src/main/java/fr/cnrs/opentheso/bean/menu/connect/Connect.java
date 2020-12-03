@@ -2,6 +2,8 @@ package fr.cnrs.opentheso.bean.menu.connect;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 //import java.util.logging.Level;
@@ -82,6 +84,10 @@ public class Connect {
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
      }
+    
+    public boolean isConnected(){
+        return poolConnexion != null;
+    }
 
     public void closeConnexion() {
         if(poolConnexion != null)
@@ -97,6 +103,7 @@ public class Connect {
     }
     
     public HikariDataSource getPoolConnexion() {
+        if(poolConnexion == null) return null;
         if (poolConnexion.isClosed()) {
             openConnexionPool();
         }

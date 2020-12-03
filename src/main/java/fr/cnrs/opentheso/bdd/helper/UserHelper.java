@@ -329,6 +329,48 @@ public class UserHelper {
         }
         return nodeUser;
     }
+    
+    /**
+     * cette fonction permet de retourner le nom d'un groupe
+     *
+     *
+     * @param ds
+     * @param projectName
+     * @return
+     */
+    public int getThisProjectId(
+            HikariDataSource ds, String projectName) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        int projectId = -1;
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT"
+                            + "  user_group_label.id_group"
+                            + " FROM"
+                            + "  user_group_label"
+                            + " WHERE"
+                            + "  user_group_label.label_group ilike '" + projectName + "'";
+                    resultSet = stmt.executeQuery(query);
+                    if (resultSet.next()) {
+                        projectId = resultSet.getInt("id_group");
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return projectId;
+    }    
 
     /**
      * cette fonction permet de retourner le nom d'un groupe
@@ -1079,7 +1121,7 @@ public class UserHelper {
      * @param userGroupName
      * @return
      */
-    public boolean createUserGroup(HikariDataSource ds,
+    public boolean addNewProject(HikariDataSource ds,
             String userGroupName) {
         Statement stmt;
         boolean status = false;

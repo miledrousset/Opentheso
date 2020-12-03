@@ -121,6 +121,7 @@ public class ExportRdf4jHelperNew {
             if (modified != null) {
                 conceptScheme.addDate(modified, SKOSProperty.modified);
             }
+            conceptScheme.setThesaurus(thesaurus);
         }
 
         //liste top concept
@@ -245,6 +246,7 @@ public class ExportRdf4jHelperNew {
      * @param ds
      * @param idTheso
      * @param idConcept
+     * @param isCandidatExport
      */
     public void exportConcept(HikariDataSource ds, String idTheso, String idConcept, boolean isCandidatExport) {
         SKOSResource sKOSResource = new SKOSResource();
@@ -266,6 +268,19 @@ public class ExportRdf4jHelperNew {
         sKOSResource.setUri(getUri(nodeConcept));
         sKOSResource.setProperty(SKOSProperty.Concept);
 
+        //// définir le status du Concept (CA=candidat, DEP= déprécié, autre= concept)
+        setStatusOfConcept(nodeConcept.getConcept().getStatus(), sKOSResource);
+
+        // ajout des concepts de remplacements ReplacedBy et Replaces
+        if(nodeConcept.getReplacedBy() != null && !nodeConcept.getReplacedBy().isEmpty()) {
+            addReplaces(nodeConcept.getReplacedBy(), sKOSResource, idTheso);
+        }
+        if(nodeConcept.getReplaces() != null && !nodeConcept.getReplaces().isEmpty()) {
+            addReplaces(nodeConcept.getReplaces(), sKOSResource, idTheso);
+        }    
+        
+
+        // pour l'export des données du module candidat
         if (isCandidatExport) {
             sKOSResource.setSkosStatus(addStatut(conceptHelper.getNodeStatus(ds, idConcept, idTheso)));
             addDiscussions(nodeConcept.getMessages(), sKOSResource);
@@ -290,6 +305,8 @@ public class ExportRdf4jHelperNew {
         addNoteGiven(nodeNotes, sKOSResource);
         addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
         addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
+        
+        // relations        
         addRelationGiven(nodeConcept.getNodeListOfBT(), nodeConcept.getNodeListOfNT(),
                 nodeConcept.getNodeListIdsOfRT(), sKOSResource, nodeConcept.getConcept().getIdThesaurus());
 
@@ -328,6 +345,21 @@ public class ExportRdf4jHelperNew {
         }
         
         skosXmlDocument.addconcept(sKOSResource);
+    }
+    
+    private void setStatusOfConcept(String status, SKOSResource sKOSResource){
+        switch (status.toLowerCase()) {
+            case "ca":
+                sKOSResource.setStatus(SKOSProperty.candidate);
+                break;
+            case "dep":
+                sKOSResource.setStatus(SKOSProperty.deprecated);
+                break;
+            default:
+                sKOSResource.setStatus(SKOSProperty.Concept);
+                break;              
+        }
+        
     }
 
     private SKOSStatus addStatut(NodeStatus nodeStatus) {
@@ -507,6 +539,27 @@ public class ExportRdf4jHelperNew {
                     prop = SKOSProperty.broader;
             }
             resource.addRelation(getUriFromNodeUri(bt.getUri(), idTheso), prop);
+        }
+    }    
+    
+    // ajoute les données de remplacement des concepts dépréciés dans les 2 sens (Replaced et Replace)
+    private void addReplaces(ArrayList<NodeHieraRelation> replaces,
+             SKOSResource resource, String idTheso) {
+        for (NodeHieraRelation uriReplace : replaces) {
+            int prop;
+
+            switch (uriReplace.getRole()) {
+                case "replacedBy":
+                    prop = SKOSProperty.isReplacedBy;
+                    break;
+                case "replace":
+                    prop = SKOSProperty.replaces;
+                    break;
+                default:
+                    prop = -1;
+                    break;
+            }
+            resource.addReplaces(getUriFromNodeUri(uriReplace.getUri(), idTheso), prop);
         }
     }    
 

@@ -79,7 +79,10 @@ public interface SKOSProperty {
 
     public static final int message = 86;
     
- 
+    public static final int candidate = 90;    
+    public static final int deprecated = 91;
     
+    public static final int isReplacedBy = 95;
+    public static final int replaces = 96;    
 
 }

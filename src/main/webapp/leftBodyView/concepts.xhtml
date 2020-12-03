@@ -19,8 +19,6 @@
                 <p:ajax event="select" listener="#{treeConcepts.onNodeSelect}" update="formRightTab indexTitle canceptsTree"
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
-                <p:ajax event="collapse" listener="#{treeConcepts.onNodeCollapse}" />
-                <p:ajax event="unselect" listener="#{treeConcepts.onNodeUnselect}" />
 
                 <p:treeNode  expandedIcon="far fa-object-group" collapsedIcon="fas fa-object-group" >
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>

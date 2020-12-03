@@ -18,8 +18,15 @@
 
                     <b:column span="2" style="background: #FAFAFA">
                         <b:navCommandLink ajax="true" icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
-                                          action="#{newProjectBean.updateProject(projectList)}"/>
+                                          action="#{newProjectBean.updateProject(projectList)}"
+                                          update="profileForm:modifyProjectForm"/>
                     </b:column>
+                    <b:column span="2" style="background: #FAFAFA">
+                        <b:navCommandLink ajax="true" icon-awesome="fas fa-trash-alt" iconSize="lg" style="color: #F7A269;"
+                                          tooltip="Supprimer le projet" tooltip-delay-show="500"
+                                          action="#{newProjectBean.deleteProject(projectList)}"
+                                          update="profileForm:modifyProjectForm"/>
+                    </b:column>                    
 
                     <p:spacer height="20" />
                 </ui:repeat>

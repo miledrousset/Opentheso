@@ -5,11 +5,12 @@
  */
 package fr.cnrs.opentheso.core.imports.rdf4j;
 
+import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.bdd.tools.FileUtilities;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
@@ -48,6 +49,7 @@ public class ReadRdf4j {
      *
      * @param is
      * @param type 0 pour skos 1 pour jsonld 2 pour turtle
+     * @param isCandidatImport
      * @throws java.io.IOException
      */
     public ReadRdf4j(InputStream is, int type, boolean isCandidatImport) throws IOException {
@@ -209,12 +211,15 @@ public class ReadRdf4j {
                                             if (readIdentifier(readStruct)) {
                                                 if (readMatch(readStruct)) {
                                                     if (readImage(readStruct)) {
-
-                                                            //debug
-                                                            if (!nonReco.contains(readStruct.property.getLocalName())) {
-                                                                //System.out.println("non reconue : " + readStruct.property.getLocalName());
-                                                                nonReco.add(readStruct.property.getLocalName());
+                                                        if (readReplaces(readStruct)) { // pour le concepts dépréciés
+                                                            if (readConceptStatus(readStruct)) { // pour le reconnaitre le status du concept
+                                                                //debug
+                                                                if (!nonReco.contains(readStruct.property.getLocalName())) {
+                                                                    //System.out.println("non reconue : " + readStruct.property.getLocalName());
+                                                                    nonReco.add(readStruct.property.getLocalName());
+                                                                }
                                                             }
+                                                        }
 
                                                     }
                                                 }
@@ -277,7 +282,42 @@ public class ReadRdf4j {
         }
 
     }
+    
+    /**
+     * lit les balise de Relationships
+     *
+     * @param readStruct
+     * @return false si on a lus une balise de Relationships true sinon
+     */
+    private boolean readReplaces(ReadStruct readStruct) {
+        if (readStruct.property.getLocalName().equals("replaces")) {
+            readStruct.resource.addReplaces(readStruct.value.toString(), SKOSProperty.replaces);
+            return false;
+        } else if (readStruct.property.getLocalName().equals("isReplacedBy")) {
+            readStruct.resource.addReplaces(readStruct.value.toString(), SKOSProperty.isReplacedBy);
+            return false;
+        } else {
+            return true;
+        }
+    } 
+    
+    /**
+     * lit les balise de Relationships
+     *
+     * @param readStruct
+     * @return false si on a lus une balise de Relationships true sinon
+     */
+    private boolean readConceptStatus(ReadStruct readStruct) {
+        if (readStruct.property.getLocalName().equals("deprecated")) {
+            readStruct.resource.setStatus(SKOSProperty.deprecated);
+            return false;
+        } else {
+            return true;
+        }
+    }     
 
+        
+        
     /**
      * lit les balise de Relationships
      *
@@ -362,12 +402,63 @@ public class ReadRdf4j {
      */
     private boolean readLabellingProperties(ReadStruct readStruct) {
         if(readStruct.literal == null) return true;
+        if(readStruct.resource == null) return true;
+        
         String lang = "fr"; 
         // si aucune langue n'est précisée, on applique la langue par défaut
         if(readStruct.literal.getLanguage().isPresent()) {
             lang = readStruct.literal.getLanguage().get();
         }
             
+        ///// récupération des informations sur le thésaurus DC-Terms
+        if(SKOSProperty.ConceptScheme == readStruct.resource.getProperty()){
+            // remplir un tableau de dublin-core pour les métas-données 
+            switch (readStruct.property.getLocalName()) {
+                case "title":
+                    readStruct.resource.getThesaurus().setTitle(readStruct.literal.getLabel());
+                    readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.prefLabel);
+                    break;
+                case "creator":
+                    readStruct.resource.getThesaurus().setCreator(readStruct.literal.getLabel());
+                    break;
+                case "contributor":
+                    readStruct.resource.getThesaurus().setContributor(readStruct.literal.getLabel());
+                    break;  
+                case "publisher":
+                    readStruct.resource.getThesaurus().setPublisher(readStruct.literal.getLabel());
+                    break;  
+                case "description":
+                    readStruct.resource.getThesaurus().setDescription(readStruct.literal.getLabel());
+                    break;  
+                case "type":
+                    readStruct.resource.getThesaurus().setType(readStruct.literal.getLabel());
+                    break;
+                case "rights":
+                    readStruct.resource.getThesaurus().setRights(readStruct.literal.getLabel());
+                    break;   
+                case "subject":
+                    readStruct.resource.getThesaurus().setSubject(readStruct.literal.getLabel());
+                    break;                      
+                case "coverage":
+                    readStruct.resource.getThesaurus().setCoverage(readStruct.literal.getLabel());
+                    break;    
+                case "language":
+                    readStruct.resource.getThesaurus().setLanguage(readStruct.literal.getLabel());
+                    break; 
+                case "relation":
+                    readStruct.resource.getThesaurus().setRelation(readStruct.literal.getLabel());
+                    break;                     
+                case "source":
+                    readStruct.resource.getThesaurus().setSource(readStruct.literal.getLabel());
+                    break;
+                case "created":
+                    readStruct.resource.getThesaurus().setCreated(new FileUtilities().getDateFromString(readStruct.literal.getLabel()));
+                    break;     
+                case "modified":
+                    readStruct.resource.getThesaurus().setModified(new FileUtilities().getDateFromString(readStruct.literal.getLabel()));
+                    break;                      
+            }            
+        }
             
         if (readStruct.property.getLocalName().equals("prefLabel")) {
             readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.prefLabel);
@@ -468,14 +559,14 @@ public class ReadRdf4j {
     }
     
     /**
-     * lit les balise de Notation
+     * lit les balise de image Foaf
      *
      * @param readStruct
      * @return false si on a lus une balise de Notation true sinon
      */
     private boolean readImage(ReadStruct readStruct) {
         if (readStruct.property.getLocalName().equalsIgnoreCase("Image")) {
-            readStruct.resource.addImageUri(readStruct.literal.getLabel());
+            readStruct.resource.addImageUri(readStruct.value.stringValue());
             return false;
         } else {
             return true;

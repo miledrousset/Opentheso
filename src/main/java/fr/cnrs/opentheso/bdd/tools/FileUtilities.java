@@ -18,8 +18,8 @@ import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
@@ -30,9 +30,29 @@ public class FileUtilities {
   
         public String getDate() {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date currentDate = new Date();
-            return dateFormat.format(currentDate);
+//            Date currentDate = new Date();
+//            return dateFormat.format(currentDate);
+            java.util.Date date = new java.util.Date();
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());            
+            return dateFormat.format(sqlDate);
         }
+        
+        private java.sql.Date getCurrentSqlDate() {
+            java.util.Date date = new java.util.Date();
+            return new java.sql.Date(date.getTime());            
+        }        
+        
+        public java.sql.Date getDateFromString(String date) {
+            java.sql.Date sqlDate = null;
+            try {
+                java.util.Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(date);  
+                sqlDate = new java.sql.Date(date1.getTime());
+                return sqlDate;
+            } catch (Exception e) {
+            }
+            // en cas d'erreur, on retourne la date du jour
+            return getCurrentSqlDate();
+        }        
         
 	/**
 	 * Class for computing MD5 on an outputstream

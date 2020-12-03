@@ -20,7 +20,9 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -66,6 +68,12 @@ public class NoteBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
+    private String removeParagraphTags(String rawNote){
+        rawNote = rawNote.replaceAll("<p>", "");
+        rawNote = rawNote.replaceAll("</p>", "\n");
+        return rawNote;
+    }
+    
     /**
      * permet d'ajouter un nouveau concept si le groupe = null, on ajoute un
      * concept sans groupe si l'id du concept est fourni, il faut controler s'il
@@ -80,7 +88,8 @@ public class NoteBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-
+        noteValue = removeParagraphTags(noteValue);
+        noteValue = StringEscapeUtils.unescapeXml(noteValue);
         switch (selectedTypeNote) {
             case "note":
                 if (!addConceptNote(idUser)) {

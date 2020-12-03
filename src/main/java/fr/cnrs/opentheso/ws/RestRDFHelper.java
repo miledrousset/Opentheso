@@ -398,14 +398,15 @@ public class RestRDFHelper {
      * @param lang 
      * @param group 
      * @param value 
+     * @param withNotes 
      * @return  
      */
     public String findAutocompleteConcepts(HikariDataSource ds,
             String idTheso, String lang, String group,
-            String value) {
+            String value, boolean withNotes) {
 
         String datas = findAutocompleteConcepts__(ds,
-                 value, idTheso, lang, group);
+                 value, idTheso, lang, group, withNotes);
         if(datas == null) return null;
         return datas;
     }    
@@ -422,7 +423,7 @@ public class RestRDFHelper {
     private String findAutocompleteConcepts__(
             HikariDataSource ds,
             String value, String idTheso,
-            String lang, String group) {
+            String lang, String group, boolean withNotes) {
 
         if(value == null || idTheso == null) {
             return null;
@@ -439,13 +440,17 @@ public class RestRDFHelper {
         
         
         // recherche de toutes les valeurs
-        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(ds, value, lang, group, idTheso);
+        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(ds, value, lang, group, idTheso, withNotes);
         
         if(nodeAutoCompletion == null || nodeAutoCompletion.isEmpty())
             return null;
 
         for (NodeAutoCompletion nodeAutoCompletion1 : nodeAutoCompletion) {
             uri = getUri(nodePreference, nodeAutoCompletion1, idTheso);
+            if(withNotes)
+                jsonHelper.addJsonDataFull(uri, nodeAutoCompletion1.getPrefLabel(), 
+                        nodeAutoCompletion1.getDefinition(), nodeAutoCompletion1.isIsAltLabel());
+            else
             jsonHelper.addJsonData(uri, nodeAutoCompletion1.getPrefLabel());
         }
         JsonArray datasJson = jsonHelper.getBuilder();
@@ -640,6 +645,60 @@ public class RestRDFHelper {
         for (String idConcept : branchs) {
             exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
         }
+
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        return writeRdf4j;
+    }      
+    
+    /**
+     * Fonction qui permet de récupérer un thésaurus entier
+     *
+     * @param ds
+     * @param idTheso
+     * @param format
+     * @return skos
+     */
+    public String getTheso(HikariDataSource ds,
+            String idTheso, String format) {
+
+        RDFFormat rDFFormat = getRDFFormat(format);
+        WriteRdf4j writeRdf4j = getTheso__(ds, idTheso);
+        if(writeRdf4j == null) return null;
+
+        ByteArrayOutputStream out;
+        out = new ByteArrayOutputStream();
+        Rio.write(writeRdf4j.getModel(), out, rDFFormat);
+        return out.toString();
+    }    
+    
+    /**
+     * Fonction qui permet de récupérer une branche complète en partant d'un
+     * concept et en allant jusqu'à la racine (vers le haut)
+     *
+     * @param ds
+     * @param idTheso
+     * @return skos
+     */
+    private WriteRdf4j getTheso__(
+            HikariDataSource ds, String idTheso) {
+
+        if(idTheso == null) {
+            return null;
+        }
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if (nodePreference == null) {
+            return null;
+        }
+        
+        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
+        exportRdf4jHelper.setNodePreference(nodePreference);
+        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+
+        ConceptHelper conceptHelper = new ConceptHelper();        
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);   
+        allConcepts.forEach(idConcept -> {
+            exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
+        });
 
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
         return writeRdf4j;

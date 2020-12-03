@@ -217,6 +217,7 @@ public class ImportFileBean implements Serializable {
         }
     }
     
+    
     /**
      * insérer un thésaurus dans la BDD (CSV)
      *
@@ -341,13 +342,14 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
+        onComplete();
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("toolBoxForm");
-            pf.ajax().update("toolBoxForm:listThesoForm");
-            pf.ajax().update("messageIndex");            
-        }  
+//        PrimeFaces pf = PrimeFaces.current();
+//        if (pf.isAjaxRequest()) {
+//            pf.ajax().update("toolBoxForm");
+//            pf.ajax().update("toolBoxForm:listThesoForm");
+//            pf.ajax().update("messageIndex");            
+//        }  
     }
     
     /**
@@ -730,6 +732,8 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
+        onComplete();
+
     }
 
     /**
@@ -824,12 +828,13 @@ public class ImportFileBean implements Serializable {
 
  
     public void onComplete() {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Progress Completed"));
+        progress = 100.0;
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info :", "import réussi"));        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {         
-            PrimeFaces.current().executeScript("PF('pbAjax').cancel();");        
+            PrimeFaces.current().executeScript("PF('pbAjax').cancel();"); 
+            pf.ajax().update("messageIndex"); 
         }
-   //     progress = 100;
     }    
     public void cancel(ActionEvent event) {
         progress1 = null;

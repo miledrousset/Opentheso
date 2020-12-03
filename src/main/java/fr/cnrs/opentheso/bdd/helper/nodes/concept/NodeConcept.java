@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
@@ -54,6 +55,12 @@ public class NodeConcept {
     
     //coordonnées GPS
     private NodeGps nodeGps;
+    
+    //concepts à utiliser pour un concept déprécié
+    private ArrayList <NodeIdValue> replacedBy;
+    
+    // les concepts dépréciés qui sont reliés à ce concept
+    private ArrayList <NodeIdValue> replaces;    
 
     public NodeConcept() {
         nodeNotesTerm = new ArrayList<>();
@@ -162,6 +169,22 @@ public class NodeConcept {
 
     public void setNodeGps(NodeGps nodeGps) {
         this.nodeGps = nodeGps;
+    }
+
+    public ArrayList<NodeIdValue> getReplacedBy() {
+        return replacedBy;
+    }
+
+    public void setReplacedBy(ArrayList<NodeIdValue> replacedBy) {
+        this.replacedBy = replacedBy;
+    }
+
+    public ArrayList<NodeIdValue> getReplaces() {
+        return replaces;
+    }
+
+    public void setReplaces(ArrayList<NodeIdValue> replaces) {
+        this.replaces = replaces;
     }
 
     

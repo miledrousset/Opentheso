@@ -117,22 +117,23 @@
 
                 <br/>
 
-                <p:commandButton value="Lancer la comparaison" icon="fa-search" actionListener="#{atelierThesBean.comparer()}"
+                <p:commandButton value="Lancer la comparaison" icon="fa-search"
+                                 actionListener="#{atelierThesBean.comparer()}"
                                  update="toolBoxForm" onclick="PF('bui').show()" style="margin-top: 10px"/>
 
                 <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px; border-width: 0">
                     <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
                                  var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
-                        <p:column headerText="Id Orig" style="background-color: #ebedf0;">
+                        <p:column headerText="Id Origine" style="background-color: #ebedf0;">
                             <h:outputText value="#{resultat.idOrigine}" />
                         </p:column>
-                        <p:column headerText="PrefLabel Orig" style="background-color: #ebedf0;">
+                        <p:column headerText="PrefLabel Origine" style="background-color: #ebedf0;">
                             <h:outputText value="#{resultat.prefLabelOrigine}" />
                         </p:column>
-                        <p:column headerText="ID Concept">
+                        <p:column headerText="Id #{atelierThesBean.thesoSelected.value}">
                             <h:outputText value="#{resultat.idConcept}" />
                         </p:column>
-                        <p:column headerText="PrefLabel">
+                        <p:column headerText="PrefLabel #{atelierThesBean.thesoSelected.value}">
                             <h:outputText value="#{resultat.prefLabelConcept}" />
                         </p:column>
                         <p:column headerText="AltLabel">

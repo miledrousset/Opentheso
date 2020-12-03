@@ -124,7 +124,9 @@
         </b:row>
         <b:row>    
             <b:column span="10">
-                <b:inputText value="#{candidatBean.candidatSelected.employePour}" tags="true" placeholder="Entrer ou virgule pour un autre label"/>
+                <b:inputText value="#{candidatBean.candidatSelected.employePour}" tags="true"
+                             placeholder="Entrer ou virgule pour un autre label"
+                             style="width: 100%"/>
                 <!--
                 <p:autoComplete value="# {candidatBean.candidatSelected.employePour}" multiple="true" 
                                 completeMethod="# {candidatBean.searchTerme}"/>
@@ -148,229 +150,247 @@
 
     <p:spacer/>
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
     <!-- pour les 2 sections ci-dessous, l'enregistrement des données est automatique -->
 
-    <!-- gestion des notes -->
-    <b:row rendered="#{!candidatBean.isNewCandidatActivate()}" style="margin-left: 10px">
+    <h:panelGroup id="candidateInfos" >
+        <!-- gestion des notes -->
+        <b:row rendered="#{!candidatBean.isNewCandidatActivate()}" style="margin-left: 10px">
 
-        <b:row>
+            <b:row>
+                <b:column>
+                    <b:navCommandLink value="Ajouter une nouvelle note" icon-awesome="fas fa-plus-circle" ajax="false"
+                                      styleClass="buttonIconOrange" style="color: #f47b2a" 
+                                      actionListener="#{noteBeanCandidat.reset()}" update="candidatForm:tabViewCandidat:candidateInfos"/>
+                </b:column>
+            </b:row>
+
+            <p:panel visible="#{noteBeanCandidat.visible}" toggleable="true" toggleSpeed="500" 
+                     widgetVar="panel" style="margin-top: 5px; margin-bottom: 5px">
+
+                <b:row rendered="#{!noteBeanCandidat.isEditMode}">
+                    <b:column span="12" >
+                        <h:outputText value="Terme : " style="font-size: 12px;"/>  
+                        <h:outputText value="#{candidatBean.candidatSelected.nomPref}"
+                                      style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
+                    </b:column>                      
+                </b:row>
+                <b:row rendered="#{!noteBeanCandidat.isEditMode}">
+                    <b:column span="12" >   
+                        <p:selectOneMenu id="typeNote" label="Type note" value="#{noteBeanCandidat.selectedTypeNote}" 
+                                         style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+
+                            <f:selectItems value="#{noteBeanCandidat.noteTypes}" var="typeNote"
+                                           itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
+                        </p:selectOneMenu>                                
+                    </b:column>
+                </b:row>        
+
+                <p:spacer/>
+
+                <b:row rendered="#{!noteBeanCandidat.isEditMode}">
+                    <b:column span="12" >
+                        <p:selectOneMenu label="Langue" value="#{noteBeanCandidat.selectedLang}" 
+                                         style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                            <f:selectItems  value="#{noteBeanCandidat.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                        </p:selectOneMenu>                                  
+                    </b:column>
+                </b:row>
+
+                <p:spacer/>
+
+                <b:row>
+                    <b:column span="12" >
+                        <p:textEditor value="#{noteBeanCandidat.noteValue}" 
+                                      secure="false" height="150" style="width: 100%; font-size: 12px; color: black" placeholder="Ajouter votre note" >
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+                                    <button class="ql-link" title="Ajouter un lien"></button>
+                                    <button class="ql-unlink" title="Supprimer un lien"></button>
+                                </span>
+                            </f:facet>
+                        </p:textEditor>                      
+                    </b:column>
+                </b:row>
+                <p:spacer/>
+                <b:row>
+                    <b:column span="5" offset="1">
+                        <p:commandButton value="Valider" update="candidatForm:tabViewCandidat:candidateInfos messageIndex" styleClass="ui-priority-primary" ajax="true" class="btn btn-primary"
+                                         style="width: 100%; font-size: 12px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"                                    
+                                         action="#{noteBeanCandidat.addNewNote(currentUser.nodeUser.idUser)}"/>
+                    </b:column>
+
+                    <b:column span="5" >
+                        <p:commandButton value="Retour" icon="fas fa-undo fas 2x" styleClass="ui-priority-primary" ajax="true"
+                                         actionListener="#{noteBeanCandidat.reset()}"
+                                         action="#{noteBeanCandidat.setVisible(false)}"
+                                         style="width: 100%; font-size: 12px; font-weight: normal; color: white; background: #FFC107; 
+                                         border: none; box-shadow: none; float: right" class="btn btn-primary"
+                                         update="candidatForm:tabViewCandidat:candidateInfos"/>
+                    </b:column>                       
+                </b:row>  
+            </p:panel>
+
             <b:column>
-                <b:navCommandLink value="Ajouter une nouvelle note" icon-awesome="fas fa-plus-circle" ajax="false"
-                                  styleClass="buttonIconOrange" style="color: #f47b2a" 
-                                  actionListener="#{noteBeanCandidat.reset()}" update="candidatForm"/>
+                <h:form id="listNotesForm" style="margin-top: 10px">
+
+                    <b:row>
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                    </b:row>
+
+                    <b:row rendered="#{candidatBean.candidatSelected.nodeNotes == null ||
+                                       candidatBean.candidatSelected.nodeNotes.size() == 0}">
+                        <b:column>
+                            <h:outputText value="Aucune note pour le moment ..." style="font-size: 12px; color: grey; font-style: italic"/>
+                        </b:column>
+                    </b:row>
+
+                    <b:row rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}">
+                        <b:column>
+                            <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
+                                <b:row style="font-size: 12px; padding-top: 5px; background-color: #{
+                                       viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
+                                       rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}" 
+                                       tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}" tooltip-delay-show="500">
+                                    <b:column span="6" >
+                                        <h:outputText value="#{note.lexicalvalue}" style="width: 100%; resize: none; font-size: 13px;" escape="false" />
+                                    </b:column>
+                                    <b:column span="2" >
+                                        <h:outputText value="#{note.notetypecode}" style="width: 100%; resize: none; font-size: 13px;" escape="false" />
+                                    </b:column>
+                                    <b:column span="1" >
+                                        <h:outputText value="#{note.lang}" style="width: 100%; resize: none; font-size: 13px;"  />
+                                    </b:column>                                
+                                    <b:column span="1">
+                                        <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
+                                                          style="color: #f47b2a;"
+                                                          actionListener="#{noteBeanCandidat.resetEditNode(note)}"  
+                                                          update="candidatForm:tabViewCandidat:candidateInfos"
+                                                          styleClass="buttonIconOrange" ajax="false"/>
+                                    </b:column>
+                                    <b:column span="1">
+                                        <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
+                                                          styleClass="buttonIconOrange" style="color: #f47b2a;"
+                                                          actionListener="#{noteBeanCandidat.initSelectedNode(note)}"
+                                                          oncomplete="PF('deleteNote').show();"
+                                                          update="idDeleteNote deleteNoteForm messageIndex"/>
+                                    </b:column>   
+                                    <b:column span="1">
+                                        <b:navCommandLink rendered="#{note.voted}" update="candidatForm:tabViewCandidat:candidateInfos"
+                                                          icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
+                                                          style="color: #f47b2a" action="#{candidatBean.addNoteVote(note)}"
+                                                          tooltip="Cliquez pour voter pour cette note" tooltip-delay-show="500"/>
+                                        <b:navCommandLink rendered="#{!note.voted}" update="candidatForm:tabViewCandidat:candidateInfos"
+                                                          icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
+                                                          style="color: #666666" action="#{candidatBean.addNoteVote(note)}"
+                                                          tooltip="Cliquez pour voter pour cette note" tooltip-delay-show="500"/>
+                                    </b:column>   
+                                </b:row>   
+                            </ui:repeat>
+
+                            <b:row>
+                                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                            </b:row>
+                        </b:column>
+                    </b:row>
+
+                </h:form>
             </b:column>
         </b:row>
 
-        <p:panel visible="#{noteBeanCandidat.visible}" toggleable="true" toggleSpeed="500" 
-                 widgetVar="panel" style="margin-top: 5px; margin-bottom: 5px">
+        <p:spacer/>
+
+        <!-- gestion des traductions -->
+        <b:row rendered="#{!candidatBean.isNewCandidatActivate()}"  style="margin-left: 10px">
 
             <b:row>
-                <b:column span="10" offset="1" >
-                    <h:outputText value="Terme : " style="font-size: 12px;"/>  
-                    <h:outputText value="#{candidatBean.candidatSelected.nomPref}"
-                                  style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
-                </b:column>                      
-            </b:row>
-            <b:row>
-                <b:column span="10" offset="1" >   
-                    <p:selectOneMenu id="typeNote" label="Type note" value="#{noteBeanCandidat.selectedTypeNote}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
-
-                        <f:selectItems value="#{noteBeanCandidat.noteTypes}" var="typeNote"
-                                       itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
-                    </p:selectOneMenu>                                
+                <b:column span="12">
+                    <b:navCommandLink value="Ajouter une nouvelle traduction"
+                                      icon-awesome="fas fa-plus-circle"
+                                      oncomplete="PF('newTraduction').show();" ajax="false"
+                                      styleClass="buttonIconOrange" style="color: #f47b2a"
+                                      actionListener="#{traductionService.init()}"
+                                      update="idNewTraduction newTraductionForm messageIndex"/>
                 </b:column>
-            </b:row>        
+            </b:row> 
 
-            <p:spacer/>
+            <b:column span="12" style="margin-top: 5px">
+                <h:form id="listTraductionForm">
 
-            <b:row>
-                <b:column span="10" offset="1" >
-                    <p:selectOneMenu label="Langue" value="#{noteBeanCandidat.selectedLang}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
-                        <f:selectItems  value="#{noteBeanCandidat.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                    </p:selectOneMenu>                                  
-                </b:column>
-            </b:row>
+                    <b:row>
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                    </b:row>
 
-            <p:spacer/>
-
-            <b:row>
-                <b:column span="10" offset="1" >
-                    <p:textEditor value="#{noteBeanCandidat.noteValue}" height="200" placeholder="tapez votre note ..." 
-                                  style="margin-bottom:10px" secure='false'/>
-                </b:column>
-            </b:row>
-
-            <b:row>
-                <b:column span="5" offset="1">
-                    <p:commandButton value="Ajouter" update="newNoteForm" styleClass="ui-priority-primary" ajax="true" class="btn btn-primary"
-                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"                                    
-                                     action="#{noteBeanCandidat.addNewNote(currentUser.nodeUser.idUser)}"/>
-                </b:column>
-
-                <b:column span="5" >
-                    <p:commandButton value="Retour" icon="fas fa-undo fas 2x" styleClass="ui-priority-primary" ajax="false"
-                                     actionListener="#{noteBeanCandidat.setVisible(false)}"
-                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #FFC107; 
-                                     border: none; box-shadow: none; float: right" class="btn btn-primary"
-                                     update="candidatForm"/>
-                </b:column>                       
-            </b:row>  
-        </p:panel>
-
-        <b:column>
-            <h:form id="listNotesForm" style="margin-top: 10px">
-                
-                <b:row>
-                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-                </b:row>
-                
-                <b:row rendered="#{candidatBean.candidatSelected.nodeNotes == null ||
-                                   candidatBean.candidatSelected.nodeNotes.size() == 0}">
-                    <b:column>
-                        <h:outputText value="Aucune note pour le moment ..." style="font-size: 12px; color: grey; font-style: italic"/>
-                    </b:column>
-                </b:row>
-                
-                <b:row rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}">
-                    <b:column>
-                        <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
-                            <b:row style="font-size: 12px; padding-top: 5px; background-color: #{
-                                   viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
-                                   rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}" 
-                                   tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}" tooltip-delay-show="500">
-                                <b:column span="6" >
-                                    <h:outputText value="#{note.lexicalvalue}" style="width: 100%; resize: none; font-size: 13px;" escape="false" />
-                                </b:column>
-                                <b:column span="2" >
-                                    <h:outputText value="#{note.notetypecode}" style="width: 100%; resize: none; font-size: 13px;" escape="false" />
-                                </b:column>
-                                <b:column span="1" >
-                                    <h:outputText value="#{note.lang}" style="width: 100%; resize: none; font-size: 13px;"  />
-                                </b:column>                                
-                                <b:column span="1">
-                                    <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
-                                                      style="color: #f47b2a;"
-                                                      actionListener="#{noteBeanCandidat.resetEditNode(note)}"  
-                                                      update="candidatForm"
-                                                      styleClass="buttonIconOrange" ajax="false"/>
-                                </b:column>
-                                <b:column span="1">
-                                    <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
-                                                      styleClass="buttonIconOrange" style="color: #f47b2a;"
-                                                      actionListener="#{noteBeanCandidat.initSelectedNode(note)}"
-                                                      oncomplete="PF('deleteNote').show();"
-                                                      update="idDeleteNote deleteNoteForm messageIndex"/>
-                                </b:column>   
-                                <b:column span="1">
-                                    <b:navCommandLink rendered="#{note.voted}" update="candidatForm"
-                                                      icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
-                                                      style="color: #f47b2a" action="#{candidatBean.addNoteVote(note)}"
-                                                      tooltip="Cliquez pour voter pour cette note" tooltip-delay-show="500"/>
-                                    <b:navCommandLink rendered="#{!note.voted}" update="candidatForm"
-                                                      icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
-                                                      style="color: #666666" action="#{candidatBean.addNoteVote(note)}"
-                                                      tooltip="Cliquez pour voter pour cette note" tooltip-delay-show="500"/>
-                                </b:column>   
-                            </b:row>   
-                        </ui:repeat>
-                        
-                        <b:row>
-                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-                        </b:row>
-                    </b:column>
-                </b:row>
-
-            </h:form>
-        </b:column>
-    </b:row>
-
-    <p:spacer/>
-
-    <!-- gestion des traductions -->
-    <b:row rendered="#{!candidatBean.isNewCandidatActivate()}"  style="margin-left: 10px">
-
-        <b:row>
-            <b:column span="12">
-                <b:navCommandLink value="Ajouter une nouvelle traduction"
-                                  icon-awesome="fas fa-plus-circle"
-                                  oncomplete="PF('newTraduction').show();" ajax="false"
-                                  styleClass="buttonIconOrange" style="color: #f47b2a"
-                                  actionListener="#{traductionService.init()}"
-                                  update="idNewTraduction newTraductionForm messageIndex"/>
-            </b:column>
-        </b:row> 
-
-        <b:column span="12" style="margin-top: 5px">
-            <h:form id="listTraductionForm">
-                
-                <b:row>
-                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-                </b:row>
-                
-                <b:row style="font-size: 12px; color: #666666">
-                    <b:column span="4">
-                        <h:outputText value="#{langueBean.getMsg('candidat.language')}"/>
-                    </b:column>
-                    <b:column span="4">
-                        <h:outputText value="#{langueBean.getMsg('candidat.traduction')}"/>
-                    </b:column>
-                    <b:column span="2">
-                        <h:outputText value="#{langueBean.getMsg('candidat.edit')}"/>
-                    </b:column> 
-                    <b:column span="2">
-                        <h:outputText value="#{langueBean.getMsg('candidat.remove')}"/>
-                    </b:column>                         
-                </b:row>
-                
-                <b:row>
-                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-                </b:row>
-                
-                <b:row rendered="#{candidatBean.candidatSelected.traductions.size() == 0}">
-                    <b:column span="12">
-                        <h:outputText  value="Aucune traduction pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
-                    </b:column>
-                </b:row>
-                
-                <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
-                    <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.
-                                                                       candidatSelected.traductions.indexOf(traduction))}; padding-top: 5px"
-                           rendered="#{candidatBean.candidatSelected.traductions.size() > 0}">
-                        <b:column span="4" >
-                            <h:outputText value="#{traduction.langue}"/>
+                    <b:row style="font-size: 12px; color: #666666">
+                        <b:column span="4">
+                            <h:outputText value="#{langueBean.getMsg('candidat.language')}"/>
                         </b:column>
-                        <b:column span="4" >
-                            <h:outputText value="#{traduction.traduction}"/>
+                        <b:column span="4">
+                            <h:outputText value="#{langueBean.getMsg('candidat.traduction')}"/>
                         </b:column>
                         <b:column span="2">
-                            <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
-                                              oncomplete="PF('editTraduction').show();" style="color: #f47b2a;"
-                                              actionListener="#{traductionService.init(traduction)}"
-                                              styleClass="buttonIconOrange" ajax="false"
-                                              update="idEditTraduction editTraductionForm"/>     
-                        </b:column>
-
+                            <h:outputText value="#{langueBean.getMsg('candidat.edit')}"/>
+                        </b:column> 
                         <b:column span="2">
-                            <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
-                                              styleClass="buttonIconOrange" style="color: #f47b2a;"
-                                              actionListener="#{traductionService.init(traduction)}"
-                                              oncomplete="PF('confirmDeleteTraduction').show();" 
-                                              update="idConfirmDelete confirmDeleteForm"/>
+                            <h:outputText value="#{langueBean.getMsg('candidat.remove')}"/>
                         </b:column>                         
-                    </b:row>   
-                </ui:repeat>
-                
-                <b:row>
-                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-                </b:row>
-            </h:form>
-        </b:column>
-    </b:row>  
+                    </b:row>
 
+                    <b:row>
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                    </b:row>
+
+                    <b:row rendered="#{candidatBean.candidatSelected.traductions.size() == 0}">
+                        <b:column span="12">
+                            <h:outputText  value="Aucune traduction pour le moment ..." style="font-size: 12px; color: grey; font-style: italic " />
+                        </b:column>
+                    </b:row>
+
+                    <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
+                        <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.
+                                                                           candidatSelected.traductions.indexOf(traduction))}; padding-top: 5px"
+                               rendered="#{candidatBean.candidatSelected.traductions.size() > 0}">
+                            <b:column span="4" >
+                                <h:outputText value="#{traduction.langue}"/>
+                            </b:column>
+                            <b:column span="4" >
+                                <h:outputText value="#{traduction.traduction}"/>
+                            </b:column>
+                            <b:column span="2">
+                                <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
+                                                  oncomplete="PF('editTraduction').show();" style="color: #f47b2a;"
+                                                  actionListener="#{traductionService.init(traduction)}"
+                                                  styleClass="buttonIconOrange" ajax="false"
+                                                  update="idEditTraduction editTraductionForm"/>     
+                            </b:column>
+
+                            <b:column span="2">
+                                <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg" 
+                                                  styleClass="buttonIconOrange" style="color: #f47b2a;"
+                                                  actionListener="#{traductionService.init(traduction)}"
+                                                  oncomplete="PF('confirmDeleteTraduction').show();" 
+                                                  update="idConfirmDelete confirmDeleteForm"/>
+                            </b:column>                         
+                        </b:row>   
+                    </ui:repeat>
+
+                    <b:row>
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                    </b:row>
+                </h:form>
+            </b:column>
+        </b:row>  
+    </h:panelGroup>
 
 
     <!-- désactivé par Miled, provoque un conflit avec le module côté concept -->

@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.skosapi;
 
+import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +32,8 @@ public class SKOSXmlDocument {
     private ArrayList<SKOSResource> groupList;
     private ArrayList<SKOSResource> conceptList;
     private String title;
+    
+
     
     // c'est un tableau qui contient les équivalences entre les URI et l'identifiant des concepts
     // pour permettre de reconstruire un thésaurus avec les identifiants ARK-Handle et l'ID d'origine
@@ -156,4 +159,6 @@ public class SKOSXmlDocument {
     public void setEquivalenceUriArkHandle(HashMap equivalenceUriArkHandle) {
         this.equivalenceUriArkHandle = equivalenceUriArkHandle;
     }
+    
+    
 }

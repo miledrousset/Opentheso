@@ -26,14 +26,14 @@
                     </p:selectOneMenu>
                 </b:column>
                 <b:column span="2">
-                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}" 
+                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
                                       iconAwesome="fa-plus-circle" icon-size="l" style="color: #f47b2a;"
                                       tooltip="Créer un nouveau projet" tooltip-delay-show="1000"
                                       actionListener="#{newProjectBean.init()}"
                                       update="profileForm:idNewProject profileForm:newProjectForm"
                                       oncomplete="PF('newProject').show();"/>
 
-                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}" 
+                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
                                       iconAwesome="fa-edit" icon-size="l" style="color: #f47b2a; margin-left: 10px;"
                                       tooltip="Modifier le label des projets" tooltip-delay-show="1000"
                                       actionListener="#{newProjectBean.init()}"

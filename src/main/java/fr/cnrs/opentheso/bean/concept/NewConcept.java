@@ -388,25 +388,7 @@ public class NewConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-
-        conceptBean.getConcept(idTheso, idConceptParent, idLang);
-        isCreated = true;
-
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        if(!conceptHelper.getMessage().isEmpty()) {
-            FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN, "", conceptHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg2);                 
-        }
-       
- //       PrimeFaces.current().executeScript("PF('addNT').hide();");
-
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-        //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNarrower");     
-        }
-
         if (tree.getSelectedNode() == null) {
             return;
         }
@@ -419,15 +401,34 @@ public class NewConcept implements Serializable {
         }
 
         // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-    //    if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
+        
+        /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
+        // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
+        if(tree.getSelectedNode().getChildCount() == 0) {
+            tree.getSelectedNode().setType("concept");
+        }
+        if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
             tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formLeftTab:tabTree:tree");
             }
-    //    }
+        }
+        conceptBean.getConcept(idTheso, idConceptParent, idLang);
+        isCreated = true;
+
+        if (pf.isAjaxRequest()) {
+        //    pf.ajax().update("messageIndex");
+            pf.ajax().update("formRightTab:viewTabConcept:idConceptNarrower");     
+        }        
+        
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(!conceptHelper.getMessage().isEmpty()) {
+            FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN, "", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg2);                 
+        }        
         init();
-        // sinon, on ne fait rien, l'arbre sera déplié automatiquement
-        //    PrimeFaces.current().executeScript("$('.addNT1').modal('hide');"); 
+ //       PrimeFaces.current().executeScript("PF('addNT').hide();");
     }    
 
     private void init(){

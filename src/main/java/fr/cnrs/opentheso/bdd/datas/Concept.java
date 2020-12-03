@@ -17,6 +17,7 @@ public class Concept {
     private String userName;
     private int idUser;
     private String lang;
+    private boolean isDeprecated;
 
     public Concept(String idConcept, String status, String notation, String idThesaurus, String idGroup,
             boolean topConcept) {
@@ -137,4 +138,14 @@ public class Concept {
     public void setLang(String lang) {
         this.lang = lang;
     }
+
+    public boolean isIsDeprecated() {
+        return isDeprecated;
+    }
+
+    public void setIsDeprecated(boolean isDeprecated) {
+        this.isDeprecated = isDeprecated;
+    }
+    
+    
 }
