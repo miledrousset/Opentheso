@@ -36,6 +36,9 @@ public class IndexSetting implements Serializable {
     // si un concept est sélectionné
     private boolean isValueSelected;
     
+    // si une facette est sélectionnée
+    private boolean isFacetSelected;
+    
     
     
 ////// variables pour les vues du menu
@@ -97,6 +100,10 @@ public class IndexSetting implements Serializable {
 
     public boolean isIsValueSelected() {
         return isValueSelected;
+    }
+
+    public boolean isNotConnected() {
+        return !isValueSelected & !isFacetSelected;
     }
 
     public void setIsValueSelected(boolean isValueSelected) {
@@ -215,6 +222,15 @@ public class IndexSetting implements Serializable {
 
     public void setToolBoxColor(String toolBoxColor) {
         this.toolBoxColor = toolBoxColor;
+    }
+
+    public boolean isIsFacetSelected() {
+        return isFacetSelected;
+    }
+
+    public void setIsFacetSelected(boolean isFacetSelected) {
+        this.isFacetSelected = isFacetSelected;
+        isValueSelected = false;
     }
 
 }

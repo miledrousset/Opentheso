@@ -1,0 +1,218 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui">
+
+    <h:panelGroup id="facetView" styleClass="textOpentheso">    
+        <b:row id="idConceptViewActions" rendered="#{(currentUser.nodeUser != null)}" 
+               style="margin-left: 5px; margin-right: 5px" >  
+            <b:column>
+                <b:row>
+
+                    <b:column span="3" colXs="4">
+                        <h:outputText value="Labelle" title="Preferred Term" style="font-weight: bold"/>
+                    </b:column>
+                    <b:column span="1" >
+                        <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                    icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                    style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <b:navCommandLink value="Renommer la facette"  update="idRenameFacet renameFacetForm"
+                                              oncomplete="PF('renameFacet').show();"
+                                              style="font-size: 12px;"/>
+                        </b:dropMenu>
+                    </b:column>   
+                    <b:column span="8" colXs="8">
+                        <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
+                                      title="#{editFacet.facetSelected.idFacet}" style="font-weight: bold" />
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
+                    </b:column>
+
+                </b:row>
+
+
+                <b:row>
+                    <b:column span="3" colXs="4">
+                        <h:outputText value="Concept parent" title="Concept parent" style="font-weight: bold"/>
+                    </b:column>
+                    <b:column span="1" >
+                        <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                    icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                    style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <b:navCommandLink value="Modifer le concept Paprent"  update="idAddConceptParentToFacet"
+                                              oncomplete="PF('addConceptParentToFacet').show();" style="font-size: 12px;"/>
+                        </b:dropMenu>
+                    </b:column>   
+                    <b:column span="8" colXs="8">
+                        <h:outputText value="#{editFacet.concepParent.term.lexical_value}"
+                                      title="#{editFacet.facetSelected.idConceptParent}" />
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
+                    </b:column>          
+                </b:row>
+
+                <b:row>
+                    <b:column span="3" colXs="4">
+                        <h:outputText value="Concepts associés" title="Concepts associés" style="font-weight: bold"/>
+                    </b:column>
+                    <b:column span="1">
+                        <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                    icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                    style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <b:navCommandLink value="Gérer les concepts" update="idManagerConcepts"
+                                              oncomplete="PF('managerConcepts').show();"
+                                              style="font-size: 12px;"/>           
+                        </b:dropMenu>
+                    </b:column>
+
+                    <b:column span="8" colXs="8" rendered="#{editFacet.conceptList.size() == 0}">
+                        <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
+                    </b:column>
+
+
+                    <b:column span="8" colXs="8" rendered="#{editFacet.conceptList.size() != 0}">
+                        <ui:repeat var="concept" value="#{editFacet.conceptList}" varStatus="status">
+
+                            <b:navCommandLink value="#{concept.value}" tooltip="#{concept.id}" tooltip-delay-show="1000"
+                                              update="formRightTab" style="color: #43B572;" styleClass="textOpentheso"/>
+
+                        </ui:repeat>
+                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
+                    </b:column>
+                </b:row>
+
+                <!-- ligne Traductions -->
+                <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
+                    <b:column span="3" colXs="3">
+                        <h:outputText value="Traduction" style="font-weight: bold" />
+                    </b:column>
+                    <b:column span="1">
+                        <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                    icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="Gérer les traductions" tooltip-delay-show="1000"
+                                    style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <b:navCommandLink value="Ajouter une traduction" update="idAddFacetTraduction"
+                                              action = "#{editFacet.setLangListForTraduction()}"
+                                              oncomplete="PF('addFacetTraduction').show();"
+                                              style="font-size: 12px;"/>
+                            <b:navCommandLink value="Modifier une traduction" update="idRenameFacetTraduction"
+                                              oncomplete="PF('renameFacetTraduction').show();"
+                                              style="font-size: 12px;"/>
+                            <b:navCommandLink value="Supprimer une traduction" update="idDeleteFacetTraduction"
+                                              oncomplete="PF('deleteFacetTraduction').show();"
+                                              style="font-size: 12px;"/>
+                        </b:dropMenu> 
+                    </b:column>
+
+                    <h:panelGroup>
+                        <b:column span="8" colXs="8" rendered="#{editFacet.facetTraductions.size() == 0}">
+                            <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
+                        </b:column>
+
+
+                        <b:column span="8" colXs="8" rendered="#{editFacet.facetTraductions.size() != 0}">
+                            <ui:repeat var="trad" value="#{editFacet.facetTraductions}" >
+                                <b:row>
+                                    <b:column >
+                                        <b:navCommandLink value="#{trad.lexicalValue} (#{trad.lang})" tooltip-delay-show="1000"
+                                                          style="color: #43B572;"
+                                                          styleClass="textOpentheso"/>                        
+                                    </b:column> 
+                                </b:row> 
+                            </ui:repeat> 
+                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
+                        </b:column>
+                    </h:panelGroup>
+                </b:row>  
+
+            </b:column>
+
+        </b:row>
+
+    </h:panelGroup>
+
+    <ui:include src="/dialog/facet/renameFacet.xhtml" />
+    <ui:include src="/dialog/facet/addTraduction.xhtml" />
+    <ui:include src="/dialog/facet/deleteTraduction.xhtml" />
+    <ui:include src="/dialog/facet/removeConceptFromFacet.xhtml" />
+    <ui:include src="/dialog/facet/renameTraduction.xhtml" />
+
+    <p:dialog header="Modifier le concept parent"  widgetVar="addConceptParentToFacet"
+              minHeight="40" id="idAddConceptParentToFacet" modal="true" resizable="true"
+              position="top" width="400" style="margin-top: 150px">
+
+        <b:row >
+            <b:column>
+                <h:outputText value="Concept parent actuel : #{editFacet.concepParent.term.lexical_value}" style="font-size: 13px; color: black;" />
+                <p:spacer height="30"/>
+            </b:column>
+        </b:row>            
+
+        <b:row >
+            <b:column>
+                <h:outputText value="tapez % pour tout afficher" style="font-size: 12px;" />
+            </b:column>
+        </b:row>  
+
+        <b:row>
+            <b:column>
+                <p:autoComplete value="#{editFacet.termeParentAssocie}" multiple="false" var="item"
+                                forceSelection="true" completeMethod="#{editFacet.searchConcept}"                                  
+                                minQueryLength="1" itemLabel="#{item.value}" itemValue="#{item}" converter="searchConverterIdValue"
+                                scrollHeight="300" style="width: 100%">
+
+                    <p:column  style="font-size: 12px;">
+                        <h:outputText title="#{item.id}" value="#{item.value}" />
+                    </p:column>
+
+                </p:autoComplete> 
+            </b:column>
+        </b:row>
+
+        <b:row style="margin-bottom: 20px; margin-top: 30px">
+            <b:column >
+                <p:commandButton value="Enregistrer" class="btn btn-primary" actionListener="#{editFacet.modifierConceptParent()}"
+                                 style="width:100%; font-size: 12px; color: white; background: #43B572;"/>
+            </b:column>
+        </b:row> 
+    </p:dialog>
+
+    <p:dialog id="idManagerConcepts" header="Gérer les concepts associés à la facette" 
+              widgetVar="managerConcepts" modal="false" resizable="false" 
+              position="top" width="500" style="margin-top: 150px" >         
+
+        <b:row >
+            <b:column>
+                <h:outputText value="Liste concetps associés" style="font-size: 13px; color: black;" />
+                <p:spacer height="30"/>
+            </b:column>
+        </b:row>            
+
+        <b:row >
+            <b:column>
+                <h:outputText value="tapez % pour tout afficher" style="font-size: 12px;" />
+            </b:column>
+        </b:row>  
+
+        <b:row>
+            <b:column>
+                <p:autoComplete value="#{editFacet.conceptList}" multiple="true" var="concept" forceSelection="true"
+                                completeMethod="#{editFacet.searchConcept}" itemLabel="#{concept.value}" itemValue="#{concept}"
+                                converter="searchConverterIdValue" scrollHeight="300" style="width: 100%; height: 35px;">
+                    <p:column style="font-size: 12px;">
+                        <h:outputText title="#{concept.id}" value="#{concept.value}" />
+                    </p:column>
+                </p:autoComplete> 
+            </b:column>
+        </b:row>
+
+        <b:row style="margin-bottom: 20px; margin-top: 30px">
+            <b:column>
+                <b:commandButton value="Valider" class="btn btn-primary" actionListener="#{editFacet.modifierConceptAssocie()}"
+                                 oncomplete="PF('addConceptParentToFacet').hide();" style="width:100%; font-size: 12px;
+                                 color: white; background: #43B572;"/>
+            </b:column>
+        </b:row>  
+    </p:dialog> 
+
+</ui:fragment>

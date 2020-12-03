@@ -1356,6 +1356,51 @@ public class SearchHelper {
         return nodeSearchMinis;
     }
     
+    public String searchIDConceptByPrefLab(HikariDataSource ds, String value, String idTheso, String idLang) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        String idConcept = null;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT concept.id_concept "
+                            + "FROM concept, preferred_term, non_preferred_term, term "
+                            + "WHERE preferred_term.id_concept = concept.id_concept "
+                            + "AND preferred_term.id_thesaurus = concept.id_thesaurus "
+                            + "AND non_preferred_term.id_term = preferred_term.id_term "
+                            + "AND non_preferred_term.id_thesaurus = preferred_term.id_thesaurus "
+                            + "AND term.id_term = preferred_term.id_term "
+                            + "AND term.id_thesaurus = preferred_term.id_thesaurus "
+                            + "AND term.lang = non_preferred_term.lang "
+                            + "AND non_preferred_term.lexical_value = '"+value+"'"
+                            + "AND non_preferred_term.id_thesaurus = '" + idTheso + "' "
+                            + "AND non_preferred_term.lang = '" + idLang + "'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        idConcept = resultSet.getString("id_concept");
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List of autocompletion of Text : " + value, sqle);
+        }
+
+        return idConcept;
+    }
+    
     /**
      * Cette fonction permet de récupérer une liste de termes pour
      * l'autocomplétion pour créer des relations entre les concepts

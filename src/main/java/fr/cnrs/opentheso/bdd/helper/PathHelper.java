@@ -15,9 +15,6 @@ import java.util.ArrayList;
  */
 public class PathHelper {
 
-    public PathHelper() {
-    }
-
     public ArrayList<Path> getPathOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus) {
 
@@ -31,14 +28,6 @@ public class PathHelper {
                 firstPath,
                 path, allPaths);
 
-/*        for (int i = 0; i < tabIdInvert.size(); i++) {
-            ArrayList<String> pathTemp = new ArrayList<>();
-            for (int j = tabIdInvert.get(i).size(); j > 0; j--) {
-                pathTemp.add(tabIdInvert.get(i).get(j - 1));
-            }
-            tabIdInvert.remove(i);
-            tabIdInvert.add(i, pathTemp);
-        }*/
         return allPaths;
     }
     
@@ -53,7 +42,6 @@ public class PathHelper {
      * @param idThesaurus
      * @param firstPath
      * @param path
-     * @param tabId
      * @return Vector Ce vecteur contient tous les Path des BT d'un id_terme
      * exemple (327,368,100,#,2251,5555,54544,8789,#) ici deux path disponible
      * il faut trouver le path qui correspond au microthesaurus en cours pour

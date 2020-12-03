@@ -20,16 +20,19 @@
                     <b:tab id="viewTabSearch" title="Liste de résultat" style="color: #43B572; padding-top: 1px; padding-bottom: 1px;" >
                         <f:facet name="anchor"><b:iconAwesome name="search-location" style="color: #f47b2a" size="s"/></f:facet>
                         <ui:include  src="rightBodyView/resultSearch.xhtml"/>
-                    </b:tab>
+                    </b:tab>    
                 </b:tabView>
             </b:column>
         </b:row>
-        
-        
-        <b:row rendered="#{!indexSetting.isValueSelected}">
-            <ui:include  src="/rightBodyView/thesoHome.xhtml" />
+       
+        <b:row rendered="#{indexSetting.isFacetSelected}">
+            <ui:include src="/rightBodyView/facet.xhtml" />
         </b:row>
-        
+
+        <b:row rendered="#{indexSetting.isNotConnected()}">
+            <ui:include src="/rightBodyView/thesoHome.xhtml" />
+        </b:row>
+
     </b:form>
 
 

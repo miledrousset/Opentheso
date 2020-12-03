@@ -51,9 +51,9 @@
                                       oncomplete="PF('deleteConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>   
-                    
-                    
-                    
+
+
+
                     <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                                       tooltip="Permet de générer ou mettre à jour l'identifiant Ark"
                                       tooltip-delay-show="500"
@@ -76,88 +76,88 @@
                                       oncomplete="PF('generateHandle').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>                    
-                    
-                    
-                    
-                    
-                    
+
+
+
+
+
                     <!-- partie pour générer les identifiants ARK d'un thésaurus à déplacer par la suite vers la boite à outils -->
                     <b:navLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"/>
-                    
+
                     <b:navCommandLink 
                         rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                         value="Générer les identifiants Ark manquants" 
                         tooltip="Permet de générer les identifiants Ark pour les concepts qui n'en ont pas"
-                                      disabled="false"                                      
-                                      action="#{editConcept.generateArkForConceptWithoutArk()}"
-                                      update="messageIndex"
-                                      style="font-size: 12px;">
+                        disabled="false"                                      
+                        action="#{editConcept.generateArkForConceptWithoutArk()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
                     </b:navCommandLink>
                     <b:navCommandLink 
                         rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                         value="Générer les identifiants Ark pour cette branche" 
                         tooltip="Permet de générer ou mise à jour les identifiants Ark pour cette branche du thésaurus"
-                                      disabled="false"                                      
-                                      action="#{editConcept.generateArkForThisBranch()}"
-                                      update="messageIndex"
-                                      style="font-size: 12px;">
+                        disabled="false"                                      
+                        action="#{editConcept.generateArkForThisBranch()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
                     </b:navCommandLink>                     
                     <b:navCommandLink 
                         rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                         value="Générer la totalité des identifiants Ark" 
                         tooltip="Permet de générer la totalité des identifiants Ark pour ce thésaurus"
-                                      disabled="false"                                      
-                                      action="#{editConcept.generateAllArk()}"
-                                      update="messageIndex"
-                                      style="font-size: 12px;">
+                        disabled="false"                                      
+                        action="#{editConcept.generateAllArk()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
                     </b:navCommandLink>   
-                    
-                    
+
+
                     <!-- partie pour générer les identifiants Handle d'un thésaurus à déplacer par la suite vers la boite à outils -->
                     <b:navLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"/>
-                    
+
                     <b:navCommandLink 
                         rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                         value="Générer les identifiants Handle manquants" 
                         tooltip="Permet de générer les identifiants Handle pour les concepts qui n'en ont pas"
-                                      disabled="false"                                      
-                                      action="#{editConcept.generateHandleForConceptWithoutHandle()}"
-                                      update="messageIndex"
-                                      style="font-size: 12px;">
+                        disabled="false"                                      
+                        action="#{editConcept.generateHandleForConceptWithoutHandle()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
                     </b:navCommandLink>
                     <b:navCommandLink 
                         rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                         value="Générer les identifiants Handle pour cette branche" 
                         tooltip="Permet de générer ou mise à jour les identifiants Handle pour cette branche du thésaurus"
-                                      disabled="false"                                      
-                                      action="#{editConcept.generateHandleForThisBranch()}"
-                                      update="messageIndex"
-                                      style="font-size: 12px;">
+                        disabled="false"                                      
+                        action="#{editConcept.generateHandleForThisBranch()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
                     </b:navCommandLink>                     
                     <b:navCommandLink 
                         rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                         value="Générer la totalité des identifiants Handle" 
                         tooltip="Permet de générer la totalité des identifiants Handle pour ce thésaurus"
-                                      disabled="false"                                      
-                                      action="#{editConcept.generateAllHandle()}"
-                                      update="messageIndex"
-                                      style="font-size: 12px;">
+                        disabled="false"                                      
+                        action="#{editConcept.generateAllHandle()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
                     </b:navCommandLink>                       
-                    
-                    
-                    
-                    
-                    
-                    
+
+
+
+
+
+
                     <!-- partie pour copier des concepts/branches d'un thésaurus à un autre -->
                     <b:navLink/>
                     <b:navCommandLink disabled="false"
-                                        rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
-                                       value="Copier vers un autre thésaurus" tooltip="Copier le concept/branche vers un autre thésaurus" tooltip-delay-show="1000"
-                                       action="#{copyAndPasteBetweenTheso.onStartCopy()}"
-                                       styleClass="buttonIconOrange"
-                                       style="font-size: 12px;"
-                                       update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
+                                      rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
+                                      value="Copier vers un autre thésaurus" tooltip="Copier le concept/branche vers un autre thésaurus" tooltip-delay-show="1000"
+                                      action="#{copyAndPasteBetweenTheso.onStartCopy()}"
+                                      styleClass="buttonIconOrange"
+                                      style="font-size: 12px;"
+                                      update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
                     </b:navCommandLink>
                     <b:navCommandLink rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
                                       value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) ici !!" 
@@ -176,13 +176,13 @@
                                        style="font-size: 12px;"
                                        update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
                     </b:navCommandLink>                      
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+
+
+
+
+
+
+
                     <b:navLink/>
                     <b:navCommandLink value="Importer une liste tabulée"
                                       tooltip="Importer une liste de concepts spécifiques au format tabulé sous #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
@@ -203,8 +203,8 @@
         <ui:include src="/dialog/concept/generateArk.xhtml" /> 
         <ui:include src="/dialog/concept/generateHandle.xhtml" />         
         <ui:include src="/dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />         
-       
-        
+
+
 
 
         <!-- Fil d'ariane -->
@@ -237,7 +237,15 @@
                                  oncomplete="PF('addNT').show();"
                                  value="add concept" title="ajouter un concept spécifique"
                                  style="margin-left: -5px;"
-                                 styleClass="buttonIconOrange"/>                
+                                 styleClass="buttonIconOrange"/>       
+
+                <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                 icon="fas fa-plus-circle fa-s"
+                                 actionListener="#{newConcept.reset()}"     
+                                 oncomplete="PF('addFacet').show();"
+                                 value="add facet" title="ajouter une facette"
+                                 style="margin-left: -5px;"
+                                 styleClass="buttonIconOrange"/>            
             </b:column>
         </b:row>
 
@@ -252,9 +260,9 @@
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                     <b:navCommandLink value="Renommer le concept"  update="idRenameConcept renameForm" 
-                               actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
-                               oncomplete="PF('renameConcept').show();"
-                               style="font-size: 12px;"/>
+                                      actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
+                                      oncomplete="PF('renameConcept').show();"
+                                      style="font-size: 12px;"/>
                 </b:dropMenu>
             </b:column>            
             <b:column span="6" colXs="6">
@@ -630,7 +638,7 @@
 
 
 
-        
+
         <!--                                  -->        
         <!-- Total des concepts de la branche --> 
         <!--                                  -->      
@@ -648,20 +656,20 @@
             </b:column>
             <b:column id="branchCount" span="8" colXs="8">
                 <h:outputText rendered="#{conceptView.countOfBranch != 0}"
-                    value="#{conceptView.countOfBranch} concept (s)" title="cliquez à gauche pour lancer le calcul" 
-                    style="font-size: 12px; color: #666666" />
+                              value="#{conceptView.countOfBranch} concept (s)" title="cliquez à gauche pour lancer le calcul" 
+                              style="font-size: 12px; color: #666666" />
             </b:column>             
         </b:row>         
         <p:separator styleClass="separator" style="margin-top: 5px; margin-bottom: 5px;"/>     
         <!--           Fin                    -->        
         <!-- Total des concepts de la branche --> 
         <!--                                  -->          
-       
-        
-        
-        
-        
-        
+
+
+
+
+
+
 
 
 
@@ -1065,7 +1073,7 @@
                             -->
                             <p:panel header="Map" toggleable="true" closable="false" toggleSpeed="500" 
                                      style="margin-top: 10px; margin-bottom: 10px">
-                                    <leaf:mapAdvanced map="#{conceptView.mapModel}" />  
+                                <leaf:mapAdvanced map="#{conceptView.mapModel}" />  
                             </p:panel>
                         </b:column>
                     </b:row>
@@ -1232,7 +1240,7 @@
                         target="_blank"
                         icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
             </b:column>     
-            
+
             <!-- Cas d'uri de type Handle -->
             <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
                 <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
@@ -1240,7 +1248,7 @@
                         target="_blank"
                         icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
             </b:column>
-            
+
             <!-- Cas d'uri interne -->            
             <b:column span="8" colXs="8" rendered="#{!roleOnTheso.nodePreference.originalUriIsHandle and !roleOnTheso.nodePreference.originalUriIsArk}">
                 <b:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
@@ -1302,6 +1310,7 @@
 
         <!-- Dialogues -->        
         <ui:include src="/dialog/concept/addNT.xhtml" /> 
+        <ui:include src="/dialog/facet/addFacet.xhtml" /> 
         <ui:include src="/dialog/concept/renameConcept.xhtml" /> 
 
 

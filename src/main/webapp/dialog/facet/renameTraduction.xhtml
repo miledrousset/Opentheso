@@ -1,0 +1,52 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="idRenameFacetTraduction" header="Modifier les traductions" widgetVar="renameFacetTraduction" 
+              modal="true" resizable="true" position="top" width="450" style="margin-top: 50px;" >         
+
+        <h:form id="renameFacetTraductionForm">   
+            <b:row >
+                <b:column span="11"  colXs="11"  >
+                    <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
+                                  style="font-size: 13px; color: #43B572; margin-left: 5px;">
+                    </h:outputText >
+                </b:column>
+            </b:row> 
+
+            <p:spacer/>
+
+            <b:panel style="max-height: 300px;overflow-y:scroll ">
+                <b:row >
+                    <ui:repeat var="traductionToEdit" value="#{editFacet.facetTraductions}" >
+                        <b:column span="8" colXs="8" style="background: #FAFAFA">
+                            <b:inputText value="#{traductionToEdit.lexicalValue}" style="font-size: 12px;"/>                    
+                        </b:column>
+                        <b:column span="2" colXs="2" style="background: #FAFAFA">
+                            <h:outputText value="#{traductionToEdit.lang}" style="color: #43B572; font-size: 14px;"/>                    
+                        </b:column>
+                        <b:column span="1" colXs="1" style="background: #FAFAFA">
+                            <b:commandButton icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
+                                              action="#{editFacet.updateTraduction(traductionToEdit)}"
+                                              update="formRightTab:facetView"/>
+                        </b:column>
+
+                        <p:spacer height="20" />
+                    </ui:repeat>
+                </b:row>
+            </b:panel>
+
+            <b:row>
+                <b:column span="4" offset="4" colXs="8" offset-xs="2">
+                    <b:commandButton ajax="true" value="Fermer" class="btn btn-primary"
+                                     oncomplete="PF('renameFacetTraduction').hide();"
+                                     style="width:100%; font-size: 12px; color: white; background: #43B572;"/>
+                </b:column>
+            </b:row>
+
+        </h:form>
+    </p:dialog> 
+    <!--  </b:modal> -->    
+</ui:fragment>
