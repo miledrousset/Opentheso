@@ -2,6 +2,7 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup id="facetView" styleClass="textOpentheso">    
@@ -72,10 +73,9 @@
 
                     <b:column span="8" colXs="8" rendered="#{editFacet.conceptList.size() != 0}">
                         <ui:repeat var="concept" value="#{editFacet.conceptList}" varStatus="status">
-
                             <b:navCommandLink value="#{concept.value}" tooltip="#{concept.id}" tooltip-delay-show="1000"
                                               update="formRightTab" style="color: #43B572;" styleClass="textOpentheso"/>
-
+                            <h:outputText value=" ; "/>
                         </ui:repeat>
                         <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
                     </b:column>
@@ -92,7 +92,6 @@
                                     style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <b:navCommandLink value="Ajouter une traduction" update="idAddFacetTraduction"
                                               action = "#{editFacet.setLangListForTraduction()}"
-                                              oncomplete="PF('addFacetTraduction').show();"
                                               style="font-size: 12px;"/>
                             <b:navCommandLink value="Modifier une traduction" update="idRenameFacetTraduction"
                                               oncomplete="PF('renameFacetTraduction').show();"
@@ -130,12 +129,6 @@
         </b:row>
 
     </h:panelGroup>
-
-    <ui:include src="/dialog/facet/renameFacet.xhtml" />
-    <ui:include src="/dialog/facet/addTraduction.xhtml" />
-    <ui:include src="/dialog/facet/deleteTraduction.xhtml" />
-    <ui:include src="/dialog/facet/removeConceptFromFacet.xhtml" />
-    <ui:include src="/dialog/facet/renameTraduction.xhtml" />
 
     <p:dialog header="Modifier le concept parent"  widgetVar="addConceptParentToFacet"
               minHeight="40" id="idAddConceptParentToFacet" modal="true" resizable="true"
@@ -213,6 +206,123 @@
                                  color: white; background: #43B572;"/>
             </b:column>
         </b:row>  
-    </p:dialog> 
+    </p:dialog>
+
+    <p:dialog id="idAddFacetTraduction" header="Ajouter une traduction" widgetVar="addFacetTraduction"
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >
+        <b:row>
+            <b:column span="6" style="margin-left: 5px;">
+                <b:row>
+                    <b:column span="12" style=" margin-bottom: 10px; ">
+                        <h:outputText value="Terme : " style="font-size: 12px;"/>
+                        <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
+                    </b:column>
+
+                    <b:column>
+                        <p:selectOneMenu label="Langue" value="#{editFacet.selectedLang}"
+                                         style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                            <f:selectItems  value="#{editFacet.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                        </p:selectOneMenu>
+                    </b:column>
+
+                    <b:column>
+                        <b:inputText label="traduction" placeholder="tapez votre traduction ..."
+                                     value="#{editFacet.traductionValue}" style="font-size: 12px;"/>
+                    </b:column>
+                </b:row>
+            </b:column>
+
+            <b:column span="5" style-class="message2">
+                <b:row>
+                    <b:column span="2" offset="10">
+                        <b:commandLink icon-awesome="fas fa-exclamation-circle"
+                                       style="font-size: 17px; color: #FF7979"
+                                       action="#{noteBean.infos}"/>
+                    </b:column>
+                </b:row>
+                <b:row>
+                    <b:column span="12">
+                        <b:messages autoUpdate="true"/>
+                    </b:column>
+                </b:row>
+            </b:column>
+        </b:row>
+
+        <b:row style="margin-bottom: 10px;">
+            <b:column span="4" offset="8" >
+                <b:commandButton value="Valider" style="width:100%; font-size: 13px;
+                                 font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                 class="btn btn-primary" action="#{editFacet.addNewTraduction()}"/>
+            </b:column>
+        </b:row>
+    </p:dialog>
+
+    <p:dialog id="idRenameFacetTraduction" header="Modifier les traductions" widgetVar="renameFacetTraduction"
+              modal="true" resizable="true" position="top" width="450" style="margin-top: 50px;" >
+        <b:row >
+            <b:column span="11"  colXs="11"  >
+                <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
+                              style="font-size: 13px; color: #43B572; margin-left: 5px;">
+                </h:outputText >
+            </b:column>
+        </b:row>
+
+        <p:spacer/>
+
+        <b:panel style="max-height: 300px;overflow-y:scroll ">
+            <b:row >
+                <ui:repeat var="traductionToEdit" value="#{editFacet.facetTraductions}" >
+                    <b:column span="8" colXs="8" style="background: #FAFAFA">
+                        <b:inputText value="#{traductionToEdit.lexicalValue}" style="font-size: 12px;"/>
+                    </b:column>
+                    <b:column span="2" colXs="2" style="background: #FAFAFA">
+                        <h:outputText value="#{traductionToEdit.lang}" style="color: #43B572; font-size: 14px;"/>
+                    </b:column>
+                    <b:column span="1" colXs="1" style="background: #FAFAFA">
+                        <b:commandButton icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
+                                         action="#{editFacet.updateTraduction(traductionToEdit)}"
+                                         update="formRightTab:facetView"/>
+                    </b:column>
+
+                    <p:spacer height="20" />
+                </ui:repeat>
+            </b:row>
+        </b:panel>
+
+        <b:row>
+            <b:column span="4" offset="4" colXs="8" offset-xs="2">
+                <b:commandButton ajax="true" value="Fermer" class="btn btn-primary"
+                                 oncomplete="PF('renameFacetTraduction').hide();"
+                                 style="width:100%; font-size: 12px; color: white; background: #43B572;"/>
+            </b:column>
+        </b:row>
+    </p:dialog>
+
+    <p:dialog id="idDeleteFacetTraduction" header="Supprimer une traduction" widgetVar="deleteFacetTraduction"
+              modal="true" resizable="true" position="top" width="320" style="margin-top: 150px" >
+        <b:row >
+            <b:column span="11" offset="1" >
+                <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: black;"/>
+                <p:spacer height="30"/>
+            </b:column>
+        </b:row>
+
+        <b:row style="font-size: 12px;">
+            <ui:repeat var="traductions" value="#{editFacet.facetTraductions}" >
+                <b:column span="8" offset="1" style="background: #FAFAFA">
+                    <h:outputText value="#{traductions.lexicalValue} (#{traductions.lang})" style="color: #43B572"/>
+                </b:column>
+                <b:column span="2" style="background: #FAFAFA">
+                    <b:navCommandLink icon-awesome="fas fa-trash-alt" style="color: #FF7979"
+                                      action="#{editFacet.deleteTraduction(traductions)}"/>
+                </b:column>
+
+                <p:spacer height="20" />
+            </ui:repeat>
+        </b:row>
+    </p:dialog>
+
+    <ui:include src="/dialog/facet/renameFacet.xhtml" />
+    <ui:include src="/dialog/facet/removeConceptFromFacet.xhtml" />
 
 </ui:fragment>

@@ -186,6 +186,9 @@ public class Tree implements Serializable {
                 dataService.addNodeWithoutChild("file", data, parent);
             }
         }
+
+        addFacettes(parent);
+
         return true;
     }
 
@@ -215,9 +218,9 @@ public class Tree implements Serializable {
         
     }
     
-    public void addNewFacet(TreeNode parent, String facetName) {
+    public void addNewFacet(TreeNode parent, String facetName, String idFacet) {
         TreeNodeData data = new TreeNodeData(
-                facetName,
+                idFacet,
                 facetName,
                 "",
                 false,//isgroup

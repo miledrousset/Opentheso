@@ -51,14 +51,18 @@ public class NodeIdValue implements Comparable{
     public String getNotation() {
         return notation;
     }
-    
+
     @Override
     public int compareTo(Object o) {
-        String str1, str2;
-        str1 = Normalizer.normalize(this.value, Normalizer.Form.NFD);
-        str1 = str1.replaceAll("[^\\p{ASCII}]", "");
-        str2 = Normalizer.normalize(((NodeIdValue)o).value, Normalizer.Form.NFD);
-        str2 = str2.replaceAll("[^\\p{ASCII}]", "");
-        return str1.toUpperCase().compareTo(str2.toUpperCase());
+        try {
+            String str1, str2;
+            str1 = Normalizer.normalize(this.value, Normalizer.Form.NFD);
+            str1 = str1.replaceAll("[^\\p{ASCII}]", "");
+            str2 = Normalizer.normalize(((NodeIdValue)o).value, Normalizer.Form.NFD);
+            str2 = str2.replaceAll("[^\\p{ASCII}]", "");
+            return str1.toUpperCase().compareTo(str2.toUpperCase());
+        } catch (Exception e) {
+            return 1;
+        }
     }
 }
