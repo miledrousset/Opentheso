@@ -9,10 +9,12 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
 import java.io.Serializable;
@@ -35,6 +37,15 @@ public class EditFacet implements Serializable {
 
     @Inject
     private Connect connect;
+    
+    @Inject
+    private RightBodySetting rightBodySetting;
+    
+    @Inject
+    private ConceptView conceptBean;
+    
+    @Inject
+    private IndexSetting indexSetting;
 
     @Inject
     private ConceptView conceptView;
@@ -75,6 +86,33 @@ public class EditFacet implements Serializable {
 
         newFacetName = facetSelected.getLexicalValue();
         
+    }
+    
+    public void supprimerFacette() {
+        new FacetHelper().deleteFacet(connect.getPoolConnexion(), 
+                facetSelected.getIdFacet(), 
+                selectedTheso.getCurrentIdTheso());
+        
+        tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+        tree.expandTreeToPath(facetSelected.getIdConceptParent(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getSelectedLang());
+        
+        tree.setIdConcept(facetSelected.getIdConceptParent());
+        indexSetting.setIsFacetSelected(false);
+        indexSetting.setIsValueSelected(true);
+        
+        rightBodySetting.setShowConceptToOn();
+        conceptBean.getConceptForTree(selectedTheso.getCurrentIdTheso(), 
+                facetSelected.getIdConceptParent(), 
+                selectedTheso.getSelectedLang());
+        rightBodySetting.setIndex("0");
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formRightTab");
+            pf.ajax().update("formLeftTab:tabTree:tree");
+        }
     }
     
     private void setListConceptsAssocie() {
@@ -296,7 +334,7 @@ public class EditFacet implements Serializable {
             pf.ajax().update("formRightTab:facetView");
         }
         PrimeFaces.current().executeScript("PF('addFacet').hide();");
-
+        newFacetName = "";
     }
 
     public void updateLabelFacet() {

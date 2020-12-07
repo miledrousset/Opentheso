@@ -547,5 +547,13 @@ public class Tree implements Serializable {
     public void setDataService(DataService dataService) {
         this.dataService = dataService;
     }
+
+    public String getIdConcept() {
+        return idConcept;
+    }
+
+    public void setIdConcept(String idConcept) {
+        this.idConcept = idConcept;
+    }
     
 }

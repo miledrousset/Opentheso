@@ -122,6 +122,19 @@
                             <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
                         </b:column>
                     </h:panelGroup>
+                </b:row> 
+
+                <b:row style="margin-bottom: 20px; margin-top: 30px">
+                    <b:column>
+                        <p:commandButton value="Supprimer la facette" action="#{editFacet.supprimerFacette}">
+                            <p:confirm header="Confirmation" message="Vous êtes sûr ?" icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                            <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                        </p:confirmDialog>   
+                    </b:column>
                 </b:row>  
 
             </b:column>
@@ -152,7 +165,7 @@
                 <p:autoComplete value="#{editFacet.termeParentAssocie}" multiple="false" var="item"
                                 forceSelection="true" completeMethod="#{editFacet.searchConcept}"                                  
                                 minQueryLength="1" itemLabel="#{item.value}" itemValue="#{item}" converter="searchConverterIdValue"
-                                scrollHeight="300" style="width: 100%">
+                                scrollHeight="300" style="width: 150px; height: 35px;">
 
                     <p:column  style="font-size: 12px;">
                         <h:outputText title="#{item.id}" value="#{item.value}" />
@@ -165,7 +178,7 @@
         <b:row style="margin-bottom: 20px; margin-top: 30px">
             <b:column >
                 <p:commandButton value="Enregistrer" class="btn btn-primary" actionListener="#{editFacet.modifierConceptParent()}"
-                                 style="width:100%; font-size: 12px; color: white; background: #43B572;"/>
+                                 style="width:150px; font-size: 12px; color: white; background: #43B572;"/>
             </b:column>
         </b:row> 
     </p:dialog>
@@ -191,7 +204,7 @@
             <b:column>
                 <p:autoComplete value="#{editFacet.conceptList}" multiple="true" var="concept" forceSelection="true"
                                 completeMethod="#{editFacet.searchConcept}" itemLabel="#{concept.value}" itemValue="#{concept}"
-                                converter="searchConverterIdValue" scrollHeight="300" style="width: 100%; height: 35px;">
+                                converter="searchConverterIdValue" scrollHeight="300" style="width: 150px; height: 35px;">
                     <p:column style="font-size: 12px;">
                         <h:outputText title="#{concept.id}" value="#{concept.value}" />
                     </p:column>
@@ -202,7 +215,7 @@
         <b:row style="margin-bottom: 20px; margin-top: 30px">
             <b:column>
                 <b:commandButton value="Valider" class="btn btn-primary" actionListener="#{editFacet.modifierConceptAssocie()}"
-                                 oncomplete="PF('addConceptParentToFacet').hide();" style="width:100%; font-size: 12px;
+                                 oncomplete="PF('addConceptParentToFacet').hide();" style="width:150px; font-size: 12px;
                                  color: white; background: #43B572;"/>
             </b:column>
         </b:row>  
