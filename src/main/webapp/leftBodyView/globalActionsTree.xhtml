@@ -4,16 +4,13 @@
              xmlns:b="http://bootsfaces.net/ui">
 
 
-    <h:panelGroup id="idGlobalActionsTree" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}" >
-        <b:row rendered="#{(currentUser.nodeUser != null) and 
-                                    (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
-               style="font-size: 12px; " >
-            <b:column span="2" offset="10">
+    <h:panelGroup id="idGlobalActionsTree" rendered="#{(currentUser.nodeUser != null) and 
+                                    (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
 
+            <b:column span="2" >
                 <!-- ajout de TopTermes et des collections -->
-                <!-- ajout de TopTermes et des collections -->
-                <b:dropMenu icon-awesome="fa-plus-circle" icon-size="l"  value=""
-                            style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px; "
+                <b:dropMenu icon-awesome="fa-plus-circle" icon-size="sm"  value=""
+                            style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px; margin-top: 2px;"
                             class="dropdown-submenu pull-left">
                     <b:navCommandLink  value="Add top concept"
                                        action="#{newConcept.reset()}"
@@ -22,9 +19,6 @@
                                        update="idAddTopConcept addTopConceptForm"                            
                                        style="font-size: 12px; ">
                     </b:navCommandLink>
-                    
-                    
-                    
                     
                     <!-- partie pour coller en topTerm le concept/branche copié d'un thésaurus -->
                     <b:navLink/>
@@ -53,6 +47,5 @@
                 <ui:include src="/dialog/concept/addTopConcept.xhtml" />
                 <ui:include src="/dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />                  
             </b:column>
-        </b:row> 
     </h:panelGroup>        
 </ui:fragment>

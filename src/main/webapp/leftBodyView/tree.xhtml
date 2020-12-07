@@ -4,16 +4,23 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:b="http://bootsfaces.net/ui">
 
+    
 
-    <!-- Actions sur l'arbre -->
-    <ui:include src="/leftBodyView/globalActionsTree.xhtml"/>
 
     <b:row>
-        <b:column span="12">
-            <b:navCommandLink value="Visualiser en graphe" update="containerIndex"
-                              ajax="true" style="color: #F47B2A; float: right; margin-right: 13px"
-                              action= "#{tree.showDiagram(true)}"/>
+        <b:column  span="1" offset="8" >
         </b:column>
+        <!-- Actions sur l'arbre -->
+        <ui:include src="/leftBodyView/globalActionsTree.xhtml" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}"/>        
+
+        <!-- affichage du graphe -->
+        <b:column span="1" >
+            <b:navCommandLink iconAwesome="fas fa-project-diagram" icon-size="sm" 
+                  tooltip="Visualiser la branche en graphe" tooltip-delay-show="500"
+                  update="containerIndex"
+                  ajax="true" style="color: #F47B2A; float: right; margin-top: 2px;"
+                  action= "#{tree.showDiagram(true)}"/>                
+        </b:column>        
     </b:row>
 
     
