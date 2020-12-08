@@ -17,11 +17,16 @@
     <dependencies>
         
 <!-- https://mvnrepository.com/artifact/org.webjars/d3js -->
-<dependency>
-    <groupId>org.webjars</groupId>
-    <artifactId>d3js</artifactId>
-    <version>6.2.0</version>
-</dependency>        
+<!-- En cours d'intégration -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>d3js</artifactId>
+            <version>6.2.0</version>
+        </dependency>        
+<!-- En cours d'intégration -->        
+        
+        
+        
         
         <dependency>
             <groupId>javax.servlet</groupId>
