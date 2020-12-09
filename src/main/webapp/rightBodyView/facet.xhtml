@@ -6,7 +6,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup id="facetView" styleClass="textOpentheso">    
-        <b:row id="idConceptViewActions" rendered="#{(currentUser.nodeUser != null)}" 
+        <b:row id="idConceptViewActions"  
                style="margin-left: 5px; margin-right: 5px" >  
             <b:column>
                 <b:row>
@@ -124,7 +124,9 @@
                     </h:panelGroup>
                 </b:row> 
 
-                <b:row style="margin-bottom: 20px; margin-top: 30px">
+                <b:row style="margin-bottom: 20px; margin-top: 30px" 
+                       rendered="#{(currentUser.nodeUser != null) and 
+                                        (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
                     <b:column>
                         <p:commandButton value="Supprimer la facette" action="#{editFacet.supprimerFacette}">
                             <p:confirm header="Confirmation" message="Vous êtes sûr ?" icon="pi pi-exclamation-triangle" />

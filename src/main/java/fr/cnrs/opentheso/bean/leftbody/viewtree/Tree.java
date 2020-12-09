@@ -227,9 +227,9 @@ public class Tree implements Serializable {
                 false,//isSubGroup
                 true,//isConcept
                 false,//isTopConcept
-                "facette");
+                "facet");
         
-        dataService.addNodeWithoutChild("facette", data, parent);
+        dataService.addNodeWithoutChild("facet", data, parent);
     }
     
     public boolean isNoedSelected() {
@@ -253,7 +253,7 @@ public class Tree implements Serializable {
             
             if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
                 parent.getChildren().remove(0);
-                if ("facette".equals(parent.getType())) {
+                if ("facet".equals(parent.getType())) {
                     
                     List<String> list = new FacetHelper().getConceptAssocietedToFacette(connect.getPoolConnexion(),
                             ((TreeNodeData) parent.getData()).getName(),
@@ -306,9 +306,9 @@ public class Tree implements Serializable {
                     false,
                     true,
                     false,
-                    "facette"
+                    "facet"
             );
-            new DefaultTreeNode("DUMMY", new DefaultTreeNode("facette", data, parent));
+            new DefaultTreeNode("DUMMY", new DefaultTreeNode("facet", data, parent));
         });
     }
     
@@ -324,7 +324,7 @@ public class Tree implements Serializable {
             noedSelected = true;
             DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
             
-            if (!"facette".equals(parent.getType())) {
+            if (!"facet".equals(parent.getType())) {
                 indexSetting.setIsFacetSelected(false);
                 idConcept = ((TreeNodeData) selectedNode.getData()).getNodeId();
                 
