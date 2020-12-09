@@ -28,6 +28,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 import org.primefaces.event.NodeExpandEvent;
@@ -68,8 +70,7 @@ public class Tree implements Serializable {
     private TreeNode selectedNode; // le neoud sélectionné par clique
     private TreeNode root;
     
-    private String idTheso;
-    private String idLang;
+    private String idTheso, idConceptParent, idLang;
     private boolean noedSelected;
     
     ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
@@ -257,7 +258,7 @@ public class Tree implements Serializable {
                     
                     List<String> list = new FacetHelper().getConceptAssocietedToFacette(connect.getPoolConnexion(),
                             ((TreeNodeData) parent.getData()).getName(),
-                            idTheso, selectedTheso.getCurrentLang(), idConcept);
+                            idTheso, selectedTheso.getCurrentLang(), idConceptParent);
                     
                     TermHelper termHelper = new TermHelper();
                     
@@ -279,11 +280,8 @@ public class Tree implements Serializable {
                         dataService.addNodeWithoutChild("file", data, parent);
                     });
                 } else {
-                    idConcept = ((TreeNodeData) parent.getData()).getNodeId();
+                    idConceptParent = ((TreeNodeData) parent.getData()).getNodeId();
                     addConceptsChild(parent);
-                    if ("concept".equals(parent.getType())) {
-                        addFacettes(parent);
-                    }
                 }
             }
             noedSelected = false;
@@ -291,7 +289,10 @@ public class Tree implements Serializable {
     }
     
     private void addFacettes(TreeNode parent) {
-        List<NodeFacet> facettes = new FacetHelper().getFacettesAssociatedToConceptParent(
+
+        FacetHelper facetHelper = new FacetHelper();
+
+        List<NodeFacet> facettes = facetHelper.getFacettesAssociatedToConceptParent(
                 connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 idTheso,
@@ -308,11 +309,18 @@ public class Tree implements Serializable {
                     false,
                     "facet"
             );
-            new DefaultTreeNode("DUMMY", new DefaultTreeNode("facet", data, parent));
+
+            List<String> childs = facetHelper.getConceptAssocietedToFacette(connect.getPoolConnexion(),
+                    facette.getLexicalValue(), idTheso, selectedTheso.getCurrentLang(), idConceptParent);
+
+            if (CollectionUtils.isEmpty(childs)) {
+                new DefaultTreeNode(new DefaultTreeNode("facet", data, parent));
+            } else {
+                new DefaultTreeNode("DUMMY", new DefaultTreeNode("facet", data, parent));
+            }
         });
     }
-    
-    private String idConcept;
+
     
     public void onNodeSelect(NodeSelectEvent event) {
         if (noedSelected) {
@@ -326,7 +334,7 @@ public class Tree implements Serializable {
             
             if (!"facet".equals(parent.getType())) {
                 indexSetting.setIsFacetSelected(false);
-                idConcept = ((TreeNodeData) selectedNode.getData()).getNodeId();
+                idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
                 
                 if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
                     rightBodySetting.setShowConceptToOn();
@@ -549,11 +557,11 @@ public class Tree implements Serializable {
     }
 
     public String getIdConcept() {
-        return idConcept;
+        return idConceptParent;
     }
 
     public void setIdConcept(String idConcept) {
-        this.idConcept = idConcept;
+        this.idConceptParent = idConcept;
     }
     
 }
