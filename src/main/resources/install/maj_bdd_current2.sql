@@ -64,6 +64,49 @@ $$ LANGUAGE plpgsql;
 
 
 --
+-- Tables pour la gestion des facettes
+--
+
+CREATE TABLE IF NOT EXISTS public.concept_facette
+(
+    id_facette integer NOT NULL,
+    id_thesaurus text COLLATE pg_catalog."default" NOT NULL,
+    id_concept text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT concept_facettes_pkey PRIMARY KEY (id_facette, id_thesaurus, id_concept)
+);
+
+create or replace function delete_table_thesaurus_array() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='thesaurus_array' AND column_name='id_facet') THEN
+        execute 'DROP TABLE thesaurus_array;
+                CREATE sequence IF NOT EXISTS thesaurus_array_facet_id_seq
+                INCREMENT 1
+                    MINVALUE 1
+                    MAXVALUE 9223372036854775807
+                    START 1
+                    CACHE 1;
+                CREATE TABLE thesaurus_array
+                (
+                    id_thesaurus character varying COLLATE pg_catalog."default" NOT NULL,
+                    id_concept_parent character varying COLLATE pg_catalog."default" NOT NULL,
+                    ordered boolean NOT NULL DEFAULT false,
+                    notation character varying COLLATE pg_catalog."default",
+                    id_facet integer NOT NULL,
+                    CONSTRAINT thesaurus_array_pkey PRIMARY KEY (id_facet, id_thesaurus, id_concept_parent)
+                );
+                ALTER TABLE node_label drop COLUMN facet_id;
+                ALTER TABLE node_label ADD COLUMN id_facet integer NOT NULL DEFAULT nextval(''thesaurus_array_facet_id_seq''::regclass);';
+    END IF;
+end
+$$language plpgsql;
+
+
+
+
+
+
+
+--
 -- mise a jour de la table preferences (ajout de la colonne sort_by_notation)
 --
 create or replace function update_table_preferences_sortbynotation() returns void as $$
@@ -130,7 +173,7 @@ SELECT update_table_candidat_vote();
 SELECT update_table_candidat_status();
 SELECT update_table_info();
 SELECT update_table_corpus_link();
-
+SELECT delete_table_thesaurus_array();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -140,7 +183,7 @@ SELECT delete_fonction('update_table_candidat_vote','');
 SELECT delete_fonction('update_table_candidat_status','');
 SELECT delete_fonction('update_table_info','');
 SELECT delete_fonction('update_table_corpus_link','');
-
+SELECT delete_fonction('delete_table_thesaurus_array','');
 
 
 

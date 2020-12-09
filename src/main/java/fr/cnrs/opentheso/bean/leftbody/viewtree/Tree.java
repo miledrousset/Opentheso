@@ -261,13 +261,13 @@ public class Tree implements Serializable {
                     
                     TermHelper termHelper = new TermHelper();
                     
-                    list.stream().forEach(idConcept -> {
+                    list.stream().forEach(idConcept1 -> {
                         
-                        Term term = termHelper.getThisTerm(connect.getPoolConnexion(), idConcept, idTheso,
+                        Term term = termHelper.getThisTerm(connect.getPoolConnexion(), idConcept1, idTheso,
                                 selectedTheso.getCurrentLang());
                         
                         TreeNodeData data = new TreeNodeData(
-                                idConcept,
+                                idConcept1,
                                 term.getLexical_value(),
                                 null,
                                 false,

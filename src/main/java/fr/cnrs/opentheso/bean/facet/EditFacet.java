@@ -318,12 +318,17 @@ public class EditFacet implements Serializable {
     public void addNewFacet() {
 
         FacetHelper facetHelper = new FacetHelper();
-        checkLabelFacet(facetHelper);
+        if(!checkLabelFacet(facetHelper)){
+            return;            
+        }
 
         int idFacet = facetHelper.addNewFacet(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), newFacetName, selectedTheso.getCurrentLang(),
                 null);
-
+        if(idFacet == -1) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la création de la Facette !");
+            return;
+        }
         showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec sucée !");
 
         tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");
@@ -365,17 +370,18 @@ public class EditFacet implements Serializable {
 
     }
 
-    private void checkLabelFacet(FacetHelper facetHelper) {
+    private boolean checkLabelFacet(FacetHelper facetHelper) {
         if (StringUtils.isEmpty(newFacetName)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez saisir un nom à la nouvelle facette !");
-            return;
+            return false;
         }
 
         if (facetHelper.checkExistanceFacetByNameAndLangAndThesau(connect.getPoolConnexion(),
                 newFacetName, selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Le nom de la facette '" + newFacetName + "' existe déjà !");
-            return;
+            return false;
         }
+        return true;
     }
 
     public ArrayList<NodeIdValue> searchConcept(String value) {
