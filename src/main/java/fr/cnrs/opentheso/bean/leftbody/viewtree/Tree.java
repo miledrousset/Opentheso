@@ -110,6 +110,7 @@ public class Tree implements Serializable {
     
     private boolean addFirstNodes() {
         ConceptHelper conceptHelper = new ConceptHelper();
+        FacetHelper facetHelper = new FacetHelper();
         TreeNodeData data;
 
         // la liste est triée par alphabétique ou notation
@@ -128,7 +129,11 @@ public class Tree implements Serializable {
                     true,//isTopConcept
                     "topTerm"
             );
-            if (nodeConceptTree.isHaveChildren()) {
+
+            List<NodeFacet> facets = facetHelper.getFacettesAssociatedToConceptParent(connect.getPoolConnexion(),
+                    nodeConceptTree.getIdConcept(), idTheso, idLang);
+
+            if (nodeConceptTree.isHaveChildren() || CollectionUtils.isNotEmpty(facets)) {
                 dataService.addNodeWithChild("concept", data, root);
             } else {
                 dataService.addNodeWithoutChild("file", data, root);
@@ -152,6 +157,7 @@ public class Tree implements Serializable {
     
     private boolean addConceptsChild(TreeNode parent) {
         ConceptHelper conceptHelper = new ConceptHelper();
+        FacetHelper facetHelper = new FacetHelper();
         
         ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConcepts(
                 connect.getPoolConnexion(),
@@ -180,8 +186,15 @@ public class Tree implements Serializable {
                     false,//isTopConcept
                     "term"
             );
-            
-            if (conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso, nodeConceptTree.getIdConcept())) {
+
+
+            boolean haveConceptChild = conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso,
+                    nodeConceptTree.getIdConcept());
+
+            List<NodeFacet> facets = facetHelper.getFacettesAssociatedToConceptParent(connect.getPoolConnexion(),
+                    nodeConceptTree.getIdConcept(), idTheso, idLang);
+
+            if (haveConceptChild || CollectionUtils.isNotEmpty(facets)) {
                 dataService.addNodeWithChild("concept", data, parent);
             } else {
                 dataService.addNodeWithoutChild("file", data, parent);
