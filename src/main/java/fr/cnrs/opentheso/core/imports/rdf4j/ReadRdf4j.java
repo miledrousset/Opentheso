@@ -156,7 +156,11 @@ public class ReadRdf4j {
                     prop = SKOSProperty.MicroThesaurus;
                     validProperty = true;
                 } else if (type.contains("Collection".toUpperCase())) {
-                    prop = SKOSProperty.Collection;
+                    if (st.getSubject().toString().contains("Facet".toUpperCase())) {
+                        prop = SKOSProperty.FACET;
+                    } else {
+                        prop = SKOSProperty.Collection;
+                    }
                     validProperty = true;
                 } else if (type.contains("Concept".toUpperCase())) {
                     prop = SKOSProperty.Concept;
@@ -168,6 +172,8 @@ public class ReadRdf4j {
                     readStruct.resource = new SKOSResource(uri, prop);
                     if (prop == SKOSProperty.ConceptScheme) {
                         sKOSXmlDocument.setConceptScheme(readStruct.resource);
+                    } else if (prop == SKOSProperty.FACET) {
+                        sKOSXmlDocument.addFacet(readStruct.resource);
                     } else if (prop == SKOSProperty.ConceptGroup || prop == SKOSProperty.Collection || prop == SKOSProperty.Theme || prop == SKOSProperty.MicroThesaurus) {
                         sKOSXmlDocument.addGroup(readStruct.resource);
                     } else if (prop == SKOSProperty.Concept) {

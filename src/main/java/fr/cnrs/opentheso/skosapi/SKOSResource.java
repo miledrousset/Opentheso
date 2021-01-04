@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
-import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
 
 /**
  *

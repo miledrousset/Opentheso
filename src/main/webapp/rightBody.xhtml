@@ -25,8 +25,11 @@
             </b:column>
         </b:row>
 
+        <b:row rendered="#{indexSetting.isFacetSelected}">
+            <ui:include src="/rightBodyView/facet.xhtml" />
+        </b:row>
 
-        <b:row rendered="#{!indexSetting.isValueSelected}">
+        <b:row rendered="#{indexSetting.isValueSelected}">
             <ui:include  src="/rightBodyView/thesoHome.xhtml" />
         </b:row>
 

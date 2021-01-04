@@ -35,6 +35,9 @@ public class IndexSetting implements Serializable {
 
     // si un concept est sélectionné
     private boolean isValueSelected;
+    
+    // si une facette est sélectionnée
+    private boolean isFacetSelected;
 
     //private boolean isConceptDiagramSelected;
 
@@ -96,8 +99,13 @@ public class IndexSetting implements Serializable {
         return isValueSelected;
     }
 
+    public boolean isNotConnected() {
+        return !isValueSelected & !isFacetSelected;
+    }
+
     public void setIsValueSelected(boolean isValueSelected) {
         this.isValueSelected = isValueSelected;
+        isFacetSelected = false;
     }
 
     public boolean isIsThesoActive() {
@@ -171,7 +179,6 @@ public class IndexSetting implements Serializable {
         isSettingActive = false;
         resetColor();
         toolBoxColor = "white";
-
     }
 
     public String getThesoColor() {
@@ -221,4 +228,14 @@ public class IndexSetting implements Serializable {
     public void setConceptDiagramSelected(boolean conceptDiagramSelected) {
         isConceptDiagramSelected = conceptDiagramSelected;
     }*/
+
+    public boolean isIsFacetSelected() {
+        return isFacetSelected;
+    }
+
+    public void setIsFacetSelected(boolean isFacetSelected) {
+        this.isFacetSelected = isFacetSelected;
+        isValueSelected = false;
+    }
+
 }

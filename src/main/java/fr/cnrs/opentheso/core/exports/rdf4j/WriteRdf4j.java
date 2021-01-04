@@ -5,13 +5,10 @@
  */
 package fr.cnrs.opentheso.core.exports.rdf4j;
 
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.skosapi.*;
-import java.net.URLEncoder;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -24,7 +21,6 @@ import org.eclipse.rdf4j.model.vocabulary.FOAF;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
-//import org.eclipse.rdf4j.model.vocabulary.SKOSXL;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 
 /**
@@ -70,6 +66,7 @@ public class WriteRdf4j {
     private void writeModel() {
         writeConceptScheme();
         writeGroup();
+        writeFacet();
         writeConcept();
     }
 
@@ -104,7 +101,7 @@ public class WriteRdf4j {
                     try {
                         imageUri = imageUri.replaceAll(" ", "%20");
                         IRI uri = vf.createIRI(imageUri);
-                        builder.add(FOAF.IMAGE, uri);                        
+                        builder.add(FOAF.IMAGE, uri);
                     } catch (Exception e) {
                         return;
                     }
@@ -112,7 +109,7 @@ public class WriteRdf4j {
             }
         }
     }
-    
+
     private void writeReplaces(SKOSResource resource) {
         for (SKOSReplaces replace : resource.getsKOSReplaces()) {
             IRI uri = vf.createIRI(replace.getTargetUri());
@@ -136,6 +133,15 @@ public class WriteRdf4j {
                 break;
             default:
                 break;
+        }
+    }
+
+    private void writeFacet() {
+        for (SKOSResource facet : xmlDocument.getFacetList()) {
+            builder.subject(vf.createIRI(facet.getUri()));
+            builder.add(RDF.TYPE, SKOS.COLLECTION);
+            writeLabel(facet);
+            writeDate(facet);
         }
     }
 
@@ -164,8 +170,8 @@ public class WriteRdf4j {
         builder.subject(vf.createIRI(conceptScheme.getUri()));//createURI(conceptScheme.getUri()));
 
         builder.add(RDF.TYPE, SKOS.CONCEPT_SCHEME);
-        
-        
+
+
         writeLabel(conceptScheme);
         writeRelation(conceptScheme);
         writeMatch(conceptScheme);
@@ -184,7 +190,7 @@ public class WriteRdf4j {
         Double lon = null;
         try {
             lat = Double.parseDouble(gps.getLat());
-            lon = Double.parseDouble(gps.getLon());            
+            lon = Double.parseDouble(gps.getLon());
         } catch (Exception e) {
         }
         if (lat != null && lon != null) {
@@ -342,48 +348,43 @@ public class WriteRdf4j {
             }
         }
     }
-    
+
     private void writeDcTerms(SKOSResource resource){
-        if(resource.getThesaurus().getTitle()!= null && !resource.getThesaurus().getTitle().isEmpty()) 
+        if(resource.getThesaurus().getTitle()!= null && !resource.getThesaurus().getTitle().isEmpty())
             builder.add(DCTERMS.TITLE, resource.getThesaurus().getTitle());
-        
-        if(resource.getThesaurus().getCreator()!= null && !resource.getThesaurus().getCreator().isEmpty()) 
-            builder.add(DCTERMS.CREATOR, resource.getThesaurus().getCreator()); 
-        
-        if(resource.getThesaurus().getContributor() != null && !resource.getThesaurus().getContributor().isEmpty()) 
-            builder.add(DCTERMS.CONTRIBUTOR, resource.getThesaurus().getContributor());   
-        
-        if(resource.getThesaurus().getPublisher()!= null && !resource.getThesaurus().getPublisher().isEmpty()) 
-            builder.add(DCTERMS.PUBLISHER, resource.getThesaurus().getPublisher());           
 
-        if(resource.getThesaurus().getDescription()!= null && !resource.getThesaurus().getDescription().isEmpty()) 
+        if(resource.getThesaurus().getCreator()!= null && !resource.getThesaurus().getCreator().isEmpty())
+            builder.add(DCTERMS.CREATOR, resource.getThesaurus().getCreator());
+
+        if(resource.getThesaurus().getContributor() != null && !resource.getThesaurus().getContributor().isEmpty())
+            builder.add(DCTERMS.CONTRIBUTOR, resource.getThesaurus().getContributor());
+
+        if(resource.getThesaurus().getPublisher()!= null && !resource.getThesaurus().getPublisher().isEmpty())
+            builder.add(DCTERMS.PUBLISHER, resource.getThesaurus().getPublisher());
+
+        if(resource.getThesaurus().getDescription()!= null && !resource.getThesaurus().getDescription().isEmpty())
             builder.add(DCTERMS.DESCRIPTION, resource.getThesaurus().getDescription());
-        
-        if(resource.getThesaurus().getType()!= null && !resource.getThesaurus().getType().isEmpty()) 
-            builder.add(DCTERMS.TYPE, resource.getThesaurus().getType());     
-        
-        if(resource.getThesaurus().getRights()!= null && !resource.getThesaurus().getRights().isEmpty()) 
+
+        if(resource.getThesaurus().getType()!= null && !resource.getThesaurus().getType().isEmpty())
+            builder.add(DCTERMS.TYPE, resource.getThesaurus().getType());
+
+        if(resource.getThesaurus().getRights()!= null && !resource.getThesaurus().getRights().isEmpty())
             builder.add(DCTERMS.RIGHTS, resource.getThesaurus().getRights());
-        
-        if(resource.getThesaurus().getSubject()!= null && !resource.getThesaurus().getSubject().isEmpty()) 
+
+        if(resource.getThesaurus().getSubject()!= null && !resource.getThesaurus().getSubject().isEmpty())
             builder.add(DCTERMS.SUBJECT, resource.getThesaurus().getSubject());
-                 
-        if(resource.getThesaurus().getCoverage()!= null && !resource.getThesaurus().getCoverage().isEmpty()) 
-            builder.add(DCTERMS.COVERAGE, resource.getThesaurus().getCoverage());        
 
-        if(resource.getThesaurus().getLanguage()!= null && !resource.getThesaurus().getLanguage().isEmpty()) 
-            builder.add(DCTERMS.LANGUAGE, resource.getThesaurus().getLanguage());          
+        if(resource.getThesaurus().getCoverage()!= null && !resource.getThesaurus().getCoverage().isEmpty())
+            builder.add(DCTERMS.COVERAGE, resource.getThesaurus().getCoverage());
 
-        if(resource.getThesaurus().getRelation()!= null && !resource.getThesaurus().getRelation().isEmpty()) 
-            builder.add(DCTERMS.RELATION, resource.getThesaurus().getRelation());          
-                 
-        if(resource.getThesaurus().getSource()!= null && !resource.getThesaurus().getSource().isEmpty()) 
-            builder.add(DCTERMS.SOURCE, resource.getThesaurus().getSource());          
-//
-//        if(resource.getThesaurus().getCreated()!= null) 
-//            builder.add(DCTERMS.CREATED, resource.getThesaurus().getCreated());          
-//        if(resource.getThesaurus().getModified()!= null) 
-//            builder.add(DCTERMS.MODIFIED, resource.getThesaurus().getModified());    
+        if(resource.getThesaurus().getLanguage()!= null && !resource.getThesaurus().getLanguage().isEmpty())
+            builder.add(DCTERMS.LANGUAGE, resource.getThesaurus().getLanguage());
+
+        if(resource.getThesaurus().getRelation()!= null && !resource.getThesaurus().getRelation().isEmpty())
+            builder.add(DCTERMS.RELATION, resource.getThesaurus().getRelation());
+
+        if(resource.getThesaurus().getSource()!= null && !resource.getThesaurus().getSource().isEmpty())
+            builder.add(DCTERMS.SOURCE, resource.getThesaurus().getSource());
     }
 
     private void writeMatch(SKOSResource resource) {
@@ -492,6 +493,12 @@ public class WriteRdf4j {
                 /// unesco properties for Groups or Collections    
                 case SKOSProperty.memberOf:
                     builder.add("opentheso:memberOf", uri);
+                    break;
+                case SKOSProperty.TOP_FACET:
+                    builder.add("opentheso:topFacet", uri);
+                    break;
+                case SKOSProperty.FACET:
+                    builder.add("opentheso:facet", uri);
                     break;
             }
 
