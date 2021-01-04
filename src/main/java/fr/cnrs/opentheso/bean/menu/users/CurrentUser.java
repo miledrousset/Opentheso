@@ -66,7 +66,7 @@ public class CurrentUser implements Serializable {
         facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         nodeUser = null;
-
+        roleOnThesoBean.showListTheso();
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
 

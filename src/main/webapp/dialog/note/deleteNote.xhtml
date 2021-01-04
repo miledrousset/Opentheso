@@ -9,7 +9,7 @@
     -->
 
     <p:dialog id="idDeleteNote" header="Supprimer une note" widgetVar="deleteNote" 
-              modal="true" resizable="true" position="top" width="450" style="margin-top: 150px; max-height: 500px;overflow-y:scroll ">         
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 50px; max-height: 500px;overflow-y:scroll ">         
 
         <h:form id="deleteNoteForm">   
             
@@ -26,8 +26,7 @@
                 <ui:repeat var="noteToDelete" value="#{noteBean.nodeToDelete()}" >
                     <b:column span="8" offset="1" style="background: #FAFAFA">
                         <h:outputText rendered="#{noteToDelete.lexicalvalue != ''}"
-                                      value="#{noteToDelete.lexicalvalue}"
-                                      />                    
+                                      value="#{noteToDelete.lexicalvalue}" escape="false"/>                    
                     </b:column>
                     <b:column span="2" style="background: #FAFAFA">
                         <b:navCommandLink icon-awesome="fas fa-trash-alt" style="color: #FF7979"

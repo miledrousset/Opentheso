@@ -27,7 +27,7 @@ public class ExportStatistiques {
     private String document; //String ou a tout l'information
     private String id_theso = "";
     public String lange = "";
-    ArrayList<Integer> concept_orphan = new ArrayList<>();// combien orphan il y a dans chac domaine
+
     ArrayList<String> quisontorphan = new ArrayList<>();//les concept qui sont orphan
     public String tete="";
     public String totalconcept=""; 
@@ -121,7 +121,6 @@ public class ExportStatistiques {
                             cantitad++;//on garde toutes le progénitures d'une domaine e.getkey
                             conceptOrp.add(rS.getString(1));
                         }
-                        orphan = combianorphan(ds, conceptOrp);
                         //appelation a la funtion pour savoir combien de concept orphan ils sont
                         combienterm.add(cantitad - orphan);
                         resultSet = stmt.executeQuery(query2);
@@ -160,46 +159,6 @@ public class ExportStatistiques {
         }
     }
 
-    /**
-     * ici on peus savoir combien de concept ils sont orphan dans chac domaine
-     *
-     * @param ds
-     * @param combianOrphan
-     * @return
-     */
-    private int combianorphan(HikariDataSource ds, ArrayList<String> combianOrphan) {
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet resultset;
-
-        int sont_orphan = 0;
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    for (int i = 0; i < combianOrphan.size(); i++) {
-                        String query = "select id_concept from concept_orphan where id_concept ='" + combianOrphan.get(i) + "'";
-                        resultset = stmt.executeQuery(query);
-                        if (resultset.next()) {
-                            sont_orphan++;
-                            quisontorphan.add(combianOrphan.get(i));
-                        } else {
-
-                        }
-                    }
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Table.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        concept_orphan.add(sont_orphan);
-        return sont_orphan;
-    }
 
     /**
      * permet de faire une copy de notre
@@ -362,7 +321,7 @@ public class ExportStatistiques {
         document = tete + id_theso + "  \t  " + lg + " \t "+ totalconcept + (candidat.size() - map.size()) + "\r\n";
         //document += langueBean.getMsg("stat.statCpt4")+"\n\n";//ne marche pas et je sais pas pourquoi
         for (int cont = 0; cont < domaines2; cont++) {
-            document += candidat.get(cont) + "   " + cantite.get(quelledomaine) + " + " + concept_orphan.get(quelledomaine) + " Orphan \r\n";//combiens term pour chac domaine
+            document += candidat.get(cont) + "   " + cantite.get(quelledomaine) + " + " + " Orphan \r\n";//combiens term pour chac domaine
             //on commence aprés le domaines a chercher le term (domaines + positionmultipli)
             //cantite.get(quelledomaine) nous donne combiens term pour chac domain
             //+domaines parceque on commence aprés le domaines
@@ -436,17 +395,17 @@ public class ExportStatistiques {
         int conttateur = 0;
         int cont;
         changenames(ds, quisontorphan, lange, combien);
-        for (int h = 0; h < domaines; h++) {
-            this.document += "\r\n\r\n" + listnonT.get(h) + "  "+nondescr + ouviens.get(ousont);
-            this.document += "\r\n\t  "+termesNonTra + noTraduit.get(ousont);//manque faire le languageBean.getMsg 
-            this.document += "\r\n\t  "+notes ;//donne error le getMsg
-            this.document += "\r\n\t  "+ConceptOrphan ;
-            for (cont = conttateur; cont < concept_orphan.get(ousont) + conttateur; cont++) {
-                this.document += quisontorphan.get(cont) + ", ";
-            }
-            conttateur += concept_orphan.get(ousont);
-            ousont++;
-        }
+//        for (int h = 0; h < domaines; h++) {
+//            this.document += "\r\n\r\n" + listnonT.get(h) + "  "+nondescr + ouviens.get(ousont);
+//            this.document += "\r\n\t  "+termesNonTra + noTraduit.get(ousont);//manque faire le languageBean.getMsg 
+//            this.document += "\r\n\t  "+notes ;//donne error le getMsg
+//            this.document += "\r\n\t  "+ConceptOrphan ;
+//            for (cont = conttateur; cont < concept_orphan.get(ousont) + conttateur; cont++) {
+//                this.document += quisontorphan.get(cont) + ", ";
+//            }
+//            conttateur += concept_orphan.get(ousont);
+//            ousont++;
+//        }
         return this.document;
     }
 

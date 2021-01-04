@@ -29,7 +29,7 @@ public class IndexSetting implements Serializable {
 
     // si un thésaurus est sélectionné 
     private boolean isSelectedTheso;
-    
+
     // si un profil est connecté
     private boolean isConnected;
 
@@ -38,56 +38,53 @@ public class IndexSetting implements Serializable {
     
     // si une facette est sélectionnée
     private boolean isFacetSelected;
-    
-    
-    
-////// variables pour les vues du menu
-    private boolean isThesoActive;   
-    private boolean isCandidateActive;
-    private boolean isProfileActive; 
-    private boolean isSettingActive;    
-    private boolean isToolBoxActive;
 
+    //private boolean isConceptDiagramSelected;
+
+////// variables pour les vues du menu
+    private boolean isThesoActive;
+    private boolean isCandidateActive;
+    private boolean isProfileActive;
+    private boolean isSettingActive;
+    private boolean isToolBoxActive;
 
     // variables pour les couleurs de boutons
     private String thesoColor;
     private String candidateColor;
     private String profileColor;
-    private String settingColor;    
-    private String toolBoxColor;     
-    
+    private String settingColor;
+    private String toolBoxColor;
+
     public IndexSetting() {
         isThesoActive = true;
         thesoColor = "white";
         candidateColor = "#B3DDC4";
         profileColor = "#B3DDC4";
         settingColor = "#B3DDC4";
-        toolBoxColor = "#B3DDC4";        
+        toolBoxColor = "#B3DDC4";
     }
 
-    public void reset(){
+    public void reset() {
         isThesoActive = true;
         resetColor();
         thesoColor = "white";
     }
-    
-    private void resetColor(){
+
+    private void resetColor() {
         thesoColor = "#B3DDC4";
         candidateColor = "#B3DDC4";
         profileColor = "#B3DDC4";
         settingColor = "#B3DDC4";
         toolBoxColor = "#B3DDC4";
-    }    
-    
-    
-    
+    }
+
     public boolean isIsSelectedTheso() {
         return isSelectedTheso;
     }
 
     public void setIsSelectedTheso(boolean isSelectedTheso) {
         this.isSelectedTheso = isSelectedTheso;
-       
+
     }
 
     public boolean isIsConnected() {
@@ -108,6 +105,7 @@ public class IndexSetting implements Serializable {
 
     public void setIsValueSelected(boolean isValueSelected) {
         this.isValueSelected = isValueSelected;
+        isFacetSelected = false;
     }
 
     public boolean isIsThesoActive() {
@@ -117,11 +115,11 @@ public class IndexSetting implements Serializable {
     public void setIsThesoActive(boolean isThesoActive) {
         this.isThesoActive = isThesoActive;
         isCandidateActive = false;
-        isProfileActive = false; 
-        isSettingActive = false;    
-        isToolBoxActive = false; 
+        isProfileActive = false;
+        isSettingActive = false;
+        isToolBoxActive = false;
         resetColor();
-        thesoColor = "white";         
+        thesoColor = "white";
     }
 
     public boolean isIsCandidateActive() {
@@ -131,12 +129,12 @@ public class IndexSetting implements Serializable {
     public void setIsCandidateActive(boolean isCandidateActive) throws IOException {
         candidatBean.initCandidatModule();
         this.isCandidateActive = isCandidateActive;
-        isThesoActive = false;   
-        isProfileActive = false; 
-        isSettingActive = false;    
-        isToolBoxActive = false;  
+        isThesoActive = false;
+        isProfileActive = false;
+        isSettingActive = false;
+        isToolBoxActive = false;
         resetColor();
-        candidateColor = "white";   
+        candidateColor = "white";
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
@@ -147,12 +145,12 @@ public class IndexSetting implements Serializable {
 
     public void setIsProfileActive(boolean isProfileActive) {
         this.isProfileActive = isProfileActive;
-        isThesoActive = false;   
+        isThesoActive = false;
         isCandidateActive = false;
-        isSettingActive = false;    
-        isToolBoxActive = false; 
+        isSettingActive = false;
+        isToolBoxActive = false;
         resetColor();
-        profileColor = "white";          
+        profileColor = "white";
     }
 
     public boolean isIsSettingActive() {
@@ -161,28 +159,27 @@ public class IndexSetting implements Serializable {
 
     public void setIsSettingActive(boolean isSettingActive) {
         this.isSettingActive = isSettingActive;
-        isThesoActive = false;   
+        isThesoActive = false;
         isCandidateActive = false;
-        isProfileActive = false; 
-        isToolBoxActive = false;  
+        isProfileActive = false;
+        isToolBoxActive = false;
         resetColor();
-        settingColor = "white";          
+        settingColor = "white";
     }
-    
+
     public boolean isIsToolBoxActive() {
         return isToolBoxActive;
     }
 
     public void setIsToolBoxActive(boolean isToolBoxActive) {
         this.isToolBoxActive = isToolBoxActive;
-        isThesoActive = false;   
+        isThesoActive = false;
         isCandidateActive = false;
-        isProfileActive = false; 
+        isProfileActive = false;
         isSettingActive = false;
         resetColor();
-        toolBoxColor = "white";            
-     
-    }    
+        toolBoxColor = "white";
+    }
 
     public String getThesoColor() {
         return thesoColor;
@@ -223,6 +220,14 @@ public class IndexSetting implements Serializable {
     public void setToolBoxColor(String toolBoxColor) {
         this.toolBoxColor = toolBoxColor;
     }
+/*
+    public boolean isConceptDiagramSelected() {
+        return isConceptDiagramSelected;
+    }
+
+    public void setConceptDiagramSelected(boolean conceptDiagramSelected) {
+        isConceptDiagramSelected = conceptDiagramSelected;
+    }*/
 
     public boolean isIsFacetSelected() {
         return isFacetSelected;

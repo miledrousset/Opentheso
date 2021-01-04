@@ -1391,8 +1391,6 @@ public class ConceptHelper {
                 setIdConceptGroupConcept(conn, idTheso, id, newId);
                 //table concept_historique
                 setIdConceptHistorique(conn, idTheso, id, newId);
-                //table concept_orphan
-                setIdConceptOrphan(conn, idTheso, id, newId);
                 //table gps 
                 gpsHelper.setIdConceptGPS(conn, idTheso, id, newId);
                 //table hierarchical_relationship
@@ -1407,8 +1405,8 @@ public class ConceptHelper {
                 imagesHelper.setIdConceptImage(conn, idTheso, id, newId);
                 //table ExternalImages 
                 imagesHelper.setIdConceptExternalImages(conn, idTheso, id, newId);
-                //table concept_fusion
-                setIdConceptFusion(conn, idTheso, id, newId);
+                //table concept_replacedby
+                setIdConceptReplacedby(conn, idTheso, id, newId);
                 //table preferred_term 
                 setIdConceptPreferedTerm(conn, idTheso, id, newId);
                 //table alignement
@@ -2465,166 +2463,6 @@ public class ConceptHelper {
     }
 
     /**
-     * Cette fonction permet de fusionner deux concepts. Le premier concept
-     * reste, le second passe en état 'fusionné'.
-     *
-     * @param ds
-     * @param idConcept1
-     * @param idConcept2
-     * @param idTheso
-     * @param idUser
-     * @return
-     */
-    public boolean addConceptFusion(HikariDataSource ds,
-            String idConcept1, String idConcept2, String idTheso, int idUser) {
-        boolean status = false;
-        String idArk = "";
-        Connection conn;
-        Statement stmt;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            conn.setAutoCommit(false);
-            Concept concept = getThisConcept(ds, idConcept2, idTheso);
-            concept.setStatus("hidden");
-
-            if (!addConceptHistorique(conn, concept, idUser)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            } else if (!updateStatusConcept(ds, idConcept2, idTheso, "hidden")) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into concept_fusion "
-                            + "(id_concept1, id_concept2, id_thesaurus, id_user)"
-                            + " values ("
-                            + "'" + idConcept1 + "'"
-                            + ",'" + idConcept2 + "'"
-                            + ",'" + idTheso + "'"
-                            + ",'" + idUser + "')";
-                    stmt.executeUpdate(query);
-                    status = true;
-                    conn.commit();
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while melting Concept : " + idConcept1 + " and " + idConcept2, sqle);
-        }
-        return status;
-    }
-
-    /**
-     * Cette fonction permet de désactiver un concept (hidden)
-     *
-     * @param ds
-     * @param idConcept
-     * @param idTheso
-     * @param idUser
-     * @return
-     */
-    public boolean desactiveConcept(HikariDataSource ds, String idConcept,
-            String idTheso, int idUser) {
-        Connection conn;
-        Statement stmt;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            conn.setAutoCommit(false);
-            try {
-                stmt = conn.createStatement();
-                try {
-                    Concept concept = getThisConcept(ds, idConcept, idTheso);
-                    concept.setStatus("hidden");
-
-                    if (!addConceptHistorique(conn, concept, idUser)) {
-                        conn.rollback();
-                        conn.close();
-                        return false;
-                    }
-
-                    String query = "UPDATE concept "
-                            + "set status='hidden'"
-                            + " WHERE id_concept ='" + idConcept + "'"
-                            + " AND id_thesaurus='" + idTheso + "'";
-
-                    stmt.executeUpdate(query);
-                    conn.commit();
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error during desactivation of Concept : " + idConcept, sqle);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Cette fonction permet de réactiver un concept (!hidden)
-     *
-     * @param ds
-     * @param idConcept
-     * @param idTheso
-     * @param idUser
-     * @return
-     */
-    public boolean reactiveConcept(HikariDataSource ds, String idConcept,
-            String idTheso, int idUser) {
-        Connection conn;
-        Statement stmt;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    Concept concept = getThisConcept(ds, idConcept, idTheso);
-                    concept.setStatus("D");
-
-                    if (!addConceptHistorique(conn, concept, idUser)) {
-                        conn.rollback();
-                        conn.close();
-                        return false;
-                    }
-
-                    String query = "UPDATE concept "
-                            + "set status='D'"
-                            + " WHERE id_concept ='" + idConcept + "'"
-                            + " AND id_thesaurus='" + idTheso + "'";
-
-                    stmt.executeUpdate(query);
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error during reactivation of Concept : " + idConcept, sqle);
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Cette fonction permet de supprimer un Concept avec ses relations et
      * traductions
      *
@@ -2704,7 +2542,7 @@ public class ConceptHelper {
                 return false;
             }
 
-            if (!deleteConceptFusion(conn, idThesaurus, idConcept)) {
+            if (!deleteConceptReplacedby(conn, idThesaurus, idConcept)) {
                 conn.rollback();
                 conn.close();
                 return false;
@@ -2852,8 +2690,6 @@ public class ConceptHelper {
                             + " and id_term ='" + idterm + "'";
                     stmt.executeUpdate(query);
 
-                    bushenfants(conn, idConcept, idThesaurus);
-
                     query = "delete from hierarchical_relationship where"
                             + " id_thesaurus ='" + idThesaurus + "'"
                             + " and id_concept1 ='" + idConcept + "'";
@@ -2879,10 +2715,6 @@ public class ConceptHelper {
                             + " and id_concept2 ='" + idConcept + "'";
                     stmt.executeUpdate(query);
 
-                    query = "delete from concept_orphan where"
-                            + " id_thesaurus ='" + idThesaurus + "'"
-                            + " and id_concept ='" + idConcept + "'";
-                    stmt.executeUpdate(query);
                     status = true;
 
                 } finally {
@@ -2896,39 +2728,6 @@ public class ConceptHelper {
             log.error("Error while deleting Concept : " + idConcept, sqle);
         }
         return status;
-    }
-
-    private void bushenfants(Connection conn, String idConcept, String idTheso) {
-        Statement stmt;
-        ArrayList<String> conceptabush = new ArrayList<>();
-        ResultSet resulset;
-        try {
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select id_concept2 from hierarchical_relationship"
-                            + " where id_thesaurus ='" + idTheso
-                            + "' and id_concept1 ='" + idConcept
-                            + "' and role LIKE 'NT%'";
-                    resulset = stmt.executeQuery(query);
-                    while (resulset.next()) {
-                        conceptabush.add(resulset.getString(1));
-                    }
-                    for (int i = 0; i < conceptabush.size(); i++) {
-                        query = "Insert into concept_orphan (id_concept, id_thesaurus)"
-                                + " values('" + conceptabush.get(i) + "', '" + idTheso + "')";
-                        stmt.execute(query);
-                    }
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                //     conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while deleting Concept : " + idConcept, sqle);
-        }
     }
 
     /**
@@ -4039,7 +3838,7 @@ public class ConceptHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select * from concept " // left join concept_group_concept  on id_concept = idconcept and id_thesaurus = idthesaurus where id_thesaurus = '"
+                    String query = "select * from concept "
                             + " where id_thesaurus = '" + idThesaurus + "'"
                             + " and id_concept = '" + idConcept + "'";
                     stmt.executeQuery(query);
@@ -5992,6 +5791,11 @@ public class ConceptHelper {
             nodeConceptExport.setVotes(new CandidatDao().getAllVotesByCandidat(ds, idConcept, idThesaurus));
         }
 
+        /// pour les concepts dépréciés 
+        DeprecateHelper deprecateHelper = new DeprecateHelper();
+        nodeConceptExport.setReplacedBy(deprecateHelper.getAllReplacedByWithArk(ds, idThesaurus, idConcept));
+        nodeConceptExport.setReplaces(deprecateHelper.getAllReplacesWithArk(ds, idThesaurus, idConcept));
+        
         return nodeConceptExport;
     }
 
@@ -6005,47 +5809,6 @@ public class ConceptHelper {
                     + " (" + result.get(0).getLinkAddress() + ")");
         }
         return initialStr;
-    }
-
-    public ArrayList<NodeFusion> getConceptFusion(HikariDataSource ds,
-            String idConcept, String idLang, String idThesaurus) {
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
-        ArrayList<NodeFusion> nf = new ArrayList<>();
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select id_concept1, id_concept2 from concept_fusion where"
-                            + " concept_fusion.id_thesaurus = '" + idThesaurus + "'"
-                            + " AND (concept_fusion.id_concept1 = '" + idConcept + "'"
-                            + " OR concept_fusion.id_concept2 = '" + idConcept + "')";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-
-                    while (resultSet.next()) {
-                        NodeFusion n = new NodeFusion();
-                        n.setIdConcept1(resultSet.getString("id_concept1"));
-                        n.setIdConcept2(resultSet.getString("id_concept2"));
-                        n.setLexicalValue1(getLexicalValueOfConcept(ds, resultSet.getString("id_concept1"), idThesaurus, idLang));
-                        n.setLexicalValue2(getLexicalValueOfConcept(ds, resultSet.getString("id_concept2"), idThesaurus, idLang));
-                        nf.add(n);
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting fusion of Concept : " + idConcept, sqle);
-        }
-        return nf;
     }
 
     /**
@@ -6249,6 +6012,9 @@ public class ConceptHelper {
         if (concept == null) {
             return null;
         }
+        if(concept.getStatus().equalsIgnoreCase("dep")) {
+            concept.setIsDeprecated(true);
+        }
         nodeConcept.setConcept(concept);
 
         //récupération du Terme
@@ -6289,6 +6055,12 @@ public class ConceptHelper {
         ImagesHelper imagesHelper = new ImagesHelper();
         nodeConcept.setNodeimages(imagesHelper.getExternalImages(ds, idConcept, idThesaurus));
 
+        // concepts qui remplacent un concept déprécié
+        DeprecateHelper deprecatedHelper = new DeprecateHelper();
+        nodeConcept.setReplacedBy(deprecatedHelper.getAllReplacedBy(ds, idThesaurus, idConcept, idLang));
+        // les concepts dépécés que ce concept remplace
+        nodeConcept.setReplaces(deprecatedHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
+        
         return nodeConcept;
     }
 
@@ -6324,6 +6096,46 @@ public class ConceptHelper {
                         idConcept = resultSet.getString("id_concept");
                     } else {
                         return null;
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting idConcept of idTerm : " + idConcept, sqle);
+        }
+        return idConcept;
+    }
+    
+    public String getConceptIdFromPrefLabel(HikariDataSource ds, String prefLabel, 
+            String idThesaurus, String lang) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        String idConcept = null;
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String str = prefLabel.replaceAll("\'", "%");
+                    String query = "SELECT DISTINCT(preferred_term.id_concept) " +
+                        "FROM preferred_term, term " +
+                        "WHERE term.id_thesaurus = '"+idThesaurus+"' " +
+                        "AND term.id_term = preferred_term.id_term " +
+                        "AND term.lexical_value like '%"+str+"%' " +
+                        "AND lang = '"+lang+"'";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet.next()) {
+                        idConcept = resultSet.getString("id_concept");
                     }
 
                 } finally {
@@ -6974,29 +6786,6 @@ public class ConceptHelper {
     }
 
     /**
-     * Change l'id d'un concept dans la table concept_orphan
-     *
-     * @param conn
-     * @param idTheso
-     * @param idConcept
-     * @param newIdConcept
-     * @throws SQLException
-     */
-    public void setIdConceptOrphan(Connection conn, String idTheso, String idConcept, String newIdConcept) throws SQLException {
-        Statement stmt;
-        stmt = conn.createStatement();
-        try {
-            String query = "UPDATE concept_orphan"
-                    + " SET id_concept = '" + newIdConcept + "'"
-                    + " WHERE id_concept = '" + idConcept + "'"
-                    + " AND id_thesaurus = '" + idTheso + "'";
-            stmt.execute(query);
-        } finally {
-            stmt.close();
-        }
-    }
-
-    /**
      * Change l'id d'un concept dans la table hierarchical_relationship
      *
      * @param conn
@@ -7054,7 +6843,7 @@ public class ConceptHelper {
     }
 
     /**
-     * Change l'id d'un concept dans la table concept_fusion
+     * Change l'id d'un concept dans la table concept_replacedby
      *
      * @param conn
      * @param idTheso
@@ -7062,16 +6851,16 @@ public class ConceptHelper {
      * @param newIdConcept
      * @throws java.sql.SQLException
      */
-    public void setIdConceptFusion(Connection conn, String idTheso, String idConcept, String newIdConcept) throws SQLException {
+    public void setIdConceptReplacedby(Connection conn, String idTheso, String idConcept, String newIdConcept) throws SQLException {
         Statement stmt;
         stmt = conn.createStatement();
         try {
-            String query = "UPDATE concept_fusion"
+            String query = "UPDATE concept_replacedby"
                     + " SET id_concept1 = '" + newIdConcept + "'"
                     + " WHERE id_concept1 = '" + idConcept + "'"
                     + " AND id_thesaurus = '" + idTheso + "'";
             query += ";";
-            query += "UPDATE concept_fusion"
+            query += "UPDATE concept_replacedby"
                     + " SET id_concept2 = '" + newIdConcept + "'"
                     + " WHERE id_concept2 = '" + idConcept + "'"
                     + " AND id_thesaurus = '" + idTheso + "'";
@@ -7083,25 +6872,25 @@ public class ConceptHelper {
     }
 
     /**
-     * permet de supprimer un concept dans la table concept_fusion
+     * permet de supprimer un concept dans la table concept_replacedby
      *
      * @param conn
      * @param idTheso
      * @param idConcept
      * @return
      */
-    public boolean deleteConceptFusion(Connection conn, String idTheso, String idConcept) {
+    public boolean deleteConceptReplacedby(Connection conn, String idTheso, String idConcept) {
         boolean status = false;
         try {
             Statement stmt;
             stmt = conn.createStatement();
 
             try {
-                String query = "delete from concept_fusion"
+                String query = "delete from concept_replacedby"
                         + " WHERE id_concept1 = '" + idConcept + "'"
                         + " AND id_thesaurus = '" + idTheso + "'";
                 query += ";";
-                query += "delete from concept_fusion"
+                query += "delete from concept_replacedby"
                         + " WHERE id_concept2 = '" + idConcept + "'"
                         + " AND id_thesaurus = '" + idTheso + "'";
                 stmt.execute(query);

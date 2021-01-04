@@ -979,8 +979,8 @@ public class AlignmentHelper {
                             + alig.getSource() + "','"
                             + alig.getRequete() + "','"
                             + alig.getTypeRequete() + "','"
-                            + alig.getAlignement_format() + "','"
-                            + id_user + "','"
+                            + alig.getAlignement_format() + "',"
+                            + id_user + ",'"
                             + alig.getDescription() + "');";
                     stmt.execute(query);
                     status = true;

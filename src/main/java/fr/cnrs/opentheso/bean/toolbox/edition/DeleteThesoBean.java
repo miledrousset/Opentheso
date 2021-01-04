@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -31,10 +32,13 @@ import javax.inject.Inject;
 @SessionScoped
 public class DeleteThesoBean implements Serializable {
     @Inject private Connect connect;
+    @Inject private SelectedTheso selectedTheso;
     
     private String idThesoToDelete;
     private String valueOfThesoToDelelete;
     private boolean isDeleteOn;
+    
+    private String currentIdTheso;
     /**
      * Creates a new instance of DeleteThesoBean
      */
@@ -42,18 +46,23 @@ public class DeleteThesoBean implements Serializable {
         idThesoToDelete = null;
         valueOfThesoToDelelete = null;
         isDeleteOn = false;
+        currentIdTheso = null;
     }
     
     public void init() {
         idThesoToDelete = null;
         valueOfThesoToDelelete = null;
-        isDeleteOn = false;        
+        isDeleteOn = false;     
+        currentIdTheso = null;
     }
     
-    public void confirmDelete(NodeIdValue nodeTheso) {
+    public void confirmDelete(NodeIdValue nodeTheso, String cucurrentIdTheso) {
         this.idThesoToDelete = nodeTheso.getId();
         this.valueOfThesoToDelelete = nodeTheso.getValue();
         isDeleteOn = true;
+        
+        // récupération de l'idTheso en cours
+        this.currentIdTheso = cucurrentIdTheso;
     }
     
     /**
@@ -96,6 +105,13 @@ public class DeleteThesoBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
+        if(idThesoToDelete.equalsIgnoreCase(currentIdTheso)) {
+            selectedTheso.setSelectedIdTheso(null);
+            selectedTheso.setSelectedLang(null);
+            selectedTheso.setSelectedTheso();
+        }
+        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "thesaurus supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();

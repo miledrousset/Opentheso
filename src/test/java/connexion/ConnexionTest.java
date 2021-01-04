@@ -27,9 +27,9 @@ public class ConnexionTest {
         config.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
 
         // Pactols2
-        config.addDataSourceProperty("user", "pactols");
-        config.addDataSourceProperty("password", "pactols");
-        config.addDataSourceProperty("databaseName", "pactols2_prod");
+        config.addDataSourceProperty("user", "opentheso");
+        config.addDataSourceProperty("password", "opentheso");
+        config.addDataSourceProperty("databaseName", "opentheso");
         config.addDataSourceProperty("portNumber", "5432");
         config.addDataSourceProperty("serverName", "localhost");
 

@@ -21,13 +21,13 @@ import org.eclipse.rdf4j.model.vocabulary.FOAF;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
 
 /**
  *
  * @author Quincy
  */
 public class WriteRdf4j {
-
 
     public final static String DELIMINATE = "##";
     public final static String STATUS_TAG = "status";
@@ -50,8 +50,6 @@ public class WriteRdf4j {
         writeModel();
         model = builder.build();
     }
-    
-    
 
     private void loadModel() {
         builder = new ModelBuilder();
@@ -62,7 +60,7 @@ public class WriteRdf4j {
         builder.setNamespace("iso-thes", "http://purl.org/iso25964/skos-thes#");
         builder.setNamespace("opentheso", "http://purl.org/umu/uneskos#");
         builder.setNamespace("foaf", "http://xmlns.com/foaf/0.1/");
-
+        builder.setNamespace("owl", "http://www.w3.org/2002/07/owl#");
     }
 
     private void writeModel() {
@@ -90,8 +88,52 @@ public class WriteRdf4j {
             writeStatusCandidat(concept);
             writeDiscussions(concept);
             writeVotes(concept);
-        }
 
+            writeStatus(concept);
+            writeReplaces(concept);
+        }
+    }
+
+    private void writeImageUri(SKOSResource resource) {
+        if (resource.getImageUris() != null) {
+            if (!resource.getImageUris().isEmpty()) {
+                for (String imageUri : resource.getImageUris()) {
+                    try {
+                        imageUri = imageUri.replaceAll(" ", "%20");
+                        IRI uri = vf.createIRI(imageUri);
+                        builder.add(FOAF.IMAGE, uri);
+                    } catch (Exception e) {
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeReplaces(SKOSResource resource) {
+        for (SKOSReplaces replace : resource.getsKOSReplaces()) {
+            IRI uri = vf.createIRI(replace.getTargetUri());
+            int prop = replace.getProperty();
+            switch (prop) {
+                case SKOSProperty.isReplacedBy:
+                    builder.add(DCTERMS.IS_REPLACED_BY, uri);
+                    break;
+                case SKOSProperty.replaces:
+                    builder.add(DCTERMS.REPLACES, uri);
+                    break;
+            }
+        }
+    }
+
+    private void writeStatus(SKOSResource resource) {
+        int prop = resource.getStatus();
+        switch (prop) {
+            case SKOSProperty.deprecated:
+                builder.add(OWL.DEPRECATED, true);
+                break;
+            default:
+                break;
+        }
     }
 
     private void writeFacet() {
@@ -121,13 +163,14 @@ public class WriteRdf4j {
     }
 
     private void writeConceptScheme() {
-        if(xmlDocument.getConceptScheme() == null){
+        if (xmlDocument.getConceptScheme() == null) {
             return;
         }
         SKOSResource conceptScheme = xmlDocument.getConceptScheme();
         builder.subject(vf.createIRI(conceptScheme.getUri()));//createURI(conceptScheme.getUri()));
 
         builder.add(RDF.TYPE, SKOS.CONCEPT_SCHEME);
+
 
         writeLabel(conceptScheme);
         writeRelation(conceptScheme);
@@ -138,22 +181,22 @@ public class WriteRdf4j {
         writeCreator(conceptScheme);
         writeDocumentation(conceptScheme);
         writeGPS(conceptScheme);
+        writeDcTerms(conceptScheme);
     }
 
     private void writeGPS(SKOSResource resource) {
         SKOSGPSCoordinates gps = resource.getGPSCoordinates();
-        String lat = gps.getLat();
-        String lon = gps.getLon();
-        Literal literal;
-
-        if (lat != null && lon != null) {
-            literal = vf.createLiteral(lat, XMLSchema.DOUBLE);
-            builder.add("geo:lat", literal);
-
-            literal = vf.createLiteral(lon, XMLSchema.DOUBLE);
-            builder.add("geo:long", literal);
+        Double lat = null;
+        Double lon = null;
+        try {
+            lat = Double.parseDouble(gps.getLat());
+            lon = Double.parseDouble(gps.getLon());
+        } catch (Exception e) {
         }
-
+        if (lat != null && lon != null) {
+            builder.add("geo:lat", lat);
+            builder.add("geo:long", lon);
+        }
     }
 
     private void writeDocumentation(SKOSResource resource) {
@@ -234,36 +277,22 @@ public class WriteRdf4j {
         }
 
     }
-    
+
     /**
      * Pour écrire le chemin complet / autopostage
-     * @param resource 
+     *
+     * @param resource
      */
     private void writePath(SKOSResource resource) {
-        Literal literal;
-        if(resource.getPaths() != null){
-            if(!resource.getPaths().isEmpty()) {
+        if (resource.getPaths() != null) {
+            if (!resource.getPaths().isEmpty()) {
                 for (String path1 : resource.getPaths()) {
-                    literal = vf.createLiteral(path1.trim(), XMLSchema.STRING);            
-                    builder.add(DCTERMS.DESCRIPTION, literal);
+                    builder.add(DCTERMS.DESCRIPTION, path1.trim());
                 }
             }
         }
     }
-    
-    private void writeImageUri(SKOSResource resource) {
-        Literal literal;
-        if(resource.getImageUris() != null){
-            if(!resource.getImageUris().isEmpty()) {
-                for (String imageUri : resource.getImageUris()) {
-                    literal = vf.createLiteral(imageUri.trim(), XMLSchema.STRING);            
-                    builder.add(FOAF.IMAGE, literal);
-                }
-            }
-        }
-    }  
-    
-        
+
     private void writeIdentifier(SKOSResource resource) {
         if (resource.getSdc() != null) {
             builder.add(DCTERMS.IDENTIFIER, resource.getSdc().getIdentifier());
@@ -285,7 +314,6 @@ public class WriteRdf4j {
             builder.add(SKOS.NOTATION, notation.getNotation());
         }
     }
-
 
     private void writeDiscussions(SKOSResource resource) {
         for (SKOSDiscussion discussion : resource.getMessages()) {
@@ -321,6 +349,49 @@ public class WriteRdf4j {
         }
     }
 
+    private void writeDcTerms(SKOSResource resource){
+        if(resource.getThesaurus().getTitle()!= null && !resource.getThesaurus().getTitle().isEmpty())
+            builder.add(DCTERMS.TITLE, resource.getThesaurus().getTitle());
+
+        if(resource.getThesaurus().getCreator()!= null && !resource.getThesaurus().getCreator().isEmpty())
+            builder.add(DCTERMS.CREATOR, resource.getThesaurus().getCreator());
+
+        if(resource.getThesaurus().getContributor() != null && !resource.getThesaurus().getContributor().isEmpty())
+            builder.add(DCTERMS.CONTRIBUTOR, resource.getThesaurus().getContributor());
+
+        if(resource.getThesaurus().getPublisher()!= null && !resource.getThesaurus().getPublisher().isEmpty())
+            builder.add(DCTERMS.PUBLISHER, resource.getThesaurus().getPublisher());
+
+        if(resource.getThesaurus().getDescription()!= null && !resource.getThesaurus().getDescription().isEmpty())
+            builder.add(DCTERMS.DESCRIPTION, resource.getThesaurus().getDescription());
+
+        if(resource.getThesaurus().getType()!= null && !resource.getThesaurus().getType().isEmpty())
+            builder.add(DCTERMS.TYPE, resource.getThesaurus().getType());
+
+        if(resource.getThesaurus().getRights()!= null && !resource.getThesaurus().getRights().isEmpty())
+            builder.add(DCTERMS.RIGHTS, resource.getThesaurus().getRights());
+
+        if(resource.getThesaurus().getSubject()!= null && !resource.getThesaurus().getSubject().isEmpty())
+            builder.add(DCTERMS.SUBJECT, resource.getThesaurus().getSubject());
+
+        if(resource.getThesaurus().getCoverage()!= null && !resource.getThesaurus().getCoverage().isEmpty())
+            builder.add(DCTERMS.COVERAGE, resource.getThesaurus().getCoverage());
+
+        if(resource.getThesaurus().getLanguage()!= null && !resource.getThesaurus().getLanguage().isEmpty())
+            builder.add(DCTERMS.LANGUAGE, resource.getThesaurus().getLanguage());
+
+        if(resource.getThesaurus().getRelation()!= null && !resource.getThesaurus().getRelation().isEmpty())
+            builder.add(DCTERMS.RELATION, resource.getThesaurus().getRelation());
+
+        if(resource.getThesaurus().getSource()!= null && !resource.getThesaurus().getSource().isEmpty())
+            builder.add(DCTERMS.SOURCE, resource.getThesaurus().getSource());
+//
+//        if(resource.getThesaurus().getCreated()!= null)
+//            builder.add(DCTERMS.CREATED, resource.getThesaurus().getCreated());
+//        if(resource.getThesaurus().getModified()!= null)
+//            builder.add(DCTERMS.MODIFIED, resource.getThesaurus().getModified());
+    }
+
     private void writeMatch(SKOSResource resource) {
         int prop;
         IRI uri;
@@ -346,7 +417,7 @@ public class WriteRdf4j {
                         break;
                     default:
                         break;
-                }                
+                }
             } catch (Exception ex) {
                 Logger.getLogger(WriteRdf4j.class.getName()).log(Level.SEVERE,
                         "Error URI Alignement : " + resource.getUri(), ex);
@@ -355,18 +426,17 @@ public class WriteRdf4j {
     }
 
     private void writeStatusCandidat(SKOSResource resource) {
-        if(resource.getSkosStatus() != null && !StringUtils.isEmpty(resource.getSkosStatus().getIdStatus())){
+        if (resource.getSkosStatus() != null && !StringUtils.isEmpty(resource.getSkosStatus().getIdStatus())) {
             builder.add(SKOS.NOTE, vf.createLiteral(resource.getSkosStatus().getIdStatus() + DELIMINATE + resource.getSkosStatus().getMessage()
                     + DELIMINATE + resource.getSkosStatus().getIdUser() + DELIMINATE + resource.getSkosStatus().getDate(), STATUS_TAG));
         }
     }
-    
 
     private void writeRelation(SKOSResource resource) {
         int prop;
 
         for (SKOSRelation relation : resource.getRelationsList()) {
-            
+
             IRI uri = vf.createIRI(relation.getTargetUri());
             prop = relation.getProperty();
             switch (prop) {
@@ -424,7 +494,7 @@ public class WriteRdf4j {
                 case SKOSProperty.superGroup:
                     builder.add("iso-thes:superGroup", uri);
                     break;
-                    
+
                 /// unesco properties for Groups or Collections    
                 case SKOSProperty.memberOf:
                     builder.add("opentheso:memberOf", uri);

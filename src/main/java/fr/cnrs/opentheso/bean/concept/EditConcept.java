@@ -6,7 +6,10 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
+import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -16,8 +19,6 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -56,6 +57,11 @@ public class EditConcept implements Serializable {
     private boolean isCreated;
     private boolean duplicate;
     private boolean forDelete;
+    
+    private boolean isReplacedByRTrelation;
+    
+    // dépréciation
+    private ArrayList<NodeIdValue> nodeReplaceBy;
 
     public EditConcept() {
     }
@@ -66,6 +72,9 @@ public class EditConcept implements Serializable {
         prefLabel = label;
         notation = "";
         forDelete = false;
+        isReplacedByRTrelation = false;
+        
+        nodeReplaceBy = conceptView.getNodeConcept().getReplacedBy();
     }
 
     public void infos() {
@@ -295,7 +304,6 @@ public class EditConcept implements Serializable {
             pf.ajax().update("formRightTab:viewTabConcept:conceptView");
         }
         PrimeFaces.current().executeScript("PF('deleteConcept').hide();");
-
         reset("");
     }
 
@@ -318,6 +326,113 @@ public class EditConcept implements Serializable {
                     idTheso,
                     idUser);
         }
+    }
+    
+    
+///////////////////////////////////////////////////////////////////////////////
+//////// gestion des concepts dépérciés    
+///////////////////////////////////////////////////////////////////////////////    
+    
+    public void deprecateConcept(String idConcept, String idTheso, int idUser){
+        DeprecateHelper deprecateHelper = new DeprecateHelper();
+        FacesMessage msg;
+        if(!deprecateHelper.deprecateConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été déprécié !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), 
+                idConcept);       
+        conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());        
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept a bien été déprécié");
+        FacesContext.getCurrentInstance().addMessage(null, msg);     
+    }
+    
+    public void approveConcept(String idConcept, String idTheso, int idUser){
+        DeprecateHelper deprecateHelper = new DeprecateHelper();
+        FacesMessage msg;
+        if(!deprecateHelper.approveConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été approuvé !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }
+        if(isReplacedByRTrelation) {
+            RelationsHelper relationsHelper = new RelationsHelper();
+            if(conceptView.getNodeConcept().getReplacedBy() != null && !conceptView.getNodeConcept().getReplacedBy().isEmpty())
+                for (NodeIdValue nodeIdValue : nodeReplaceBy) {
+                    relationsHelper.addRelationRT(connect.getPoolConnexion(), idConcept, idTheso, nodeIdValue.getId(), idUser);                    
+                }
+        }
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), 
+                idConcept);          
+        conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept a bien été approuvé");
+        FacesContext.getCurrentInstance().addMessage(null, msg);        
+    }    
+    
+    public void addReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy, int idUser){
+        FacesMessage msg;        
+        if(idConceptReplaceBy == null || idConceptReplaceBy.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de concept sélectionné !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }
+        DeprecateHelper deprecateHelper = new DeprecateHelper();
+
+        if(!deprecateHelper.addReplacedBy(connect.getPoolConnexion(),
+                idConceptDeprecated, idTheso, idConceptReplaceBy, idUser)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été ajouté !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), 
+                idConceptDeprecated);          
+        conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("formRightTab:viewTabConcept:idDeprecatedLabel");
+        }           
+    }
+
+    public void deleteReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy){
+        FacesMessage msg;        
+        if(idConceptReplaceBy == null || idConceptReplaceBy.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de concept sélectionné !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;              
+        }
+        DeprecateHelper deprecateHelper = new DeprecateHelper();
+
+        if(!deprecateHelper.deleteReplacedBy(connect.getPoolConnexion(),
+                idConceptDeprecated, idTheso, idConceptReplaceBy)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "la relation n'a pas été enlevée !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), 
+                idConceptDeprecated);         
+        conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation supprimée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("formRightTab:viewTabConcept:idDeprecatedLabel");
+        }  
+        reset("");
+        
     }
     
     
@@ -562,6 +677,22 @@ public class EditConcept implements Serializable {
 
     public void setForDelete(boolean forDelete) {
         this.forDelete = forDelete;
+    }
+
+    public ArrayList<NodeIdValue> getNodeReplaceBy() {
+        return nodeReplaceBy;
+    }
+
+    public void setNodeReplaceBy(ArrayList<NodeIdValue> nodeReplaceBy) {
+        this.nodeReplaceBy = nodeReplaceBy;
+    }
+
+    public boolean isIsReplacedByRTrelation() {
+        return isReplacedByRTrelation;
+    }
+
+    public void setIsReplacedByRTrelation(boolean isReplacedByRTrelation) {
+        this.isReplacedByRTrelation = isReplacedByRTrelation;
     }
 
 }
