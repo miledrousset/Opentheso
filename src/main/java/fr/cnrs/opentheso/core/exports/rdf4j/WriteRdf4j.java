@@ -385,11 +385,6 @@ public class WriteRdf4j {
 
         if(resource.getThesaurus().getSource()!= null && !resource.getThesaurus().getSource().isEmpty())
             builder.add(DCTERMS.SOURCE, resource.getThesaurus().getSource());
-//
-//        if(resource.getThesaurus().getCreated()!= null)
-//            builder.add(DCTERMS.CREATED, resource.getThesaurus().getCreated());
-//        if(resource.getThesaurus().getModified()!= null)
-//            builder.add(DCTERMS.MODIFIED, resource.getThesaurus().getModified());
     }
 
     private void writeMatch(SKOSResource resource) {
