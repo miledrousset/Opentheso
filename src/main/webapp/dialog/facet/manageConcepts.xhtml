@@ -1,0 +1,62 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="idManageMembers" header="Gérer les concepts membres" 
+              widgetVar="manageMembers" modal="true" resizable="true" 
+              position="top" width="400" style="margin-top: 50px" >         
+        <h:form id="manageMembersForm"
+                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+            <b:row >
+                <b:column span="10" offset="1" style=" margin-bottom: 10px; width: 100%">
+                    <h:outputText value="Facette: " />
+                    <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: #42a068;" />
+                </b:column>   
+            </b:row>            
+            <b:row >
+                <b:column span="10" offset="1">
+                    <h:outputText value="Rechercher un concept" style="font-size: 12px; width: 100%" />
+                </b:column>
+            </b:row>  
+            <b:row >
+                <!-- Valeur -->
+                <b:column span="10" offset="1">
+                    <p:autoComplete id="autoSynonymLink" value="#{editFacet.conceptSelected}"
+                                    var="concept"
+                                    forceSelection="true"
+                                    completeMethod="#{editFacet.searchConcept}"                                  
+                                    minQueryLength="1" itemLabel="#{concept.value}" itemValue="#{concept}" converter="searchConverterIdValue"
+                                    scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 28px;box-shadow: none;border-color: #43B572"
+                                    style="font-size: 12px; height: 28px; width: 100%">
+                        <p:column style="font-size: 12px; width: 100%">
+                            <h:outputText title="#{concept.id}" value="#{concept.value}" />
+                        </p:column>
+
+                    </p:autoComplete>  
+                </b:column>              
+            </b:row>
+            <b:row >
+                <b:column span="10" offset="1" >
+                    <b:messages autoUpdate="true"/>
+                </b:column>               
+            </b:row>
+
+            <b:row style="margin-bottom: 20px; margin-top: 30px; width: 100%">
+                <b:column span="4" offset="2">
+                    <b:commandButton value="#{langueBean.getMsg('btnExit')}" class="btn btn-primary"
+                                     oncomplete="PF('manageMembers').hide();" style="width: 100%; font-size: 12px;
+                                     color: white; background: #8C8C8C;"/>
+                </b:column>                  
+                <b:column span="4">
+                    <b:commandButton value="#{langueBean.getMsg('btnAdd')}" class="btn btn-primary" actionListener="#{editFacet.addMemberToFacet()}"
+                                     update="manageMembersForm"
+                                     style="width: 100%; font-size: 12px; 
+                                     color: white; background: #43B572;"/>
+                </b:column>
+            </b:row>  
+        </h:form>
+    </p:dialog>
+
+</ui:fragment>

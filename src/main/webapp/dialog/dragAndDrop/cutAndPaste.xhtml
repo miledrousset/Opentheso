@@ -64,7 +64,7 @@
             <b:row style="margin-bottom: 10px; margin-top: 30px">
                 <b:column span="4" offset="4" >
                     <b:commandButton rendered="#{cutAndPaste.isValidPaste}"
-                        id="buttonSubmitCut" value="Valider" 
+                        id="buttonSubmitCut" value="#{langueBean.getMsg('btnValidate')}" 
                         style="width:100%; font-size: 13px; 
                         font-weight: normal;
                         color: white; background: #43B572; border: none; box-shadow: none;"
@@ -75,7 +75,7 @@
              
                 <b:column span="4"  >
                     <b:commandButton 
-                        id="buttonCancel1" value="Annuler" 
+                        id="buttonCancel1" value="#{langueBean.getMsg('btnCancel')}" 
                         style="width:100%; font-size: 13px; 
                         font-weight: normal;
                         color: white; background: #FF7979; border: none; box-shadow: none;"

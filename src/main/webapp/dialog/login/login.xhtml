@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-     <p:dialog id="idLogin" header="Connexion" widgetVar="login" 
+     <p:dialog id="idLogin" header="#{langueBean.getMsg('menu.login')}" widgetVar="login" 
               modal="true" resizable="true" position="top" width="450" style="margin-top: 50px" >        
 
         <h:form id="loginForm">
@@ -13,7 +13,7 @@
                     <b:row >
                         <b:column span="12" >
                             <b:icon name="user" style="color: #43B572"/>                            
-                            <b:inputText placeholder="Username" id="username" value="#{currentUser.username}"
+                            <b:inputText placeholder="#{langueBean.getMsg('menu.username')}" id="username" value="#{currentUser.username}"
                                          style="font-size: 12px;">
                             </b:inputText>
                         </b:column>
@@ -21,7 +21,7 @@
                     <b:row >
                         <b:column span="12" > 
                             <b:iconAwesome name="key" style="color: #43B572"/>
-                            <b:inputSecret  placeholder="Password" id="password" value="#{currentUser.password}"
+                            <b:inputSecret  placeholder="#{langueBean.getMsg('menu.password')}" id="password" value="#{currentUser.password}"
                                            style="font-size: 12px;">
                             </b:inputSecret>
                         </b:column>
@@ -35,7 +35,7 @@
 
             <b:row style="margin-bottom: 20px;">
                 <b:column span="5" offset="1" >
-                    <p:commandButton id="buttonLogin" value="login" update="loginForm"
+                    <p:commandButton id="buttonLogin" value="#{langueBean.getMsg('menu.login')}" update="loginForm"
                                      class="btn btn-primary"
                                      action="#{currentUser.login()}" 
                                      style="width:100%; font-size: 13px; 
@@ -43,7 +43,7 @@
                                      color: white; background: #43B572; border: none; box-shadow: none; "/>
                 </b:column>
                 <b:column span="5">
-                    <p:commandButton disabled="true" value="Passe oublié" action="#{currentUser.forgotPassword()}"
+                    <p:commandButton disabled="true" value="#{langueBean.getMsg('menu.forgotten_pass')}" action="#{currentUser.forgotPassword()}"
                                      class="btn btn-primary"
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;

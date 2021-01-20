@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddTraduction" header="Ajouter une traduction" widgetVar="addTraduction" 
+    <p:dialog id="idAddTraduction" header="#{langueBean.getMsg('rightbody.conceptdialog.add_translation')}" widgetVar="addTraduction" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
         <h:form id="addTraductionForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
@@ -13,7 +13,7 @@
                 <b:column span="6" style="margin-left: 5px;">
                     <b:row>
                         <b:column span="12" style=" margin-bottom: 10px; ">
-                            <h:outputText value="Terme : "
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "
                                           style="font-size: 12px;"/>  
                             <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
                                           style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
@@ -22,7 +22,7 @@
                         
                         <!-- Langues du thésaurus -->
                         <b:column span="12" rendered="#{traductionBean.nodeLangsFiltered.size() != 0}">
-                            <p:selectOneMenu id="collection" label="Langue" value="#{traductionBean.selectedLang}" 
+                            <p:selectOneMenu id="collection" label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionBean.selectedLang}"
                                              style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
                                 <f:selectItems  value="#{traductionBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                             </p:selectOneMenu>                                  
@@ -31,7 +31,8 @@
 
 
                         <b:column span="12" rendered="#{traductionBean.nodeLangsFiltered.size() != 0}">
-                            <b:inputText id="idTraductionValue" label="traduction" placeholder="tapez votre traduction ..."  
+                            <b:inputText id="idTraductionValue" label="#{langueBean.getMsg('candidat.traduction')}" 
+                                         placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."     
                                          value="#{traductionBean.traductionValue}" style="font-size: 12px;"/>
                         </b:column>                             
                     </b:row>
@@ -57,7 +58,7 @@
 
             <b:row style="margin-bottom: 10px;" rendered="#{traductionBean.nodeLangsFiltered.size() != 0}">
                 <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="Valider"  update="addTraductionForm" 
+                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addTraductionForm" 
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
                                      color: white; background: #43B572; border: none; box-shadow: none;"

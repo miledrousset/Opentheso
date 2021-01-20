@@ -70,10 +70,16 @@ public class RelationsHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_concept2,role from hierarchical_relationship"
-                            + " where id_thesaurus = '" + idThesaurus + "'"
-                            + " and id_concept1 = '" + idConcept + "'"
-                            + " and role LIKE 'NT%'";
+                    String query = "select id_concept2, role from hierarchical_relationship, concept" +
+                                " where" +
+                                " hierarchical_relationship.id_concept2 = concept.id_concept" +
+                                " and" +
+                                " hierarchical_relationship.id_thesaurus = concept.id_thesaurus" +
+                                " and" +
+                                " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'" +
+                                " and id_concept1 = '" + idConcept + "'" +
+                                " and role LIKE 'NT%'" +
+                                " and concept.status != 'CA'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {

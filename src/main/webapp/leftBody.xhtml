@@ -12,14 +12,14 @@
                       style="margin-top: -20px; font-size: 12px; color: #43B572">
 
                 <b:dropMenu value=""  style="font-size: 12px; " >
-                    <b:navCommandLink iconAwesome="fas fa-sort-alpha-down" value="tri alphabétique"
+                    <b:navCommandLink iconAwesome="fas fa-sort-alpha-down" value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
                                       actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="false"
                                       action="#{selectedTheso.reloadSelectedTheso()}"
                                       style="font-size: 12px"
                                       active="#{!selectedTheso.sortByNotation}"
                                       update="containerIndex candidatForm formMenu formLeftTab">
                     </b:navCommandLink>
-                    <b:navCommandLink iconAwesome="fas fa-sort-amount-down-alt" value="tri par notation"
+                    <b:navCommandLink iconAwesome="fas fa-sort-amount-down-alt" value="#{langueBean.getMsg('leftbody.notation_sort')}"
                                       actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="false"
                                       action="#{selectedTheso.reloadSelectedTheso()}"
                                       style="font-size: 12px;"
@@ -35,22 +35,26 @@
         <b:row>
             <b:column span="12" col-xs="0">
                 <b:tabView activeIndex="#{leftBodySetting.index}" content-style="margin-left:-14px; margin-right:-14px;font-size: 12px;">
-                    <b:tab id="tabTree" title="Concept" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px; " >
+                    <b:tab id="tabTree" title="#{langueBean.getMsg('leftbody.concept')}" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px;"
+                           tooltip="#{langueBean.getMsg('leftbody.concept_tree_view')}" tooltip-delay-show="500">
                         <f:facet name="anchor"><b:iconAwesome name="sitemap" style="color: #f47b2a" size="xs"/></f:facet>
                         <ui:include src="leftBodyView/tree.xhtml"/>
                     </b:tab>            
 
-                    <b:tab id="tabList" title="Index" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px; " >
+                    <b:tab id="tabList" title="#{langueBean.getMsg('leftbody.index')}" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px;"
+                           tooltip="#{langueBean.getMsg('leftbody.index_search_view')}" tooltip-delay-show="500">
                         <f:facet name="anchor"><b:iconAwesome name="list-ul" style="color: #f47b2a" size="xs"/></f:facet>
                         <ui:include src="leftBodyView/list.xhtml"/>
                     </b:tab>
 
-                    <b:tab id="tabGroups" title="Collection" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px; ">
+                    <b:tab id="tabGroups" title="#{langueBean.getMsg('leftbody.collection')}" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px;"
+                           tooltip="#{langueBean.getMsg('leftbody.view_collections_and_members')}" tooltip-delay-show="500">
                         <f:facet name="anchor"><b:iconAwesome name="object-group" style="color: #f47b2a" size="xs"/></f:facet>
                         <ui:include src="leftBodyView/groups.xhtml"/>
                     </b:tab>
 
-                    <b:tab id="tabConcept" title="Arbre" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px; ">
+                    <b:tab id="tabConcept" title="#{langueBean.getMsg('leftbody.tree')}" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px;"
+                           tooltip="#{langueBean.getMsg('leftbody.view_collections_and_concepts')}" tooltip-delay-show="500">
                         <f:facet name="anchor">
                             <b:iconAwesome name="sitemap" style="color: #f47b2a" size="xs"/>
                         </f:facet>

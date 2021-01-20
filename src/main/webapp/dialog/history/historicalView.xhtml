@@ -4,7 +4,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog id="idHistoricalView" header="Affiche l'historique du concept" widgetVar="historicalView" 
+    <p:dialog id="idHistoricalView" header="#{langueBean.getMsg('rightbody.concept.view_change_history')}" widgetVar="historicalView" 
               modal="true" resizable="true" position="top" width="600"  height="600" style="margin-top: 150px" >        
         <h:form id="historicalViewForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
@@ -12,7 +12,7 @@
                 <b:column span="12" style="margin-left: 5px;">
                     <b:dataTable value="#{historyBean.historyLabels}" paginated="false" 
                                  var="label"
-                                 caption="Historique de changement des termes"
+                                 caption="#{langueBean.getMsg('rightbody.conceptdialog.history_term_changes')}"
                                  scrollSize="200px"
                                  scrollCollapse="true"
                                  searching="false"
@@ -30,7 +30,7 @@
                 <b:column span="12" style="margin-left: 5px;">
                     <b:dataTable value="#{historyBean.historySynonyms}" paginated="false" 
                                  var="synonym"
-                                 caption="Historique de changement des synonymes"
+                                 caption="#{langueBean.getMsg('rightbody.conceptdialog.history_synonm_changes')}"
                                  scrollSize="200px"
                                  scrollCollapse="true"
                                  fixedHeader="true"
@@ -48,7 +48,7 @@
                 <b:column span="12" style="margin-left: 5px;">
                     <b:dataTable value="#{historyBean.historyNotes}" paginated="false" 
                                  var="note"
-                                 caption="Historique de changement des notes" 
+                                 caption="#{langueBean.getMsg('rightbody.conceptdialog.history_note_changes')}" 
                                  scrollSize="200px"
                                  scrollCollapse="true"
                                  fixedHeader="true"
@@ -67,7 +67,7 @@
                 <b:column span="12" style="margin-left: 5px;">
                     <b:dataTable value="#{historyBean.historyRelations}" paginated="false" 
                                  var="relations"
-                                 caption="Historique de changement des relations" 
+                                 caption="#{langueBean.getMsg('rightbody.conceptdialog.history_relationship_changes')}" 
                                  scrollSize="200px"
                                  scrollCollapse="true"
                                  fixedHeader="true"

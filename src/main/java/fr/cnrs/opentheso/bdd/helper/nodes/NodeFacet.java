@@ -1,8 +1,10 @@
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+
 public class NodeFacet {
     
-    private int idFacet;
+    private String idFacet;
     private String idThesaurus;
     private String lexicalValue;
     private String created;
@@ -10,11 +12,15 @@ public class NodeFacet {
     private String lang;
     private String idConceptParent;
 
-    public int getIdFacet() {
+    private NodeTermTraduction nodeTraduction;
+    private NodeUri nodeUri;
+    
+    
+    public String getIdFacet() {
         return idFacet;
     }
 
-    public void setIdFacet(int idFacet) {
+    public void setIdFacet(String idFacet) {
         this.idFacet = idFacet;
     }
 
@@ -64,6 +70,22 @@ public class NodeFacet {
 
     public void setIdConceptParent(String idConceptParent) {
         this.idConceptParent = idConceptParent;
+    }
+
+    public NodeUri getNodeUri() {
+        return nodeUri;
+    }
+
+    public void setNodeUri(NodeUri nodeUri) {
+        this.nodeUri = nodeUri;
+    }
+
+    public NodeTermTraduction getNodeTraduction() {
+        return nodeTraduction;
+    }
+
+    public void setNodeTraduction(NodeTermTraduction nodeTraduction) {
+        this.nodeTraduction = nodeTraduction;
     }
     
     

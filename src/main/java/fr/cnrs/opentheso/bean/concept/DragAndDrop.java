@@ -6,6 +6,7 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
@@ -138,18 +139,67 @@ public class DragAndDrop implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang());
         }
-
-        // on conctrole s'il y a plusieurs branches, 
-        if (nodeConceptDrag.getNodeBT().size() < 2) {
-            // sinon, on applique le changement direct 
-            paste();
-        } else {
-            // si oui, on affiche une boite de dialogue pour choisir les branches à couper
-            PrimeFaces pf = PrimeFaces.current();
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:idDragAndDrop");
+        
+        FacetHelper facetHelper = new FacetHelper();
+        // cas de déplacement vers une facette 
+        if(((TreeNodeData) dropNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
+            // cas d'une branche, pas permis
+            if(!nodeConceptDrag.getNodeNT().isEmpty()) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                rollBackAfterErrorOrCancelDragDrop();
+                return;
             }
-            pf.executeScript("PF('dragAndDrop').show();");
+            String idFacet = ((TreeNodeData) dropNode.getData()).getNodeId();
+
+            if(idFacet == null) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                rollBackAfterErrorOrCancelDragDrop();
+                return;                
+            }
+
+            facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+                    idFacet,
+                    selectedTheso.getCurrentIdTheso(),
+                    ((TreeNodeData) dragNode.getData()).getNodeId());
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concept ajouté à la facette");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } else {
+            // on vérifie si le noeud à déplacer est un membre d'une facette, alors on supprime cette appartenance
+            if(((TreeNodeData) dragNode.getData()).getNodeType().equalsIgnoreCase("facetmember")){
+                try {
+                    String idFacetParent = ((TreeNodeData) dragNode.getData()).getIdFacetParent();
+                    if(!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                            idFacetParent,
+                            ((TreeNodeData) dragNode.getData()).getNodeId(),
+                            selectedTheso.getCurrentIdTheso())) {
+                        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                        FacesContext.getCurrentInstance().addMessage(null, msg);
+                        rollBackAfterErrorOrCancelDragDrop();
+                        return; 
+                    }
+                } catch (Exception e) {
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    rollBackAfterErrorOrCancelDragDrop();
+                    return;                      
+                }
+                
+            }
+            
+            // on controle s'il y a plusieurs branches, 
+            if (nodeConceptDrag.getNodeBT().size() < 2) {
+                // sinon, on applique le changement direct 
+                paste();
+            } else {
+                // si oui, on affiche une boite de dialogue pour choisir les branches à couper
+                PrimeFaces pf = PrimeFaces.current();
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("formRightTab:viewTabConcept:idDragAndDrop");
+                }
+                pf.executeScript("PF('dragAndDrop').show();");
+            }
         }
     }
 
@@ -355,6 +405,7 @@ public class DragAndDrop implements Serializable {
                 return;
             }
 
+            /// coller au même endroit
             if (nodeConceptDrop.getConcept().getIdConcept().equalsIgnoreCase(nodeConceptDrag.getConcept().getIdConcept())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Impossible de coller au même endroit ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);

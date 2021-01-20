@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddNote" header="Ajout de note" widgetVar="addNote" 
+    <p:dialog id="idAddNote" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNote" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 50px" >        
         <h:form id="addNoteForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
@@ -13,7 +13,7 @@
                 <b:column span="6" style="margin-left: 5px;">
                     <b:row>
                         <b:column span="12" style=" margin-bottom: 10px; ">
-                            <h:outputText value="Terme : "
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "
                                           style="font-size: 12px;"/>  
                             <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
                                           style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
@@ -23,7 +23,7 @@
                         
                         <!-- type note -->
                         <b:column span="12" >
-                            <p:selectOneMenu id="typeNote" label="Type note" value="#{noteBean.selectedTypeNote}" 
+                            <p:selectOneMenu id="typeNote" label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" value="#{noteBean.selectedTypeNote}" 
                                              style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
                                 
                                 <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
@@ -35,7 +35,7 @@
                         
                         <!-- Langue de la note -->
                         <b:column span="12" >
-                            <p:selectOneMenu id="collection" label="Langue" value="#{noteBean.selectedLang}" 
+                            <p:selectOneMenu id="collection" label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{noteBean.selectedLang}" 
                                              style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
                                 <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                             </p:selectOneMenu>                                  
@@ -65,11 +65,11 @@
             <b:row>
                 <b:column span="12">
                     <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" 
-                                  secure="false" height="200" style="font-size: 12px; color: black" placeholder="Ajouter votre note">
+                                  secure="false" height="200" style="font-size: 12px; color: black" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
                         <f:facet name="toolbar" >
                             <span class="ql-formats" >
-                                <button class="ql-link" title="Ajouter un lien"></button>
-                                <button class="ql-unlink" title="Supprimer un lien"></button>
+                                <button class="ql-link" title="#{langueBean.getMsg('rightbody.conceptdialog.add_link')}"></button>
+                                <button class="ql-unlink" title="#{langueBean.getMsg('rightbody.conceptdialog.delete_link')}"></button>
                             </span>
                         </f:facet>
                     </p:textEditor>                    
@@ -79,7 +79,7 @@
             <p:spacer/>
             <b:row >
                 <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="Valider"  update="addNoteForm" 
+                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addNoteForm" 
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
                                      color: white; background: #43B572; border: none; box-shadow: none;"

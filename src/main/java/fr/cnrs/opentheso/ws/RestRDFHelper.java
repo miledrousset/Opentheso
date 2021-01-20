@@ -179,6 +179,52 @@ public class RestRDFHelper {
         return writeRdf4j;
     }    
     
+    
+    /**
+     * Permet de retourner un concept au format défini en passant par un identifiant DOI
+     * utilisé pour la négociation de contenu
+     * 
+     * @param ds
+     * @param doi 
+     * @param format 
+     * @return  
+     */
+    public String exportConceptDoi(HikariDataSource ds, 
+            String doi, String format) {
+
+        RDFFormat rDFFormat = getRDFFormat(format);
+        WriteRdf4j writeRdf4j = getConceptFromDoi(ds, doi);
+        if(writeRdf4j == null) return null;
+
+        ByteArrayOutputStream out;
+        out = new ByteArrayOutputStream();
+        Rio.write(writeRdf4j.getModel(), out, rDFFormat);
+        return out.toString();
+    }            
+    
+    private WriteRdf4j getConceptFromDoi(HikariDataSource ds,
+            String doi) {
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        String idConcept = doi;//conceptHelper.getIdConcept FromHandleId(ds, doi);
+        String idTheso = conceptHelper.getIdThesaurusFromIdConcept(ds, idConcept);
+        
+        if(doi == null || idTheso == null) {
+            return null;
+        }
+        
+        NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if(nodePreference == null) return null;
+        
+        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
+        exportRdf4jHelper.setNodePreference(nodePreference);
+        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+
+        exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        return writeRdf4j;
+    }    
+    
     /**
      * Permet de retourner un concept au format défini en passant par un identifiant Handle
      * utilisé pour la négociation de contenu

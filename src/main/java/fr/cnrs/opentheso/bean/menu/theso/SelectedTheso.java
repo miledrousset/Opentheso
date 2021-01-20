@@ -168,6 +168,7 @@ public class SelectedTheso implements Serializable {
         startNewTheso(null);
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
+        indexSetting.setIsHomeSelected(true);
         //indexSetting.setIsThesoActive(true);
         if (pf.isAjaxRequest()) {
             PrimeFaces.current().ajax().update("formMenu");
@@ -192,6 +193,7 @@ public class SelectedTheso implements Serializable {
         startNewTheso(null);
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
+        indexSetting.setIsHomeSelected(true);
         //indexSetting.setIsThesoActive(true);
       /*  if (pf.isAjaxRequest()) {
             PrimeFaces.current().ajax().update("formMenu");

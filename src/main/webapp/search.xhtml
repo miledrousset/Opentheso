@@ -9,7 +9,7 @@
                 
                 <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}" 
                                  style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
-                                 title="Changer la langue du thésaurus">
+                                 title="#{langueBean.getMsg('search.change_thesaurus_language')}">
                                 <p:ajax event="valueChange" update="formSearch formLeftTab formRightTab" 
                                              listener="#{selectedTheso.changeLang()}" />                    
                     <f:selectItems  value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
@@ -50,7 +50,8 @@
             <!-- <b:column span="6" contentDisabled="false" offset-md="3">-->
             <b:column span="1" offset="5" offset-lg="5" offset-md="4" offset-xs="4" colXs="2"
                       style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
-                <b:selectBooleanCheckbox caption="Exact" value="#{searchBean.exactMatch}" tooltip="rechercher par mot exact" 
+                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
+                                         tooltip="#{langueBean.getMsg('search.search_exact_word')}" 
                                          onclick="ajax:searchBean.activateExactMatch()"
                                          update="formSearch"
                                          style="margin-top: 2px;">
@@ -59,7 +60,8 @@
             </b:column>
             <b:column span="1" colXs="2"
                       style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
-                <b:selectBooleanCheckbox caption="Note" value="#{searchBean.withNote}" tooltip="rechercher uniquement dans les notes" 
+                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
+                                         tooltip="#{langueBean.getMsg('search.search_only_note')}" 
                                          onclick="ajax:searchBean.activateWithNote()"
                                          update="formSearch"
                                          style="margin-top: 2px;"/>
@@ -67,7 +69,7 @@
             <b:column span="1" colXs="2"
                       style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
                 <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
-                                         tooltip="rechercher dans les identifiants (Id, Ark, Handle, Notation)"
+                                         tooltip="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)"
                                          onclick="ajax:searchBean.activateWithId()"
                                          update="formSearch"
                                          style="margin-top: 2px;"/>

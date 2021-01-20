@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddNT" header="Ajouter un concept spécifique" widgetVar="addNT" 
+    <p:dialog id="idAddNT" header="#{langueBean.getMsg('rightbody.conceptdialog.add_specific_concept')}" widgetVar="addNT" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
         <h:form id="addNTForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
@@ -13,19 +13,19 @@
                 <b:column span="6" style="margin-left: 5px;">
                     <b:row>
                         <b:column span="12" style=" margin-bottom: 10px; ">
-                            <h:outputText value="Terme générique : "
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')} : "
                                           style="font-size: 12px;"/>  
                             
                             <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
                                           style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
                         </b:column>
                         <b:column span="12">
-                            <b:inputText id="inputId" placeholder="new concept..." value="#{newConcept.prefLabel}" />
+                            <b:inputText id="inputId" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.new_concept')}..." value="#{newConcept.prefLabel}" />
                             <p:focus for="inputId"/>
                         </b:column>                        
                         <b:column span="12" >
-                            <b:selectOneMenu id="relationTypeNT" label="Relation" value="#{newConcept.relationType}" 
-                                             style="font-size: 12px; background: white; border-color: #43B572" tooltip="La relation à définir entre les deux concepts"
+                            <b:selectOneMenu id="relationTypeNT" label="#{langueBean.getMsg('rightbody.conceptdialog.relationship')}" value="#{newConcept.relationType}" 
+                                             style="font-size: 12px; background: white; border-color: #43B572" tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_relationship')}"
                                              tooltipDelayShow="500">
                                 <f:selectItems value="#{newConcept.typesRelationsNT}" var="typesNT"
                                                itemLabel="#{typesNT.description_fr} (#{typesNT.relationType})" itemValue="#{typesNT.relationType}"/>
@@ -33,8 +33,8 @@
                         </b:column>
                         
                         <b:column span="12" >
-                            <b:selectOneMenu label="Collection:" id="collection" value="#{newConcept.idGroup}" 
-                                             style="font-size: 12px; background: white; border-color: #43B572" tooltip="A quelle collection ajouter le concept"
+                            <b:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.collection')}:" id="collection" value="#{newConcept.idGroup}" 
+                                             style="font-size: 12px; background: white; border-color: #43B572" tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_collection')}"
                                              tooltipDelayShow="500">
                                 <f:selectItem itemLabel="..." itemValue="" />
                                 <f:selectItems value="#{newConcept.nodeGroups}" var="nodeGroup"
@@ -42,13 +42,13 @@
                             </b:selectOneMenu>                                  
                         </b:column>
                         <b:column span="12" >
-                            <b:inputText label="Notation:" placeholder="notation..." id="notation" value="#{newConcept.notation}"
+                            <b:inputText label="#{langueBean.getMsg('rightbody.concept.notation')}:" placeholder="#{langueBean.getMsg('rightbody.concept.notation')}..." id="notation" value="#{newConcept.notation}"
                                          ajax="true" autocomplete="false"  style="font-size: 12px;">
                             </b:inputText>
                         </b:column>
 
                         <b:column span="12" >
-                            <b:inputText label="Id" placeholder="identifiant facultatif..." id="privateId" value="#{newConcept.idNewConcept}"
+                            <b:inputText label="Id" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.optional_identifier')}..." id="privateId" value="#{newConcept.idNewConcept}"
                                          ajax="true" autocomplete="false"  style="font-size: 12px;">
                             </b:inputText>
                         </b:column>                             
@@ -70,7 +70,7 @@
                             <b:messages autoUpdate="true"/>
                             <b:row >
                                 <b:column span="5" offset="1" >
-                                    <b:commandButton rendered="#{newConcept.duplicate}" id="buttonRenameForced" value="Forcer" update="addNTForm"
+                                    <b:commandButton rendered="#{newConcept.duplicate}" id="buttonRenameForced" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" update="addNTForm"
                                                      class="btn btn-primary"
                                                      action="#{newConcept.addNewConceptForced(
                                                             conceptView.nodeConcept.concept.idConcept,
@@ -81,7 +81,7 @@
                                                      style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
                                 </b:column>                        
                                 <b:column span="5" >
-                                    <b:commandButton rendered="#{newConcept.duplicate}" id="buttonCancel" value="Annuler" update="addNTForm"
+                                    <b:commandButton rendered="#{newConcept.duplicate}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" update="addNTForm"
                                                      class="btn btn-primary"
                                                      action="#{newConcept.cancel()}" 
                                                      icon-awesome="fas fa-undo" 
@@ -95,7 +95,7 @@
 
             <b:row style="margin-bottom: 10px;">
                 <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="Valider"  update="addNTForm" 
+                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnAdd')}"  update="addNTForm" 
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
                                      color: white; background: #43B572; border: none; box-shadow: none;"

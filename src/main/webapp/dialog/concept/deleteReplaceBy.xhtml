@@ -8,13 +8,13 @@
                  style="font-size: 12px;">
     -->
 
-    <p:dialog id="idDeleteReplaceBy" header="Supprimer lien (remplacer par)" widgetVar="deleteReplaceBy" 
+    <p:dialog id="idDeleteReplaceBy" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_replaceby')}" widgetVar="deleteReplaceBy" 
               modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >         
 
         <h:form id="deleteReplaceByForm">   
             <b:row >
                 <b:column span="11" offset="1" >
-                    <h:outputText value="Concept déprécié: " style="font-size: 14px; color: black;"/>                    
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.deprecated_concept')}: " style="font-size: 14px; color: black;"/>                    
                     <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 14px; color: #C63632;"/>
                 </b:column>
             </b:row>        
@@ -23,7 +23,7 @@
 
             <b:row >
                 <b:column span="11" offset="1" >
-                    <h:outputText value="Est remplacé par:" style="font-size: 12px; color: black;"/>                    
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.is_replaced_by')}:" style="font-size: 12px; color: black;"/>                    
                 </b:column>
             </b:row> 
             <b:row style="font-size: 12px;">

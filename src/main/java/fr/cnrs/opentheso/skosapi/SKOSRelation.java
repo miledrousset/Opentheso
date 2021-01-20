@@ -11,10 +11,14 @@ public class SKOSRelation implements SKOSProperty {
     private int property;
 
     public SKOSRelation(String uri, int prop) throws Exception {
-        if (-1 <= prop && prop <= 21 ) {
+        if (-1 <= prop && prop <= 22 ) {
             this.targetUri = uri;
             this.property = prop;
         } else {
+            if (100 <= prop && prop <= 105 ){
+                this.targetUri = uri;
+                this.property = prop;                
+            } else
             throw new Exception("Erreur : cette propriété n'est pas valide pour la relation avec le concept d'URI" + uri);
         }
     }

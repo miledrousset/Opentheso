@@ -34,7 +34,7 @@
                                          style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
                     </b:column>
                     <b:column span="6" >
-                        <b:commandButton rendered="#{editConcept.forDelete}" id="buttonCancel" value="Annuler" update="deleteConceptForm"
+                        <b:commandButton rendered="#{editConcept.forDelete}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" update="deleteConceptForm"
                                          class="btn btn-primary"
                                          action="#{editConcept.cancelDelete()}" 
                                          icon-awesome="fas fa-undo" 

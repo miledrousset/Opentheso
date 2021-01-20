@@ -14,7 +14,7 @@
                     
                     <b:navbarLinks pull="left" rendered="#{currentUser.nodeUser != null}">
                         <b:navCommandLink 
-                            value="Thésaurus" 
+                            value="#{langueBean.getMsg('menu.thesaurus')}"  
                             action="#{indexSetting.setIsThesoActive(true)}"
                             update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm" 
                             style="color: #{indexSetting.thesoColor}">
@@ -29,7 +29,7 @@
                                    update="containerIndex"  />
 
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}"
-                                   value="Profil" 
+                                   value="#{langueBean.getMsg('menu.profile')}" 
                                    action="#{indexSetting.setIsProfileActive(true)}"
                                    actionListener="#{profileBean.reset()}"
                                     update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
@@ -42,12 +42,12 @@
                                           actionListener="#{toolBoxBean.reset()}"
                                           update="containerIndex formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
                                           toolBoxForm"
-                                          value="Boite à outils" icon-align="right"
+                                          value="#{langueBean.getMsg('menu.toolbox')}" icon-align="right"
                                           style="color: #{indexSetting.toolBoxColor}">
                         </b:navCommandLink>
                         <b:navCommandLink rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso != null)
                                         and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
-                                   value="Paramètres" 
+                                   value="#{langueBean.getMsg('menu.setting')}" 
                                    action="#{indexSetting.setIsSettingActive(true)}"
                                    actionListener="#{settingAndToolsBean.reset()}"
                                     update="containerIndex  formMenu formLeftTab formSearch:languageSelect formSearch formRightTab homePageForm
@@ -60,8 +60,6 @@
                     
                     <b:navbarLinks pull="right" >
 
-
-
                         <!-- liste des thésaurus -->                 
                         <b:navLink style="height: 30px; margin-top: -3px; margin-right: -10px;">
                             <p:selectOneMenu id="idListTheso" value="#{selectedTheso.selectedIdTheso}"
@@ -69,12 +67,12 @@
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;">
                                 <p:ajax event="valueChange" update="containerIndex candidatForm formMenu"
                                              listener="#{selectedTheso.setSelectedTheso()}" />
-                                <f:selectItem itemLabel="(select thesaurus)" itemValue=""/>
+                                <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
                                 <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
                             </p:selectOneMenu>
                         </b:navLink>                        
                         <!-- Relaod Theso -->
-                        <b:navCommandLink  tooltip="Recharger le thésaurus"
+                        <b:navCommandLink  tooltip="#{langueBean.getMsg('menu.reload_thesaurus')}"
                                            tooltip-delay-show="500"
                                           icon-awesome="fas fa-sync" icon-size="l" style=" color: #C63632"
                                           ajax="true" action="#{selectedTheso.reloadSelectedTheso()}" 
@@ -83,20 +81,21 @@
 
                         <!--Not connected-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser == null}"
-                                          tooltip="Se connecter" icon-awesome="key"  icon-size="l"
+                                          tooltip="#{langueBean.getMsg('menu.login')}" icon-awesome="key"  icon-size="l"
                                          
                                           oncomplete="PF('login').show();"
                                           styleClass="buttonIconOrange"
                                           update="idLogin loginForm"/>
 
                         <!--is connected-->
-                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{currentUser.nodeUser.name} !! cliquer pour se déconnecter"
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{currentUser.nodeUser.name} !! #{langueBean.getMsg('menu.logout')}"
                                           icon-awesome="sign-out-alt" icon-size="l" style="color: #C63632;"
                                           ajax="true" action="#{currentUser.disconnect()}"/>              
                         
                         
                         <!-- Langues -->
-                        <b:dropMenu value="#{langueBean.idLangue}"  style="font-size: 12px; margin-right: -10px;" >
+                        <b:dropMenu value="#{langueBean.idLangue}"  style="font-size: 12px; margin-right: -10px;" 
+                                    tooltip="#{langueBean.getMsg('menu.change_interface_language')}" tooltip-delay-show="500">
                             <b:navCommandLink iconAwesome="flag fas_custom_flag" value="fr" action="#{langueBean.changeLangue('fr')}" ajax="false"
                                               style="font-size: 12px; background: none; border: none; color: #43B572;margin-left: -5px;"
                                               update="formMenu formLeftTab formSearch:languageSelect formSearch formRightTab containerIndex homePageForm">
@@ -126,6 +125,5 @@
 
     <ui:include src="dialog/login/login.xhtml" />    
     <ui:include src="dialog/help.xhtml" />
-    <ui:include src="dialog/helpAlignment.xhtml" />
-
+    <ui:include src="dialog/helpAlignment.xhtml" />    
 </ui:fragment>

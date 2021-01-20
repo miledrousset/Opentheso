@@ -9,7 +9,7 @@
                  style="font-size: 12px;">
     -->
 
-    <p:dialog id="idChangeRelation" header="modifier les relations spécifiques" widgetVar="changeRelation" 
+    <p:dialog id="idChangeRelation" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_specific_relationships')}" widgetVar="changeRelation" 
               modal="true" resizable="true" position="top" width="550" style="margin-top: 150px; max-height: 500px;overflow-y:scroll " >         
 
         <h:form id="changeRelationForm">   
@@ -24,11 +24,11 @@
 
             <b:row >
                 <b:column span="5" >
-                    <h:outputText value="a une relation"
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.has_relationship')}"
                                   style="font-size: 12px; font-weight: bold; color: #F49F66; margin-left: 10px"/>
                 </b:column>
                 <b:column span="5" >
-                    <h:outputText value="avec le concept"
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.with_concept')}"
                                   style="font-size: 12px; font-weight: bold; color: #F49F66; margin-left: 10px"/>
                 </b:column>                
                 <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >

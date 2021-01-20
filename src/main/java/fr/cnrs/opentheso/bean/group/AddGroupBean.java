@@ -83,8 +83,7 @@ public class AddGroupBean implements Serializable {
 
         NodeGroup nodeGroup = new NodeGroup();
         if (titleGroup.isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    languageBean.getMsg("error") + " :", languageBean.getMsg("theso.error7")));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le label est obligatoire !"));
             return;
         }
 
@@ -106,14 +105,13 @@ public class AddGroupBean implements Serializable {
                 idUser);
         if (idGroup == null) {
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :",
-                            titleGroup + " " + languageBean.getMsg("group.errorCreate")));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "","Erreur interne"));
             return;
         }
         treeGroups.addNewGroupToTree(idGroup, idTheso, idLang);
 
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info") + " :",
-                titleGroup + " " + languageBean.getMsg("theso.info1.2")));
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                titleGroup + " a été ajouté avec succès"));
 
         PrimeFaces.current().executeScript("PF('addGroup').hide();");
         PrimeFaces pf = PrimeFaces.current();
@@ -159,7 +157,7 @@ public class AddGroupBean implements Serializable {
         } 
         if (titleGroup.isEmpty()) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    languageBean.getMsg("error") + " :", "Un label est obligatoire"));
+                    "", "Le label est obligatoire"));
             return;
         }
         NodeGroup nodeGroup = new NodeGroup();        
@@ -181,21 +179,20 @@ public class AddGroupBean implements Serializable {
                 idUser);
         if (idSubGroup == null) {
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :",
-                            titleGroup + " " + languageBean.getMsg("group.errorCreate")));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur interne"));
             return;
         }        
 
         if (!groupHelper.addSubGroup(connect.getPoolConnexion(), idGroupFather, idSubGroup, idTheso)) {
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("error") + " :",
-                            titleGroup + " " + languageBean.getMsg("group.errorCreate")));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                            titleGroup + " : Erreur de création"));
             return;
         }
         treeGroups.addNewSubGroupToTree(treeGroups.getSelectedNode(), idSubGroup, idTheso, idLang);        
         
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info") + " :",
-                titleGroup + " " + languageBean.getMsg("theso.info1.2")));
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                titleGroup + " a été ajouté avec succès"));
 
         PrimeFaces.current().executeScript("PF('addSubGroup').hide();");
         PrimeFaces pf = PrimeFaces.current();

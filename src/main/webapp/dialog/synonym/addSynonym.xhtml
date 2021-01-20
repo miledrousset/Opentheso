@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddSynonym" header="Ajouter un synonyme" widgetVar="addSynonym" 
+    <p:dialog id="idAddSynonym" header="#{langueBean.getMsg('rightbody.conceptdialog.add_synonym')}" widgetVar="addSynonym" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
         <h:form id="addSynonymForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
@@ -13,7 +13,7 @@
                 <b:column span="6" style="margin-left: 5px;">
                     <b:row>
                         <b:column span="12" style=" margin-bottom: 10px; ">
-                            <h:outputText value="Terme : "
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "
                                           style="font-size: 12px;"/>  
                             <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
                                           style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
@@ -22,7 +22,7 @@
 
                         <!-- Langues du thésaurus -->
                         <b:column span="12">
-                            <b:selectOneMenu id="collection" label="Langue" value="#{synonymBean.selectedLang}" 
+                            <b:selectOneMenu id="collection" label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{synonymBean.selectedLang}" 
                                              style="font-size: 12px; background: white; border-color: #43B572">
                                 <f:selectItems  value="#{synonymBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                             </b:selectOneMenu>                                  
@@ -31,14 +31,15 @@
                         <!-- type synonyme -->
                         <b:column span="5" style="font-size: 12px;" >
                             <b:switch value="#{synonymBean.isHidden}" 
-                                      tooltip="Permet de masquer la valeur en mode public" tooltip-delay-show="1000"
-                                      label="Caché ?" offColor="danger" onColor="success"
+                                      tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_hidden')}" tooltip-delay-show="1000"
+                                      label="#{langueBean.getMsg('rightbody.conceptdialog.hidden')} ?" offColor="danger" onColor="success"
                                       switchsize="mini" labelStyle="font-size: 12px;" />                         
                         </b:column>                        
 
                         <!-- Valeur -->
                         <b:column span="12" >
-                            <b:inputText id="idTraductionValue" label="Synonyme" placeholder="tapez une valeur ..."  
+                            <b:inputText id="idTraductionValue" label="#{langueBean.getMsg('rightbody.concept.synonym')}"
+                                         placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."  
                                          value="#{synonymBean.value}" style="font-size: 12px;">
                                 <b:focus rendered="true" />
                             </b:inputText>
@@ -50,14 +51,15 @@
                     <b:messages autoUpdate="true"/>
                     <b:row >
                         <b:column span="5" offset="1" >
-                            <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonRenameForced" value="Forcer" update="addSynonymForm"
+                            <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonRenameForced"
+                                             value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" update="addSynonymForm"
                                              class="btn btn-primary"
                                              action="#{synonymBean.addForced(
                                                        currentUser.nodeUser.idUser)}" 
                                              style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
                         </b:column>                        
                         <b:column span="5" >
-                            <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonCancel" value="Annuler" update="addSynonymForm"
+                            <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" update="addSynonymForm"
                                              class="btn btn-primary"
                                              action="#{synonymBean.cancel()}" 
                                              icon-awesome="fas fa-undo" 
@@ -70,7 +72,7 @@
             <b:row style="margin-bottom: 10px;" >
                 <b:column span="4" offset="8" >
                     <b:commandButton rendered="#{!synonymBean.duplicate}"
-                                     id="buttonSubmit" value="Valider"  update="addSynonymForm" 
+                                     id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addSynonymForm" 
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
                                      color: white; background: #43B572; border: none; box-shadow: none;"

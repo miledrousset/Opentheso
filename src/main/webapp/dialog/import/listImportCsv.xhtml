@@ -74,8 +74,8 @@
                                     Pour les champs qui autorisent les valeurs multiples, il faut les séparer par (##) ex : (deux##2).<br/>
                                     Si l'identifiant existe déjà dans le thésaurus, le concept à importer sera rejeté.
                                     
-                                    La colonne Uri n'est pas obligatoire si vous avez uniquement une liste sur une seule colonne,<br/>
-                                    dans ce cas, il ne faut plus utiliser la colonne (skos:broader).
+                                    La colonne Uri est obligatoire, les identifiants peuvent être vident si vous ne les avez pas.<br/>
+                                    Si vous voulez récuperer une hiérarchie en utilisant la colonne (skos:broader), c'est possible aussi.
                                 </p>
                             </p:outputPanel>
                         </fieldset>
@@ -144,7 +144,7 @@
                     <b:row >
                         <b:column span="4" offset="1"> 
                             <p:commandButton id="cancelCsv" icon="fas fa-undo"  
-                                             value="Retour"
+                                             value="#{langueBean.getMsg('btnBack')}"
                                              class="btn btn-success"
                                              style="width: 100%; background-color: #FFC107; color: black; border: none;"
                                              action="#{importFileBean.init()}"

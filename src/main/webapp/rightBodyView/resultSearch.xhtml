@@ -23,7 +23,7 @@
                 </b:column>
                 
                 <b:column span="1" rendered="#{result.nodeBT.size() != 0}">
-                    <h:outputText value="SYN : " title="Synonyme" style="color: #8C8C8C; font-size: 12px"/>
+                    <h:outputText value="SYN : " title="#{langueBean.getMsg('rightbody.concept.synonym')}" style="color: #8C8C8C; font-size: 12px"/>
                 </b:column>                
                 <b:column span="11" rendered="#{result.nodeEM.size() != 0}">
                     <ui:repeat var="em" value="#{result.nodeEM}" >
@@ -32,7 +32,7 @@
                 </b:column>  
                 
                 <b:column span="1" rendered="#{result.nodeBT.size() != 0}">
-                    <h:outputText value="BT : " title="Terme générique" style="color: #8C8C8C; font-size: 12px"/>
+                    <h:outputText value="BT : " title="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')}" style="color: #8C8C8C; font-size: 12px"/>
                 </b:column>                
                 <b:column span="11" rendered="#{result.nodeBT.size() != 0}">
                     <ui:repeat var="bt" value="#{result.nodeBT}" >
@@ -59,7 +59,7 @@
                 </b:column>
 
                 <b:column span="1" rendered="#{result.nodeTermTraductions.size() != 0}">
-                    <h:outputText value="Langs: " title="Traductions" style="color: #8C8C8C; font-size: 12px"/>
+                    <h:outputText value="Langs: " title="#{langueBean.getMsg('candidat.traductions')}" style="color: #8C8C8C; font-size: 12px"/>
                 </b:column>                
                 <b:column span="11" rendered="#{result.nodeTermTraductions.size() != 0}">
                     <ui:repeat var="langs" value="#{result.nodeTermTraductions}" >

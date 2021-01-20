@@ -168,9 +168,10 @@ public class NewThesoBean implements Serializable {
         viewEditionBean.init();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
+            pf.ajax().update("formMenu:idListTheso");
             pf.ajax().update("toolBoxForm");
             pf.ajax().update("toolBoxForm:listThesoForm");
-            pf.ajax().update("messageIndex");            
+            pf.ajax().update("messageIndex");           
         }        
     }
 

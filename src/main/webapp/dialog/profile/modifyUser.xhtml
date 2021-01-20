@@ -44,7 +44,7 @@
 
             <b:row style="margin-bottom: 10px;">
                 <b:column span="4" offset="7" >
-                    <b:commandButton id="buttonSubmit" value="Valider"  update="profileForm modifyUserForm" 
+                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="profileForm modifyUserForm" 
                                      tooltip="Valider les changements de l'utilisateur" tooltip-delay-show="1000"
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
@@ -75,7 +75,7 @@
             </b:row>
             <b:row style="margin-bottom: 10px;">
                 <b:column span="4" offset="7" >
-                    <b:commandButton value="valider"  update="modifyUserForm"
+                    <b:commandButton value="#{langueBean.getMsg('btnValidate')}"  update="modifyUserForm"
                                      tooltip="Pour changer le mot de passe de l'utilisateur" tooltip-delay-show="1000"
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;

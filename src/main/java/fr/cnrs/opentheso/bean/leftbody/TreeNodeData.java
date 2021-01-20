@@ -22,6 +22,9 @@ public class TreeNodeData implements Serializable {
     private boolean isTopConcept;    
     
     private String nodeType;
+    
+    // Si le noeud est de type (facetMember) on conserve l'identifiant du parent qui est une facette (pour pouvoir appliquer le Drag and Drop) 
+    private String idFacetParent;
 
     public TreeNodeData(String nodeId, String name, String notation,
             boolean isGroup, boolean isSubGroup,
@@ -100,6 +103,15 @@ public class TreeNodeData implements Serializable {
     public void setIsTopConcept(boolean isTopConcept) {
         this.isTopConcept = isTopConcept;
     }
+
+    public String getIdFacetParent() {
+        return idFacetParent;
+    }
+
+    public void setIdFacetParent(String idFacetParent) {
+        this.idFacetParent = idFacetParent;
+    }
+
  
  
     @Override

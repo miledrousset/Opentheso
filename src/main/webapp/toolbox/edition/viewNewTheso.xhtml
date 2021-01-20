@@ -70,9 +70,9 @@
         <p:spacer/>    
         <b:row >
             <b:column span="2" offset="3"> 
-                <b:commandButton id="cancel" iconAwesome="fas fa-undo"  
-                                 value="Retour" style="width: 100%; font-size: 12px;"
-                                 tooltip="Retour"  tooltip-delay-show="1000"
+                <b:commandButton id="#{langueBean.getMsg('btnCancel')}" iconAwesome="fas fa-undo"  
+                                 value="#{langueBean.getMsg('btnBack')}" style="width: 100%; font-size: 12px;"
+                                 tooltip="#{langueBean.getMsg('btnBack')}"  tooltip-delay-show="1000"
                                  actionListener="#{viewEditionBean.init()}"
                                  action="#{newThesoBean.init()}"
                                  update="toolBoxForm toolBoxForm:listThesoForm">

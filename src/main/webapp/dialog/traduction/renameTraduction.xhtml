@@ -8,7 +8,7 @@
                  style="font-size: 12px;">
     -->
 
-    <p:dialog id="idRenameTraduction" header="modifier une traduction" widgetVar="renameTraduction" 
+    <p:dialog id="idRenameTraduction" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_translation')}" widgetVar="renameTraduction" 
               modal="true" resizable="true" position="top" width="450" style="margin-top: 50px;" >         
 
         <h:form id="renameTraductionForm">   
@@ -47,8 +47,8 @@
             <b:row>
                 <b:column span="4" offset="4" colXs="8" offset-xs="2">
                     <b:commandButton ajax="true"
-                                     id="buttonRenameAll" value="Tout modifier" 
-                                     tooltip="Valider toutes les modifications" tooltip-delay-show="500"
+                                     id="buttonRenameAll" value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}" 
+                                     tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_modify_all')}" tooltip-delay-show="500" 
                                      update="formRightTab:viewTabConcept:renameTraductionForm  formRightTab:viewTabConcept:idRenameTraduction"
                                      class="btn btn-primary"
                                      action="#{traductionBean.updateAllTraduction(currentUser.nodeUser.idUser)}"

@@ -7,7 +7,7 @@
     <p:dialog id="idConfirmDeleteCorpus" header="Confirmer la suppression" widgetVar="confirmDeleteCorpus" 
               modal="true" resizable="true" position="top" width="300" style="margin-top: 150px" >         
 
-        <h:form id="confirmDeleteForm">   
+        <h:panelGroup id="confirmDeleteForm">   
             <b:row >
                 <b:column span="11" offset="1" >
                     <h:outputText value="Voulez-vous supprimer le lien vers ce corpus " style="font-size: 13px; color: black;"/>                    
@@ -26,15 +26,15 @@
                 <b:column span="8" offset="2" >
                     <b:commandButton 
                                      id="buttonDel" value="Supprimer" 
-                                     ajax="true"
+                                    
                                      class="btn btn-primary"
                                      action="#{corpusBean.deleteCorpus()}"
-                                     update="settingForm:corpusForm:idConfirmDeleteCorpus settingForm:corpusForm:tabCorpus messageIndex"
+                                     update=" settingForm:corpusForm:tabCorpus messageIndex"
                                      oncomplete="PF('confirmDeleteCorpus').hide();"
                                      style="width:100%; font-size: 12px;
                                      color: white; background: #C63632;"/>
                 </b:column>
             </b:row>    
-        </h:form>  
+        </h:panelGroup>>  
     </p:dialog>     
 </ui:fragment>

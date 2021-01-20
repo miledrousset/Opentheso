@@ -22,7 +22,7 @@ import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
-
+import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfResource;
 /**
  *
  * @author Quincy
@@ -139,7 +139,8 @@ public class WriteRdf4j {
     private void writeFacet() {
         for (SKOSResource facet : xmlDocument.getFacetList()) {
             builder.subject(vf.createIRI(facet.getUri()));
-            builder.add(RDF.TYPE, SKOS.COLLECTION);
+            builder.add(RDF.TYPE, vf.createIRI("http://purl.org/iso25964/skos-thes#ThesaurusArray"));//vf.createIRI(facet.getUri()));//RDF.TYPE, SKOS.COLLECTION);
+            writeRelation(facet);
             writeLabel(facet);
             writeDate(facet);
         }
@@ -494,12 +495,19 @@ public class WriteRdf4j {
                 case SKOSProperty.memberOf:
                     builder.add("opentheso:memberOf", uri);
                     break;
-                case SKOSProperty.TOP_FACET:
+
+/*                case SKOSProperty.TOP_FACET:
                     builder.add("opentheso:topFacet", uri);
                     break;
                 case SKOSProperty.FACET:
                     builder.add("opentheso:facet", uri);
+                    break;*/
+                case SKOSProperty.superOrdinate:
+                    builder.add("iso-thes:superOrdinate", uri);
                     break;
+                case SKOSProperty.subordinateArray:
+                    builder.add("iso-thes:subordinateArray", uri);
+                    break;                       
             }
 
         }

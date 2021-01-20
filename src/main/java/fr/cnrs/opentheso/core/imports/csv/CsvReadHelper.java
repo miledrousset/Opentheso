@@ -65,7 +65,7 @@ public class CsvReadHelper {
     public boolean readFile(Reader in){
         try {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
-                    withDelimiter(delimiter).withIgnoreEmptyLines().parse(in);
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withTrim().parse(in);
             String uri1;
   //          boolean first = true;
             
@@ -85,7 +85,7 @@ public class CsvReadHelper {
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 // puis on génère un nouvel identifiant
                 try {
-                    uri1 = record.get("URI");
+                    uri1 = record.get("﻿URI");
                     conceptObject.setIdConcept(getId(uri1));
                 } catch (Exception e) {
                     //message = message + " Erreur à la ligne :" + record.toString(); //System.err.println("");

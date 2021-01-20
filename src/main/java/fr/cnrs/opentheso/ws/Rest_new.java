@@ -419,6 +419,76 @@ public class Rest_new {
     /*
      * fin de la recherche par idArk
      */
+    
+    
+    
+    
+    
+///////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////       
+/////////////////////////////////////////////////////    
+///////////////////////////////////////////////////// 
+    /* TEST TEST TEST DOI
+     */
+///////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////       
+    
+    
+    /**
+     * récupérer un concept par DOI et produire du REF-SKOS 
+     * @param doi1
+     * @param doi2
+     * @param doiId
+     * @return 
+     */
+    @Path("/doi:{doi1}.{doi2}/{doiId}.rdf")
+    @GET
+    @Produces("application/rdf+xml;charset=UTF-8")
+    public Response getSkosFromDoi__(
+            @PathParam("doi1") String doi1,
+            @PathParam("doi2") String doi2,
+            @PathParam("doiId") String doiId) {
+
+        if (doi1 == null || doi2 == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if (doi1.isEmpty() || doi2.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if (doiId == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if (doiId.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        HikariDataSource ds = connect();
+        if (ds == null) {
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+        String datas = restRDFHelper.exportConceptDoi(ds,
+                "doi:" + doi1 + "." + doi2 + "/" + doiId,
+                "application/rdf+xml");
+        ds.close();
+        if (datas == null) {
+            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+    }    
+///////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////       
+/////////////////////////////////////////////////////    
+///////////////////////////////////////////////////// 
+    /* TEST TEST TEST DOI
+     */
+///////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////       
+    
+    
+    
+    
+    
+    
 ///////////////////////////////////////////////////// 
 /////////////////////////////////////////////////////       
 /////////////////////////////////////////////////////    

@@ -16,7 +16,7 @@
         <!-- affichage du graphe -->
         <b:column span="1" >
             <b:navCommandLink iconAwesome="fas fa-project-diagram" icon-size="sm" 
-                  tooltip="Visualiser la branche en graphe" tooltip-delay-show="500"
+                  tooltip="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" tooltip-delay-show="500"
                   update="containerIndex"
                   ajax="true" style="color: #F47B2A; float: right; margin-top: 2px;"
                   action= "#{tree.showDiagram(true)}"/>                
@@ -24,13 +24,14 @@
     </b:row>
 
     
-    <!-- Arbre du thésaurus -->
+    <!-- Arbre du thésaurus il faut intégrer  dropRestrict="sibling" par la suite -->
     <b:row>
          <b:column span="12">
             <p:tree id="tree" value="#{tree.root}"  dynamic="true" var="nodetree" selectionMode="single"  selection="#{tree.selectedNode}"
                     style="width: auto; border: none; font-size: 12px;  min-height: 700px; max-height: 800px;overflow-y:scroll" animate="true"
                     styleClass="tree_custom" disabled="#{tree.noedSelected}"
                     draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
+                   
                     widgetVar="treeWidget">
                 <p:ajax event="expand"  listener="#{tree.onNodeExpand}"
                         onstart="$(document.body).css({'cursor' : 'wait'});"
@@ -39,7 +40,7 @@
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
 
-                <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" />
+                <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="messageIndex tree" />
                 
                 <p:treeNode  expandedIcon="far fa-folder-open fa_custom_open" collapsedIcon="far fa-folder fa_custom_collapse" >
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>

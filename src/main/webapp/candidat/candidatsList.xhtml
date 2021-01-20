@@ -244,7 +244,7 @@
                                      actionListener="#{importFileBean.addSkosCandidatToBDD()}"/>
                 </b:column>
                 <b:column span="2" offset="2" >
-                    <p:commandButton id="cancelSkos" icon="fas fa-undo" value="Retour" class="btn btn-success"
+                    <p:commandButton id="cancelSkos" icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
                                      style="width: 100%; background-color: #FFC107; color: black; border: none;"
                                      actionListener="#{candidatBean.setListCandidatsActivate(true)}"
                                      update="candidatForm"/>

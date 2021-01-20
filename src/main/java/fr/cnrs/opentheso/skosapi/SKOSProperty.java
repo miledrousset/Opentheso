@@ -28,10 +28,13 @@ public interface SKOSProperty {
     public static final int narrowerInstantial=17;
     public static final int narrowerPartitive=18;
     public static final int relatedHasPart=19;
-    public static final int TOP_FACET = 20;
-    public static final int FACET = 21;
+
     public static final int relatedPartOf=-1;
     
+    public static final int superOrdinate = 100;
+    public static final int subordinateArray = 101;      
+    public static final int TOP_FACET = 102;
+    public static final int FACET = 103;    
     
 
     //Symbolic Labelling
@@ -87,4 +90,7 @@ public interface SKOSProperty {
     public static final int isReplacedBy = 95;
     public static final int replaces = 96;
 
+        
+
+    
 }

@@ -79,9 +79,9 @@
         <!-- Validation -->
         <b:row >
             <b:column span="4" offset="1"> 
-                <b:commandButton id="cancel" iconAwesome="fas fa-undo"  
-                                 value="Retour" style="width: 100%;"
-                                 tooltip="Retour"  tooltip-delay-show="1000"
+                <b:commandButton id="#{langueBean.getMsg('btnCancel')}" iconAwesome="fas fa-undo"  
+                                 value="#{langueBean.getMsg('btnBack')}" style="width: 100%;"
+                                 tooltip="#{langueBean.getMsg('btnBack')}"  tooltip-delay-show="1000"
                                  actionListener="#{viewEditionBean.init()}"
                                  action="#{exportFileBean.init()}"
                                  update="toolBoxForm toolBoxForm:listThesoForm:viewExportSkosForm">

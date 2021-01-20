@@ -4,15 +4,15 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog id="idReplaceBy" header="Replacer par" widgetVar="replaceBy" 
+    <p:dialog id="idReplaceBy" header="#{langueBean.getMsg('rightbody.conceptdialog.replace_by')}" widgetVar="replaceBy" 
               modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >        
         <h:form id="replaceByForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
             <b:row>
                 <b:column span="11" offset="1">
-                    <h:outputText value="Remplacer le concept " style="font-size: 14px;"/>  
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.replace_concept')} " style="font-size: 14px;"/>  
                     <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value} " style="font-size: 14px; color: #C63632;"/>
-                    <h:outputText value=" par :" style="font-size: 14px;"/>                             
+                    <h:outputText value=" #{langueBean.getMsg('rightbody.conceptdialog.by')} :" style="font-size: 14px;"/>                             
                 </b:column>
             </b:row>  
             
@@ -45,7 +45,7 @@
             <b:row>
                 <b:column span="4" offset="4" >
                     <b:commandButton 
-                                     id="buttonSubmit" value="Ajouter"  update="replaceByForm" 
+                                     id="buttonSubmit" value="#{langueBean.getMsg('btnAdd')}"  update="replaceByForm" 
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
                                      color: white; background: #43B572; border: none; box-shadow: none;"

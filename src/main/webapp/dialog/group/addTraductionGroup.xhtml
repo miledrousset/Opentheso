@@ -13,7 +13,7 @@
                 <b:column span="6" style="margin-left: 5px;">
                     <b:row>
                         <b:column span="12" style=" margin-bottom: 10px; ">
-                            <h:outputText value="Terme : "
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "
                                           style="font-size: 12px;"/>  
                             <h:outputText value="#{groupView.nodeGroup.lexicalValue}"
                                           style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
@@ -57,7 +57,7 @@
 
             <b:row style="margin-bottom: 10px;" rendered="#{traductionGroupBean.nodeLangsFiltered.size() != 0}">
                 <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="Valider"  update="addTraductionGroupForm" 
+                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addTraductionGroupForm" 
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
                                      color: white; background: #43B572; border: none; box-shadow: none;"

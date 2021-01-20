@@ -8,7 +8,7 @@
                  style="font-size: 12px;">
     -->
 
-    <p:dialog id="idRenameConcept" header="Renommer le concept" widgetVar="renameConcept" 
+    <p:dialog id="idRenameConcept" header="#{langueBean.getMsg('rightbody.conceptdialog.rename_concept')}" widgetVar="renameConcept" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >         
 
         <h:form id="renameForm">           
@@ -35,7 +35,8 @@
                     <b:messages for="newPrefLabel" id="messageRename" autoUpdate="true"/>
                     <b:row >
                         <b:column span="5" offset="1" >
-                            <b:commandButton rendered="#{editConcept.duplicate}" id="buttonRenameForced" value="Forcer" update="renameForm"
+                            <b:commandButton rendered="#{editConcept.duplicate}" id="buttonRenameForced" 
+                                             value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" update="renameForm"
                                              class="btn btn-primary"
                                              action="#{editConcept.updateForced(
                                                        selectedTheso.currentIdTheso,
@@ -44,7 +45,7 @@
                                              style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
                         </b:column>                        
                         <b:column span="5" offset="1" >
-                            <b:commandButton rendered="#{editConcept.duplicate}" id="buttonCancel" value="Annuler" update="renameForm"
+                            <b:commandButton rendered="#{editConcept.duplicate}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" update="renameForm"
                                              class="btn btn-primary"
                                              action="#{editConcept.cancel()}" 
                                              icon-awesome="fas fa-undo" 
@@ -57,7 +58,7 @@
             <b:row style="margin-bottom: 20px;">
                 <b:column span="4" offset="1" >
                     <b:commandButton rendered="#{!editConcept.duplicate}"
-                                     id="buttonRename" value="valider" update="renameForm"
+                                     id="buttonRename" value="#{langueBean.getMsg('btnValidate')}" update="renameForm"
                                      class="btn btn-primary"
                                      action="#{editConcept.updateLabel(
                                                selectedTheso.currentIdTheso,

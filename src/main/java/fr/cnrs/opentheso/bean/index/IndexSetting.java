@@ -36,6 +36,9 @@ public class IndexSetting implements Serializable {
     // si un concept est sélectionné
     private boolean isValueSelected;
     
+    // si un thésaurus est sélectionné, on affiche les infos de Home
+    private boolean isHomeSelected;    
+    
     // si une facette est sélectionnée
     private boolean isFacetSelected;
 
@@ -95,19 +98,12 @@ public class IndexSetting implements Serializable {
         this.isConnected = isConnected;
     }
 
-    public boolean isIsValueSelected() {
-        return isValueSelected;
-    }
+
 
     public boolean isNotConnected() {
         return !isValueSelected & !isFacetSelected;
     }
-
-    public void setIsValueSelected(boolean isValueSelected) {
-        this.isValueSelected = isValueSelected;
-        isFacetSelected = false;
-    }
-
+    
     public boolean isIsThesoActive() {
         return isThesoActive;
     }
@@ -229,6 +225,26 @@ public class IndexSetting implements Serializable {
         isConceptDiagramSelected = conceptDiagramSelected;
     }*/
 
+    public boolean isIsValueSelected() {
+        return isValueSelected;
+    }
+    
+    public void setIsValueSelected(boolean isValueSelected) {
+        this.isValueSelected = isValueSelected;
+        isFacetSelected = false;
+        isHomeSelected = false;
+    }
+
+    public boolean isIsHomeSelected() {
+        return isHomeSelected;
+    }
+
+    public void setIsHomeSelected(boolean isHomeSelected) {
+        this.isHomeSelected = isHomeSelected;
+        isFacetSelected = false;
+        isValueSelected = false;
+    }    
+    
     public boolean isIsFacetSelected() {
         return isFacetSelected;
     }
@@ -236,6 +252,7 @@ public class IndexSetting implements Serializable {
     public void setIsFacetSelected(boolean isFacetSelected) {
         this.isFacetSelected = isFacetSelected;
         isValueSelected = false;
+        isHomeSelected = false;
     }
 
 }

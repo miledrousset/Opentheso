@@ -149,15 +149,30 @@ public class ExportRdf4jHelperNew {
     }
 
     public void exportFacettes(HikariDataSource ds, String idTheso){
+        FacetHelper facetHelper = new FacetHelper();
         
-        ArrayList<NodeFacet> facets = new FacetHelper().getAllFacetsDetailsOfThesaurus(ds, idTheso, null);
+        ArrayList<NodeFacet> facets = facetHelper.getAllFacetsDetailsOfThesaurus(ds, idTheso);
         
         for (NodeFacet facet : facets) {
-            SKOSResource sKOSResource = new SKOSResource("http://www.w3.org/2004/02/skos/core#Facet?idFacet="+facet.getIdFacet(), SKOSProperty.FACET);
+            SKOSResource sKOSResource =  new SKOSResource(getPath() + "/" + facet.getIdFacet(), SKOSProperty.FACET);//new SKOSResource("http://www.w3.org/2004/02/skos/core#Facet?idFacet="+facet.getIdFacet(), SKOSProperty.FACET);
+            sKOSResource.addRelation(getUriFromNodeUri(facet.getNodeUri(), idTheso), SKOSProperty.superOrdinate);
             sKOSResource.addLabel(facet.getLexicalValue(), facet.getLang(), SKOSProperty.prefLabel);
             sKOSResource.addDate(facet.getCreated(), SKOSProperty.created);
             sKOSResource.addDate(facet.getModified(), SKOSProperty.modified);
+            addFacetMembers(ds, facetHelper, sKOSResource, facet, idTheso);
             skosXmlDocument.addFacet(sKOSResource);
+        }
+    }
+    
+    private void addFacetMembers(HikariDataSource ds, 
+            FacetHelper facetHelper, SKOSResource sKOSResource,
+            NodeFacet nodeFacet, String idTheso){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        NodeUri nodeUri;
+        List<String> members = facetHelper.getAllMembersOfFacet(ds, nodeFacet.getIdFacet(), idTheso);
+        for (String idConcept : members) {
+            nodeUri = conceptHelper.getNodeUriOfConcept(ds, idConcept, idTheso);
+            sKOSResource.addRelation(getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
         }
     }
 
@@ -340,14 +355,11 @@ public class ExportRdf4jHelperNew {
         }
         sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
 
-        FacetHelper facetHelper = new FacetHelper();
-        List<String> idFacettes = facetHelper.getIdFacetsAssociatedToConceptParent(ds, idConcept, idTheso);
-        for (String idFacette : idFacettes) {
-            int prop = SKOSProperty.FACET;
-            if (facetHelper.isConceptParentInFacet(ds, idFacette, idConcept)) {
-                prop = SKOSProperty.TOP_FACET;
+        if(nodeConcept.getListFacetsOfConcept() != null) {
+            for (String idFacette : nodeConcept.getListFacetsOfConcept()) {
+                int prop = SKOSProperty.subordinateArray;
+                sKOSResource.addRelation(getPath() + "/" + idFacette, prop);
             }
-            sKOSResource.addRelation("http://www.w3.org/2004/02/skos/core#Facet?idFacet="+idFacette, prop);
         }
 
         ArrayList<String> first = new ArrayList<>();

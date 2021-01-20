@@ -81,7 +81,7 @@
 
                 <b:row>
                     <b:column span="3" offset="6" >
-                        <b:commandButton id="buttonSubmit" value="Valider" ajax="false"  update="addNTForm" look="success"
+                        <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}" ajax="false"  update="addNTForm" look="success"
                                          style="width:100%; " size="sm" 
                                          actionListener="#{newConcept.addNewConcept(
                                                    conceptBean.nodeConcept.concept.idConcept,

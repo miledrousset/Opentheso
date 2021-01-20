@@ -4,11 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <!--    <b:modal id="idRenameConcept"  class="renameConcept" title="Renommer le concept" close-on-escape="false" backdrop="false"
-                 style="font-size: 12px;">
-    -->
-
-    <p:dialog id="idRenameSynonym" header="modifier synonyme" widgetVar="renameSynonym" 
+    <p:dialog id="idRenameSynonym" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_synonym')}" widgetVar="renameSynonym" 
               modal="true" resizable="true" position="top" width="500" style="margin-top: 50px;" >         
 
         <h:form id="renameSynonymForm">   
@@ -25,18 +21,18 @@
             <b:panel style="max-height: 300px;overflow-y:scroll ">           
                 <b:row >
                     <b:column span="5" >
-                        <h:outputText value="Synonyme" style="color: black;font-size: 13px;"/>                    
+                        <h:outputText value="#{langueBean.getMsg('indexview.synonym')}" style="color: black;font-size: 13px;"/>                    
                     </b:column>
                     <b:column span="2" >
-                        <h:outputText value="langue" style="color: black;font-size: 13px;"/>
+                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" style="color: black;font-size: 13px;"/> 
                     </b:column>
 
                     <b:column span="3" >
-                        <h:outputText value="caché ?" style="color: black;font-size: 13px;"/>                        
+                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')} ?" style="color: black;font-size: 13px;"/>                         
                     </b:column>                             
 
                     <b:column span="2">
-                        <h:outputText value="valider" style="color: black;font-size: 13px;"/>
+                        <h:outputText value="#{langueBean.getMsg('btnValidate')}" style="color: black;font-size: 13px;"/>
                     </b:column>
                 </b:row>
                 <ui:repeat var="synonymToEdit" value="#{synonymBean.nodeEMsForEdit}" >
@@ -71,7 +67,8 @@
             </b:row>
             <b:row >
                 <b:column span="5" offset="1" colXs="5" offset-xs="1">
-                    <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonRenameForced" value="Forcer"
+                    <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonRenameForced" 
+                                     value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" 
                                      update="formRightTab:viewTabConcept:renameSynonymForm"
                                      class="btn btn-primary"
                                      action="#{synonymBean.updateSynonymForced(
@@ -79,7 +76,7 @@
                                      style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
                 </b:column>                        
                 <b:column span="5" colXs="5">
-                    <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonCancel" value="Annuler"
+                    <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}"
                                      update="formRightTab:viewTabConcept:renameSynonymForm"
                                      class="btn btn-primary"
                                      action="#{synonymBean.cancel()}" 
@@ -91,8 +88,8 @@
             <b:row>
                 <b:column span="4" offset="4" colXs="8" offset-xs="2">
                     <b:commandButton rendered="#{!synonymBean.duplicate}"
-                                     id="buttonRenameAll" value="Tout modifier" 
-                                     tooltip="Valider toutes les modifications" tooltip-delay-show="500"
+                                     id="buttonRenameAll" value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}"
+                                     tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_modify_all')}" tooltip-delay-show="500"
                                      update="formRightTab:viewTabConcept:renameSynonymForm"
                                      class="btn btn-primary"
                                      action="#{synonymBean.updateAllSynonyms(
@@ -104,5 +101,4 @@
             </b:row>              
         </h:form>
     </p:dialog> 
-    <!--  </b:modal> -->    
 </ui:fragment>

@@ -67,12 +67,12 @@ $$ LANGUAGE plpgsql;
 -- Tables pour la gestion des facettes
 --
 
-CREATE TABLE IF NOT EXISTS public.concept_facette
+CREATE TABLE IF NOT EXISTS public.concept_facet
 (
-    id_facette integer NOT NULL,
+    id_facet character varying NOT NULL,
     id_thesaurus text COLLATE pg_catalog."default" NOT NULL,
     id_concept text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT concept_facettes_pkey PRIMARY KEY (id_facette, id_thesaurus, id_concept)
+    CONSTRAINT concept_facettes_pkey PRIMARY KEY (id_facet, id_thesaurus, id_concept)
 );
 
 create or replace function delete_table_thesaurus_array() returns void as $$
@@ -91,11 +91,12 @@ begin
                     id_concept_parent character varying COLLATE pg_catalog."default" NOT NULL,
                     ordered boolean NOT NULL DEFAULT false,
                     notation character varying COLLATE pg_catalog."default",
-                    id_facet integer NOT NULL,
+                    id_facet character varying NOT NULL,
                     CONSTRAINT thesaurus_array_pkey PRIMARY KEY (id_facet, id_thesaurus, id_concept_parent)
                 );
                 ALTER TABLE node_label drop COLUMN facet_id;
-                ALTER TABLE node_label ADD COLUMN id_facet integer NOT NULL DEFAULT nextval(''thesaurus_array_facet_id_seq''::regclass);';
+                ALTER TABLE node_label ADD COLUMN id integer NOT NULL DEFAULT nextval(''thesaurus_array_facet_id_seq''::regclass);
+                ALTER TABLE node_label ADD COLUMN id_facet character varying NOT NULL;';
     END IF;
 end
 $$language plpgsql;
@@ -167,6 +168,10 @@ $$language plpgsql;
 
 -- Table: concept_orphan à supprimer, elle n'est plus utile
 DROP TABLE if exists public.concept_orphan;
+
+-- 
+DROP TABLE if exists public.thesaurus_array_concept;
+
 
 -- Renommer la table concept_fusion pour gérer les concepts dépréciés 
 ALTER TABLE if exists concept_fusion RENAME TO concept_replacedby;

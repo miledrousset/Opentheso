@@ -1,14 +1,13 @@
 package fr.cnrs.opentheso.bean.facet;
 
-import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.bean.concept.NewConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -35,26 +34,14 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class EditFacet implements Serializable {
 
-    @Inject
-    private Connect connect;
-    
-    @Inject
-    private RightBodySetting rightBodySetting;
-    
-    @Inject
-    private ConceptView conceptBean;
-    
-    @Inject
-    private IndexSetting indexSetting;
-
-    @Inject
-    private ConceptView conceptView;
-
-    @Inject
-    private Tree tree;
-
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private RightBodySetting rightBodySetting;
+    @Inject private ConceptView conceptBean;
+    @Inject private IndexSetting indexSetting;
+    @Inject private ConceptView conceptView;
+    @Inject private Tree tree;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private NewConcept newConcept;    
 
     private ArrayList<NodeLangTheso> nodeLangs, nodeLangsFiltered;
     private ArrayList<NodeIdValue> conceptList;
@@ -64,18 +51,20 @@ public class EditFacet implements Serializable {
     private NodeConcept concepParent;
     private NodeFacet facetSelected;
     
+    private NodeIdValue conceptSelected;
+    
 
-    public void initEditFacet(int facetId, String idTheso, String idLang) {
+    public void initEditFacet(String facetId, String idTheso, String idLang) {
         
         FacetHelper facetHelper = new FacetHelper();
         
         facetSelected = facetHelper.getThisFacet(connect.getPoolConnexion(),
                 facetId, idTheso, idLang);
-        
+        if(facetSelected == null || facetSelected.getIdFacet() == null) return;
         concepParent = new ConceptHelper().getConcept(connect.getPoolConnexion(),
                 facetSelected.getIdConceptParent(),
-                selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang());
+                idTheso,
+                idLang);
         
         conceptParentTerme = concepParent.getTerm().getLexical_value();
         
@@ -86,6 +75,10 @@ public class EditFacet implements Serializable {
 
         newFacetName = facetSelected.getLexicalValue();
         
+    }
+    
+    public void initNewFacet(){
+        newFacetName = "";
     }
     
     public void supprimerFacette() {
@@ -120,11 +113,10 @@ public class EditFacet implements Serializable {
         FacetHelper facetHelper = new FacetHelper();
         ConceptHelper termHelper = new ConceptHelper();
         
-        List<String> concepts = facetHelper.getConceptAssocietedToFacette(connect.getPoolConnexion(), 
-                facetSelected.getLexicalValue(), 
-                selectedTheso.getCurrentIdTheso(), 
-                selectedTheso.getCurrentLang(), 
-                facetSelected.getIdConceptParent());
+        List<String> concepts = facetHelper.getAllMembersOfFacet(
+                connect.getPoolConnexion(), 
+                facetSelected.getIdFacet(), 
+                selectedTheso.getCurrentIdTheso());    
         
         conceptList = new ArrayList<>();
         for (String idConcept : concepts) {
@@ -229,7 +221,7 @@ public class EditFacet implements Serializable {
             }
         }
         if(nodeLangsFiltered.isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " La Facette est déjà traduit dans toutes les langues du thésaurus !!!");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " La Facette est déjà traduite dans toutes les autres langues du thésaurus !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
@@ -237,29 +229,51 @@ public class EditFacet implements Serializable {
         PrimeFaces.current().executeScript("PF('addFacetTraduction').show();");
     }
     
-    public void modifierConceptAssocie() {
-
-        TermHelper termHelper = new TermHelper();
+    /**
+     * permet d'ajouter un concept existant à la facette
+     */
+    public void addMemberToFacet() {
         FacetHelper facetHelper = new FacetHelper();
+        ConceptHelper conceptHelper = new ConceptHelper();
+
+        FacesMessage msg;
         
-        facetHelper.deleteAllConceptAssocietedToFacet(connect.getPoolConnexion(), 
+        if(conceptSelected == null || conceptSelected.getId() == null || conceptSelected.getId().isEmpty()){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " pas de concept sélectionné !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }        
+        
+        if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+                facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(), conceptSelected.getId())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " La création a échoué !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        String label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(),
+                conceptSelected.getId(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+/*        facetHelper.deleteAllConceptAssocietedToFacet(connect.getPoolConnexion(), 
                 facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso());
+                */
+
+    //    tree.getSelectedNode().clearParent();
         
-        tree.getSelectedNode().clearParent();
-        
-        for (NodeIdValue concept : conceptList) {
+ /*       for (NodeIdValue concept : conceptList) {
             
             facetHelper.addConceptToFacet(connect.getPoolConnexion(), facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(),
                     concept.getId());
-
-            Term term = termHelper.getThisTerm(connect.getPoolConnexion(), concept.getId(), selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang());
-           
-            TreeNodeData data = new TreeNodeData(concept.getId(), term.getLexical_value(), "", false,
+            label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(), concept.getId(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+          */
+            TreeNodeData data = new TreeNodeData(conceptSelected.getId(), label, "", false,
                     false, true, false, "term");
-
-            tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
-        }
+            data.setIdFacetParent(facetSelected.getIdFacet());
+            if(conceptHelper.haveChildren(connect.getPoolConnexion(),
+                    selectedTheso.getCurrentIdTheso(), conceptSelected.getId())) {
+                tree.getDataService().addNodeWithChild("concept", data, tree.getSelectedNode());
+            } else {
+                tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+            }
+    //    }
 
         initDataAfterAction();
 
@@ -267,7 +281,7 @@ public class EditFacet implements Serializable {
         tree.expandTreeToPath2(facetSelected.getIdConceptParent(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getSelectedLang(),
-                facetSelected.getIdFacet()+"");
+                facetSelected.getIdFacet());
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -322,10 +336,13 @@ public class EditFacet implements Serializable {
             return;            
         }
 
-        int idFacet = facetHelper.addNewFacet(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(), newFacetName, selectedTheso.getCurrentLang(),
+        String idFacet = facetHelper.addNewFacet(connect.getPoolConnexion(),
+                null,
+                selectedTheso.getCurrentIdTheso(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                newFacetName, selectedTheso.getCurrentLang(),
                 null);
-        if(idFacet == -1) {
+        if(idFacet == null) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la création de la Facette !");
             return;
         }
@@ -345,12 +362,26 @@ public class EditFacet implements Serializable {
     public void updateLabelFacet() {
 
         FacetHelper facetHelper = new FacetHelper();
-        checkLabelFacet(facetHelper);
+        if(!checkLabelFacet(facetHelper)) return;
 
-        facetHelper.updateLabelFacet(connect.getPoolConnexion(), newFacetName,
+        if(facetHelper.isTraductionExistOfFacet(connect.getPoolConnexion(),
+                facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
+            if(!facetHelper.updateLabelFacet(connect.getPoolConnexion(), newFacetName,
+                                facetSelected.getIdFacet(),
+                                selectedTheso.getCurrentIdTheso(),
+                                selectedTheso.getCurrentLang())) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur interne BDD!");
+                return;
+            }
+        } else 
+            if(!facetHelper.addFacetTraduction(connect.getPoolConnexion(), 
                 facetSelected.getIdFacet(),
                 selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang());
+                newFacetName,
+                selectedTheso.getCurrentLang())){
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur interne BDD!");
+                return;                
+            }
 
         showMessage(FacesMessage.SEVERITY_INFO, "Facette modifiée avec sucée !");
 
@@ -479,5 +510,15 @@ public class EditFacet implements Serializable {
     public void setConceptList(ArrayList<NodeIdValue> conceptList) {
         this.conceptList = conceptList;
     }
+
+    public NodeIdValue getConceptSelected() {
+        return conceptSelected;
+    }
+
+    public void setConceptSelected(NodeIdValue conceptSelected) {
+        this.conceptSelected = conceptSelected;
+    }
+    
+    
     
 }

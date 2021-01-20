@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddAlignment" header="Alignement avec des thésaurus externes" widgetVar="addAlignment" 
+    <p:dialog id="idAddAlignment" header="#{langueBean.getMsg('rightbody.conceptdialog.alignment_with_external_thesauri')}" widgetVar="addAlignment" 
               modal="true" resizable="true" position="top" width="1100" style="margin-top: 50px" >
 
 
@@ -20,11 +20,17 @@
                         <b:column span="1" offset="8">
                             <b:navbarLinks pull="right" >
                                 <b:dropMenu icon-awesome="filter" value="" style="font-size: 12px; color: #f47b2a;" contentStyle="font-size: 12px;">
-                                    <b:selectBooleanCheckbox value="#{alignmentBean.withLang}" caption="Langues" tooltip="récupérer les traductions" tooltip-delay="1000"
+                                    <b:selectBooleanCheckbox value="#{alignmentBean.withLang}" 
+                                                             caption="#{langueBean.getMsg('candidat.traductions')}"
+                                                             tooltip="#{langueBean.getMsg('rightbody.conceptdialog.retrieve_translations')}" tooltip-delay="1000" 
                                                              style="margin-top: 2px;  font-size: 12px; " offset="1"/>
-                                    <b:selectBooleanCheckbox value="#{alignmentBean.withNote}" caption="Notes" tooltip="récupérer les notes" tooltip-delay="1000"
+                                    <b:selectBooleanCheckbox value="#{alignmentBean.withNote}" 
+                                                             caption="#{langueBean.getMsg('rightbody.concept.notes')}" 
+                                                             tooltip="#{langueBean.getMsg('rightbody.conceptdialog.retrieve_notes')}" tooltip-delay="1000" 
                                                              style="margin-top: 2px;font-size: 12px;" offset="1"/>     
-                                    <b:selectBooleanCheckbox value="#{alignmentBean.withImage}" caption="Images" tooltip="récupérer les images" tooltip-delay="1000"
+                                    <b:selectBooleanCheckbox value="#{alignmentBean.withImage}"
+                                                             caption="#{langueBean.getMsg('rightbody.concept.images')}"
+                                                             tooltip="#{langueBean.getMsg('rightbody.conceptdialog.retrieve_images')}" tooltip-delay="1000"   
                                                              style="margin-top: 2px;font-size: 12px;" offset="1"/>                                 
                                 </b:dropMenu>
 
@@ -34,16 +40,17 @@
                         <b:column span="1">
                             <b:navbarLinks pull="right" >
                                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="gérer les sources d'alignement" tooltip-delay-show="1000"
+                                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
+                                            tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_manage_alignment_sources')}" tooltip-delay-show="1000"
                                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    <b:navCommandLink value="Gérer les sources" 
+                                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" 
                                                       action="#{setAlignmentSourceBean.init()}"
                                                       update="addAlignmentForm addAlignmentForm:columnRightPanel
                                                       addAlignmentForm:panelSetting"
                                                       style="font-size: 12px;"></b:navCommandLink>
-                                    <b:navCommandLink value="Ajouter une source"
+                                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.conceptdialog.add_source')}"
                                                       disabled="false"
-                                                      tooltip="Ajouter une nouvelle source de type Opentheso"
+                                                      tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_add_source')}"
                                                       action="#{setAlignmentSourceBean.initAddSource()}"
                                                       update="addAlignmentForm addAlignmentForm:columnRightPanel
                                                       addAlignmentForm:panelAddNewSource"
@@ -71,19 +78,25 @@
                         <!-- ligne navigation dans les concepts -->
                         <b:row>
                             <b:column span="4">
-                                <b:navCommandLink value="set" id="reset" icon-awesome="fas fa-step-backward" style="color: #f47b2a"
+                                <b:navCommandLink value="#{langueBean.getMsg('rightbody.conceptdialog.reset')}"
+                                                  tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_reset')}" tooltip-delay-show="500"
+                                                  id="reset" icon-awesome="fas fa-step-backward" style="color: #f47b2a"
                                                   action="#{alignmentBean.restart(conceptView.selectedLang,  selectedTheso.currentIdTheso)}"
                                                   styleClass="styleButton_db"
                                                   update="addAlignmentForm:columnLeftPanel"/>
                             </b:column>
                             <b:column span="4">                
-                                <b:navCommandLink value="pre" id="previous" icon-awesome="fas fa-arrow-circle-left" style="color: #43B572"
+                                <b:navCommandLink value="#{langueBean.getMsg('rightbody.conceptdialog.previous')}" id="previous"
+                                                  tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_previous')}" tooltip-delay-show="500"
+                                                  icon-awesome="fas fa-arrow-circle-left" style="color: #43B572"
                                                   action="#{alignmentBean.previousTen(conceptView.selectedLang,  selectedTheso.currentIdTheso)}" 
                                                   styleClass="styleButton_db"
                                                   update="addAlignmentForm:columnLeftPanel"/>
                             </b:column>
                             <b:column span="4">
-                                <b:navCommandLink value="next" id="next" icon-awesome="fas fa-arrow-circle-right" style="color: #43B572"
+                                <b:navCommandLink value="#{langueBean.getMsg('rightbody.conceptdialog.next')}"
+                                                  tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_next')}" tooltip-delay-show="500"
+                                                  id="next" icon-awesome="fas fa-arrow-circle-right" style="color: #43B572"
                                                   action="#{alignmentBean.nextTen(conceptView.selectedLang,  selectedTheso.currentIdTheso)}"
                                                   styleClass="styleButton_db"
                                                   update="addAlignmentForm:columnLeftPanel"/>
@@ -124,18 +137,18 @@
 
                                     <b:column span="5" rendered="#{!alignmentBean.isNameAlignment}" style="font-size: 12px; margin-top: -5px">
                                         <b:inputText value="#{alignmentBean.conceptValueForAlignment}" 
-                                                     tooltip="concept à aligner" tooltip-delay-show="1000"
+                                                     tooltip="#{langueBean.getMsg('rightbody.conceptdialog.concept_tobe_aligned')}" tooltip-delay-show="1000"
                                                      style="height: 25px; border-color: #43B572" />
                                     </b:column>
 
                                     <!-- nom et prénom pour IdRef -->
                                     <b:column span="3" rendered="#{alignmentBean.isNameAlignment}" style="font-size: 12px; margin-top: -5px" >
-                                        <b:inputText tooltip="Nom" placeholder="Nom" tooltip-delay-show="1000"
+                                        <b:inputText tooltip="#{langueBean.getMsg('rightbody.conceptdialog.name')}" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.name')}" tooltip-delay-show="1000"
                                                      value="#{alignmentBean.nom}" 
                                                      style="height: 25px; border-color: #43B572"/>
                                     </b:column>
                                     <b:column span="3" rendered="#{alignmentBean.isNameAlignment}"  style="font-size: 12px; margin-top: -5px">
-                                        <b:inputText tooltip="Prenom" placeholder="Prenom" tooltip-delay-show="1000"
+                                        <b:inputText tooltip="#{langueBean.getMsg('rightbody.conceptdialog.first_name')}" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.first_name')}" tooltip-delay-show="1000"
                                                      value="#{alignmentBean.prenom}" 
                                                      style="height: 25px; border-color: #43B572"/>
                                     </b:column>
@@ -151,7 +164,7 @@
                                     </b:column>
 
                                     <b:column span="1" style="font-size: 12px;">
-                                        <b:navCommandLink id="cbAjAlignAuto" tooltip="Chercher les alignements" tooltip-delay-show="1000"
+                                        <b:navCommandLink id="cbAjAlignAuto" tooltip="#{langueBean.getMsg('rightbody.conceptdialog.search_for_alignments')}" tooltip-delay-show="1000"
                                                           iconAwesome="search" style="color: #f47b2a; "
                                                           action="#{alignmentBean.searchAlignments(
                                                                     selectedTheso.selectedIdTheso, 
@@ -187,14 +200,14 @@
                                                     <b:row >
                                                         <b:column span="12" style="background: #FAFAFA">
                                                             <b:inputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                                                         label="concept local"
+                                                                         label="#{langueBean.getMsg('rightbody.conceptdialog.local_concept')}"
                                                                          disabled="true"
                                                                          style="color: #43B572; font-size: 12px;"/>                    
                                                         </b:column>
                                                     </b:row>
                                                     <b:row >
                                                         <b:column span="12" style="background: #FAFAFA">
-                                                            <b:selectOneMenu id="relationType"  value="#{alignmentManualBean.manualAlignmentType}"  label="type d'équivalence"
+                                                            <b:selectOneMenu id="relationType"  value="#{alignmentManualBean.manualAlignmentType}"  label="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')}"
                                                                              style="font-size: 12px; background: white; border-color: #43B572">
                                                                 <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
                                                                                itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
@@ -204,14 +217,14 @@
                                                     <b:row >
                                                         <b:column span="12" style="background: #FAFAFA">
                                                             <b:inputText value="#{alignmentManualBean.manualAlignmentUri}"
-                                                                         label="Uri distante" 
+                                                                         label="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')}" 
                                                                          style="color: #43B572; font-size: 12px;"/>                    
                                                         </b:column>
                                                     </b:row>
                                                     <b:row >            
                                                         <b:column span="12" style="background: #FAFAFA">
                                                             <b:inputText value="#{alignmentManualBean.manualAlignmentSource}"
-                                                                         label="Nome de la source" 
+                                                                         label="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}" 
                                                                          disabled="true"
                                                                          style="color: #43B572; font-size: 12px;"/>                    
                                                         </b:column>
@@ -220,7 +233,7 @@
 
                                                     <b:row style="margin-bottom: 10px;">
                                                         <b:column span="4" >
-                                                            <b:commandButton id="buttonCancelManual" value="Cancel" 
+                                                            <b:commandButton id="buttonCancelManual" value="#{langueBean.getMsg('btnCancel')}" 
                                                                              style="width:100%; font-size: 13px; 
                                                                              font-weight: normal;
                                                                              color: white; background: #8C8C8C; border: none; box-shadow: none;"
@@ -229,7 +242,7 @@
                                                                              update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"/>
                                                         </b:column>                                                              
                                                         <b:column span="4" offset="4" >
-                                                            <b:commandButton id="buttonSubmitManual" value="Valider" 
+                                                            <b:commandButton id="buttonSubmitManual" value="#{langueBean.getMsg('btnValidate')}" 
                                                                              style="width:100%; font-size: 13px; 
                                                                              font-weight: normal;
                                                                              color: white; background: #F7A269; border: none; box-shadow: none;"
@@ -276,7 +289,7 @@
                                                         <b:row rendered="#{nodeAlign.concept_target_alt.trim() != null and nodeAlign.concept_target_alt.trim() != ''}">
                                                             <b:column span="12" >
                                                                 <h:outputText rendered="#{nodeAlign.concept_target_alt.trim() != null and nodeAlign.concept_target_alt.trim() != ''}" 
-                                                                              value="altLable : #{nodeAlign.concept_target_alt}&lt;br/&gt;" escape="false" /> 
+                                                                              value="#{langueBean.getMsg('indexview.synonym')} : #{nodeAlign.concept_target_alt}&lt;br/&gt;" escape="false" /> 
                                                             </b:column>
                                                         </b:row>
                                                         <b:row rendered="#{nodeAlign.def_target.trim() != null and nodeAlign.def_target.trim() != ''}">
@@ -293,7 +306,7 @@
 
                                                     <b:column span="1">
                                                         <b:navCommandLink iconAwesome="fas fa-file-import" style="font-size: 14px; color: #f47b2a;"
-                                                                          tooltip="selectionner cet alignement" tooltip-delay-show="1000"
+                                                                          tooltip="#{langueBean.getMsg('rightbody.conceptdialog.select_this_alignment')}" tooltip-delay-show="1000"
                                                                           action="#{alignmentBean.getUriAndOptions(
                                                                                     nodeAlign,
                                                                                     selectedTheso.selectedIdTheso,
@@ -319,7 +332,7 @@
                                                 </b:column>
                                                 <b:column span="4">
                                                     <p:selectOneMenu id="alignmentType" value="#{alignmentBean.selectedAlignementType}"
-                                                                     title="Type d'alignement"
+                                                                     title="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
                                                                      style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
                                                                      panelStyle="font-size: 12px; background: none; border: none; box-shadow: none;">
                                                         <f:selectItems value="#{alignmentBean.alignmentTypes}" var="type" itemLabel="#{type.value}" itemValue="#{type.key}" />
@@ -332,7 +345,7 @@
 
                                                 <b:column span="1">
                                                     <b:navCommandLink id="align" iconAwesome="fas fa-check-circle fas 2x" style="color: #f47b2a"
-                                                                      tooltip="Valider l'alignement" tooltip-delay-show="1000"
+                                                                      tooltip="#{langueBean.getMsg('rightbody.conceptdialog.validate_alignment')}" tooltip-delay-show="1000"
                                                                       actionListener="#{alignmentBean.addAlignment(
                                                                                         selectedTheso.selectedIdTheso, 
                                                                                         alignmentBean.idConceptSelectedForAlignment,
@@ -342,7 +355,7 @@
                                                     </b:navCommandLink>
                                                 </b:column>
                                                 <b:column span="1">
-                                                    <b:navCommandLink id="cancel" iconAwesome="fas fa-undo" style="color: #f47b2a"
+                                                    <b:navCommandLink id="#{langueBean.getMsg('btnCancel')}" iconAwesome="fas fa-undo" style="color: #f47b2a"
                                                                       tooltip="Retour sans aligner"  tooltip-delay-show="1000"
                                                                       action="#{alignmentBean.cancelAlignment()}"
                                                                       update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel">
@@ -356,7 +369,7 @@
                                                 <!-- langues externes -->
                                                 <b:row rendered="#{(alignmentBean.traductionsOfAlignment != null) and (alignmentBean.traductionsOfAlignment.size() != 0)}">
                                                     <b:column span="12">
-                                                        <h:outputText value="traductions de #{alignmentBean.selectedAlignement}" />
+                                                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.translations_of')} #{alignmentBean.selectedAlignement}" />
                                                     </b:column>
                                                 </b:row>
 
@@ -368,7 +381,7 @@
                                                         </b:column>
                                                         <b:column span="4">
                                                             <b:inputText value="#{externalTraductions.localValue}" disabled="true"
-                                                                         tooltip="valeur locale" tooltip-delay-show="1000"
+                                                                         tooltip="#{langueBean.getMsg('rightbody.conceptdialog.local_value')}" tooltip-delay-show="1000"
                                                                          style="height: 25px;"/>
                                                         </b:column>
                                                         <b:column span="4">
@@ -385,7 +398,7 @@
                                                 <!-- Notes externes -->
                                                 <b:row rendered="#{(alignmentBean.descriptionsOfAlignment != null) and (alignmentBean.descriptionsOfAlignment.size() != 0)}">
                                                     <b:column span="12">
-                                                        <h:outputText value="Définition de #{alignmentBean.selectedAlignement}" />
+                                                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.definition_of')} #{alignmentBean.selectedAlignement}" />
                                                     </b:column>
                                                 </b:row>
 
@@ -408,7 +421,7 @@
                                                 <!-- images externes -->
                                                 <b:row rendered="#{(alignmentBean.imagesOfAlignment != null) and (alignmentBean.imagesOfAlignment.size() != 0)}">
                                                     <b:column span="12">
-                                                        <h:outputText value="Images de #{alignmentBean.selectedAlignement}"  />
+                                                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.images_of')} #{alignmentBean.selectedAlignement}"  />
                                                     </b:column>
                                                 </b:row>
 
@@ -533,7 +546,7 @@
                             </b:panel>  
                             <b:row style="margin-bottom: 10px;">
                                 <b:column span="4" offset="3" >
-                                    <b:commandButton id="buttonCancel" value="cancel"
+                                    <b:commandButton id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}"
                                                      update="addAlignmentForm addAlignmentForm:columnRightPanel
                                                      addAlignmentForm:panelSetting"
                                                      style="width:100%; font-size: 13px; 
@@ -543,7 +556,7 @@
                                                      action="#{setAlignmentSourceBean.cancel()}"/>
                                 </b:column>                                    
                                 <b:column span="4" offset="1" >
-                                    <b:commandButton id="buttonSubmit" value="Valider"
+                                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"
                                                      update="addAlignmentForm addAlignmentForm:columnRightPanel
                                                      addAlignmentForm:panelSetting"
                                                      style="width:100%; font-size: 13px; 
@@ -566,33 +579,33 @@
 
                             <b:row style="margin-top: 10px;">
                                 <b:column span="2" offset="1">
-                                    <h:outputText value="Nom" style="font-size: 12px;"/>
+                                    <h:outputText value="#{langueBean.getMsg('statistique.label')}" style="font-size: 12px;"/>
                                 </b:column>
                                 <b:column span="7">
-                                    <b:inputText placeholder="Nom de la source" value="#{setAlignmentSourceBean.sourceName}" 
+                                    <b:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}" value="#{setAlignmentSourceBean.sourceName}" 
                                                  style="font-size: 12px; height: 25px; "/>
                                 </b:column>                                  
                             </b:row>
                             
                             <b:row>
                                 <b:column span="2" offset="1">
-                                    <h:outputText value="Uri" style="font-size: 12px;"/>
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri')}" style="font-size: 12px;"/>
                                 </b:column>
                                 <b:column span="7">
-                                    <b:inputText placeholder="Uri du serveur" value="#{setAlignmentSourceBean.sourceUri}"
+                                    <b:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.uri')}" value="#{setAlignmentSourceBean.sourceUri}"
                                                  style="font-size: 12px; height: 25px;"
-                                                 tooltip="Indiquer l'URL du serveur exemple (https://monserveur.fr/opentheso)" tooltip-delay-show="500"/>
+                                                 tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_uri')} (https://monserveur.fr/opentheso)" tooltip-delay-show="500"/>
                                 </b:column>                                  
                             </b:row>    
                             
                             <b:row>
                                 <b:column span="2" offset="1">
-                                    <h:outputText value="Id. du thésaurus" style="font-size: 12px;"/>
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}" style="font-size: 12px;"/>
                                 </b:column>
                                 <b:column span="7">
-                                    <b:inputText placeholder="Identifiant du thésaurus" value="#{setAlignmentSourceBean.sourceIdTheso}"
+                                    <b:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}" value="#{setAlignmentSourceBean.sourceIdTheso}"
                                                  style="font-size: 12px; height: 25px;"
-                                                 tooltip="Indiquer l'identifiant du thésaurus exemple (th1)" tooltip-delay-show="500"/>
+                                                 tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_id_thesaurus')}" tooltip-delay-show="500"/>
                                 </b:column>                                  
                             </b:row>        
                             
@@ -609,7 +622,7 @@
                             <p:spacer/>
                             <b:row style="margin-bottom: 10px;">
                                 <b:column span="4" offset="1" >
-                                    <b:commandButton id="buttonCancel2" value="cancel"
+                                    <b:commandButton id="buttonCancel2" value="#{langueBean.getMsg('btnCancel')}"
                                                      update="addAlignmentForm addAlignmentForm:columnRightPanel
                                                      addAlignmentForm:panelAddNewSource"
                                                      style="width:100%; font-size: 13px; 
@@ -619,7 +632,7 @@
                                                      action="#{setAlignmentSourceBean.cancel()}"/>
                                 </b:column>                                    
                                 <b:column span="4" offset="1" >
-                                    <b:commandButton id="buttonSubmit2" value="Ajouter"
+                                    <b:commandButton id="buttonSubmit2" value="#{langueBean.getMsg('btnAdd')}"
                                                      update="addAlignmentForm addAlignmentForm:columnRightPanel
                                                      addAlignmentForm:panelAddNewSource"
                                                      style="width:100%; font-size: 13px; 
