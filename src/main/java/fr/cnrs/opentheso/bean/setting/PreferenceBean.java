@@ -60,6 +60,8 @@ public class PreferenceBean implements Serializable {
             uriType = "handle";
         if(nodePreference.isOriginalUriIsArk())
             uriType = "ark";
+        if(nodePreference.isOriginalUriIsDoi())
+            uriType = "doi";        
         
     }
     

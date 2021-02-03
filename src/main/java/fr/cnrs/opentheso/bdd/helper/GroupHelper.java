@@ -2648,17 +2648,18 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT \n" +
-                        "  concept_group.idgroup, \n" +
-                        "  concept_group.id_ark, \n" +
-                        "  concept_group.id_handle\n" +
-                        " FROM \n" +
-                        "  public.concept_group_concept, \n" +
-                        "  public.concept_group\n" +
-                        " WHERE \n" +
-                        "  concept_group.idgroup = concept_group_concept.idgroup AND\n" +
-                        "  concept_group.idthesaurus = concept_group_concept.idthesaurus AND\n" +
-                        "  concept_group_concept.idconcept = '" + idConcept + "' AND \n" +
+                    String query = "SELECT " +
+                        "  concept_group.idgroup," +
+                        "  concept_group.id_ark," +
+                        "  concept_group.id_handle, " +
+                        "  concept_group.id_doi " +
+                        " FROM " +
+                        "  concept_group_concept," +
+                        "  concept_group" +
+                        " WHERE" +
+                        "  concept_group.idgroup = concept_group_concept.idgroup AND" +
+                        "  concept_group.idthesaurus = concept_group_concept.idthesaurus AND" +
+                        "  concept_group_concept.idconcept = '" + idConcept + "' AND" +
                         "  concept_group_concept.idthesaurus = '" + idThesaurus + "'";
 
                     stmt.executeQuery(query);
@@ -2675,7 +2676,12 @@ public class GroupHelper {
                             nodeUri.setIdHandle("");
                         } else {
                             nodeUri.setIdHandle(resultSet.getString("id_handle"));
-                        }                        
+                        }
+                        if(resultSet.getString("id_doi") == null) {
+                            nodeUri.setIdDoi("");
+                        } else {
+                            nodeUri.setIdDoi(resultSet.getString("id_doi"));
+                        }                           
                         nodeUris.add(nodeUri);
                     }
 

@@ -29,7 +29,7 @@
 
 
 
--- permet de retrouver les concepts qui n'ont pas de realtion associative RT
+-- permet de retrouver les concepts qui n'ont pas de relation associative RT
 --
 -- select id_concept from concept 
 -- where 

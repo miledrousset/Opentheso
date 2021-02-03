@@ -96,7 +96,7 @@ begin
                 );
                 ALTER TABLE node_label drop COLUMN facet_id;
                 ALTER TABLE node_label ADD COLUMN id integer NOT NULL DEFAULT nextval(''thesaurus_array_facet_id_seq''::regclass);
-                ALTER TABLE node_label ADD COLUMN id_facet character varying NOT NULL;';
+                ALTER TABLE node_label ADD COLUMN id_facet character varying DEFAULT ''''::character varying';
     END IF;
 end
 $$language plpgsql;
@@ -104,23 +104,8 @@ $$language plpgsql;
 
 
 
-
-
-
 --
--- mise a jour de la table preferences (ajout de la colonne sort_by_notation)
---
-create or replace function update_table_preferences_sortbynotation() returns void as $$
-begin
-    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='sort_by_notation') THEN
-        execute 'ALTER TABLE preferences ADD COLUMN sort_by_notation boolean DEFAULT false';
-    END IF;
-end
-$$language plpgsql;
-
-
---
--- mise a jour de la table candidat_vote (ajout de la colonne sort_by_notation)
+-- mise a jour de la table candidat_vote (ajout de la colonne type_vote)
 --
 create or replace function update_table_candidat_vote() returns void as $$
 begin
@@ -177,27 +162,82 @@ DROP TABLE if exists public.thesaurus_array_concept;
 ALTER TABLE if exists concept_fusion RENAME TO concept_replacedby;
 
 
+-- Préférences : ajout de l'option mise en cache de l'arbre et sort_by_notation
+--
+create or replace function update_table_preferences_original_uri_doi() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='original_uri_is_doi') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN original_uri_is_doi boolean DEFAULT false;';
+    END IF;
+end
+$$language plpgsql;
+
+create or replace function update_table_preferences_tree_cache() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='tree_cache') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN tree_cache boolean DEFAULT false;';
+    END IF;
+end
+$$language plpgsql;
+
+create or replace function update_table_preferences_sortbynotation() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='sort_by_notation') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN sort_by_notation boolean DEFAULT false';
+    END IF;
+end
+$$language plpgsql;
+
+
+-- Ajout du champ DOI à la table Concept
+--
+create or replace function update_table_concept_doi() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept' AND column_name='id_doi') THEN
+        execute 'ALTER TABLE concept ADD COLUMN id_doi character varying DEFAULT ''''::character varying;';
+    END IF;
+end
+$$language plpgsql;
+
+-- Ajout du champ DOI à la table concept_group
+--
+create or replace function update_table_concept_group_doi() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept_group' AND column_name='id_doi') THEN
+        execute 'ALTER TABLE concept_group ADD COLUMN id_doi character varying DEFAULT ''''::character varying;';
+    END IF;
+end
+$$language plpgsql;
+
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
+SELECT update_table_preferences_original_uri_doi();
 SELECT update_table_preferences_sortbynotation();
+SELECT update_table_preferences_tree_cache();
 SELECT update_table_candidat_vote();
 SELECT update_table_candidat_status();
 SELECT update_table_info();
 SELECT update_table_corpus_link();
 SELECT delete_table_thesaurus_array();
+SELECT update_table_concept_doi();
+SELECT update_table_concept_group_doi();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
 ----------------------------------------------------------------------------
+SELECT delete_fonction('update_table_preferences_original_uri_doi','');
 SELECT delete_fonction('update_table_preferences_sortbynotation','');
+SELECT delete_fonction('update_table_preferences_tree_cache','');
 SELECT delete_fonction('update_table_candidat_vote','');
 SELECT delete_fonction('update_table_candidat_status','');
 SELECT delete_fonction('update_table_info','');
 SELECT delete_fonction('update_table_corpus_link','');
 SELECT delete_fonction('delete_table_thesaurus_array','');
-
-
+SELECT delete_fonction('update_table_concept_doi','');
+SELECT delete_fonction('update_table_concept_group_doi','');
 
 
 

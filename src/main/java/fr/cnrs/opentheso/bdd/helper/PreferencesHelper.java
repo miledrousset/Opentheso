@@ -119,6 +119,9 @@ public class PreferencesHelper {
                         np.setPreferredName(resultSet.getString("preferredname")); 
                         np.setAuto_expand_tree(resultSet.getBoolean("auto_expand_tree"));
                         
+                        np.setSort_by_notation(resultSet.getBoolean("sort_by_notation"));
+                        np.setTree_cache(resultSet.getBoolean("tree_cache"));                        
+                        
                         // Ark
                         np.setUseArk(resultSet.getBoolean("use_ark"));
                         np.setServeurArk(resultSet.getString("server_ark"));
@@ -156,6 +159,7 @@ public class PreferencesHelper {
                         np.setOriginalUri(resultSet.getString("original_uri"));
                         np.setOriginalUriIsArk(resultSet.getBoolean("original_uri_is_ark"));
                         np.setOriginalUriIsHandle(resultSet.getBoolean("original_uri_is_handle"));
+                        np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
                     }
 
                 } finally {
@@ -375,6 +379,9 @@ public class PreferencesHelper {
                             + ", identifier_type='" + np.getIdentifierType() + "'"
                             + ", preferredname='" + np.getPreferredName()+ "'"
                             + ", auto_expand_tree='" + np.isAuto_expand_tree() + "'"
+                            + ", tree_cache='" + np.isTree_cache() + "'"
+                            + ", sort_by_notation='" + np.isSort_by_notation() + "'"                            
+
                             
                             // Ark
                             + ", use_ark='" + np.isUseArk() + "'"
@@ -415,6 +422,7 @@ public class PreferencesHelper {
                             + ", original_uri='" + stringPlus.convertString(np.getOriginalUri())+"'"
                             + ", original_uri_is_ark=" + np.isOriginalUriIsArk()
                             + ", original_uri_is_handle=" + np.isOriginalUriIsHandle()
+                            + ", original_uri_is_doi=" + np.isOriginalUriIsDoi()
                             
                             + " WHERE"
                             + " id_thesaurus = '" + idThesaurus + "'";
@@ -464,7 +472,7 @@ public class PreferencesHelper {
                             + " use_handle,"
                             + " user_handle, pass_handle, path_key_handle, path_cert_handle,"
                             + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
-                            + " original_uri_is_ark, original_uri_is_handle)"
+                            + " original_uri_is_ark, original_uri_is_handle,original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation)"
  
                             + " values('" + idThesaurus + "'"
                             + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
@@ -510,7 +518,10 @@ public class PreferencesHelper {
                             + "," + np.isAuto_expand_tree()                            
                             + ",'" + np.getOriginalUri() + "'"
                             + "," + np.isOriginalUriIsArk()
-                            + "," + np.isOriginalUriIsHandle()                            
+                            + "," + np.isOriginalUriIsHandle()
+                            + "," + np.isOriginalUriIsDoi()
+                            + ",'" + np.isTree_cache() + "'"
+                            + ",'" + np.isSort_by_notation() + "'"
                             + ")";
                     stmt.executeUpdate(query);
                     status = true;

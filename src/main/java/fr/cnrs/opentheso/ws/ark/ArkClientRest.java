@@ -164,8 +164,7 @@ public final class ArkClientRest {
             response.close();
             client.close();
         }
-        setIdArkHandle();
-        return true;
+        return setIdArkHandle();
     }
     
     /**
@@ -435,6 +434,7 @@ public final class ArkClientRest {
     }    
 
     private boolean setIdArkHandle(){
+        
         if(jsonArk == null) return false;
         JsonReader reader;
         try {
@@ -443,22 +443,49 @@ public final class ArkClientRest {
 
            // JsonArray jsonArray = jsonObject.asJsonArray();
             reader.close();
-
-            JsonObject jo = jsonObject.getJsonObject("result");
-
-            JsonString values = jo.getJsonString("ark");
-            if(values == null)
-                idArk = null;
-            else
-                idArk = values.getString().trim();        
-
-
-            values = jo.getJsonString("handle");
-            if(values == null)
-                idHandle = null;
-            else
-                idHandle = values.getString().trim();        
-            token = jsonObject.getString("token");
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ok")) {
+                idArk = jsonObject.getJsonObject("result").getString("ark");
+                idHandle = jsonObject.getJsonObject("result").getString("handle");
+            //    Uri = jsonObject.getJsonObject("result").getString("urlTarget");
+                token = jsonObject.getJsonString("token").getString();
+                return true;
+//                
+//                JsonObject jo = jsonObject.getJsonObject("result");
+//                JsonString values = jo.getJsonString("ark");
+//                if(values == null)
+//                    idArk = null;
+//                else
+//                    idArk = values.getString().trim();        
+//                values = jo.getJsonString("handle");
+//                if(values == null)
+//                    idHandle = null;
+//                else
+//                    idHandle = values.getString().trim();        
+//                token = jsonObject.getString("token");
+//                return true;
+                
+            }            
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ERROR")) {
+                message = jsonObject.getJsonString("description").getString();
+                token = jsonObject.getJsonString("token").getString();
+                return false;
+            }  
+            
+//            JsonObject jo = jsonObject.getJsonObject("result");
+//
+//            JsonString values = jo.getJsonString("ark");
+//            if(values == null)
+//                idArk = null;
+//            else
+//                idArk = values.getString().trim();        
+//
+//
+//            values = jo.getJsonString("handle");
+//            if(values == null)
+//                idHandle = null;
+//            else
+//                idHandle = values.getString().trim();        
+//            token = jsonObject.getString("token");
         } catch (Exception e) {
             message = e.toString();
             return false;

@@ -101,7 +101,7 @@ public class DeprecateHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_concept2, id_ark, id_handle " +
+                    String query = "select id_concept2, id_ark, id_handle, id_doi " +
                             " from concept_replacedby, concept" +
                             " where " +
                             " concept.id_concept = concept_replacedby.id_concept1" +
@@ -126,6 +126,11 @@ public class DeprecateHelper {
                         } else {
                             nodeUri.setIdHandle(resultSet.getString("id_handle"));
                         }
+                        if ((resultSet.getString("id_doi") == null) || (resultSet.getString("id_doi").trim().isEmpty())) {
+                            nodeUri.setIdDoi("");
+                        } else {
+                            nodeUri.setIdDoi(resultSet.getString("id_doi"));
+                        }                        
                         nodeUri.setIdConcept(resultSet.getString("id_concept2"));
 
                         nodeHieraRelation.setRole("replacedBy");
@@ -218,7 +223,7 @@ public class DeprecateHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_concept1, id_ark, id_handle " +
+                    String query = "select id_concept1, id_ark, id_handle, id_doi " +
                             " from concept_replacedby, concept" +
                             " where " +
                             " concept.id_concept = concept_replacedby.id_concept2" +
@@ -243,6 +248,11 @@ public class DeprecateHelper {
                         } else {
                             nodeUri.setIdHandle(resultSet.getString("id_handle"));
                         }
+                        if ((resultSet.getString("id_doi") == null) || (resultSet.getString("id_doi").trim().isEmpty())) {
+                            nodeUri.setIdDoi("");
+                        } else {
+                            nodeUri.setIdDoi(resultSet.getString("id_doi"));
+                        }                        
                         nodeUri.setIdConcept(resultSet.getString("id_concept1"));
 
                         nodeHieraRelation.setRole("replace");

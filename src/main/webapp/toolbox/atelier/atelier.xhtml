@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:wizard nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}">
+    <p:wizard nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}" >
         
         <p:tab id="actions" title="Choix de l'action" titleStyleClass="tabCostum">
             
@@ -23,10 +23,11 @@
             <p:panel header="Les données de comparaison" styleClass="redColoredPanel">
                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
                     <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px" />
-                    <p:selectOneMenu value="#{atelierThesBean.delimiterCsv}" style="font-size: 12px; background: white; border-color: #43B572">
-                        <f:selectItem itemLabel=";" itemValue=";" />
-                        <f:selectItem itemLabel="," itemValue="," />
-                        <f:selectItem itemLabel="\t" itemValue="\t" />
+                    <p:selectOneMenu value="#{atelierThesBean.choiceDelimiter}" style="font-size: 12px; background: white; border-color: #43B572">
+                        <f:selectItem itemLabel="," itemValue="0" />
+                        <f:selectItem itemLabel=";" itemValue="1" />
+                        <f:selectItem itemLabel="\t" itemValue="2" />
+                        <p:ajax event="change" listener="#{atelierThesBean.actionChoice()}" />
                     </p:selectOneMenu>
                 </h:panelGrid>
 

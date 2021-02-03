@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.leftbody.viewtree;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
@@ -35,10 +34,10 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.collections.CollectionUtils;
 import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -193,6 +192,11 @@ public class Tree implements Serializable {
         }
     }
 
+    /// l'évennement ne focntionne pas avec tree dynamic="true"
+    public void onNodeCollapse(NodeCollapseEvent event) {
+         event.getTreeNode().setExpanded(false);
+    }    
+
     private void addMembersOfFacet(TreeNode parent) {
         List<String> list = new FacetHelper().getAllMembersOfFacet(connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
@@ -219,7 +223,7 @@ public class Tree implements Serializable {
                     idConcept1);
             if (haveConceptChild) {
                 dataService.addNodeWithChild("concept", data, parent);
-            } else {     
+            } else {
                 dataService.addNodeWithoutChild("file", data, parent);
             }
         });
@@ -370,8 +374,8 @@ public class Tree implements Serializable {
                 selectedTheso.getCurrentLang());
         nodeIdValues.stream().forEach(facette -> {
             TreeNodeData data = new TreeNodeData(
-                    facette.getId()+ "",
-                    facette.getValue().isEmpty() ? "("+ facette.getId() + ")" : facette.getValue(),
+                    facette.getId() + "",
+                    facette.getValue().isEmpty() ? "(" + facette.getId() + ")" : facette.getValue(),
                     null,
                     false,
                     false,
@@ -416,7 +420,7 @@ public class Tree implements Serializable {
                 rightBodySetting.setIndex("0");
             } else {
                 indexSetting.setIsFacetSelected(true);
-            //    String idFacet = ((TreeNodeData) parent.getData()).getNodeId();
+                //    String idFacet = ((TreeNodeData) parent.getData()).getNodeId();
                 editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
                 PrimeFaces.current().ajax().update("formRightTab");
             }
@@ -601,12 +605,14 @@ public class Tree implements Serializable {
     }
 
     /**
-     * permet de controler si la branche est chargée, on se positionne sur le concept,
-     * sinon, on récupère les fils et on se positionne sur le concept
-     * Cas d'un noeud Facette : on zappe le neoud puisque le concept est sous cette facette, ensuite, on se positionne sur le concept 
+     * permet de controler si la branche est chargée, on se positionne sur le
+     * concept, sinon, on récupère les fils et on se positionne sur le concept
+     * Cas d'un noeud Facette : on zappe le neoud puisque le concept est sous
+     * cette facette, ensuite, on se positionne sur le concept
+     *
      * @param treeNodeParent
      * @param idConceptChildToFind
-     * @return 
+     * @return
      */
     private TreeNode selectChildNode(TreeNode treeNodeParent, String idConceptChildToFind) {
         // test si les fils ne sont pas construits
@@ -614,17 +620,16 @@ public class Tree implements Serializable {
         if (treeNodeParent.getChildCount() == 1 && treeNodeParent.getChildren().get(0).getData().toString().equals("DUMMY")) {
             treeNodeParent.getChildren().remove(0);
 
-
             if ("facet".equals(treeNodeParent.getType())) {
                 addMembersOfFacet(treeNodeParent);
             } else {
                 if (facetHelper.isConceptHaveFacet(connect.getPoolConnexion(),
-                    ((TreeNodeData) treeNodeParent.getData()).getNodeId(), idTheso)) {
+                        ((TreeNodeData) treeNodeParent.getData()).getNodeId(), idTheso)) {
                     addConceptsChildWithFacets(treeNodeParent);
                 } else {
                     addConceptsChild(treeNodeParent);
                 }
-            }            
+            }
         }
         List<TreeNode> treeNodes = treeNodeParent.getChildren();
 
@@ -633,7 +638,7 @@ public class Tree implements Serializable {
             if (((TreeNodeData) treeNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
                 try {
                     //String idFacet = ((TreeNodeData) treeNode.getData()).getNodeId();
-                    if(facetHelper.isFacetHaveThisMember(connect.getPoolConnexion(),
+                    if (facetHelper.isFacetHaveThisMember(connect.getPoolConnexion(),
                             ((TreeNodeData) treeNode.getData()).getNodeId(),
                             idConceptChildToFind, idTheso)) {
                         if (treeNode.getChildCount() == 1 && treeNode.getChildren().get(0).getData().toString().equals("DUMMY")) {
@@ -647,7 +652,7 @@ public class Tree implements Serializable {
                 }
             }
             //// fin 
-            
+
             if (((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idConceptChildToFind)) {
                 return treeNode;
             }
@@ -655,7 +660,7 @@ public class Tree implements Serializable {
         // pas de noeud trouvé dans les fils
         return null;
     }
-    
+
     private TreeNode selectChildNodeFromFacet(TreeNode treeNodeFacet, String idConceptChildToFind) {
         List<TreeNode> treeNodes = treeNodeFacet.getChildren();
 
@@ -666,7 +671,7 @@ public class Tree implements Serializable {
             }
         }
         // pas de noeud trouvé dans les fils
-        return null;        
+        return null;
     }
 
     public DataService getDataService() {

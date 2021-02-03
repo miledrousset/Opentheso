@@ -11,14 +11,13 @@
 delete from alignement;
 delete from concept;
 delete from concept_candidat;
-delete from concept_fusion;
 delete from concept_group;
 delete from concept_group_concept;
 delete from concept_group_historique;
 delete from concept_group_label;
 delete from concept_group_label_historique;
 delete from concept_historique;
-delete from concept_orphan;
+
 delete from concept_term_candidat;
 delete from gps;
 delete from hierarchical_relationship;
@@ -40,10 +39,11 @@ delete from term_historique;
 delete from thesaurus;
 delete from thesaurus_array;
 delete from thesaurus_label;
+delete from concept_facet;
+
 --delete from user_role;
 delete from users;
 delete from users_historique;
-delete from thesaurus_array_concept;
 delete from relation_group;
 delete from alignement_preferences;
 delete from gps_preferences;
@@ -83,7 +83,7 @@ ALTER SEQUENCE user__id_seq RESTART WITH 2;
 ALTER SEQUENCE user_group_label__id_seq RESTART WITH 1;
 ALTER SEQUENCE alignement_preferences_id_seq RESTART WITH 1;
 ALTER SEQUENCE gps_preferences_id_seq RESTART WITH 1;
-
+ALTER SEQUENCE thesaurus_array_facet_id_seq RESTART WITH 1;
 
 
 -- # créarion de l'admin pour la première connexion

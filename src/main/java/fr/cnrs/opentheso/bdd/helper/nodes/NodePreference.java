@@ -6,6 +6,9 @@ public class NodePreference {
     private int identifierType;
     private String preferredName;
     private boolean auto_expand_tree;
+    private boolean sort_by_notation;
+    private boolean tree_cache;    
+    
     
     // paramètres Ark
     private boolean useArk;
@@ -50,6 +53,7 @@ public class NodePreference {
     private String originalUri;
     private boolean originalUriIsArk;
     private boolean originalUriIsHandle;
+    private boolean originalUriIsDoi;    
 
     public String getSourceLang() {
         return sourceLang;
@@ -345,6 +349,30 @@ public class NodePreference {
 
     public void setAuto_expand_tree(boolean auto_expand_tree) {
         this.auto_expand_tree = auto_expand_tree;
+    }
+
+    public boolean isSort_by_notation() {
+        return sort_by_notation;
+    }
+
+    public void setSort_by_notation(boolean sort_by_notation) {
+        this.sort_by_notation = sort_by_notation;
+    }
+
+    public boolean isTree_cache() {
+        return tree_cache;
+    }
+
+    public void setTree_cache(boolean tree_cache) {
+        this.tree_cache = tree_cache;
+    }
+
+    public boolean isOriginalUriIsDoi() {
+        return originalUriIsDoi;
+    }
+
+    public void setOriginalUriIsDoi(boolean originalUriIsDoi) {
+        this.originalUriIsDoi = originalUriIsDoi;
     }
 
 

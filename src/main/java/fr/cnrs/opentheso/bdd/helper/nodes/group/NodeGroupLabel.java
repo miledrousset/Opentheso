@@ -7,6 +7,7 @@ public class NodeGroupLabel {
     private String idGroup;
     private String idArk;
     private String idHandle;
+    private String idDoi;
     private String notation;
     private String idThesaurus;
     
@@ -61,6 +62,14 @@ public class NodeGroupLabel {
 
     public void setNotation(String notation) {
         this.notation = notation;
+    }
+
+    public String getIdDoi() {
+        return idDoi;
+    }
+
+    public void setIdDoi(String idDoi) {
+        this.idDoi = idDoi;
     }
 
            

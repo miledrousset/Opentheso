@@ -14,6 +14,7 @@ public class NodeUri {
     private String idConcept;
     private String idArk;
     private String idHandle;
+    private String idDoi;
 
     public NodeUri() {
     }
@@ -41,6 +42,14 @@ public class NodeUri {
 
     public void setIdHandle(String idHandle) {
         this.idHandle = idHandle;
+    }
+
+    public String getIdDoi() {
+        return idDoi;
+    }
+
+    public void setIdDoi(String idDoi) {
+        this.idDoi = idDoi;
     }
     
 }

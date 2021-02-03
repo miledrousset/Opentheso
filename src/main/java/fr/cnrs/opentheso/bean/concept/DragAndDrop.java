@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
@@ -246,7 +247,7 @@ public class DragAndDrop implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
     
-    public void validateCutAndPaste() {
+/*    public void validateCutAndPaste() {
         isValidPaste = false;
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> descendingConcepts = conceptHelper.getIdsOfBranch(
@@ -265,7 +266,7 @@ public class DragAndDrop implements Serializable {
             return;
         }
         isValidPaste = true;
-    }
+    }*/
     
     /**
      * deplacement entre concepts
@@ -405,13 +406,40 @@ public class DragAndDrop implements Serializable {
                 return;
             }
 
-            /// coller au même endroit
+    /*        /// coller au même endroit
             if (nodeConceptDrop.getConcept().getIdConcept().equalsIgnoreCase(nodeConceptDrag.getConcept().getIdConcept())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Impossible de coller au même endroit ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
-            }
+            }*/
+            
+            
+            
+            /// Vérifier si le dépalcement est valide (controle des relations interdites)
+            ValidateActionHelper validateActionHelper = new ValidateActionHelper();
+            if(!validateActionHelper.isMoveConceptToConceptValid(
+                    connect.getPoolConnexion(),
+                    selectedTheso.getCurrentIdTheso(),
+                    nodeConceptDrag.getConcept().getIdConcept(),
+                    nodeConceptDrop.getConcept().getIdConcept())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
+                
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                isValidPaste = false;
+                reloadTree();
+                return;    
+            }            
 
+            //     validateCutAndPaste();
+
+       
+   /*         if(!isValidPaste) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Déplacement interdit, vérifier les relations ");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;                
+            }*/
             // cas de déplacement d'un concept à concept        
             if ((!nodeConceptDrag.getConcept().isTopConcept())) {
                 if(!moveFromConceptToConcept()) return;

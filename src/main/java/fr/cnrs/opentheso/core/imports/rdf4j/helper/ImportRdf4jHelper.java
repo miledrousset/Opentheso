@@ -72,6 +72,7 @@ public class ImportRdf4jHelper {
 //    private boolean useArk;
     private String selectedIdentifier;
     private String prefixHandle;
+    private String prefixDoi;    
 
     private NodePreference nodePreference;
     private StringBuilder message;
@@ -208,6 +209,7 @@ public class ImportRdf4jHelper {
             message.append("Erreur lors de la création du thésaurus");
             return null;
         }
+        conn.commit();
         // Si le Titre du thésaurus n'est pas detecter, on donne un nom par defaut
         if (skosXmlDocument.getConceptScheme().getLabelsList().isEmpty()) {
             if (thesaurus.getTitle().isEmpty()) {
@@ -232,7 +234,7 @@ public class ImportRdf4jHelper {
                 return null;
             }
         }
-
+        conn.commit();
         // ajouter le thésaurus dans le group de l'utilisateur
         if (idGroupUser != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
             UserHelper userHelper = new UserHelper();
@@ -273,7 +275,10 @@ public class ImportRdf4jHelper {
             }
             if(selectedIdentifier.equalsIgnoreCase("handle")){
                 nodePreference.setOriginalUriIsHandle(true);
-            }            
+            }
+            if(selectedIdentifier.equalsIgnoreCase("doi")){
+                nodePreference.setOriginalUriIsDoi(true);
+            }             
             preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);            
         } else {
             nodePreference.setCheminSite(uri);
@@ -284,7 +289,10 @@ public class ImportRdf4jHelper {
             }
             if(selectedIdentifier.equalsIgnoreCase("handle")){
                 nodePreference.setOriginalUriIsHandle(true);
-            }             
+            }    
+            if(selectedIdentifier.equalsIgnoreCase("doi")){
+                nodePreference.setOriginalUriIsDoi(true);
+            }               
             preferencesHelper.addPreference(ds, nodePreference, idTheso); 
         }
     }
@@ -354,6 +362,10 @@ public class ImportRdf4jHelper {
             if (selectedIdentifier.equalsIgnoreCase("handle")) {
                 idArkHandle = getIdHandleFromUri(group.getUri());
             }
+            if (selectedIdentifier.equalsIgnoreCase("doi")) {
+                idArkHandle = getIdDoiFromUri(group.getUri());
+            }            
+            
             if(idArkHandle == null)
                 idArkHandle = "";
             groupHelper.insertGroup(ds, idGroup, idTheso, idArkHandle, type, notationValue, "", false, idUser);
@@ -497,6 +509,9 @@ public class ImportRdf4jHelper {
         if ("handle".equalsIgnoreCase(selectedIdentifier)) {
             acs.concept.setIdHandle(getIdHandleFromUri(conceptResource.getUri()));
         }
+        if ("doi".equalsIgnoreCase(selectedIdentifier)) {
+            acs.concept.setIdDoi(getIdDoiFromUri(conceptResource.getUri()));
+        }        
 
         acs.concept.setIdThesaurus(idTheso);
         addNotation(acs);
@@ -1168,7 +1183,7 @@ public class ImportRdf4jHelper {
         }
     }
 
-    private static String getIdFromUri(String uri) {
+    private String getIdFromUri(String uri) {
         if (uri.contains("idg=")) {
             if (uri.contains("&")) {
                 uri = uri.substring(uri.indexOf("idg=") + 4, uri.indexOf("&"));
@@ -1229,17 +1244,31 @@ public class ImportRdf4jHelper {
         if (uri.contains("ark:/")) {
             id = uri.substring(uri.indexOf("ark:/") + 5, uri.length());
         }
+        if(id == null) return getIdFromUri(uri);          
         return id;
     }
 
     private String getIdHandleFromUri(String uri) {
         // URI de type Handle
         String id = null;
+        if(prefixHandle == null) return getIdFromUri(uri);        
         if (uri.contains(prefixHandle)) {
             id = uri.substring(uri.indexOf(prefixHandle), uri.length());
         }
+        if(id == null) return getIdFromUri(uri);  
         return id;
     }
+    
+    private String getIdDoiFromUri(String uri) {
+        // URI de type Doi
+        String id = null;
+        if(prefixDoi == null) return getIdFromUri(uri);
+        if (uri.contains(prefixDoi)) {
+            id = uri.substring(uri.indexOf(prefixDoi), uri.length());
+        }
+        if(id == null) return getIdFromUri(uri);  
+        return id;
+    }    
 
     public void addLangsToThesaurus(HikariDataSource ds, String idTheso) {
 
@@ -1342,5 +1371,14 @@ public class ImportRdf4jHelper {
     public void setPrefixHandle(String prefixHandle) {
         this.prefixHandle = prefixHandle;
     }
+
+    public String getPrefixDoi() {
+        return prefixDoi;
+    }
+
+    public void setPrefixDoi(String prefixDoi) {
+        this.prefixDoi = prefixDoi;
+    }
+    
 
 }

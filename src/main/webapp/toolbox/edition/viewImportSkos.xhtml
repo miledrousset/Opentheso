@@ -16,7 +16,9 @@
         <!-- format de date -->
         <b:row style="margin-left: 30px; margin-right: 30px; ">
             <b:column span="5">
-                <b:inputText placeholder="yyyy-MM-dd" label="Format de la date" value="#{importFileBean.formatDate}" style="color: #C63632; font-size: 12px;"/>
+                <b:inputText placeholder="yyyy-MM-dd" label="Format de la date" 
+                             title="Pour récuperer la date du concept, il faut préciser le format de la date !!"
+                             value="#{importFileBean.formatDate}" style="color: #C63632; font-size: 12px;"/>
             </b:column>
         </b:row>
 
@@ -32,6 +34,7 @@
                             <f:selectItem itemLabel="Sans" itemValue="sans" />
                             <f:selectItem itemLabel="Ark" itemValue="ark" />
                             <f:selectItem itemLabel="Handle" itemValue="handle" />
+                            <f:selectItem itemLabel="Doi" itemValue="doi" />
                         </p:selectOneRadio>
                     </p:row>
 
@@ -40,7 +43,7 @@
                             <p:radioButton id="opt1" for="customRadio" itemIndex="0" />
                         </p:column>
                         <p:column>
-                            <h:outputLabel for="opt1" value="Sans" />
+                            <h:outputLabel for="opt1" value="Sans" title="L'identifiant du concept sera généré à partir de l'URI, aucun identifiant pérenne ne sera récupéré !!"/>
                         </p:column>
                         <p:column>
                             <p:outputLabel value="" />
@@ -51,7 +54,7 @@
                             <p:radioButton id="opt2" for="customRadio" itemIndex="1" />
                         </p:column>
                         <p:column>
-                            <h:outputLabel for="opt2" value="Ark" />
+                            <h:outputLabel for="opt2" value="Ark" title="Permet de récupérer l'identifiant Ark automatiquement, un identifiant interne sera créé en plus !!"/>
                         </p:column>
                         <p:column>
                             <p:outputLabel value="" />
@@ -62,12 +65,23 @@
                             <p:radioButton id="opt3" for="customRadio" itemIndex="2" />
                         </p:column>
                         <p:column>
-                            <h:outputLabel for="opt3" value="Handle -> Préfixe :" />
+                            <h:outputLabel for="opt3" value="Handle -> préfixe :" />
                         </p:column>
                         <p:column>
-                            <p:inputText value="#{importFileBean.prefixHandle}"/>
+                            <p:inputText value="#{importFileBean.prefixHandle}" placeholder="22.600.12859" title="Exemple de préfixe: 22.600.12859, Permet de récupérer l'identifiant Handle automatiquement, un identifiant interne sera créé en plus !!"/>
                         </p:column>
                     </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:radioButton id="opt4" for="customRadio" itemIndex="3" />
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel for="opt4" value="Doi -> préfixe :" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{importFileBean.prefixDoi}" placeholder="10.1109" title="Exemple de préfixe: 10.1109, Permet de récupérer l'identifiant Doi automatiquement, un identifiant interne sera créé en plus !!"/>
+                        </p:column>
+                    </p:row>                    
                 </p:panelGrid>
             </b:column>
         </b:row>

@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
@@ -174,6 +175,19 @@ public class CutAndPaste implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);            
                 return;
             }
+        }
+        ValidateActionHelper validateActionHelper = new ValidateActionHelper();
+        if(!validateActionHelper.isMoveConceptToConceptValid(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                nodeConceptDrag.getConcept().getIdConcept(),
+                nodeConceptDrop.getConcept().getIdConcept())) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            isValidPaste = false;
+            return;
         }
         isValidPaste = true;
     }

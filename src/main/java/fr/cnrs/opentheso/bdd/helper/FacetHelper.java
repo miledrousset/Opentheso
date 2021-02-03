@@ -247,7 +247,7 @@ public class FacetHelper {
                 resultSet = stmt.getResultSet();
                 if (resultSet.next()) {
                     int idNumerique = resultSet.getInt(1);
-                    idFacet = "" + (idNumerique);
+                    idFacet = "F" + (idNumerique);
                 }
 
             } finally {

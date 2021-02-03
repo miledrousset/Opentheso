@@ -13,7 +13,8 @@
                 <b:column span="2">
                     <h:outputText value="Uri d'origine " title="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!"/>
                     <b:iconAwesome value="fa-info" size="l" style="color: #C63632; margin-left: 5px;" 
-                                   tooltip="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!"
+                                   tooltip="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!
+                                   C'est ce choix qui va servir à construire l'URI du concept à l'export"
                                    tooltip-delay-show="500"/>
                 </b:column>
 
@@ -24,6 +25,7 @@
                                 <f:selectItem itemLabel="Uri classique" itemValue="uri" />
                                 <f:selectItem itemLabel="Ark" itemValue="ark" />
                                 <f:selectItem itemLabel="Handle" itemValue="handle" />
+                                <f:selectItem itemLabel="Doi" itemValue="doi" />
                             </p:selectOneRadio>
                         </b:column>
                     </b:row>
@@ -91,7 +93,29 @@
                 <b:column span="2" offset="1">
                     <p:toggleSwitch value="#{preferenceBean.nodePreference.auto_expand_tree}" style="font-size: 12px;" />                    
                 </b:column>
+            </b:row>
+            
+            <!-- Activer/ désactiver le cache de l'arbre  -->
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                <b:column span="6">
+                    <h:outputText value="Désactiver/Activer le cache de l'arbre" title="Quand c'est activé, si on raffraichi la page, l'arbre se déplie même quand les dossiers sont fermés"/>
+                </b:column>
+                <b:column span="2" offset="1">
+                    <p:toggleSwitch value="#{preferenceBean.nodePreference.tree_cache}" style="font-size: 12px;"  />                    
+                </b:column>
             </b:row>             
+            
+            
+            <!-- Activer/ désactiver le tri par notation par défaut -->
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                <b:column span="6">
+                    <h:outputText value="Désactiver/Activer le tri par notation par defaut"/>
+                </b:column>
+                <b:column span="2" offset="1">
+                    <p:toggleSwitch value="#{preferenceBean.nodePreference.sort_by_notation}" style="font-size: 12px;"  />                    
+                </b:column>
+            </b:row>               
+            
             
             <p:spacer/>
             <!-- Activer/désactiver le webservices -->

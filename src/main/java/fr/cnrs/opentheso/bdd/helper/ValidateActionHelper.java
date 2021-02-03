@@ -11,6 +11,7 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 public class ValidateActionHelper {
 
+    private String message;
     public ValidateActionHelper() {
     }
     
@@ -69,18 +70,21 @@ public class ValidateActionHelper {
         // relations RT et NT en même temps interdites
         if(relationsHelper.isConceptHaveRelationRT(ds,
                 idConcept, idConceptToAdd, idTheso) == true){ 
+            message = "Une relation associative existe déjà entre les deux concepts";            
             return false;
         }
         
         // relations BT et NT en même temps interdites
         if(relationsHelper.isConceptHaveRelationNTorBT(ds,
                 idConcept, idConceptToAdd, idTheso) == true){ 
+            message = "Une relation générique ou spécifique existe déjà entre les deux concepts";              
             return false;
         }
         
         // relation entre frères est interdite 
         if(relationsHelper.isConceptHaveBrother(ds,
                 idConcept, idConceptToAdd, idTheso) == true){ 
+            message = "Les concepts ont déjà une relation frère";            
             return false;
         }        
         return true;
@@ -105,12 +109,14 @@ public class ValidateActionHelper {
         // relations RT et NT en même temps interdites
         if(relationsHelper.isConceptHaveRelationRT(ds,
                 idConcept, idConceptToAdd, idTheso) == true){ 
+            message = "Une relation associative existe déjà entre les deux concepts";
             return false;
         }
         
         // relations BT et NT en même temps interdites
         if(relationsHelper.isConceptHaveRelationNTorBT(ds,
                 idConcept, idConceptToAdd, idTheso) == true){ 
+            message = "Une relation générique ou spécifique existe déjà entre les deux concepts";            
             return false;
         }
         
@@ -133,9 +139,10 @@ public class ValidateActionHelper {
             String idConceptToAdd) {
         RelationsHelper relationsHelper = new RelationsHelper();
         if(relationsHelper.isConceptHaveRelationNTorBT(ds,
-                idConcept, idConceptToAdd, idTheso) == true) 
+                idConcept, idConceptToAdd, idTheso) == true) {
+            message = "Une relation générique ou spécifique existe déjà entre les deux concepts";              
             return false;
-        
+        }
         // relation entre frères est interdite 
 /*        if(relationsHelper.isConceptHaveBrother(ds,
                 idConcept, idConceptToAdd, idTheso) == true){ 
@@ -143,5 +150,13 @@ public class ValidateActionHelper {
         }*/         
         return true;
     }     
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
     
 }

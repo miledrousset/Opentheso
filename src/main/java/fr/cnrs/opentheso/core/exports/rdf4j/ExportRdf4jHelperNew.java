@@ -657,6 +657,15 @@ public class ExportRdf4jHelperNew {
                 }
             }
         }
+        if(nodePreference.isOriginalUriIsDoi()) {
+            // URI de type Doi
+            if (nodeConceptExport.getConcept().getIdDoi() != null) {
+                if (!nodeConceptExport.getConcept().getIdDoi().trim().isEmpty()) {
+                    uri = "https://doi.org/" + nodeConceptExport.getConcept().getIdDoi();
+                    return uri;
+                }
+            }
+        }        
         // si on ne trouve pas ni Handle, ni Ark
         //    uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
@@ -711,6 +720,15 @@ public class ExportRdf4jHelperNew {
                 }
             }
         }
+        if(nodePreference.isOriginalUriIsDoi()) {        
+            // URI de type Doi
+            if (nodeGroupLabel.getIdDoi() != null) {
+                if (!nodeGroupLabel.getIdDoi().trim().isEmpty()) {
+                    uri = "https://doi.org/" + nodeGroupLabel.getIdDoi();
+                    return uri;
+                }
+            }
+        }        
         // si on ne trouve pas ni Handle, ni Ark
 //        uri = nodePreference.getCheminSite() + nodeGroupLabel.getIdGroup();
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
@@ -810,6 +828,15 @@ public class ExportRdf4jHelperNew {
                 }
             }
         }
+        if(nodePreference.isOriginalUriIsDoi()) {
+            // URI de type Doi
+            if (nodeUri.getIdDoi() != null) {
+                if (!nodeUri.getIdDoi().trim().isEmpty()) {
+                    uri = "https://doi.org/" + nodeUri.getIdDoi();
+                    return uri;
+                }
+            }
+        }        
 
         // si on ne trouve pas ni Handle, ni Ark
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {

@@ -351,7 +351,7 @@ public class ConceptHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_concept, id_ark, id_handle from concept"
+                    String query = "select id_concept, id_ark, id_handle, id_doi from concept"
                             + " where id_thesaurus = '" + idTheso + "'"
                             + " and top_concept = true and status !='CA'";
                     stmt.executeQuery(query);
@@ -368,6 +368,11 @@ public class ConceptHelper {
                         } else {
                             nodeUri.setIdHandle(resultSet.getString("id_handle"));
                         }
+                        if ((resultSet.getString("id_doi") == null) || (resultSet.getString("id_doi").trim().isEmpty())) {
+                            nodeUri.setIdDoi("");
+                        } else {
+                            nodeUri.setIdDoi(resultSet.getString("id_doi"));
+                        }                        
                         nodeUri.setIdConcept(resultSet.getString("id_concept"));
                         NodeUris.add(nodeUri);
                     }
@@ -944,7 +949,7 @@ public class ConceptHelper {
             String idThesaurus, String idGroup) {
 
         String query = "SELECT DISTINCT concept.id_concept,"
-                + " concept.id_ark, concept.id_handle"
+                + " concept.id_ark, concept.id_handle, concept.id_doi"
                 + " FROM concept, concept_group_concept"
                 + " WHERE"
                 + " concept.id_concept = concept_group_concept.idconcept AND"
@@ -991,6 +996,7 @@ public class ConceptHelper {
                         nodeUri.setIdConcept(resultSet.getString("id_concept"));
                         nodeUri.setIdArk(resultSet.getString("id_ark"));
                         nodeUri.setIdHandle(resultSet.getString("id_handle"));
+                        nodeUri.setIdDoi(resultSet.getString("id_doi"));
                         nodeUris.add(nodeUri);
                     }
 
@@ -1752,11 +1758,15 @@ public class ConceptHelper {
 
             privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
 
+            if(idConcept.equalsIgnoreCase("122812")) {
+                int i=1;
+            }
             /// cas où on n'a pas d'idArk dans le concept, il faut alors le créer sur Arkeo
             if (concept.getIdArk() == null || concept.getIdArk().isEmpty()) {
                 // création d'un identifiant Ark + (Handle avec le serveur Ark de la MOM)
                 if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
                     message = arkHelper2.getMessage();
+                    message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
                     return false;
                 }
                 if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdArk())) {
@@ -1772,8 +1782,10 @@ public class ConceptHelper {
                 if (arkHelper2.isArkExistOnServer(concept.getIdArk())) {
                     // ark existe sur le serveur, alors on applique une mise à jour
                     // pour l'URL et les métadonnées
+
                     if (!arkHelper2.updateArk(concept.getIdArk(), privateUri, nodeMetaData)) {
                         message = arkHelper2.getMessage();
+                        message = arkHelper2.getMessage() + "  idConcept = " + idConcept;                        
                         return false;
                     }
                     if (nodePreference.isGenerateHandle()) {
@@ -1786,6 +1798,7 @@ public class ConceptHelper {
                     // + (création de l'ID Handle avec le serveur Ark de la MOM)
                     if (!arkHelper2.addArkWithProvidedId(concept.getIdArk(), privateUri, nodeMetaData)) {
                         message = arkHelper2.getMessage();
+                        message = arkHelper2.getMessage() + "  idConcept = " + idConcept;                        
                         return false;
                     }
                     if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdArk())) {
@@ -2688,6 +2701,12 @@ public class ConceptHelper {
                 conn.close();
                 return false;
             }
+            if (!deleteFacets(ds, idThesaurus, idConcept)) {
+                conn.rollback();
+                conn.close();
+                return false;
+            }            
+            
             if (nodePreference != null) {
                 // Si on arrive ici, c'est que tout va bien 
                 // alors c'est le moment de supprimer le code ARK
@@ -3752,7 +3771,7 @@ public class ConceptHelper {
                 stmt = conn.createStatement();
                 try {
                     query = "Insert into concept "
-                            + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle)"
+                            + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi)"
                             + " values ("
                             + "'" + concept.getIdConcept() + "'"
                             + ",'" + concept.getIdThesaurus() + "'"
@@ -3762,7 +3781,9 @@ public class ConceptHelper {
                             + ",'" + concept.getStatus() + "'"
                             + ",'" + concept.getNotation() + "'"
                             + "," + concept.isTopConcept()
-                            + ",'" + concept.getIdHandle() + "')";
+                            + ",'" + concept.getIdHandle() + "'"
+                            + ",'" + concept.getIdDoi() + "'"
+                            + ")";
                     stmt.executeUpdate(query);
                     status = true;
                     conn.commit();
@@ -3990,6 +4011,7 @@ public class ConceptHelper {
                         concept.setIdThesaurus(idThesaurus);
                         concept.setIdArk(resultSet.getString("id_ark"));
                         concept.setIdHandle(resultSet.getString("id_handle"));
+                        concept.setIdDoi(resultSet.getString("id_doi"));
                         concept.setCreated(resultSet.getDate("created"));
                         concept.setModified(resultSet.getDate("modified"));
                         concept.setStatus(resultSet.getString("status"));
@@ -7146,6 +7168,26 @@ public class ConceptHelper {
         }
         return status;
     }
+    
+            
+    /**
+     * permet de supprimer un concept dans la table concept_replacedby
+     *
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @return
+     */
+    public boolean deleteFacets(HikariDataSource ds, String idTheso, String idConcept) {
+        FacetHelper facetHelper = new FacetHelper();
+        List<String> listFacets = facetHelper.getAllIdFacetsOfConcept(ds, idConcept, idTheso);
+        for (String idFacet : listFacets) {
+            if(!facetHelper.deleteFacet(ds, idFacet, idTheso)){
+                return false;
+            }
+        }
+        return true;
+    }            
 
     /**
      * Change l'id d'un concept dans la table preferred_term

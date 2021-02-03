@@ -36,12 +36,15 @@ public class AtelierThesBean implements Serializable {
     private ArrayList<ConceptResultNode> result;
 
     private int spanTable;
-    private String delimiterCsv = ";";
+    private int choiceDelimiter = 0;    
+    private char delimiterCsv = ',';
     private String selectedColumn;
     private String actionSelected;
     
     @PostConstruct
     public void init() {
+        choiceDelimiter = 0;
+        delimiterCsv = ',';
         titles = new ArrayList<>();
         values = new ArrayList<>();
         result = new ArrayList<>();
@@ -53,6 +56,15 @@ public class AtelierThesBean implements Serializable {
         values = new ArrayList<>();
         result = new ArrayList<>();
         nodeListTheso = atelierThesService.searchAllThesaurus();   
+    }
+    
+    public void actionChoice() {
+        if(choiceDelimiter == 0)
+            delimiterCsv = ',';
+        if(choiceDelimiter == 1)
+            delimiterCsv = ';';
+        if(choiceDelimiter == 2)
+            delimiterCsv = '\t';         
     }
     
     public void comparer() {
@@ -94,14 +106,6 @@ public class AtelierThesBean implements Serializable {
 
     public List<List<String>> getValues() {
         return values;
-    }
-
-    public String getDelimiterCsv() {
-        return delimiterCsv;
-    }
-
-    public void setDelimiterCsv(String delimiterCsv) {
-        this.delimiterCsv = delimiterCsv;
     }
 
     public ArrayList<NodeIdValue> getNodeListTheso() {
@@ -176,6 +180,14 @@ public class AtelierThesBean implements Serializable {
         } else {
             return event.getNewStep();
         }
+    }
+
+    public int getChoiceDelimiter() {
+        return choiceDelimiter;
+    }
+
+    public void setChoiceDelimiter(int choiceDelimiter) {
+        this.choiceDelimiter = choiceDelimiter;
     }
 
     private void showMessage(FacesMessage.Severity messageType, String messageValue) {

@@ -815,7 +815,7 @@
                     <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                 icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                                 style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                        <b:navCommandLink value="#{langueBean.getMsg('rightbody.delete_note.note')}" 
+                        <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                           actionListener="#{noteBean.reset()}"
                                           action = "#{noteBean.setSelectedTypeNote('note')}"
                                           oncomplete="PF('deleteNote').show();"
@@ -1371,15 +1371,24 @@
                             target="_blank"
                             icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
                 </b:column>
+                
+                <!-- Cas d'uri de type Doi -->
+                <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsDoi}">
+                    <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}"
+                            value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}" icon="link"
+                            target="_blank"
+                            icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                </b:column>                
 
-                <!-- Cas d'uri interne -->
-                <b:column span="8" colXs="8" rendered="#{!roleOnTheso.nodePreference.originalUriIsHandle and !roleOnTheso.nodePreference.originalUriIsArk}">
-                    <b:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
-                            value="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
+                <!-- Cas d'uri interne 
+                <b:column span="8" colXs="8" rendered="# {!roleOnTheso.nodePreference.originalUriIsHandle and !roleOnTheso.nodePreference.originalUriIsArk}">
+                    <b:link href="# {request.contextPath}/?idc=# {conceptView.nodeConcept.concept.idConcept}&amp;idt=# {conceptView.nodeConcept.concept.idThesaurus}"
+                            value="# {request.contextPath}/?idc=# {conceptView.nodeConcept.concept.idConcept}&amp;idt=# {conceptView.nodeConcept.concept.idThesaurus}"
                             icon="link"
                             target="_blank"
                             icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
                 </b:column>
+                -->
             </b:row >
 
             <b:row rendered="#{conceptView.nodeConcept.concept.idArk != ''}">
@@ -1387,10 +1396,12 @@
                     <h:outputText value="IdArk" style="margin-left: 5px;"/>
                 </b:column>
                 <b:column span="8" colXs="8">
-                    <b:link href="#{roleOnTheso.nodePreference.uriArk}#{conceptView.nodeConcept.concept.idArk}"
-                            value="#{roleOnTheso.nodePreference.uriArk}#{conceptView.nodeConcept.concept.idArk}"
+                    <h:outputText value="#{conceptView.nodeConcept.concept.idArk}" style="font-size: 12px; color: #43B572;"/>
+                    <!-- <b:link href="# {roleOnTheso.nodePreference.uriArk}# {conceptView.nodeConcept.concept.idArk}"
+                            value="# {roleOnTheso.nodePreference.uriArk}# {conceptView.nodeConcept.concept.idArk}"
                             target="_blank"
                             icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                    -->
                 </b:column>
             </b:row >
             <b:row rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
@@ -1398,10 +1409,12 @@
                     <h:outputText value="IdHandle" style="margin-left: 5px;"/>
                 </b:column>
                 <b:column span="8" colXs="8">
-                    <b:link href="https://hdl.handle.net/#{conceptView.nodeConcept.concept.idHandle}"
-                            value="https://hdl.handle.net/#{conceptView.nodeConcept.concept.idHandle}"
+                    <h:outputText value="#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;"/>
+                    <!--  <b:link href="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
+                            value="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
                             target="_blank"
                             icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
+                     -->
                 </b:column>
             </b:row >
 

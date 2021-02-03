@@ -73,6 +73,8 @@ public class ImportFileBean implements Serializable {
     private String selectedIdentifier ="sans";
     private String prefixHandle;
     private boolean isCandidatImport;
+    private String prefixDoi;    
+    
     
     // import CSV
     private char delimiterCsv = ',';
@@ -112,6 +114,8 @@ public class ImportFileBean implements Serializable {
         progress = 0;
         progressStep = 0;        
         info = "";
+        prefixHandle = null;
+        prefixDoi = null;
         error = new StringBuffer();
         warning = "";
         uri = "";
@@ -689,6 +693,7 @@ public class ImportFileBean implements Serializable {
             importRdf4jHelper.setSelectedIdentifier(selectedIdentifier);
             
             importRdf4jHelper.setPrefixHandle(prefixHandle);
+            importRdf4jHelper.setPrefixDoi(prefixDoi);
 
             importRdf4jHelper.setNodePreference(roleOnThesoBean.getNodePreference());
             importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);
@@ -1009,6 +1014,14 @@ public class ImportFileBean implements Serializable {
 
     public void setPrefixHandle(String prefixHandle) {
         this.prefixHandle = prefixHandle;
+    }
+
+    public String getPrefixDoi() {
+        return prefixDoi;
+    }
+
+    public void setPrefixDoi(String prefixDoi) {
+        this.prefixDoi = prefixDoi;
     }
 
     public char getDelimiterCsv() {

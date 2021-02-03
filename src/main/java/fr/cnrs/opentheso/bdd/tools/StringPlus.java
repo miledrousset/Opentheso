@@ -4,7 +4,7 @@ import java.text.Normalizer;
 
 public class StringPlus {
 
-    public StringPlus() {
+public StringPlus() {
 
     }
     

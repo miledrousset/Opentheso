@@ -91,6 +91,7 @@ public class NewConcept implements Serializable {
         prefLabel = null;
         idNewConcept = null;
         notation = null;
+        isConceptUnderFacet = false;
         if(conceptBean.getNodeConcept() != null) {
             for (NodeGroup nodeGroup : conceptBean.getNodeConcept().getNodeConceptGroup()) {
                 idGroup = nodeGroup.getConceptGroup().getIdgroup();
@@ -111,12 +112,13 @@ public class NewConcept implements Serializable {
     }
     
     public void resetForFacet(NodeFacet nodeFacet){
+        reset();
         isConceptUnderFacet = true;
         // le concept BT
         idBTfacet = nodeFacet.getIdConceptParent();
         // id de la facette
         idFacet = nodeFacet.getIdFacet();
-        reset();
+
     }
 
     public void infos() {
@@ -464,7 +466,9 @@ public class NewConcept implements Serializable {
             tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formLeftTab:tabTree:tree");
+                pf.executeScript("srollToSelected()");
             }
+            tree.getSelectedNode().setExpanded(true);
         }
         conceptBean.getConcept(idTheso, idConceptParent, idLang);
         isCreated = true;

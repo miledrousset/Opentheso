@@ -351,7 +351,7 @@ public class RelationsHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_concept2, role, id_ark, id_handle "
+                    String query = "select id_concept2, role, id_ark, id_handle, id_doi "
                             + " from hierarchical_relationship as hr"
                             + " left join concept as con on id_concept = id_concept2"
                             + " and hr.id_thesaurus = con.id_thesaurus"
@@ -372,6 +372,11 @@ public class RelationsHelper {
                         } else {
                             nodeUri.setIdHandle(resultSet.getString("id_handle"));
                         }
+                        if ((resultSet.getString("id_doi") == null) || (resultSet.getString("id_doi").trim().isEmpty())) {
+                            nodeUri.setIdDoi("");
+                        } else {
+                            nodeUri.setIdDoi(resultSet.getString("id_doi"));
+                        }                        
                         nodeUri.setIdConcept(resultSet.getString("id_concept2"));
 
                         nodeHieraRelation.setRole(resultSet.getString("role"));
@@ -2581,7 +2586,7 @@ public class RelationsHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_concept2, role, id_ark, id_handle "
+                    String query = "select id_concept2, role, id_ark, id_handle, id_doi "
                             + " from hierarchical_relationship as hr"
                             + " left join concept as con on id_concept = id_concept2"
                             + " and hr.id_thesaurus = con.id_thesaurus"
@@ -2603,6 +2608,11 @@ public class RelationsHelper {
                         } else {
                             nodeUri.setIdHandle(resultSet.getString("id_handle"));
                         }
+                        if ((resultSet.getString("id_doi") == null) || (resultSet.getString("id_doi").trim().isEmpty())) {
+                            nodeUri.setIdDoi("");
+                        } else {
+                            nodeUri.setIdDoi(resultSet.getString("id_doi"));
+                        }                        
                         nodeUri.setIdConcept(resultSet.getString("id_concept2"));
 
                         nodeHieraRelation.setRole(resultSet.getString("role"));

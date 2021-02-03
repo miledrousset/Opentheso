@@ -121,14 +121,14 @@ public class AtelierThesService implements Serializable {
         return definition;
     }
     
-    public List<List<String>> loadCsvFile(FileUploadEvent event, String delimiterCsv) {
+    public List<List<String>> loadCsvFile(FileUploadEvent event, char delimiterCsv) {
         List<List<String>> values = new ArrayList<>();
         try {
             String line;
             Reader reader = new InputStreamReader(event.getFile().getInputStream());
             BufferedReader br = new BufferedReader(reader);
             while ((line = br.readLine()) != null) {
-                List<String> list = Arrays.asList(line.split(delimiterCsv));
+                List<String> list = Arrays.asList(line.split(""+delimiterCsv));
                 values.add(list);
             }
             reader.close();
