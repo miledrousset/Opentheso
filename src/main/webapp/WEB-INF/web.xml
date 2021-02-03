@@ -8,7 +8,7 @@
 
     <context-param>
         <param-name>version</param-name>
-        <param-value>21.01</param-value>
+        <param-value>21.02</param-value>
     </context-param>
 
     <!-- thème de Primefaces omega -->
