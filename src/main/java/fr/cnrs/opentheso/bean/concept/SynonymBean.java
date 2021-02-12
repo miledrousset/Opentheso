@@ -19,6 +19,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 
@@ -27,7 +28,7 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Named(value = "synonymBean")
-@SessionScoped
+@ViewScoped
 public class SynonymBean implements Serializable {
 
     @Inject
@@ -79,9 +80,10 @@ public class SynonymBean implements Serializable {
     
     public void prepareNodeEMForEdit(){
         nodeEMsForEdit = new ArrayList<>();
-        for (NodeEM nodeEM : nodeEMs) {
-            nodeEM.setOldValue(nodeEM.getLexical_value());
-            nodeEMsForEdit.add(nodeEM);
+        for (NodeEM nodeEM1 : nodeEMs) {
+            nodeEM1.setOldValue(nodeEM1.getLexical_value());
+            nodeEM1.setOldHiden(nodeEM1.isHiden());
+            nodeEMsForEdit.add(nodeEM1);
         }
     }
     
@@ -228,8 +230,12 @@ public class SynonymBean implements Serializable {
             } 
             updateSynonymForced(idUser);
         } else {
-            updateStatus(nodeEM, idUser);
+            if(nodeEM.isOldHiden() != nodeEM.isHiden()){
+                updateStatus(nodeEM, idUser);
+            }
         }
+        reset();
+        prepareNodeEMForEdit();
     }    
     
     /**
@@ -265,7 +271,7 @@ public class SynonymBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         //    PrimeFaces.current().executeScript("PF('addNote').hide();");
-        reset();
+
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
@@ -282,30 +288,30 @@ public class SynonymBean implements Serializable {
         FacesMessage msg;
         TermHelper termHelper = new TermHelper();
         
-        if(nodeEMs == null) {
+        if(nodeEMsForEdit == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
         
-        for (NodeEM nodeEM1 : nodeEMs) {
+        for (NodeEM nodeEM1 : nodeEMsForEdit) {
             // save de la valeur pour une modification forcée
             this.nodeEM = nodeEM1;
         
-            if(!nodeEM.getOldValue().equals(nodeEM.getLexical_value())){
+            if(!nodeEM1.getOldValue().equals(nodeEM1.getLexical_value())){
                 if (termHelper.isTermExist(connect.getPoolConnexion(),
-                        nodeEM.getLexical_value(),
+                        nodeEM1.getLexical_value(),
                         selectedTheso.getCurrentIdTheso(),
-                        nodeEM.getLang())) {
+                        nodeEM1.getLang())) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     duplicate = true;
                     return;
                 }
                 if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
-                        nodeEM.getLexical_value(),
+                        nodeEM1.getLexical_value(),
                         selectedTheso.getCurrentIdTheso(),
-                        nodeEM.getLang())) {
+                        nodeEM1.getLang())) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     duplicate = true;
@@ -313,9 +319,13 @@ public class SynonymBean implements Serializable {
                 } 
                 updateSynonymForced(idUser);
             } else {
-                updateStatus(nodeEM, idUser);
+                if(nodeEM1.isOldHiden() != nodeEM1.isHiden()){
+                    updateStatus(nodeEM1, idUser);
+                }
             }
         }
+        reset();
+        prepareNodeEMForEdit();
     }      
     
     /**
@@ -353,7 +363,7 @@ public class SynonymBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         //    PrimeFaces.current().executeScript("PF('addNote').hide();");
-        reset();
+
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");

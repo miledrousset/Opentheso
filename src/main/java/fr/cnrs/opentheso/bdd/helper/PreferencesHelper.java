@@ -472,7 +472,7 @@ public class PreferencesHelper {
                             + " use_handle,"
                             + " user_handle, pass_handle, path_key_handle, path_cert_handle,"
                             + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
-                            + " original_uri_is_ark, original_uri_is_handle,original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation)"
+                            + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation)"
  
                             + " values('" + idThesaurus + "'"
                             + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"

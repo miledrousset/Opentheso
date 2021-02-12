@@ -23,6 +23,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 
@@ -31,7 +32,8 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Named(value = "cutAndPaste")
-@SessionScoped
+//@SessionScoped
+@ViewScoped
 public class CutAndPaste implements Serializable {
 
     @Inject
@@ -72,7 +74,8 @@ public class CutAndPaste implements Serializable {
 //        isBranch = true;
 //        isCopyOfGroup = false;
 
-        nodeBTsToCut = null;
+        if(nodeBTsToCut != null)
+            nodeBTsToCut.clear();
         isCopyOn = false;
         isValidPaste = false;
         nodeConceptDrag = null;
@@ -95,7 +98,8 @@ public class CutAndPaste implements Serializable {
         if (nodeConceptDrag == null) {
             return;
         }
-        nodeBTsToCut = new ArrayList<>();
+        if(nodeBTsToCut == null)
+            nodeBTsToCut = new ArrayList<>();
         for (NodeBT nodeBT : nodeConceptDrag.getNodeBT()) {
             NodeBT nodeBT1 = new NodeBT();
             nodeBT1.setIdConcept(nodeBT.getIdConcept());

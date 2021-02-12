@@ -17,27 +17,28 @@ import org.primefaces.model.TreeNode;
 public class DataService {
      
     public TreeNode createRoot() {
-        TreeNode root = new DefaultTreeNode(new TreeNodeData("1", "root","1", false, false, false, false, "root"), null);
-        return root;
+        return new DefaultTreeNode(new TreeNodeData("1", "root","1", false, false, false, false, "root"), null);
+//        TreeNode root = new DefaultTreeNode(new TreeNodeData("1", "root","1", false, false, false, false, "root"), null);
+//        return root;
     }
    
     public void addNodeWithChild(String typeDocument, TreeNodeData data, TreeNode parentNode){
         if(parentNode == null) return;
-        TreeNode document;
+  //      TreeNode document;
         if(typeDocument == null || typeDocument.isEmpty())
-            document = new DefaultTreeNode(data, parentNode);
+            parentNode = new DefaultTreeNode(data, parentNode);
         else
-            document = new DefaultTreeNode(typeDocument, data, parentNode);
+            parentNode = new DefaultTreeNode(typeDocument, data, parentNode);
         
-        new DefaultTreeNode("DUMMY", document);
+        new DefaultTreeNode("DUMMY", parentNode);
     }
     
     public void addNodeWithoutChild(String typeDocument, TreeNodeData data, TreeNode parentNode){
         if(parentNode == null) return;
-        TreeNode document;
+    //    TreeNode document;
         if(typeDocument == null || typeDocument.isEmpty())
-            document = new DefaultTreeNode(data, parentNode);
+            new DefaultTreeNode(data, parentNode);
         else
-            document = new DefaultTreeNode(typeDocument, data, parentNode);
+            new DefaultTreeNode(typeDocument, data, parentNode);
     }    
 }

@@ -19,6 +19,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 
@@ -27,7 +28,7 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Named(value = "traductionBean")
-@SessionScoped
+@ViewScoped
 public class TraductionBean implements Serializable {
 
     @Inject
@@ -53,7 +54,10 @@ public class TraductionBean implements Serializable {
 
     public void reset() {
         nodeLangs = selectedTheso.getNodeLangs();
-        nodeLangsFiltered = new ArrayList<>();
+        if(nodeLangsFiltered == null)
+            nodeLangsFiltered = new ArrayList<>();
+        else
+            nodeLangsFiltered.clear();
         nodeTermTraductions = conceptBean.getNodeConcept().getNodeTermTraductions();
         
         selectedLang = null;

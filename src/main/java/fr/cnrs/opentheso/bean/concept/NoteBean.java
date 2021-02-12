@@ -68,9 +68,21 @@ public class NoteBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    private String removeParagraphTags(String rawNote){
+    private String clearValue(String rawNote){
         rawNote = rawNote.replaceAll("<p>", "");
         rawNote = rawNote.replaceAll("</p>", "\n");
+        
+        // enlève les code ascii non visibles
+        rawNote = rawNote.replace((char)27, ' ');
+
+        // pour trouver le code ascii
+    /*    char[] test = noteValue.toCharArray();
+        for (char c : test) {
+            System.out.println(c);
+            int ascii = c; 
+            System.out.println(ascii);
+        }*/
+        
         return rawNote;
     }
     
@@ -88,7 +100,7 @@ public class NoteBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        noteValue = removeParagraphTags(noteValue);
+        noteValue = clearValue(noteValue);
         noteValue = StringEscapeUtils.unescapeXml(noteValue);
         switch (selectedTypeNote) {
             case "note":

@@ -240,21 +240,16 @@ public class Tree implements Serializable {
                 selectedTheso.getCurrentLang(),
                 selectedTheso.isSortByNotation());
 
-        boolean haveConceptChild;
-        boolean haveFacet;
+//        boolean haveConceptChild;
+//        boolean haveFacet;
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
             if (nodeConceptTree.getIdConcept() == null) {
                 continue;
             }
 
-            String label = nodeConceptTree.getTitle();
-            if (nodeConceptTree.getTitle().isEmpty()) {
-                label = "(" + nodeConceptTree.getIdConcept() + ")";
-            }
-
             TreeNodeData data = new TreeNodeData(
                     nodeConceptTree.getIdConcept(),
-                    label,
+                    nodeConceptTree.getTitle().isEmpty() ? "(" + nodeConceptTree.getIdConcept() + ")" : nodeConceptTree.getTitle(),
                     nodeConceptTree.getNotation(),
                     false,//isgroup
                     false,//isSubGroup
@@ -263,16 +258,27 @@ public class Tree implements Serializable {
                     "term"
             );
 
-            haveConceptChild = conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso,
-                    nodeConceptTree.getIdConcept());
-
-            haveFacet = facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), nodeConceptTree.getIdConcept(), idTheso);
-
-            if (haveConceptChild || haveFacet) {
+            if(conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso,
+                    nodeConceptTree.getIdConcept())) {
                 dataService.addNodeWithChild("concept", data, parent);
-            } else {
-                dataService.addNodeWithoutChild("file", data, parent);
+                continue;
             }
+            if(facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), nodeConceptTree.getIdConcept(), idTheso)) {
+                dataService.addNodeWithChild("concept", data, parent);
+                continue;
+            }
+            dataService.addNodeWithoutChild("file", data, parent);
+            
+//            haveConceptChild = conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso,
+//                    nodeConceptTree.getIdConcept());
+//
+//            haveFacet = facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), nodeConceptTree.getIdConcept(), idTheso);
+//
+//            if (haveConceptChild || haveFacet) {
+//                dataService.addNodeWithChild("concept", data, parent);
+//            } else {
+//                dataService.addNodeWithoutChild("file", data, parent);
+//            }
         }
         return true;
     }

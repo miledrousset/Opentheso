@@ -2,12 +2,12 @@ package fr.cnrs.opentheso.bean.menu.connect;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.io.Serializable;
 import java.util.Properties;
 import java.util.ResourceBundle;
 //import java.util.logging.Level;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 
 import javax.faces.application.FacesMessage;
 
@@ -17,8 +17,8 @@ import javax.inject.Named;
 
 
 @Named (value = "connect")
-@javax.enterprise.context.ApplicationScoped
-public class Connect {
+@ApplicationScoped
+public class Connect implements Serializable{
    
    
     private HikariDataSource poolConnexion = null;

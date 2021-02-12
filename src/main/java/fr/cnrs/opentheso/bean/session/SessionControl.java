@@ -41,7 +41,11 @@ public class SessionControl implements Serializable {
         clearComponent();
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
-
+        PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
+        PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
+    /*    System.gc ();
+        System.runFinalization ();
+      */  
         // Rafraîchissement de la page
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
@@ -59,25 +63,26 @@ public class SessionControl implements Serializable {
 
         while(childrenIt.hasNext()) {
             UIComponent component = childrenIt.next();
-            if (component instanceof HtmlInputText) {
-                HtmlInputText com = (HtmlInputText) component;
-                com.resetValue();
-            }
-            if (component instanceof HtmlSelectOneMenu) {
-                HtmlSelectOneMenu com = (HtmlSelectOneMenu) component;
-                com.resetValue();
-            }
-            if (component instanceof HtmlSelectBooleanCheckbox) {
-                HtmlSelectBooleanCheckbox com = (HtmlSelectBooleanCheckbox) component;
-                com.resetValue();
-            }
-            if (component instanceof HtmlSelectManyCheckbox) {
-                HtmlSelectManyCheckbox com = (HtmlSelectManyCheckbox) component;
-                com.resetValue();
-            }
+                if(component != null) {
+                if (component instanceof HtmlInputText) {
+                    HtmlInputText com = (HtmlInputText) component;
+                    com.resetValue();
+                }
+                if (component instanceof HtmlSelectOneMenu) {
+                    HtmlSelectOneMenu com = (HtmlSelectOneMenu) component;
+                    com.resetValue();
+                }
+                if (component instanceof HtmlSelectBooleanCheckbox) {
+                    HtmlSelectBooleanCheckbox com = (HtmlSelectBooleanCheckbox) component;
+                    com.resetValue();
+                }
+                if (component instanceof HtmlSelectManyCheckbox) {
+                    HtmlSelectManyCheckbox com = (HtmlSelectManyCheckbox) component;
+                    com.resetValue();
+                }
 
-            clearAllComponentInChilds(component.getFacetsAndChildren());
-
+                clearAllComponentInChilds(component.getFacetsAndChildren());
+                }
         }
 
     }

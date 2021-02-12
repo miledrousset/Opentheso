@@ -298,6 +298,7 @@ public class ImportFileBean implements Serializable {
                     default:
                         break;
                 }
+                
                 progressStep++;
                 progress = progressStep / total * 100;                
 

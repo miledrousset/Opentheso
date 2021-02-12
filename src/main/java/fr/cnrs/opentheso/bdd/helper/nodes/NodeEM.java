@@ -23,7 +23,8 @@ public class NodeEM {
     private String idUser;
     private String action;
     
-    private String oldValue; // pour permettre la modification
+    private String oldValue; // pour permettre la modification en évitant de copier les données qui n'ont pas changées
+    private boolean oldHiden; // pour permettre la modification    
 
     public NodeEM() {
     }
@@ -107,6 +108,16 @@ public class NodeEM {
     public void setOldValue(String oldValue) {
         this.oldValue = oldValue;
     }
+
+    public boolean isOldHiden() {
+        return oldHiden;
+    }
+
+    public void setOldHiden(boolean oldHiden) {
+        this.oldHiden = oldHiden;
+    }
+
+
 
    
 }

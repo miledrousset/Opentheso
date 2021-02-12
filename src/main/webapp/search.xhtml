@@ -39,11 +39,26 @@
             </b:column>     
             <b:column span="1" colXs="1">
                 <b:commandButton id="buttonSearch" action="#{searchBean.applySearch()}" 
-                                 
-                                 update="formSearch formRightTab"
-                                 iconAwesome="search" icon-size="l" style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; font-size: 12px"/>
+                                 update="formSearch formRightTab" 
+                                onclick="$(document.body).css({'cursor' : 'wait'});"
+                                oncomplete="$(document.body).css({'cursor' : 'default'});"                                 
+                                 iconAwesome="search" icon-size="l" style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; font-size: 12px"/>                
             </b:column>
 
+            
+            
+            <!--test-->
+            <!--
+            <b:column span="1" colXs="1">
+                <b:commandButton id="buttonTest" action="# {testMemory.testGetConcept()}" 
+                                 update="formSearch formRightTab"
+                                 iconAwesome="search" icon-size="l" style="color: red; background: #F7A269; border: none; height: 27px; font-size: 12px"/>
+            </b:column>     
+            -->
+            
+            
+            
+                        
         </b:row>
 
         <b:row >

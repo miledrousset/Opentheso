@@ -37,16 +37,18 @@ public class SearchBean implements Serializable {
     
  
     
-    NodeSearchMini searchSelected;
+    private NodeSearchMini searchSelected;
     
-    ArrayList<NodeSearchMini> listResultAutoComplete;    
-    ArrayList<NodeConceptSearch> nodeConceptSearchs;
+    private ArrayList<NodeSearchMini> listResultAutoComplete;    
+    private ArrayList<NodeConceptSearch> nodeConceptSearchs;
     
     private String searchValue;
     
     // sert à afficher ou non le total de résultat
     private boolean isSelectedItem;
     
+    private SearchHelper searchHelper;
+    private ConceptHelper conceptHelper;
     
     
     // filter search
@@ -79,12 +81,62 @@ public class SearchBean implements Serializable {
         nodeConceptSearchs = null;//new ArrayList<>();
     }
     
+    
+    
+    
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////////// Memory test //////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////       
+    public void testMemory() {
+        String value = "vase";
+        String id = "300";
+        isSelectedItem = false;
+    //    searchSelected = new NodeSearchMini();
+        if(searchHelper == null) 
+            searchHelper = new SearchHelper();
+        
+        if(listResultAutoComplete == null) {
+            listResultAutoComplete = new ArrayList<>();
+        } else 
+            listResultAutoComplete.clear();
+       
+        listResultAutoComplete = searchHelper.searchExactMatch(connect.getPoolConnexion(),
+                    value,
+                    selectedTheso.getCurrentLang(),
+                    selectedTheso.getCurrentIdTheso());
+/*                if(!withId && !withNote) {
+                    listResultAutoComplete = searchHelper.searchFullTextElastic(connect.getPoolConnexion(),
+                                value,
+                                selectedTheso.getCurrentLang(),
+                                selectedTheso.getCurrentIdTheso());
+                }*/
+        ArrayList<String> nodeSearchsId;
+        nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(),
+                id, selectedTheso.getCurrentIdTheso());
+    }    
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////    
+
+
+
+
+    
+    
     public List<NodeSearchMini> completTermFullText(String value) {
 
         isSelectedItem = false;
-        searchSelected = new NodeSearchMini();
-        SearchHelper searchHelper = new SearchHelper();
-        listResultAutoComplete = new ArrayList<>();
+    //    searchSelected = new NodeSearchMini();
+        if(searchHelper == null) 
+            searchHelper = new SearchHelper();
+        
+        if(listResultAutoComplete == null) {
+            listResultAutoComplete = new ArrayList<>();
+        } else 
+            listResultAutoComplete.clear();
+
         if(selectedTheso == null) return listResultAutoComplete;
         
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
@@ -110,8 +162,12 @@ public class SearchBean implements Serializable {
     }    
 
     public void onSelect(){
-        nodeConceptSearchs = new ArrayList<>();
-        ConceptHelper conceptHelper = new ConceptHelper();
+        if(nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else 
+            nodeConceptSearchs.clear();        
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
         nodeConceptSearchs.add(
                     conceptHelper.getConceptForSearch(
                     connect.getPoolConnexion(),
@@ -132,9 +188,16 @@ public class SearchBean implements Serializable {
      */
     public void applySearch(){
    //     if(listResultAutoComplete == null) return;
-        nodeConceptSearchs = new ArrayList<>();
-        ConceptHelper conceptHelper = new ConceptHelper();
-        SearchHelper searchHelper = new SearchHelper();
+  //      nodeConceptSearchs. = new ArrayList<>();
+        if(nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else 
+            nodeConceptSearchs.clear();
+        
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
+        if(searchHelper == null) 
+            searchHelper = new SearchHelper();
         ArrayList<String> nodeSearchsId;
         
         if(withId) {

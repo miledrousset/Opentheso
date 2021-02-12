@@ -7,7 +7,6 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
@@ -25,6 +24,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.TreeDragDropEvent;
@@ -35,7 +35,8 @@ import org.primefaces.model.TreeNode;
  * @author miledrousset
  */
 @Named(value = "dragAndDrop")
-@SessionScoped
+//@SessionScoped
+@ViewScoped
 public class DragAndDrop implements Serializable {
 
     @Inject
@@ -76,8 +77,9 @@ public class DragAndDrop implements Serializable {
 //        movedFromId = null;
 //        isBranch = true;
 //        isCopyOfGroup = false;
-
-        nodeBTsToCut = null;
+        if(nodeBTsToCut != null)
+            nodeBTsToCut.clear();
+ //       nodeBTsToCut = null;
         isCopyOn = false;
         isValidPaste = false;
         nodeConceptDrag = null;
@@ -101,7 +103,8 @@ public class DragAndDrop implements Serializable {
         if (nodeConceptDrag == null) {
             return;
         }
-        nodeBTsToCut = new ArrayList<>();
+        if(nodeBTsToCut == null)
+            nodeBTsToCut = new ArrayList<>();
         for (NodeBT nodeBT : nodeConceptDrag.getNodeBT()) {
             NodeBT nodeBT1 = new NodeBT();
             nodeBT1.setIdConcept(nodeBT.getIdConcept());

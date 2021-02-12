@@ -159,12 +159,11 @@ public class TermHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_term from non_preferred_term where "
-                            + "unaccent_string(lexical_value) ilike "
-                            + "unaccent_string('" + title
-                            + "')  and lang = '" + idLang
-                            + "' and id_thesaurus = '" + idThesaurus
-                            + "'";
+                    String query = "select id_term from non_preferred_term" +
+                            "where" +
+                            "f_unaccent(lower(lexical_value)) like '" + title + "'" +
+                            "and lang = '" + idLang +"'" +
+                            "and id_thesaurus = '" + idThesaurus + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
@@ -205,8 +204,10 @@ public class TermHelper {
         Connection conn = null;
         Statement stmt;
         boolean isPassed = false;
-
-        oldValue = (new StringPlus().convertString(oldValue));
+        StringPlus stringPlus = new StringPlus();
+        
+        oldValue = stringPlus.convertString(oldValue);
+        newValue = stringPlus.convertString(newValue);
         try {
             conn = ds.getConnection();
             conn.setAutoCommit(false);
@@ -1755,6 +1756,7 @@ public class TermHelper {
         return status;
     }
 
+    /*
     public boolean updateTermSynonyme(HikariDataSource ds,
             String oldValue, Term term, int idUser) {
 
@@ -1792,7 +1794,7 @@ public class TermHelper {
             log.error("Error while updating Synonym Modification : " + term.getId_term(), sqle);
         }
         return status;
-    }
+    }*/
 
     /**
      * Cette fonction permet de récupérer un Term par son id et son thésaurus et
@@ -3349,7 +3351,9 @@ public class TermHelper {
         Statement stmt;
         ResultSet resultSet;
         boolean existe = false;
-        title = new StringPlus().convertString(title);
+        StringPlus stringPlus = new StringPlus();
+        title = stringPlus.convertString(title);
+        title = stringPlus.unaccentLowerString(title);        
 
         try {
             // Get connection from pool
@@ -3357,12 +3361,11 @@ public class TermHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_term from term where "
-                            + "unaccent_string(lexical_value) ilike "
-                            + "unaccent_string('" + title
-                            + "')  and lang = '" + idLang
-                            + "' and id_thesaurus = '" + idThesaurus
-                            + "'";
+                    String query = "select id_term from term" +
+                            "where" +
+                            "f_unaccent(lower(lexical_value)) like '" + title + "'" +
+                            "and lang = '" + idLang + "'" +
+                            "and id_thesaurus = '" + idThesaurus + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
