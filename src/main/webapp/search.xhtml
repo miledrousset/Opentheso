@@ -39,9 +39,8 @@
             </b:column>     
             <b:column span="1" colXs="1">
                 <b:commandButton id="buttonSearch" action="#{searchBean.applySearch()}" 
-                                 update="formSearch formRightTab" 
-                                onclick="$(document.body).css({'cursor' : 'wait'});"
-                                oncomplete="$(document.body).css({'cursor' : 'default'});"                                 
+                                 update="formRightTab" 
+                            
                                  iconAwesome="search" icon-size="l" style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; font-size: 12px"/>                
             </b:column>
 

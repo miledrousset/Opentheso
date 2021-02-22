@@ -141,7 +141,7 @@ public class OpenthesoHelper {
         SKOSXmlDocument sxd;
         try {
             inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
-            ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false); /// read XML SKOS
+            ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, idLang); /// read XML SKOS
             sxd = readRdf4j.getsKOSXmlDocument();
 
             for (SKOSResource resource : sxd.getConceptList()) {

@@ -233,8 +233,9 @@ public class ImportRdf4jHelper {
                 message.append("Erreur lors de la création des traductions du thésaurus");
                 return null;
             }
+            conn.commit();
         }
-        conn.commit();
+//        conn.commit();
         // ajouter le thésaurus dans le group de l'utilisateur
         if (idGroupUser != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
             UserHelper userHelper = new UserHelper();

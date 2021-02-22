@@ -237,6 +237,162 @@ public class SearchHelper {
     }    
     
     
+    /**
+     * Permet de chercher les terms avec précision pour limiter le bruit
+     * avec filtre par langue et ou par groupe
+     * Adapter pour le widget de connexion avec l'affichage d'un arbre
+     *
+     * @param ds
+     * @param value
+     * @param idLang
+     * @param idGroup
+     * @param idTheso
+     * @return
+     */
+    public ArrayList<String> searchAutoCompletionWSForWidget(HikariDataSource ds,
+            String value, String idLang, String idGroup, String idTheso) {
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        StringPlus stringPlus = new StringPlus();
+
+        ArrayList<String> nodeIds = new ArrayList<>();
+        value = stringPlus.convertString(value);
+        value = stringPlus.unaccentLowerString(value);
+        
+        String multiValuesPT = "";
+        String multiValuesNPT = "";
+        String values[] = value.trim().split(" ");
+
+        // filter by lang, c'est très important 
+        if(idLang != null && !idLang.isEmpty()) {
+            multiValuesPT += " and term.lang = '" + idLang + "'";
+            multiValuesNPT += " and non_preferred_term.lang = '" + idLang + "'"; 
+        }
+        
+        // filter by group, c'est très important 
+        if(idGroup != null && !idGroup.isEmpty()) {
+            multiValuesPT += " and concept_group_concept.idgroup = '" + idGroup + "'";
+            multiValuesNPT += " and concept_group_concept.idgroup = '" + idGroup + "'"; 
+        }        
+        
+        
+        for (String value1 : values) {
+            multiValuesPT += 
+                    " and ("
+                    + " f_unaccent(lower(term.lexical_value)) like '" + value1 + "%'"
+                    + " or"
+                    + " f_unaccent(lower(term.lexical_value)) like '% " + value1 + "%'"
+                    + " or"
+                    + " f_unaccent(lower(term.lexical_value)) like '%''" + value1 + "%'"                    
+                    + ")";
+            multiValuesNPT += 
+                    " and ("
+                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value1 + "%'"
+                    + " or"
+                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '% " + value1 + "%'"
+                    + " or"
+                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '%''" + value1 + "%'"                     
+                    + ")";            
+        }
+
+        String query;
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    if(idGroup != null && !idGroup.isEmpty()) {
+                        query = "select concept.id_concept "
+                                + " from concept, concept_group_concept, preferred_term, term " 
+                                + " where"
+                                + " concept.id_concept = concept_group_concept.idconcept" 
+                                + " and" 
+                                + " concept.id_thesaurus = concept_group_concept.idthesaurus" 
+                                + " and" 
+                                + " concept.id_concept = preferred_term.id_concept" 
+                                + " and" 
+                                + " concept.id_thesaurus = preferred_term.id_thesaurus " 
+                                + " and" 
+                                + " preferred_term.id_term = term.id_term" 
+                                + " and" 
+                                + " preferred_term.id_thesaurus = term.id_thesaurus " 
+                                + " and"
+                                + " term.id_thesaurus = '" + idTheso + "'" 
+                                + multiValuesPT
+                                + " order by term.lexical_value ASC limit 100";
+                    } else {
+                        query = "select term.lexical_value, "
+                                + " concept.id_concept"
+                                + " from term, preferred_term, concept where"
+                                + " concept.id_concept = preferred_term.id_concept"
+                                + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                                + " and preferred_term.id_term = term.id_term"
+                                + " and"
+                                + " preferred_term.id_thesaurus = term.id_thesaurus"
+                                + " and"
+                                + " term.id_thesaurus = '" + idTheso + "'"
+                                + multiValuesPT
+                                + " order by term.lexical_value ASC limit 100";
+                    }
+                    resultSet = stmt.executeQuery(query);
+                    while (resultSet.next()) {
+                        if(!nodeIds.contains(resultSet.getString("id_concept")))
+                            nodeIds.add(resultSet.getString("id_concept"));
+                    }
+
+                    /**
+                     * recherche de Synonymes
+                     */
+                    if(idGroup != null && !idGroup.isEmpty()) {
+                         query = "select concept.id_concept" 
+                                + " from concept, concept_group_concept, preferred_term, non_preferred_term" 
+                                + " where" 
+                                + " concept.id_concept = concept_group_concept.idconcept" 
+                                + " and"
+                                + " concept.id_thesaurus = concept_group_concept.idthesaurus" 
+                                + " and" 
+                                + " concept.id_concept = preferred_term.id_concept" 
+                                + " and" 
+                                + " concept.id_thesaurus = preferred_term.id_thesaurus" 
+                                + " and" 
+                                + " preferred_term.id_term = non_preferred_term.id_term" 
+                                + " and" 
+                                + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus" 
+                                
+                                + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"                              
+                                + multiValuesNPT
+                                + " order by non_preferred_term.lexical_value ASC limit 100";                                  
+                    } else {
+                        query = "select concept.id_concept" 
+                                + " from non_preferred_term, preferred_term, concept" 
+                                + " where" 
+                                +" preferred_term.id_term = non_preferred_term.id_term " 
+                                + " and preferred_term.id_thesaurus = non_preferred_term.id_thesaurus" 
+                                + " and preferred_term.id_concept = concept.id_concept" 
+                                + " AND preferred_term.id_thesaurus = concept.id_thesaurus" 
+                                + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"  
+                                + multiValuesNPT
+                                + " order by non_preferred_term.lexical_value ASC limit 100";                        
+                    }
+                    resultSet = stmt.executeQuery(query);
+                    while (resultSet.next()) {
+                        if(!nodeIds.contains(resultSet.getString("id_concept")))
+                            nodeIds.add(resultSet.getString("id_concept"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeIds;
+    }        
+    
+    
     /** 
      * Cette fonction permet de faire une recherche par valeur sur les termes
      * Préférés et les synonymes (la recherche porte sur les termes contenus

@@ -5,9 +5,7 @@
  */
 package fr.cnrs.opentheso.core.imports.rdf4j;
 
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.tools.FileUtilities;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,6 +36,7 @@ public class ReadRdf4j {
     private static Model model;
     private SKOSXmlDocument sKOSXmlDocument;
     private String message = "";
+    private String workLanguage;
     
     Logger logger = LoggerFactory.getLogger(ReadRdf4j.class);
  
@@ -50,9 +49,11 @@ public class ReadRdf4j {
      * @param is
      * @param type 0 pour skos 1 pour jsonld 2 pour turtle
      * @param isCandidatImport
+     * @param workLanguage
      * @throws java.io.IOException
      */
-    public ReadRdf4j(InputStream is, int type, boolean isCandidatImport) throws IOException {
+    public ReadRdf4j(InputStream is, int type, boolean isCandidatImport, String workLanguage) throws IOException {
+        this.workLanguage = workLanguage;
         sKOSXmlDocument = new SKOSXmlDocument();
         switch (type) {
             case 0:
@@ -128,91 +129,92 @@ public class ReadRdf4j {
         for (Statement st : model) {
 
             readStruct.value = st.getObject();
-
             readStruct.property = st.getPredicate();
-            if (readStruct.value instanceof Literal) {
-                readStruct.literal = (Literal) readStruct.value;
-            }
 
-            //Concept or ConceptScheme or Collection or ConceptGroup
-            if (readStruct.property.getLocalName().equals("type")) {
-                validProperty = false;
-                int prop = -1;
-                String type = readStruct.value.toString();
-                
-                type = type.toUpperCase();
-                if (type.contains("ConceptScheme".toUpperCase())) {
-                    prop = SKOSProperty.ConceptScheme;
-                    sKOSXmlDocument.setTitle(st.getSubject().stringValue());
-                    validProperty = true;
-                } else if (type.contains("ConceptGroup".toUpperCase())) {
-                    prop = SKOSProperty.ConceptGroup;
-                    validProperty = true;
+            // pour exclure les balises de type (shema.org) sinon, ca produit une erreur quand on a un tableau
+            if(!readStruct.property.getNamespace().contains("schema.org")) {
+                if (readStruct.value instanceof Literal) {
+                    readStruct.literal = (Literal) readStruct.value;
+                }
+                //Concept or ConceptScheme or Collection or ConceptGroup
+                if (readStruct.property.getLocalName().equals("type")) {
+                    validProperty = false;
+                    int prop = -1;
+                    String type = readStruct.value.toString();
 
-                } else if (type.contains("Theme".toUpperCase())) {
-                    prop = SKOSProperty.Theme;
-                    validProperty = true;
-                } else if (type.contains("MicroThesaurus".toUpperCase())) {
-                    prop = SKOSProperty.MicroThesaurus;
-                    validProperty = true;
-                } else if (type.contains("Collection".toUpperCase())) {
-                    if (st.getSubject().toString().contains("Facet".toUpperCase())) {
-                        prop = SKOSProperty.FACET;
+                    type = type.toUpperCase();
+                    if (type.contains("ConceptScheme".toUpperCase())) {
+                        prop = SKOSProperty.ConceptScheme;
+                        sKOSXmlDocument.setTitle(st.getSubject().stringValue());
+                        validProperty = true;
+                    } else if (type.contains("ConceptGroup".toUpperCase())) {
+                        prop = SKOSProperty.ConceptGroup;
+                        validProperty = true;
+
+                    } else if (type.contains("Theme".toUpperCase())) {
+                        prop = SKOSProperty.Theme;
+                        validProperty = true;
+                    } else if (type.contains("MicroThesaurus".toUpperCase())) {
+                        prop = SKOSProperty.MicroThesaurus;
+                        validProperty = true;
+                    } else if (type.contains("Collection".toUpperCase())) {
+                        if (st.getSubject().toString().contains("Facet".toUpperCase())) {
+                            prop = SKOSProperty.FACET;
+                        } else {
+                            prop = SKOSProperty.Collection;
+                        }
+                        validProperty = true;
+                    } else if (type.contains("Concept".toUpperCase())) {
+                        prop = SKOSProperty.Concept;
+                        validProperty = true;
+                    }
+                    if(validProperty) {
+                        String uri = st.getSubject().stringValue();
+                //        System.out.println("URI = " + uri);
+                        readStruct.resource = new SKOSResource(uri, prop);
+                        if (prop == SKOSProperty.ConceptScheme) {
+                            sKOSXmlDocument.setConceptScheme(readStruct.resource);
+                        } else if (prop == SKOSProperty.FACET) {
+                            sKOSXmlDocument.addFacet(readStruct.resource);
+                        } else if (prop == SKOSProperty.ConceptGroup || prop == SKOSProperty.Collection || prop == SKOSProperty.Theme || prop == SKOSProperty.MicroThesaurus) {
+                            sKOSXmlDocument.addGroup(readStruct.resource);
+                        } else if (prop == SKOSProperty.Concept) {
+                            sKOSXmlDocument.addconcept(readStruct.resource);
+                        }else {
+                                logger.info("This is how you configure Java Logging with SLF4J");
+                //            System.out.println("Erreur de type : " + prop);
+                        }
+                    }
+
+                } //Labelling Properties
+                else if (readStruct.property.getLocalName().equals("note") && isCandidatImport) {
+                    if (WriteRdf4j.STATUS_TAG.equals(readStruct.literal.getLanguage().get())) {
+                        readStruct.resource.setSkosStatus(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
+                    } else if (WriteRdf4j.VOTE_TAG.equals(readStruct.literal.getLanguage().get())) {
+                        readStruct.resource.addVote(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
+                    } else if (WriteRdf4j.DISCUSSION_TAG.equals(readStruct.literal.getLanguage().get())) {
+                        readStruct.resource.addMessage(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
                     } else {
-                        prop = SKOSProperty.Collection;
+                        String lang = readStruct.literal.getLanguage().get();
+                        readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.note);
                     }
-                    validProperty = true;
-                } else if (type.contains("Concept".toUpperCase())) {
-                    prop = SKOSProperty.Concept;
-                    validProperty = true;
-                }
-                if(validProperty) {
-                    String uri = st.getSubject().stringValue();
-            //        System.out.println("URI = " + uri);
-                    readStruct.resource = new SKOSResource(uri, prop);
-                    if (prop == SKOSProperty.ConceptScheme) {
-                        sKOSXmlDocument.setConceptScheme(readStruct.resource);
-                    } else if (prop == SKOSProperty.FACET) {
-                        sKOSXmlDocument.addFacet(readStruct.resource);
-                    } else if (prop == SKOSProperty.ConceptGroup || prop == SKOSProperty.Collection || prop == SKOSProperty.Theme || prop == SKOSProperty.MicroThesaurus) {
-                        sKOSXmlDocument.addGroup(readStruct.resource);
-                    } else if (prop == SKOSProperty.Concept) {
-                        sKOSXmlDocument.addconcept(readStruct.resource);
-                    }else {
-                            logger.info("This is how you configure Java Logging with SLF4J");
-            //            System.out.println("Erreur de type : " + prop);
-                    }
-                }
 
-            } //Labelling Properties
-            else if (readStruct.property.getLocalName().equals("note") && isCandidatImport) {
-                if (WriteRdf4j.STATUS_TAG.equals(readStruct.literal.getLanguage().get())) {
-                    readStruct.resource.setSkosStatus(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
-                } else if (WriteRdf4j.VOTE_TAG.equals(readStruct.literal.getLanguage().get())) {
-                    readStruct.resource.addVote(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
-                } else if (WriteRdf4j.DISCUSSION_TAG.equals(readStruct.literal.getLanguage().get())) {
-                    readStruct.resource.addMessage(readStruct.literal.getLabel().split(WriteRdf4j.DELIMINATE));
-                } else {
-                    String lang = readStruct.literal.getLanguage().get();
-                    readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.note);
                 }
-
-            }
-            else if (readLabellingProperties(readStruct)) {
-                if(readStruct.resource == null)
-                    readStruct.resource = new SKOSResource();
-                //Dates
-              /* désactivé par Miled (pose problèe avec les notations  
-                if (!isCandidatImport) {
-                    readNote(readStruct);
-                }*/
-                if (readDate(readStruct)) {
-                    //Semantic Relationships
-                    if (readRelationships(readStruct)) {
-                        //Documentation Properties
-                        if (readDocumentation(readStruct)) {
-                            if (readCreator(readStruct)) {
-                                if (readGPSCoordinates(readStruct)) {
+                else if (readLabellingProperties(readStruct)) {
+                    if(readStruct.resource == null)
+                        readStruct.resource = new SKOSResource();
+                    //Dates
+                  /* désactivé par Miled (pose problèe avec les notations  
+                    if (!isCandidatImport) {
+                        readNote(readStruct);
+                    }*/
+                    if (readDate(readStruct)) {
+                        //Semantic Relationships
+                        if (readRelationships(readStruct)) {
+                            //Documentation Properties
+                            if (readDocumentation(readStruct)) {
+                                if (readCreator(readStruct)) {
+                                    if (readGPSCoordinates(readStruct)) {
                                         if (readNotation(readStruct)) {
                                             if (readIdentifier(readStruct)) {
                                                 if (readMatch(readStruct)) {
@@ -231,20 +233,21 @@ public class ReadRdf4j {
                                                 }
                                             }
                                         }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        if (!nonReco.isEmpty()) {
-            String balises = "";
-            for (String b : nonReco) {
-                balises += "    " + b + "\n";
+            if (!nonReco.isEmpty()) {
+                String balises = "";
+                for (String b : nonReco) {
+                    balises += "    " + b + "\n";
+                }
+                message = message + "Not readed RDF tag\n" + balises;//fileBean.setWarning("Not readed RDF tag\n" + balises);
             }
-            message = message + "Not readed RDF tag\n" + balises;//fileBean.setWarning("Not readed RDF tag\n" + balises);
         }
     }
 
@@ -255,7 +258,7 @@ public class ReadRdf4j {
      * @return false si on a lus une balise de Documentation true sinon
      */
     private boolean readDocumentation(ReadStruct readStruct) {
-        String lang = "fr"; 
+        String lang = workLanguage; 
         if(readStruct.literal == null) return true;
         // si aucune langue n'est précisée, on applique la langue par défaut
         if(readStruct.literal.getLanguage().isPresent()) {
@@ -410,8 +413,9 @@ public class ReadRdf4j {
         if(readStruct.literal == null) return true;
         if(readStruct.resource == null) return true;
         
-        String lang = "fr"; 
-        // si aucune langue n'est précisée, on applique la langue par défaut
+        // si aucune langue n'est précisée, on applique la langue par défaut        
+        String lang = workLanguage; 
+       
         if(readStruct.literal.getLanguage().isPresent()) {
             lang = readStruct.literal.getLanguage().get();
         }
@@ -423,46 +427,46 @@ public class ReadRdf4j {
                 case "title":
                     readStruct.resource.getThesaurus().setTitle(readStruct.literal.getLabel());
                     readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.prefLabel);
-                    break;
+                    return false;
                 case "creator":
                     readStruct.resource.getThesaurus().setCreator(readStruct.literal.getLabel());
-                    break;
+                    return false;
                 case "contributor":
                     readStruct.resource.getThesaurus().setContributor(readStruct.literal.getLabel());
-                    break;  
+                    return false;
                 case "publisher":
                     readStruct.resource.getThesaurus().setPublisher(readStruct.literal.getLabel());
-                    break;  
+                    return false;
                 case "description":
                     readStruct.resource.getThesaurus().setDescription(readStruct.literal.getLabel());
-                    break;  
+                    return false; 
                 case "type":
                     readStruct.resource.getThesaurus().setType(readStruct.literal.getLabel());
-                    break;
+                    return false;
                 case "rights":
                     readStruct.resource.getThesaurus().setRights(readStruct.literal.getLabel());
-                    break;   
+                    return false; 
                 case "subject":
                     readStruct.resource.getThesaurus().setSubject(readStruct.literal.getLabel());
-                    break;                      
+                    return false;                     
                 case "coverage":
                     readStruct.resource.getThesaurus().setCoverage(readStruct.literal.getLabel());
-                    break;    
+                    return false;   
                 case "language":
                     readStruct.resource.getThesaurus().setLanguage(readStruct.literal.getLabel());
-                    break; 
+                    return false;
                 case "relation":
                     readStruct.resource.getThesaurus().setRelation(readStruct.literal.getLabel());
-                    break;                     
+                    return false;                   
                 case "source":
                     readStruct.resource.getThesaurus().setSource(readStruct.literal.getLabel());
-                    break;
+                    return false;
                 case "created":
                     readStruct.resource.getThesaurus().setCreated(new FileUtilities().getDateFromString(readStruct.literal.getLabel()));
-                    break;     
+                    return false;    
                 case "modified":
                     readStruct.resource.getThesaurus().setModified(new FileUtilities().getDateFromString(readStruct.literal.getLabel()));
-                    break;                      
+                    return false;                   
             }            
         }
             

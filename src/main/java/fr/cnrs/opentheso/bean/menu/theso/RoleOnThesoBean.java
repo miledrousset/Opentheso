@@ -352,6 +352,19 @@ public class RoleOnThesoBean implements Serializable {
         setIsContributorOnThisTheso(false);
     }
 
+    /**
+     * permet de savoir si le thésaurus en cours n'est plus dans la liste des thésaurus autorisés
+     * alors on nettoie initialise et on nettoie l'écran
+     */
+    public void setAndClearThesoInAuthorizedList(){
+        // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
+        if(!authorizedTheso.contains(selectedTheso.getCurrentIdTheso())) {
+            selectedTheso.setSelectedIdTheso(null);
+            selectedTheso.setSelectedLang(null);
+            selectedTheso.setSelectedTheso();
+        }
+    }
+    
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////
     //////// fin des nouvelles fontions ////////////////////////////////

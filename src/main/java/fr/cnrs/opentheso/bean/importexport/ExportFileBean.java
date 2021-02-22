@@ -22,9 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -38,7 +38,7 @@ import org.primefaces.model.StreamedContent;
  * @author miledrousset
  */
 @Named(value = "exportFileBean")
-@ViewScoped
+@SessionScoped
 public class ExportFileBean implements Serializable {
 
     private final static String DATE_FORMAT = "dd-mm-yyyy";
@@ -198,6 +198,7 @@ public class ExportFileBean implements Serializable {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(new WriteRdf4j(datas).getModel(), out, format);
 
+        datas.clear();
         return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
                 .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
     }

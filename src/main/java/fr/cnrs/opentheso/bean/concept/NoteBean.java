@@ -5,6 +5,7 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
@@ -173,7 +174,7 @@ public class NoteBean implements Serializable {
         if (selectedTypeNote.equalsIgnoreCase("note") || selectedTypeNote.equalsIgnoreCase("scopeNote") || selectedTypeNote.equalsIgnoreCase("historyNote")) {
             if (!noteHelper.updateConceptNote(connect.getPoolConnexion(),
                     nodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                    nodeNote.getId_concept(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     nodeNote.getLang(),
                     selectedTheso.getCurrentIdTheso(),
                     nodeNote.getLexicalvalue(),
@@ -197,6 +198,10 @@ public class NoteBean implements Serializable {
                 return;
             }
         }
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept());        
         
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),

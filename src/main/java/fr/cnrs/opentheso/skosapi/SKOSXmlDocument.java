@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.skosapi;
 
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,6 +49,29 @@ public class SKOSXmlDocument {
         equivalenceUriArkHandle = new HashMap();
     }
 
+    public void clear(){
+        if(groupList != null){
+            groupList.forEach(sKOSResource -> {
+                sKOSResource.clear();
+            });
+            groupList.clear();
+        }
+        if(conceptList != null){
+            conceptList.forEach(sKOSResource -> {
+                sKOSResource.clear();
+            });
+            conceptList.clear();
+        }        
+        if(facetList != null){
+            facetList.forEach(sKOSResource -> {
+                sKOSResource.clear();
+            });
+            facetList.clear();
+        }   
+        if(equivalenceUriArkHandle != null)
+            equivalenceUriArkHandle.clear();           
+    }
+    
     public void addGroup(SKOSResource r) {
         groupList.add(r);
     }

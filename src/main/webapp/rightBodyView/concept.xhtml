@@ -1445,56 +1445,57 @@
                                  styleClass="buttonIconOrange"/>
             </b:column>
         </b:row>
+        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
+            <!-- Dialogues -->        
+            <ui:include src="/dialog/concept/addNT.xhtml" /> 
+            <ui:include src="/dialog/facet/addFacet.xhtml" />
+            <ui:include src="/dialog/concept/renameConcept.xhtml" />
+            <ui:include src="/dialog/concept/replaceBy.xhtml" />
+            <ui:include src="/dialog/concept/deleteReplaceBy.xhtml" />
 
-        <!-- Dialogues -->        
-        <ui:include src="/dialog/concept/addNT.xhtml" /> 
-        <ui:include src="/dialog/facet/addFacet.xhtml" />
-        <ui:include src="/dialog/concept/renameConcept.xhtml" />
-        <ui:include src="/dialog/concept/replaceBy.xhtml" />
-        <ui:include src="/dialog/concept/deleteReplaceBy.xhtml" />
+            <ui:include src="/dialog/synonym/addSynonym.xhtml" />        
+            <ui:include src="/dialog/synonym/deleteSynonym.xhtml" /> 
+            <ui:include src="/dialog/synonym/renameSynonym.xhtml" /> 
 
-        <ui:include src="/dialog/synonym/addSynonym.xhtml" />        
-        <ui:include src="/dialog/synonym/deleteSynonym.xhtml" /> 
-        <ui:include src="/dialog/synonym/renameSynonym.xhtml" /> 
+            <ui:include src="/dialog/image/addImage.xhtml" />        
+            <ui:include src="/dialog/image/deleteImage.xhtml" /> 
+            <ui:include src="/dialog/image/updateImage.xhtml" />         
 
-        <ui:include src="/dialog/image/addImage.xhtml" />        
-        <ui:include src="/dialog/image/deleteImage.xhtml" /> 
-        <ui:include src="/dialog/image/updateImage.xhtml" />         
+            <ui:include src="/dialog/broader/addBroaderLink.xhtml" /> 
+            <ui:include src="/dialog/broader/deleteBroaderLink.xhtml" />         
 
-        <ui:include src="/dialog/broader/addBroaderLink.xhtml" /> 
-        <ui:include src="/dialog/broader/deleteBroaderLink.xhtml" />         
+            <ui:include src="/dialog/narrower/addNarrowerLink.xhtml" /> 
+            <ui:include src="/dialog/narrower/deleteNarrowerLink.xhtml" /> 
+            <ui:include src="/dialog/narrower/changeRelation.xhtml" />         
 
-        <ui:include src="/dialog/narrower/addNarrowerLink.xhtml" /> 
-        <ui:include src="/dialog/narrower/deleteNarrowerLink.xhtml" /> 
-        <ui:include src="/dialog/narrower/changeRelation.xhtml" />         
+            <ui:include src="/dialog/related/addRelatedLink.xhtml" /> 
+            <ui:include src="/dialog/related/deleteRelatedLink.xhtml" />         
 
-        <ui:include src="/dialog/related/addRelatedLink.xhtml" /> 
-        <ui:include src="/dialog/related/deleteRelatedLink.xhtml" />         
+            <ui:include src="/dialog/concept/setNotation.xhtml" />
 
-        <ui:include src="/dialog/concept/setNotation.xhtml" />
+            <ui:include src="/dialog/traduction/addTraduction.xhtml" />
+            <ui:include src="/dialog/traduction/deleteTraduction.xhtml" />
+            <ui:include src="/dialog/traduction/renameTraduction.xhtml" />
 
-        <ui:include src="/dialog/traduction/addTraduction.xhtml" />
-        <ui:include src="/dialog/traduction/deleteTraduction.xhtml" />
-        <ui:include src="/dialog/traduction/renameTraduction.xhtml" />
+            <ui:include src="/dialog/group/removeConceptFromGroup.xhtml" />
+            <ui:include src="/dialog/group/addConceptToGroup.xhtml" />
+            <ui:include src="/dialog/group/removeConceptAndChildFromGroup.xhtml" />
+            <ui:include src="/dialog/group/addConceptAndChildToGroup.xhtml" />
 
-        <ui:include src="/dialog/group/removeConceptFromGroup.xhtml" />
-        <ui:include src="/dialog/group/addConceptToGroup.xhtml" />
-        <ui:include src="/dialog/group/removeConceptAndChildFromGroup.xhtml" />
-        <ui:include src="/dialog/group/addConceptAndChildToGroup.xhtml" />
+            <ui:include src="/dialog/note/addNote.xhtml" /> 
+            <ui:include src="/dialog/note/deleteNote.xhtml" /> 
+            <ui:include src="/dialog/note/editNote.xhtml" />  
 
-        <ui:include src="/dialog/note/addNote.xhtml" /> 
-        <ui:include src="/dialog/note/deleteNote.xhtml" /> 
-        <ui:include src="/dialog/note/editNote.xhtml" />  
+            <ui:include src="/dialog/history/historicalView.xhtml" />
 
-        <ui:include src="/dialog/history/historicalView.xhtml" />
+            <ui:include src="/dialog/alignment/addAlignment.xhtml" />
+            <ui:include src="/dialog/alignment/deleteAlignment.xhtml" />     
+            <ui:include src="/dialog/alignment/updateAlignment.xhtml" />         
+            <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />  
 
-        <ui:include src="/dialog/alignment/addAlignment.xhtml" />
-        <ui:include src="/dialog/alignment/deleteAlignment.xhtml" />     
-        <ui:include src="/dialog/alignment/updateAlignment.xhtml" />         
-        <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />  
-
-        <ui:include src="/dialog/gps/setGps.xhtml" />      
-        <ui:include src="/dialog/gps/deleteGps.xhtml" />
+            <ui:include src="/dialog/gps/setGps.xhtml" />      
+            <ui:include src="/dialog/gps/deleteGps.xhtml" />
+        </h:panelGroup>
     </h:panelGroup>
 
 

@@ -1595,6 +1595,74 @@ public class Rest_new {
         return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
     }
 
+    
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //////////////Fonction qui permet de produire /////////////////////////////////////////  
+    //////////////des données Json pour le widget Aïoli////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+        /**
+     * Permet de rechercher une valeur en filtrant par theso, groupe et langue
+     * 
+     * "http://193.48.140.131:8083/opentheso/api/searchwidget?q=or&lang=fr&theso=TH_1"
+     *
+     * @param uri JSON
+     * @return
+     */
+    @Path("/searchwidget")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response searchJsonForWidget(@Context UriInfo uri) {
+        String value = null;
+        String idLang = "";
+        String idTheso = null;
+        String group = "";
+//        String format = null;
+//        String filter = null;
+
+        String datas;
+
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("lang")) {
+                    idLang = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("q")) {
+                    value = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("theso")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("group")) {
+                    group = valeur;
+                }
+//                if (e.getKey().equalsIgnoreCase("format")) {
+//                    format = valeur;
+//                }
+            }
+        }
+
+        if (idTheso == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+        }
+        if (value == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+        }
+        datas = getDatasForWidget(idTheso, idLang, group, value);
+        if (datas == null) {
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+    }
+    
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////  
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    
+
+    
+    
+    
     private String getDatas(
             String idTheso, String idLang, String group,
             String value,
@@ -1772,6 +1840,23 @@ public class Rest_new {
         }
         return datas;
     }
+
+    private String getDatasForWidget(String idTheso,
+            String idLang, String group, String value) {
+        HikariDataSource ds = connect();
+        if (ds == null) {
+            return null;
+        }
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+        String datas = restRDFHelper.findDatasForWidget(ds,
+                idTheso, idLang, group, value);
+        ds.close();
+        if (datas == null) {
+            return null;
+        }
+        return datas;
+    }    
+    
 
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 

@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idAddBroaderLink" header="#{langueBean.getMsg('rightbody.conceptdialog.add_generic_relationship')}" widgetVar="addBroaderLink" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 150px" >        
+              modal="true" resizable="true" closable="true" position="top" width="400" style="margin-top: 150px" >        
         <h:form id="addBroaderLinkForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
             <b:row>
@@ -47,9 +47,9 @@
                     <b:messages autoUpdate="true"/>
                 </b:column>                
             </b:row>
-
+            <p:spacer/>
             <b:row style="margin-bottom: 10px;" >
-                <b:column span="4" offset="8" >
+                <b:column span="4" offset="2" >
                     <b:commandButton 
                                      id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addBroaderLinkForm" 
                                      style="width:100%; font-size: 13px; 
@@ -57,7 +57,7 @@
                                      color: white; background: #43B572; border: none; box-shadow: none;"
                                      class="btn btn-primary"
                                      action="#{broaderBean.addNewBroaderLink(currentUser.nodeUser.idUser)}"/>
-                </b:column>                    
+                </b:column>  
             </b:row>            
         </h:form>
     </p:dialog>   

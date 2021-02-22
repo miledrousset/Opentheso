@@ -67,6 +67,10 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         nodeUser = null;
         roleOnThesoBean.showListTheso();
+        // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
+        roleOnThesoBean.setAndClearThesoInAuthorizedList();
+        
+        
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
 

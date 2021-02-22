@@ -1123,7 +1123,8 @@ public class AlignmentBean implements Serializable {
             agrovocHelper.setOptions(selectedNodeAlignment,
                     selectedOptions,
                     thesaurusUsedLanguageWithoutCurrentLang,
-                    thesaurusUsedLanguage);
+                    thesaurusUsedLanguage,
+                    selectedTheso.getCurrentLang());
             setObjectTraductions(agrovocHelper.getResourceTraductions());
             setObjectDefinitions(agrovocHelper.getResourceDefinitions());
             setObjectImages(agrovocHelper.getResourceImages());

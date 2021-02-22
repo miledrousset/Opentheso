@@ -473,43 +473,14 @@ public class ConceptView implements Serializable {
     
     
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
-        paths = new PathHelper().getPathOfConcept(
+        PathHelper pathHelper = new PathHelper();
+        paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
         //pathOfConcept = getPathFromArray(paths);
-        pathLabel = getPathWithLabel(paths, idTheso, idLang, idConcept);
+        pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
     }
 
-    private ArrayList<NodePath> getPathWithLabel(ArrayList<Path> paths,
-                String idTheso, String idLang, String selectedIdConcept) {
-        ArrayList<NodePath> pathLabel1 = new ArrayList<>();
-        ConceptHelper conceptHelper = new ConceptHelper();
-        boolean isStartNewPath = true;
-        String label;
-        
-        for (Path path1 : paths) {
-            for (String idConcept : path1.getPath()) {
-                if(!idConcept.equalsIgnoreCase(selectedIdConcept)) {
-                    NodePath nodePath = new NodePath();
-                    nodePath.setIdConcept(idConcept);
-                    label = conceptHelper.getLexicalValueOfConcept(
-                            connect.getPoolConnexion(),
-                            idConcept,
-                            idTheso, idLang);
-                    if(label.isEmpty())
-                        label = "("+ idConcept+")";
-                    nodePath.setTitle(label);
-                    if(isStartNewPath)
-                        nodePath.setIsStartOfPath(isStartNewPath);
-                    else
-                        nodePath.setIsStartOfPath(isStartNewPath);
-                    pathLabel1.add(nodePath);
-                    isStartNewPath = false;
-                }
-            }
-            isStartNewPath = true;
-        }
-        return pathLabel1;
-    }
+
     
     
     

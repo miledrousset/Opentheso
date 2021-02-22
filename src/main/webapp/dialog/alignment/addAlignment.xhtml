@@ -6,7 +6,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddAlignment" header="#{langueBean.getMsg('rightbody.conceptdialog.alignment_with_external_thesauri')}" widgetVar="addAlignment" 
-              modal="true" resizable="true" position="top" width="1100" style="margin-top: 50px" >
+              modal="true" resizable="true" position="top" closable="false" width="1100" style="margin-top: 50px" >
 
 
         <h:form id="addAlignmentForm" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">     
@@ -17,7 +17,7 @@
                 <!-- barre de control -->
                 <b:row>
                     <b:navBar fluid="true" style="background: #FAFAFA;" >
-                        <b:column span="1" offset="8">
+                        <b:column span="1" offset="7">
                             <b:navbarLinks pull="right" >
                                 <b:dropMenu icon-awesome="filter" value="" style="font-size: 12px; color: #f47b2a;" contentStyle="font-size: 12px;">
                                     <b:selectBooleanCheckbox value="#{alignmentBean.withLang}" 
@@ -61,12 +61,23 @@
 
                         <b:column span="1">
                             <b:navbarLinks pull="right" >
-                                <b:navLink ajax="true" update="idHelpAlignment" oncomplete="$('.helpAlignment').modal('show');" style="margin-right: -10px; margin-left: -5px;" >
+                                <b:navLink ajax="true" update="idHelpAlignment" oncomplete="$('.helpAlignment').modal('show');"  >
                                     <b:iconAwesome value="fas fa-question" size="xl" style="color: #f47b2a;"/>
                                 </b:navLink>
                             </b:navbarLinks>
                         </b:column>                            
+                        <b:column span="2">
+                            <b:navbarLinks pull="right" >
+                                    <b:navCommandLink value="#{langueBean.getMsg('btnExit')}"
+                                                      
+                                                      iconAwesome="far fa-window-close"
+                                                      update=" formRightTab:viewTabConcept formRightTab"
+                                                      style="color:#C63632;"></b:navCommandLink> 
+                            </b:navbarLinks>
+                        </b:column>   
 
+                       
+                        
                     </b:navBar>
 
                 </b:row>
@@ -351,7 +362,8 @@
                                                                                         alignmentBean.idConceptSelectedForAlignment,
                                                                                         currentUser.nodeUser.idUser)}"
                                                                       update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
-                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal" >
+                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal
+                                                                      formRightTab:viewTabConcept:idConceptGps" >
                                                     </b:navCommandLink>
                                                 </b:column>
                                                 <b:column span="1">

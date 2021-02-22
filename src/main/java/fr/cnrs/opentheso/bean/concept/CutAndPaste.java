@@ -23,7 +23,6 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 
@@ -32,8 +31,8 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Named(value = "cutAndPaste")
-//@SessionScoped
-@ViewScoped
+@SessionScoped
+//@ViewScoped
 public class CutAndPaste implements Serializable {
 
     @Inject

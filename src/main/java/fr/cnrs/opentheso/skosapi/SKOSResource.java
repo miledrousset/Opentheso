@@ -89,7 +89,36 @@ public class SKOSResource {
         this.property = property;
         this.uri = uri;
     }
-
+    
+    public void clear(){
+        skosStatus = null;
+        
+        if(labelsList != null)
+            labelsList.clear();
+        if(relationsList != null)
+            relationsList.clear();        
+        if(documentationsList != null)
+            documentationsList.clear();        
+        if(dateList != null)
+            dateList.clear();        
+        if(creatorList != null)
+            creatorList.clear();        
+        GPSCoordinates = null;
+        if(notationList != null)
+            notationList.clear();        
+        if(matchList != null)
+            matchList.clear();        
+        if(imageUris != null)
+            imageUris.clear();        
+        if(messages != null)
+            messages.clear();        
+        if(votes != null)
+            votes.clear();        
+        if(sKOSReplaces != null)
+            sKOSReplaces.clear();        
+        thesaurus = null;  
+    }
+    
     public int getProperty() {
         return property;
     }

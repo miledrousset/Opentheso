@@ -108,6 +108,20 @@ public class ImportFileBean implements Serializable {
     /**
      *
      */
+    
+    private void clearMemory(){
+        if(conceptObjects != null)
+            conceptObjects.clear();
+        if(langs != null)
+            langs.clear();
+        if(allLangs != null)
+            allLangs.clear();        
+        if(nodeUserProjects != null)
+            nodeUserProjects.clear();
+        if(sKOSXmlDocument != null)
+            sKOSXmlDocument.clear();
+    }
+    
     public void init() {
         choiceDelimiter = 0;
         haveError = false;
@@ -494,7 +508,7 @@ public class ImportFileBean implements Serializable {
                 }
                 ReadRdf4j readRdf4j = null;
                 try {
-                    readRdf4j = new ReadRdf4j(is, 0, isCandidatImport);
+                    readRdf4j = new ReadRdf4j(is, 0, isCandidatImport, connect.getWorkLanguage());
                 } catch (IOException ex) {
                     error.append(System.getProperty("line.separator"));
                     error.append(ex.getMessage());
@@ -548,7 +562,7 @@ public class ImportFileBean implements Serializable {
                 }
                 ReadRdf4j readRdf4j;
                 try {
-                    readRdf4j = new ReadRdf4j(is, 1, isCandidatImport);
+                    readRdf4j = new ReadRdf4j(is, 1, isCandidatImport, connect.getWorkLanguage());
                     warning = readRdf4j.getMessage();
                     sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
                     total = sKOSXmlDocument.getConceptList().size() ;
@@ -592,7 +606,7 @@ public class ImportFileBean implements Serializable {
                 }
                 ReadRdf4j readRdf4j;
                 try {
-                    readRdf4j = new ReadRdf4j(is, 3, isCandidatImport);
+                    readRdf4j = new ReadRdf4j(is, 3, isCandidatImport, connect.getWorkLanguage());
                     warning = readRdf4j.getMessage();
                     sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
                     total = sKOSXmlDocument.getConceptList().size();
@@ -637,7 +651,7 @@ public class ImportFileBean implements Serializable {
                 }
                 ReadRdf4j readRdf4j;
                 try {
-                    readRdf4j = new ReadRdf4j(is, 2, isCandidatImport);
+                    readRdf4j = new ReadRdf4j(is, 2, isCandidatImport, connect.getWorkLanguage());
                     warning = readRdf4j.getMessage();
                     sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
                     total = sKOSXmlDocument.getConceptList().size();
@@ -841,6 +855,7 @@ public class ImportFileBean implements Serializable {
             PrimeFaces.current().executeScript("PF('pbAjax').cancel();"); 
             pf.ajax().update("messageIndex"); 
         }
+        clearMemory();
     }    
     public void cancel(ActionEvent event) {
         progress1 = null;

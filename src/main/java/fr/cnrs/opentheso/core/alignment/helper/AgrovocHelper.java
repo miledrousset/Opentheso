@@ -195,7 +195,7 @@ public class AgrovocHelper {
             NodeAlignment selectedNodeAlignment,
             List<String> selectedOptions,
             ArrayList<String> thesaurusUsedLanguageWithoutCurrentLang,
-            ArrayList<String> thesaurusUsedLanguage) {
+            ArrayList<String> thesaurusUsedLanguage, String currentLang) {
         if (selectedNodeAlignment == null) {
             return;
         }
@@ -217,7 +217,7 @@ public class AgrovocHelper {
         for (String selectedOption : selectedOptions) {
             switch (selectedOption) {
                 case "langues":
-                    resourceTraductions = getTraductions(datas, thesaurusUsedLanguageWithoutCurrentLang);
+                    resourceTraductions = getTraductions(datas, thesaurusUsedLanguageWithoutCurrentLang, currentLang);
                     break;
             /*    case "notes":
                     resourceDefinitions = resourceDefinitions;//getDescriptions(datas, thesaurusUsedLanguage);
@@ -238,7 +238,8 @@ public class AgrovocHelper {
      */
     private ArrayList<SelectedResource> getTraductions(
             String xmlDatas,
-            ArrayList<String> languages) {
+            ArrayList<String> languages,
+            String currentLang) {
         ArrayList<SelectedResource> traductions = new ArrayList<>();
         ArrayList<SelectedResource> descriptions = new ArrayList<>();        
 
@@ -249,7 +250,7 @@ public class AgrovocHelper {
         SKOSXmlDocument sxd;
         try {
             inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
-            ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false); /// read XML SKOS
+            ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, currentLang); /// read XML SKOS
             sxd = readRdf4j.getsKOSXmlDocument();
 
             for (SKOSResource resource : sxd.getConceptList()) {

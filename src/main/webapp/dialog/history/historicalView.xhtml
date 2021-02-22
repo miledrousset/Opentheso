@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idHistoricalView" header="#{langueBean.getMsg('rightbody.concept.view_change_history')}" widgetVar="historicalView" 
-              modal="true" resizable="true" position="top" width="600"  height="600" style="margin-top: 150px" >        
+              modal="true" resizable="true" position="top" width="600"  height="600" style="margin-top: 50px" >        
         <h:form id="historicalViewForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
             <b:row >

@@ -18,7 +18,7 @@
                 <b:column span="12">
                     <b:commandLink value="#{result.prefLabel}" tooltip="#{result.idConcept}" tooltip-delay-show="500"
                                    actionListener="#{searchBean.onSelectConcept(result.idConcept)}"
-                                   update="formRightTab"
+                                   update="formRightTab:viewTabConcept formRightTab"
                                    style="color: #43B572; font-size: 14px"/>
                 </b:column>
                 

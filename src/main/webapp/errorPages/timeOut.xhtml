@@ -9,21 +9,32 @@
         <link rel="stylesheet" type="text/css" href="../css/style.css"/>
         <link rel="stylesheet" type="text/css" href="../css/menu.css"/>
     </h:head>
+    
     <h:body>
-        <div id="menuHead">
-            <div id="menuHeadTop">
-                <img src="../images/logo_Opentheso.png" style="width: 60px; margin-top: 0px; margin-right: -20px; margin-bottom: -25px;"/><br/>
-            </div>
-        </div>
-        <div style="margin: auto; width: 1000px; margin-top: 100px;">
-            <h1>
-                <h:outputText value="session.expired" />
-            </h1>
+        <b:container>
+            <b:row >
+                <b:column span="12">
+                    <b:jumbotron>
+                        <a href="#{request.contextPath}/index.xhtml">
+                            <div >
+                                <div align="center" id="menuHeadTop">
+                                    <img src="#{request.contextPath}/images/logo_Opentheso.png" style="width: 200px; margin-top: 0px; margin-right: -20px; margin-bottom: -25px;"/><br/>
+                                </div>
+                            </div>
+                        </a>
+                        <br/><br/>
+                        <div align="center">
+                             <img src="../images/wait.gif" style="width: 80px; margin-top: 0px; margin-right: -20px; margin-bottom: -25px;"/>
+                             <br/><br/><br/>
+                            <h:outputText value="Votre session a expiré / session expired" />
+                            <br/>
+                            <h:outputText value="Cliquez sur le logo pour revenir à l'accueil / Click on the logo to return to home" />
+                        </div>
 
-                           <b:link href="http://localhost:8080/opentheso2" value="http://localhost:8080/opentheso2"/>
-
-            <br/>
-        </div>
-    </h:body>
+                    </b:jumbotron>
+                </b:column>
+            </b:row >            
+        </b:container>
+    </h:body>    
 </html>
 

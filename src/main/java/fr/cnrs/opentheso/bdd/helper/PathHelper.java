@@ -6,8 +6,14 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
+import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import java.util.ArrayList;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 /**
  *
@@ -15,6 +21,65 @@ import java.util.ArrayList;
  */
 public class PathHelper {
 
+    
+    public ArrayList<NodePath> getPathWithLabel(HikariDataSource ds,
+            ArrayList<Path> paths,
+            String idTheso, String idLang, String selectedIdConcept) {
+        ArrayList<NodePath> pathLabel1 = new ArrayList<>();
+        ConceptHelper conceptHelper = new ConceptHelper();
+        boolean isStartNewPath = true;
+        String label;
+        
+        for (Path path1 : paths) {
+            for (String idConcept : path1.getPath()) {
+                if(!idConcept.equalsIgnoreCase(selectedIdConcept)) {
+                    NodePath nodePath = new NodePath();
+                    nodePath.setIdConcept(idConcept);
+                    label = conceptHelper.getLexicalValueOfConcept(
+                            ds,
+                            idConcept,
+                            idTheso, idLang);
+                    if(label.isEmpty())
+                        label = "("+ idConcept+")";
+                    nodePath.setTitle(label);
+                    if(isStartNewPath)
+                        nodePath.setIsStartOfPath(isStartNewPath);
+                    else
+                        nodePath.setIsStartOfPath(isStartNewPath);
+                    pathLabel1.add(nodePath);
+                    isStartNewPath = false;
+                }
+            }
+            isStartNewPath = true;
+        }
+        return pathLabel1;
+    }  
+    
+    public void getPathWithLabelAsJson(HikariDataSource ds,
+            ArrayList<Path> paths, JsonArrayBuilder jsonArrayBuilder,
+            String idTheso, String idLang, String selectedIdConcept) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        String label;
+   
+        for (Path path1 : paths) {
+            JsonArrayBuilder jsonArrayBuilderPath = Json.createArrayBuilder();            
+            for (String idConcept : path1.getPath()) {
+                JsonObjectBuilder job = Json.createObjectBuilder();
+
+                label = conceptHelper.getLexicalValueOfConcept(
+                        ds,
+                        idConcept,
+                        idTheso, idLang);
+                if(label.isEmpty())
+                    label = "("+ idConcept+")";
+                job.add("id", idConcept);
+                job.add("label", label);
+                jsonArrayBuilderPath.add(job.build());
+            }
+            jsonArrayBuilder.add(jsonArrayBuilderPath.build());//.toString());
+        }
+    }      
+    
     public ArrayList<Path> getPathOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus) {
 

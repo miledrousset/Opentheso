@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.session;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import org.primefaces.PrimeFaces;
 
@@ -27,11 +28,13 @@ public class SessionControl implements Serializable {
 
     @Inject
     private CurrentUser currentUser;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private final int DEFAULT_TIMEOUT_IN_MIN = 10;
-
-
+    
     public void isTimeout() throws IOException {
+        if(FacesContext.getCurrentInstance()== null) return;
         if (currentUser.getNodeUser() != null) {
             //Déconnexion de l'utilisateur
             currentUser.disconnect();
@@ -39,7 +42,9 @@ public class SessionControl implements Serializable {
 
         //Vider le cache
         clearComponent();
-        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        
+        externalContext.invalidateSession();
         PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
@@ -47,8 +52,38 @@ public class SessionControl implements Serializable {
         System.runFinalization ();
       */  
         // Rafraîchissement de la page
+        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI());     
+    //    selectedTheso.getCurrentIdTheso();
+        System.gc();
+        System.runFinalization ();
+  /*      if (currentUser.getNodeUser() != null) {
+            //Déconnexion de l'utilisateur
+            currentUser.disconnect();
+        }
+
+        //Vider le cache
+        clearComponent();
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+
+        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+
+        HttpServletResponse response = (HttpServletResponse) ectx.getResponse();
+
+        HttpSession session = (HttpSession) ectx.getSession(false);
+
+        session.invalidate();
+
+        PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
+        PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
+        PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
+        /*    System.gc ();
+        System.runFinalization ();
+         */
+ /*       selectedTheso.getCurrentIdTheso();
+        System.gc();
+        // Rafraîchissement de la page
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());*/
     }
 
     public void clearComponent() {
@@ -61,9 +96,9 @@ public class SessionControl implements Serializable {
 
     private void clearAllComponentInChilds(Iterator<UIComponent> childrenIt) {
 
-        while(childrenIt.hasNext()) {
+        while (childrenIt.hasNext()) {
             UIComponent component = childrenIt.next();
-                if(component != null) {
+            if (component != null) {
                 if (component instanceof HtmlInputText) {
                     HtmlInputText com = (HtmlInputText) component;
                     com.resetValue();
@@ -82,11 +117,10 @@ public class SessionControl implements Serializable {
                 }
 
                 clearAllComponentInChilds(component.getFacetsAndChildren());
-                }
+            }
         }
 
     }
-
 
     public int getTimeout() {
         int minNbr;
@@ -94,10 +128,10 @@ public class SessionControl implements Serializable {
             FacesContext context = FacesContext.getCurrentInstance();
             ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
             minNbr = Integer.parseInt(bundlePref.getString("timeout_nbr_minute"));
-        } catch(Exception e) {
+        } catch (Exception e) {
             minNbr = DEFAULT_TIMEOUT_IN_MIN;
         }
         return (minNbr * 60 * 1000);
     }
-    
+
 }

@@ -20,11 +20,12 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.TreeDragDropEvent;
@@ -35,8 +36,8 @@ import org.primefaces.model.TreeNode;
  * @author miledrousset
  */
 @Named(value = "dragAndDrop")
-//@SessionScoped
-@ViewScoped
+@SessionScoped
+//@ViewScoped
 public class DragAndDrop implements Serializable {
 
     @Inject
@@ -72,20 +73,28 @@ public class DragAndDrop implements Serializable {
 
     public DragAndDrop() {
     }
+    
+    @PostConstruct
+    public void init(){
+        int i = 0;
+    }
+
+    /// est appelé avant la destruction de la session, c'est le moment idéal pour nettoyer les variables
+    @PreDestroy
+    public void destroy(){
+        int i = 0;
+    }
 
     public void reset() {
-//        movedFromId = null;
-//        isBranch = true;
-//        isCopyOfGroup = false;
         if(nodeBTsToCut != null)
             nodeBTsToCut.clear();
- //       nodeBTsToCut = null;
         isCopyOn = false;
         isValidPaste = false;
-        nodeConceptDrag = null;
-        nodeConceptDrop = null;
+        
+        nodeConceptDrag.clear();
+        nodeConceptDrop.clear();
+        
         isdragAndDrop = false;
-
         isDropToRoot = false;
     }
 

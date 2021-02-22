@@ -187,8 +187,23 @@ public class NodeConcept {
         this.replaces = replaces;
     }
 
-    
 
-    
+    public void clear(){
+        if(nodeBT != null) nodeBT.clear();
+        concept = null;
+        term = null;
+        if(nodeNT != null) nodeNT.clear();
+        if(nodeRT != null) nodeRT.clear();
+        if(nodeEM != null) nodeEM.clear();
+        if(nodeNotesTerm != null) nodeNotesTerm.clear();
+        if(nodeNotesConcept != null) nodeNotesConcept.clear();
+        if(nodeimages != null) nodeimages.clear();
+        if(nodeConceptGroup != null) nodeConceptGroup.clear();
+        if(nodeTermTraductions != null) nodeTermTraductions.clear();
+        if(nodeAlignments != null) nodeAlignments.clear();
+        nodeGps = null;
+        if(replacedBy != null) replacedBy.clear();    
+        if(replaces != null) replaces.clear();    
+    }
     
 }

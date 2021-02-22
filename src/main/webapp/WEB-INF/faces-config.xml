@@ -69,5 +69,8 @@
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <servler-name>Faces Servlet</servler-name>
     </filter-mapping>
+    <factory>
+        <exception-handler-factory>fr.cnrs.opentheso.bean.session.ViewExpiredExceptionHandlerFactory</exception-handler-factory>
+    </factory>    
 </faces-config>
 

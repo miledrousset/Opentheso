@@ -13,14 +13,19 @@ import java.util.stream.Collectors;
 import javax.json.JsonArray;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -506,6 +511,81 @@ public class RestRDFHelper {
             return null;
     }
     
+    /**
+     * Permet de retourner les concepts au format Json
+     * avec valeur et URI (pour les programmes qui utilisent l'autocomplétion)
+     * mais aussi la branche complète vers la racine
+     * 
+     * @param ds
+     * @param idTheso
+     * @param lang 
+     * @param group 
+     * @param value 
+     * @return  
+     */
+    public String findDatasForWidget(HikariDataSource ds,
+            String idTheso, String lang, String group,
+            String value) {
+
+        String datas = findDatasForWidget__(ds,
+                 value, idTheso, lang, group);
+        if(datas == null) return null;
+        return datas;
+    }    
+    
+    
+    /**
+     * recherche par valeur
+     * @param ds
+     * @param value
+     * @param idTheso
+     * @param lang
+     * @return 
+     */
+    private String findDatasForWidget__(
+            HikariDataSource ds,
+            String value, String idTheso,
+            String lang, String group) {
+
+        if(value == null || idTheso == null) {
+            return null;
+        }        
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if (nodePreference == null) {
+            return null;
+        }
+
+        SearchHelper searchHelper = new SearchHelper();
+
+        
+        // recherche de toutes les valeurs
+        ArrayList<String> nodeIds = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, group, idTheso);
+        
+        if(nodeIds == null || nodeIds.isEmpty())
+            return null;
+
+        // construire le tableau JSON avec le chemin vers la racine pour chaque Id
+        PathHelper pathHelper = new PathHelper();
+        ArrayList<Path> paths;
+        
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();        
+        
+        for (String idConcept : nodeIds) {
+            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
+            if(paths != null && !paths.isEmpty()){
+                pathHelper.getPathWithLabelAsJson(ds, 
+                        paths, 
+                        jsonArrayBuilder,
+                        idTheso, lang, idConcept);
+            }
+        }
+    //    datasJson = jsonArrayBuilder.build().toString();
+        if(jsonArrayBuilder != null)
+            return jsonArrayBuilder.build().toString();
+        else 
+            return null;
+    }    
+
     
     /**
      * Fonction qui permet de récupérer une branche complète en partant d'un
@@ -883,6 +963,4 @@ public class RestRDFHelper {
                 + "&idt=" + idTheso;
         return uri;
     }
-    
-
 }

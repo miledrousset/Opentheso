@@ -83,6 +83,8 @@ public class SelectedTheso implements Serializable {
 
     @PostConstruct
     public void initializing() {
+        System.gc();
+        System.runFinalization ();        
         if(!connect.isConnected()) {
             System.err.println("Erreur de connexion BDD");
             return;
@@ -290,20 +292,20 @@ public class SelectedTheso implements Serializable {
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      * @return 
      */
-    public String preRenderView() {
+    public void preRenderView() {
         if (idThesoFromUri == null) {
-            return "";
+            return; 
         }
         if (idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (idConceptFromUri == null || idConceptFromUri.isEmpty()) {
                 // accès au même thésaurus, on l'ignore 
                 initIdsFromUri();
-                return "";
+                return;
             }
             if (currentLang == null) {
                 String idLang = getIdLang();
                 if (idLang == null || idLang.isEmpty()) {
-                    return "";
+                    return;
                 }
                 currentLang = idLang;
                 selectedLang = idLang;
@@ -312,21 +314,23 @@ public class SelectedTheso implements Serializable {
             actionFromConceptToOn();
             tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
             initIdsFromUri();
-            return "";
+            return;
         }
 
         // gestion de l'accès par thésaurus d'un identifiant différent 
         if (!idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
-
-            selectedIdTheso = idThesoFromUri;
-            startNewTheso(currentLang);
-            if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
-                conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
-                actionFromConceptToOn();
-                if(conceptBean.getNodeConcept() != null) {
-                    tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
+            if(isValidTheso(idThesoFromUri)) {
+                selectedIdTheso = idThesoFromUri;
+                startNewTheso(currentLang);
+                if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
+                    conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
+                    actionFromConceptToOn();
+                    if(conceptBean.getNodeConcept() != null) {
+                        tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
+                    }
                 }
-            }
+            } else 
+                return;
         }
 
         indexSetting.setIsSelectedTheso(true);
@@ -345,7 +349,11 @@ public class SelectedTheso implements Serializable {
             pf.ajax().update("formRightTab");
         }
         initIdsFromUri();
-        return "";
+    }
+    
+    private boolean isValidTheso(String idTheso){
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        return !thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso);
     }
 
     public String getIdConceptFromUri() {
