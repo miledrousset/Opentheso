@@ -563,16 +563,13 @@
             </b:column>
             <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
                 <b:iconAwesome value="level-down-alt" size="m" style="color:#143a1e;"/>                 
-            </b:column>            
-
-            <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}">
-                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
-            </b:column>            
-
-
-
-            <h:panelGroup id="idConceptNarrower" >
+            </b:column>  
+            
+            <h:panelGroup id="idConceptNarrower" >            
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}">
+                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
+                </b:column>            
                 <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeNT.size() != 0}">
                     <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() lt 21}" var="value"
                                varStatus="status1" 

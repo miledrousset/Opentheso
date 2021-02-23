@@ -77,11 +77,7 @@ public class ConceptView implements Serializable {
     private String selectedLang;
     private ArrayList <NodeCorpus> nodeCorpuses;
 
-    
-    private ArrayList<String> pathOfConcept;
     private ArrayList<NodePath> pathLabel;
-    
-    private ArrayList<Path> paths; // les hiérarchies du concept
     
     /// pagination
     private int sizeToShowNT;
@@ -113,18 +109,31 @@ public class ConceptView implements Serializable {
             isUriRequest = false;
             return;
         }*/
-        nodeConcept = null;
+        if(nodeConcept != null){
+            nodeConcept.clear();
+        }
         selectedLang = null;
-        notes = new ArrayList<>();
-        scopeNotes = new ArrayList<>();  
-        changeNotes = new ArrayList<>();
-        definitions = new ArrayList<>();
-        editorialNotes = new ArrayList<>();
-        examples = new ArrayList<>();
-        historyNotes = new ArrayList<>();
+        if(notes == null)
+            notes = new ArrayList<>();
+        if(scopeNotes == null)
+            scopeNotes = new ArrayList<>();        
+        if(changeNotes == null)
+            changeNotes = new ArrayList<>();        
+        if(definitions == null)
+            definitions = new ArrayList<>();
+        if(editorialNotes == null)
+            editorialNotes = new ArrayList<>();        
+        if(examples == null)
+            examples = new ArrayList<>();        
+        if(historyNotes == null)
+            historyNotes = new ArrayList<>();        
+      
         sizeToShowNT = 0;
         nodeCorpuses = null;
         countOfBranch = 0;
+        
+        if(mapModel == null) 
+            mapModel = new Map();
     }
 
     /**
@@ -225,14 +234,13 @@ public class ConceptView implements Serializable {
 
 
     private void initMap()  {
-
         LatLong place = new LatLong(nodeConcept.getNodeGps().getLatitude()+"",
                 nodeConcept.getNodeGps().getLongitude()+"");
 
         String titre = nodeConcept.getTerm() != null ? nodeConcept.getTerm().getLexical_value() : "";
 
         //Configure Map
-        mapModel = new Map();
+ //       mapModel = new Map();
         mapModel.setWidth("100%");
         mapModel.setHeight("250px");
         mapModel.setCenter(place);
@@ -474,7 +482,7 @@ public class ConceptView implements Serializable {
     
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
-        paths = pathHelper.getPathOfConcept(
+        ArrayList<Path> paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
         //pathOfConcept = getPathFromArray(paths);
         pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
@@ -538,14 +546,6 @@ public class ConceptView implements Serializable {
 
     public void setNodeConcept(NodeConcept nodeConcept) {
         this.nodeConcept = nodeConcept;
-    }
-
-    public ArrayList<String> getPathOfConcept() {
-        return pathOfConcept;
-    }
-
-    public void setPathOfConcept(ArrayList<String> pathOfConcept) {
-        this.pathOfConcept = pathOfConcept;
     }
 
     public ArrayList<NodePath> getPathLabel() {

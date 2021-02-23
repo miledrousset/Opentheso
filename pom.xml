@@ -141,7 +141,7 @@
             <version>1.1</version>
             <type>jar</type>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>ki-jzkit-iface</groupId>
             <artifactId>ki-jzkit-iface</artifactId>
             <version>1.2.3</version>
@@ -153,6 +153,7 @@
             <version>1.2.3</version>
             <type>jar</type>
         </dependency>
+        -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>

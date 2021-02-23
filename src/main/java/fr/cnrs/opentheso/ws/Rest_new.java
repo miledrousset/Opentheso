@@ -419,11 +419,6 @@ public class Rest_new {
     /*
      * fin de la recherche par idArk
      */
-    
-    
-    
-    
-    
 ///////////////////////////////////////////////////// 
 /////////////////////////////////////////////////////       
 /////////////////////////////////////////////////////    
@@ -432,14 +427,13 @@ public class Rest_new {
      */
 ///////////////////////////////////////////////////// 
 /////////////////////////////////////////////////////       
-    
-    
     /**
-     * récupérer un concept par DOI et produire du REF-SKOS 
+     * récupérer un concept par DOI et produire du REF-SKOS
+     *
      * @param doi1
      * @param doi2
      * @param doiId
-     * @return 
+     * @return
      */
     @Path("/doi:{doi1}.{doi2}/{doiId}.rdf")
     @GET
@@ -474,21 +468,17 @@ public class Rest_new {
             return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
-    }    
+    }
 ///////////////////////////////////////////////////// 
 /////////////////////////////////////////////////////       
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
+
     /* TEST TEST TEST DOI
      */
 ///////////////////////////////////////////////////// 
 /////////////////////////////////////////////////////       
-    
-    
-    
-    
-    
-    
+
 ///////////////////////////////////////////////////// 
 /////////////////////////////////////////////////////       
 /////////////////////////////////////////////////////    
@@ -1568,7 +1558,11 @@ public class Rest_new {
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response
+                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
+            //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
             }
             case "jsonld":
                 format = "application/ld+json";
@@ -1576,33 +1570,44 @@ public class Rest_new {
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
+            //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
             case "turtle":
                 format = "text/turtle";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response
+                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                   
+            //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
             case "json":
                 format = "application/json";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                   
+            //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
         }
         return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
     }
 
-    
     ///////////////////////////////////////////////////////////////////////////////////////
     //////////////Fonction qui permet de produire /////////////////////////////////////////  
     //////////////des données Json pour le widget Aïoli////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
-        /**
+    /**
      * Permet de rechercher une valeur en filtrant par theso, groupe et langue
-     * 
+     *
      * "http://193.48.140.131:8083/opentheso/api/searchwidget?q=or&lang=fr&theso=TH_1"
      *
      * @param uri JSON
@@ -1642,27 +1647,26 @@ public class Rest_new {
         }
 
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if (value == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         datas = getDatasForWidget(idTheso, idLang, group, value);
         if (datas == null) {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();        
+    //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
-    
+
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////  
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
-    
-
-    
-    
-    
     private String getDatas(
             String idTheso, String idLang, String group,
             String value,
@@ -1760,7 +1764,12 @@ public class Rest_new {
         if (datas == null) {
             return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //      return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+        //  return Response.ok(skos.toString()).header("Access-Control-Allow-Origin", "*").build();
     }
 
     /**
@@ -1821,7 +1830,11 @@ public class Rest_new {
         if (datas == null) {
             return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+       // return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();
     }
 
     private String getAutocompleteDatas(String idTheso,
@@ -1855,8 +1868,7 @@ public class Rest_new {
             return null;
         }
         return datas;
-    }    
-    
+    }
 
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 

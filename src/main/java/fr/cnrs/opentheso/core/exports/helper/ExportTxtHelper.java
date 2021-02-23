@@ -5,13 +5,13 @@
  */
 package fr.cnrs.opentheso.core.exports.helper;
 
-import com.k_int.IR.IRQuery;
+/*import com.k_int.IR.IRQuery;
 import com.k_int.IR.QueryModels.PrefixString;
 import com.k_int.IR.SearchException;
 import com.k_int.IR.SearchTask;
 import com.k_int.IR.Searchable;
 import com.k_int.IR.TimeoutExceededException;
-import com.k_int.hss.HeterogeneousSetOfSearchable;
+import com.k_int.hss.HeterogeneousSetOfSearchable;*/
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.ArrayList;
 import java.util.List;
@@ -401,7 +401,7 @@ public class ExportTxtHelper {
         if (selectedOptions.contains("occ")) {
             //on écrit les occurences 
             txtBuff.append("\t");
-            txtBuff.append(totalOfNotices(idConcept));
+        //    txtBuff.append(totalOfNotices(idConcept));
         }
 
         first = true;
@@ -563,7 +563,7 @@ public class ExportTxtHelper {
     /**
      * fonction temporaire qui ne marche qu'avec Koha
      */
-    private int totalOfNotices(String idConcept) {
+/*    private int totalOfNotices(String idConcept) {
         int tot = 0;
         if (nodePreference == null) {
             return 0;
@@ -598,7 +598,7 @@ public class ExportTxtHelper {
             }
         }
         return tot;
-    }
+    }*/
 
     public StringBuffer getTxtBuff() {
         return txtBuff;

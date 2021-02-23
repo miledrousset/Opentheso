@@ -48,7 +48,7 @@ var autoComplete = (function () {
                     element.style.visibility = 'hidden';
                 }
 
-                var urlWS = 'https://cors-anywhere.herokuapp.com/' + options.url
+                var urlWS = options.url
                         + term + '?theso=' + options.thesaurus;
 
                 if (options['groupe'] !== undefined) {
