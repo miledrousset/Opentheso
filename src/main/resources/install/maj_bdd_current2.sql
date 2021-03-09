@@ -127,6 +127,21 @@ begin
 end
 $$language plpgsql;
 
+
+--
+-- mise a jour de la table info (suppression des contraintes)
+--
+create or replace function update_table_info_constraint() returns void as $$
+begin
+    if exists (SELECT * from information_schema.table_constraints where table_name = 'info' 
+	and constraint_name ='info_pkey') then 
+	execute
+	'ALTER TABLE ONLY info
+	  drop CONSTRAINT info_pkey';
+    END IF;
+end
+$$language plpgsql;
+
 --
 -- mise a jour de la table info (ajout de la colonne googleanalytics)
 --
@@ -134,10 +149,13 @@ create or replace function update_table_info() returns void as $$
 begin
     IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='info' AND column_name='googleanalytics') THEN
         execute 'ALTER TABLE info ADD COLUMN  googleanalytics character varying;
+                 delete from info;
                  INSERT INTO public.info (version_opentheso, version_bdd, googleanalytics) VALUES ('''', '''', '''');';
     END IF;
 end
 $$language plpgsql;
+
+
 
 
 --
@@ -219,6 +237,7 @@ SELECT update_table_preferences_sortbynotation();
 SELECT update_table_preferences_tree_cache();
 SELECT update_table_candidat_vote();
 SELECT update_table_candidat_status();
+SELECT update_table_info_constraint();
 SELECT update_table_info();
 SELECT update_table_corpus_link();
 SELECT delete_table_thesaurus_array();
@@ -233,6 +252,7 @@ SELECT delete_fonction('update_table_preferences_sortbynotation','');
 SELECT delete_fonction('update_table_preferences_tree_cache','');
 SELECT delete_fonction('update_table_candidat_vote','');
 SELECT delete_fonction('update_table_candidat_status','');
+SELECT delete_fonction('update_table_info_constraint','');
 SELECT delete_fonction('update_table_info','');
 SELECT delete_fonction('update_table_corpus_link','');
 SELECT delete_fonction('delete_table_thesaurus_array','');

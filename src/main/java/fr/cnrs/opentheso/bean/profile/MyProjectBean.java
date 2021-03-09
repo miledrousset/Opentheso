@@ -31,7 +31,6 @@ public class MyProjectBean implements Serializable {
     @Inject private Connect connect;
     @Inject private LanguageBean languageBean;
     @Inject private CurrentUser currentUser;
-    @Inject private SelectedTheso selectedTheso;
     
     private ArrayList<NodeIdValue> listeThesoOfProject;
     private Map<String, String> listeGroupsOfUser;

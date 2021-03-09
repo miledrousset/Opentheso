@@ -33,7 +33,6 @@ public class Connect implements Serializable{
         ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
         workLanguage = bundlePref.getString("workLanguage");
         defaultThesaurusId = bundlePref.getString("defaultThesaurusId");
-        
     }    
     
     private ResourceBundle getBundlePool(){

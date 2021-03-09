@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.condidat.enumeration;
+package fr.cnrs.opentheso.bean.candidat.enumeration;
 
 public enum StatusEnum {
 

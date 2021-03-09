@@ -1,10 +1,10 @@
-package fr.cnrs.opentheso.bean.condidat;
+package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bean.condidat.dao.TermeDao;
-import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
+import fr.cnrs.opentheso.bean.candidat.dao.TermeDao;
+import fr.cnrs.opentheso.bean.candidat.dto.TraductionDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;

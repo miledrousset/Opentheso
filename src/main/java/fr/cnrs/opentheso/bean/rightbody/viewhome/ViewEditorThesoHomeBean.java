@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.Serializable;
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -29,6 +30,11 @@ public class ViewEditorThesoHomeBean implements Serializable {
     
     @Inject
     private LanguageBean languageBean; 
+    
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
     
     public ViewEditorThesoHomeBean() {
     }

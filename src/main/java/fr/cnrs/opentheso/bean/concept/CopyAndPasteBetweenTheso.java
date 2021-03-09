@@ -17,6 +17,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -55,6 +56,11 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     // pour savoir si on récupère les identifiants pérennes ou non
     private String identifierType = "sans";    
 
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }       
+    
     public CopyAndPasteBetweenTheso() {
     }
 

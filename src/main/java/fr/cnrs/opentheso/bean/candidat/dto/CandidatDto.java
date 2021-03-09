@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.condidat.dto;
+package fr.cnrs.opentheso.bean.candidat.dto;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;

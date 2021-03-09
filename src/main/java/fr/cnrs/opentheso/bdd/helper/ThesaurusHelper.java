@@ -689,10 +689,10 @@ public class ThesaurusHelper {
                 stmt = conn.createStatement();
                 try {
                     if(withPrivateTheso) 
-                        query = "select id_thesaurus from thesaurus order by id_thesaurus";
+                        query = "select id_thesaurus from thesaurus order by created DESC";
                     else
                         // uniquement pour les SuperAdmin
-                        query = "select id_thesaurus from thesaurus where thesaurus.private != true order by id_thesaurus";
+                        query = "select id_thesaurus from thesaurus where thesaurus.private != true order by created DESC";
 
                     resultSet = stmt.executeQuery(query);
                     while (resultSet.next()) {
@@ -1377,7 +1377,11 @@ public class ThesaurusHelper {
                             + "delete from thesaurus_alignement_source where id_thesaurus = '" + idThesaurus + "';"
                             + "delete from concept_group_concept where idthesaurus = '" + idThesaurus + "';"
                             + "delete from relation_group where id_thesaurus = '" + idThesaurus + "';"
-                            + "delete from preferences where id_thesaurus = '" + idThesaurus + "';";
+                            + "delete from preferences where id_thesaurus = '" + idThesaurus + "';"
+                            + "delete from candidat_status where id_thesaurus = '" + idThesaurus + "';"
+                            + "delete from candidat_vote where id_thesaurus = '" + idThesaurus + "';"
+                            + "delete from candidat_messages where id_thesaurus = '" + idThesaurus + "';"
+                            ;
 
                     stmt.executeUpdate(query);
                     state = true;

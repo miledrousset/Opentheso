@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.condidat;
+package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
@@ -11,9 +11,10 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
-import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
-import fr.cnrs.opentheso.bean.condidat.enumeration.VoteType;
+import fr.cnrs.opentheso.bean.candidat.dao.TermeDao;
+import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
+import fr.cnrs.opentheso.bean.candidat.enumeration.VoteType;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -46,23 +47,12 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CandidatBean implements Serializable {
 
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private CurrentUser currentUser;
-
-    @Inject
-    private SelectedTheso selectedTheso;
-
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Inject
-    private LanguageBean languageBean;
-
-    @Inject
-    private ConceptView conceptView;
+    @Inject private Connect connect;
+    @Inject private CurrentUser currentUser;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptView;
 
     private final CandidatService candidatService = new CandidatService();
 
@@ -83,17 +73,12 @@ public class CandidatBean implements Serializable {
     private ArrayList<NodeLangTheso> languagesOfTheso;
 
 
-    private String test;
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
     @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }
+    
+    
     public void initCandidatModule() {
         isListCandidatsActivate = true;
         isRejectCandidatsActivate = true;
@@ -103,9 +88,31 @@ public class CandidatBean implements Serializable {
         isImportViewActivate = false;
         isExportViewActivate = false;
 
-        candidatList = new ArrayList<>();
-        allTermes = new ArrayList<>();
-        domaines = new ArrayList<>();
+        if(candidatList == null)
+            candidatList = new ArrayList<>();
+        else 
+            candidatList.clear();
+        if(allTermes == null)
+            allTermes = new ArrayList<>();
+        else
+            allTermes.clear();
+        if(domaines == null)
+            domaines = new ArrayList<>();
+        else
+            domaines.clear();
+        if(selectedLanguages == null)
+            selectedLanguages = new ArrayList<>();
+        else 
+            selectedLanguages.clear();
+        if(rejetCadidat == null) 
+            rejetCadidat = new ArrayList<>();
+        else
+            rejetCadidat.clear();
+        if(acceptedCadidat == null) 
+            acceptedCadidat = new ArrayList<>();
+        else
+            acceptedCadidat.clear();
+        
         getAllCandidatsByThesoAndLangue();
         getRejectCandidatByThesoAndLangue();
         getAcceptedCandidatByThesoAndLangue();
@@ -115,8 +122,7 @@ public class CandidatBean implements Serializable {
         selectedExportFormat = "skos";
 
         languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-        selectedLanguages = new ArrayList<>();
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());        
         languagesOfTheso.forEach((nodeLang) -> {
             selectedLanguages.add(nodeLang);
         });
@@ -129,7 +135,7 @@ public class CandidatBean implements Serializable {
             candidatList = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
                     getIdLang(), 1, "CA");
         } else {
-            candidatList = new ArrayList<>();
+            candidatList.clear();
         }
     }
 
@@ -139,7 +145,7 @@ public class CandidatBean implements Serializable {
             rejetCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
                     getIdLang(), 3, "CA");
         } else {
-            rejetCadidat = new ArrayList<>();
+            rejetCadidat.clear();
         }
     }
 
@@ -149,7 +155,7 @@ public class CandidatBean implements Serializable {
             acceptedCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
                     getIdLang(), 2, null);
         } else {
-            acceptedCadidat = new ArrayList<>();
+            acceptedCadidat.clear();
         }
     }
 
@@ -296,7 +302,7 @@ public class CandidatBean implements Serializable {
         }
 
         candidatSelected = candidatDto;
-        candidatSelected.setLang(languageBean.getIdLangue());
+        candidatSelected.setLang(getIdLang());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
         candidatService.getCandidatDetails(connect, candidatSelected);
@@ -305,7 +311,7 @@ public class CandidatBean implements Serializable {
         allTermes = candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(candidatDto.getNomPref()))
                 .collect(Collectors.toList());
 
-        domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
+//        domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
 
         setShowCandidatActivate(true);
 
@@ -366,21 +372,20 @@ public class CandidatBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg2"));
             return;
         }
-
+        TermHelper termHelper = new TermHelper();
         if (initialCandidat == null) {
-
             ConceptHelper conceptHelper = new ConceptHelper();
-            TermHelper termHelper = new TermHelper();
+
 
             // en cas d'un nouveau candidat, verification dans les prefLabels
             if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
-                    selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
+                    selectedTheso.getCurrentIdTheso(), getIdLang())) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg3"));
                 return;
             }
             // verification dans les altLabels
             if (termHelper.isAltLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
-                    selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
+                    selectedTheso.getCurrentIdTheso(), getIdLang())) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg4"));
                 return;
             }
@@ -389,7 +394,9 @@ public class CandidatBean implements Serializable {
             concept.setIdConcept(candidatSelected.getIdConcepte());
             concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
             concept.setTopConcept(false);
-            concept.setLang(connect.getWorkLanguage());
+
+            concept.setLang(getIdLang());
+
             concept.setIdUser(currentUser.getNodeUser().getIdUser());
             concept.setUserName(currentUser.getUsername());
             concept.setStatus("CA");
@@ -404,7 +411,7 @@ public class CandidatBean implements Serializable {
             candidatSelected.setIdConcepte(idNewConcept);
             Term terme = new Term();
             terme.setId_thesaurus(selectedTheso.getCurrentIdTheso());
-            terme.setLang(languageBean.getIdLangue());
+            terme.setLang(getIdLang());
             terme.setContributor(currentUser.getNodeUser().getIdUser());
             terme.setLexical_value(candidatSelected.getNomPref().trim());
             terme.setSource("candidat");
@@ -441,8 +448,22 @@ public class CandidatBean implements Serializable {
 
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
-                candidatService.updateIntitule(connect, candidatSelected.getNomPref(), selectedTheso.getCurrentIdTheso(),
-                        selectedTheso.getSelectedLang(), candidatSelected.getIdTerm());
+                if(termHelper.isTermExistInThisLang(connect.getPoolConnexion(), candidatSelected.getIdTerm(), getIdLang(), candidatSelected.getIdThesaurus())) {
+                    candidatService.updateIntitule(connect, candidatSelected.getNomPref(), candidatSelected.getIdThesaurus(),
+                            getIdLang(), candidatSelected.getIdTerm());
+                } else {
+                    Term term = new Term();
+                    term.setId_thesaurus(selectedTheso.getCurrentIdTheso());
+                    term.setLang(getIdLang());
+                    term.setContributor(currentUser.getNodeUser().getIdUser());
+                    term.setLexical_value(candidatSelected.getNomPref().trim());
+                    term.setSource("candidat");
+                    term.setStatus("D");
+                    term.setId_term(candidatSelected.getIdTerm());
+                    TermeDao termeDao = new TermeDao();
+                    termeDao.addNewTerme(connect.getPoolConnexion(), term);                   
+                }
+
             }
         }
 
@@ -629,16 +650,15 @@ public class CandidatBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg9"));
             return;
         }
-
         setIsNewCandidatActivate(true);
 
         candidatSelected = new CandidatDto();
         candidatSelected.setIdConcepte(null);//candidatService.getCandidatID(connect));
-        candidatSelected.setLang(languageBean.getIdLangue());
+        candidatSelected.setLang(getIdLang());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
 
-        domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
+//        domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), getIdLang());
 
         allTermes = candidatList;
 

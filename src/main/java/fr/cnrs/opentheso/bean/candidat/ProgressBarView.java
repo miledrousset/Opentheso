@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.condidat;
+package fr.cnrs.opentheso.bean.candidat;
 
 import javax.inject.Named;
 import java.io.Serializable;

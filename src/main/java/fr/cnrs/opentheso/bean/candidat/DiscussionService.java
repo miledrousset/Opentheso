@@ -1,9 +1,9 @@
-package fr.cnrs.opentheso.bean.condidat;
+package fr.cnrs.opentheso.bean.candidat;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bean.concept.SynonymBean;
-import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
-import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
+import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.utils.EmailUtils;

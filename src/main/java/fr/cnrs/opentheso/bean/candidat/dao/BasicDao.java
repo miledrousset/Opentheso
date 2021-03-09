@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.condidat.dao;
+package fr.cnrs.opentheso.bean.candidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;

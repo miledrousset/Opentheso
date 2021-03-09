@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.condidat;
+package fr.cnrs.opentheso.bean.candidat;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Concept;
@@ -10,19 +10,20 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
-import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
-import fr.cnrs.opentheso.bean.condidat.dao.DomaineDao;
-import fr.cnrs.opentheso.bean.condidat.dao.TermeDao;
-import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
-import fr.cnrs.opentheso.bean.condidat.dao.NoteDao;
-import fr.cnrs.opentheso.bean.condidat.dao.RelationDao;
-import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
-import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
-import fr.cnrs.opentheso.bean.condidat.dto.TraductionDto;
-import fr.cnrs.opentheso.bean.condidat.enumeration.VoteType;
+import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
+import fr.cnrs.opentheso.bean.candidat.dao.DomaineDao;
+import fr.cnrs.opentheso.bean.candidat.dao.TermeDao;
+import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
+import fr.cnrs.opentheso.bean.candidat.dao.NoteDao;
+import fr.cnrs.opentheso.bean.candidat.dao.RelationDao;
+import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
+import fr.cnrs.opentheso.bean.candidat.dto.TraductionDto;
+import fr.cnrs.opentheso.bean.candidat.enumeration.VoteType;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import java.sql.SQLException;
@@ -90,19 +91,19 @@ public class CandidatService implements Serializable {
         HikariDataSource connection = connect.getPoolConnexion();
         try {
             CandidatDao condidatDao = new CandidatDao();
-            temps = condidatDao.searchCandidatsByStatus(connection, idThesaurus, lang, etat, statut);
+            temps = condidatDao.getCandidatsByStatus(connection, idThesaurus, lang, etat, statut);
             temps.forEach(candidatDto -> {
                 try {
-                    candidatDto.setStatut(condidatDao.searchCondidatStatus(connection, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus()));
+              //    candidatDto.setStatut(condidatDao.searchCondidatStatus(connection, candidatDto.getIdConcepte(),
+              //              candidatDto.getIdThesaurus()));
                     candidatDto.setNbrParticipant(condidatDao.searchParticipantCount(connection, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus()));
+                            idThesaurus));
                     candidatDto.setNbrDemande(condidatDao.searchDemandeCount(connection, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus()));
+                            idThesaurus));
                     candidatDto.setNbrVote(condidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus(), VoteType.CANDIDAT.getLabel()));
+                            idThesaurus, VoteType.CANDIDAT.getLabel()));
                     candidatDto.setNbrNoteVote(condidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus(), VoteType.NOTE.getLabel()));
+                            idThesaurus, VoteType.NOTE.getLabel()));
                 } catch (SQLException ex) {
                     Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -177,37 +178,60 @@ public class CandidatService implements Serializable {
 
     public String saveNewCondidat(Connect connect, Concept concept, ConceptHelper conceptHelper)
             throws SQLException {
-        HikariDataSource connection = connect.getPoolConnexion();
-        String idNewCondidat = conceptHelper.addConceptInTable(connect.getPoolConnexion().getConnection(), concept, concept.getIdUser());
-        if (idNewCondidat == null) {
-            return null;
-        }
 
-        new CandidatDao().setStatutForCandidat(connection, 1, idNewCondidat, concept.getIdThesaurus(),
+        Connection conn = null;
+        String idNewCondidat = null;
+        try {
+            conn = connect.getPoolConnexion().getConnection();
+            conn.setAutoCommit(false);
+            idNewCondidat = conceptHelper.addConceptInTable(conn, concept, concept.getIdUser());
+            if (idNewCondidat == null) {
+                conn.rollback();
+                conn.close();
+                return null;
+            }
+            conn.commit();
+            conn.close();
+        } catch (SQLException ex) {
+            try {
+                Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex1) {
+            }
+        }            
+
+        new CandidatDao().setStatutForCandidat(connect.getPoolConnexion(), 1, idNewCondidat, concept.getIdThesaurus(),
                 concept.getIdUser() + "");
-
-        connection.close();
         return idNewCondidat;
     }
 
     public String saveNewTerm(Connect connect, Term term,
             String idConcept, int idUser) throws SQLException {
-
-        HikariDataSource connection = connect.getPoolConnexion();
-
-        String idTerm = new TermHelper().addTerm(connect.getPoolConnexion().getConnection(), term,
+        Connection conn = null;
+        String idTerm = null;
+        try {
+            conn = connect.getPoolConnexion().getConnection();
+            conn.setAutoCommit(false);
+            idTerm = new TermHelper().addTerm(connect.getPoolConnexion().getConnection(), term,
                 idConcept, idUser);
-
-        if (idTerm == null) {
-            return null;
-        }
-
-        // faux, il ne faut pas créer un Synonyme en même temps que le prefLabel
-    /*    new TermeDao().saveIntitule(connect, candidatSelected.getNomPref(), candidatSelected.getIdThesaurus(),
-                candidatSelected.getLang(), candidatSelected.getIdConcepte(), idTerm);*/
-
-        connection.close();
-
+            if (idTerm == null) {
+                conn.rollback();
+                conn.close();
+                return null;
+            }   
+            conn.commit();
+            conn.close();            
+        } catch (SQLException ex) {
+            try {
+                Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex1) {
+            }
+        }  
         return idTerm;
     }
 
@@ -348,7 +372,7 @@ public class CandidatService implements Serializable {
     }
 
     public List<DomaineDto> getDomainesList(Connect connect, String idThesaurus, String lang) {
-        return new DomaineDao().getAllDomaines(connect, idThesaurus, lang);
+        return new DomaineDao().getAllDomaines(connect.getPoolConnexion(), idThesaurus, lang);
     }
 
     public void getCandidatDetails(Connect connect, CandidatDto candidatSelected) {
@@ -359,7 +383,10 @@ public class CandidatService implements Serializable {
             MessageDao messageDao = new MessageDao();
             CandidatDao candidatDao = new CandidatDao();
             RelationDao relationDao = new RelationDao();
-
+            TermHelper termHelper = new TermHelper();
+            candidatSelected.setIdTerm(termHelper.getIdTermOfConcept(connection, 
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+            
             candidatSelected.setCollections(new DomaineDao().getDomaineCandidatByConceptAndThesaurusAndLang(connection,
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 

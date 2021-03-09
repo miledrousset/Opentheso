@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.profile;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 /**
@@ -31,6 +32,10 @@ public class ProfileBean implements Serializable {
     private String projectsColor;
     private String thesaurusColor;    
     
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
     
     public ProfileBean() {
     }

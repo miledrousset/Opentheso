@@ -1,18 +1,22 @@
-package fr.cnrs.opentheso.bean.condidat.dao;
+package fr.cnrs.opentheso.bean.candidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
-import fr.cnrs.opentheso.bean.condidat.dto.CandidatDto;
-import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
-import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
+import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CandidatDao extends BasicDao {
 
@@ -82,14 +86,21 @@ public class CandidatDao extends BasicDao {
      * @return
      * @throws SQLException 
      */
-    public List<CandidatDto> searchCandidatsByStatus(HikariDataSource hikariDataSource, String idThesaurus,
+    public List<CandidatDto> getCandidatsByStatus(HikariDataSource hikariDataSource, String idThesaurus,
             String lang, int etat, String statut) throws SQLException {
 
-        List<CandidatDto> temps = new ArrayList<>();
+        List<CandidatDto> candidatDtos = new ArrayList<>();
 
-        openDataBase(hikariDataSource);
-        
-        stmt.executeQuery(createRequest(lang, idThesaurus, etat, statut));
+        // récupération des Id des concepts candidats
+        getAllIdOfCandidate(hikariDataSource, idThesaurus, etat, candidatDtos);
+        ConceptHelper conceptHelper = new ConceptHelper();
+   //     UserHelper userHelper = new UserHelper();
+
+        for (CandidatDto candidatDto : candidatDtos) {
+            candidatDto.setNomPref(conceptHelper.getLexicalValueOfConcept(hikariDataSource, candidatDto.getIdConcepte(), idThesaurus, lang));
+        }
+        return candidatDtos;
+ /*       stmt.executeQuery(createRequest(lang, idThesaurus, etat, statut));
 
         resultSet = stmt.getResultSet();
 
@@ -104,9 +115,41 @@ public class CandidatDao extends BasicDao {
             candidatDto.setUserId(resultSet.getInt("contributor"));
             temps.add(candidatDto);
         }
+*/
 
+
+    }
+    
+    private void getAllIdOfCandidate(HikariDataSource hikariDataSource,
+            String idTheso, int etat, List<CandidatDto> candidatDtos) throws SQLException{
+        
+        openDataBase(hikariDataSource);
+        String query = "SELECT concept.id_concept, concept.created, candidat_status.id_user" +
+                " FROM concept, candidat_status" +
+                " WHERE " +
+                " concept.id_concept = candidat_status.id_concept" +
+                " and " +
+                " concept.id_thesaurus = candidat_status.id_thesaurus" +
+
+                " AND candidat_status.id_status = " + etat + 
+                " AND concept.id_thesaurus = '" + idTheso + "'" +
+                " order by created DESC";
+        try {
+            resultSet = stmt.executeQuery(query);
+            while(resultSet.next()) {
+                CandidatDto candidatDto = new CandidatDto();
+                candidatDto.setIdConcepte(resultSet.getString("id_concept"));
+                candidatDto.setCreationDate(resultSet.getDate("created"));
+                candidatDto.setStatut("" + etat);
+                candidatDto.setUserId(resultSet.getInt("id_user"));
+                candidatDto.setIdThesaurus(idTheso);
+                candidatDtos.add(candidatDto);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CandidatDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+                        
         closeDataBase();
-        return temps;
     }
     
    /**
@@ -268,6 +311,10 @@ public class CandidatDao extends BasicDao {
                             + "VALUES ('" + idConcepte + "', " + status + ", '"+date+"', " + idUser + ", '" + idThesaurus + "')");
             closeDataBase();
         } catch (Exception e) {
+            try {
+                closeDataBase();
+            } catch (Exception ea) {
+            }
 
         }
     }
@@ -317,7 +364,10 @@ public class CandidatDao extends BasicDao {
                             + "VALUES (" + idUser + ",'" + idConcept + "','" + idThesaurus + "', '"+idNote+"', '" + typeVote + "')");
             closeDataBase();
         } catch (Exception e) {
-
+            try {
+                closeDataBase();
+            } catch (Exception ed) {
+            }
         }
     }
     

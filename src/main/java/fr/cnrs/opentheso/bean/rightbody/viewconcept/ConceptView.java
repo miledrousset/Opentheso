@@ -43,6 +43,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -97,6 +98,10 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> examples;
     private ArrayList<NodeNote> historyNotes;
 
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
 
     /**
      * Creates a new instance of ConceptBean
@@ -357,6 +362,7 @@ public class ConceptView implements Serializable {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             int status = conn.getResponseCode();
+            if(status != 200) return -1;
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -393,6 +399,7 @@ public class ConceptView implements Serializable {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             int status = conn.getResponseCode();
+            if(status != 200) return -1;
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -402,13 +409,13 @@ public class ConceptView implements Serializable {
             return getCountFromJson(json);
 
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         } catch (IOException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         } catch (Exception ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         }
         return -1;
     }
@@ -416,10 +423,15 @@ public class ConceptView implements Serializable {
     private int getCountFromJson(String jsonText) {
         if(jsonText == null) return -1;
         JsonObject jsonObject;
-        try ( //{"responseCode":1,"handle":"20.500.11942/opentheso443"}
-            JsonReader reader = Json.createReader(new StringReader(jsonText))) {
+        try {
+            JsonReader reader = Json.createReader(new StringReader(jsonText));
             jsonObject = reader.readObject();
-            return jsonObject.getInt("count");
+   //         System.err.println(jsonText + " #### " + nodeConcept.getConcept().getIdConcept());
+            return jsonObject.getInt("count");            
+        } catch (Exception e) {
+            System.err.println(e + " " + jsonText + " " + nodeConcept.getConcept().getIdConcept());
+           // Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, e + " " + jsonText);            
+            return -1;
         }
     }
 
@@ -484,6 +496,12 @@ public class ConceptView implements Serializable {
         PathHelper pathHelper = new PathHelper();
         ArrayList<Path> paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
+        if(paths == null) {
+            System.out.println("Erreur de path pour le concept :" + idConcept);
+            if(pathLabel!= null)
+                pathLabel.clear();
+            return;
+        }
         //pathOfConcept = getPathFromArray(paths);
         pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
     }

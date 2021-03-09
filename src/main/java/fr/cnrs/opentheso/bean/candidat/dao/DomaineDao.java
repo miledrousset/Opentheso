@@ -1,38 +1,54 @@
-package fr.cnrs.opentheso.bean.condidat.dao;
+package fr.cnrs.opentheso.bean.candidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bean.condidat.dto.DomaineDto;
+import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class DomaineDao extends BasicDao {
     
-    public List<DomaineDto> getAllDomaines(Connect connect, String idThesaurus, String lang) {
+    public List<DomaineDto> getAllDomaines(HikariDataSource ds, String idThesaurus, String lang) {
         List<DomaineDto> domaines = new ArrayList<>();
+        Connection conn;
+        Statement stmt1;
+        ResultSet resultSet1;
+
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            stmt.executeQuery("SELECT idgroup, lexicalvalue FROM concept_group_label where idthesaurus = '"
-                    + idThesaurus+"' AND lang = '"+lang+"'");
-            resultSet = stmt.getResultSet();
-            while (resultSet.next()) {
-                DomaineDto domaineDto = new DomaineDto();
-                domaineDto.setId(resultSet.getString("idgroup"));
-                domaineDto.setName(resultSet.getString("lexicalvalue"));
-                domaines.add(domaineDto);
+            conn = ds.getConnection();
+            try {
+                stmt1 = conn.createStatement();
+                try {
+                    String query = "SELECT idgroup, lexicalvalue FROM concept_group_label where idthesaurus = '"
+                                + idThesaurus+"' AND lang = '"+lang+"'";
+
+                    stmt1.executeQuery(query);
+                    resultSet1 = stmt1.getResultSet();
+                    while (resultSet1.next()) {
+                        DomaineDto domaineDto = new DomaineDto();
+                        domaineDto.setId(resultSet1.getString("idgroup"));
+                        domaineDto.setName(resultSet1.getString("lexicalvalue"));
+                        domaines.add(domaineDto);
+                    }
+                } finally {
+                    stmt1.close();
+                }
+            } finally {
+                conn.close();
             }
-            resultSet.close();
-            stmt.close();
-        } catch (SQLException e) {
-            LOG.error(e);
-        }
+        } catch (SQLException sqle) {
+            LOG.error(sqle);
+        }        
         return domaines;
     }
 

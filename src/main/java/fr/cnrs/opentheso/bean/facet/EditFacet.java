@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bean.concept.NewConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -19,6 +18,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -41,7 +41,6 @@ public class EditFacet implements Serializable {
     @Inject private ConceptView conceptView;
     @Inject private Tree tree;
     @Inject private SelectedTheso selectedTheso;
-    @Inject private NewConcept newConcept;    
 
     private ArrayList<NodeLangTheso> nodeLangs, nodeLangsFiltered;
     private ArrayList<NodeIdValue> conceptList;
@@ -53,7 +52,11 @@ public class EditFacet implements Serializable {
     
     private NodeIdValue conceptSelected;
     
-
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
+    
     public void initEditFacet(String facetId, String idTheso, String idLang) {
         
         FacetHelper facetHelper = new FacetHelper();

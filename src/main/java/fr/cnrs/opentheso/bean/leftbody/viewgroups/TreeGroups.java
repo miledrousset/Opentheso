@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
+import javax.annotation.PostConstruct;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -44,18 +45,12 @@ import org.primefaces.model.TreeNode;
 
 public class TreeGroups implements Serializable {
 
-    @Inject
-    private Connect connect;
-    @Inject
-    private RightBodySetting rightBodySetting;
-    @Inject
-    ConceptView conceptView;
-    @Inject
-    GroupView groupView;
-    @Inject
-    private LeftBodySetting leftBodySetting;
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private RightBodySetting rightBodySetting;
+    @Inject private ConceptView conceptView;
+    @Inject private GroupView groupView;
+    @Inject private LeftBodySetting leftBodySetting;
+    @Inject private SelectedTheso selectedTheso;
 
 
     private DataService dataService;
@@ -66,7 +61,11 @@ public class TreeGroups implements Serializable {
 
     private boolean noedSelected;
 
-
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }   
+    
     public void reset() {
         root = null;
         selectedNode = null;

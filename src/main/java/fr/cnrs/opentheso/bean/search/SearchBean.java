@@ -19,6 +19,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 /**
@@ -56,6 +57,11 @@ public class SearchBean implements Serializable {
     private boolean withNote;
     private boolean withId;
     
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
+    
     /**
      * Creates a new instance of SearchBean
      */
@@ -77,8 +83,15 @@ public class SearchBean implements Serializable {
     }     
     
     public void reset(){
+        if(nodeConceptSearchs != null) {
+            for (NodeConceptSearch nodeConceptSearch : nodeConceptSearchs) {
+                nodeConceptSearch.clear();
+            }
+            nodeConceptSearchs = null;
+        }
+        if(listResultAutoComplete != null)
+            listResultAutoComplete.clear();
         searchSelected = null;
-        nodeConceptSearchs = null;//new ArrayList<>();
     }
     
     
@@ -88,6 +101,7 @@ public class SearchBean implements Serializable {
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// Memory test //////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////       
+    /*
     public void testMemory() {
         String value = "vase";
         String id = "300";
@@ -111,10 +125,10 @@ public class SearchBean implements Serializable {
                                 selectedTheso.getCurrentLang(),
                                 selectedTheso.getCurrentIdTheso());
                 }*/
-        ArrayList<String> nodeSearchsId;
+    /*    ArrayList<String> nodeSearchsId;
         nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(),
                 id, selectedTheso.getCurrentIdTheso());
-    }    
+    }    */
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

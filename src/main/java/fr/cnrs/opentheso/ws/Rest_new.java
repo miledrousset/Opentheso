@@ -900,7 +900,11 @@ public class Rest_new {
         if (datas == null) {
             return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();        
+//        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 
     /**
@@ -935,7 +939,11 @@ public class Rest_new {
         if (datas == null) {
             return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();       
+    //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 
     /**
@@ -953,14 +961,14 @@ public class Rest_new {
             @PathParam("idConcept") String idConcept) {
 
         if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
@@ -968,9 +976,13 @@ public class Rest_new {
                 "application/json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();         
+    //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -988,14 +1000,14 @@ public class Rest_new {
             @PathParam("idConcept") String idConcept) {
 
         if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
@@ -1003,9 +1015,13 @@ public class Rest_new {
                 "application/json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();         
+   //     return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -1023,14 +1039,14 @@ public class Rest_new {
             @PathParam("idConcept") String idConcept) {
 
         if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
@@ -1038,9 +1054,13 @@ public class Rest_new {
                 "application/ld+json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();        
+    //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -1058,14 +1078,14 @@ public class Rest_new {
             @PathParam("idConcept") String idConcept) {
 
         if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
@@ -1073,9 +1093,13 @@ public class Rest_new {
                 "application/ld+json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();        
+    //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -1093,14 +1117,14 @@ public class Rest_new {
             @PathParam("idConcept") String idConcept) {
 
         if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
@@ -1108,9 +1132,13 @@ public class Rest_new {
                 "text/turtle");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();         
+    //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
 
     /**
@@ -1128,14 +1156,14 @@ public class Rest_new {
             @PathParam("idConcept") String idConcept) {
 
         if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,
@@ -1143,9 +1171,13 @@ public class Rest_new {
                 "text/turtle");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();         
+    //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
@@ -1218,6 +1250,10 @@ public class Rest_new {
      *
      * @param uri RDF+XML
      * @return
+     * 
+     * /// options 
+     * https://pactols.frantiq.fr/opentheso/api/search?q=ark:/26678/pcrtVFfTq3JlGu&lang=fr&theso=TH_1&showLabels=true
+     * 
      */
     @Path("/search")
     @GET
@@ -1230,7 +1266,9 @@ public class Rest_new {
         String group = "";
 
         String filter = null;
-
+        boolean showLabels = false;
+        String idArk = null;
+        
         String datas;
 
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
@@ -1250,15 +1288,22 @@ public class Rest_new {
                 if (e.getKey().equalsIgnoreCase("format")) {
                     format = valeur;
                 }
+                if (e.getKey().equalsIgnoreCase("showLabels")) {
+                    if(valeur.equalsIgnoreCase("true"))
+                        showLabels = true;
+                }
             }
-        }
-
-        if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if (value == null) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }        
+
+        if (!value.contains("ark:/")) {
+            if (idTheso == null) {
+                return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            }
         }
+
 
         // vérification du filtre pour savoir si la recherche concerne des champs spécifiques 
         if (value.contains("notation:")) {
@@ -1268,6 +1313,15 @@ public class Rest_new {
         if (value.contains("prefLabel:")) {
             /// rercherche par notation
         }
+        /// rercherche par idArk
+        if (value.contains("ark:/")) {
+            try {
+                idArk = value.substring(value.indexOf("ark:/")+5);
+            } catch (Exception e) {
+                return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            }
+            format = "ark";
+        }        
 
         if (format == null) {
             format = "rdf";
@@ -1302,6 +1356,13 @@ public class Rest_new {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
                 return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+            case "ark":
+//                format = "application/json";
+                datas = getDatasFromArk(idTheso, idLang, idArk, showLabels);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();                
         }
         return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
     }
@@ -1696,6 +1757,35 @@ public class Rest_new {
         }
         return datas;
     }
+    
+    //http://localhost:8082/opentheso2/api/search?q=ark:/26678/pcrt4gr80Hd4Bm
+    private String getDatasFromArk(
+            String idTheso,
+            String idLang,
+            String idArk,
+            boolean showLabels) {
+        
+        HikariDataSource ds = null;
+        String datas;
+        try {
+            ds = connect();
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            if(idLang == null || idLang.isEmpty()) {
+                datas = restRDFHelper.exportConcept(ds,
+                        idArk, "application/json");
+            } else
+                datas = restRDFHelper.exportConceptFromArkWithLang(ds,
+                        idArk, idTheso, idLang, showLabels, "application/json");
+            ds.close();
+            return datas;
+        } catch (Exception e) {
+            if (ds != null) {
+               ds.close();
+            }
+        }
+        return null;
+    }    
+ 
 
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 

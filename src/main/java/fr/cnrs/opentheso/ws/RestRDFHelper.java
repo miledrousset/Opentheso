@@ -182,7 +182,59 @@ public class RestRDFHelper {
         exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
         return writeRdf4j;
-    }    
+    }   
+    
+    
+    /**
+     * Permet de retourner un concept au format défini en passant par un identifiant Ark
+     * et id thesaurus et filtré par langue et pour récupérer les labels des relations BT et NT
+     * 
+     * @param ds
+     * @param idArk 
+     * @param idTheso 
+     * @param showLabels 
+     * @param idLang 
+     * @param format 
+     * @return  
+     */
+    public String exportConceptFromArkWithLang(HikariDataSource ds, 
+            String idArk, String idTheso, String idLang, boolean showLabels,
+            String format) {
+
+        RDFFormat rDFFormat = getRDFFormat(format);
+        WriteRdf4j writeRdf4j = exportConceptFromArkWithLang__(
+                ds, idArk, idTheso, idLang, showLabels);
+        if(writeRdf4j == null) return null;
+
+        ByteArrayOutputStream out;
+        out = new ByteArrayOutputStream();
+        Rio.write(writeRdf4j.getModel(), out, rDFFormat);
+        return out.toString();
+    }
+    
+    private WriteRdf4j exportConceptFromArkWithLang__(HikariDataSource ds, 
+            String idArk, String idTheso, String idLang, boolean showLabels) {
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        String idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk);
+        if(idTheso == null || idTheso.isEmpty())
+            idTheso = conceptHelper.getIdThesaurusFromArkId(ds, idArk);
+        
+        if(idConcept == null || idTheso == null) {
+            return null;
+        }
+        
+        NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if(nodePreference == null) return null;
+        
+        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
+        exportRdf4jHelper.setNodePreference(nodePreference);
+        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+
+        exportRdf4jHelper.addSignleConceptByLang(idTheso, idConcept, idLang, showLabels);
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        return writeRdf4j;
+    }     
     
     
     /**

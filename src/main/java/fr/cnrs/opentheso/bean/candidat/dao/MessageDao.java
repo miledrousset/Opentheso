@@ -1,8 +1,8 @@
-package fr.cnrs.opentheso.bean.condidat.dao;
+package fr.cnrs.opentheso.bean.candidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
-import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +27,10 @@ public class MessageDao extends BasicDao {
                     .append("', '").append(idThesaurus).append("')").toString());
             closeDataBase();
         } catch (SQLException e) {
+            try {
+                closeDataBase();
+            } catch (Exception ed) {
+            }
             LOG.error(e);
         }
     }

@@ -1,6 +1,6 @@
-package fr.cnrs.opentheso.bean.condidat.dao;
+package fr.cnrs.opentheso.bean.candidat.dao;
 
-import fr.cnrs.opentheso.bean.condidat.CandidatBean;
+import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;

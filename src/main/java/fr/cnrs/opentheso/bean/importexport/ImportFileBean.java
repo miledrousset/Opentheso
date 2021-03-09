@@ -19,7 +19,7 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bean.condidat.CandidatBean;
+import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -769,8 +769,8 @@ public class ImportFileBean implements Serializable {
         
         try {
             
-            candidatBean.setProgressBarStep(0);
-            candidatBean.setProgressBarValue(0);
+            progress = 0;
+            progressStep = 0;
             
             ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
             importRdf4jHelper.setInfos(connect.getPoolConnexion(), formatDate, 
@@ -782,7 +782,9 @@ public class ImportFileBean implements Serializable {
             candidatBean.setProgressBarStep(100 / sKOSXmlDocument.getConceptList().size());
 
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
-                candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
+            //    candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
+                progressStep++;
+                progress = progressStep / sKOSXmlDocument.getConceptList().size() * 100;
                 importRdf4jHelper.addConcept(sKOSResource, selectedTheso.getCurrentIdTheso(), isCandidatImport);
             }
 
@@ -790,12 +792,12 @@ public class ImportFileBean implements Serializable {
                 candidatBean.getAllCandidatsByThesoAndLangue();
                 candidatBean.setIsListCandidatsActivate(true);
             }
-            
         } catch (Exception e) {
                 
         } finally {
             
         }
+        onComplete();
     }    
     
     

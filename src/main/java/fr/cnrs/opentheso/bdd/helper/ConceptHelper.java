@@ -36,8 +36,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
-import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
-import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
+import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
+import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
@@ -621,7 +621,7 @@ public class ConceptHelper {
                         query = "SELECT concept.status, concept.id_concept"
                                 + " FROM concept WHERE"
                                 + " concept.id_thesaurus = '" + idThesaurus + "' AND"
-                                + " concept.top_concept = true";
+                                + " concept.top_concept = true  and status != 'CA'";
                     }
 
                     stmt.executeQuery(query);

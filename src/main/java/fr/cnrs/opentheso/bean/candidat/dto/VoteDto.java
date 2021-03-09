@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.bean.condidat.dto;
+package fr.cnrs.opentheso.bean.candidat.dto;
 
 public class VoteDto {
 

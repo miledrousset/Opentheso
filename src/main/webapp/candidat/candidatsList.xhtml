@@ -13,33 +13,32 @@
                                  padding-right: 20px;" ajax="true" actionListener="#{candidatBean.initialNewCandidat()}" update="candidatForm"/>
             </b:column>
             <b:column span="3" colXs="7">
-                <b:dropButton  tooltip="Importer/exporter les candidats" tooltip-delay-show="500"
-                               value="Importer/exporter"  icon-size="l" iconAlign="right"
+                <b:dropButton  tooltip="#{langueBean.getMsg('candidat.import_export_candidates_tooltip')}" tooltip-delay-show="500"
+                               value="#{langueBean.getMsg('candidat.import_export_candidates')}"  icon-size="l" iconAlign="right"
                                style="width: 100%; background: none; border: none; box-shadow: none; font-size: 12px;"  >
-                    <b:navCommandLink value="Récupérer les candidats de l'ancienne version"
-                                      tooltip="Permet de récupérer les anciens candidats saisis dans l'ancienne version pour les inclure dans ce nouveau module, seuls les candidats en attente sont récupérés"
+                    <b:navCommandLink value="#{langueBean.getMsg('candidat.retrieve_from_old_version')}"
+                                      tooltip="#{langueBean.getMsg('candidat.retrieve_from_old_version_tooltip')}"
                                       tooltip-delay-show="500"
                                       style="font-size: 12px;"
                                       iconAwesome="fa-download fas_color_orange"
                                       action="#{candidatBean.getOldCandidates()}"
                                       update="candidatForm messageIndex"/>
 
-                    <b:navCommandLink value="Export candidats en format SKOS"
-                                      tooltip="Exporter tout les candidats en format SKOS"
+                    <b:navCommandLink value="#{langueBean.getMsg('candidat.export_in_SKOS')}"
+                                      tooltip="#{langueBean.getMsg('candidat.export_in_SKOS_tooltip')}"
                                       tooltip-delay-show="500"
                                       style="font-size: 12px;"
                                       iconAwesome="fa-download fas_color_orange"
                                       action="#{candidatBean.setExportViewActivate(true)}"
                                       update="candidatForm messageIndex"/>
 
-                    <b:navCommandLink value="Importer candidats en format SKOS"
-                                      tooltip="Exporter tout les candidats en format SKOS"
+                    <b:navCommandLink value="#{langueBean.getMsg('candidat.import_in_SKOS_format')}"
+                                      tooltip="#{langueBean.getMsg('candidat.import_in_SKOS_format_tooltip')}"
                                       tooltip-delay-show="500"
                                       style="font-size: 12px;"
                                       iconAwesome="fa-download fas_color_orange"
                                       action="#{candidatBean.setImportViewActivate(true)}"
                                       update="candidatForm messageIndex"/>
-
                 </b:dropButton>
             </b:column>
         </b:row>
@@ -61,74 +60,53 @@
             </b:column>
         </b:row>
 
-        <b:row style="margin-top: 20px">
-            <b:column>
-                <b:row style="font-size: 12px; color: #666666">
-                    <b:column span="1">
-                        <h:outputText value="id"/>
-                    </b:column>
-                    <b:column span="4">
-                        <h:outputText value="#{langueBean.getMsg('candidat.titre')}"/>
-                    </b:column>
-                    <b:column span="2">
-                        <h:outputText value="#{langueBean.getMsg('candidat.creation_date')}"/>
-                    </b:column>
-                    <b:column span="2">
-                        <h:outputText value="Votes"/>
-                    </b:column>
-                    <b:column span="2">
-                        <h:outputText value="Votes Note"/>
-                    </b:column>
-                    <b:column span="1">
-                        <h:outputText value="Messages"/>
-                    </b:column>
-                </b:row>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-                <b:row rendered="#{candidatBean.candidatList.size() == 0}">
-                    <b:column>
-                        <h:outputText value="#{langueBean.getMsg('candidat.save.msg10')}"
-                                      style="font-size: 12px; color: grey; font-style: italic " />
-                    </b:column>
-                </b:row>
-                <ui:repeat id="candidtatsList" var="candidat" value="#{candidatBean.candidatList}">
-                    <b:row style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatList.indexOf(candidat))};
-                           padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
-                        <b:column span="1" >
-                            <h:outputText value="#{candidat.idConcepte}" />
-                        </b:column>
-                        <b:column span="4" >
-                            <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572"
-                                              actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
-                        </b:column>
-
-                        <b:column span="2" >
-                            <h:outputText value="#{candidat.creationDate}" />
-                        </b:column>
-                        <b:column span="2">
-                            <h:outputText value="#{candidat.nbrVote}" />
-                        </b:column>
-                        <b:column span="2">
-                            <h:outputText value="#{candidat.nbrNoteVote}" />
-                        </b:column>
-                        <b:column span="1">
-                            <h:outputText value="#{candidat.nbrParticipant}" />
-                        </b:column>
-                    </b:row>
-                </ui:repeat>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+        <!-- tableau des candidats -->
+        <b:row>
+            <b:column span="12">                                
+                <p:dataTable id="tabUser" rendered="#{candidatBean.candidatList != null}"
+                             value="#{candidatBean.candidatList}" var="listCandidats" scrollable="true" resizableColumns="false" scrollHeight="450"
+                             style="font-size: 12px;">
+                    
+                    <p:column width="20" headerText="id">
+                        <h:outputText value="#{listCandidats.idConcepte}" />
+                    </p:column>                    
+                    
+                    <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
+                        <b:navCommandLink value="(#{listCandidats.idConcepte})" ajax="true" update="candidatForm" style="color: #43B572"
+                                          actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
+                    </p:column>  
+                    <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
+                        <b:navCommandLink value="#{listCandidats.nomPref}" ajax="true" update="candidatForm" style="color: #43B572"
+                                          actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
+                    </p:column> 
+                    
+                    <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
+                        <h:outputText value="#{listCandidats.creationDate}" />
+                    </p:column>  
+                    <p:column width="20" headerText="Votes">
+                        <h:outputText value="#{listCandidats.nbrVote}" />
+                    </p:column>   
+                    <p:column width="20" headerText="Votes Note">
+                        <h:outputText value="#{listCandidats.nbrNoteVote}" />
+                    </p:column>      
+                    <p:column width="20" headerText="Messages">
+                        <h:outputText value="#{listCandidats.nbrParticipant}" />
+                    </p:column>                       
+                </p:dataTable>     
             </b:column>
-        </b:row>
+        </b:row>                                        
+
     </b:panel>
 
     <p:panel visible="#{candidatBean.isExportViewActivate()}">
 
         <b:row style="margin-bottom: 15px">
             <b:column>
-                <h:outputText value="Exportation des candidats" />
+                <h:outputText value="#{langueBean.getMsg('candidat.exporting_candidates')}" />
             </b:column>
         </b:row>
 
-        <p:panel header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
+        <p:panel header="#{langueBean.getMsg('candidat.language_list')}" toggleable="true" closable="false" toggleSpeed="500"
                  closeSpeed="500" style="margin-bottom:20px" collapsed="true">
             <p:dataTable id="listLangue" var="langue" value="#{candidatBean.languagesOfTheso}"
                          selection="#{candidatBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
@@ -136,7 +114,7 @@
                 <p:column headerText="Code" width="60">
                     <h:outputText value="#{langue.code}" />
                 </p:column>
-                <p:column headerText="Langue">
+                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.language')}">
                     <h:outputText value="#{langue.value}" />
                 </p:column>
             </p:dataTable>
@@ -144,7 +122,7 @@
 
         <b:row>
             <b:column span="2" offset="7">
-                <h:outputText value="Format de sortie :" />
+                <h:outputText value="#{langueBean.getMsg('candidat.output_format')} :" />
             </b:column>
             <b:column span="2" >
                 <p:selectOneMenu value="#{candidatBean.selectedExportFormat}"
@@ -160,7 +138,7 @@
 
         <b:row>
             <b:column span="6">
-                <p:commandButton value="Exporter" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
+                <p:commandButton value="#{langueBean.getMsg('candidat.export')}" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
                                  class="btn btn-success" style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
                                  onclick="PF('pbAjax').start();" update="viewExportCandidats candidatForm">
                     <p:fileDownload value="#{exportFileBean.exportCandidatsEnSkos()}" />
@@ -184,14 +162,14 @@
 
         <b:row>
             <b:column>
-                <h:outputText value="Import candidats en format Skos" style="font-size: 14px; color: #C63632"/>
+                <h:outputText value="#{langueBean.getMsg('candidat.import_in_Skos')}" style="font-size: 14px; color: #C63632"/>
             </b:column>
         </b:row>
 
         <!-- choix du format de sortie Skos, Json, JsonLd, Turtle -->
         <b:row style="margin-top: 10px">
             <b:column span="1" >
-                <h:outputText value="Format: " />
+                <h:outputText value="#{langueBean.getMsg('candidat.format')}: " />
             </b:column>
             <b:column span="2">
                 <p:selectOneMenu id="idTypeImportSingle" value="#{importFileBean.typeImport}"
@@ -209,7 +187,7 @@
         <!-- Choix du fichier -->   
         <b:row style="margin-top: 10px">
             <b:column span="12" > 
-                <p:fileUpload listener="#{importFileBean.loadFileSkos}" label="parcourir" mode="advanced" auto="true"
+                <p:fileUpload listener="#{importFileBean.loadFileSkos}" label="#{langueBean.getMsg('candidat.parcourir')}" mode="advanced" auto="true"
                               allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/" update="viewImportSkosForm importButton" 
                               style="font-size: 12px;" >
                     <f:attribute name="isCandidatImport" value="true" />
@@ -226,7 +204,7 @@
 
         <b:row rendered="#{importFileBean.loadDone}" style="margin-top: 10px; font-size: 12px;">
             <b:column span="5">
-                <h:outputText value="Total des concepts: " />
+                <h:outputText value="#{langueBean.getMsg('candidat.total_concepts')}: " />
                 <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
             </b:column>
         </b:row>
@@ -237,7 +215,7 @@
             <b:row >
                 <b:column span="2" offset="3">
                     <p:commandButton id="buttonImportSkos" class="btn btn-success" widgetVar="buttonImportSkos"
-                                     icon="fas fa-check-circle fas 2x" ajax="true" value="Importer" disabled="#{!importFileBean.loadDone}"
+                                     icon="fas fa-check-circle fas 2x" ajax="true" value="#{langueBean.getMsg('candidat.import')}" disabled="#{!importFileBean.loadDone}"
                                      update="toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm candidatForm"
                                      onclick="PF('pbAjax').start(); PF('buttonImportSkos').disable();"
                                      style="width: 100%; background-color: #5CB85C; border: none;"

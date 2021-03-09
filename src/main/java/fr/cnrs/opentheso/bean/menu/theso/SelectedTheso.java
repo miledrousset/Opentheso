@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bean.condidat.CandidatBean;
+//import fr.cnrs.opentheso.bean.condidat.CandidatBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -27,37 +27,19 @@ import org.primefaces.PrimeFaces;
 
 public class SelectedTheso implements Serializable {
 
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private IndexSetting indexSetting;
-
-    @Inject
-    private CandidatBean candidatBean;
-
-    @Inject
-    private TreeGroups treeGroups;
-
-    @Inject
-    private TreeConcepts treeConcepts;
-
-    @Inject
-    private Tree tree;
-    @Inject
-    private ListIndex listIndex;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SearchBean searchBean;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-    @Inject
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject
-    private ViewEditorHomeBean viewEditorHomeBean;
-
-    @Inject RightBodySetting rightBodySetting;
+    @Inject private Connect connect;
+    @Inject private IndexSetting indexSetting;
+//    @Inject private CandidatBean candidatBean;
+    @Inject private TreeGroups treeGroups;
+    @Inject private TreeConcepts treeConcepts;
+    @Inject private Tree tree;
+    @Inject private ListIndex listIndex;
+    @Inject private ConceptView conceptBean;
+    @Inject private SearchBean searchBean;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private ViewEditorHomeBean viewEditorHomeBean;
+    @Inject private RightBodySetting rightBodySetting;
 
     private static final long serialVersionUID = 1L;
 
@@ -83,8 +65,8 @@ public class SelectedTheso implements Serializable {
 
     @PostConstruct
     public void initializing() {
-        System.gc();
-        System.runFinalization ();        
+  //      System.gc();
+   //     System.runFinalization ();        
         if(!connect.isConnected()) {
             System.err.println("Erreur de connexion BDD");
             return;
@@ -130,7 +112,7 @@ public class SelectedTheso implements Serializable {
             return;
         }
 
-        candidatBean.initCandidatModule();
+//        candidatBean.initCandidatModule();
 
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
             roleOnThesoBean.showListTheso();
@@ -171,7 +153,7 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
-        //indexSetting.setIsThesoActive(true);
+        indexSetting.setIsThesoActive(true);
         if (pf.isAjaxRequest()) {
             PrimeFaces.current().ajax().update("formMenu");
             PrimeFaces.current().ajax().update("candidatForm");
@@ -187,7 +169,7 @@ public class SelectedTheso implements Serializable {
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
             treeGroups.reset();
-        candidatBean.initCandidatModule();
+//        candidatBean.initCandidatModule();
 
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
             return;

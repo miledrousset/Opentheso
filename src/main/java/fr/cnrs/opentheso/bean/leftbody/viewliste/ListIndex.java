@@ -15,6 +15,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -39,6 +40,11 @@ public class ListIndex implements Serializable {
     private boolean withAltLabel;
     private boolean permuted;
 
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
+    
     public ListIndex() {
     }
 
