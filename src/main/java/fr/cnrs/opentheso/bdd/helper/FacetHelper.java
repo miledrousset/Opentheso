@@ -74,15 +74,13 @@ public class FacetHelper {
             String idConcept, String idThesaurus) {
 
         Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<String> listIdFacets = new ArrayList<>();
 
         try {
             // Get connection from pool
             conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
+            try (Statement stmt = conn.createStatement()){
                 try {
                     String query = "SELECT  thesaurus_array.id_facet" +
                     " FROM thesaurus_array " +
@@ -97,7 +95,7 @@ public class FacetHelper {
                         listIdFacets.add(resultSet.getString("id_facet"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
                 }
             } finally {
                 conn.close();
@@ -121,14 +119,12 @@ public class FacetHelper {
      */
     public NodeFacet getThisFacet(HikariDataSource ds, String idFacet, String idThesaurus, String lang) {
         Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         NodeFacet nodeFacet = new NodeFacet();
 
         try {
             conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
+            try (Statement stmt = conn.createStatement()){
                 try {
                         String query = "SELECT node_label.id_facet, thesaurus_array.id_concept_parent" +
                                 " FROM node_label, thesaurus_array" +
@@ -149,7 +145,7 @@ public class FacetHelper {
                             nodeFacet.setLang(lang);
                         }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
                 }
             } finally {
                 conn.close();
@@ -234,23 +230,17 @@ public class FacetHelper {
     
     private String getNewId(HikariDataSource ds) {
         String idFacet = null;
-        String query;
-        Statement stmt;
-        ResultSet resultSet;
-
-        try {
-            Connection conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                query = "select nextval('thesaurus_array_facet_id_seq') from thesaurus_array_facet_id_seq";
-                stmt.executeQuery(query);
+        ResultSet resultSet = null;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select nextval('thesaurus_array_facet_id_seq') from thesaurus_array_facet_id_seq");
                 resultSet = stmt.getResultSet();
                 if (resultSet.next()) {
                     int idNumerique = resultSet.getInt(1);
                     idFacet = "F" + (idNumerique);
                 }
-
             } finally {
+                if (resultSet != null) resultSet.close();
                 conn.close();
             }
         } catch (SQLException ex) {
@@ -413,7 +403,7 @@ public class FacetHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -440,6 +430,7 @@ public class FacetHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -466,7 +457,7 @@ public class FacetHelper {
             String idThesaurus, String lang) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String label = "";
 
         try {
@@ -481,6 +472,7 @@ public class FacetHelper {
                         label = resultSet.getString("lexical_value");
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -497,7 +489,7 @@ public class FacetHelper {
             String idThesaurus, String lang) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<NodeFacet> facetLists = new ArrayList();
 
         try {
@@ -517,6 +509,7 @@ public class FacetHelper {
                         facetLists.add(facet);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -1228,7 +1221,7 @@ public class FacetHelper {
      */
     public boolean isConceptHaveFacet(HikariDataSource ds, String idConcept, String idTheso) {
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -1246,6 +1239,7 @@ public class FacetHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {

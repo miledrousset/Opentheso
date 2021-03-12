@@ -56,13 +56,6 @@ public class SearchBean implements Serializable {
     private boolean withNote;
     private boolean withId;
     
-    /**
-     * Creates a new instance of SearchBean
-     */
-    public SearchBean() {
-//        nodeConceptSearchs = new ArrayList<>();
-    }
-    
     public void activateExactMatch(){
         withId = false;
         withNote = false;

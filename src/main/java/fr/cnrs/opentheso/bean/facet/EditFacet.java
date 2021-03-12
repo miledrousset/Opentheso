@@ -52,7 +52,17 @@ public class EditFacet implements Serializable {
     private NodeFacet facetSelected;
     
     private NodeIdValue conceptSelected;
-    
+
+
+    public void reset() {
+        nodeLangs = null;
+        nodeLangsFiltered = null;
+        conceptList = null;
+        termeParentAssocie = null;
+        facetTraductions = null;
+        concepParent = null;
+        facetSelected = null;
+    }
 
     public void initEditFacet(String facetId, String idTheso, String idLang) {
         

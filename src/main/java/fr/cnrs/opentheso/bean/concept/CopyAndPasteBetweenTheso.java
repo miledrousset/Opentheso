@@ -53,10 +53,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     private boolean isDropToRoot;
     
     // pour savoir si on récupère les identifiants pérennes ou non
-    private String identifierType = "sans";    
-
-    public CopyAndPasteBetweenTheso() {
-    }
+    private String identifierType = "sans";
 
     public void reset() {
         isCopyOn = false;

@@ -10,25 +10,19 @@ import java.net.Socket;
  *
  * @author antonio.perez
  */
-
 public class VerificationInternet {
+    
     private final String dirWeb = "www.google.fr";
     private final int port = 80;
     
-    
-    public boolean isConected()
-    {
+    public boolean isConected(){
         boolean status = false;
         try{
             Socket socket = new Socket(dirWeb, port);
-            if(socket.isConnected())
-            {
-                status=true;
-            }
+            return socket.isConnected();
         }catch(Exception e){
             System.out.println("Il n'y a pas de connexion");
+            return false;
         }
-        
-        return status;
     }   
 }

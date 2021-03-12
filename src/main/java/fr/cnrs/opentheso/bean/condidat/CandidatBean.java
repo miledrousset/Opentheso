@@ -92,6 +92,19 @@ public class CandidatBean implements Serializable {
     public void setTest(String test) {
         this.test = test;
     }
+    
+    public void reset() {
+        candidatSelected = null;
+        initialCandidat = null;
+        exportFormat = null;
+        candidatList = null;
+        rejetCadidat = null;
+        acceptedCadidat = null;
+        allTermes = null;
+        domaines = null;
+        selectedLanguages = null;
+        languagesOfTheso = null;
+    }
 
     @PostConstruct
     public void initCandidatModule() {

@@ -522,10 +522,10 @@ public class NewConcept implements Serializable {
 
         SearchHelper searchHelper = new SearchHelper();
 
-        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso() == null) {
+        if (selectedTheso.getCurrentIdTheso() == null) {
             return null;
         }
-        if (selectedTheso.getCurrentIdTheso().isEmpty() || selectedTheso.getCurrentIdTheso().isEmpty()) {
+        if (selectedTheso.getCurrentIdTheso().isEmpty()) {
             return null;
         }
 

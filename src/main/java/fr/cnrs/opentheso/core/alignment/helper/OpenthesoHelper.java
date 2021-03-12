@@ -124,7 +124,7 @@ public class OpenthesoHelper {
                 con.disconnect();
             
             listeAlign = getValues(xmlRecord, idC, idLang, idTheso, source);
-
+            br.close();
         } catch (MalformedURLException e) {
         } catch (IOException e) {
         }

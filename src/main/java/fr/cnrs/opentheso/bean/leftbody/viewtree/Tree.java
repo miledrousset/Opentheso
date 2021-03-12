@@ -91,6 +91,9 @@ public class Tree implements Serializable {
         selectedNode = null;
         rightBodySetting.init();
         noedSelected = false;
+        dataService = null;
+        treeNodeDataSelect = null;
+        selectedNodes = null;
     }
 
     public void initialise(String idTheso, String idLang) {

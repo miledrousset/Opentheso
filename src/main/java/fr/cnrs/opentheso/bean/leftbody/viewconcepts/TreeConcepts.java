@@ -45,14 +45,13 @@ public class TreeConcepts implements Serializable {
     private RightBodySetting rightBodySetting;
 
     @Inject
-    ConceptView conceptView;
+    private ConceptView conceptView;
 
     @Inject
-    GroupView groupView;
-    @Inject private SelectedTheso selectedTheso;
+    private GroupView groupView;
 
     @Inject
-    private LeftBodySetting leftBodySetting;
+    private SelectedTheso selectedTheso;
 
     private DataService dataService;
 
@@ -68,6 +67,9 @@ public class TreeConcepts implements Serializable {
         selectedNode = null;
         rightBodySetting.init();
         noedSelected = false;
+        dataService = null;
+        idTheso = null;
+        idLang = null;
     }
 
     public void initialise(String idTheso, String idLang) {
