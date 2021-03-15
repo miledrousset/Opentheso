@@ -67,6 +67,8 @@ public class ConceptHelper {
     public ConceptHelper() {
     }
 
+
+
     /**
      * ************************************************************
      * /**************************************************************
@@ -189,16 +191,16 @@ public class ConceptHelper {
         }
         return nodeConceptTree;
     }
-    
+
     /**
-     * Cas où le concept_père a des facettes : 
-     * 
-     * permet de récupérer la liste des concepts suivant l'id du
-     * Concept-Père et le thésaurus sous forme de classe NodeConceptTree (sans
-     * les relations) elle fait le tri alphabétique ou par notation
-     * 
-     * En ignorant les concepts qui sont rangés dans les facettes du Concept-Père,
-     * on les récupère à la suite quand on clique sur les facettes
+     * Cas où le concept_père a des facettes :
+     *
+     * permet de récupérer la liste des concepts suivant l'id du Concept-Père et
+     * le thésaurus sous forme de classe NodeConceptTree (sans les relations)
+     * elle fait le tri alphabétique ou par notation
+     *
+     * En ignorant les concepts qui sont rangés dans les facettes du
+     * Concept-Père, on les récupère à la suite quand on clique sur les facettes
      *
      * @param ds
      * @param idConcept
@@ -234,15 +236,12 @@ public class ConceptHelper {
                                 + " hierarchical_relationship.id_concept1 = '" + idConcept + "' AND"
                                 + " hierarchical_relationship.role ILIKE 'NT%'"
                                 + " and concept.status != 'CA'"
-                                
                                 + " and id_concept2 not in (select id_concept from concept_facet, thesaurus_array "
                                 + " where"
                                 + " concept_facet.id_facet = thesaurus_array.id_facet"
                                 + " and concept_facet.id_thesaurus = thesaurus_array.id_thesaurus"
                                 + " and thesaurus_array.id_concept_parent = '" + idConcept + "'"
-                                + " and thesaurus_array.id_thesaurus = '" + idThesaurus + "')"                                
-                                
-                                
+                                + " and thesaurus_array.id_thesaurus = '" + idThesaurus + "')"
                                 + " ORDER BY"
                                 + " concept.notation ASC;";
                     } else {
@@ -254,7 +253,6 @@ public class ConceptHelper {
                                 + " and id_concept1 = '" + idConcept + "'"
                                 + " and role LIKE 'NT%'"
                                 + " and concept.status != 'CA'"
-                                
                                 + " and id_concept2 not in (select id_concept from concept_facet, thesaurus_array "
                                 + " where"
                                 + " concept_facet.id_facet = thesaurus_array.id_facet"
@@ -325,8 +323,7 @@ public class ConceptHelper {
             Collections.sort(nodeConceptTree);
         }
         return nodeConceptTree;
-    }    
-    
+    }
 
     /**
      * Cettte fonction permet de retourner la liste des TopConcept avec IdArk et
@@ -372,7 +369,7 @@ public class ConceptHelper {
                             nodeUri.setIdDoi("");
                         } else {
                             nodeUri.setIdDoi(resultSet.getString("id_doi"));
-                        }                        
+                        }
                         nodeUri.setIdConcept(resultSet.getString("id_concept"));
                         NodeUris.add(nodeUri);
                     }
@@ -409,8 +406,10 @@ public class ConceptHelper {
             Connection conn = ds.getConnection();
             conn.setAutoCommit(false);
 
-            if(idOldBTsToDelete.size()<2 && !idOldBTsToDelete.isEmpty()) {
-                if(idOldBTsToDelete.get(0).equalsIgnoreCase(idNewConceptBT)) return true;
+            if (idOldBTsToDelete.size() < 2 && !idOldBTsToDelete.isEmpty()) {
+                if (idOldBTsToDelete.get(0).equalsIgnoreCase(idNewConceptBT)) {
+                    return true;
+                }
             }
             for (String idOldBT : idOldBTsToDelete) {
                 if (!new RelationsHelper().deleteRelationBT(conn, idConcept, idThesaurus, idOldBT, idUser)) {
@@ -725,16 +724,15 @@ public class ConceptHelper {
     }
 
     /**
-     * permet de retourner la liste des Top concepts pour un group donné retour au
-     * format de NodeIdValue (informations pour construire l'arbre
+     * permet de retourner la liste des Top concepts pour un group donné retour
+     * au format de NodeIdValue (informations pour construire l'arbre
      *
      * @param ds
      * @param idThesaurus
      * @param idLang
      * @param idGroup
      * @param isSortByNotation
-     * @return
-     * #MR
+     * @return #MR
      */
     public ArrayList<NodeIdValue> getListTopConceptsOfGroup(HikariDataSource ds,
             String idThesaurus, String idLang, String idGroup, boolean isSortByNotation) {
@@ -830,8 +828,8 @@ public class ConceptHelper {
         }
 
         return tabIdValues;
-    }    
-    
+    }
+
     /**
      * permet de retourner la liste des concepts pour un group donné retour au
      * format de NodeConceptTree (informations pour construire l'arbre
@@ -955,7 +953,7 @@ public class ConceptHelper {
                 + " concept.id_concept = concept_group_concept.idconcept AND"
                 + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                + " concept_group_concept.idgroup = '" + idGroup +"'";
+                + " concept_group_concept.idgroup = '" + idGroup + "'";
 
         return getConceptDetails(ds, query, idThesaurus);
     }
@@ -969,9 +967,9 @@ public class ConceptHelper {
      */
     public ArrayList<NodeUri> getListConceptsWithoutGroup(HikariDataSource ds, String idThesaurus) {
 
-        String query = "SELECT DISTINCT concept.id_concept, concept.id_ark, concept.id_handle FROM concept " +
-                "WHERE id_thesaurus = '"+idThesaurus+"' " +
-                "AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '"+idThesaurus+"')";
+        String query = "SELECT DISTINCT concept.id_concept, concept.id_ark, concept.id_handle FROM concept "
+                + "WHERE id_thesaurus = '" + idThesaurus + "' "
+                + "AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE id_thesaurus = '" + idThesaurus + "')";
 
         return getConceptDetails(ds, query, idThesaurus);
     }
@@ -1047,7 +1045,7 @@ public class ConceptHelper {
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
-                    if(resultSet.next()) {
+                    if (resultSet.next()) {
                         count = resultSet.getInt(1);
                     }
                 } finally {
@@ -1064,7 +1062,8 @@ public class ConceptHelper {
     }
 
     /**
-     * permet de retourner le nombre des concepts dans un thesaurus rattaché à aucun groupe
+     * permet de retourner le nombre des concepts dans un thesaurus rattaché à
+     * aucun groupe
      *
      * @param ds
      * @param idThesaurus
@@ -1083,10 +1082,10 @@ public class ConceptHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT count(id_concept) FROM concept " +
-                            " WHERE id_thesaurus = '"+idThesaurus+"' " +
-                            " AND concept.status != 'CA'" +
-                            " AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '"+idThesaurus+"')";
+                    String query = "SELECT count(id_concept) FROM concept "
+                            + " WHERE id_thesaurus = '" + idThesaurus + "' "
+                            + " AND concept.status != 'CA'"
+                            + " AND id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
@@ -1758,8 +1757,8 @@ public class ConceptHelper {
 
             privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
 
-            if(idConcept.equalsIgnoreCase("122812")) {
-                int i=1;
+            if (idConcept.equalsIgnoreCase("122812")) {
+                int i = 1;
             }
             /// cas où on n'a pas d'idArk dans le concept, il faut alors le créer sur Arkeo
             if (concept.getIdArk() == null || concept.getIdArk().isEmpty()) {
@@ -1785,7 +1784,7 @@ public class ConceptHelper {
 
                     if (!arkHelper2.updateArk(concept.getIdArk(), privateUri, nodeMetaData)) {
                         message = arkHelper2.getMessage();
-                        message = arkHelper2.getMessage() + "  idConcept = " + idConcept;                        
+                        message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
                         return false;
                     }
                     if (nodePreference.isGenerateHandle()) {
@@ -1798,7 +1797,7 @@ public class ConceptHelper {
                     // + (création de l'ID Handle avec le serveur Ark de la MOM)
                     if (!arkHelper2.addArkWithProvidedId(concept.getIdArk(), privateUri, nodeMetaData)) {
                         message = arkHelper2.getMessage();
-                        message = arkHelper2.getMessage() + "  idConcept = " + idConcept;                        
+                        message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
                         return false;
                     }
                     if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdArk())) {
@@ -2705,8 +2704,8 @@ public class ConceptHelper {
                 conn.rollback();
                 conn.close();
                 return false;
-            }            
-            
+            }
+
             if (nodePreference != null) {
                 // Si on arrive ici, c'est que tout va bien 
                 // alors c'est le moment de supprimer le code ARK
@@ -3697,7 +3696,6 @@ public class ConceptHelper {
         return status;
     }
 
-
     public boolean addNewGroupOfConcept(HikariDataSource ds, String idconcept, String idgroup, String idthesaurus) {
         Statement stmt;
         boolean status = false;
@@ -3708,7 +3706,7 @@ public class ConceptHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
-                    +idgroup+"', '"+idthesaurus+"', '"+idconcept+"');";
+                            + idgroup + "', '" + idthesaurus + "', '" + idconcept + "');";
 
                     stmt.executeUpdate(query);
                     status = true;
@@ -3758,9 +3756,9 @@ public class ConceptHelper {
         if (concept.getIdHandle() == null) {
             concept.setIdHandle("");
         }
-        if (concept.getNotation()== null) {
+        if (concept.getNotation() == null) {
             concept.setNotation("");
-        }        
+        }
 
         try {
             Connection conn = ds.getConnection();
@@ -3805,12 +3803,11 @@ public class ConceptHelper {
         return status;
     }
 
+    public NodeStatus getNodeStatus(HikariDataSource ds, String idConcept, String idThesaurus) {
 
-    public NodeStatus getNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus) {
-        
         Statement stmt;
-        boolean status = false;        
-        NodeStatus nodeStatus = new NodeStatus();        
+        boolean status = false;
+        NodeStatus nodeStatus = new NodeStatus();
         try {
             Connection conn = ds.getConnection();
             // Get connection from pool
@@ -3818,7 +3815,7 @@ public class ConceptHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    query = "SELECT * FROM candidat_status WHERE id_concept = '"+idConcept+"';";
+                    query = "SELECT * FROM candidat_status WHERE id_concept = '" + idConcept + "';";
                     stmt.executeQuery(query);
                     ResultSet resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
@@ -3838,13 +3835,13 @@ public class ConceptHelper {
         } catch (SQLException sqle) {
             log.error("Error while getting NodeStatus  du Concept : " + idConcept, sqle);
         }
-        return nodeStatus;     
+        return nodeStatus;
     }
 
-    public boolean setNodeStatus (HikariDataSource ds, String idConcept, String idThesaurus, String idStatus, String date,
-                               int idUser, String message) {
+    public boolean setNodeStatus(HikariDataSource ds, String idConcept, String idThesaurus, String idStatus, String date,
+            int idUser, String message) {
         Statement stmt;
-        boolean status = false;        
+        boolean status = false;
         try {
             Connection conn = ds.getConnection();
             // Get connection from pool
@@ -3853,7 +3850,7 @@ public class ConceptHelper {
                 stmt = conn.createStatement();
                 try {
                     query = "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus, message) VALUES ('"
-                    +idConcept+"', '"+idStatus+"', '"+date+"', "+idUser+", '"+idThesaurus+"', '"+message+"');";
+                            + idConcept + "', '" + idStatus + "', '" + date + "', " + idUser + ", '" + idThesaurus + "', '" + message + "');";
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
@@ -3872,7 +3869,6 @@ public class ConceptHelper {
         }
         return status;
     }
-
 
     /**
      * deprecated by Miled Cette fonction permet d'insérrer un Concept dans la
@@ -4811,11 +4807,10 @@ public class ConceptHelper {
         }
         return ark;
     }
-    
-    
-   /**
-     * Cette fonction permet de récupérer les identifiants d'un concept 
-     * idArk, idHandle, idConcept sous forme de nodeUri
+
+    /**
+     * Cette fonction permet de récupérer les identifiants d'un concept idArk,
+     * idHandle, idConcept sous forme de nodeUri
      *
      * @param ds
      * @param idConcept
@@ -4856,8 +4851,7 @@ public class ConceptHelper {
             log.error("Error while getting nodeUri of Concept : " + idConcept, sqle);
         }
         return nodeUri;
-    }    
-    
+    }
 
     /**
      * Cette fonction permet de récupérer l'identifiant Handle sinon renvoie un
@@ -4986,10 +4980,9 @@ public class ConceptHelper {
     }
 
     /**
-     * Cette fonction permet de récupérer l'identifiant du Concept d'après
-     * l'id du concept 
-     * !!!! ATTENTION !!!! l'id du concept peut se trouver dans plusieurs thésaurus différents
-     * donc on ne retourne que le premier.
+     * Cette fonction permet de récupérer l'identifiant du Concept d'après l'id
+     * du concept !!!! ATTENTION !!!! l'id du concept peut se trouver dans
+     * plusieurs thésaurus différents donc on ne retourne que le premier.
      *
      * @param ds
      * @param arkId
@@ -5026,8 +5019,8 @@ public class ConceptHelper {
             log.error("Error while getting idThesaurus by idConcept: " + idConcept, sqle);
         }
         return idThesaurus;
-    }    
-    
+    }
+
     /**
      * Cette fonction permet de récupérer l'identifiant du thésaurus d'après
      * l'idArk
@@ -5962,7 +5955,7 @@ public class ConceptHelper {
         NoteHelper noteHelper = new NoteHelper();
         GpsHelper gpsHelper = new GpsHelper();
         ImagesHelper imagesHelper = new ImagesHelper();
-        
+
         String htmlTagsRegEx = "<[^>]*>";
 
         // les relations BT, NT, RT
@@ -6009,7 +6002,6 @@ public class ConceptHelper {
 
         //récupération des Notes du Concept
 //#### SQL #### //      
-
         ArrayList<NodeNote> noteConcept = noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus);
         if (isCandidatExport) {
             for (NodeNote note : noteConcept) {
@@ -6046,15 +6038,15 @@ public class ConceptHelper {
         // pour les facettes
         FacetHelper facetHelper = new FacetHelper();
         List<String> idFacettes = facetHelper.getAllIdFacetsOfConcept(ds, idConcept, idThesaurus);
-        if(!idFacettes.isEmpty()){
+        if (!idFacettes.isEmpty()) {
             nodeConceptExport.setListFacetsOfConcept(idFacettes);
         }
-        
+
         /// pour les concepts dépréciés 
         DeprecateHelper deprecateHelper = new DeprecateHelper();
         nodeConceptExport.setReplacedBy(deprecateHelper.getAllReplacedByWithArk(ds, idThesaurus, idConcept));
         nodeConceptExport.setReplaces(deprecateHelper.getAllReplacesWithArk(ds, idThesaurus, idConcept));
-        
+
         return nodeConceptExport;
     }
 
@@ -6271,7 +6263,7 @@ public class ConceptHelper {
         if (concept == null) {
             return null;
         }
-        if(concept.getStatus().equalsIgnoreCase("dep")) {
+        if (concept.getStatus().equalsIgnoreCase("dep")) {
             concept.setIsDeprecated(true);
         }
         nodeConcept.setConcept(concept);
@@ -6319,7 +6311,7 @@ public class ConceptHelper {
         nodeConcept.setReplacedBy(deprecatedHelper.getAllReplacedBy(ds, idThesaurus, idConcept, idLang));
         // les concepts dépécés que ce concept remplace
         nodeConcept.setReplaces(deprecatedHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
-        
+
         return nodeConcept;
     }
 
@@ -6369,8 +6361,8 @@ public class ConceptHelper {
         }
         return idConcept;
     }
-    
-    public String getConceptIdFromPrefLabel(HikariDataSource ds, String prefLabel, 
+
+    public String getConceptIdFromPrefLabel(HikariDataSource ds, String prefLabel,
             String idThesaurus, String lang) {
 
         Connection conn;
@@ -6385,12 +6377,12 @@ public class ConceptHelper {
                 stmt = conn.createStatement();
                 try {
                     String str = prefLabel.replaceAll("\'", "%");
-                    String query = "SELECT DISTINCT(preferred_term.id_concept) " +
-                        "FROM preferred_term, term " +
-                        "WHERE term.id_thesaurus = '"+idThesaurus+"' " +
-                        "AND term.id_term = preferred_term.id_term " +
-                        "AND term.lexical_value like '%"+str+"%' " +
-                        "AND lang = '"+lang+"'";
+                    String query = "SELECT DISTINCT(preferred_term.id_concept) "
+                            + "FROM preferred_term, term "
+                            + "WHERE term.id_thesaurus = '" + idThesaurus + "' "
+                            + "AND term.id_term = preferred_term.id_term "
+                            + "AND term.lexical_value like '%" + str + "%' "
+                            + "AND lang = '" + lang + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
@@ -6434,15 +6426,15 @@ public class ConceptHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select count(*)  from hierarchical_relationship, concept" +
-                            " where " +
-                            " hierarchical_relationship.id_concept2 = concept.id_concept" +
-                            " and" +
-                            " hierarchical_relationship.id_thesaurus = concept.id_thesaurus" +
-                            " and hierarchical_relationship.id_thesaurus='" + idThesaurus +"'" +
-                            " and id_concept1='" + idConcept +"'" +
-                            " and role LIKE 'NT%'" +
-                            " and concept.status != 'CA'";
+                    String query = "select count(*)  from hierarchical_relationship, concept"
+                            + " where "
+                            + " hierarchical_relationship.id_concept2 = concept.id_concept"
+                            + " and"
+                            + " hierarchical_relationship.id_thesaurus = concept.id_thesaurus"
+                            + " and hierarchical_relationship.id_thesaurus='" + idThesaurus + "'"
+                            + " and id_concept1='" + idConcept + "'"
+                            + " and role LIKE 'NT%'"
+                            + " and concept.status != 'CA'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -7168,8 +7160,7 @@ public class ConceptHelper {
         }
         return status;
     }
-    
-            
+
     /**
      * permet de supprimer un concept dans la table concept_replacedby
      *
@@ -7182,12 +7173,12 @@ public class ConceptHelper {
         FacetHelper facetHelper = new FacetHelper();
         List<String> listFacets = facetHelper.getAllIdFacetsOfConcept(ds, idConcept, idTheso);
         for (String idFacet : listFacets) {
-            if(!facetHelper.deleteFacet(ds, idFacet, idTheso)){
+            if (!facetHelper.deleteFacet(ds, idFacet, idTheso)) {
                 return false;
             }
         }
         return true;
-    }            
+    }
 
     /**
      * Change l'id d'un concept dans la table preferred_term
@@ -7262,13 +7253,12 @@ public class ConceptHelper {
         this.message = message;
     }
 
-
     public int getNbrOfCanceptByThes(Connection conn, String idThesaurus) {
         Statement stmt;
         int nbrConcept = 0;
         try {
             stmt = conn.createStatement();
-            stmt.executeQuery("SELECT count(*) FROM concept WHERE id_thesaurus = '"+idThesaurus+"' AND status != 'CA'");
+            stmt.executeQuery("SELECT count(*) FROM concept WHERE id_thesaurus = '" + idThesaurus + "' AND status != 'CA'");
             ResultSet resultSet = stmt.getResultSet();
             while (resultSet.next()) {
                 nbrConcept = resultSet.getInt("count");
@@ -7279,7 +7269,6 @@ public class ConceptHelper {
         }
         return nbrConcept;
     }
-
 
     public List<ConceptStatisticData> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus, String lang,
             String dateDebut, String dateFin, String collectionId, String nbrResultat) throws SQLException {
@@ -7292,19 +7281,19 @@ public class ConceptHelper {
                 .append("SELECT con.id_concept, con.created, con.modified, users.username ")
                 .append("FROM concept con, users ");
 
-        if(!StringUtils.isEmpty(collectionId)) {
+        if (!StringUtils.isEmpty(collectionId)) {
             request.append(", concept_group_concept con_group ");
         }
 
         request.append("WHERE con.status = 'D' ")
                 .append("AND con.id_thesaurus = '").append(idThesaurus).append("' ");
 
-        if(!StringUtils.isEmpty(collectionId)) {
+        if (!StringUtils.isEmpty(collectionId)) {
             request.append("AND con.id_concept = con_group.idconcept ")
                     .append("AND con_group.idgroup = '").append(collectionId).append("' ");
         }
 
-        if(!StringUtils.isEmpty(dateDebut) && !StringUtils.isEmpty(dateFin)) {
+        if (!StringUtils.isEmpty(dateDebut) && !StringUtils.isEmpty(dateFin)) {
             request.append("AND con.modified BETWEEN '").append(dateDebut).append("' AND '").append(dateFin).append("' ");
         }
 

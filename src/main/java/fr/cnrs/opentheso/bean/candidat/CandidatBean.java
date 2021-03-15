@@ -73,11 +73,19 @@ public class CandidatBean implements Serializable {
     private ArrayList<NodeLangTheso> languagesOfTheso;
 
 
+    private List<CandidatDto> selectedCandidates;
+    private boolean listSelected;
+    
     @PostConstruct
     public void postInit(){
-        int test = 0;
+      //  int test = 0;
     }
     
+    public void setStateForSelectedCandidate(){
+        if(selectedCandidates != null){
+            listSelected = !selectedCandidates.isEmpty();
+        }
+    }
     
     public void initCandidatModule() {
         isListCandidatsActivate = true;
@@ -87,7 +95,8 @@ public class CandidatBean implements Serializable {
         isShowCandidatActivate = false;
         isImportViewActivate = false;
         isExportViewActivate = false;
-
+        listSelected = false;
+        
         if(candidatList == null)
             candidatList = new ArrayList<>();
         else 
@@ -113,6 +122,11 @@ public class CandidatBean implements Serializable {
         else
             acceptedCadidat.clear();
         
+        if(selectedCandidates == null)
+            selectedCandidates = new ArrayList<>();
+        else
+            selectedCandidates.clear();
+        
         getAllCandidatsByThesoAndLangue();
         getRejectCandidatByThesoAndLangue();
         getAcceptedCandidatByThesoAndLangue();
@@ -126,7 +140,6 @@ public class CandidatBean implements Serializable {
         languagesOfTheso.forEach((nodeLang) -> {
             selectedLanguages.add(nodeLang);
         });
-
     }
 
     public void getAllCandidatsByThesoAndLangue() {
@@ -936,4 +949,22 @@ public class CandidatBean implements Serializable {
     public void setAcceptedCandidatsActivate(boolean isAcceptedCandidatsActivate) {
         this.isAcceptedCandidatsActivate = isAcceptedCandidatsActivate;
     }
+
+    public List<CandidatDto> getSelectedCandidates() {
+        return selectedCandidates;
+    }
+
+    public void setSelectedCandidates(List<CandidatDto> selectedCandidates) {
+        this.selectedCandidates = selectedCandidates;
+    }
+
+    public boolean isListSelected() {
+        return listSelected;
+    }
+
+    public void setListSelected(boolean listSelected) {
+        this.listSelected = listSelected;
+    }
+    
+    
 }

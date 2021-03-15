@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <b:panel rendered="#{candidatBean.isListCandidatsActivate()}" style="padding: 10px">
+    <b:panel id="panelCandidateList" rendered="#{candidatBean.isListCandidatsActivate()}" style="padding: 10px">
         <b:row>
             <b:column span="2" colXs="5">
                 <b:commandButton id="addNewCandidat" value="#{langueBean.getMsg('candidat.add')}" size="sm" class="btn btn-success"
@@ -62,21 +62,27 @@
 
         <!-- tableau des candidats -->
         <b:row>
-            <b:column span="12">                                
-                <p:dataTable id="tabUser" rendered="#{candidatBean.candidatList != null}"
-                             value="#{candidatBean.candidatList}" var="listCandidats" scrollable="true" resizableColumns="false" scrollHeight="450"
-                             style="font-size: 12px;">
+            <b:column span="12"> 
+                <p:dataTable id="checkboxDT" var="listCandidats" value="#{candidatBean.candidatList}"
+                             selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
+                             style="margin-bottom:0; font-size: 12px;" paginator="true" rows="15" >
                     
-                    <p:column width="20" headerText="id">
+                    <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="candidatForm:tabViewCandidat:submitList candidatForm:tabViewCandidat:panelCandidateList"></p:ajax>
+                    <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="candidatForm:tabViewCandidat:submitList candidatForm:tabViewCandidat:panelCandidateList"></p:ajax>
+                    <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="candidatForm:tabViewCandidat:submitList candidatForm:tabViewCandidat:panelCandidateList"></p:ajax>
+                    <p:column rendered="#{(currentUser.nodeUser != null) and 
+                                        (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                              selectionMode="multiple" style="width:16px;text-align:center"/>
+                    <p:column  width="20" headerText="id">
                         <h:outputText value="#{listCandidats.idConcepte}" />
                     </p:column>                    
                     
                     <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
-                        <b:navCommandLink value="(#{listCandidats.idConcepte})" ajax="true" update="candidatForm" style="color: #43B572"
+                        <b:navCommandLink value="(#{listCandidats.idConcepte})" ajax="true" update="candidatForm" style="font-size: 13px; color: #43B572; "
                                           actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
                     </p:column>  
                     <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
-                        <b:navCommandLink value="#{listCandidats.nomPref}" ajax="true" update="candidatForm" style="color: #43B572"
+                        <b:navCommandLink value="#{listCandidats.nomPref}" ajax="true" update="candidatForm" style="font-size: 13px; color: #43B572;"
                                           actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
                     </p:column> 
                     
@@ -91,13 +97,27 @@
                     </p:column>      
                     <p:column width="20" headerText="Messages">
                         <h:outputText value="#{listCandidats.nbrParticipant}" />
-                    </p:column>                       
-                </p:dataTable>     
+                    </p:column>  
+                </p:dataTable>        
             </b:column>
-        </b:row>                                        
-
+        </b:row>    
+        
+        <b:row id="submitList" rendered="#{(currentUser.nodeUser != null) and 
+                            (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and
+                            (candidatBean.isListSelected())}">
+            <b:column span="12" style="align-content: center">
+                <b:commandButton value="#{langueBean.getMsg('candidat.submitList')}" 
+                                 style="background: #F47B2A; border-color: #F47B2A; display: block; 
+                                 margin-left: auto; margin-right: auto; margin-top: 10px; color: white" look="primary" size="l" 
+                                 update="idProcessCandidateList processCandidateListForm"
+                                 oncomplete="PF('processCandidateList').show();"
+                                 actionListener="#{processCandidateBean.resetForList(candidatBean.selectedCandidates)}"/>
+            </b:column>
+        </b:row>          
     </b:panel>
 
+  
+    
     <p:panel visible="#{candidatBean.isExportViewActivate()}">
 
         <b:row style="margin-bottom: 15px">

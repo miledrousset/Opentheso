@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Named;
@@ -33,14 +34,21 @@ public class ProcessCandidateBean implements Serializable {
 
     private CandidatDto selectedCandidate;
     private String adminMessage;
+    
+    private List<CandidatDto> selectedCandidates;
 
     public ProcessCandidateBean() {
     }
 
     public void reset(CandidatDto candidatSelected) {
-        selectedCandidate = candidatSelected;
+        this.selectedCandidate = candidatSelected;
     }
+    
+    public void resetForList(List<CandidatDto> selectedCandidates) {
+        this.selectedCandidates = selectedCandidates;
+    }    
 
+    
 
     public void insertCandidat(int idUser) {
         if(selectedCandidate == null) {
@@ -80,7 +88,7 @@ public class ProcessCandidateBean implements Serializable {
             printErreur("Erreur d'insertion");
             return;
         }
-        printMessage("Canditat inséré avec succès");
+        printMessage("Candidat inséré avec succès");
         reset(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
         try { 
@@ -95,17 +103,83 @@ public class ProcessCandidateBean implements Serializable {
             pf.ajax().update("candidatForm");
         }         
     }
+    
+    public void insertListCandidat(int idUser) {
+        if(selectedCandidates == null || selectedCandidates.isEmpty()) {
+            printErreur("Pas de candidat sélectionné");
+            return;
+        }
+        CandidatService candidatService = new CandidatService();
+
+        for (CandidatDto selectedCandidate1 : selectedCandidates) {
+            if(!candidatService.insertCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
+                printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")" );
+                return;
+            }            
+        }
+
+        printMessage("Canditats insérés avec succès");
+        reset(null);
+        resetForList(null);
+        candidatBean.getAllCandidatsByThesoAndLangue();
+        try { 
+            candidatBean.setIsListCandidatsActivate(true);
+        } catch (IOException ex) {
+            Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+//        PrimeFaces pf = PrimeFaces.current();
+//        if (pf.isAjaxRequest()) {
+//            pf.ajax().update("candidatForm");           
+//        } 
+    }
+    
+    public void rejectCandidatList(int idUser){
+        if(selectedCandidates == null || selectedCandidates.isEmpty()) {
+            printErreur("Pas de candidat sélectionné");
+            return;
+        }
+        CandidatService candidatService = new CandidatService();
+
+        for (CandidatDto selectedCandidate1 : selectedCandidates) {
+            if(!candidatService.rejectCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
+                printErreur("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")" );
+                return;
+            }            
+        }        
+
+        printMessage("Candidats insérés avec succès");
+        reset(null);
+        resetForList(null);        
+        candidatBean.getAllCandidatsByThesoAndLangue();
+        try { 
+            candidatBean.setIsListCandidatsActivate(true);
+        } catch (IOException ex) {
+            Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+//        PrimeFaces pf = PrimeFaces.current();
+//        if (pf.isAjaxRequest()) {
+//   //         pf.ajax().update("candidatForm:listTraductionForm");
+//            pf.ajax().update("candidatForm");
+//        }         
+    }    
+    
 
     private void printErreur(String message) {
         FacesMessage msg;
         msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces pf = PrimeFaces.current();        
+        pf.ajax().update("messageIndex");           
     }
     
     private void printMessage(String message) {
         FacesMessage msg;
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces pf = PrimeFaces.current();        
+        pf.ajax().update("messageIndex");          
     }    
 
     public CandidatDto getSelectedCandidate() {

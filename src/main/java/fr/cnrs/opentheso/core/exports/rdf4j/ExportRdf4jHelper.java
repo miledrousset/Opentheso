@@ -1097,6 +1097,12 @@ public class ExportRdf4jHelper {
                 case "editorialNote":
                     prop = SKOSProperty.editorialNote;
                     break;
+                case "changeNote":
+                    prop = SKOSProperty.changeNote;
+                    break;
+                case "example":
+                    prop = SKOSProperty.example;
+                    break;                     
                 default:
                     prop = SKOSProperty.note;
                     break;
@@ -1121,6 +1127,12 @@ public class ExportRdf4jHelper {
                 case "editorialNote":
                     prop = SKOSProperty.editorialNote;
                     break;
+                case "changeNote":
+                    prop = SKOSProperty.changeNote;
+                    break;
+                case "example":
+                    prop = SKOSProperty.example;
+                    break;                     
                 default:
                     prop = SKOSProperty.note;
                     break;

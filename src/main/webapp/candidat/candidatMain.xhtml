@@ -7,6 +7,8 @@
     <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
             style="margin-top: -20px; border-left: 20px; border-right: 20px; background-color: #FAFAFA; padding: 50px">
 
+        <b:growl id="messageCandidat" globalOnly="true" showDetail="true" placementFrom="bottom"/>
+        
         <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
                    style="background-color: #FAFAFA;">
             <p:tab title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
@@ -82,7 +84,7 @@
     <ui:include src="/candidat/dialog/participantsList.xhtml" /> 
     <ui:include src="/candidat/dialog/envoyerInvitation.xhtml" />
     <ui:include src="/candidat/dialog/processCandidate.xhtml" />  
-
+    <ui:include src="/candidat/dialog/processCandidateList.xhtml" />  
 
     <ui:include src="/dialog/alignment/addAlignment.xhtml" />
     <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />
