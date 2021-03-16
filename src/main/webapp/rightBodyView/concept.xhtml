@@ -1455,7 +1455,9 @@
                                  styleClass="buttonIconOrange"/>
             </b:column>
         </b:row>
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
+
+   
+        <h:panelGroup  rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
             <!-- Dialogues -->        
             <ui:include src="/dialog/concept/addNT.xhtml" /> 
             <ui:include src="/dialog/facet/addFacet.xhtml" />
@@ -1507,6 +1509,4 @@
             <ui:include src="/dialog/gps/deleteGps.xhtml" />
         </h:panelGroup>
     </h:panelGroup>
-
-
 </ui:fragment>

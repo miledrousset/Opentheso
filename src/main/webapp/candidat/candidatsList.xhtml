@@ -51,11 +51,12 @@
             <b:column medium-screen="6">
                 <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
                               text-align: right; vertical-align: central" value="#{langueBean.getMsg('candidat.search')}"/>
-                <b:inputText value="#{candidatBean.searchValue1}" >
+                <b:inputText id="submitSearchCandidate" value="#{candidatBean.searchValue1}" >
                     <f:facet name="append">
-                        <b:commandButton look="success" iconAwesome="search" icon-align="right"
+                        <b:commandButton id="commandSubmitSearchCandidate" look="success" iconAwesome="search" icon-align="right"
                                          update="candidatForm" actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
                     </f:facet>
+                    <p:defaultCommand target="commandSubmitSearchCandidate" scope="submitSearchCandidate"/>
                 </b:inputText>
             </b:column>
         </b:row>

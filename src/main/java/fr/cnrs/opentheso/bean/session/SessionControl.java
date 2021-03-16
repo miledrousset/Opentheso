@@ -52,7 +52,8 @@ public class SessionControl implements Serializable {
         System.runFinalization ();
       */  
         // Rafraîchissement de la page
-        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI());     
+        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI());   
+  
     //    selectedTheso.getCurrentIdTheso();
         System.gc();
         System.runFinalization ();
