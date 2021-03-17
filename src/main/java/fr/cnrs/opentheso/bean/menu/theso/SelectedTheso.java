@@ -232,9 +232,15 @@ public class SelectedTheso implements Serializable {
         setThesoName();
 
         // initialisation de l'arbre des groupes
+        treeGroups.reset();
         treeGroups.initialise(selectedIdTheso, selectedLang);
+        
+        treeConcepts.reset();
         treeConcepts.initialise(selectedIdTheso, selectedLang);
+        
+        tree.reset();
         tree.initialise(selectedIdTheso, selectedLang);
+        
         listIndex.reset();
         conceptBean.init();
     }

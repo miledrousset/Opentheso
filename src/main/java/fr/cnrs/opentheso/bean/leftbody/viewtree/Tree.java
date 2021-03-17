@@ -81,7 +81,7 @@ public class Tree implements Serializable {
         rightBodySetting.init();
         noedSelected = false;
         System.gc();
-        System.runFinalization ();       
+        System.runFinalization();
     }
     
     public void initialise(String idTheso, String idLang) {
@@ -92,8 +92,8 @@ public class Tree implements Serializable {
 
         dataService = new DataService();
         root = dataService.createRoot();
-     //   addFirstNodes();
-        expandAllNode();
+        addFirstNodes();
+     //   expandAllNode();
         selectedNodes = new ArrayList<>();
         leftBodySetting.setIndex("0");
         noedSelected = false;
