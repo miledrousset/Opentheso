@@ -94,6 +94,8 @@ public class Tree implements Serializable {
         dataService = null;
         treeNodeDataSelect = null;
         selectedNodes = null;
+        System.gc();
+        System.runFinalization();
     }
 
     public void initialise(String idTheso, String idLang) {

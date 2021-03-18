@@ -17,6 +17,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import javax.inject.Named;
@@ -545,6 +546,47 @@ public class EditConcept implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }    
     
+    public void infosDeleteHandle() {
+        String message = "Permet de supprimer un identifiant Handle, il sera définitivement supprimé !!";
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }     
+    
+    /**
+     * permet de générer l'identifiant Handle, s'il n'existe pas, il sera créé, sinon, il sera mis à jour.
+     */
+    public void deleteHandle(){
+        FacesMessage msg;        
+        if(roleOnThesoBean.getNodePreference() == null ) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Pas de préférences pour le thésaurus !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);  
+            return;
+        }
+        if(conceptView.getNodeConcept().getConcept().getIdHandle() == null || conceptView.getNodeConcept().getConcept().getIdHandle().isEmpty() ) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Pas d'identifiant Handle à supprimer !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);  
+            return;
+        }        
+        HandleHelper handleHelper = new HandleHelper(roleOnThesoBean.getNodePreference());
+        
+        if (!handleHelper.deleteIdHandle(
+                conceptView.getNodeConcept().getConcept().getIdHandle(),
+                selectedTheso.getCurrentIdTheso())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", handleHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }  
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateHandleIdOfConcept(connect.getPoolConnexion(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                "");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }    
+    
     /**
      * permet de générer l'identifiant Handle, s'il n'existe pas, il sera créé, sinon, il sera mis à jour.
      */
@@ -616,11 +658,10 @@ public class EditConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);            
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Handle a échoué !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }        
-
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Handle a réussi !!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        } else {     
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Handle a réussi !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("messageIndex");
         }        

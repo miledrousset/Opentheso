@@ -6,12 +6,11 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
+import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenTheso;
-import fr.cnrs.opentheso.bean.condidat.CandidatBean;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
@@ -114,7 +113,7 @@ public class CurrentUser implements Serializable {
 
         // On appelle Garbage Collector pour libérer la mémoire occupé par les variables qui ont une valeur "null"
         System.gc();
-        
+
         
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
@@ -241,7 +240,10 @@ public class CurrentUser implements Serializable {
     private void initAllAuthorizedProjectAsAdmin(){
         UserHelper userHelper = new UserHelper();
         ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdminTemp = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
-        allAuthorizedProjectAsAdmin = new ArrayList<>();
+        if(allAuthorizedProjectAsAdmin == null)
+            allAuthorizedProjectAsAdmin = new ArrayList<>();
+        else
+            allAuthorizedProjectAsAdmin.clear();
         for (NodeUserRoleGroup nodeUserRoleGroup : allAuthorizedProjectAsAdminTemp) {
             if(nodeUserRoleGroup.isIsAdmin())
                 allAuthorizedProjectAsAdmin.add(nodeUserRoleGroup);

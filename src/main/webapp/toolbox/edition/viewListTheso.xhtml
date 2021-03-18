@@ -37,87 +37,88 @@
         </b:row>
 
         <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 10px"/> 
-
-        <b:row id="listThesoDatas" style="margin-left: 30px; margin-right: 30px;">
-
-
-            <b:column span="12">
-                <b:row style="font-size: 12px;  color: #666666">
-                    <b:column span="4">
-                        <h:outputText value="Liste des thésaurus"/>
-                    </b:column>
-                    <b:column span="2">
-                        <h:outputText value="Public/privé"/>
-                    </b:column>
-                    <b:column span="2">
-                        <h:outputText value="Modifier"/>
-                    </b:column>
-                    <b:column span="2">
-                        <h:outputText value="Exporter"/>
-                    </b:column>      
-                    <b:column span="2">
-                        <h:outputText value="Supprimer"/>
-                    </b:column>                         
-                </b:row>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-
-
-                <!-- la boucle pour les thésaurus autorisés -->
-                <ui:repeat id="listThesoActions" var="listTheso" value="#{roleOnTheso.nodeListThesoAsAdmin}">
-                    <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
-                        <b:column span="4" >
-                            <h:outputText value="#{listTheso.value} (#{listTheso.id})"/>
-                        </b:column>
-                        <b:column span="2" tooltip="Pour changer, aller dans modifier" tooltip-delay-show="1000">
-                            <p:toggleSwitch id="toggleThesoStatus" value="#{listTheso.status}" style="font-size: 10px" disabled="true" />
+        
+        <p:scrollPanel mode="native" style="max-height: 550px; border: #FAFAFA; background-color: #FFFFFF;">
+            <b:row id="listThesoDatas" style="margin-left: 30px; margin-right: 30px;">
+                <b:column span="12">
+                    <b:row style="font-size: 12px;  color: #666666">
+                        <b:column span="4">
+                            <h:outputText value="Liste des thésaurus"/>
                         </b:column>
                         <b:column span="2">
-                            <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
-                                              actionListener="#{editThesoBean.init(listTheso)}"
-                                              action="#{viewEditionBean.setIsViewModifyTheso(true)}"
-                                              tooltip="Modifier le thésaurus" tooltip-delay-show="1000"
-                                              update="toolBoxForm toolBoxForm:listThesoForm"
-                                              style="color: #f47b2a; ">
-                            </b:navCommandLink>                            
+                            <h:outputText value="Public/privé"/>
                         </b:column>
-
-                        <!-- export des thésaurus -->
                         <b:column span="2">
-                            <b:dropMenu  
-                                icon-awesome="fas fa-file-export" icon-size="lg"  value="" iconAlign="right"
-                                style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px;" contentStyle="font-size: 12px;">
-                                <b:navCommandLink value="Skos" ajax="false"
-                                                  tooltip="Exporter le thésaurus au format Skos" tooltip-delay-show="1000"
-                                                  actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
-                                                  action="#{viewEditionBean.setIsViewExportSkos(true)}"
-                                                  update="toolBoxForm toolBoxForm:listThesoForm"
-                                                  style="font-size: 12px;"/>
-                                
-                                <b:navCommandLink value="PDF" ajax="false" tooltip="Exporter le thésaurus au format PDF" tooltip-delay-show="1000"
-                                                  actionListener="#{viewExportBean.init(listTheso, 'PDF')}"
-                                                  action="#{viewEditionBean.setIsViewExportPDF(true)}"
-                                                  update="toolBoxForm"
-                                                  style="font-size: 12px;"/>
-                                
-                                <b:navCommandLink value="CSV" ajax="false" tooltip="Exporter le thésaurus au format CSV" tooltip-delay-show="1000"
-                                                  actionListener="#{viewExportBean.init(listTheso, 'CSV')}"
-                                                  action="#{viewEditionBean.setIsViewExportCSV(true)}"
-                                                  update="toolBoxForm"
-                                                  style="font-size: 12px;"/>
-                            </b:dropMenu> 
+                            <h:outputText value="Modifier"/>
                         </b:column>
-
                         <b:column span="2">
-                            <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg"
-                                              actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
-                                             update="toolBoxForm:idConfirmDelete toolBoxForm:confirmDeleteForm"
-                                             oncomplete="PF('confirmDelete').show();"
-                                             style="color: #f47b2a; "/>
+                            <h:outputText value="Exporter"/>
+                        </b:column>      
+                        <b:column span="2">
+                            <h:outputText value="Supprimer"/>
                         </b:column>                         
-                    </b:row>   
-                </ui:repeat>
-            </b:column>
-        </b:row>   
+                    </b:row>
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
+
+
+                    <!-- la boucle pour les thésaurus autorisés -->
+                    <ui:repeat id="listThesoActions" var="listTheso" value="#{roleOnTheso.nodeListThesoAsAdmin}">
+                        <b:row style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
+                            <b:column span="4" >
+                                <h:outputText value="#{listTheso.value} (#{listTheso.id})"/>
+                            </b:column>
+                            <b:column span="2" tooltip="Pour changer, aller dans modifier" tooltip-delay-show="1000">
+                                <p:toggleSwitch id="toggleThesoStatus" value="#{listTheso.status}" style="font-size: 10px" disabled="true" />
+                            </b:column>
+                            <b:column span="2">
+                                <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
+                                                  actionListener="#{editThesoBean.init(listTheso)}"
+                                                  action="#{viewEditionBean.setIsViewModifyTheso(true)}"
+                                                  tooltip="Modifier le thésaurus" tooltip-delay-show="1000"
+                                                  update="toolBoxForm toolBoxForm:listThesoForm"
+                                                  style="color: #f47b2a; ">
+                                </b:navCommandLink>                            
+                            </b:column>
+
+                            <!-- export des thésaurus -->
+                            <b:column span="2">
+                                <b:dropMenu  
+                                    icon-awesome="fas fa-file-export" icon-size="lg"  value="" iconAlign="right"
+                                    style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px;" contentStyle="font-size: 12px;">
+                                    <b:navCommandLink value="Skos" ajax="false"
+                                                      tooltip="Exporter le thésaurus au format Skos" tooltip-delay-show="1000"
+                                                      actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
+                                                      action="#{viewEditionBean.setIsViewExportSkos(true)}"
+                                                      update="toolBoxForm toolBoxForm:listThesoForm"
+                                                      style="font-size: 12px;"/>
+
+                                    <b:navCommandLink value="PDF" ajax="false" tooltip="Exporter le thésaurus au format PDF" tooltip-delay-show="1000"
+                                                      actionListener="#{viewExportBean.init(listTheso, 'PDF')}"
+                                                      action="#{viewEditionBean.setIsViewExportPDF(true)}"
+                                                      update="toolBoxForm"
+                                                      style="font-size: 12px;"/>
+
+                                    <b:navCommandLink value="CSV" ajax="false" tooltip="Exporter le thésaurus au format CSV" tooltip-delay-show="1000"
+                                                      actionListener="#{viewExportBean.init(listTheso, 'CSV')}"
+                                                      action="#{viewEditionBean.setIsViewExportCSV(true)}"
+                                                      update="toolBoxForm"
+                                                      style="font-size: 12px;"/>
+                                </b:dropMenu> 
+                            </b:column>
+
+                            <b:column span="2">
+                                <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg"
+                                                  actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
+                                                 update="toolBoxForm:idConfirmDelete toolBoxForm:confirmDeleteForm"
+                                                 oncomplete="PF('confirmDelete').show();"
+                                                 style="color: #f47b2a; "/>
+                            </b:column>                         
+                        </b:row>   
+                    </ui:repeat>
+                </b:column>
+            </b:row>             
+        </p:scrollPanel>
+  
     </h:form>   
 
     <ui:include src="/toolbox/edition/confirmDelete.xhtml" /> 

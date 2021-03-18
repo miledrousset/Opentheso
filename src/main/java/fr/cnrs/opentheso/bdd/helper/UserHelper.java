@@ -848,7 +848,7 @@ public class UserHelper {
                             + " WHERE "
                             + "  user_role_group.id_group = user_group_thesaurus.id_group AND"
                             + "  user_role_group.id_user = " + idUser
-                            + " order by id_thesaurus";
+                            + " order by id_thesaurus DESC";
                     resultSet = stmt.executeQuery(query);
 
                     while (resultSet.next()) {
@@ -896,7 +896,7 @@ public class UserHelper {
                                 " user_role_group.id_user =  " + idUser +
                                 " AND" +
                                 " user_role_group.id_role = 2" +
-                                " order by id_thesaurus;";
+                                " order by id_thesaurus DESC";
                     resultSet = stmt.executeQuery(query);
 
                     while (resultSet.next()) {

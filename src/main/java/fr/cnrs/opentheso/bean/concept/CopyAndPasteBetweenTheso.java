@@ -83,14 +83,21 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         // controler les déplacements non autorisés 
         
         FacesMessage msg;
-        nodeConceptDrag = conceptBean.getNodeConcept();
+        ConceptHelper conceptHelper = new ConceptHelper();
+
+        // aprsè l'initialisation du conceptBean, cette variable est aussi initialisée
+        // pour éviter cela, on construi un nouvel objet
+        nodeConceptDrag = conceptHelper.getConcept(
+                connect.getPoolConnexion(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getTerm().getLang());
         isCopyOn = true;
         idThesoOrigin = selectedTheso.getCurrentIdTheso();
         if (nodeConceptDrag == null) {
             return;
         }
-        
-        ConceptHelper conceptHelper = new ConceptHelper();        
+
         conceptsToCopy = conceptHelper.getIdsOfBranch(
                 connect.getPoolConnexion(),
                 nodeConceptDrag.getConcept().getIdConcept(),
@@ -173,6 +180,11 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         // cas de déplacement d'un concept/branche d'un autre thésaurus vers un concept
         CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper = new CopyAndPasteBetweenThesoHelper();
         
+        if(nodeConceptDrag.getConcept() == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                "", "Erreur de copie"));
+            return false;
+        }
             if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(connect.getPoolConnexion(),
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -182,7 +194,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                     currentUser.getNodeUser().getIdUser(),
                     roleOnThesoBean.getNodePreference())) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    languageBean.getMsg("tools.copyBranch"), "Erreur de copie")); 
+                    "", "Erreur de copie"));
             } 
         return true;
     }
@@ -200,7 +212,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                     currentUser.getNodeUser().getIdUser(),
                     roleOnThesoBean.getNodePreference())) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    languageBean.getMsg("tools.copyBranch"), "Erreur de copie")); 
+                    "", "Erreur de copie"));
             } 
         return true;        
         /*

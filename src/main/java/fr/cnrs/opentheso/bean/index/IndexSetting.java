@@ -5,13 +5,14 @@
  */
 package fr.cnrs.opentheso.bean.index;
 
-import fr.cnrs.opentheso.bean.condidat.CandidatBean;
+//import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import java.io.IOException;
 
-import javax.inject.Inject;
+//import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 @SessionScoped
 public class IndexSetting implements Serializable {
 
-    @Inject
-    private CandidatBean candidatBean;
+//    @Inject private CandidatBean candidatBean;
 
     // si un thésaurus est sélectionné 
     private boolean isSelectedTheso;
@@ -58,6 +58,11 @@ public class IndexSetting implements Serializable {
     private String settingColor;
     private String toolBoxColor;
 
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
+    
     public IndexSetting() {
         isThesoActive = true;
         thesoColor = "white";
@@ -123,7 +128,7 @@ public class IndexSetting implements Serializable {
     }
 
     public void setIsCandidateActive(boolean isCandidateActive) throws IOException {
-        candidatBean.initCandidatModule();
+//        candidatBean.initCandidatModule();
         this.isCandidateActive = isCandidateActive;
         isThesoActive = false;
         isProfileActive = false;

@@ -4,7 +4,7 @@
 
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>21.02</version>
+    <version>21.03</version>
     <packaging>war</packaging>
 
     <name>opentheso2</name>
@@ -240,8 +240,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>13</source>
+                    <target>13</target>
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>

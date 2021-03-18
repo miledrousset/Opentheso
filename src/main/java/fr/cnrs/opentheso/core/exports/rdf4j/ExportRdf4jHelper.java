@@ -358,6 +358,93 @@ public class ExportRdf4jHelper {
         skosXmlDocument.addconcept(sKOSResource);
     }
     
+    /**
+     * fonction de test avant validation
+     * @param idThesaurus
+     * @param idConcept
+     * @param idLang 
+     * @param showLabels 
+     */
+    public void addSignleConceptByLang(String idThesaurus, String idConcept, String idLang, boolean showLabels) {
+        idTheso = idThesaurus;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        SKOSResource sKOSResource = new SKOSResource();
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idThesaurus, false, false);
+
+        if (nodeConcept == null) {
+            return;
+        }
+
+    //    concept.setUri(getUriFromId(idConcept));
+        sKOSResource.setUri(getUri(nodeConcept));
+        sKOSResource.setProperty(SKOSProperty.Concept);
+
+        // prefLabel
+        for (NodeTermTraduction traduction : nodeConcept.getNodeTermTraductions()) {
+            if(traduction.getLang().equalsIgnoreCase(idLang))
+                sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.prefLabel);
+        }
+        // altLabel
+        for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
+            if(nodeEM.getLang().equalsIgnoreCase(idLang)) {
+                if(nodeEM.isHiden())
+                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.hiddenLabel);
+                else
+                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.altLabel);   
+            }
+        }
+        ArrayList<NodeNote> nodeNotes = new ArrayList<>();
+        for (NodeNote nodeNote : nodeConcept.getNodeNoteConcept()) {
+            if(nodeNote.getLang().equalsIgnoreCase(idLang))
+                nodeNotes.add(nodeNote);
+        }
+        for (NodeNote nodeNote : nodeConcept.getNodeNoteTerm()) {
+            if(nodeNote.getLang().equalsIgnoreCase(idLang))
+                nodeNotes.add(nodeNote);
+        }        
+        addNoteGiven(nodeNotes, sKOSResource);
+        addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
+        addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
+        
+        if(showLabels) {
+ //           addRelationGivenWithLabel(nodeConcept.getNodeListOfBT(), nodeConcept.getNodeListOfNT(),
+ //               nodeConcept.getNodeListIdsOfRT(), sKOSResource, nodeConcept.getConcept().getIdThesaurus(), idLang);            
+        } else {
+            addRelationGiven(nodeConcept.getNodeListOfBT(), nodeConcept.getNodeListOfNT(),
+                nodeConcept.getNodeListIdsOfRT(), sKOSResource, nodeConcept.getConcept().getIdThesaurus());
+        }
+        String notation = nodeConcept.getConcept().getNotation();
+        String created = nodeConcept.getConcept().getCreated().toString();
+        String modified = nodeConcept.getConcept().getModified().toString();
+
+        if (notation != null && !notation.equals("null")) {
+            sKOSResource.addNotation(notation);
+        }
+        if (created != null) {
+            sKOSResource.addDate(created, SKOSProperty.created);
+        }
+        if (modified != null) {
+            sKOSResource.addDate(modified, SKOSProperty.modified);
+        }
+        sKOSResource.addRelation(getUriFromId(idTheso), SKOSProperty.inScheme);
+        for (NodeUri nodeUri : nodeConcept.getNodeListIdsOfConceptGroup()) {
+            sKOSResource.addRelation(getUriGroupFromNodeUri(nodeUri,idTheso), SKOSProperty.memberOf);
+        }           
+        sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
+        
+
+        ArrayList<String> first = new ArrayList<>();
+        first.add(idConcept);
+        ArrayList<ArrayList<String>> paths = new ArrayList<>();
+            
+        paths = new ConceptHelper().getPathOfConceptWithoutGroup(ds, idConcept, idThesaurus, first, paths);
+        ArrayList<String> pathFromArray = getPathFromArray(paths);
+        if(!pathFromArray.isEmpty())
+            sKOSResource.setPaths(pathFromArray);
+    //    sKOSResource.setPath("A/B/C/D/"+idConcept);
+        skosXmlDocument.addconcept(sKOSResource);
+    }    
+    
     private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
         String pathFromArray = "";
         ArrayList<String> allPath = new ArrayList<>();
@@ -919,6 +1006,67 @@ public class ExportRdf4jHelper {
         }
     }
 
+/*    private void addRelationGivenWithLabel(ArrayList<NodeHieraRelation> btList, ArrayList<NodeHieraRelation> ntList,
+            ArrayList<NodeHieraRelation> rtList, SKOSResource resource, String idTheso, String idLang) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        String label;
+        for (NodeHieraRelation rt : rtList) {
+            int prop;
+            switch (rt.getRole()) {
+                case "RHP":
+                    prop = SKOSProperty.relatedHasPart;
+                    break;
+                case "RPO":
+                    prop = SKOSProperty.relatedPartOf;
+                    break;
+                default:
+                    prop = SKOSProperty.related;
+            }
+            resource.addRelation(getUriFromNodeUri(rt.getUri(), idTheso), prop);
+            label = conceptHelper.getLexicalValueOfConcept(ds, rt.getUri().getIdConcept(), idTheso, idLang);
+            resource.addLabel(label, idLang, SKOSProperty.prefLabel);
+        }
+        for (NodeHieraRelation nt : ntList) {
+            int prop;
+            switch (nt.getRole()) {
+                case "NTG":
+                    prop = SKOSProperty.narrowerGeneric;
+                    break;
+                case "NTP":
+                    prop = SKOSProperty.narrowerPartitive;
+                    break;
+                case "NTI":
+                    prop = SKOSProperty.narrowerInstantial;
+                    break;
+                default:
+                    prop = SKOSProperty.narrower;
+            }
+            resource.addRelation(getUriFromNodeUri(nt.getUri(), idTheso), prop);
+            label = conceptHelper.getLexicalValueOfConcept(ds, nt.getUri().getIdConcept(), idTheso, idLang);
+            resource.addLabel(label, idLang, SKOSProperty.prefLabel);            
+        }
+        for (NodeHieraRelation bt : btList) {
+
+            int prop;
+            switch (bt.getRole()) {
+                case "BTG":
+                    prop = SKOSProperty.broaderGeneric;
+                    break;
+                case "BTP":
+                    prop = SKOSProperty.broaderPartitive;
+                    break;
+                case "BTI":
+                    prop = SKOSProperty.broaderInstantial;
+                    break;
+                default:
+                    prop = SKOSProperty.broader;
+            }
+            resource.addRelation(getUriFromNodeUri(bt.getUri(), idTheso), prop);
+            label = conceptHelper.getLexicalValueOfConcept(ds, bt.getUri().getIdConcept(), idTheso, idLang);
+            resource.addLabel(label, idLang, SKOSProperty.prefLabel);            
+        }
+    }        */
+    
     private void addNoteGiven(ArrayList<NodeNote> nodeNotes, SKOSResource resource, List<NodeLangTheso> selectedLanguages) {
         for (NodeNote note : nodeNotes) {
 
@@ -949,6 +1097,12 @@ public class ExportRdf4jHelper {
                 case "editorialNote":
                     prop = SKOSProperty.editorialNote;
                     break;
+                case "changeNote":
+                    prop = SKOSProperty.changeNote;
+                    break;
+                case "example":
+                    prop = SKOSProperty.example;
+                    break;                     
                 default:
                     prop = SKOSProperty.note;
                     break;
@@ -973,6 +1127,12 @@ public class ExportRdf4jHelper {
                 case "editorialNote":
                     prop = SKOSProperty.editorialNote;
                     break;
+                case "changeNote":
+                    prop = SKOSProperty.changeNote;
+                    break;
+                case "example":
+                    prop = SKOSProperty.example;
+                    break;                     
                 default:
                     prop = SKOSProperty.note;
                     break;

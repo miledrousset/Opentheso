@@ -108,6 +108,7 @@ public class PathHelper {
         RelationsHelper relationsHelper = new RelationsHelper();
 
         ArrayList<String> idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
+        if(idBTs == null) return null;
         if (idBTs.size() > 1) {
             for (String idBT1 : path) {
                 firstPath.add(0,idBT1);

@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bean.concept.NewConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -41,7 +40,6 @@ public class EditFacet implements Serializable {
     @Inject private ConceptView conceptView;
     @Inject private Tree tree;
     @Inject private SelectedTheso selectedTheso;
-    @Inject private NewConcept newConcept;    
 
     private ArrayList<NodeLangTheso> nodeLangs, nodeLangsFiltered;
     private ArrayList<NodeIdValue> conceptList;

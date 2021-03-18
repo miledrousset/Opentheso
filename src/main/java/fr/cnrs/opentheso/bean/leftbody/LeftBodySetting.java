@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.leftbody;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -18,7 +19,11 @@ import java.io.Serializable;
 public class LeftBodySetting implements Serializable {
 
     private String index;
-
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
+    
     public LeftBodySetting() {
     }
 

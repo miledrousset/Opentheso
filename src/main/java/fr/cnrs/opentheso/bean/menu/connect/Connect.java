@@ -33,8 +33,11 @@ public class Connect implements Serializable{
         ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
         workLanguage = bundlePref.getString("workLanguage");
         defaultThesaurusId = bundlePref.getString("defaultThesaurusId");
-        
     }    
+    
+    public String getOpenthesoVersionFromWar() {
+        return FacesContext.getCurrentInstance().getExternalContext().getInitParameterMap().get("version");
+    }
     
     private ResourceBundle getBundlePool(){
         FacesContext context = FacesContext.getCurrentInstance();

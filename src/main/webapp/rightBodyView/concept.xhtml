@@ -82,16 +82,28 @@
                                       style="font-size: 12px;">
                     </b:navCommandLink>
                     <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
-                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_ark')}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_handle')}"
                                       tooltip-delay-show="500"                                      
-                                      value="#{langueBean.getMsg('rightbody.concept.generate_ark')}" 
+                                      value="#{langueBean.getMsg('rightbody.concept.generate_handle')}" 
                                       disabled="false"                                      
                                       actionListener="#{editConcept.infosHandle()}"
                                       update="idGenerateHandle generateHandleForm"
                                       action="#{editConcept.reset('')}"
                                       oncomplete="PF('generateHandle').show();"
                                       style="font-size: 12px;">
+                    </b:navCommandLink>
+                    <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_delete_handle')}"
+                                      tooltip-delay-show="500"                                      
+                                      value="#{langueBean.getMsg('rightbody.concept.delete_handle')}" 
+                                      disabled="false"                                      
+                                      actionListener="#{editConcept.infosDeleteHandle()}"
+                                      update="idDeleteHandle deleteHandleForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('deleteHandle').show();"
+                                      style="font-size: 12px;">
                     </b:navCommandLink>                    
+                    
 
 
                     <!-- partie pour générer les identifiants ARK d'un thésaurus à déplacer par la suite vers la boite à outils -->
@@ -215,7 +227,8 @@
         <ui:include src="/dialog/concept/approveConcept.xhtml" />
         <ui:include src="/dialog/import/listImportCsv.xhtml" />
         <ui:include src="/dialog/concept/generateArk.xhtml" /> 
-        <ui:include src="/dialog/concept/generateHandle.xhtml" />         
+        <ui:include src="/dialog/concept/generateHandle.xhtml" />    
+        <ui:include src="/dialog/concept/deleteHandle.xhtml" />           
         <ui:include src="/dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />         
 
 
@@ -1442,7 +1455,9 @@
                                  styleClass="buttonIconOrange"/>
             </b:column>
         </b:row>
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
+
+   
+        <h:panelGroup  rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
             <!-- Dialogues -->        
             <ui:include src="/dialog/concept/addNT.xhtml" /> 
             <ui:include src="/dialog/facet/addFacet.xhtml" />
@@ -1494,6 +1509,4 @@
             <ui:include src="/dialog/gps/deleteGps.xhtml" />
         </h:panelGroup>
     </h:panelGroup>
-
-
 </ui:fragment>

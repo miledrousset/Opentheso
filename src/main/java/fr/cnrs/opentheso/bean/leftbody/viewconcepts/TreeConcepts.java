@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
-import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;

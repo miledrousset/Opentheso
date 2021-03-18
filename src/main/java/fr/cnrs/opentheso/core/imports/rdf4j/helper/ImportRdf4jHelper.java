@@ -42,10 +42,10 @@ import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 
-import fr.cnrs.opentheso.bean.condidat.dao.CandidatDao;
-import fr.cnrs.opentheso.bean.condidat.dao.MessageDao;
-import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
-import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
+import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
+import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
+import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
 import fr.cnrs.opentheso.skosapi.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -553,10 +553,16 @@ public class ImportRdf4jHelper {
 
     private void addStatut(AddConceptsStruct acs, SKOSStatus skosStatus, String idTheso, String idConcept) {
         acs.status = new NodeStatus();
+
         acs.status.setIdThesaurus(idTheso);
         acs.status.setIdConcept(idConcept);
-        acs.status.setMessage(skosStatus.getMessage());
-        acs.status.setIdStatus(skosStatus.getIdStatus());
+        if(skosStatus == null) {
+            acs.status.setMessage("");
+            acs.status.setIdStatus("1");            
+        } else {
+            acs.status.setMessage(skosStatus.getMessage());
+            acs.status.setIdStatus(skosStatus.getIdStatus());
+        }
     }
     
     private void addConceptToBdd(AddConceptsStruct acs, String idTheso, boolean isCandidatImport) {
@@ -564,11 +570,6 @@ public class ImportRdf4jHelper {
             System.out.println("Erreur sur le Concept = " + acs.concept.getIdConcept());
         }
         acs.termHelper.insertTerm(ds, acs.nodeTerm, idUser);
-
-        if (isCandidatImport) {
-            acs.conceptHelper.setNodeStatus(ds, acs.status.getIdConcept(), acs.status.getIdThesaurus(), acs.status.getIdStatus(),
-                    new Date().toString(), idUser, acs.status.getMessage());
-        }
 
         RelationsHelper relationsHelper = new RelationsHelper();
 
@@ -744,7 +745,7 @@ public class ImportRdf4jHelper {
 
         // For Concept : customnote ; scopeNote ; historyNote
         // For Term : definition; editorialNote; historyNote;
-        if (isCandidatImport) {
+       /* if (isCandidatImport) {
             for (NodeNote nodeNoteList1 : acs.nodeNotes) {
 
                 String str = formatLinkToHtmlTag(nodeNoteList1.getLexicalvalue());
@@ -768,7 +769,7 @@ public class ImportRdf4jHelper {
                 }
 
             }
-        } else {
+        } else {*/
             for (NodeNote nodeNoteList1 : acs.nodeNotes) {
 
                 if (nodeNoteList1.getNotetypecode().equals("customnote") || nodeNoteList1.getNotetypecode().equals("scopeNote") || nodeNoteList1.getNotetypecode().equals("note")) {
@@ -787,11 +788,11 @@ public class ImportRdf4jHelper {
                 }
 
             }
-        }
+       // }
 
-        if (isCandidatImport && !StringUtils.isEmpty(acs.collectionToAdd)) {
+      /*  if (!isCandidatImport && !StringUtils.isEmpty(acs.collectionToAdd)) {
             new ConceptHelper().addNewGroupOfConcept(ds, acs.concept.getIdConcept(), acs.collectionToAdd, idTheso);
-        }
+        }*/
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
             acs.alignmentHelper.addNewAlignment(ds, nodeAlignment);
@@ -827,18 +828,19 @@ public class ImportRdf4jHelper {
         }
 
         if (isCandidatImport) {
+            acs.conceptHelper.setNodeStatus(ds, acs.status.getIdConcept(), acs.status.getIdThesaurus(), acs.status.getIdStatus(),
+                    new Date().toString(), idUser, acs.status.getMessage());
+            
             for (MessageDto message : acs.messages) {
                 new MessageDao().addNewMessage(ds, message.getMsg(), message.getIdUser(), acs.concept.getIdConcept(),
                         idTheso, message.getDate());
             }
-
-            int status = 1;
-            try {
-                status = Integer.parseInt(acs.status.getIdStatus());
-            } catch (Exception ex) { }
-            new CandidatDao().setStatutForCandidat(ds, status, acs.status.getIdConcept(), idTheso,
-                    acs.status.getIdUser(), acs.status.getDate());
-
+//            int status = 1;
+//            try {
+//                status = Integer.parseInt(acs.status.getIdStatus());
+//            } catch (Exception ex) { }
+//            new CandidatDao().setStatutForCandidat(ds, status, acs.status.getIdConcept(), idTheso,
+//                    acs.status.getIdUser(), acs.status.getDate());
             for (VoteDto vote : acs.votes) {
                 new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
             }
