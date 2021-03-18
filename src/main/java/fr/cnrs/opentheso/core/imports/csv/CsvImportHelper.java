@@ -92,7 +92,7 @@ public class CsvImportHelper {
             String thesoName, String idLang,
             int idProject,
             NodeUser nodeUser) {
-        try {
+        try (Connection conn = ds.getConnection()){
             Thesaurus thesaurus = new Thesaurus();
 
             thesaurus.setCreator(nodeUser.getName());
@@ -100,7 +100,6 @@ public class CsvImportHelper {
 
             ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
             thesaurusHelper.setIdentifierType("2");
-            Connection conn = ds.getConnection();
             conn.setAutoCommit(false);
             String idTheso1;
             thesaurus.setLanguage(idLang);
@@ -134,7 +133,6 @@ public class CsvImportHelper {
                 }
             }
             conn.commit();
-            conn.close();
             return idTheso1;
         } catch (SQLException ex) {
             Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);

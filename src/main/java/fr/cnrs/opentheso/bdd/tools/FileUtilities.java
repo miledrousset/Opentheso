@@ -346,22 +346,14 @@ public class FileUtilities {
      * Buffered copy of input stream to a given file. Must be fast&furious.
      */
     public static void copyToFile(InputStream in, File to) throws IOException {
-        FileChannel out;
+
         ReadableByteChannel inCh = Channels.newChannel(in);
-        try {
-            out = (new FileOutputStream(to)).getChannel();
-            
-            try {
-	        	long lastpos = 0;
-	        	long nbRead;
-	        	while ((nbRead = out.transferFrom(inCh, lastpos, BUFF_SIZE))>= BUFF_SIZE)
-	        	{
-	        		lastpos += nbRead;
-	        	}
-            } finally
-            {
-            	out.close();
-            }
+        try (FileChannel out = (new FileOutputStream(to)).getChannel()) {
+			long lastpos = 0;
+			long nbRead;
+			while ((nbRead = out.transferFrom(inCh, lastpos, BUFF_SIZE))>= BUFF_SIZE) {
+				lastpos += nbRead;
+			}
         } finally {
             // Make sure all streams are flushed and/or closed.
             in.close(); // so close input
@@ -373,16 +365,10 @@ public class FileUtilities {
      */
     public static void copyToFile(FileInputStream in, File to) throws IOException {
         FileChannel inCh = in.getChannel();
-        try {
-        	FileOutputStream outStream = new FileOutputStream(to); 
-            
-            try {
-                FileChannel out = outStream.getChannel();
-	        	out.transferFrom(inCh, 0, inCh.size());
-            } finally
-            {
-            	outStream.close();
-            }
+        try (FileOutputStream outStream = new FileOutputStream(to)) {
+			FileChannel out = outStream.getChannel();
+			out.transferFrom(inCh, 0, inCh.size());
+			out.close();
         } finally {
             // Make sure all streams are flushed and/or closed.
             in.close(); // so close input
@@ -479,22 +465,15 @@ public class FileUtilities {
      * @return MD5
      */
     public static String copyToFileMD5(InputStream in, File to) throws IOException {
-        FileChannel outCh;
         MD5InputStream md5In = new MD5InputStream(in);
         ReadableByteChannel md5Ch = Channels.newChannel(md5In);
-        try {
-        	outCh = (new FileOutputStream(to)).getChannel();
-        	try {
-	        	long lastpos = 0;
-	        	long nbRead;
-	        	while ((nbRead = outCh.transferFrom(md5Ch, lastpos, BUFF_SIZE))>= BUFF_SIZE)
-	        	{
-	        		lastpos += nbRead;
-	        	}
-        	} finally
-        	{
-        		outCh.close();
-        	}
+        try (FileChannel outCh = (new FileOutputStream(to)).getChannel()) {
+			long lastpos = 0;
+			long nbRead;
+			while ((nbRead = outCh.transferFrom(md5Ch, lastpos, BUFF_SIZE))>= BUFF_SIZE)
+			{
+				lastpos += nbRead;
+			}
         	return md5In.computeMD5();
 		} finally {
             // Make sure all streams are flushed and/or closed.
