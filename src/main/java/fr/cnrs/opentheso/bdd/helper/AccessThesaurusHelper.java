@@ -23,13 +23,8 @@ import org.apache.commons.logging.LogFactory;
  * @author miled.rousset
  */
 public class AccessThesaurusHelper {
+
    private final Log log = LogFactory.getLog(ThesaurusHelper.class);
-    //private int nbThesoPublic;
-    
-    public AccessThesaurusHelper(){
-        
-        
-    }
         
  //// restructuration de la classe AccessThesaurusHelper le 05/04/2018 #MR//////    
     
@@ -48,27 +43,20 @@ public class AccessThesaurusHelper {
      * @return 
      * #MR
      */
-    public boolean updateVisibility(HikariDataSource ds,
-            String idTheso,
-            boolean isPrivate) {
+    public boolean updateVisibility(HikariDataSource ds, String idTheso, boolean isPrivate) {
         
-        Statement stmt;
+        Statement stmt = null;
         boolean status = false;
         try {
             Connection conn = ds.getConnection();
             try {
                 stmt = conn.createStatement();
-                try {
-                    String query = "UPDATE thesaurus SET private = " +
-                            isPrivate + 
-                            " WHERE id_thesaurus='" + 
-                            idTheso + "'";
-                    stmt.executeUpdate(query);
-                    status = true;                    
-                } finally {
-                    stmt.close();
-                }
+                String query = "UPDATE thesaurus SET private = " +  isPrivate + " WHERE id_thesaurus='" + idTheso + "'";
+                stmt.executeUpdate(query);
+                status = true;
             } finally {
+                if (stmt != null) stmt.close();
+                conn.close();
             }
         } catch (SQLException ex) {
             log.error("error while updating visibility of thesaurus = " +idTheso, ex);
@@ -98,39 +86,27 @@ public class AccessThesaurusHelper {
      * @return 
      */
     private HashMap getListPrivateThesaurusUser(HikariDataSource ds,String idLang, int idUser){
-        Connection conn;
-        PreparedStatement stmt;
+
         HashMap listTheoUser=new HashMap();
         if(ds == null) return listTheoUser;
-        ResultSet rs;
-        try{
-            conn=ds.getConnection();
-            try{
-              
-              
-                String sql="SELECT thesaurus_label.id_thesaurus,thesaurus_label.title FROM thesaurus_label INNER JOIN( SELECT thesaurus.id_thesaurus FROM thesaurus INNER JOIN  user_role ON thesaurus.id_thesaurus=user_role.id_thesaurus WHERE user_role.id_user=? and thesaurus.private=true) AS theso ON theso.id_thesaurus=thesaurus_label.id_thesaurus WHERE lang=?";
-                stmt=conn.prepareStatement(sql);
+
+        try (Connection conn = ds.getConnection()){
+
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT thesaurus_label.id_thesaurus,thesaurus_label.title FROM thesaurus_label INNER JOIN( SELECT thesaurus.id_thesaurus FROM thesaurus INNER JOIN  user_role ON thesaurus.id_thesaurus=user_role.id_thesaurus WHERE user_role.id_user=? and thesaurus.private=true) AS theso ON theso.id_thesaurus=thesaurus_label.id_thesaurus WHERE lang=?")){
+
                 stmt.setInt(1, idUser);
                 stmt.setString(2, idLang);
-                                             
-                
-                try{
-                    rs=stmt.executeQuery();
+
+                try (ResultSet rs = stmt.executeQuery()) {
                     while(rs.next()){
                         String id=rs.getString("id_thesaurus");
                         String title=rs.getString("title");
                         listTheoUser.put(title+" ("+id+") ",id);
                     }
                 }
-                finally{
-                    stmt.close();
-                }
-                
-            }finally{
-                conn.close();
             }
-        }catch(SQLException e){
             
+        }catch(SQLException e){
             log.error("Erro while retrieving list of private thesaurus of the user : "+listTheoUser, e);
         }
         
@@ -150,10 +126,10 @@ public class AccessThesaurusHelper {
     private HashMap getListPublicThesaurus(HikariDataSource ds,String idLang){
         
         Connection conn;
-        PreparedStatement stmt;
+        PreparedStatement stmt = null;
         HashMap listOfPrivate=new HashMap();
         if(ds == null) return listOfPrivate;
-        ResultSet rs;
+        ResultSet rs = null;
         
         try{
             conn=ds.getConnection();
@@ -164,19 +140,18 @@ public class AccessThesaurusHelper {
                 stmt=conn.prepareStatement(sql);
                 stmt.setBoolean(1, false);
                 stmt.setString(2, idLang);
-                try{
-                    rs=stmt.executeQuery();
-                    while(rs.next()){
-                        String id=rs.getString("id_thesaurus");
-                        String title=rs.getString("title");
-                        
-                        listOfPrivate.put(title+" ("+id+") ",id);
-                    }
+
+                rs=stmt.executeQuery();
+                while(rs.next()){
+                    String id=rs.getString("id_thesaurus");
+                    String title=rs.getString("title");
+
+                    listOfPrivate.put(title+" ("+id+") ",id);
                 }
-                finally{
-                    stmt.close();
-                }
+
             }finally{
+                if (stmt != null) stmt.close();
+                if (rs != null) rs.close();
                 conn.close();
             }
                 
@@ -233,32 +208,22 @@ public class AccessThesaurusHelper {
      * @return 
      */
     public HashMap getListThesaurusSA(HikariDataSource ds,String idLang){
+       
+        HashMap listOfAll=new HashMap();
         
-       Connection conn;
-       PreparedStatement stmt;
-       HashMap listOfAll=new HashMap();
-       ResultSet rs;
-       try{
-           conn=ds.getConnection();
-           try{
-               String sql="SELECT thesaurus_label.id_thesaurus,thesaurus_label.title "
-                        + "FROM thesaurus_label WHERE lang=?";
-               stmt=conn.prepareStatement(sql);
-               stmt.setString(1,idLang);
-               try{
-                   rs=stmt.executeQuery();
-                   while(rs.next()){
+        try (Connection conn = ds.getConnection()){
+           
+           try (PreparedStatement stmt = conn.prepareStatement("SELECT thesaurus_label.id_thesaurus,thesaurus_label.title "
+                        + "FROM thesaurus_label WHERE lang=?")) {
+                stmt.setString(1,idLang);
+               
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while(rs.next()){
                        String id=rs.getString("id_thesaurus");
                        String title=rs.getString("title");
                        listOfAll.put(title+" ("+id+") ",id);
-                   }
-               }
-               finally{
-                   stmt.close();
-               }
-           }
-           finally{
-               conn.close();
+                    }  
+                }
            }
        }
        catch(SQLException e){
@@ -279,20 +244,16 @@ public class AccessThesaurusHelper {
      */
     public Thesaurus getAThesaurus(HikariDataSource ds, String idTheso,String idLang){
         
-        Connection conn;
-        PreparedStatement stmt;
         Thesaurus th=new Thesaurus();
-        ResultSet rs;
-        try{
-            conn=ds.getConnection();
-            try{
-                String sql="SELECT *  FROM thesaurus INNER JOIN thesaurus_label ON thesaurus.id_thesaurus=thesaurus_label.id_thesaurus WHERE thesaurus.id_thesaurus=? AND lang=?";
+        
+        try (Connection conn=ds.getConnection()) {
+            
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT *  FROM thesaurus INNER JOIN thesaurus_label ON thesaurus.id_thesaurus=thesaurus_label.id_thesaurus WHERE thesaurus.id_thesaurus=? AND lang=?")) {
                 
-                stmt=conn.prepareStatement(sql);
                 stmt.setString(1,idTheso);
                 stmt.setString(2,idLang);
-                try{
-                    rs=stmt.executeQuery();
+
+                try (ResultSet rs=stmt.executeQuery()) {
                     if(rs.next()){
                         th.setContributor(rs.getString("contributor"));
                         th.setCoverage(rs.getString("coverage"));
@@ -312,26 +273,16 @@ public class AccessThesaurusHelper {
                         th.setTitle(rs.getString("title"));
                         th.setType(rs.getString("type"));
                         th.setPrivateTheso(rs.getBoolean("private"));
-                        
-                        
+
+                    } else{
+                        log.error("la requete n'a pas trouver de thesaurus associé à l'idenitifiant");
                     }
-                    else{
-                    
-                       log.error("la requete n'a pas trouver de thesaurus associé à l'idenitifiant"); 
-                    }
-                    
                 }
-                finally{
-                    stmt.close();
-                }
-            }finally{
-                conn.close();
             }
         }
         catch(SQLException e){
             log.error("error while retrieving a thesaurus from the bdd "+th.toString(),e);
         }
-        
         
         return th;
         
@@ -349,37 +300,28 @@ public class AccessThesaurusHelper {
      * @return 
      */
     public HashMap getListThesaurusOwned(HikariDataSource ds, String idLang,int idUser){
-        Connection conn;
+        
         HashMap listOfOwned = new HashMap();
-        PreparedStatement stmt;
-        ResultSet rs;
-        try{
-            conn=ds.getConnection();
-            try{
-                String sql="SELECT thesaurus_label.id_thesaurus,title FROM thesaurus_label JOIN user_role ON "
-                        + "thesaurus_label.id_thesaurus=user_role.id_thesaurus AND id_user=? and lang=?";
-                stmt=conn.prepareStatement(sql);
+        
+        try (Connection conn = ds.getConnection()) {
+            
+            try (PreparedStatement stmt=conn.prepareStatement("SELECT thesaurus_label.id_thesaurus,title FROM thesaurus_label JOIN user_role ON "
+                        + "thesaurus_label.id_thesaurus=user_role.id_thesaurus AND id_user=? and lang=?")) {
+
                 stmt.setInt(1, idUser);
                 stmt.setString(2, idLang);
-                try{
-                    rs=stmt.executeQuery();
+
+                try (ResultSet rs = stmt.executeQuery()) {
                     while(rs.next()){
                         String id=rs.getString("id_thesaurus");
                         String title=rs.getString("title");
-                        
                         listOfOwned.put(title+" ("+id+") ",id);
                     }
                 }
-                finally{
-                    stmt.close();
-                }
-            }finally{
-                conn.close();
             }
         }
         catch(SQLException e){
-            log.error("error while retrieving owned thesaurus  list ="+listOfOwned,e);
-            
+            log.error("error while retrieving a thesaurus from the bdd",e);
         }
 
         return listOfOwned;
@@ -394,29 +336,21 @@ public class AccessThesaurusHelper {
      * @return 
      */
     private boolean valueExist(HikariDataSource ds,String idTheso){
-        Connection conn;
-        PreparedStatement stmt;
-        ResultSet rs;
+        
         boolean ret=false;
         
-        try{
-            conn=ds.getConnection();
-            try{
-                String sql="SELECT * FROM thesaurus WHERE id_thesaurus=?";
-                stmt=conn.prepareStatement(sql);
+        try (Connection conn = ds.getConnection()){
+            
+            String sql="SELECT * FROM thesaurus WHERE id_thesaurus=?";
+            
+            try (PreparedStatement stmt = conn.prepareStatement(sql)){
                 stmt.setString(1, idTheso);
-                try{
-                    rs=stmt.executeQuery();
+                
+                try (ResultSet rs = stmt.executeQuery()) {
                     ret=rs.next();
                 }
-                finally{
-                    stmt.close();
-                }
-            }finally{
-                conn.close();
             }
-        }
-        catch(SQLException e){
+        } catch(SQLException e){
             log.error("error while Select from thesaurus table id_thesaurus ="+idTheso,e);
         }
         return ret;
@@ -434,32 +368,21 @@ public class AccessThesaurusHelper {
      */
     public int insertVisibility(HikariDataSource ds, boolean visible, String idTheso) {
         boolean existAlready=this.valueExist(ds,idTheso);
-        Connection conn;
-        PreparedStatement stmt;
         int execute=-1;
-        try{
-            conn=ds.getConnection();
-            try{
-                String sql;
-                if(existAlready){
-                   sql="UPDATE thesaurus SET private=? WHERE id_thesaurus=?";
-                }
-                else{
-                   sql="INSERT INTO thesaurus (private,id_thesaurus) VALUES(?,?)";
-                }
-                stmt=conn.prepareStatement(sql);
+        
+        try (Connection conn = ds.getConnection()) {
+            
+            String sql;
+            if(existAlready){
+                sql="UPDATE thesaurus SET private=? WHERE id_thesaurus=?";
+            } else{
+                sql="INSERT INTO thesaurus (private,id_thesaurus) VALUES(?,?)";
+            }
+            
+            try (PreparedStatement stmt = conn.prepareStatement(sql)){
                 stmt.setBoolean(1,visible);
                 stmt.setString(2,idTheso);
-                try{
-                    execute=stmt.executeUpdate();
-                    
-                }
-                finally{
-                    stmt.close();
-                }
-            }
-            finally{
-                conn.close();
+                execute=stmt.executeUpdate();
             }
         }
         catch(SQLException e){
@@ -469,22 +392,17 @@ public class AccessThesaurusHelper {
     }
     public int supprVisibility(HikariDataSource ds, String idTheso){
         Connection conn;
-        PreparedStatement stmt;
+        PreparedStatement stmt = null;
         int execute=-1;
         try{
             conn=ds.getConnection();
             try{
-                String sql="DELETE FROM thesaurus WHERE id_thesaurus=?";
-                stmt=conn.prepareStatement(sql);
+                String sql = "DELETE FROM thesaurus WHERE id_thesaurus=?";
+                stmt = conn.prepareStatement(sql);
                 stmt.setString(1,idTheso);
-                try{
-                    execute=stmt.executeUpdate();
-                }
-                finally{
-                    stmt.close();
-                }
-            }
-            finally{
+                execute = stmt.executeUpdate();
+            } finally{
+                if (stmt != null) stmt.close();
                 conn.close();
                 
             }

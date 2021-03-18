@@ -47,12 +47,23 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CandidatBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private CurrentUser currentUser;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptView;
+    @Inject
+    private Connect connect;
+
+    @Inject
+    private CurrentUser currentUser;
+
+    @Inject
+    private SelectedTheso selectedTheso;
+
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+
+    @Inject
+    private LanguageBean languageBean;
+
+    @Inject
+    private ConceptView conceptView;
 
     private final CandidatService candidatService = new CandidatService();
 
@@ -71,22 +82,39 @@ public class CandidatBean implements Serializable {
     private List<DomaineDto> domaines;
     private List<NodeLangTheso> selectedLanguages;
     private ArrayList<NodeLangTheso> languagesOfTheso;
-
-
     private List<CandidatDto> selectedCandidates;
     private boolean listSelected;
-    
-    @PostConstruct
-    public void postInit(){
-      //  int test = 0;
+
+
+    private String test;
+
+    public String getTest() {
+        return test;
     }
-    
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    public void reset() {
+        candidatSelected = null;
+        initialCandidat = null;
+        exportFormat = null;
+        candidatList = null;
+        rejetCadidat = null;
+        acceptedCadidat = null;
+        allTermes = null;
+        domaines = null;
+        selectedLanguages = null;
+        languagesOfTheso = null;
+    }
+
     public void setStateForSelectedCandidate(){
         if(selectedCandidates != null){
             listSelected = !selectedCandidates.isEmpty();
         }
     }
-    
+
     public void initCandidatModule() {
         isListCandidatsActivate = true;
         isRejectCandidatsActivate = true;
@@ -96,10 +124,10 @@ public class CandidatBean implements Serializable {
         isImportViewActivate = false;
         isExportViewActivate = false;
         listSelected = false;
-        
+
         if(candidatList == null)
             candidatList = new ArrayList<>();
-        else 
+        else
             candidatList.clear();
         if(allTermes == null)
             allTermes = new ArrayList<>();
@@ -111,22 +139,22 @@ public class CandidatBean implements Serializable {
             domaines.clear();
         if(selectedLanguages == null)
             selectedLanguages = new ArrayList<>();
-        else 
+        else
             selectedLanguages.clear();
-        if(rejetCadidat == null) 
+        if(rejetCadidat == null)
             rejetCadidat = new ArrayList<>();
         else
             rejetCadidat.clear();
-        if(acceptedCadidat == null) 
+        if(acceptedCadidat == null)
             acceptedCadidat = new ArrayList<>();
         else
             acceptedCadidat.clear();
-        
+
         if(selectedCandidates == null)
             selectedCandidates = new ArrayList<>();
         else
             selectedCandidates.clear();
-        
+
         getAllCandidatsByThesoAndLangue();
         getRejectCandidatByThesoAndLangue();
         getAcceptedCandidatByThesoAndLangue();
@@ -136,7 +164,7 @@ public class CandidatBean implements Serializable {
         selectedExportFormat = "skos";
 
         languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());        
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         languagesOfTheso.forEach((nodeLang) -> {
             selectedLanguages.add(nodeLang);
         });
@@ -474,7 +502,7 @@ public class CandidatBean implements Serializable {
                     term.setStatus("D");
                     term.setId_term(candidatSelected.getIdTerm());
                     TermeDao termeDao = new TermeDao();
-                    termeDao.addNewTerme(connect.getPoolConnexion(), term);                   
+                    termeDao.addNewTerme(connect.getPoolConnexion(), term);
                 }
 
             }
@@ -965,6 +993,6 @@ public class CandidatBean implements Serializable {
     public void setListSelected(boolean listSelected) {
         this.listSelected = listSelected;
     }
-    
-    
+
+
 }

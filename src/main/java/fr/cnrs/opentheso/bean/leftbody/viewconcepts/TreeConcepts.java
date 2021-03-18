@@ -28,7 +28,6 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 
 /**
  *
@@ -37,11 +36,21 @@ import javax.annotation.PostConstruct;
 @Named(value = "treeConcepts")
 @SessionScoped
 public class TreeConcepts implements Serializable {
-    @Inject private Connect connect;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private ConceptView conceptView;
-    @Inject private GroupView groupView;
-    @Inject private SelectedTheso selectedTheso;
+
+    @Inject
+    private Connect connect;
+
+    @Inject
+    private RightBodySetting rightBodySetting;
+
+    @Inject
+    private ConceptView conceptView;
+
+    @Inject
+    private GroupView groupView;
+
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private DataService dataService;
 
@@ -51,16 +60,15 @@ public class TreeConcepts implements Serializable {
 
     private boolean noedSelected;
 
-    @PostConstruct
-    public void postInit(){
-        int test = 0;
-    }       
 
     public void reset() {
         root = null;
         selectedNode = null;
         rightBodySetting.init();
         noedSelected = false;
+        dataService = null;
+        idTheso = null;
+        idLang = null;
     }
 
     public void initialise(String idTheso, String idLang) {

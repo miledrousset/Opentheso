@@ -11,7 +11,6 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.Serializable;
-import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -25,24 +24,21 @@ import javax.inject.Inject;
 @Named(value = "viewEditorThesoHomeBean")
 @SessionScoped
 public class ViewEditorThesoHomeBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
+
+    @Inject
+    private Connect connect;
+
+    @Inject
+    private SelectedTheso selectedTheso;
     
     @Inject
     private LanguageBean languageBean; 
-    
-    @PostConstruct
-    public void postInit(){
-        int test = 0;
-    }    
-    
-    public ViewEditorThesoHomeBean() {
-    }
-    
-    private boolean isViewPlainText = false;
-    private String text;
-    
+
+
+    private boolean isViewPlainText;
     private boolean isInEditing;
+
+    private String text;
     private String colorOfHtmlButton;
     private String colorOfTextButton;    
 

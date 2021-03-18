@@ -73,17 +73,20 @@ public class HtmlPageHelper {
     public boolean setHomePage(HikariDataSource ds,
             String htmlText, String idLang) {
 
-
-        if(isHomeExist(ds, idLang)) {
-            if(!updateHome(ds,
-            htmlText,
-            idLang)) return false;
+        if (isHomeExist(ds, idLang)) {
+            if (!updateHome(ds,
+                    htmlText,
+                    idLang)) {
+                return false;
+            }
         } else {
-            if(!insertHome(ds,
-            htmlText,
-            idLang)) return false;
+            if (!insertHome(ds,
+                    htmlText,
+                    idLang)) {
+                return false;
+            }
         }
-        return true;        
+        return true;
     }
 
     private boolean updateHome(HikariDataSource ds,
@@ -92,7 +95,7 @@ public class HtmlPageHelper {
 
         StringPlus stringPlus = new StringPlus();
         htmlText = stringPlus.convertString(htmlText);
-        
+
         String query;
         Statement stmt;
         Connection conn;
@@ -119,14 +122,14 @@ public class HtmlPageHelper {
         }
         return isPassed;
     }
-    
+
     private boolean insertHome(HikariDataSource ds,
             String htmlText,
             String idLang) {
 
         StringPlus stringPlus = new StringPlus();
         htmlText = stringPlus.convertString(htmlText);
-        
+
         String query;
         Statement stmt;
         Connection conn;
@@ -153,11 +156,11 @@ public class HtmlPageHelper {
             this.log.error("error while inserting homepage", ex);
         }
         return isPassed;
-    }       
+    }
 
-    
     /**
-     * cette fonction permet de retourner le Theso Home Page du thésaurus séléectionné 
+     * cette fonction permet de retourner le Theso Home Page du thésaurus
+     * séléectionné
      *
      * @param ds
      * @param idTheso
@@ -196,11 +199,10 @@ public class HtmlPageHelper {
             this.log.error("error while trying to get thesoHomepage", ex);
         }
         return homePage;
-    }    
-    
-    
+    }
+
     /**
-     * cette fonction permet de sauvegarger le Home Page d'un thésaurus 
+     * cette fonction permet de sauvegarger le Home Page d'un thésaurus
      *
      * @param ds
      * @param htmlText
@@ -213,20 +215,24 @@ public class HtmlPageHelper {
             String idTheso,
             String idLang) {
 
-        if(isThesoHomeExist(ds, idTheso, idLang)) {
-            if(!updateThesoHome(ds,
-            htmlText,
-            idTheso,
-            idLang)) return false;
+        if (isThesoHomeExist(ds, idTheso, idLang)) {
+            if (!updateThesoHome(ds,
+                    htmlText,
+                    idTheso,
+                    idLang)) {
+                return false;
+            }
         } else {
-            if(!insertThesoHome(ds,
-            htmlText,
-            idTheso,
-            idLang)) return false;
+            if (!insertThesoHome(ds,
+                    htmlText,
+                    idTheso,
+                    idLang)) {
+                return false;
+            }
         }
         return true;
     }
-    
+
     private boolean updateThesoHome(HikariDataSource ds,
             String htmlText,
             String idTheso,
@@ -234,7 +240,7 @@ public class HtmlPageHelper {
 
         StringPlus stringPlus = new StringPlus();
         htmlText = stringPlus.convertString(htmlText);
-        
+
         String query;
         Statement stmt;
         Connection conn;
@@ -262,7 +268,7 @@ public class HtmlPageHelper {
         }
         return isPassed;
     }
-    
+
     private boolean insertThesoHome(HikariDataSource ds,
             String htmlText,
             String idTheso,
@@ -270,7 +276,7 @@ public class HtmlPageHelper {
 
         StringPlus stringPlus = new StringPlus();
         htmlText = stringPlus.convertString(htmlText);
-        
+
         String query;
         Statement stmt;
         Connection conn;
@@ -298,21 +304,21 @@ public class HtmlPageHelper {
             this.log.error("error while inserting thesohomepage", ex);
         }
         return isPassed;
-    }     
-    
-    
+    }
+
     /**
      * vérifie si la page d'accueil du thésaurus exist déjà
+     *
      * @param ds
      * @param idTheso
      * @param idLang
-     * @return 
+     * @return
      */
     private boolean isThesoHomeExist(
             HikariDataSource ds,
             String idTheso,
-            String idLang ){
-        
+            String idLang) {
+
         Statement stmt;
         ResultSet resultSet;
         boolean existe = false;
@@ -343,18 +349,19 @@ public class HtmlPageHelper {
         }
         return existe;
     }
-    
+
     /**
      * vérifie si la page Home d'Opentheso exist déjà
+     *
      * @param ds
      * @param idTheso
      * @param idLang
-     * @return 
+     * @return
      */
     private boolean isHomeExist(
             HikariDataSource ds,
-            String idLang ){
-        
+            String idLang) {
+
         Statement stmt;
         ResultSet resultSet;
         boolean existe = false;
@@ -383,25 +390,8 @@ public class HtmlPageHelper {
             log.error("Error while asking if Home of opentheso exist : " + idLang, sqle);
         }
         return existe;
-    }    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    }
+
     /**
      * cette fonction permet de retourner le copyright d'un thésaurus
      *
@@ -411,23 +401,14 @@ public class HtmlPageHelper {
      */
     public String getCopyright(HikariDataSource ds, String idTheso) {
         String copyright = "";
-        String query;
-        Statement stmt;
-        ResultSet resultSet;
-        Connection conn;
-
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                query = "SELECT copyright FROM copyright WHERE copyright.id_thesaurus='" + idTheso + "'";
-                stmt.executeQuery(query);
-                resultSet = stmt.getResultSet();
-                if (resultSet.next()) {
-                    copyright = resultSet.getString("copyright");
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT copyright FROM copyright WHERE copyright.id_thesaurus='" + idTheso + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        copyright = resultSet.getString("copyright");
+                    }
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException ex) {
             this.log.error("error while trying to proced result from database", ex);
@@ -444,24 +425,14 @@ public class HtmlPageHelper {
      * @param copyright
      * @return
      */
-    public boolean updateCopyright(HikariDataSource ds, String idTheso,
-            String copyright) {
-        String query;
-        Statement stmt;
-        Connection conn;
+    public boolean updateCopyright(HikariDataSource ds, String idTheso, String copyright) {
         boolean status = false;
         copyright = new StringPlus().convertString(copyright);
-
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                query = "update copyright SET copyright= '"
-                        + copyright + "' WHERE id_thesaurus='" + idTheso + "'";
-                stmt.executeUpdate(query);
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update copyright SET copyright= '"
+                        + copyright + "' WHERE id_thesaurus='" + idTheso + "'");
                 status = true;
-            } finally {
-                conn.close();
             }
         } catch (SQLException ex) {
             this.log.error("error while trying to update copyright", ex);
@@ -471,31 +442,16 @@ public class HtmlPageHelper {
 
     /**
      * permet d'ajouter un copyright à un thésaurus
-     *
-     * @param ds
-     * @param idTheso
-     * @param copyright
-     * @return
      */
-    public boolean addCopyright(HikariDataSource ds, String idTheso,
-            String copyright) {
+    public boolean addCopyright(HikariDataSource ds, String idTheso, String copyright) {
 
-        String query;
-        Statement stmt;
-        Connection conn;
         boolean status = false;
         copyright = new StringPlus().convertString(copyright);
-
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                query = "INSERT INTO copyright (id_thesaurus,copyright) VALUES ('"
-                        + idTheso + "','" + copyright + "')";
-                stmt.executeUpdate(query);
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("INSERT INTO copyright (id_thesaurus,copyright) VALUES ('"
+                        + idTheso + "','" + copyright + "')");
                 status = true;
-            } finally {
-                conn.close();
             }
         } catch (SQLException ex) {
             this.log.error("error while trying to insert a copyright", ex);

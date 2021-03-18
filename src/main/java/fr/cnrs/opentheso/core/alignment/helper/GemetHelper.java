@@ -94,6 +94,7 @@ public class GemetHelper {
             records = new String(bytes, Charset.forName("UTF-8"));
             conn.disconnect();
             listeAlign = getValues(value, records, idC, idTheso, source);
+            br.close();
         } catch (MalformedURLException e) {
             messages.append(e.toString());
             return null;

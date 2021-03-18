@@ -17,7 +17,6 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
-import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -54,15 +53,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     private boolean isDropToRoot;
     
     // pour savoir si on récupère les identifiants pérennes ou non
-    private String identifierType = "sans";    
-
-    @PostConstruct
-    public void postInit(){
-        int test = 0;
-    }       
-    
-    public CopyAndPasteBetweenTheso() {
-    }
+    private String identifierType = "sans";
 
     public void reset() {
         isCopyOn = false;
@@ -106,7 +97,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         if (nodeConceptDrag == null) {
             return;
         }
-     
+
         conceptsToCopy = conceptHelper.getIdsOfBranch(
                 connect.getPoolConnexion(),
                 nodeConceptDrag.getConcept().getIdConcept(),
@@ -191,7 +182,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         
         if(nodeConceptDrag.getConcept() == null) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                "", "Erreur de copie"));             
+                "", "Erreur de copie"));
             return false;
         }
             if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(connect.getPoolConnexion(),
@@ -203,7 +194,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                     currentUser.getNodeUser().getIdUser(),
                     roleOnThesoBean.getNodePreference())) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "", "Erreur de copie")); 
+                    "", "Erreur de copie"));
             } 
         return true;
     }
@@ -221,7 +212,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                     currentUser.getNodeUser().getIdUser(),
                     roleOnThesoBean.getNodePreference())) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "", "Erreur de copie")); 
+                    "", "Erreur de copie"));
             } 
         return true;        
         /*

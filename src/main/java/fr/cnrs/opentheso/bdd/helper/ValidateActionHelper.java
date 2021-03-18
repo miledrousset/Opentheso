@@ -12,22 +12,11 @@ import com.zaxxer.hikari.HikariDataSource;
 public class ValidateActionHelper {
 
     private String message;
-    public ValidateActionHelper() {
-    }
     
     /**
      * vérifie la cohérence des relations avant l'action
-     * @param ds
-     * @param idTheso
-     * @param idConcept
-     * @param idConceptToAdd
-     * @return 
      */
-    public boolean isAddRelationNTValid(
-            HikariDataSource ds,
-            String idTheso, 
-            String idConcept,
-            String idConceptToAdd) {
+    public boolean isAddRelationNTValid(HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
         RelationsHelper relationsHelper = new RelationsHelper();
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
@@ -53,17 +42,9 @@ public class ValidateActionHelper {
     
     /**
      * vérifie la cohérence des relations avant l'action
-     * @param ds
-     * @param idTheso
-     * @param idConcept
-     * @param idConceptToAdd
-     * @return 
      */
-    public boolean isAddRelationBTValid(
-            HikariDataSource ds,
-            String idTheso, 
-            String idConcept,
-            String idConceptToAdd) {
+    public boolean isAddRelationBTValid( HikariDataSource ds, String idTheso, 
+            String idConcept, String idConceptToAdd) {
         RelationsHelper relationsHelper = new RelationsHelper();
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
@@ -92,17 +73,9 @@ public class ValidateActionHelper {
     
     /**
      * vérifie la cohérence des relations avant l'action
-     * @param ds
-     * @param idTheso
-     * @param idConcept
-     * @param idConceptToAdd
-     * @return 
      */
-    public boolean isMoveConceptToConceptValid(
-            HikariDataSource ds,
-            String idTheso, 
-            String idConcept,
-            String idConceptToAdd) {
+    public boolean isMoveConceptToConceptValid(HikariDataSource ds, String idTheso, 
+            String idConcept, String idConceptToAdd) {
         RelationsHelper relationsHelper = new RelationsHelper();
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
@@ -126,28 +99,15 @@ public class ValidateActionHelper {
     
     /**
      * vérifie la cohérence des relations avant l'action
-     * @param ds
-     * @param idTheso
-     * @param idConcept
-     * @param idConceptToAdd
-     * @return 
      */
-    public boolean isAddRelationRTValid(
-            HikariDataSource ds,
-            String idTheso,
-            String idConcept,
+    public boolean isAddRelationRTValid(HikariDataSource ds, String idTheso, String idConcept,
             String idConceptToAdd) {
         RelationsHelper relationsHelper = new RelationsHelper();
         if(relationsHelper.isConceptHaveRelationNTorBT(ds,
                 idConcept, idConceptToAdd, idTheso) == true) {
             message = "Une relation générique ou spécifique existe déjà entre les deux concepts";              
             return false;
-        }
-        // relation entre frères est interdite 
-/*        if(relationsHelper.isConceptHaveBrother(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
-            return false;
-        }*/         
+        }  
         return true;
     }     
 

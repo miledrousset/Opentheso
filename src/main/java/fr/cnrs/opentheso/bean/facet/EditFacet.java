@@ -18,7 +18,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -51,12 +50,18 @@ public class EditFacet implements Serializable {
     private NodeFacet facetSelected;
     
     private NodeIdValue conceptSelected;
-    
-    @PostConstruct
-    public void postInit(){
-        int test = 0;
-    }    
-    
+
+
+    public void reset() {
+        nodeLangs = null;
+        nodeLangsFiltered = null;
+        conceptList = null;
+        termeParentAssocie = null;
+        facetTraductions = null;
+        concepParent = null;
+        facetSelected = null;
+    }
+
     public void initEditFacet(String facetId, String idTheso, String idLang) {
         
         FacetHelper facetHelper = new FacetHelper();

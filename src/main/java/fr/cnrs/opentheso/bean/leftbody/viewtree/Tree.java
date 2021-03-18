@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -51,17 +50,34 @@ import org.primefaces.model.TreeNode;
 @Named(value = "tree")
 @SessionScoped
 public class Tree implements Serializable {
-    @Inject private Connect connect;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private LeftBodySetting leftBodySetting;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private ConceptsDiagramBean conceptsDiagramBean;
-    @Inject private IndexSetting indexSetting;
-    @Inject private EditFacet editFacet;
 
-    
+    @Inject
+    private Connect connect;
+
+    @Inject
+    private RightBodySetting rightBodySetting;
+
+    @Inject
+    private LeftBodySetting leftBodySetting;
+
+    @Inject
+    private ConceptView conceptBean;
+
+    @Inject
+    private SelectedTheso selectedTheso;
+
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+
+    @Inject
+    private ConceptsDiagramBean conceptsDiagramBean;
+
+    @Inject
+    private IndexSetting indexSetting;
+
+    @Inject
+    private EditFacet editFacet;
+
     private DataService dataService;
     private TreeNode selectedNode; // le neoud sélectionné par clique
     private TreeNode root;
@@ -70,20 +86,18 @@ public class Tree implements Serializable {
     private TreeNodeData treeNodeDataSelect;
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
-    @PostConstruct
-    public void postInit(){
-        int test = 0;
-    }    
-    
     public void reset() {
         root = null;
         selectedNode = null;
         rightBodySetting.init();
         noedSelected = false;
+        dataService = null;
+        treeNodeDataSelect = null;
+        selectedNodes = null;
         System.gc();
         System.runFinalization();
     }
-    
+
     public void initialise(String idTheso, String idLang) {
         this.idTheso = idTheso;
         this.idLang = idLang;
@@ -93,7 +107,6 @@ public class Tree implements Serializable {
         dataService = new DataService();
         root = dataService.createRoot();
         addFirstNodes();
-     //   expandAllNode();
         selectedNodes = new ArrayList<>();
         leftBodySetting.setIndex("0");
         noedSelected = false;
@@ -720,49 +733,4 @@ public class Tree implements Serializable {
     public void setTreeNodeDataSelect(TreeNodeData treeNodeDataSelect) {
         this.treeNodeDataSelect = treeNodeDataSelect;
     }
-    
-    
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-////// pour tester la mémoire occupée par l'arbre ////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * permet de déplier tout l'arbre 
-     *
-     * #MR
-     */
-    public void expandAllNode() {
-        dataService = null;
-        dataService = new DataService();
-        root = dataService.createRoot();        
-        addFirstNodes();
-        List<TreeNode> treeNodes = root.getChildren();
-       
-        for (TreeNode treeNode : treeNodes) {
-            expandedAllRecursively(treeNode, true);
-        }
-    }    
-    private void expandedAllRecursively(TreeNode node, boolean expanded) {
-        if (node.getChildCount() == 1 && node.getChildren().get(0).getData().toString().equals("DUMMY")) {
-            node.getChildren().remove(0);
-            addConceptsChild(node);
-        }      
-        for (TreeNode child : node.getChildren()) {
-            
-//            addConceptsChild(node);
-            expandedAllRecursively(child, expanded);
-        }
-        node.setExpanded(expanded);
-    }
-    
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-////// pour tester la mémoire occupée par l'arbre ////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////    
-    
-    
-    
 }
