@@ -47,26 +47,21 @@ public class GroupHelper {
     private final Log log = LogFactory.getLog(GroupHelper.class);
     private NodePreference nodePreference;
     private String message;
-    
-    public GroupHelper() {
-    }
 
-    
- //// restructuration de la classe GroupHelper le 31/07/2018 //////    
-    
- ////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////////
- ////////////////// Nouvelles fonctions #MR//////////////////////////////
- ////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////////    
-
+    //// restructuration de la classe GroupHelper le 31/07/2018 //////    
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////// Nouvelles fonctions #MR//////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////    
     /**
      * permet de mettre à jour le Type de groupe
+     *
      * @param ds
      * @param type
      * @param idTheso
      * @param idGroup
-     * @return 
+     * @return
      */
     public boolean updateTypeGroup(HikariDataSource ds,
             String type,
@@ -82,8 +77,8 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query="UPDATE concept_group SET idtypecode='" + type + "'"
-                            + " WHERE idgroup='" + idGroup + "'" 
+                    String query = "UPDATE concept_group SET idtypecode='" + type + "'"
+                            + " WHERE idgroup='" + idGroup + "'"
                             + " AND idthesaurus='" + idTheso + "'";
 
                     stmt.executeUpdate(query);
@@ -98,18 +93,19 @@ public class GroupHelper {
             // Log exception
             log.error("Error while updating groupType : " + idGroup, sqle);
         }
-        return status;       
-    }    
+        return status;
+    }
 
     /**
      * Permet de renommer un Domaine
+     *
      * @param ds
      * @param label
      * @param idLang
      * @param idGroup
      * @param idTheso
      * @param idUser
-     * @return 
+     * @return
      */
     public boolean renameGroup(
             HikariDataSource ds,
@@ -138,7 +134,7 @@ public class GroupHelper {
                             + " AND idgroup ='" + idGroup + "'";
 
                     stmt.executeUpdate(query);
-                    if(!addGroupTraductionHistoriqueRollBack(conn, idGroup, idTheso, idLang, label, idUser)){
+                    if (!addGroupTraductionHistoriqueRollBack(conn, idGroup, idTheso, idLang, label, idUser)) {
                         conn.rollback();
                         conn.close();
                     }
@@ -154,7 +150,7 @@ public class GroupHelper {
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while updating group : " + idGroup, sqle);
-            if(conn != null){
+            if (conn != null) {
                 try {
                     conn.rollback();
                     conn.close();
@@ -164,8 +160,8 @@ public class GroupHelper {
             }
         }
         return status;
-    }    
-    
+    }
+
     /**
      * Permet de retourner le type de groupe en utilisant le code
      *
@@ -176,7 +172,7 @@ public class GroupHelper {
     public NodeGroupType getGroupType(HikariDataSource ds, String codeType) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         NodeGroupType nodeGroupType = null;
         try {
             // Get connection from pool
@@ -186,17 +182,20 @@ public class GroupHelper {
                 try {
                     String query = "Select code, label, skoslabel from"
                             + " concept_group_type where"
-                            + " code = '" + codeType + "'" ;
+                            + " code = '" + codeType + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
-                    if(resultSet.next()) {
+                    if (resultSet.next()) {
                         nodeGroupType = new NodeGroupType();
                         nodeGroupType.setCode(resultSet.getString("code"));
                         nodeGroupType.setLabel(resultSet.getString("label"));
-                        nodeGroupType.setSkosLabel(resultSet.getString("skoslabel"));                        
+                        nodeGroupType.setSkosLabel(resultSet.getString("skoslabel"));
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -207,8 +206,8 @@ public class GroupHelper {
             log.error("Error while getting Type of Group : " + sqle);
         }
         return nodeGroupType;
-    }    
-    
+    }
+
     public boolean addIdArkGroup(HikariDataSource ds,
             String idTheso,
             String idGroup,
@@ -240,12 +239,11 @@ public class GroupHelper {
             } catch (SQLException sqle) {
                 // Log exception
                 log.error("Error while adding ArkId for IdGroup : " + idGroup, sqle);
-            }            
+            }
         }
         return false;
     }
-    
-    
+
     /**
      * Permet d'ajouter le Groupe par défaut pour les concepts qui sont
      * orphelins ou sans groupes
@@ -262,7 +260,7 @@ public class GroupHelper {
 
         String idGroup = "orphans";
 
-        insertGroup(ds, idGroup, idTheso,"", "C",
+        insertGroup(ds, idGroup, idTheso, "", "C",
                 "", //notation
                 "",
                 false,
@@ -278,12 +276,11 @@ public class GroupHelper {
         conceptGroupLabel.setLexicalvalue("NoGroup");
         addGroupTraduction(ds, conceptGroupLabel, 1);
         return true;
-    }    
-    
+    }
+
     /**
      * Cette fonction permet d'ajouter un group (MT, domaine etc..) avec le
-     * libellé
-     * elle retourne l'identifiant du nouveau groupe ou null
+     * libellé elle retourne l'identifiant du nouveau groupe ou null
      *
      * @param ds
      * @param nodeConceptGroup
@@ -297,12 +294,11 @@ public class GroupHelper {
         String idGroup = null;
         Connection conn;
         String idArk = "";
-        String idHandle = "";        
-        
-        
-    /*    nodeConceptGroup.setLexicalValue(
+        String idHandle = "";
+
+        /*    nodeConceptGroup.setLexicalValue(
                 new StringPlus().convertString(nodeConceptGroup.getLexicalValue()));
-        */
+         */
         if (nodeConceptGroup.getConceptGroup().getNotation() == null) {
             nodeConceptGroup.getConceptGroup().setNotation("");
         }
@@ -310,16 +306,16 @@ public class GroupHelper {
             // Get connection from pool
             conn = ds.getConnection();
             conn.setAutoCommit(false);
-            
+
             // récupération d'un nouvel id pour group
-            idGroup = getNewIdGroup(conn);            
-            if(idGroup == null) {
+            idGroup = getNewIdGroup(conn);
+            if (idGroup == null) {
                 conn.rollback();
                 conn.close();
                 return null;
             }
             // Ajout des informations dans la table de ConceptGroup
-            if(!insertGroup(conn, idGroup, idArk,
+            if (!insertGroup(conn, idGroup, idArk,
                     nodeConceptGroup.getConceptGroup().getIdthesaurus(),
                     nodeConceptGroup.getConceptGroup().getIdtypecode(),
                     nodeConceptGroup.getConceptGroup().getNotation(),
@@ -328,9 +324,9 @@ public class GroupHelper {
                 conn.close();
                 return null;
             }
-            
+
             // ajout de la traduction 
-            if(!addGroupTraductionRollBack(conn, idGroup,
+            if (!addGroupTraductionRollBack(conn, idGroup,
                     nodeConceptGroup.getConceptGroup().getIdthesaurus(),
                     nodeConceptGroup.getIdLang(),
                     nodeConceptGroup.getLexicalValue())) {
@@ -338,14 +334,14 @@ public class GroupHelper {
                 conn.close();
                 return null;
             }
-            
+
             // ajout dans l'historique 
-            if(!addGroupTraductionHistoriqueRollBack(conn,
+            if (!addGroupTraductionHistoriqueRollBack(conn,
                     idGroup,
                     nodeConceptGroup.getConceptGroup().getIdthesaurus(),
                     nodeConceptGroup.getIdLang(),
                     nodeConceptGroup.getLexicalValue(),
-                    idUser)){
+                    idUser)) {
                 conn.rollback();
                 conn.close();
                 return null;
@@ -386,10 +382,11 @@ public class GroupHelper {
             log.error("Error while adding ConceptGroup : " + idGroup, sqle);
         }
         return idGroup;
-    }    
-    
-     /**
-     * Cette fonction permet d'ajouter un libellé pour un group (MT, domaine etc..) 
+    }
+
+    /**
+     * Cette fonction permet d'ajouter un libellé pour un group (MT, domaine
+     * etc..)
      *
      * @param conn
      * @param idGroup
@@ -429,9 +426,10 @@ public class GroupHelper {
         }
         return status;
     }
-    
+
     /**
-     * Cette fonction permet d'ajouter une ligne historisque du chagement dans les traductions du groupe
+     * Cette fonction permet d'ajouter une ligne historisque du chagement dans
+     * les traductions du groupe
      *
      * @param conn
      * @param idGroup
@@ -472,22 +470,24 @@ public class GroupHelper {
             // Log exception
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
                 log.error("Error while adding traduction to ConceptGroupLabel : " + idGroup, sqle);
-            } else
+            } else {
                 status = true;
-            
+            }
+
         }
         return status;
     }
-    
+
     /**
-     * Permet d'insérer un Group dans la BDD 
+     * Permet d'insérer un Group dans la BDD
+     *
      * @param conn
      * @param idGroup
      * @param idArk
      * @param idTheso
      * @param idTypeCode
      * @param notation
-     * @return 
+     * @return
      */
     private boolean insertGroup(Connection conn,
             String idGroup, String idArk,
@@ -519,7 +519,7 @@ public class GroupHelper {
         }
         return status;
     }
-    
+
     /**
      *
      * @param conn
@@ -538,24 +538,27 @@ public class GroupHelper {
             return false;
         }
         ArkHelper arkHelper = new ArkHelper(nodePreference);
-        if(!arkHelper.login()) return false;
-        
+        if (!arkHelper.login()) {
+            return false;
+        }
+
         String privateUri = "?idg=" + idGroup + "&idt=" + idThesaurus;
-        if(!arkHelper.addArk(privateUri, nodeMetaData)) {
+        if (!arkHelper.addArk(privateUri, nodeMetaData)) {
             message = arkHelper.getMessage();
             return false;
         }
-       
+
         String idArk = arkHelper.getIdArk();
         String idHandle = arkHelper.getIdHandle();
-        if(idHandle == null)
+        if (idHandle == null) {
             idHandle = "";
-        if(!updateArkIdOfGroup(conn, idGroup, idThesaurus, idArk)) {
+        }
+        if (!updateArkIdOfGroup(conn, idGroup, idThesaurus, idArk)) {
             return false;
         }
-        return updateHandleIdOfGroup(conn, idGroup, idThesaurus, idHandle);        
+        return updateHandleIdOfGroup(conn, idGroup, idThesaurus, idHandle);
     }
-    
+
     /**
      *
      * @param conn
@@ -575,9 +578,9 @@ public class GroupHelper {
         }
         String privateUri = "?idg=" + idGroup + "&idt=" + idThesaurus;
         HandleHelper handleHelper = new HandleHelper(nodePreference);
-        
+
         String idHandle = handleHelper.addIdHandle(privateUri);
-        if(idHandle == null) {
+        if (idHandle == null) {
             message = handleHelper.getMessage();
             return false;
         }
@@ -587,21 +590,22 @@ public class GroupHelper {
 
     /**
      * permet de retourner un nouvel id pour le group
+     *
      * @param conn
-     * @return 
+     * @return
      */
     private String getNewIdGroup(Connection conn) {
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String idgroup = null;
         try {
             stmt = conn.createStatement();
             try {
                 String query = "select nextval('concept_group__id_seq') from concept_group__id_seq";
-                 //       + "select max(id) from concept_group";
+                //       + "select max(id) from concept_group";
                 stmt.executeQuery(query);
                 resultSet = stmt.getResultSet();
-                if(resultSet.next()) {
+                if (resultSet.next()) {
                     int idNumeriqueGroup = resultSet.getInt(1);
                     idgroup = "G" + idNumeriqueGroup;
                     // si le nouveau Id existe, on l'incrémente
@@ -609,16 +613,18 @@ public class GroupHelper {
                         idgroup = "G" + (++idNumeriqueGroup);
                     }
                 }
-            }
-            finally {
+            } finally {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
                 stmt.close();
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return idgroup;
-    }    
+    }
+
     /**
      * Cette fonction permet de savoir si l'ID du group existe ou non
      *
@@ -630,7 +636,7 @@ public class GroupHelper {
             String idGroup) {
 
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -656,9 +662,10 @@ public class GroupHelper {
         }
         return existe;
     }
-    
+
     /**
-     * Cette fonction permet de savoir si la notation esxiste dans le thésaurus (pour les groupes)
+     * Cette fonction permet de savoir si la notation esxiste dans le thésaurus
+     * (pour les groupes)
      *
      * @param ds
      * @param notation
@@ -669,7 +676,7 @@ public class GroupHelper {
             String notation, String idTheso) {
 
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         Connection conn;
         boolean existe = false;
 
@@ -687,6 +694,9 @@ public class GroupHelper {
                         existe = resultSet.getRow() != 0;
                     }
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -696,10 +706,10 @@ public class GroupHelper {
             log.error("Error while asking if notation existe : " + notation, sqle);
         }
         return existe;
-    }      
-    
+    }
+
     /**
-     * Cette fonction permet de mettre à jour l'identifiant Ark d'un group 
+     * Cette fonction permet de mettre à jour l'identifiant Ark d'un group
      * existant
      *
      * @param conn
@@ -739,7 +749,7 @@ public class GroupHelper {
     }
 
     /**
-     * Cette fonction permet de mettre à jour l'identifiant Handle d'un group 
+     * Cette fonction permet de mettre à jour l'identifiant Handle d'un group
      * existant
      *
      * @param conn
@@ -776,19 +786,20 @@ public class GroupHelper {
             log.error("Error while updating or adding HandleId of Group : " + idGroup, sqle);
         }
         return status;
-    }    
-    
+    }
+
     /**
      * permet de supprimer une relation entre le concept et le groupe
      * suppression de l'appartenance du concept à ce groupe
+     *
      * @param ds
      * @param idGroup
      * @param idConcept
      * @param idThesaurus
      * @param idUser
-     * @return 
+     * @return
      */
-    public boolean deleteRelationConceptGroupConcept(HikariDataSource ds, 
+    public boolean deleteRelationConceptGroupConcept(HikariDataSource ds,
             String idGroup, String idConcept, String idThesaurus, int idUser) {
         boolean status = false;
         Connection conn;
@@ -818,16 +829,16 @@ public class GroupHelper {
         }
         return status;
     }
-    
+
     /**
      * permet de supprimer l'appartenance des concepts à ce groupe/ collection
+     *
      * @param ds
      * @param idGroup
      * @param idTheso
-     * @return 
-     * #MR
+     * @return #MR
      */
-    public boolean removeConceptsFromThisGroup(HikariDataSource ds, String idGroup, String idTheso){
+    public boolean removeConceptsFromThisGroup(HikariDataSource ds, String idGroup, String idTheso) {
         boolean status = false;
         Connection conn;
         Statement stmt;
@@ -852,19 +863,18 @@ public class GroupHelper {
             // Log exception
             log.error("Error while deleting all relations of groupe-concept of group : " + idGroup, sqle);
         }
-        return status;        
+        return status;
     }
-    
-    
+
     /**
-     * Cette fonction permet de supprimer un groupe et ses traductions (subGroup)
+     * Cette fonction permet de supprimer un groupe et ses traductions
+     * (subGroup)
      *
      * @param conn
      * @param idGroup
      * @param idThesaurus
      * @param idUser
-     * @return
-     * #MR
+     * @return #MR
      */
     public boolean deleteConceptGroupRollBack(Connection conn,
             String idGroup, String idThesaurus, int idUser) {
@@ -885,12 +895,12 @@ public class GroupHelper {
                         + " idthesaurus = '" + idThesaurus + "'"
                         + " and idgroup  = '" + idGroup + "'";
                 stmt.executeUpdate(query);
-                
+
                 // Suppression du sous groupe
                 query = "delete from relation_group where"
                         + " id_thesaurus = '" + idThesaurus + "'"
                         + " and id_group2  = '" + idGroup + "'";
-                stmt.executeUpdate(query);                
+                stmt.executeUpdate(query);
                 status = true;
 
             } finally {
@@ -901,15 +911,14 @@ public class GroupHelper {
             log.error("Error while deleting group : " + idGroup, sqle);
         }
         return status;
-    }    
-    
+    }
+
     /**
      * permet de retourner la liste des domaines de premier niveau (MT, G, C, T)
      *
      * @param ds
      * @param idTheso
-     * @param idLang
-     * #MR
+     * @param idLang #MR
      * @return
      */
     public ArrayList<NodeGroup> getListRootConceptGroup(HikariDataSource ds,
@@ -924,33 +933,37 @@ public class GroupHelper {
             if (nodeConceptGroup == null) {
                 return null;
             }
-            if(isHaveSubGroup(ds, idTheso, idGroup))
+            if (isHaveSubGroup(ds, idTheso, idGroup)) {
                 nodeConceptGroup.setIsHaveChildren(true);
-            if(isGroupHaveConcepts(ds, idGroup, idTheso))
+            }
+            if (isGroupHaveConcepts(ds, idGroup, idTheso)) {
                 nodeConceptGroup.setIsHaveChildren(true);
-            
-            if(nodeConceptGroup.getLexicalValue().isEmpty())
+            }
+
+            if (nodeConceptGroup.getLexicalValue().isEmpty()) {
                 nodeConceptGroup.setLexicalValue("__" + idGroup);
-            
+            }
+
             nodeConceptGroupList.add(nodeConceptGroup);
         }
 
         return nodeConceptGroupList;
 
-    }    
-    
+    }
+
     /**
      * permet de trouver la liste des Id des Groupes de premier niveau
+     *
      * @param ds
      * @param idThesaurus
-     * @return 
+     * @return
      */
     public ArrayList<String> getListIdOfRootGroup(HikariDataSource ds,
             String idThesaurus) {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList tabIdConceptGroup = null;
 
         try {
@@ -959,10 +972,10 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select idgroup, notation from concept_group where idthesaurus = '" 
-                            + idThesaurus +
-                            "' and  idgroup NOT IN ( SELECT id_group2 FROM relation_group WHERE relation = 'sub')" +
-                            " order by notation ASC";
+                    String query = "select idgroup, notation from concept_group where idthesaurus = '"
+                            + idThesaurus
+                            + "' and  idgroup NOT IN ( SELECT id_group2 FROM relation_group WHERE relation = 'sub')"
+                            + " order by notation ASC";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -972,6 +985,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -982,8 +998,8 @@ public class GroupHelper {
             log.error("Error while getting List Id or Groups of thesaurus : " + idThesaurus, sqle);
         }
         return tabIdConceptGroup;
-    }    
-    
+    }
+
     /**
      * Permet de retourner un NodeConceptGroup par identifiant, par thésaurus et
      * par langue / ou null si rien cette fonction ne retourne pas les détails
@@ -1000,7 +1016,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         NodeGroup nodeConceptGroup = null;
         ConceptGroup conceptGroup = null;
 
@@ -1054,6 +1070,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1064,26 +1083,28 @@ public class GroupHelper {
             log.error("Error while adding element : " + idThesaurus, sqle);
         }
         return nodeConceptGroup;
-    }    
-    
-    
+    }
+
     /**
      * Permet de retourner la liste des sous_groupes d'un Group (type G/C/MT/T)
-     * si le group n'est pas traduit, on récupère l'ID à la place 
-     * 
+     * si le group n'est pas traduit, on récupère l'ID à la place
+     *
      * @param ds
      * @param idConceptGroup
      * @param idTheso
      * @param idLang
-     * @return
-     * #MR
+     * @return #MR
      */
     public ArrayList<NodeGroup> getListChildsOfGroup(HikariDataSource ds,
             String idConceptGroup, String idTheso, String idLang) {
-        
+
         ArrayList<String> lisIdGroups = getListGroupChildIdOfGroup(ds, idConceptGroup, idTheso);
-        if(lisIdGroups == null) return null;
-        if(lisIdGroups.isEmpty()) return null;
+        if (lisIdGroups == null) {
+            return null;
+        }
+        if (lisIdGroups.isEmpty()) {
+            return null;
+        }
 
         ArrayList<NodeGroup> nodeGroups = new ArrayList<>();
 
@@ -1093,31 +1114,35 @@ public class GroupHelper {
             if (nodeConceptGroup == null) {
                 return null;
             }
-            if(isHaveSubGroup(ds, idTheso, idGroup))
+            if (isHaveSubGroup(ds, idTheso, idGroup)) {
                 nodeConceptGroup.setIsHaveChildren(true);
-            if(isGroupHaveConcepts(ds, idGroup, idTheso))
+            }
+            if (isGroupHaveConcepts(ds, idGroup, idTheso)) {
                 nodeConceptGroup.setIsHaveChildren(true);
-            
-            if(nodeConceptGroup.getLexicalValue().isEmpty())
+            }
+
+            if (nodeConceptGroup.getLexicalValue().isEmpty()) {
                 nodeConceptGroup.setLexicalValue("__" + idGroup);
+            }
             nodeGroups.add(nodeConceptGroup);
         }
         return nodeGroups;
     }
-    
+
     /**
      * Retourne la liste des identifiants des groupes fils
+     *
      * @param ds
      * @param idGRoup
      * @param idThesaurus
-     * @return 
+     * @return
      */
     public ArrayList<String> getListGroupChildIdOfGroup(HikariDataSource ds,
             String idGRoup, String idThesaurus) {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String> idGroupParentt = new ArrayList<>();
         try {
             // Get connection from pool
@@ -1125,19 +1150,19 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT " +
-                                    "  concept_group.notation, " +
-                                    "  concept_group.idgroup" +
-                                    " FROM " +
-                                    "  relation_group, " +
-                                    "  concept_group" +
-                                    " WHERE " +
-                                    "  concept_group.idthesaurus = relation_group.id_thesaurus AND" +
-                                    "  concept_group.idgroup = relation_group.id_group2 AND" +
-                                    "  concept_group.idthesaurus = '" + idThesaurus + "' AND " +
-                                    "  relation_group.id_group1 = '" + idGRoup + "' AND " +
-                                    "  relation_group.relation = 'sub'" +
-                                    "  order by notation ASC;";
+                    String query = "SELECT "
+                            + "  concept_group.notation, "
+                            + "  concept_group.idgroup"
+                            + " FROM "
+                            + "  relation_group, "
+                            + "  concept_group"
+                            + " WHERE "
+                            + "  concept_group.idthesaurus = relation_group.id_thesaurus AND"
+                            + "  concept_group.idgroup = relation_group.id_group2 AND"
+                            + "  concept_group.idthesaurus = '" + idThesaurus + "' AND "
+                            + "  relation_group.id_group1 = '" + idGRoup + "' AND "
+                            + "  relation_group.relation = 'sub'"
+                            + "  order by notation ASC;";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {
@@ -1147,6 +1172,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1157,89 +1185,35 @@ public class GroupHelper {
             log.error("Error while getting Id of group of Concept : " + idGRoup, sqle);
         }
         return idGroupParentt;
-    }    
- ////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////////
- //////// fin des nouvelles fonctions ////////////////////////////////
- ////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////////        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-  
-    
-    
-    
-    /** à supprimer (doublon) #MR
-     * Permet de retourner la liste des sous_groupes d'un Group (type G/C/MT/T)
-     * si le group n'est pas traduit, on récupère l'ID à la place 
-     * 
+    }
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    //////// fin des nouvelles fonctions ////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////        
+
+    /**
+     * à supprimer (doublon) #MR Permet de retourner la liste des sous_groupes
+     * d'un Group (type G/C/MT/T) si le group n'est pas traduit, on récupère
+     * l'ID à la place
+     *
      * @param ds
      * @param idConceptGroup
      * @param idThesaurus
      * @param idLang
      * @return
-     * 
+     *
      */
     public ArrayList<NodeConceptTree> getRelationGroupOf(HikariDataSource ds,
             String idConceptGroup, String idThesaurus, String idLang) {
         ArrayList<NodeConceptTree> nodeConceptTrees;
         ArrayList<String> lisIdGroups = getListGroupChildIdOfGroup(ds, idConceptGroup, idThesaurus);
-        if(lisIdGroups == null) return null;
-        if(lisIdGroups.isEmpty()) return null;
+        if (lisIdGroups == null) {
+            return null;
+        }
+        if (lisIdGroups.isEmpty()) {
+            return null;
+        }
 
         nodeConceptTrees = new ArrayList<>();
         for (String idGroup : lisIdGroups) {
@@ -1256,16 +1230,16 @@ public class GroupHelper {
         }
         return nodeConceptTrees;
     }
-    
+
     /**
      * permet d'ajouter un sous groupe
+     *
      * @param ds
      * @param fatherNodeID
      * @param childNodeID
-     * @param idThesaurus 
-     * @return  
+     * @param idThesaurus
+     * @return
      */
-    
     public boolean addSubGroup(HikariDataSource ds,
             String fatherNodeID, String childNodeID, String idThesaurus) {
 
@@ -1298,7 +1272,7 @@ public class GroupHelper {
             }
         } catch (SQLException sqle) {
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
-              log.error("Error while adding relation : " + sqle);
+                log.error("Error while adding relation : " + sqle);
             }
 
         }
@@ -1307,11 +1281,12 @@ public class GroupHelper {
 
     /**
      * permet d'ajouter un concept à un groupe ou collection
+     *
      * @param ds
      * @param groupID
      * @param conceptID
-     * @param idThesaurus 
-     * @return  
+     * @param idThesaurus
+     * @return
      */
     public boolean addConceptGroupConcept(HikariDataSource ds,
             String groupID, String conceptID, String idThesaurus) {
@@ -1342,21 +1317,23 @@ public class GroupHelper {
                 conn.close();
             }
         } catch (SQLException sqle) {
-            if (sqle.getSQLState().equalsIgnoreCase("23505"))
+            if (sqle.getSQLState().equalsIgnoreCase("23505")) {
                 status = true;
-            else
+            } else {
                 log.error("Error while addConceptGroupConcept : " + sqle);
+            }
         }
         return status;
     }
 
     /**
      * Ajout d'un groupe à un concept avec Rollback
+     *
      * @param conn
      * @param groupID
      * @param conceptID
-     * @param idThesaurus 
-     * @return  
+     * @param idThesaurus
+     * @return
      */
     public boolean addConceptGroupConcept(Connection conn,
             String groupID, String conceptID, String idThesaurus) {
@@ -1382,16 +1359,14 @@ public class GroupHelper {
                     stmt.close();
                 }
             } finally {
-           //     conn.close();
+                //     conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while addConceptGroupConcept : " + sqle);
         }
         return status;
-    }    
-    
-
+    }
 
     /**
      * Fonction qui permet de supprimer un domaine de la branche donnée avec un
@@ -1465,10 +1440,6 @@ public class GroupHelper {
         return true;
     }
 
-
-    
-
-    
     /**
      * Cette fonction permet d'ajouter un group (MT, domaine etc..) avec le
      * libellé dans l'historique
@@ -1486,7 +1457,7 @@ public class GroupHelper {
             String urlSite, String idArk, int idUser, String idConceptGroup) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         nodeConceptGroup.setLexicalValue(
                 new StringPlus().convertString(nodeConceptGroup.getLexicalValue()));
         try {
@@ -1510,6 +1481,9 @@ public class GroupHelper {
                     stmt.executeUpdate(query);
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1533,6 +1507,7 @@ public class GroupHelper {
     public ArrayList<NodeGroup> getGroupHistoriqueAll(HikariDataSource ds,
             String idConcept, String idThesaurus) {
 
+        ResultSet resultSet = null;
         Connection conn;
         Statement stmt;
         ArrayList<NodeGroup> nodeGroupList = null;
@@ -1550,7 +1525,7 @@ public class GroupHelper {
                             + " and concept_group_historique.id_user=users.id_user"
                             + " order by modified DESC";
 
-                    ResultSet resultSet = stmt.executeQuery(query);
+                    resultSet = stmt.executeQuery(query);
                     if (resultSet != null) {
                         nodeGroupList = new ArrayList<>();
                         while (resultSet.next()) {
@@ -1569,6 +1544,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1596,6 +1574,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
+        ResultSet resultSet = null;
         ArrayList<NodeGroup> nodeGroupList = null;
 
         try {
@@ -1612,7 +1591,7 @@ public class GroupHelper {
                             + " and modified <= '" + date.toString()
                             + "' order by modified DESC";
 
-                    ResultSet resultSet = stmt.executeQuery(query);
+                    resultSet = stmt.executeQuery(query);
                     if (resultSet != null) {
                         nodeGroupList = new ArrayList<>();
                         while (resultSet.next()) {
@@ -1631,6 +1610,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1671,8 +1653,9 @@ public class GroupHelper {
         Connection conn;
         Statement stmt;
         boolean status = false;
-        if(idArk == null)
+        if (idArk == null) {
             idArk = "";
+        }
         /*
          * récupération de l'identifiant Ark pour le ConceptGroup
          * de type : ark:/66666/srvq9a5Ll41sk
@@ -1688,9 +1671,8 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
 
-
                     if (isArkActive) {
-                    /*    ArrayList<DcElement> dcElementsList = new ArrayList<>();
+                        /*    ArrayList<DcElement> dcElementsList = new ArrayList<>();
                         ArkClient ark_Client = new ArkClient();
                         idArk = ark_Client.getArkId(
                                 new FileUtilities().getDate(),
@@ -1719,10 +1701,11 @@ public class GroupHelper {
                 conn.close();
             }
         } catch (SQLException sqle) {
-            if (sqle.getSQLState().equalsIgnoreCase("23505"))
+            if (sqle.getSQLState().equalsIgnoreCase("23505")) {
                 status = true;
-            else
+            } else {
                 log.error("Error while adding ConceptGroup : " + idGroup, sqle);
+            }
         }
         return status;
     }
@@ -1742,6 +1725,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
+        ResultSet resultSet = null;
         ArrayList<NodeGroupTraductions> nodeGroupTraductionsList = null;
 
         try {
@@ -1755,7 +1739,7 @@ public class GroupHelper {
                             + " and idthesaurus = '" + idThesaurus + "'"
                             + " and lang != '" + idLang + "'";
 
-                    ResultSet resultSet = stmt.executeQuery(query);
+                    resultSet = stmt.executeQuery(query);
                     if (resultSet != null) {
                         nodeGroupTraductionsList = new ArrayList<>();
                         while (resultSet.next()) {
@@ -1768,6 +1752,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1782,17 +1769,18 @@ public class GroupHelper {
 
     /**
      * permet de retourner le nombre de Groups pour un concept
+     *
      * @param ds
      * @param idConcept
      * @param idThesaurus
-     * @return 
+     * @return
      */
     public int getCountOfGroups(HikariDataSource ds,
             String idConcept, String idThesaurus) {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int count = 0;
         try {
             // Get connection from pool
@@ -1800,18 +1788,21 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT count(concept_group_concept.idgroup)" +
-                        " FROM concept_group_concept" +
-                        " WHERE" +
-                        " concept_group_concept.idconcept = '" + idConcept +"'" +
-                        " AND" +
-                        " concept_group_concept.idthesaurus = '" + idThesaurus + "'";
+                    String query = "SELECT count(concept_group_concept.idgroup)"
+                            + " FROM concept_group_concept"
+                            + " WHERE"
+                            + " concept_group_concept.idconcept = '" + idConcept + "'"
+                            + " AND"
+                            + " concept_group_concept.idthesaurus = '" + idThesaurus + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
                     }
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1822,8 +1813,8 @@ public class GroupHelper {
             log.error("Error while getting count of Groups of Concept : " + idConcept, sqle);
         }
         return count;
-    }    
-    
+    }
+
     /**
      * Cette fonction permet de retourner les traductions d'un domaine
      *
@@ -1837,6 +1828,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
+        ResultSet resultSet = null;
         ArrayList<NodeGroupTraductions> nodeGroupTraductionsList = null;
 
         try {
@@ -1850,7 +1842,7 @@ public class GroupHelper {
                             + "where idgroup = '" + idGroup + "'"
                             + " and idthesaurus = '" + idThesaurus + "'";
 
-                    ResultSet resultSet = stmt.executeQuery(query);
+                    resultSet = stmt.executeQuery(query);
                     if (resultSet != null) {
                         nodeGroupTraductionsList = new ArrayList<>();
                         while (resultSet.next()) {
@@ -1865,6 +1857,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1920,10 +1915,11 @@ public class GroupHelper {
                 conn.close();
             }
         } catch (SQLException sqle) {
-            if (sqle.getSQLState().equalsIgnoreCase("23505"))
+            if (sqle.getSQLState().equalsIgnoreCase("23505")) {
                 status = true;
-            else
+            } else {
                 log.error("Error while adding traduction to ConceptGroupLabel : " + conceptGroupLabel.getIdgroup(), sqle);
+            }
         }
         return status;
     }
@@ -1991,6 +1987,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
+        ResultSet resultSet = null;
         ArrayList<NodeGroup> nodeGroupList = null;
 
         try {
@@ -2007,7 +2004,7 @@ public class GroupHelper {
                             + " and concept_group_label_historique.id_user=users.id_user"
                             + "' order by modified DESC";
 
-                    ResultSet resultSet = stmt.executeQuery(query);
+                    resultSet = stmt.executeQuery(query);
                     if (resultSet != null) {
                         nodeGroupList = new ArrayList<>();
                         while (resultSet.next()) {
@@ -2024,6 +2021,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2052,6 +2052,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
+        ResultSet resultSet = null;
         ArrayList<NodeGroup> nodeGroupList = null;
 
         try {
@@ -2069,7 +2070,7 @@ public class GroupHelper {
                             + " and modified <= '" + date.toString()
                             + "' order by modified DESC";
 
-                    ResultSet resultSet = stmt.executeQuery(query);
+                    resultSet = stmt.executeQuery(query);
                     if (resultSet != null) {
                         nodeGroupList = new ArrayList<>();
                         while (resultSet.next()) {
@@ -2086,6 +2087,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2098,13 +2102,11 @@ public class GroupHelper {
         return nodeGroupList;
     }
 
-
-
     public String getIdFather(HikariDataSource ds,
             String idGRoup, String idThesaurus) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String idFather = null;
         try {
             // Get connection from pool
@@ -2124,6 +2126,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2136,10 +2141,6 @@ public class GroupHelper {
 
         return idFather;
     }
-
-
-
-
 
     /**
      * Permet de retourner un NodeGroupLable des Labels d'un Group / idThesaurus
@@ -2154,7 +2155,7 @@ public class GroupHelper {
             String idConceptGroup, String idThesaurus) {
 
         NodeGroupLabel nodeGroupLabel = new NodeGroupLabel();
-        
+
         nodeGroupLabel.setIdGroup(idConceptGroup);
         nodeGroupLabel.setIdThesaurus(idThesaurus);
         nodeGroupLabel.setIdArk(getIdArkOfGroup(ds, idConceptGroup, idThesaurus));
@@ -2164,7 +2165,6 @@ public class GroupHelper {
 
         return nodeGroupLabel;
     }
-    
 
     /**
      * Permet de retourner le lexical Value of Group
@@ -2180,7 +2180,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String lexicalValue = "";
 
         try {
@@ -2200,6 +2200,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2219,10 +2222,8 @@ public class GroupHelper {
      * @param idGroup
      * @param idThesaurus
      * @param idLang
-     * @return
-     * #MR
+     * @return #MR
      */
-    
     public boolean deleteGroupTraduction(HikariDataSource ds,
             String idGroup, String idThesaurus,
             String idLang) {
@@ -2254,8 +2255,6 @@ public class GroupHelper {
         }
         return status;
     }
-
-
 
     /**
      * Permet de retourner une ArrayList de NodeConceptGroup par langue et par
@@ -2302,7 +2301,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = null;
         text = new StringPlus().convertString(text);
 
@@ -2335,6 +2334,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2347,7 +2349,7 @@ public class GroupHelper {
 
         return nodeAutoCompletionList;
     }
-    
+
     /**
      * Cette fonction permet de récupérer la liste des domaines pour
      * l'autocomplétion
@@ -2363,7 +2365,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         text = new StringPlus().convertString(text);
 
@@ -2394,6 +2396,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2405,7 +2410,7 @@ public class GroupHelper {
         }
 
         return nodeIdValues;
-    }    
+    }
 
     /**
      * Cette fonction permet de récupérer la liste des domaines sauf celui en
@@ -2425,7 +2430,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = null;
         text = new StringPlus().convertString(text);
 
@@ -2459,6 +2464,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2485,7 +2493,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList tabIdConceptGroup = null;
 
         try {
@@ -2504,6 +2512,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2520,7 +2531,7 @@ public class GroupHelper {
             String idThesaurus) {
 
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList tabIdConceptGroup = null;
 
         try {
@@ -2538,6 +2549,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2549,36 +2563,33 @@ public class GroupHelper {
         return tabIdConceptGroup;
     }
 
-
-
     /**
-     * Permet de retourner l'hiérarchie complète d'un groupe 
-     * en partant du groupe ou sous-groupe pour arriver à la racine.
-     * exp pour le sous_groupe (environnement) : Education -> Education science -> environnement 
-     * 
+     * Permet de retourner l'hiérarchie complète d'un groupe en partant du
+     * groupe ou sous-groupe pour arriver à la racine. exp pour le sous_groupe
+     * (environnement) : Education -> Education science -> environnement
+     *
      * @param ds
      * @param idThesaurus
      * @param idGroup
-     * @return 
-     * #MR
+     * @return #MR
      */
-    public NodeGroup getGroupHierarchy (HikariDataSource ds, 
+    public NodeGroup getGroupHierarchy(HikariDataSource ds,
             String idThesaurus, String idGroup) {
         NodeGroup nodeGroup = new NodeGroup();
-        
-     //   nodeGroup. 
-      //  getSubGroup()
-      return nodeGroup;
+
+        //   nodeGroup. 
+        //  getSubGroup()
+        return nodeGroup;
     }
-    
-    public String getSubGroup(HikariDataSource ds, 
+
+    public String getSubGroup(HikariDataSource ds,
             String idThesaurus, String idGroup) {
         return "";
     }
-    
+
     /**
-     * Permet de retourner la liste Id des Groupes pour un Concept et un thésaurus
-     * donné
+     * Permet de retourner la liste Id des Groupes pour un Concept et un
+     * thésaurus donné
      *
      * @param ds le pool de connexion
      * @param idThesaurus
@@ -2590,7 +2601,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList tabIdConceptGroup = null;
 
         try {
@@ -2612,6 +2623,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2623,7 +2637,7 @@ public class GroupHelper {
         }
         return tabIdConceptGroup;
     }
-    
+
     /**
      * Permet de retourner la liste des Groupes pour un Concept et un thésaurus
      * donné
@@ -2631,16 +2645,15 @@ public class GroupHelper {
      * @param ds le pool de connexion
      * @param idThesaurus
      * @param idConcept
-     * @return Objet Class ArrayList NodeGroup
-     * #MR
+     * @return Objet Class ArrayList NodeGroup #MR
      */
     public ArrayList<NodeUri> getListGroupOfConceptArk(HikariDataSource ds,
             String idThesaurus, String idConcept) {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
-        ArrayList <NodeUri> nodeUris = new ArrayList<>();
+        ResultSet resultSet = null;
+        ArrayList<NodeUri> nodeUris = new ArrayList<>();
 
         try {
             // Get connection from pool
@@ -2648,44 +2661,47 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT " +
-                        "  concept_group.idgroup," +
-                        "  concept_group.id_ark," +
-                        "  concept_group.id_handle, " +
-                        "  concept_group.id_doi " +
-                        " FROM " +
-                        "  concept_group_concept," +
-                        "  concept_group" +
-                        " WHERE" +
-                        "  concept_group.idgroup = concept_group_concept.idgroup AND" +
-                        "  concept_group.idthesaurus = concept_group_concept.idthesaurus AND" +
-                        "  concept_group_concept.idconcept = '" + idConcept + "' AND" +
-                        "  concept_group_concept.idthesaurus = '" + idThesaurus + "'";
+                    String query = "SELECT "
+                            + "  concept_group.idgroup,"
+                            + "  concept_group.id_ark,"
+                            + "  concept_group.id_handle, "
+                            + "  concept_group.id_doi "
+                            + " FROM "
+                            + "  concept_group_concept,"
+                            + "  concept_group"
+                            + " WHERE"
+                            + "  concept_group.idgroup = concept_group_concept.idgroup AND"
+                            + "  concept_group.idthesaurus = concept_group_concept.idthesaurus AND"
+                            + "  concept_group_concept.idconcept = '" + idConcept + "' AND"
+                            + "  concept_group_concept.idthesaurus = '" + idThesaurus + "'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
                         NodeUri nodeUri = new NodeUri();
                         nodeUri.setIdConcept(resultSet.getString("idgroup"));
-                        if(resultSet.getString("id_ark") == null) {
+                        if (resultSet.getString("id_ark") == null) {
                             nodeUri.setIdArk("");
                         } else {
                             nodeUri.setIdArk(resultSet.getString("id_ark"));
                         }
-                        if(resultSet.getString("id_handle") == null) {
+                        if (resultSet.getString("id_handle") == null) {
                             nodeUri.setIdHandle("");
                         } else {
                             nodeUri.setIdHandle(resultSet.getString("id_handle"));
                         }
-                        if(resultSet.getString("id_doi") == null) {
+                        if (resultSet.getString("id_doi") == null) {
                             nodeUri.setIdDoi("");
                         } else {
                             nodeUri.setIdDoi(resultSet.getString("id_doi"));
-                        }                           
+                        }
                         nodeUris.add(nodeUri);
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2696,10 +2712,8 @@ public class GroupHelper {
             log.error("Error while getting List Id or Groups of Concept : " + idConcept, sqle);
         }
         return nodeUris;
-    }        
-    
-   
-    
+    }
+
     /**
      * Permet de retourner la liste des Groupes pour un Concept et un thésaurus
      * donné
@@ -2715,8 +2729,8 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
-        ArrayList <NodeGroup> nodeGroups = new ArrayList<>();
+        ResultSet resultSet = null;
+        ArrayList<NodeGroup> nodeGroups = new ArrayList<>();
 
         try {
             // Get connection from pool
@@ -2733,14 +2747,18 @@ public class GroupHelper {
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
-                        NodeGroup nodeGroup = getThisConceptGroup(ds, 
+                        NodeGroup nodeGroup = getThisConceptGroup(ds,
                                 resultSet.getString("idgroup"),
                                 idThesaurus, idLang);
-                        if(nodeGroup != null) 
+                        if (nodeGroup != null) {
                             nodeGroups.add(nodeGroup);
+                        }
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2751,7 +2769,7 @@ public class GroupHelper {
             log.error("Error while getting List Id or Groups of Concept : " + idConcept, sqle);
         }
         return nodeGroups;
-    }    
+    }
 
     /**
      * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une
@@ -2766,7 +2784,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String ark = "";
         try {
             conn = ds.getConnection();
@@ -2784,6 +2802,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2795,7 +2816,7 @@ public class GroupHelper {
         }
         return ark;
     }
-    
+
     /**
      * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une
      * chaine vide
@@ -2809,7 +2830,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String ark = "";
         try {
             conn = ds.getConnection();
@@ -2827,6 +2848,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2838,7 +2862,7 @@ public class GroupHelper {
         }
         return ark;
     }
-    
+
     /**
      * Cette fonction permet de récupérer la notation d'un groupe
      *
@@ -2851,7 +2875,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String notation = "";
         try {
             conn = ds.getConnection();
@@ -2869,6 +2893,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2880,7 +2907,7 @@ public class GroupHelper {
         }
         return notation;
     }
-    
+
     /**
      * Cette fonction permet de récupérer la notation d'un groupe
      *
@@ -2890,12 +2917,14 @@ public class GroupHelper {
      * @param idThesaurus
      * @return Objet class Concept
      */
-    public boolean setNotationOfGroup(HikariDataSource ds, 
+    public boolean setNotationOfGroup(HikariDataSource ds,
             String notation, String idGroup, String idThesaurus) {
 
         Connection conn;
         Statement stmt;
-        if(notation == null) return false;
+        if (notation == null) {
+            return false;
+        }
         boolean status = false;
         try {
             conn = ds.getConnection();
@@ -2918,8 +2947,8 @@ public class GroupHelper {
             log.error("Error while updating notation of Group : " + idGroup, sqle);
         }
         return status;
-    }     
-    
+    }
+
     /**
      * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une
      * chaine vide
@@ -2932,7 +2961,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String idGroup = "";
         try {
             conn = ds.getConnection();
@@ -2949,6 +2978,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2960,7 +2992,7 @@ public class GroupHelper {
         }
         return idGroup;
     }
-    
+
     /**
      * Cette fonction permet de récupérer l'identifiant du Concept d'après
      * l'idArk
@@ -2973,7 +3005,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String idThesaurus = null;
         try {
             conn = ds.getConnection();
@@ -2990,6 +3022,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3000,9 +3035,7 @@ public class GroupHelper {
             log.error("Error while getting idThesaurus by idArk  : " + arkId, sqle);
         }
         return idThesaurus;
-    }    
-    
-    
+    }
 
     /**
      * Permet de mettre à jour un Domaine suivant un identifiant un thésaurus et
@@ -3068,7 +3101,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -3085,6 +3118,9 @@ public class GroupHelper {
                     resultSet.next();
                     existe = (resultSet.getRow() != 0);
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3096,9 +3132,9 @@ public class GroupHelper {
         }
         return existe;
     }
-    
+
     /**
-     * Cette fonction permet de savoir si le Concept a un Group ou non 
+     * Cette fonction permet de savoir si le Concept a un Group ou non
      *
      * @param ds
      * @param idConcept
@@ -3110,7 +3146,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean haveGroup = false;
 
         try {
@@ -3120,13 +3156,16 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "SELECT idgroup FROM concept_group_concept"
-                            + " WHERE idthesaurus='" + idThesaurus +"'"
+                            + " WHERE idthesaurus='" + idThesaurus + "'"
                             + " AND idconcept='" + idConcept + "'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     haveGroup = resultSet.next();
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3137,10 +3176,10 @@ public class GroupHelper {
             log.error("Error while testing if Concept have Group : " + idConcept, sqle);
         }
         return haveGroup;
-    }    
-    
+    }
+
     /**
-     * Cette fonction permet de savoir si le Groupe a des concepts 
+     * Cette fonction permet de savoir si le Groupe a des concepts
      *
      * @param ds
      * @param idGroup
@@ -3152,7 +3191,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean haveConcept = false;
 
         try {
@@ -3162,13 +3201,16 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "SELECT idconcept FROM concept_group_concept"
-                            + " WHERE idthesaurus='" + idThesaurus +"'"
+                            + " WHERE idthesaurus='" + idThesaurus + "'"
                             + " AND idgroup='" + idGroup + "'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     haveConcept = resultSet.next();
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3179,7 +3221,7 @@ public class GroupHelper {
             log.error("Error while testing if Group have Concepts : " + idGroup, sqle);
         }
         return haveConcept;
-    }        
+    }
 
     /**
      * Cette fonction permet de savoir si le Group est vide (pas de concepts)
@@ -3194,7 +3236,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean group = false;
 
         try {
@@ -3213,6 +3255,9 @@ public class GroupHelper {
                     group = (resultSet.getRow() == 0);
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3239,7 +3284,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         title = new StringPlus().convertString(title);
         try {
@@ -3261,6 +3306,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3272,7 +3320,7 @@ public class GroupHelper {
         }
         return existe;
     }
-    
+
     /**
      * Cette fonction permet de savoir si le Domaine existe dans cette langue
      *
@@ -3287,7 +3335,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -3307,6 +3355,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3317,7 +3368,7 @@ public class GroupHelper {
             log.error("Error while asking if traduction exist of Group : " + idGroup, sqle);
         }
         return existe;
-    }    
+    }
 
     /**
      * Fonction qui permet de retourner la liste des Type de Groupe
@@ -3328,7 +3379,7 @@ public class GroupHelper {
     public List<SelectItem> getAllGroupType(HikariDataSource ds) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<SelectItem> nodeGroupTypes = new ArrayList<>();
 
         try {
@@ -3348,6 +3399,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3371,7 +3425,7 @@ public class GroupHelper {
     public String getTypeGroupPere(HikariDataSource ds, String idPere, String idTheso) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String typeGroupPere = null;
         try {
             // Get connection from pool
@@ -3387,6 +3441,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3415,7 +3472,7 @@ public class GroupHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean subGroup = false;
 
         try {
@@ -3438,6 +3495,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3598,16 +3658,18 @@ public class GroupHelper {
             stmt.close();
         }
     }
+
     /**
      * moveSubGroupToSubGroup
-     * 
-     * méthode pour supprimer l'enregistrement de la bdd de donnée de la 
-     * précédente liaison ancien groupe  -> sous groupe de la table relation group
-     * pour ajouter la nouvelle relation nouveau groupe-> sous groupe
-     * de la table relation group
-     * 
+     *
+     * méthode pour supprimer l'enregistrement de la bdd de donnée de la
+     * précédente liaison ancien groupe -> sous groupe de la table relation
+     * group pour ajouter la nouvelle relation nouveau groupe-> sous groupe de
+     * la table relation group
+     *
      * pour forcer le type passer en paramètre à être enreggistré dans la table
      * concept_group
+     *
      * @param conn
      * @param originNodeIdConcept
      * @param targetNodeIdConcept
@@ -3615,144 +3677,104 @@ public class GroupHelper {
      * @param type
      * @param idThesaurus
      * @param idUser
-     * @return 
+     * @return
      */
-     public boolean moveSubGroupToSubGroup(Connection conn, String originNodeIdConcept, String targetNodeIdConcept, String BTOrigin, String type, String idThesaurus, int idUser) {
-        PreparedStatement stmt;
-        boolean ret=true;
+    public boolean moveSubGroupToSubGroup(Connection conn, String originNodeIdConcept, String targetNodeIdConcept, String BTOrigin, String type, String idThesaurus, int idUser) {
         //on supprime la branche du BT d'origine
-        String sql="DELETE FROM relation_group WHERE id_group1=? AND id_thesaurus=? AND relation=? AND id_group2=?";
-        try{
-            
-        
-            stmt=conn.prepareStatement(sql);
-            stmt.setString(1,BTOrigin);
-            stmt.setString(2,idThesaurus);
-            stmt.setString(3,"sub");
-            stmt.setString(4,originNodeIdConcept);
-            
-            try{
+        String sql = "DELETE FROM relation_group WHERE id_group1=? AND id_thesaurus=? AND relation=? AND id_group2=?";
+        try ( PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, BTOrigin);
+            stmt.setString(2, idThesaurus);
+            stmt.setString(3, "sub");
+            stmt.setString(4, originNodeIdConcept);
+            try {
                 stmt.execute();
-            }
-            finally{
-                stmt.close();
-        
-            }
-        
-        }
-        catch(SQLException e){
-            log.error("error while deleting in table relation_group for group1 :"+BTOrigin+" group 2"+originNodeIdConcept,e);
-            return false;
-            
-        }
-        //on ajoute la branche sur la targetNode
-        sql="INSERT INTO relation_group(id_group1,id_thesaurus,relation,id_group2) VALUES (?,?,?,?)";
-        try{
-            stmt=conn.prepareCall(sql);
-            stmt.setString(1,targetNodeIdConcept);
-            stmt.setString(2,idThesaurus);
-            stmt.setString(3,"sub");
-            stmt.setString(4,originNodeIdConcept);
-            try{
-                stmt.execute();
-            }
-            finally{
+            } finally {
                 stmt.close();
             }
+        } catch (SQLException e) {
+            log.error("error while deleting in table relation_group for group1 :" + BTOrigin + " group 2" + originNodeIdConcept, e);
+            return false;
+
         }
-        catch(SQLException e){
-            log.error("error while insert into table relation group for id_group 1 :"+targetNodeIdConcept+" id_group2"+originNodeIdConcept,e);
+        try ( PreparedStatement stmt = conn.prepareCall("INSERT INTO relation_group(id_group1,id_thesaurus,relation,id_group2) VALUES (?,?,?,?)")) {
+            stmt.setString(1, targetNodeIdConcept);
+            stmt.setString(2, idThesaurus);
+            stmt.setString(3, "sub");
+            stmt.setString(4, originNodeIdConcept);
+            try {
+                stmt.execute();
+            } finally {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            log.error("error while insert into table relation group for id_group 1 :" + targetNodeIdConcept + " id_group2" + originNodeIdConcept, e);
             return false;
         }
-        
+
         //finalement on force le type dans la table concept_group
-        String typeCode="G";
-        switch(type){
-            case("collection"):
-            case("subCollection"):typeCode="C";
-            break;
-            case("group"):
-            case("subGroup"):typeCode="G";            
-            break;
-            case("theme"):
-            case("subTheme"):typeCode="T";
-            break;
-            case("microTheso"):
-            case("subMicroTheso"):typeCode="MT";
-            break;
+        String typeCode = "G";
+        switch (type) {
+            case ("collection"):
+            case ("subCollection"):
+                typeCode = "C";
+                break;
+            case ("group"):
+            case ("subGroup"):
+                typeCode = "G";
+                break;
+            case ("theme"):
+            case ("subTheme"):
+                typeCode = "T";
+                break;
+            case ("microTheso"):
+            case ("subMicroTheso"):
+                typeCode = "MT";
+                break;
         }
-        sql="UPDATE concept_group SET idtypecode=? WHERE idgroup=? AND idthesaurus=?";
-        try{
-            stmt=conn.prepareCall(sql);
-            stmt.setString(1,typeCode);
-            stmt.setString(2,originNodeIdConcept);
-            stmt.setString(3,idThesaurus);
-        }   
-        catch(SQLException e){
-            log.error("error while update concept_group for id group"+originNodeIdConcept,e);
+        try ( PreparedStatement stmt = conn.prepareCall("UPDATE concept_group SET idtypecode=? WHERE idgroup=? AND idthesaurus=?")) {
+            stmt.setString(1, typeCode);
+            stmt.setString(2, originNodeIdConcept);
+            stmt.setString(3, idThesaurus);
+        } catch (SQLException e) {
+            log.error("error while update concept_group for id group" + originNodeIdConcept, e);
             return false;
         }
         return true;
     }
 
-
-
     public String getSuffixFromNode(HikariDataSource poolConnexion, String idThesaurus, String idGroup) {
-        PreparedStatement stmt;
-        Connection conn;
-        ResultSet rs;
-        String ret="";
-        try{
-            conn=poolConnexion.getConnection();
-            try{
-                String sql="SELECT numerotation FROM concept_group WHERE idthesaurus=? and idgroup=? ";
-                stmt=conn.prepareStatement(sql);
-                stmt.setString(1,idThesaurus);
-                stmt.setString(2,idGroup);
-                try{
-                    rs=stmt.executeQuery();
+
+        String ret = "";
+        try ( Connection conn = poolConnexion.getConnection()) {
+            try ( PreparedStatement stmt = conn.prepareStatement("SELECT numerotation FROM concept_group WHERE idthesaurus=? and idgroup=? ")) {
+                stmt.setString(1, idThesaurus);
+                stmt.setString(2, idGroup);
+                try ( ResultSet rs = stmt.executeQuery()) {
                     rs.next();
-                    int tmp=rs.getInt("numerotation");
-                    ret=""+tmp; 
+                    int tmp = rs.getInt("numerotation");
+                    ret = "" + tmp;
                 }
-                finally{
-                    stmt.close();
-                }
-            }finally{
-                conn.close();
             }
-        }
-        catch(SQLException e){
-            log.error("error while getting stuff from "+idGroup+" theso "+idThesaurus, e);
+        } catch (SQLException e) {
+            log.error("error while getting stuff from " + idGroup + " theso " + idThesaurus, e);
         }
         return ret;
     }
 
     public void saveSuffixFromNode(HikariDataSource poolConnexion, String idThesaurus, String idConcept, String suffix) {
-       Connection conn;
-       PreparedStatement stmt;
-       try{
-           conn=poolConnexion.getConnection();
-           try{
-               String sql="UPDATE concept_group SET numerotation=? WHERE idthesaurus=? AND idgroup=? ";
-               stmt=conn.prepareStatement(sql);
-               stmt.setInt(1,Integer.parseInt(suffix));
-               stmt.setString(2,idThesaurus);
-               stmt.setString(3,idConcept);
-               try{
-                   stmt.execute();
-               }
-               finally{
-                stmt.close();       
-                }
-           }
-           finally{
-               conn.close();
-           }
-           
-       }catch(SQLException e){
-           log.error("error while updating table concept group for thsaurus "+idThesaurus+" idconcept "+idConcept, e);
-       }
+
+        try ( Connection conn = poolConnexion.getConnection()) {
+            try ( PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE concept_group SET numerotation=? WHERE idthesaurus=? AND idgroup=? ")) {
+                stmt.setInt(1, Integer.parseInt(suffix));
+                stmt.setString(2, idThesaurus);
+                stmt.setString(3, idConcept);
+                stmt.execute();
+            }
+        } catch (SQLException e) {
+            log.error("error while updating table concept group for thsaurus " + idThesaurus + " idconcept " + idConcept, e);
+        }
     }
 
     public NodePreference getNodePreference() {
@@ -3771,11 +3793,10 @@ public class GroupHelper {
         this.message = message;
     }
 
-
-     public ArrayList<String> getListOfGroupByTheo(Connection conn, String idThesaurus) {
+    public ArrayList<String> getListOfGroupByTheo(Connection conn, String idThesaurus) {
 
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList tabIdConceptGroup = null;
 
         try {
@@ -3793,6 +3814,9 @@ public class GroupHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -3806,23 +3830,21 @@ public class GroupHelper {
 
     public ArrayList<DomaineDto> getAllGroupsByThesaurusAndLang(Connect connect, String idThesaurus, String lang) {
         ArrayList<DomaineDto> domaines = new ArrayList<>();
-        try {
-            Statement stmt = connect.getPoolConnexion().getConnection().createStatement();
+        try ( Statement stmt = connect.getPoolConnexion().getConnection().createStatement()) {
             stmt.executeQuery("SELECT idgroup, lexicalvalue FROM concept_group_label where idthesaurus = '"
-                    + idThesaurus+"' AND lang = '"+lang.toLowerCase()+"'");
-            ResultSet resultSet = stmt.getResultSet();
-            while (resultSet.next()) {
-                DomaineDto domaineDto = new DomaineDto();
-                domaineDto.setId(resultSet.getString("idgroup"));
-                domaineDto.setName(resultSet.getString("lexicalvalue"));
-                domaines.add(domaineDto);
+                    + idThesaurus + "' AND lang = '" + lang.toLowerCase() + "'");
+            try ( ResultSet resultSet = stmt.getResultSet()) {
+                while (resultSet.next()) {
+                    DomaineDto domaineDto = new DomaineDto();
+                    domaineDto.setId(resultSet.getString("idgroup"));
+                    domaineDto.setName(resultSet.getString("lexicalvalue"));
+                    domaines.add(domaineDto);
+                }
             }
-            resultSet.close();
-            stmt.close();
         } catch (SQLException e) {
             log.error(e);
         }
         return domaines;
     }
-   
+
 }

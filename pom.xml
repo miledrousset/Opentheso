@@ -23,11 +23,8 @@
             <artifactId>d3js</artifactId>
             <version>6.2.0</version>
         </dependency>        
-<!-- En cours d'intégration -->        
-        
-        
-        
-        
+<!-- En cours d'intégration -->
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
@@ -141,19 +138,6 @@
             <version>1.1</version>
             <type>jar</type>
         </dependency>
-<!--        <dependency>
-            <groupId>ki-jzkit-iface</groupId>
-            <artifactId>ki-jzkit-iface</artifactId>
-            <version>1.2.3</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>ki-jzkit-hss</groupId>
-            <artifactId>ki-jzkit-hss</artifactId>
-            <version>1.2.3</version>
-            <type>jar</type>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
@@ -190,22 +174,12 @@
             <version>3.4.4</version>
             <type>jar</type>
         </dependency>
-
-
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-core</artifactId>
             <version>3.3.0</version>
             <type>jar</type>
         </dependency>
-        <!-- TODO Dependency to delate
-                <dependency>
-                    <groupId>virt_jena3</groupId>
-                    <artifactId>virt_jena</artifactId>
-                    <version>3.0</version>
-                    <type>jar</type>
-                </dependency>
-        -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -309,9 +283,6 @@
         </plugins>
     </build>    
 
-
-
-    
     <pluginRepositories>
         <pluginRepository>
             <id>central</id>

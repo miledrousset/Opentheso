@@ -19,7 +19,6 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 /**
@@ -56,19 +55,7 @@ public class SearchBean implements Serializable {
     private boolean exactMatch;
     private boolean withNote;
     private boolean withId;
-    
-    @PostConstruct
-    public void postInit(){
-        int test = 0;
-    }    
-    
-    /**
-     * Creates a new instance of SearchBean
-     */
-    public SearchBean() {
-//        nodeConceptSearchs = new ArrayList<>();
-    }
-    
+
     public void activateExactMatch(){
         withId = false;
         withNote = false;
@@ -93,52 +80,7 @@ public class SearchBean implements Serializable {
             listResultAutoComplete.clear();
         searchSelected = null;
     }
-    
-    
-    
-    
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-////////////////////////// Memory test //////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////       
-    /*
-    public void testMemory() {
-        String value = "vase";
-        String id = "300";
-        isSelectedItem = false;
-    //    searchSelected = new NodeSearchMini();
-        if(searchHelper == null) 
-            searchHelper = new SearchHelper();
-        
-        if(listResultAutoComplete == null) {
-            listResultAutoComplete = new ArrayList<>();
-        } else 
-            listResultAutoComplete.clear();
-       
-        listResultAutoComplete = searchHelper.searchExactMatch(connect.getPoolConnexion(),
-                    value,
-                    selectedTheso.getCurrentLang(),
-                    selectedTheso.getCurrentIdTheso());
-/*                if(!withId && !withNote) {
-                    listResultAutoComplete = searchHelper.searchFullTextElastic(connect.getPoolConnexion(),
-                                value,
-                                selectedTheso.getCurrentLang(),
-                                selectedTheso.getCurrentIdTheso());
-                }*/
-    /*    ArrayList<String> nodeSearchsId;
-        nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(),
-                id, selectedTheso.getCurrentIdTheso());
-    }    */
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////    
 
-
-
-
-    
-    
     public List<NodeSearchMini> completTermFullText(String value) {
 
         isSelectedItem = false;
@@ -290,74 +232,7 @@ public class SearchBean implements Serializable {
         
         setViewsSerach();
         isSelectedItem = false;
-    }    
-    
-/*    public void applySearch(){
-        if(listResultAutoComplete == null) return;
-        nodeConceptSearchs = new ArrayList<>();
-        ConceptHelper conceptHelper = new ConceptHelper();
-        SearchHelper searchHelper = new SearchHelper();
-        ArrayList<String> nodeSearchsId;
-        
-        if(withId) {
-            nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(),
-                    searchValue, selectedTheso.getCurrentIdTheso());
-            for (String idConcept : nodeSearchsId) {
-                nodeConceptSearchs.add(0,
-                    conceptHelper.getConceptForSearch(
-                    connect.getPoolConnexion(),
-                    idConcept,
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang()));
-            }
-        }
-
-        if(withNote) {
-            nodeSearchsId = searchHelper.searchIdConceptFromNotes(connect.getPoolConnexion(),
-                    searchValue, selectedTheso.getCurrentLang(),
-                    selectedTheso.getCurrentIdTheso()
-                    );
-            
-            for (String idConcept : nodeSearchsId) {
-                nodeConceptSearchs.add(
-                    conceptHelper.getConceptForSearch(
-                    connect.getPoolConnexion(),
-                    idConcept,
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang()));
-            }
-        }
-        
-        if(exactMatch) {
-            ArrayList<NodeSearchMini> nodeSearchMini = searchHelper.searchExactMatch(connect.getPoolConnexion(),
-                    searchValue, selectedTheso.getCurrentLang(),
-                    selectedTheso.getCurrentIdTheso()
-                    );
-            for (NodeSearchMini nodeSearchMini1 : nodeSearchMini) {
-                nodeConceptSearchs.add(
-                    conceptHelper.getConceptForSearch(
-                    connect.getPoolConnexion(),
-                    nodeSearchMini1.getIdConcept(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang()));
-            }
-        }
-        
-        if(!withId && !withNote && !exactMatch) {
-            for (NodeSearchMini nodeSearchMini : listResultAutoComplete) {
-                nodeConceptSearchs.add(
-                        conceptHelper.getConceptForSearch(
-                        connect.getPoolConnexion(),
-                        nodeSearchMini.getIdConcept(),
-                        selectedTheso.getCurrentIdTheso(),
-                        selectedTheso.getCurrentLang())
-                );
-            }      
-        }
-        
-        setViewsSerach();
-        isSelectedItem = false;
-    }*/
+    }
     
     private void setViewsSerach(){
         rightBodySetting.setShowResultSearchToOn();

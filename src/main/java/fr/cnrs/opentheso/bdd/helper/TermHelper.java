@@ -60,8 +60,7 @@ public class TermHelper {
             String title, String idThesaurus, String idLang) {
 
         Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         StringPlus stringPlus = new StringPlus();
         title = stringPlus.convertString(title);
@@ -70,8 +69,7 @@ public class TermHelper {
         try {
             // Get connection from pool
             conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
+            try (Statement stmt = conn.createStatement()){
                 try {
                     String query = "select id_term from term where "
                             + " f_unaccent(lower(term.lexical_value)) like '" + title + "'"
@@ -85,7 +83,7 @@ public class TermHelper {
                     }
 
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
                 }
             } finally {
                 conn.close();
@@ -99,14 +97,12 @@ public class TermHelper {
 
     public int getNbrTermSansGroup(HikariDataSource ds, String idThesaurus, String lang) {
         Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int count = 0;
         try {
             // Get connection from pool
             conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
+            try (Statement stmt = conn.createStatement()){
                 try {
                     String query = "SELECT count(term.id_term) FROM term INNER JOIN " +
                             "(SELECT preferred_term.id_concept,preferred_term.id_term FROM preferred_term " +
@@ -122,6 +118,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -148,16 +145,14 @@ public class TermHelper {
             String title, String idThesaurus, String idLang) {
 
         Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         title = new StringPlus().convertString(title);
 
         try {
             // Get connection from pool
             conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
+            try (Statement stmt = conn.createStatement()){
                 try {
                     String query = "select id_term from non_preferred_term" +
                             "where" +
@@ -171,6 +166,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -451,7 +447,6 @@ public class TermHelper {
     /**
      *
      * @param conn
-     * @param term
      * @param idUser
      * @param action
      * @return idTerm
@@ -716,7 +711,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String lexicalValue = "";
         try {
             // Get connection from pool
@@ -734,6 +729,7 @@ public class TermHelper {
                         lexicalValue = resultSet.getString("lexical_value");
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -814,7 +810,7 @@ public class TermHelper {
             String idTerm, String idLang, String idThesaurus) {
 
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         Connection conn;
         boolean existe = false;
         try {
@@ -832,6 +828,7 @@ public class TermHelper {
                         existe = resultSet.getRow() != 0;
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -1015,7 +1012,7 @@ public class TermHelper {
         String idTerm = null;
         //     Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
         try {
             // Get connection from pool
@@ -1056,6 +1053,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -1811,7 +1809,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         Term term = null;
 
         if (isTraductionExistOfConcept(ds, idConcept, idThesaurus, idLang)) {
@@ -1851,6 +1849,7 @@ public class TermHelper {
                         }
 
                     } finally {
+                        if (resultSet != null) resultSet.close();
                         stmt.close();
                     }
                 } finally {
@@ -1885,6 +1884,7 @@ public class TermHelper {
                         }
 
                     } finally {
+                        if (resultSet != null) resultSet.close();
                         stmt.close();
                     }
                 } finally {
@@ -1913,7 +1913,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String idTerm = null;
 
         try {
@@ -1935,6 +1935,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -1962,7 +1963,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeEM> nodeEMList = null;
 
         try {
@@ -1997,6 +1998,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2025,7 +2027,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeEM> nodeEMList = null;
 
         try {
@@ -2060,6 +2062,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2089,7 +2092,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeEM> nodeEMList = null;
 
         try {
@@ -2135,6 +2138,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2162,7 +2166,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<Term> nodeTermList = null;
 
         try {
@@ -2196,6 +2200,7 @@ public class TermHelper {
                         }
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2225,7 +2230,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<Term> nodeTermList = null;
 
         try {
@@ -2260,6 +2265,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2287,7 +2293,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeEM> nodeEMList = null;
 
         try {
@@ -2333,6 +2339,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2359,7 +2366,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
 
         ArrayList<NodeTab2Levels> tabIdNonPreferredTerm = new ArrayList<>();
 
@@ -2386,6 +2393,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2413,7 +2421,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
 
         ArrayList<NodeTab2Levels> tabIdNonPreferredTerm = new ArrayList<>();
 
@@ -2443,6 +2451,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2474,7 +2483,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = new ArrayList<>();
 
         StringPlus stringPlus = new StringPlus();
@@ -2589,6 +2598,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2617,7 +2627,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = new ArrayList<>();
         StringPlus stringPlus = new StringPlus();
 
@@ -2751,6 +2761,7 @@ public class TermHelper {
                         nodeAutoCompletionList.add(nodeAutoCompletion);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2784,7 +2795,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = new ArrayList<>();
         text = new StringPlus().convertString(text);
 
@@ -2840,6 +2851,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2872,7 +2884,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = new ArrayList<>();
         text = new StringPlus().convertString(text);
 
@@ -2939,6 +2951,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2971,7 +2984,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = new ArrayList<>();
         text = new StringPlus().convertString(text);
 
@@ -3017,6 +3030,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3044,7 +3058,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -3067,6 +3081,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3094,7 +3109,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeTermTraduction> nodeTraductionsList = null;
 
         try {
@@ -3125,6 +3140,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3150,7 +3166,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeTermTraduction> nodeTraductionsList = new ArrayList<>();
 
         try {
@@ -3176,6 +3192,7 @@ public class TermHelper {
                         nodeTraductionsList.add(nodeTraductions);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3204,7 +3221,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int count = 0;
 
         try {
@@ -3227,6 +3244,7 @@ public class TermHelper {
                         count = resultSet.getInt(1);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3254,7 +3272,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String idTerm = null;
         title = new StringPlus().convertString(title);
 
@@ -3274,6 +3292,7 @@ public class TermHelper {
                         idTerm = resultSet.getString("id_term");
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3301,7 +3320,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         title = new StringPlus().convertString(title);
 
@@ -3323,6 +3342,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3349,7 +3369,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         StringPlus stringPlus = new StringPlus();
         title = stringPlus.convertString(title);
@@ -3373,6 +3393,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3397,7 +3418,7 @@ public class TermHelper {
             String idTerm, String idThesaurus) {
 
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -3413,6 +3434,7 @@ public class TermHelper {
                         existe = resultSet.getRow() != 0;
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -3442,7 +3464,7 @@ public class TermHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         title = new StringPlus().convertString(title);
 
@@ -3465,6 +3487,7 @@ public class TermHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {

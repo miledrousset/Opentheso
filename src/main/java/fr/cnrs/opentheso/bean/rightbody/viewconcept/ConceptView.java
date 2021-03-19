@@ -370,6 +370,7 @@ public class ConceptView implements Serializable {
             while ((output = br.readLine()) != null) {
                 json += output;
             }
+            br.close();
             return getCountFromJson(json);
 
         } catch (UnsupportedEncodingException ex) {
@@ -407,6 +408,7 @@ public class ConceptView implements Serializable {
             while ((output = br.readLine()) != null) {
                 json += output;
             }
+            br.close();
             return getCountFromJson(json);
 
         } catch (UnsupportedEncodingException ex) {
