@@ -1,5 +1,9 @@
 package fr.cnrs.opentheso.bean.session;
 
+import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
+import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
+import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import org.primefaces.PrimeFaces;
@@ -28,6 +32,19 @@ public class SessionControl implements Serializable {
 
     @Inject
     private CurrentUser currentUser;
+
+    @Inject
+    private TreeGroups treeGroups;
+
+    @Inject
+    private TreeConcepts treeConcepts;
+
+    @Inject
+    private Tree tree;
+
+    @Inject
+    private ListIndex listIndex;
+
     @Inject
     private SelectedTheso selectedTheso;
 
@@ -36,7 +53,6 @@ public class SessionControl implements Serializable {
     public void isTimeout() throws IOException {
         if(FacesContext.getCurrentInstance()== null) return;
         if (currentUser.getNodeUser() != null) {
-            //Déconnexion de l'utilisateur
             currentUser.disconnect();
         }
 
@@ -48,43 +64,16 @@ public class SessionControl implements Serializable {
         PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
-    /*    System.gc ();
-        System.runFinalization ();
-      */  
-        // Rafraîchissement de la page
-        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI());   
-  
-    //    selectedTheso.getCurrentIdTheso();
+
+        treeGroups.reset();
+        treeConcepts.reset();
+        tree.reset();
+        listIndex.reset();
+        selectedTheso.init();
+        
+        System.gc();
         System.gc();
         System.runFinalization ();
-  /*      if (currentUser.getNodeUser() != null) {
-            //Déconnexion de l'utilisateur
-            currentUser.disconnect();
-        }
-
-        //Vider le cache
-        clearComponent();
-        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-
-        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-
-        HttpServletResponse response = (HttpServletResponse) ectx.getResponse();
-
-        HttpSession session = (HttpSession) ectx.getSession(false);
-
-        session.invalidate();
-
-        PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
-        PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
-        PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
-        /*    System.gc ();
-        System.runFinalization ();
-         */
- /*       selectedTheso.getCurrentIdTheso();
-        System.gc();
-        // Rafraîchissement de la page
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());*/
     }
 
     public void clearComponent() {
