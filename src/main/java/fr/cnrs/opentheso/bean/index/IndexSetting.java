@@ -60,7 +60,7 @@ public class IndexSetting implements Serializable {
 
     @PostConstruct
     public void postInit(){
-        int test = 0;
+    //    int test = 0;
     }    
     
     public IndexSetting() {
@@ -111,7 +111,8 @@ public class IndexSetting implements Serializable {
         return isThesoActive;
     }
 
-    public void setIsThesoActive(boolean isThesoActive) throws IOException {
+//    public void setIsThesoActive(boolean isThesoActive) throws IOException {
+    public void setIsThesoActive(boolean isThesoActive) {        
         this.isThesoActive = isThesoActive;
         isCandidateActive = false;
         isProfileActive = false;
@@ -120,7 +121,7 @@ public class IndexSetting implements Serializable {
         resetColor();
         thesoColor = "white";
         
-        clear();
+    //    clear();
     }
 
     public boolean isIsCandidateActive() {
@@ -137,7 +138,7 @@ public class IndexSetting implements Serializable {
         resetColor();
         candidateColor = "white";
         
-        clear();
+    //    clear();
     }
 
     public boolean isIsProfileActive() {
@@ -153,7 +154,7 @@ public class IndexSetting implements Serializable {
         resetColor();
         profileColor = "white";
         
-        clear();
+    //    clear();
     }
 
     public boolean isIsSettingActive() {
@@ -169,7 +170,7 @@ public class IndexSetting implements Serializable {
         resetColor();
         settingColor = "white";
         
-        clear();
+    //    clear();
     }
 
     public boolean isIsToolBoxActive() {
@@ -185,13 +186,18 @@ public class IndexSetting implements Serializable {
         resetColor();
         toolBoxColor = "white";
         
-        clear();
+    //    clear();
     }
     
-    public void clear() throws IOException {
+//    public void clear() throws IOException {    
+    public void clear() {
         System.gc();
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+        try {
+            ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());            
+        } catch (Exception e) {
+        }
+
     }
 
     public String getThesoColor() {

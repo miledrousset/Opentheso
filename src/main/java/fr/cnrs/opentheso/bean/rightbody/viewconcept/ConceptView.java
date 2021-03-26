@@ -187,7 +187,6 @@ public class ConceptView implements Serializable {
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("formLeftTab:tabTree:tree");
                     pf.ajax().update("formSearch:languageSelect");
-                    pf.executeScript("srollToSelected()");
                 }
                 selectedTheso.actionFromConceptToOn();
             }

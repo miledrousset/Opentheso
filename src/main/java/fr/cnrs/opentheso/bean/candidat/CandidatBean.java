@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -84,17 +83,6 @@ public class CandidatBean implements Serializable {
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private List<CandidatDto> selectedCandidates;
     private boolean listSelected;
-
-
-    private String test;
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
 
     public void reset() {
         candidatSelected = null;

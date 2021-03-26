@@ -2151,6 +2151,9 @@ public class RelationsHelper {
                     if (resultSet != null) {
                         listIdBT = new ArrayList<>();
                         while (resultSet.next()) {
+                            if(idConcept.equalsIgnoreCase(resultSet.getString("id_concept2"))){
+                                return null; // détection d'une relation en boucle (2 BT 2) ou (3 NT 3)
+                            }
                             listIdBT.add(resultSet.getString("id_concept2"));
                         }
                     }

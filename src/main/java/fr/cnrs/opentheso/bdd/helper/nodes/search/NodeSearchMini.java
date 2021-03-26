@@ -18,6 +18,7 @@ public class NodeSearchMini {
     private boolean isAltLabel;
     private boolean isGroup;
 
+    
     public NodeSearchMini() {
     }
 

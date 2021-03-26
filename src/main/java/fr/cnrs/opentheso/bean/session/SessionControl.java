@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
-
 @Named(value = "sessionControl")
 @SessionScoped
 public class SessionControl implements Serializable {
@@ -32,9 +31,11 @@ public class SessionControl implements Serializable {
     private SelectedTheso selectedTheso;
 
     private final int DEFAULT_TIMEOUT_IN_MIN = 10;
-    
+
     public void isTimeout() throws IOException {
-        if(FacesContext.getCurrentInstance()== null) return;
+        if (FacesContext.getCurrentInstance() == null) {
+            return;
+        }
         if (currentUser.getNodeUser() != null) {
             //Déconnexion de l'utilisateur
             currentUser.disconnect();
@@ -43,21 +44,23 @@ public class SessionControl implements Serializable {
         //Vider le cache
         clearComponent();
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        
+
         externalContext.invalidateSession();
         PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
-    /*    System.gc ();
+        System.gc ();
         System.runFinalization ();
-      */  
+        
         // Rafraîchissement de la page
-        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI());   
-  
-    //    selectedTheso.getCurrentIdTheso();
+        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI());
+
+        //    selectedTheso.getCurrentIdTheso();
+        
+//        clearGarbageCollector();
         System.gc();
-        System.runFinalization ();
-  /*      if (currentUser.getNodeUser() != null) {
+        System.runFinalization();
+        /*      if (currentUser.getNodeUser() != null) {
             //Déconnexion de l'utilisateur
             currentUser.disconnect();
         }
@@ -85,6 +88,27 @@ public class SessionControl implements Serializable {
         // Rafraîchissement de la page
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());*/
+    }
+
+    private void clearGarbageCollector() {
+        //récupérer les informations du système
+        Runtime r = Runtime.getRuntime();
+        try {
+            //appeler les méthodes finalize() des objets
+            try {
+                //appeler les méthodes finalize() des objets
+                r.runFinalization();
+                //vider la mémoire
+                r.gc();
+                System.gc();
+            } catch (Exception e) {
+                //logger
+                System.out.println("Erreur lors du vidage de la mémoire en mode forcé runFinalization");
+            }
+        } catch (Exception e) {
+            //logger
+            System.out.println("Erreur lors du vidage de la mémoire en mode forcé viderGarbageCollector");
+        }
     }
 
     public void clearComponent() {

@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:b="http://bootsfaces.net/ui"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>OpenTheso - Erreur 500</title>
     </h:head>
@@ -16,6 +17,9 @@
             <b:row >
                 <b:column span="12">
                     <b:jumbotron>
+                        <h:form>
+                            <p:commandButton value="Initialiser la session" action="#{sessionControl.isTimeout()}" />
+                        </h:form>
                         <a href="#{request.contextPath}/index.xhtml">
                             <div >
                                 <div align="center" id="menuHeadTop">

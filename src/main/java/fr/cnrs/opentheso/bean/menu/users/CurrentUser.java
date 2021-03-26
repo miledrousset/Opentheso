@@ -112,7 +112,7 @@ public class CurrentUser implements Serializable {
         candidatBean.reset();
 
         // On appelle Garbage Collector pour libérer la mémoire occupé par les variables qui ont une valeur "null"
-        System.gc();
+    //    System.gc();
 
         
         indexSetting.setIsThesoActive(true);
@@ -142,6 +142,7 @@ public class CurrentUser implements Serializable {
      * le login normal (usuaire, pass), une 2 si on fait le login avec le
      * motpasstemp (et nous sommes dirigées a la page web de changer le
      * motpasstemp) #MR
+     * @throws java.io.IOException
      */
     public void login() throws IOException {
         UserHelper userHelper = new UserHelper();
@@ -184,7 +185,8 @@ public class CurrentUser implements Serializable {
             pf.ajax().update("formMenu");;
             
         }
-
+        System.gc ();
+        System.runFinalization ();
         
         /*   if (nodeUser.isPasstomodify()) {
             return "changePass.xhtml?faces-redirect=true";// nouvelle pass web pour changer le motpasstemp

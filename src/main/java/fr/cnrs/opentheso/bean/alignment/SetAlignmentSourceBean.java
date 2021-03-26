@@ -21,8 +21,8 @@ import java.util.Optional;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
-import org.glassfish.jersey.server.Uri;
+//import javax.ws.rs.core.UriBuilder;
+//import org.glassfish.jersey.server.Uri;
 import org.primefaces.PrimeFaces;
 
 /**

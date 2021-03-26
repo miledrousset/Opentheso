@@ -88,8 +88,8 @@ public class SelectedTheso implements Serializable {
 
     @PostConstruct
     public void initializing() {
-        System.gc();
-        System.runFinalization();
+    //    System.gc();
+    //    System.runFinalization();
         if (!connect.isConnected()) {
             System.err.println("Erreur de connexion BDD");
             return;
@@ -124,7 +124,8 @@ public class SelectedTheso implements Serializable {
      * Permet de charger le thésaurus sélectionné C'est le point d'entrée de
      * l'application
      */
-    public void setSelectedTheso() throws IOException {
+//    public void setSelectedTheso() throws IOException {
+    public void setSelectedTheso() {        
 
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
@@ -135,7 +136,7 @@ public class SelectedTheso implements Serializable {
             return;
         }
 
-        candidatBean.initCandidatModule();
+//        candidatBean.initCandidatModule();
 
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
             roleOnThesoBean.showListTheso();
@@ -189,7 +190,7 @@ public class SelectedTheso implements Serializable {
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
         treeGroups.reset();
-        candidatBean.initCandidatModule();
+//        candidatBean.initCandidatModule();
 
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
             return;
