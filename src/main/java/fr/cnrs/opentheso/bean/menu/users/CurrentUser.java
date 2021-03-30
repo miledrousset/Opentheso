@@ -112,7 +112,7 @@ public class CurrentUser implements Serializable {
         candidatBean.reset();
 
         // On appelle Garbage Collector pour libérer la mémoire occupé par les variables qui ont une valeur "null"
-    //    System.gc();
+        System.gc();
 
         
         indexSetting.setIsThesoActive(true);

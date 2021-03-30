@@ -345,6 +345,12 @@ public class ExportRdf4jHelper {
         }           
         sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
         
+        // les images
+        if(nodeConcept.getNodeimages() != null || (!nodeConcept.getNodeimages().isEmpty())) {
+            for (String imageUri : nodeConcept.getNodeimages()) {
+                sKOSResource.addImageUri(imageUri);
+            }
+        }        
 
         ArrayList<String> first = new ArrayList<>();
         first.add(idConcept);

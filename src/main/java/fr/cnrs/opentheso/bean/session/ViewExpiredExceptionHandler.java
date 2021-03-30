@@ -4,6 +4,7 @@ package fr.cnrs.opentheso.bean.session;
  *
  * @author miled.rousset
  */
+import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -15,9 +16,9 @@ import javax.faces.context.ExceptionHandlerWrapper;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
+import javax.inject.Inject;
 
 public class ViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
-
     private ExceptionHandler handler;
 
     public ViewExpiredExceptionHandler(ExceptionHandler handler) {
@@ -46,11 +47,15 @@ public class ViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
                 NavigationHandler navigationHandler = facesContext
                         .getApplication().getNavigationHandler();
                 try {
+                  //  System.gc();
                     map.put("currentViewId", viewExpiredException.getViewId());
                     navigationHandler
                             .handleNavigation(facesContext, null,
                                     "/errorPages/timeOut.xhtml?faces-redirect=true");//"viewExpired");
                     facesContext.renderResponse();
+                    System.gc();
+                    System.gc();
+                //    System.runFinalization ();
                 } finally {
                     i.remove();
                 }

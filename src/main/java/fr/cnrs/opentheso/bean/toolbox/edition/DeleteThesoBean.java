@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -68,7 +69,7 @@ public class DeleteThesoBean implements Serializable {
     /**
      * Permet de supprimer un thésaurus 
      */
-    public void deleteTheso() {
+    public void deleteTheso() throws IOException {
         if(idThesoToDelete == null) return;
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoToDelete);

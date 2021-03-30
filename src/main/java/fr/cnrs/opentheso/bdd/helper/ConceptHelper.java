@@ -1100,6 +1100,10 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de retrouver tous tes identifiants d'une branche en
      * partant du concept en paramètre
+     * @param hd
+     * @param idConceptDeTete
+     * @param idTheso
+     * @return 
      */
     public ArrayList<String> getIdsOfBranch(HikariDataSource hd, String idConceptDeTete, String idTheso) {
         ArrayList<String> lisIds = new ArrayList<>();
@@ -3655,6 +3659,10 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer les Ids des concepts suivant l'id du
      * Concept-Père et le thésaurus sous forme de classe tableau pas de tri
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
      */
     public ArrayList<String> getListChildrenOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
         ArrayList<String> listIdsOfConcept = new ArrayList<>();

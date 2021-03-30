@@ -28,6 +28,10 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -1946,14 +1950,16 @@ public class Rest_new {
 
     private String getDatasForWidget(String idTheso,
             String idLang, String group, String value) {
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return null;
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.findDatasForWidget(ds,
+                    idTheso, idLang, group, value);
+            ds.close();
         }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.findDatasForWidget(ds,
-                idTheso, idLang, group, value);
-        ds.close();
         if (datas == null) {
             return null;
         }
@@ -2530,6 +2536,102 @@ public class Rest_new {
 
         return "{\"lastUpdate\": \"" + date.toString() + "\"}";
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+   
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //////////////Fonction qui permet de produire /////////////////////////////////////////  
+    //////////////des données Json pour le graphe D3js ////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    
+
+    //http://localhost:8082/opentheso2/api/graph?theso=th19&id=266607&group=g12&lang=fr
+    
+    /**
+     * permet de récupérer les données d'un thésaurus pour le graphe géré avec D3js
+     * en précisant l'Id du thésaurus (obligatoire),
+     * l'id du concept de départ,
+     * l'id de la collection,
+     * l'id de la langue
+     * @param uri
+     * @return 
+     */
+    @Path("/graph")
+    @GET
+    @Produces("application/ld+json;charset=UTF-8")
+    public Response getDatasForGraph(@Context UriInfo uri) {
+        String idLang = "";
+        String idConcept = null;
+        String idTheso = null;
+        String idGroup = "";
+
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("id")) {
+                    idConcept = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("lang")) {
+                    idLang = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("theso")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("group")) {
+                    idGroup = valeur;
+                }
+            }
+        }
+        if (idTheso == null || idTheso.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }        
+
+        String datas;
+        
+        datas = getDatasForGraph__(idTheso, idConcept, idLang, idGroup);
+
+        if (datas == null) {
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+       // return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();
+    }
+    
+    private String getDatasForGraph__(String idTheso, String idConcept, String idLang, String idGroup) {
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.findDatasForGraph(ds,
+                    idConcept, idTheso, idLang);
+            ds.close();
+        }
+        if (datas == null) {
+            return null;
+        }
+        return datas;        
+    }
+            
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     private String messageEmptySkos() {
         String message = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
