@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.ResourceBundle;
-//import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
@@ -20,6 +19,8 @@ import javax.inject.Named;
 @Named (value = "connect")
 @ApplicationScoped
 public class Connect implements Serializable{
+
+    private final int DEFAULT_TIMEOUT_IN_MIN = 10;
    
    
     private HikariDataSource poolConnexion = null;
@@ -144,6 +145,18 @@ public class Connect implements Serializable{
             openConnexionPool();
         }
         return poolConnexion;
-    }    
+    }
+
+    public int getTimeout() {
+        int minNbr;
+        try {
+            FacesContext context = FacesContext.getCurrentInstance();
+            ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
+            minNbr = Integer.parseInt(bundlePref.getString("timeout_nbr_minute"));
+        } catch (Exception e) {
+            minNbr = DEFAULT_TIMEOUT_IN_MIN;
+        }
+        return (minNbr * 60 * 1000);
+    }
    
 }

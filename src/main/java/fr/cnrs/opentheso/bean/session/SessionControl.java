@@ -1,11 +1,14 @@
 package fr.cnrs.opentheso.bean.session;
 
+import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenTheso;
+import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import org.primefaces.PrimeFaces;
 
 import javax.enterprise.context.SessionScoped;
@@ -22,8 +25,7 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.ResourceBundle;
-import javax.servlet.http.HttpServletRequest;
+
 
 @Named(value = "sessionControl")
 @SessionScoped
@@ -45,70 +47,50 @@ public class SessionControl implements Serializable {
     private ListIndex listIndex;
 
     @Inject
-    private SelectedTheso selectedTheso;
+    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
 
-    private final int DEFAULT_TIMEOUT_IN_MIN = 10;
+    @Inject
+    private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
 
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+
+    @Inject
+    private IndexSetting indexSetting;
+
+    
     public void isTimeout() throws IOException {
-        if (FacesContext.getCurrentInstance() == null) {
-            return;
-        }
-        if (currentUser != null && currentUser.getNodeUser() != null) {
+
+        if(FacesContext.getCurrentInstance()== null) return;
+
+        if (currentUser.getNodeUser() != null) {
             currentUser.disconnect();
         } else {
-            
+            tree.reset();
+            listIndex.reset();
+            treeGroups.reset();
+            treeConcepts.reset();
+            viewEditorThesoHomeBean.reset();
+            roleOnThesoBean.showListTheso();
+            copyAndPasteBetweenTheso.reset();
+            indexSetting.setIsThesoActive(true);
+            roleOnThesoBean.setAndClearThesoInAuthorizedList();
+            PrimeFaces.current().ajax().update("containerIndex");
         }
 
         //Vider le cache
         clearComponent();
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-
-        externalContext.invalidateSession();
-
-
-        if(treeGroups != null) {
-            PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
-            PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
-            PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");            
-            treeGroups.reset();
-            treeConcepts.reset();
-            tree.reset();
-            listIndex.reset();
-            selectedTheso.init();
-            
-        }
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());        
-        FacesContext.getCurrentInstance().renderResponse();
- //       System.gc();
-
         
-        // Rafraîchissement de la page
+        externalContext.invalidateSession();
+        PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
+        PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
+        PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
+
 
         System.gc();
         System.gc();
-    //    System.runFinalization ();
-    }
-
-    private void clearGarbageCollector() {
-        //récupérer les informations du système
-        Runtime r = Runtime.getRuntime();
-        try {
-            //appeler les méthodes finalize() des objets
-            try {
-                //appeler les méthodes finalize() des objets
-                r.runFinalization();
-                //vider la mémoire
-                r.gc();
-                System.gc();
-            } catch (Exception e) {
-                //logger
-                System.out.println("Erreur lors du vidage de la mémoire en mode forcé runFinalization");
-            }
-        } catch (Exception e) {
-            //logger
-            System.out.println("Erreur lors du vidage de la mémoire en mode forcé viderGarbageCollector");
-        }
+        System.runFinalization ();
     }
 
     public void clearComponent() {
@@ -144,19 +126,6 @@ public class SessionControl implements Serializable {
                 clearAllComponentInChilds(component.getFacetsAndChildren());
             }
         }
-
-    }
-
-    public int getTimeout() {
-        int minNbr;
-        try {
-            FacesContext context = FacesContext.getCurrentInstance();
-            ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
-            minNbr = Integer.parseInt(bundlePref.getString("timeout_nbr_minute"));
-        } catch (Exception e) {
-            minNbr = DEFAULT_TIMEOUT_IN_MIN;
-        }
-        return (minNbr * 60 * 1000);
     }
 
 }

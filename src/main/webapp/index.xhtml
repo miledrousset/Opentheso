@@ -113,7 +113,7 @@
     </h:head>
 
     <h:body>
-        <p:idleMonitor timeout="#{sessionControl.timeout}">
+        <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
 
