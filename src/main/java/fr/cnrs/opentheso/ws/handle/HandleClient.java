@@ -85,6 +85,7 @@ public class HandleClient {
             message = message + "\n" + xmlRecord;
             message = message + "\n" + "status de la réponse : " + status;
             conn.disconnect();
+            br.close();
             if(status == 200) return getIdHandle(xmlRecord);
             else
                 return null;
@@ -174,6 +175,7 @@ public class HandleClient {
             xmlRecord = new String(bytes, Charset.forName("UTF-8"));
             os.close();
             conn.disconnect();
+            br.close();
             
             if(status == 200) {
                 message = "Mise à jour du Handle réussie";
@@ -278,6 +280,7 @@ public class HandleClient {
             }
             byte[] bytes = xmlRecord.getBytes();
             xmlRecord = new String(bytes, Charset.forName("UTF-8"));
+            br.close();
             os.close();
             conn.disconnect();
             message = message + "\n" + xmlRecord;
@@ -292,22 +295,31 @@ public class HandleClient {
             }
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (KeyStoreException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
         } catch (CertificateException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
         } catch (UnrecoverableKeyException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
         } catch (KeyManagementException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
         } catch (MalformedURLException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
         } catch (IOException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
         } catch (Exception ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
         }        
         return null;
     }
@@ -382,26 +394,36 @@ public class HandleClient {
             }
             message = message + "\n" + xmlRecord;
             message = message + "\n" + "status de la réponse : " + status;
+            br.close();
             return true;
 
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (KeyStoreException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (CertificateException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (UnrecoverableKeyException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (KeyManagementException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (MalformedURLException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (IOException ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } catch (Exception ex) {
             Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
         } 
         return false;
     }    

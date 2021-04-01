@@ -91,6 +91,11 @@ public class Tree implements Serializable {
         selectedNode = null;
         rightBodySetting.init();
         noedSelected = false;
+        dataService = null;
+        treeNodeDataSelect = null;
+        selectedNodes = null;
+//        System.gc();
+//        System.runFinalization();
     }
 
     public void initialise(String idTheso, String idLang) {
@@ -492,6 +497,7 @@ public class Tree implements Serializable {
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
+        PrimeFaces.current().executeScript("srollToSelected();");
     }
 
     public void expandTreeToPath2(String idConcept, String idTheso, String idLang, String idFacette) {

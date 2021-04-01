@@ -12,8 +12,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bean.condidat.dto.MessageDto;
-import fr.cnrs.opentheso.bean.condidat.dto.VoteDto;
+import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
+import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
 
 public class NodeConceptExport {
     

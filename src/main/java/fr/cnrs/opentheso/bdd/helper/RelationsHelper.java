@@ -121,7 +121,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeRT> nodeListRT = new ArrayList<>();
         ConceptHelper conceptHelper = new ConceptHelper();
         try {
@@ -147,6 +147,7 @@ public class RelationsHelper {
                         }
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -176,7 +177,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String> listIds = new ArrayList<>();
 
         try {
@@ -215,6 +216,7 @@ public class RelationsHelper {
                         listIds.add(resultSet.getString("id_concept"));
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -295,7 +297,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeRelation> nodeRelations = new ArrayList<>();
         try {
             conn = ds.getConnection();
@@ -316,6 +318,7 @@ public class RelationsHelper {
                         nodeRelations.add(nodeRelation);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -343,7 +346,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeHieraRelation> nodeListIdOfConcept = new ArrayList<>();
         try {
             // Get connection from pool
@@ -384,6 +387,7 @@ public class RelationsHelper {
                         nodeListIdOfConcept.add(nodeHieraRelation);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -461,7 +465,7 @@ public class RelationsHelper {
     public ArrayList<NodeTypeRelation> getTypesRelationsNT(HikariDataSource ds) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeTypeRelation> typesRelationsNT = null;
         try {
             conn = ds.getConnection();
@@ -480,6 +484,7 @@ public class RelationsHelper {
                         typesRelationsNT.add(nodeTypeRelation);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -500,7 +505,7 @@ public class RelationsHelper {
     public ArrayList<NodeTypeRelation> getTypesRelationsBT(HikariDataSource ds) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeTypeRelation> typesRelationsBT = null;
         try {
             conn = ds.getConnection();
@@ -519,6 +524,7 @@ public class RelationsHelper {
                         typesRelationsBT.add(nodeTypeRelation);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -698,7 +704,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeBT> nodeListBT = null;
 
         try {
@@ -764,6 +770,7 @@ public class RelationsHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -791,7 +798,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String> listIdOfBt = new ArrayList<>();
 
         try {
@@ -810,6 +817,7 @@ public class RelationsHelper {
                         listIdOfBt.add(resultSet.getString("id_concept2"));
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -836,7 +844,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<HierarchicalRelationship> listRelations = new ArrayList<>();
 
         try {
@@ -860,6 +868,7 @@ public class RelationsHelper {
                         listRelations.add(hierarchicalRelationship);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -886,7 +895,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String[]> list = new ArrayList<>();
 
         try {
@@ -906,6 +915,7 @@ public class RelationsHelper {
                         list.add(tab);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -923,7 +933,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String[]> list = new ArrayList<>();
 
         try {
@@ -945,6 +955,7 @@ public class RelationsHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -971,7 +982,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String[]> list = new ArrayList<>();
 
         try {
@@ -991,6 +1002,7 @@ public class RelationsHelper {
                         list.add(tab);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -1317,7 +1329,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<Relation> listRel = null;
 
         try {
@@ -1354,6 +1366,7 @@ public class RelationsHelper {
                         }
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -1382,7 +1395,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<Relation> listRel = null;
 
         try {
@@ -1431,6 +1444,7 @@ public class RelationsHelper {
                         }
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2055,7 +2069,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeHieraRelation> nodeListIdOfConcept = new ArrayList<>();
         try {
             // Get connection from pool
@@ -2092,6 +2106,7 @@ public class RelationsHelper {
                         nodeListIdOfConcept.add(nodeHieraRelation);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2118,7 +2133,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String> listIdBT = null;
 
         try {
@@ -2136,10 +2151,14 @@ public class RelationsHelper {
                     if (resultSet != null) {
                         listIdBT = new ArrayList<>();
                         while (resultSet.next()) {
+                            if(idConcept.equalsIgnoreCase(resultSet.getString("id_concept2"))){
+                                return null; // détection d'une relation en boucle (2 BT 2) ou (3 NT 3)
+                            }
                             listIdBT.add(resultSet.getString("id_concept2"));
                         }
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2267,7 +2286,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int count = 0;
         try {
             // Get connection from pool
@@ -2285,6 +2304,7 @@ public class RelationsHelper {
                         count = resultSet.getInt(1);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2310,7 +2330,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int count = 0;
         try {
             // Get connection from pool
@@ -2328,6 +2348,7 @@ public class RelationsHelper {
                         count = resultSet.getInt(1);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2353,7 +2374,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int count = 0;
         try {
             // Get connection from pool
@@ -2371,6 +2392,7 @@ public class RelationsHelper {
                         count = resultSet.getInt(1);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2397,7 +2419,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int count = 0;
         try {
             // Get connection from pool
@@ -2421,6 +2443,7 @@ public class RelationsHelper {
                         count = resultSet.getInt(1);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2447,7 +2470,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeNT> nodeListNT = new ArrayList<>();
 
         try {
@@ -2505,6 +2528,7 @@ public class RelationsHelper {
                     }
 
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2532,7 +2556,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String> nodeListIdsNT = new ArrayList<>();
 
         try {
@@ -2551,6 +2575,7 @@ public class RelationsHelper {
                         nodeListIdsNT.add(resultSet.getString("id_concept2"));
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2578,7 +2603,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeHieraRelation> nodeListIdOfConcept = new ArrayList<>();
         try {
             // Get connection from pool
@@ -2620,6 +2645,7 @@ public class RelationsHelper {
                         nodeListIdOfConcept.add(nodeHieraRelation);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2646,7 +2672,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -2663,6 +2689,7 @@ public class RelationsHelper {
                     resultSet = stmt.getResultSet();
                     existe = resultSet.next();
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2691,7 +2718,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -2709,6 +2736,7 @@ public class RelationsHelper {
                     resultSet = stmt.getResultSet();
                     existe = resultSet.next();
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2735,7 +2763,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -2752,6 +2780,7 @@ public class RelationsHelper {
                     resultSet = stmt.getResultSet();
                     existe = resultSet.next();
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2780,7 +2809,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -2798,6 +2827,7 @@ public class RelationsHelper {
                     resultSet = stmt.getResultSet();
                     existe = resultSet.next();
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2826,7 +2856,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
 
         try {
@@ -2850,6 +2880,7 @@ public class RelationsHelper {
                     resultSet = stmt.getResultSet();
                     existe = resultSet.next();
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {
@@ -2877,7 +2908,7 @@ public class RelationsHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeHieraRelation> nodeListIdOfConcept = new ArrayList<>();
         try {
             // Get connection from pool
@@ -2915,6 +2946,7 @@ public class RelationsHelper {
                         nodeListIdOfConcept.add(nodeHieraRelation);
                     }
                 } finally {
+                    if (resultSet != null) resultSet.close();
                     stmt.close();
                 }
             } finally {

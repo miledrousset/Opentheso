@@ -5,13 +5,14 @@
  */
 package fr.cnrs.opentheso.bean.index;
 
-import fr.cnrs.opentheso.bean.condidat.CandidatBean;
+//import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import java.io.IOException;
 
-import javax.inject.Inject;
+//import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 @SessionScoped
 public class IndexSetting implements Serializable {
 
-    @Inject
-    private CandidatBean candidatBean;
+//    @Inject private CandidatBean candidatBean;
 
     // si un thésaurus est sélectionné 
     private boolean isSelectedTheso;
@@ -58,6 +58,11 @@ public class IndexSetting implements Serializable {
     private String settingColor;
     private String toolBoxColor;
 
+    @PostConstruct
+    public void postInit(){
+    //    int test = 0;
+    }    
+    
     public IndexSetting() {
         isThesoActive = true;
         thesoColor = "white";
@@ -98,8 +103,6 @@ public class IndexSetting implements Serializable {
         this.isConnected = isConnected;
     }
 
-
-
     public boolean isNotConnected() {
         return !isValueSelected & !isFacetSelected;
     }
@@ -108,7 +111,8 @@ public class IndexSetting implements Serializable {
         return isThesoActive;
     }
 
-    public void setIsThesoActive(boolean isThesoActive) {
+//    public void setIsThesoActive(boolean isThesoActive) throws IOException {
+    public void setIsThesoActive(boolean isThesoActive) {        
         this.isThesoActive = isThesoActive;
         isCandidateActive = false;
         isProfileActive = false;
@@ -116,6 +120,8 @@ public class IndexSetting implements Serializable {
         isToolBoxActive = false;
         resetColor();
         thesoColor = "white";
+        
+    //    clear();
     }
 
     public boolean isIsCandidateActive() {
@@ -123,7 +129,7 @@ public class IndexSetting implements Serializable {
     }
 
     public void setIsCandidateActive(boolean isCandidateActive) throws IOException {
-        candidatBean.initCandidatModule();
+//        candidatBean.initCandidatModule();
         this.isCandidateActive = isCandidateActive;
         isThesoActive = false;
         isProfileActive = false;
@@ -131,15 +137,15 @@ public class IndexSetting implements Serializable {
         isToolBoxActive = false;
         resetColor();
         candidateColor = "white";
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+        
+    //    clear();
     }
 
     public boolean isIsProfileActive() {
         return isProfileActive;
     }
 
-    public void setIsProfileActive(boolean isProfileActive) {
+    public void setIsProfileActive(boolean isProfileActive) throws IOException {
         this.isProfileActive = isProfileActive;
         isThesoActive = false;
         isCandidateActive = false;
@@ -147,13 +153,15 @@ public class IndexSetting implements Serializable {
         isToolBoxActive = false;
         resetColor();
         profileColor = "white";
+        
+    //    clear();
     }
 
     public boolean isIsSettingActive() {
         return isSettingActive;
     }
 
-    public void setIsSettingActive(boolean isSettingActive) {
+    public void setIsSettingActive(boolean isSettingActive) throws IOException {
         this.isSettingActive = isSettingActive;
         isThesoActive = false;
         isCandidateActive = false;
@@ -161,13 +169,15 @@ public class IndexSetting implements Serializable {
         isToolBoxActive = false;
         resetColor();
         settingColor = "white";
+        
+    //    clear();
     }
 
     public boolean isIsToolBoxActive() {
         return isToolBoxActive;
     }
 
-    public void setIsToolBoxActive(boolean isToolBoxActive) {
+    public void setIsToolBoxActive(boolean isToolBoxActive) throws IOException {
         this.isToolBoxActive = isToolBoxActive;
         isThesoActive = false;
         isCandidateActive = false;
@@ -175,6 +185,19 @@ public class IndexSetting implements Serializable {
         isSettingActive = false;
         resetColor();
         toolBoxColor = "white";
+        
+    //    clear();
+    }
+    
+//    public void clear() throws IOException {    
+    public void clear() {
+        System.gc();
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        try {
+            ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());            
+        } catch (Exception e) {
+        }
+
     }
 
     public String getThesoColor() {

@@ -24,19 +24,21 @@ import javax.inject.Inject;
 @Named(value = "viewEditorThesoHomeBean")
 @SessionScoped
 public class ViewEditorThesoHomeBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
+
+    @Inject
+    private Connect connect;
+
+    @Inject
+    private SelectedTheso selectedTheso;
     
     @Inject
     private LanguageBean languageBean; 
-    
-    public ViewEditorThesoHomeBean() {
-    }
-    
-    private boolean isViewPlainText = false;
-    private String text;
-    
+
+
+    private boolean isViewPlainText;
     private boolean isInEditing;
+
+    private String text;
     private String colorOfHtmlButton;
     private String colorOfTextButton;    
 

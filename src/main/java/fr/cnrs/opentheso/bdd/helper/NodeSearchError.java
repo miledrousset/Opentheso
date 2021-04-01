@@ -42,7 +42,4 @@ public class NodeSearchError {
         this.idConcept = idConcept;
     }
     
-    
-    
-    
 }

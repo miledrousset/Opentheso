@@ -7,9 +7,11 @@
     <h:form id="candidatForm" rendered="#{(currentUser.nodeUser != null)}" 
             style="margin-top: -20px; border-left: 20px; border-right: 20px; background-color: #FAFAFA; padding: 50px">
 
+        <b:growl id="messageCandidat" globalOnly="true" showDetail="true" placementFrom="bottom"/>
+        
         <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
                    style="background-color: #FAFAFA;">
-            <p:tab title="Suggestions" titleStyleClass="tab1">
+            <p:tab title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isListCandidatsActivate() || 
                                    candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
                     <ui:include src="/candidat/candidatsList.xhtml" />
@@ -49,7 +51,7 @@
                 </b:row>
             </p:tab>
             
-            <p:tab title="Concepts insérés" titleStyleClass="tab1">
+            <p:tab title="#{langueBean.getMsg('candidat.inserted_concepts')}" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isAcceptedCandidatsActivate()}">
                     <ui:include src="/candidat/candidatAcceptedList.xhtml" />
                 </b:row>
@@ -58,7 +60,7 @@
                 </b:row>
             </p:tab>
             
-            <p:tab title="Concepts rejetés" titleStyleClass="tab1">
+            <p:tab title="#{langueBean.getMsg('candidat.rejected_concepts')}" titleStyleClass="tab1">
                 <b:row rendered="#{candidatBean.isRejectCandidatsActivate()}">
                     <ui:include src="/candidat/candidatRejectesList.xhtml" />
                 </b:row>
@@ -82,7 +84,7 @@
     <ui:include src="/candidat/dialog/participantsList.xhtml" /> 
     <ui:include src="/candidat/dialog/envoyerInvitation.xhtml" />
     <ui:include src="/candidat/dialog/processCandidate.xhtml" />  
-
+    <ui:include src="/candidat/dialog/processCandidateList.xhtml" />  
 
     <ui:include src="/dialog/alignment/addAlignment.xhtml" />
     <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />

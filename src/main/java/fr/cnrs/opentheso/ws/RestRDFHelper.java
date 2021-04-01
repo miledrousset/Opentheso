@@ -17,8 +17,6 @@ import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
@@ -27,6 +25,7 @@ import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 
@@ -182,7 +181,59 @@ public class RestRDFHelper {
         exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
         return writeRdf4j;
-    }    
+    }   
+    
+    
+    /**
+     * Permet de retourner un concept au format défini en passant par un identifiant Ark
+     * et id thesaurus et filtré par langue et pour récupérer les labels des relations BT et NT
+     * 
+     * @param ds
+     * @param idArk 
+     * @param idTheso 
+     * @param showLabels 
+     * @param idLang 
+     * @param format 
+     * @return  
+     */
+    public String exportConceptFromArkWithLang(HikariDataSource ds, 
+            String idArk, String idTheso, String idLang, boolean showLabels,
+            String format) {
+
+        RDFFormat rDFFormat = getRDFFormat(format);
+        WriteRdf4j writeRdf4j = exportConceptFromArkWithLang__(
+                ds, idArk, idTheso, idLang, showLabels);
+        if(writeRdf4j == null) return null;
+
+        ByteArrayOutputStream out;
+        out = new ByteArrayOutputStream();
+        Rio.write(writeRdf4j.getModel(), out, rDFFormat);
+        return out.toString();
+    }
+    
+    private WriteRdf4j exportConceptFromArkWithLang__(HikariDataSource ds, 
+            String idArk, String idTheso, String idLang, boolean showLabels) {
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        String idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk);
+        if(idTheso == null || idTheso.isEmpty())
+            idTheso = conceptHelper.getIdThesaurusFromArkId(ds, idArk);
+        
+        if(idConcept == null || idTheso == null) {
+            return null;
+        }
+        
+        NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if(nodePreference == null) return null;
+        
+        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
+        exportRdf4jHelper.setNodePreference(nodePreference);
+        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+
+        exportRdf4jHelper.addSignleConceptByLang(idTheso, idConcept, idLang, showLabels);
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        return writeRdf4j;
+    }     
     
     
     /**
@@ -586,6 +637,100 @@ public class RestRDFHelper {
             return null;
     }    
 
+    
+    
+    
+    /**
+     * Permet de retourner une branche au format Json pour le graphe D3js
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @param idLang
+     * @return  
+     */
+    public String findDatasForGraph(HikariDataSource ds,
+            String idConcept, String idTheso, String idLang) {
+
+        String datas = findDatasForGraph__(ds,
+                 idConcept, idTheso, idLang);
+        if(datas == null) return null;
+        return datas;
+    }    
+    
+    
+    /**
+     * recherche par valeur
+     * @param ds
+     * @param value
+     * @param idTheso
+     * @param lang
+     * @return 
+     */
+    private String findDatasForGraph__(
+            HikariDataSource ds,
+            String idConcept, String idTheso,
+            String idLang) {
+
+        if(idTheso == null || idTheso.isEmpty()) {
+            return null;
+        }
+        if(idConcept == null || idConcept.isEmpty()) {
+            return null;
+        }
+        if(idLang == null || idLang.isEmpty()) {
+            return null;
+        }        
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if (nodePreference == null) {
+            return null;
+        }
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        ArrayList<String> listIds = conceptHelper.getIdsOfBranch(ds, idConcept, idTheso);
+        
+        if(listIds == null || listIds.isEmpty())
+            return null;
+
+        // construire le tableau JSON 
+        
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();        
+        
+        for (String idC : listIds) {
+            if(idC != null && !idC.isEmpty()){
+                getDatasAsJson(ds, idConcept, jsonArrayBuilder, idTheso, idLang);
+            }
+        }
+    //    datasJson = jsonArrayBuilder.build().toString();
+        if(jsonArrayBuilder != null)
+            return jsonArrayBuilder.build().toString();
+        else 
+            return null;
+    }       
+    
+    public void getDatasAsJson(HikariDataSource ds,
+            String idConcept,
+            JsonArrayBuilder jsonArrayBuilder,
+            String idTheso, String idLang) {
+        String label;
+   /*
+        for (Path path1 : paths) {
+            JsonArrayBuilder jsonArrayBuilderPath = Json.createArrayBuilder();            
+            for (String idConcept : path1.getPath()) {
+                JsonObjectBuilder job = Json.createObjectBuilder();
+
+                label = new ConceptHelper().getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
+                if(label.isEmpty())
+                    label = "("+ idConcept+")";
+                job.add("id", idConcept);
+                job.add("label", label);
+                jsonArrayBuilderPath.add(job.build());
+            }
+            jsonArrayBuilder.add(jsonArrayBuilderPath.build());//.toString());
+        }*/
+    } 
+    
+    
     
     /**
      * Fonction qui permet de récupérer une branche complète en partant d'un

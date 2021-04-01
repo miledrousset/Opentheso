@@ -7,7 +7,7 @@ package fr.cnrs.opentheso.bean.search;
 
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
+//import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import javax.inject.Inject;
 
@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * @author miledrousset
  */
 @Named(value = "testMemory")
-@SessionScoped
+//@SessionScoped
 public class TestMemory implements Serializable {
     @Inject private SearchBean searchBean;
     @Inject private ConceptView conceptView;    
@@ -25,7 +25,7 @@ public class TestMemory implements Serializable {
     }
     public void testSearch(){
         for (int i = 0; i < 1000; i++) {
-            searchBean.testMemory();
+     //       searchBean.testMemory();
         }
         System.out.println("traitement terminé");
     }

@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
+import javax.annotation.PostConstruct;
 
 
 @Named("conceptsDiagramBean")
@@ -57,7 +58,11 @@ public class ConceptsDiagramBean implements Serializable {
     private Map<TextInBox, List> elementsTreeMap;
     private DefaultTreeForTreeLayout<TextInBox> defaultTreeForTreeLayout;
 
-
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
+    
     /**
      * Initialisation du diagram des concepts
      * Appeler au moment du chargement de l'interface du diagram

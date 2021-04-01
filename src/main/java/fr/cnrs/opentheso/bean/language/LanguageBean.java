@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.language;
 
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.condidat.enumeration.LanguageEnum;
+import fr.cnrs.opentheso.bean.candidat.enumeration.LanguageEnum;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -19,8 +19,7 @@ public class LanguageBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Inject
-    private Connect connect;
+    @Inject private Connect connect;
 
     private String currentBundle;
     private String idLangue;

@@ -29,14 +29,11 @@ public class NoteHelper {
     }
 
     //// restructuration de la classe NoteHelper le 29/10/2018 //////    
-    
- ////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////////
- ////////////////// Nouvelles fontions #MR//////////////////////////////
- ////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////////  
-    
-    
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////// Nouvelles fontions #MR//////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////  
     /**
      * Cette fonction permet d'ajouter l'historique de l'ajout d'une Note Ã  un
      * term insert dans la table Note_hisorique
@@ -91,8 +88,8 @@ public class NoteHelper {
             log.error("Error while adding Note historique of term : " + idTerme, sqle);
         }
         return status;
-    }    
-    
+    }
+
     /**
      * Cette fonction permet d'ajouter l'historique de l'ajout d'une Note Ã  un
      * concept insert dans la table Note_hisorique
@@ -146,8 +143,8 @@ public class NoteHelper {
             log.error("Error while adding Note historique of concept : " + idConcept, sqle);
         }
         return status;
-    } 
-    
+    }
+
     /**
      * Cette fonction permet de mettre à  jour une note de Concept
      *
@@ -213,7 +210,7 @@ public class NoteHelper {
      * @return
      */
     public boolean updateTermNote(HikariDataSource ds,
-            int idNote, 
+            int idNote,
             String idTerm, String idLang,
             String idThesausus, String note, String noteTypeCode,
             int idUser) {
@@ -231,10 +228,10 @@ public class NoteHelper {
                     String query = "UPDATE note set"
                             + " lexicalvalue = '" + note + "',"
                             + " modified = current_date"
-                            + " WHERE id =" + idNote 
+                            + " WHERE id =" + idNote
                             + " AND id_thesaurus = '" + idThesausus + "'";
                     stmt.executeUpdate(query);
-                    addTermNoteHistorique(ds, idTerm, idLang, idThesausus, note, noteTypeCode, "update", idUser);                    
+                    addTermNoteHistorique(ds, idTerm, idLang, idThesausus, note, noteTypeCode, "update", idUser);
                     status = true;
                 } finally {
                     stmt.close();
@@ -248,12 +245,12 @@ public class NoteHelper {
         }
 
         return status;
-    }    
-    
-   /**
-    *   
+    }
+
+    /**
+     *
      * Cette fonction permet de supprimer une note suivant l'id de la note
-     * 
+     *
      * @param ds
      * @param idNote
      * @param idTerm
@@ -274,12 +271,12 @@ public class NoteHelper {
         Connection conn;
         Statement stmt;
         boolean status = false;
-        
+
         try {
             conn = ds.getConnection();
             try {
                 stmt = conn.createStatement();
-                try {   
+                try {
                     String query = "delete from note"
                             + " where id = '" + idNote + "'"
                             + " and id_thesaurus = '" + idThesaurus + "'";
@@ -287,41 +284,35 @@ public class NoteHelper {
                     addTermNoteHistorique(ds, idTerm, idLang, idThesaurus, oldNote,
                             noteTypeCode, "delete", idUser);
                     status = true;
-                    
-                    } finally {
-                        stmt.close();
-                    }
+
                 } finally {
-                    conn.close();
+                    stmt.close();
                 }
-            } catch (SQLException sqle) {
-                // Log exception
-                log.error("Error while deleting note of term : " + idTerm, sqle);
+            } finally {
+                conn.close();
             }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting note of term : " + idTerm, sqle);
+        }
         return status;
     }
 
-
     public void deleteVoteByNoteId(HikariDataSource ds, int idNote, String idThesaurus, String idConcept) {
-        Connection conn;
-        Statement stmt;
-        try {
-            conn = ds.getConnection();
-            stmt = conn.createStatement();
-            stmt.executeUpdate("DELETE FROM candidat_vote WHERE id_concept = '"+idConcept
-                    +"' AND id_thesaurus = '"+idThesaurus+"' AND id_note = '"+idNote+"'");
-            stmt.close();
-            conn.close();
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("DELETE FROM candidat_vote WHERE id_concept = '" + idConcept
+                        + "' AND id_thesaurus = '" + idThesaurus + "' AND id_note = '" + idNote + "'");
+            }
         } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while deleting candidat_vote of id_note : " + idNote, sqle);
         }
     }
-    
-   /**
-    *  déprécié
-     * Cette fonction permet de supprimer une note suivant l'id de la note
-     * 
+
+    /**
+     * déprécié Cette fonction permet de supprimer une note suivant l'id de la
+     * note
+     *
      * @param ds
      * @param idNote
      * @param idConcept
@@ -339,37 +330,36 @@ public class NoteHelper {
             String idThesaurus,
             String noteTypeCode,
             String oldNote, int idUser) {
-        
+
         Connection conn;
         Statement stmt;
         boolean status = false;
-        
+
         try {
             conn = ds.getConnection();
             try {
                 stmt = conn.createStatement();
-                try {   
+                try {
                     String query = "delete from note"
                             + " where id = '" + idNote + "'"
                             + " and id_thesaurus = '" + idThesaurus + "'";
                     stmt.executeUpdate(query);
                     addConceptNoteHistorique(ds, idConcept, idLang, idThesaurus, oldNote, noteTypeCode, "delete", idUser);
                     status = true;
-                    } finally {
-                        stmt.close();
-                    }
                 } finally {
-                    conn.close();
+                    stmt.close();
                 }
-            } catch (SQLException sqle) {
-                // Log exception
-                log.error("Error while deleting note of concept : " + idConcept, sqle);
+            } finally {
+                conn.close();
             }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting note of concept : " + idConcept, sqle);
+        }
         return status;
     }
-    
-    
-    public ArrayList<NoteType> getNotesType(HikariDataSource ds){
+
+    public ArrayList<NoteType> getNotesType(HikariDataSource ds) {
         ArrayList<NoteType> noteTypes = new ArrayList<>();
         Connection conn;
         Statement stmt;
@@ -409,15 +399,15 @@ public class NoteHelper {
         }
         return noteTypes;
     }
-    
-    
+
     public class NoteType {
+
         private String CodeNote;
         private boolean isterm;
         private boolean isconcept;
         private String label_fr;
         private String label_en;
-        
+
         public NoteType() {
         }
 
@@ -460,23 +450,14 @@ public class NoteHelper {
         public void setLabel_en(String label_en) {
             this.label_en = label_en;
         }
-        
-        
-    }    
-    
-    
-    
-    
- ////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////////
- ////////////////// Fin nouvelles fontions #MR///////////////////////
- ////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////////       
-    
-    
-    
 
-    
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////// Fin nouvelles fontions #MR///////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////       
     /**
      * Cette focntion permet de retourner la liste des notes pour un concept
      * (type CustomNote, ScopeNote, HistoryNote)
@@ -577,9 +558,9 @@ public class NoteHelper {
                         nodeNote.setId_note(resultSet.getInt("id"));
                         nodeNote.setLang(resultSet.getString("lang"));
                         nodeNote.setLexicalvalue(
-                            stringPlus.normalizeStringForXml(
-                                resultSet.getString("lexicalvalue"))
-                            );
+                                stringPlus.normalizeStringForXml(
+                                        resultSet.getString("lexicalvalue"))
+                        );
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
@@ -699,9 +680,9 @@ public class NoteHelper {
                         nodeNote.setId_note(resultSet.getInt("id"));
                         nodeNote.setLang(resultSet.getString("lang"));
                         nodeNote.setLexicalvalue(
-                            stringPlus.normalizeStringForXml(
-                                resultSet.getString("lexicalvalue"))
-                            );
+                                stringPlus.normalizeStringForXml(
+                                        resultSet.getString("lexicalvalue"))
+                        );
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
@@ -743,19 +724,19 @@ public class NoteHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select lexicalvalue from note, preferred_term" +
-                            " where" +
-                            " preferred_term.id_thesaurus = note.id_thesaurus" +
-                            " and" +
-                            " preferred_term.id_term = note.id_term" +
-                            " and" +
-                            " note.notetypecode = 'definition'" +
-                            " and" +
-                            " preferred_term.id_thesaurus = '" + idThesaurus + "'" +
-                            " and " +
-                            " note.lang = '" + idLang + "'" +
-                            " and" +
-                            " preferred_term.id_concept = '" + idConcept + "'";
+                    String query = "select lexicalvalue from note, preferred_term"
+                            + " where"
+                            + " preferred_term.id_thesaurus = note.id_thesaurus"
+                            + " and"
+                            + " preferred_term.id_term = note.id_term"
+                            + " and"
+                            + " note.notetypecode = 'definition'"
+                            + " and"
+                            + " preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                            + " and "
+                            + " note.lang = '" + idLang + "'"
+                            + " and"
+                            + " preferred_term.id_concept = '" + idConcept + "'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -775,7 +756,6 @@ public class NoteHelper {
         }
         return listDefinitions;
     }
-    
 
     /**
      * Cette fonction permet d'ajouter une Note Ã  un concept instert dans la
@@ -829,8 +809,6 @@ public class NoteHelper {
         addConceptNoteHistorique(ds, idConcept, idLang, idThesaurus, note, noteTypeCode, "add", idUser);
         return status;
     }
-
-
 
     /**
      * Cette fonction permet d'ajouter une Note Ã  un concept instert dans la
@@ -1064,7 +1042,7 @@ public class NoteHelper {
                             + ",'" + idThesaurus + "'"
                             + ",'" + idTerm + "'"
                             + ",'" + idLang + "'"
-                            + ",'" + note + "'," + idUser +")";
+                            + ",'" + note + "'," + idUser + ")";
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
@@ -1078,16 +1056,15 @@ public class NoteHelper {
                 log.error("Error while adding Note of Term : " + idTerm, sqle);
                 //System.out.println(sqle.toString());
                 return false;
-            } else
+            } else {
                 return true;
+            }
             // Log exception
-            
+
         }
         addTermNoteHistorique(ds, idTerm, idLang, idThesaurus, note, noteTypeCode, "add", idUser);
         return status;
     }
-
-
 
     /**
      * Cette fonction permet de savoir si la Note d'un Concept existe ou non
@@ -1189,10 +1166,9 @@ public class NoteHelper {
         return existe;
     }
 
-    
     /**
      * Cette fonction permet de supprimer toutes les notes d'un Concept
-     * 
+     *
      * @param conn
      * @param idConcept
      * @param idThesaurus
@@ -1223,10 +1199,10 @@ public class NoteHelper {
         }
         return false;
     }
-    
+
     /**
      * Cette fonction permet de supprimer toutes les notes d'un terme
-     * 
+     *
      * @param conn
      * @param idTerm
      * @param idThesaurus
@@ -1256,16 +1232,16 @@ public class NoteHelper {
             log.error("Error while deleting all notes of Term : " + idTerm, sqle);
         }
         return false;
-    }  
-    
+    }
 
     /**
-     * pour pouvoir obtener une list des Notes a partir du idTerm
-     * sans conter avec le language
+     * pour pouvoir obtener une list des Notes a partir du idTerm sans conter
+     * avec le language
+     *
      * @param ds
      * @param idTerm
      * @param idThesaurus
-     * @return 
+     * @return
      */
     public ArrayList<NodeNote> getListNotesTerm2(HikariDataSource ds,
             String idTerm, String idThesaurus) {
@@ -1315,13 +1291,15 @@ public class NoteHelper {
         }
         return nodeNotes;
     }
-      /**
-     * pour pouvoir obtener une list des Notes a partir du idConcept
-     * sans conter avec le language
+
+    /**
+     * pour pouvoir obtener une list des Notes a partir du idConcept sans conter
+     * avec le language
+     *
      * @param ds
      * @param idConcept
      * @param idThesaurus
-     * @return 
+     * @return
      */
     public ArrayList<NodeNote> getListNotesConcept2(HikariDataSource ds, String idConcept,
             String idThesaurus) {
@@ -1385,8 +1363,8 @@ public class NoteHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT note.id, note.lang, note.notetypecode, note.lexicalvalue, note.created, " +
-                            "note.modified FROM note WHERE  note.id = " + idNote;
+                    String query = "SELECT note.id, note.lang, note.notetypecode, note.lexicalvalue, note.created, "
+                            + "note.modified FROM note WHERE  note.id = " + idNote;
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -1424,8 +1402,8 @@ public class NoteHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT id, lang, notetypecode, lexicalvalue, created, modified " +
-                            "FROM note WHERE lexicalvalue = '"+noteValue+"'";
+                    String query = "SELECT id, lang, notetypecode, lexicalvalue, created, modified "
+                            + "FROM note WHERE lexicalvalue = '" + noteValue + "'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -1463,8 +1441,8 @@ public class NoteHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    stmt.executeQuery("SELECT id, lang, notetypecode, lexicalvalue, created, modified FROM note " +
-                            "WHERE lexicalvalue = '"+value+"' AND id_thesaurus = '"+idThes+"'");
+                    stmt.executeQuery("SELECT id, lang, notetypecode, lexicalvalue, created, modified FROM note "
+                            + "WHERE lexicalvalue = '" + value + "' AND id_thesaurus = '" + idThes + "'");
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
                         nodeNote = new NodeNote();
@@ -1486,7 +1464,7 @@ public class NoteHelper {
         }
         return nodeNote;
     }
-    
+
     /**
      * Cette fonction permet de retourner le nombre de notes pour un concept
      * (toutes les notes (type terme et type concept)
@@ -1511,20 +1489,20 @@ public class NoteHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT count(preferred_term.id_concept) FROM " +
-                        "  preferred_term, note" +
-                        " WHERE " +
-                        "  preferred_term.id_thesaurus = note.id_thesaurus AND" +
-                        "  (preferred_term.id_term = note.id_term or" +
-                        "  preferred_term.id_concept = note.id_concept)" +
-                        "  AND" +
-                        "  preferred_term.id_thesaurus = '" + idThesaurus + "'" +
-                        " AND preferred_term.id_concept='" + idConcept + "'" +
-                        " AND note.lang = '" + idLang + "'";    
+                    String query = "SELECT count(preferred_term.id_concept) FROM "
+                            + "  preferred_term, note"
+                            + " WHERE "
+                            + "  preferred_term.id_thesaurus = note.id_thesaurus AND"
+                            + "  (preferred_term.id_term = note.id_term or"
+                            + "  preferred_term.id_concept = note.id_concept)"
+                            + "  AND"
+                            + "  preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                            + " AND preferred_term.id_concept='" + idConcept + "'"
+                            + " AND note.lang = '" + idLang + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
-                   if(resultSet.next()) {
-                       count = resultSet.getInt(1);
+                    if (resultSet.next()) {
+                        count = resultSet.getInt(1);
                     }
                 } finally {
                     stmt.close();
@@ -1537,9 +1515,9 @@ public class NoteHelper {
             log.error("Error while getting Count of Traductions of Concept  : " + idConcept, sqle);
         }
         return count;
-    }    
-    
-     /**
+    }
+
+    /**
      * Change l'id d'un concept dans la table note
      *
      * @param conn
@@ -1561,7 +1539,7 @@ public class NoteHelper {
             stmt.close();
         }
     }
-    
+
     /**
      * Change l'id d'un concept dans la table note_historique
      *
@@ -1584,32 +1562,60 @@ public class NoteHelper {
             stmt.close();
         }
     }
-    
-    
-    
+
     private int getNbrNoteByGroupTypeConcept(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
+
+        int count = 0;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+
+                // ajouté par Miled pour test et optimisation 
+                stmt.executeQuery("SELECT count (note.id)"
+                        + " FROM preferred_term, note, concept"
+                        + " WHERE preferred_term.id_concept = note.id_concept "
+                        + " AND preferred_term.id_thesaurus = note.id_thesaurus"
+                        + " AND concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " AND concept.id_concept = preferred_term.id_concept"
+                        + " AND preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                        + " AND note.lang = '" + idLang + "' "
+                        + " AND preferred_term.id_concept "
+                        + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "'"
+                        + " and concept_group_concept.idgroup='" + idGroup + "')");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        count = resultSet.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Count of Note in Group : " + idGroup, sqle);
+        }
+        return count;
+    }
+
+    private int getNbrNoteByGroupTypeTerm(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
 
         Connection conn;
         Statement stmt;
         int count = 0;
- 
+
         try {
             // Get connection from pool
             conn = ds.getConnection();
             stmt = conn.createStatement();
-            
+
             // ajouté par Miled pour test et optimisation 
-            stmt.executeQuery("SELECT count (note.id)" 
-                + " FROM preferred_term, note, concept"
-                + " WHERE preferred_term.id_concept = note.id_concept "
-                + " AND preferred_term.id_thesaurus = note.id_thesaurus" 
-                + " AND concept.id_thesaurus = preferred_term.id_thesaurus" 
-                + " AND concept.id_concept = preferred_term.id_concept"
-                + " AND preferred_term.id_thesaurus = '"+ idThesaurus+ "'"
-                + " AND note.lang = '" +idLang + "' "
-                + " AND preferred_term.id_concept "
-                + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus +"'"
-                + " and concept_group_concept.idgroup='" + idGroup +"')");             
+            stmt.executeQuery("SELECT count (note.id)"
+                    + " FROM preferred_term, note, concept"
+                    + " WHERE preferred_term.id_term = note.id_term "
+                    + " AND preferred_term.id_thesaurus = note.id_thesaurus"
+                    + " AND concept.id_thesaurus = preferred_term.id_thesaurus"
+                    + " AND concept.id_concept = preferred_term.id_concept"
+                    + " AND preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                    + " AND note.lang = '" + idLang + "' "
+                    + " AND preferred_term.id_concept "
+                    + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "'"
+                    + " and concept_group_concept.idgroup='" + idGroup + "')");
             /*stmt.executeQuery("SELECT count(preferred_term.id_concept) " +
                               "FROM preferred_term, note " +
                               "WHERE preferred_term.id_thesaurus = note.id_thesaurus " +
@@ -1623,7 +1629,7 @@ public class NoteHelper {
                                              "AND concept_group_concept.idgroup = '"+idGroup+"') " +
                               "AND note.lang = '"+idLang+"'");*/
             ResultSet resultSet = stmt.getResultSet();
-            if(resultSet.next()) {
+            if (resultSet.next()) {
                 count = resultSet.getInt(1);
             }
             stmt.close();
@@ -1633,74 +1639,22 @@ public class NoteHelper {
         }
         return count;
     }
-    
-    private int getNbrNoteByGroupTypeTerm(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
-
-        Connection conn;
-        Statement stmt;
-        int count = 0;
- 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            stmt = conn.createStatement();
-            
-            // ajouté par Miled pour test et optimisation 
-            stmt.executeQuery("SELECT count (note.id)" 
-                + " FROM preferred_term, note, concept"
-                + " WHERE preferred_term.id_term = note.id_term "
-                + " AND preferred_term.id_thesaurus = note.id_thesaurus" 
-                + " AND concept.id_thesaurus = preferred_term.id_thesaurus" 
-                + " AND concept.id_concept = preferred_term.id_concept"
-                + " AND preferred_term.id_thesaurus = '"+ idThesaurus+ "'"
-                + " AND note.lang = '" +idLang + "' "
-                + " AND preferred_term.id_concept "
-                + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus +"'"
-                + " and concept_group_concept.idgroup='" + idGroup +"')");             
-            /*stmt.executeQuery("SELECT count(preferred_term.id_concept) " +
-                              "FROM preferred_term, note " +
-                              "WHERE preferred_term.id_thesaurus = note.id_thesaurus " +
-                              "AND (preferred_term.id_term = note.id_term or preferred_term.id_concept = note.id_concept) " +
-                              "AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
-                              "AND preferred_term.id_concept IN (SELECT concept.id_concept " +
-                                             "FROM concept, concept_group_concept " +
-                                             "WHERE concept.id_concept = concept_group_concept.idconcept " +
-                                             "AND concept.id_thesaurus = concept_group_concept.idthesaurus " +
-                                             "AND concept.id_thesaurus = '"+idThesaurus+"' " +
-                                             "AND concept_group_concept.idgroup = '"+idGroup+"') " +
-                              "AND note.lang = '"+idLang+"'");*/
-            ResultSet resultSet = stmt.getResultSet();
-            if(resultSet.next()) {
-                count = resultSet.getInt(1);
-            }
-            stmt.close();
-            conn.close();
-        } catch (SQLException sqle) {
-            log.error("Error while getting Count of Note in Group : " + idGroup, sqle);
-        }
-        return count;
-    }    
 
     private int getNbrNoteDesConceptsSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
 
-        Connection conn;
-        Statement stmt;
         int count = 0;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            stmt = conn.createStatement();
-            stmt.executeQuery("SELECT count(note.id) FROM concept, note WHERE concept.id_concept = note.id_concept " +
-                    "AND concept.id_thesaurus = note.id_thesaurus AND concept.id_thesaurus = '"+idThesaurus+"' " +
-                    "AND note.lang = '"+idLang+"' AND concept.id_concept NOT IN (SELECT idconcept FROM concept_group_concept " +
-                    "WHERE idthesaurus = '"+idThesaurus+"')");
-            ResultSet resultSet = stmt.getResultSet();
-            if(resultSet.next()) {
-                count = resultSet.getInt(1);
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT count(note.id) FROM concept, note WHERE concept.id_concept = note.id_concept "
+                        + "AND concept.id_thesaurus = note.id_thesaurus AND concept.id_thesaurus = '" + idThesaurus + "' "
+                        + "AND note.lang = '" + idLang + "' AND concept.id_concept NOT IN (SELECT idconcept FROM concept_group_concept "
+                        + "WHERE idthesaurus = '" + idThesaurus + "')");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        count = resultSet.getInt(1);
+                    }
+                }
             }
-            stmt.close();
-            conn.close();
         } catch (SQLException sqle) {
             log.error("Error while getting Count of Note in without Group", sqle);
         }
@@ -1709,24 +1663,19 @@ public class NoteHelper {
 
     private int getNbrNoteDesTermsSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
 
-        Connection conn;
-        Statement stmt;
         int count = 0;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            stmt = conn.createStatement();
-            stmt.executeQuery("SELECT count(note.id) FROM preferred_term, note WHERE preferred_term.id_term = note.id_term " +
-                    "AND preferred_term.id_thesaurus = note.id_thesaurus AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
-                    "AND note.lang = '"+idLang+"' AND preferred_term.id_concept NOT IN " +
-                    "(SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '"+idThesaurus+"')");
-            ResultSet resultSet = stmt.getResultSet();
-            if(resultSet.next()) {
-                count = resultSet.getInt(1);
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT count(note.id) FROM preferred_term, note WHERE preferred_term.id_term = note.id_term "
+                        + "AND preferred_term.id_thesaurus = note.id_thesaurus AND preferred_term.id_thesaurus = '" + idThesaurus + "' "
+                        + "AND note.lang = '" + idLang + "' AND preferred_term.id_concept NOT IN "
+                        + "(SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "')");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        count = resultSet.getInt(1);
+                    }
+                }
             }
-            stmt.close();
-            conn.close();
         } catch (SQLException sqle) {
             log.error("Error while getting Count of Note in without Group", sqle);
         }
@@ -1734,31 +1683,34 @@ public class NoteHelper {
     }
 
     /**
-     * permet de retourner le nombre de notes (type concept et terme) pour les concepts qui n'ont pas de collection
+     * permet de retourner le nombre de notes (type concept et terme) pour les
+     * concepts qui n'ont pas de collection
+     *
      * @param ds
      * @param idThesaurus
      * @param idLang
-     * @return 
+     * @return
      */
     public int getNbrNoteSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
         int nbrNoteConcepts = getNbrNoteDesConceptsSansGroup(ds, idThesaurus, idLang);
         int nbrNoteTerms = getNbrNoteDesTermsSansGroup(ds, idThesaurus, idLang);
         return nbrNoteConcepts + nbrNoteTerms;
     }
-    
+
     /**
-     * permet de retourner le nombre de notes (type concept et terme) pour les concepts qui appartiennent à ce groupe
+     * permet de retourner le nombre de notes (type concept et terme) pour les
+     * concepts qui appartiennent à ce groupe
+     *
      * @param ds
      * @param idThesaurus
      * @param idGroup
      * @param idLang
-     * @return 
+     * @return
      */
-    public int getNbrNoteByGroup(HikariDataSource ds, String idGroup, String idThesaurus,  String idLang) {
+    public int getNbrNoteByGroup(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
         int nbrNoteConcepts = getNbrNoteByGroupTypeConcept(ds, idGroup, idThesaurus, idLang);
-        int nbrNoteTerms = getNbrNoteByGroupTypeTerm(ds,idGroup, idThesaurus, idLang);
+        int nbrNoteTerms = getNbrNoteByGroupTypeTerm(ds, idGroup, idThesaurus, idLang);
         return nbrNoteConcepts + nbrNoteTerms;
-    }    
+    }
 
 }
-

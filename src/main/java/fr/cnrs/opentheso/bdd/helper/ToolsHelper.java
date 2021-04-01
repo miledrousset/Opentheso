@@ -11,8 +11,6 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bdd.tools.FileUtilities;
-//import fr.cnrs.opentheso.ws.ark.ArkClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,15 +23,9 @@ public class ToolsHelper {
     }
 
     /**
-     * Cette fonction permet de regénerer ou générer tous les identifiants Ark
-     * du thésaurus
-     *
-     * @param ds
-     * @param idThesaurus
-     * @return ArrayList de NodePermute
+     * Cette fonction permet de regénerer ou générer tous les identifiants Ark du thésaurus
      */
-    public boolean GenerateArkIds(HikariDataSource ds,
-            String idThesaurus) {
+    public boolean GenerateArkIds(HikariDataSource ds, String idThesaurus) {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         TermHelper termHelper = new TermHelper();
@@ -42,8 +34,6 @@ public class ToolsHelper {
         // Génération des Id Ark pour les concepts
         ArrayList<String> tabIdConcept = conceptHelper.getAllIdConceptOfThesaurus(ds, idThesaurus);
 
-        String idArk;
-//        ArkClient ark_Client = new ArkClient();
         ArrayList<DcElement> dcElementsList = new ArrayList<>();
 
         for (String idConcept : tabIdConcept) {
@@ -58,88 +48,16 @@ public class ToolsHelper {
                 dcElement.setLanguage(nodeTermTraduction.getLang());
                 dcElementsList.add(dcElement);
             }
-            // String date, String url, String title, String creator, String description, String type
-    /*        idArk = ark_Client.getArkId(
-                    new FileUtilities().getDate(),
-                    "http://pactols.frantiq.fr/" + "?idc=" + idConcept + "&idt=" + idThesaurus,
-                    idConcept,
-                    "Frantiq",
-                    dcElementsList,
-                    "pcrt"); // pcrt : p= pactols, crt=code DCMI pour collection
-            conceptHelper.updateArkIdOfConcept(ds, idConcept, idThesaurus, idArk);*/
         }
 
         return true;
     }
 
     /**
-     * Fonction qui permet de replacer les orphelins qui ne les sont plus et les
-     * attacher aux concepts
-     *
-     * @param ds
-     * @param idThesaurus
-     * @return
-     */
-/*    public boolean orphanReplace(HikariDataSource ds,
-            String idThesaurus) {
-
-        ConceptHelper conceptHelper = new ConceptHelper();
-        RelationsHelper relationsHelper = new RelationsHelper();
-        GroupHelper groupHelper = new GroupHelper();
-        
-        // récupération de tous les Id concepts du thésaurus
-        ArrayList<String> idOrphans = orphanHelper.getListOrphanId(ds, idThesaurus);
-
-        // on controle si l'orphelin a un BT on le supprime des orphelins pour le rattacher au concept.
-        for (String idOrphan : idOrphans) {
-            if (relationsHelper.isConceptHaveRelationBT(ds, idOrphan, idThesaurus)) {
-                if(groupHelper.isConceptHaveGroup(ds, idOrphan, idThesaurus)) {
-                    try {
-                        Connection conn = ds.getConnection();
-                        conn.setAutoCommit(false);
-                        if (!orphanHelper.deleteOrphan(conn, idOrphan, idThesaurus)) {
-                            conn.rollback();
-                            conn.close();
-                        } else {
-                            conn.commit();
-                            conn.close();
-                        }
-                    } catch (SQLException sqle) {
-                        Logger.getLogger(ToolsHelper.class.getName()).log(Level.SEVERE, null, sqle);
-                    }
-                }
-            }
-            else {
-                // si l'orphelin est un TopTerm, il faut le supprimer pour le replacer dans le thésaurus
-                if(conceptHelper.isTopConcept(ds, idOrphan, idThesaurus)) {
-                    if(groupHelper.isConceptHaveGroup(ds, idOrphan, idThesaurus)) {
-                        try {
-                            Connection conn = ds.getConnection();
-                            conn.setAutoCommit(false);
-                            if (!orphanHelper.deleteOrphan(conn, idOrphan, idThesaurus)) {
-                                conn.rollback();
-                                conn.close();
-                            }
-                        } catch (SQLException sqle) {
-                            Logger.getLogger(ToolsHelper.class.getName()).log(Level.SEVERE, null, sqle);
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }*/
-
-    /**
      * Fonction qui permet de restructurer le thésaurus en ajoutant les NT et les BT qui manquent
      * elle permet aussi de sortir les termes orphelins si nécessaire
-     *
-     * @param ds
-     * @param idThesaurus
-     * @return
      */
-    public boolean reorganizingTheso(HikariDataSource ds,
-            String idThesaurus) {
+    public boolean reorganizingTheso(HikariDataSource ds, String idThesaurus) {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
@@ -149,8 +67,7 @@ public class ToolsHelper {
         // récupération de tous les Id concepts du thésaurus
         ArrayList<String> tabIdConcept = conceptHelper.getAllIdConceptOfThesaurus(ds, idThesaurus);
 
-        try {
-            Connection conn = ds.getConnection();
+        try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
             for (String idConcept : tabIdConcept) {
                 idBT = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
@@ -207,15 +124,13 @@ public class ToolsHelper {
      * @param idThesaurus
      * @return
      */
-    public boolean completeReciprocalRelation(HikariDataSource ds,
-            String idThesaurus) {
+    public boolean completeReciprocalRelation(HikariDataSource ds, String idThesaurus) {
 
-        ConceptHelper conceptHelper = new ConceptHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         ArrayList<NodeRelation> nodeRelations;
         
         // récupération de tous les Id concepts du thésaurus
-        ArrayList<String> tabIdConcept = conceptHelper.getAllIdConceptOfThesaurus(ds, idThesaurus);
+        ArrayList<String> tabIdConcept = new ConceptHelper().getAllIdConceptOfThesaurus(ds, idThesaurus);
         for (String idConcept : tabIdConcept) {
             // je récupère toutes les relations d'un concept 
             /*
@@ -267,22 +182,14 @@ public class ToolsHelper {
     /**
      * Fonction qui permet de détecter les concepts qui n'ont pas de groupes
      * puis elle les replace dans le domaine (NoGroup)
-     *
-     * @param ds
-     * @param idThesaurus
-     * @param defaultLang
-     * @return
      */
-    public boolean detectAndReplaceNoGroup(HikariDataSource ds,
-            String idThesaurus, String defaultLang) {
+    public boolean detectAndReplaceNoGroup(HikariDataSource ds, String idThesaurus, String defaultLang) {
 
-        ConceptHelper conceptHelper = new ConceptHelper();
         GroupHelper groupHelper = new GroupHelper();
-        
         boolean first = true;
 
         // ici, on traite les concept qui n'ont aucun groupe 
-        ArrayList<String> tabIdConcept = conceptHelper.getAllIdConceptOfThesaurusWithoutGroup(ds, idThesaurus);
+        ArrayList<String> tabIdConcept = new ConceptHelper().getAllIdConceptOfThesaurusWithoutGroup(ds, idThesaurus);
         for (String idConcept : tabIdConcept) {
             if(first) {
                 // création du domaine (NoGroup)
@@ -325,7 +232,6 @@ public class ToolsHelper {
         // récupération de tous les Id concepts du thésaurus qui n'ont pas de groupe
         // pour essayer de le compléter en se basant au BT 
         
-
         // ici, on traite les concept qui n'ont aucun groupe 
         ArrayList<String> tabIdConcept = conceptHelper.getAllIdConceptOfThesaurusWithoutGroup(ds, idThesaurus);
         for (String idConcept : tabIdConcept) {
@@ -428,63 +334,7 @@ public class ToolsHelper {
         }         
         return true;
     }
-    
-
-    /**
-     * Permet de supprimer les Groupes qui sont orphelins, cas où un concept qui
-     * appartient à deux groupes mais le concept n'a qu'une branche ou relation
-     * BT
-     *
-     * @param ds
-     * @param idThesaurus
-     * @return
-     */
-    /*   public boolean removeGroupOrphan(HikariDataSource ds,
-            String idThesaurus) {
-        ConceptHelper conceptHelper = new ConceptHelper();
-        RelationsHelper relationsHelper = new RelationsHelper();
-        GroupHelper groupHelper = new GroupHelper();
-        
-        ArrayList<String> idBTs;
-        ArrayList<String> idGroupsOfCOncept;
-        ArrayList<String> idGroupsOfBT;        
-        String idGroup;
-
-        // récupération de tous les Id concepts qui ont plusieurs groupes en même temps
-        ArrayList<String> idConcepts = conceptHelper.getConceptsHavingMultiGroup(ds, idThesaurus);
-
-        
-        
-        
-        for (String idConcept : idConcepts) {
-            // récupértation des Groupes pour ce concept
-            idGroupsOfCOncept = groupHelper.getListIdGroupOfConcept(ds, idThesaurus, idConcept);            
-            
-            // récupértation des BT pour ce concept
-            idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
-            
-            // comparaison pour détecter l'incohérence
-            // s'il n'y a qu'un sel BT pour un concept qui appartient à 2 Groupes, il y a peut être un problème
-            if(idBTs.size() < 2) {
-                for (String idBT : idBTs) {
-                    idGroupsOfBT = groupHelper.getListIdGroupOfConcept(ds, idThesaurus, idBT);
-                    if(idGroupsOfBT.size() == 1) {
-
-                    }
-                }
-            }
-
-            
-
-            
-            
-            
-        }
-
-        return false;
-    } *
-        
-        
+         
     /**
      * Permet de supprimer les BT à un concept qui est Top terme, 
      * c'est incohérent et ca provoque une boucle à l'infini
@@ -492,16 +342,14 @@ public class ToolsHelper {
      * @param idThesaurus
      * @return 
      */
-    public boolean removeBTofTopTerm(HikariDataSource ds,
-            String idThesaurus) {
+    public boolean removeBTofTopTerm(HikariDataSource ds, String idThesaurus) {
         ConceptHelper conceptHelper = new ConceptHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         ArrayList<String> idBTs;
 
         // récupération de tous les Id TT du thésaurus
         ArrayList<String> tabIdTT = conceptHelper.getAllTopTermOfThesaurus(ds, idThesaurus);
-        try {
-            Connection conn = ds.getConnection();
+        try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
             for (String idConcept : tabIdTT) {
                 idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
@@ -531,8 +379,7 @@ public class ToolsHelper {
      * @param idThesaurus
      * @return 
      */
-    public boolean reorganizingTopTerm(HikariDataSource ds,
-            String idThesaurus) {
+    public boolean reorganizingTopTerm(HikariDataSource ds, String idThesaurus) {
         ConceptHelper conceptHelper = new ConceptHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
 
@@ -543,60 +390,14 @@ public class ToolsHelper {
             conceptHelper.setTopConcept(ds, idConcept, idThesaurus);
         }
         return true;
-    }            
-    
-    /**
-     * Permet de détecter les concepts TT et les organiser dans la BDD pour pouvoir les afficher 
-     * un TT est un concept qui n'a pas de BT, il faut ajouter dans la table Concept l'information top_concept = true
-     * @param ds
-     * @param idThesaurus
-     * @return 
-     */
- /*   public boolean detectAndSetTopTerm(HikariDataSource ds,
-            String idThesaurus) {
-        ConceptHelper conceptHelper = new ConceptHelper();
-        RelationsHelper relationsHelper = new RelationsHelper();
-        ArrayList<String> idConcepts;
-
-        // récupération de tous les Id concepts qui n'ont pas de BT
-        ArrayList<String> idConcepts = conceptHelper.getAllTopTermOfThesaurus(ds, idThesaurus);
-        try {
-            Connection conn = ds.getConnection();
-            conn.setAutoCommit(false);
-            for (String idConcept : tabIdTT) {
-                idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
-                for (String idBT : idBTs) {
-                    if (!idBT.isEmpty()) {
-                        if (!relationsHelper.deleteRelationBT(conn, idConcept, idThesaurus, idBT, 1)) {
-                            conn.rollback();
-                            conn.close();
-                            return false;
-                        }
-                    }
-                }
-            }
-            conn.commit();
-            conn.close();
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(ToolsHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }    */
+    }    
 
     /**
      * Permet de supprimer les relations en boucle qui sont interdites (100 ->
      * BT -> 100) ou (100 -> NT -> 100)ou (100 -> RT -> 100) c'est incohérent et
      * ca provoque une boucle à l'infini
-     *
-     * @param ds
-     * @param role
-     * @param idThesaurus
-     * @return
      */
-    public boolean removeLoopRelations(HikariDataSource ds,
-            String role,
-            String idThesaurus) {
+    public boolean removeLoopRelations(HikariDataSource ds, String role, String idThesaurus) {
 
         RelationsHelper relationsHelper = new RelationsHelper();
 
@@ -605,12 +406,8 @@ public class ToolsHelper {
                 = relationsHelper.getListLoopRelations(ds, role, idThesaurus);
         if (!tabRelations.isEmpty()) {
             for (HierarchicalRelationship relation : tabRelations) {
-                relationsHelper.deleteThisRelation(
-                        ds,
-                        relation.getIdConcept1(),
-                        idThesaurus,
-                        role,
-                        relation.getIdConcept2());
+                relationsHelper.deleteThisRelation(ds, relation.getIdConcept1(), idThesaurus,
+                        role, relation.getIdConcept2());
             }
         }
         return true;

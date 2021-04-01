@@ -7,10 +7,10 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
     <h:head>
-        
+
         <!--Code Google Analytics, l'intégration ou la modification est gérée dans l'appli -->
         <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>        
-        
+
         <h:panelGroup id="indexTitle" >
             <title>
                 <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexical_value != ''}"
@@ -18,43 +18,75 @@
                 <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexical_value == ''}"
                               value="#{Opentheso}"/>
             </title>
-            
+
             <meta name="description" content="C'est un gestionnaire de thesaurus multilingue, développé par la plateforme Technologique WST (Web Sémantique et Thesauri) située à la MOM en partenariat avec le GDS-FRANTIQ"/>
         </h:panelGroup>
-
-
-
-            
-            
-        <script type="application/ld+json">
+        
+        <!-- 
+         <script type="application/ld+json">
+            {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Books",
+        "item": "https://example.com/books"
+      },{
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Science Fiction",
+        "item": "https://example.com/books/sciencefiction"
+      },{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Award Winners"
+      }]
+    }
+</script>  -->
+        
+    <!--    <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
-                "@type": "Organization",
-                "url": "https://opentheso.hypotheses.org",
-                "name": "OpenTheso",
-                "legalName" : "OpenTheso",
-                "logo": "http://opentheso2.mom.fr/opentheso2/images/logo_Opentheso.png",
-                "address": {
-                    "@type": "PostalAddress",
-                    "streetAddress": "7 rue Raulin",
-                    "addressLocality": "Lyon",
-                    "addressRegion": "Rhone Alpes",
-                    "postalCode": "69007",
-                    "addressCountry": "Lyon"
-                },
-                "contactPoint": [
-                    {
-                        "@context": "https://schema.org",
-                        "@type" : "ContactPoint",
-                        "telephone" : "",
-                        "contactType" : "technical support",
-                        "contactOption" : "TollFree",
-                        "areaServed" : "FR",
-                        "availableLanguage" : ["English","French"]
-                    }
-                ]
+                "@type": "Thing",
+                "url": "http://localhost:8082/opentheso2/?idc=16815&amp;idt=TH_1",
+                "name": "Santé",
+                "Organization" : "PACTOLS",
+                "image": "https://www.wikimedia.fr/wp-content/uploads/2020/04/Novel_Coronavirus_SARS-CoV-2_49679608176-350x245.jpg",
+                "description": "une courte définition"
             }
-        </script>
+        </script>         
+-->
+        <!-- <script type="application/ld+json">
+             {
+                 "@context": "https://schema.org",
+                 "@type": "Organization",
+                 "url": "https://opentheso.hypotheses.org",
+                 "name": "OpenTheso",
+                 "legalName" : "OpenTheso",
+                 "logo": "http://opentheso2.mom.fr/opentheso2/images/logo_Opentheso.png",
+                 "address": {
+                     "@type": "PostalAddress",
+                     "streetAddress": "7 rue Raulin",
+                     "addressLocality": "Lyon",
+                     "addressRegion": "Rhone Alpes",
+                     "postalCode": "69007",
+                     "addressCountry": "Lyon"
+                 },
+                 "contactPoint": [
+                     {
+                         "@context": "https://schema.org",
+                         "@type" : "ContactPoint",
+                         "telephone" : "",
+                         "contactType" : "technical support",
+                         "contactOption" : "TollFree",
+                         "areaServed" : "FR",
+                         "availableLanguage" : ["English","French"]
+                     }
+                 ]
+             }
+         </script>
+        -->
 
         <link rel="icon" href="images/icon_opentheso2.png" />
         <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" />
@@ -81,7 +113,7 @@
     </h:head>
 
     <h:body>
-        <p:idleMonitor timeout="#{sessionControl.timeout}">
+        <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
 
@@ -89,7 +121,7 @@
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
             <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
             <f:viewAction action="#{selectedTheso.preRenderView}"/>
-         <!--   <f:event listener="{selectedTheso.preRenderView}" type="preRenderView"/> -->
+            <!--   <f:event listener="{selectedTheso.preRenderView}" type="preRenderView"/> -->
 
         </f:metadata>
 
@@ -97,14 +129,14 @@
 
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
         <h:outputStylesheet name="fa/font-awesome.css" library="primefaces"/>
-       
+
         <!--
         <h:outputStylesheet name="font-awesome/5.15.1/css/all.min-jsf.css" library="webjars"/>
         <h:outputStylesheet name="font-awesome/5.15.1/css/v4-shims.min-jsf.css" library="webjars"/>
         -->
         <h:outputStylesheet library="webjars" name="font-awesome/5.15.1/css/all-jsf.css" />
 
-        <b:container id="containerIndex" >
+        <b:container id="containerIndex" rendered="#{(connect.browserName != 'agent')}">
             <ui:include src="menu.xhtml" />
 
             <h:panelGroup  rendered="#{indexSetting.isThesoActive and indexSetting.isSelectedTheso}">
@@ -134,10 +166,15 @@
             <h:panelGroup  rendered="#{indexSetting.isToolBoxActive}">
                 <ui:include src="/toolbox/toolBox.xhtml" />
             </h:panelGroup>
+        </b:container>
+ 
+        <b:container id="containerBot" rendered="#{(connect.browserName == 'agent')}">
+            <!-- <h:outputText value="# {conceptView.getMetaData()}"/> -->
 
         </b:container>
 
+
     </h:body>
-    
+
 </html>
 

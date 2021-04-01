@@ -26,33 +26,17 @@ import org.eclipse.rdf4j.rio.RDFFormat;
  */
 public class CopyAndPasteBetweenThesoHelper {
 
-    public CopyAndPasteBetweenThesoHelper() {
-    }
-
-    public boolean pasteConceptLikeNT(
-            String currentIdTheso,
-            String currentIdConcept,
-            String idConceptToMove) {
-
+    public boolean pasteConceptLikeNT(String currentIdTheso, String currentIdConcept, String idConceptToMove) {
         return true;
     }
 
-    public boolean pasteConceptLikeNTOfGroup(
-            String currentIdTheso,
-            String currentIdGroup,
+    public boolean pasteConceptLikeNTOfGroup(String currentIdTheso, String currentIdGroup,
             String idConceptToMove) {
-
         return true;
     }
 
-    public boolean pasteBranchLikeNT(
-            HikariDataSource ds,
-            String currentIdTheso,
-            String currentIdConcept,
-            String fromIdTheso,
-            String fromIdConcept,
-            String identifierType,
-            int idUser,
+    public boolean pasteBranchLikeNT(HikariDataSource ds, String currentIdTheso, String currentIdConcept,
+            String fromIdTheso, String fromIdConcept, String identifierType, int idUser,
             NodePreference nodePreference) {
 
         // récupération des concepts du thésaurus de départ
@@ -79,8 +63,7 @@ public class CopyAndPasteBetweenThesoHelper {
                     idUser)) {
             }
         }
-        try {
-            Connection conn = ds.getConnection();
+        try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
             if (!relationsHelper.addRelationBT(
                     conn,
@@ -93,7 +76,6 @@ public class CopyAndPasteBetweenThesoHelper {
             }
             conn.commit();
             conn.close();
-            
         } catch (SQLException ex) {
             Logger.getLogger(SynonymBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -101,15 +83,8 @@ public class CopyAndPasteBetweenThesoHelper {
     }
 
     
-    public boolean pasteBranchToRoot(
-            HikariDataSource ds,
-            String currentIdTheso,
-
-            String fromIdTheso,
-            String fromIdConcept,
-            String identifierType,
-            int idUser,
-            NodePreference nodePreference) {
+    public boolean pasteBranchToRoot(HikariDataSource ds, String currentIdTheso, String fromIdTheso,
+            String fromIdConcept, String identifierType, int idUser, NodePreference nodePreference) {
 
         // récupération des concepts du thésaurus de départ
         SKOSXmlDocument sKOSXmlDocument = getBranch(ds,
@@ -128,11 +103,8 @@ public class CopyAndPasteBetweenThesoHelper {
         RelationsHelper relationsHelper = new RelationsHelper();
         ArrayList<String> nodeBT = relationsHelper.getListIdBT(ds, fromIdConcept, currentIdTheso);
         for (String idBT : nodeBT) {
-            if (!relationsHelper.deleteRelationBT(ds,
-                    fromIdConcept,
-                    currentIdTheso,
-                    idBT,
-                    idUser)) {
+            if (!relationsHelper.deleteRelationBT(ds, fromIdConcept, currentIdTheso, idBT, idUser)) {
+                
             }
         }
         
@@ -141,10 +113,6 @@ public class CopyAndPasteBetweenThesoHelper {
         conceptHelper.setTopConcept(ds, fromIdConcept, currentIdTheso);
         return true;
     }
-
-    
-
-    
 
     private SKOSXmlDocument getBranch(
             HikariDataSource ds,
@@ -164,29 +132,15 @@ public class CopyAndPasteBetweenThesoHelper {
         exportRdf4jHelper.addBranch(fromIdTheso, fromIdConcept);
 
         return exportRdf4jHelper.getSkosXmlDocument();
-
-        /*        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        
-        ByteArrayOutputStream out;
-        out = new ByteArrayOutputStream();
-        Rio.write(writeRdf4j.getModel(), out, format);
-        return out.toString();*/
     }
 
-    private boolean addBranch(HikariDataSource ds,
-            SKOSXmlDocument sKOSXmlDocument,
-            NodePreference nodePreference,
-            String idTheso,
-            int idUser,
-            String identifierType) {
+    private boolean addBranch(HikariDataSource ds, SKOSXmlDocument sKOSXmlDocument, NodePreference nodePreference,
+            String idTheso, int idUser, String identifierType) {
         int idGroup = -1;
         String formatDate = "yyyy-MM-dd";
 
         ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
-        importRdf4jHelper.setInfos(ds, formatDate,
-                idUser,
-                idGroup,
-                "");//connect.getWorkLanguage());
+        importRdf4jHelper.setInfos(ds, formatDate, idUser, idGroup, "");//connect.getWorkLanguage());
         // pour récupérer les identifiants pérennes type Ark ou Handle
         importRdf4jHelper.setSelectedIdentifier(identifierType);
 

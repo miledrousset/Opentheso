@@ -450,9 +450,6 @@ public class NewConcept implements Serializable {
         // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
         if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
             tree.expandTreeToPath(idConceptParent, idTheso, idLang);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("formLeftTab:tabTree:tree");
-            }
         }
 
         // cas où l'arbre est déjà déplié ou c'est un concept sans fils
@@ -522,10 +519,10 @@ public class NewConcept implements Serializable {
 
         SearchHelper searchHelper = new SearchHelper();
 
-        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso() == null) {
+        if (selectedTheso.getCurrentIdTheso() == null) {
             return null;
         }
-        if (selectedTheso.getCurrentIdTheso().isEmpty() || selectedTheso.getCurrentIdTheso().isEmpty()) {
+        if (selectedTheso.getCurrentIdTheso().isEmpty()) {
             return null;
         }
 

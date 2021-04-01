@@ -5,11 +5,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.ResourceBundle;
-//import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 
 
 import javax.faces.context.FacesContext;
@@ -19,6 +19,8 @@ import javax.inject.Named;
 @Named (value = "connect")
 @ApplicationScoped
 public class Connect implements Serializable{
+
+    private final int DEFAULT_TIMEOUT_IN_MIN = 10;
    
    
     private HikariDataSource poolConnexion = null;
@@ -33,7 +35,42 @@ public class Connect implements Serializable{
         ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
         workLanguage = bundlePref.getString("workLanguage");
         defaultThesaurusId = bundlePref.getString("defaultThesaurusId");
+    }    
+    
+    /**
+     * retourne la version actuelle d'Opentheso d'après le WAR
+     * @return 
+     */
+    public String getOpenthesoVersionFromWar() {
+        return FacesContext.getCurrentInstance().getExternalContext().getInitParameterMap().get("version");
+    }
+    
+    /**
+     * Pour détecter les agents d'indexation
+     *
+     * @return
+     */
+    public String getBrowserName() {
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        String userAgent = externalContext.getRequestHeaderMap().get("User-Agent");
+
+        // Yahoo
+        if (userAgent.toLowerCase().contains("Slurp")) {
+            return "agent";
+        }
+        //Bing
+        if (userAgent.toLowerCase().contains("bingbot")) {
+            return "agent";
+        }
         
+        if (userAgent.toLowerCase().contains("msnbot")) {
+            return "agent";
+        }
+        //Google
+        if (userAgent.toLowerCase().contains("googlebot")) {
+            return "agent";
+        }
+        return "notagent";
     }    
     
     private ResourceBundle getBundlePool(){
@@ -108,6 +145,18 @@ public class Connect implements Serializable{
             openConnexionPool();
         }
         return poolConnexion;
-    }    
+    }
+
+    public int getTimeout() {
+        int minNbr;
+        try {
+            FacesContext context = FacesContext.getCurrentInstance();
+            ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
+            minNbr = Integer.parseInt(bundlePref.getString("timeout_nbr_minute"));
+        } catch (Exception e) {
+            minNbr = DEFAULT_TIMEOUT_IN_MIN;
+        }
+        return (minNbr * 60 * 1000);
+    }
    
 }

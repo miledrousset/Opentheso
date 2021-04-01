@@ -27,10 +27,18 @@ import org.primefaces.event.SelectEvent;
 @Named(value = "listIndex")
 @SessionScoped
 public class ListIndex implements Serializable {
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private ConceptView conceptBean;
+
+    @Inject
+    private Connect connect;
+
+    @Inject
+    private SelectedTheso selectedTheso;
+
+    @Inject
+    private RightBodySetting rightBodySetting;
+
+    @Inject
+    private ConceptView conceptBean;
     
     private String searchValue;
     private NodeIdValue selectedNode;
@@ -38,9 +46,6 @@ public class ListIndex implements Serializable {
     
     private boolean withAltLabel;
     private boolean permuted;
-
-    public ListIndex() {
-    }
 
     public void reset(){
         searchValue = null;

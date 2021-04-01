@@ -21,7 +21,23 @@ public class NodeConceptSearch {
 //    private ArrayList<NodeNote> nodeNotesTerm;
 //    private ArrayList<NodeNote> nodeNotesConcept;
 
-
+    public void clear(){
+        idConcept = null;
+        prefLabel = null;
+        if(nodeTermTraductions != null)
+            nodeTermTraductions.clear();
+        if(nodeBT != null)
+            nodeBT.clear();        
+        if(nodeNT != null)
+            nodeNT.clear();    
+        if(nodeRT != null)
+            nodeRT.clear(); 
+        if(nodeEM != null)
+            nodeEM.clear(); 
+        if(nodeConceptGroup != null)
+            nodeConceptGroup.clear();
+    }
+    
     public NodeConceptSearch() {
     }
 

@@ -1,7 +1,14 @@
 package fr.cnrs.opentheso.bean.session;
 
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenTheso;
+import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
+import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
+import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import org.primefaces.PrimeFaces;
 
 import javax.enterprise.context.SessionScoped;
@@ -15,11 +22,9 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.ResourceBundle;
 
 
 @Named(value = "sessionControl")
@@ -28,16 +33,49 @@ public class SessionControl implements Serializable {
 
     @Inject
     private CurrentUser currentUser;
-    @Inject
-    private SelectedTheso selectedTheso;
 
-    private final int DEFAULT_TIMEOUT_IN_MIN = 10;
+    @Inject
+    private TreeGroups treeGroups;
+
+    @Inject
+    private TreeConcepts treeConcepts;
+
+    @Inject
+    private Tree tree;
+
+    @Inject
+    private ListIndex listIndex;
+
+    @Inject
+    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+
+    @Inject
+    private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
+
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+
+    @Inject
+    private IndexSetting indexSetting;
+
     
     public void isTimeout() throws IOException {
+
         if(FacesContext.getCurrentInstance()== null) return;
+
         if (currentUser.getNodeUser() != null) {
-            //Déconnexion de l'utilisateur
             currentUser.disconnect();
+        } else {
+            tree.reset();
+            listIndex.reset();
+            treeGroups.reset();
+            treeConcepts.reset();
+            viewEditorThesoHomeBean.reset();
+            roleOnThesoBean.showListTheso();
+            copyAndPasteBetweenTheso.reset();
+            indexSetting.setIsThesoActive(true);
+            roleOnThesoBean.setAndClearThesoInAuthorizedList();
+            PrimeFaces.current().ajax().update("containerIndex");
         }
 
         //Vider le cache
@@ -48,42 +86,11 @@ public class SessionControl implements Serializable {
         PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
-    /*    System.gc ();
-        System.runFinalization ();
-      */  
-        // Rafraîchissement de la page
-        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI());     
-    //    selectedTheso.getCurrentIdTheso();
+
+
+        System.gc();
         System.gc();
         System.runFinalization ();
-  /*      if (currentUser.getNodeUser() != null) {
-            //Déconnexion de l'utilisateur
-            currentUser.disconnect();
-        }
-
-        //Vider le cache
-        clearComponent();
-        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-
-        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-
-        HttpServletResponse response = (HttpServletResponse) ectx.getResponse();
-
-        HttpSession session = (HttpSession) ectx.getSession(false);
-
-        session.invalidate();
-
-        PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
-        PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
-        PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
-        /*    System.gc ();
-        System.runFinalization ();
-         */
- /*       selectedTheso.getCurrentIdTheso();
-        System.gc();
-        // Rafraîchissement de la page
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());*/
     }
 
     public void clearComponent() {
@@ -119,19 +126,6 @@ public class SessionControl implements Serializable {
                 clearAllComponentInChilds(component.getFacetsAndChildren());
             }
         }
-
-    }
-
-    public int getTimeout() {
-        int minNbr;
-        try {
-            FacesContext context = FacesContext.getCurrentInstance();
-            ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
-            minNbr = Integer.parseInt(bundlePref.getString("timeout_nbr_minute"));
-        } catch (Exception e) {
-            minNbr = DEFAULT_TIMEOUT_IN_MIN;
-        }
-        return (minNbr * 60 * 1000);
     }
 
 }

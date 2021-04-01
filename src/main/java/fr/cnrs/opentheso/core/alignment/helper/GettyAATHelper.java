@@ -92,7 +92,7 @@ public class GettyAATHelper {
             conn.disconnect();
 
             listeAlign = getValues(xmlRecord, idC, idTheso, source);
-
+            br.close();
         } catch (MalformedURLException e) {
             messages.append(e.toString());
             return null;

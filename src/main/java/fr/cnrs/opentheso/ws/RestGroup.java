@@ -15,6 +15,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import java.util.List;
+import java.util.Map;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * REST Web Service
@@ -427,7 +431,7 @@ public class RestGroup {
      * SKOS
      * @return 
      */
-/*    @Path("/")
+    @Path("/")
     @GET
     @Produces("application/rdf+xml;charset=UTF-8")
     public Response searchJsonLd(@Context UriInfo uri) {
@@ -459,7 +463,7 @@ public class RestGroup {
         }
         return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();     
     }     
-    */
+    
     
 
 

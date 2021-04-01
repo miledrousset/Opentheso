@@ -131,6 +131,7 @@ public class AtelierThesService implements Serializable {
                 List<String> list = Arrays.asList(line.split(""+delimiterCsv));
                 values.add(list);
             }
+            br.close();
             reader.close();
         } catch (IOException e) {
 

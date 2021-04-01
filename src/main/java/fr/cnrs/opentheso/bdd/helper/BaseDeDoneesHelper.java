@@ -262,6 +262,7 @@ public class BaseDeDoneesHelper implements Serializable {
                         }
                     }
         }
+            bf.close();
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(BaseDeDoneesHelper.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -280,24 +281,22 @@ public class BaseDeDoneesHelper implements Serializable {
     public String getNameOwner(HikariDataSource ds, String dbName)
     {
         String owner="";
-        Statement stmt;
-        String scriptBdd;
-        ResultSet resultSet;
-        try {
-            Connection conn = ds.getConnection();
-            stmt = conn.createStatement();
-            String query="SELECT pg_user.usename " 
+        
+        try (Connection conn = ds.getConnection()) {
+            
+            try (Statement stmt = conn.createStatement()) {
+                String query="SELECT pg_user.usename " 
                         + "FROM pg_catalog.pg_user,"
                         + "  pg_catalog.pg_database" 
                         + " WHERE pg_user.usesysid = pg_database.datdba" 
                         + "  and pg_database.datname ='"+ dbName+"'";
-            resultSet = stmt.executeQuery(query);
-            if (resultSet.next())
-            {
-                owner=resultSet.getString("usename");
+                
+                try (ResultSet resultSet = stmt.executeQuery(query)) {
+                    if (resultSet.next()){
+                        owner=resultSet.getString("usename");
+                    }
+                }
             }
-            stmt.close();
-            conn.close();
         } catch (SQLException ex) {
             Logger.getLogger(Table.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -449,6 +448,7 @@ public class BaseDeDoneesHelper implements Serializable {
                     sault=false;
                 }
             }
+            bf.close();
         }catch(Exception e)
         {
 

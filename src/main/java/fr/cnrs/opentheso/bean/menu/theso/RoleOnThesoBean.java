@@ -24,7 +24,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.bean.menu.users.ManagerGroupsUsers;
+//import fr.cnrs.opentheso.bean.menu.users.ManagerGroupsUsers;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -39,19 +39,13 @@ import javax.inject.Named;
 @SessionScoped
 
 public class RoleOnThesoBean implements Serializable {
+    @Inject private Connect connect;
+    @Inject private CurrentUser currentUser;
+    //@Inject private ManagerGroupsUsers managerGroupsUsers;
+    @Inject private LanguageBean languageBean;
+    @Inject private SelectedTheso selectedTheso;
 
-    @Inject
-    private Connect connect;
-    @Inject
-    private CurrentUser currentUser;
-    @Inject
-    private ManagerGroupsUsers managerGroupsUsers;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-
-    //liste des thesaurus public suivant les droits de l'utilisateur
+    //liste des thesaurus public suivant les droits de l'utilisateur, n'inclus pas les thésaurus privés
     private Map<String, String> listTheso;
     //liste des thesaurus For export or management avec droits admin pour l'utilisateur en cours
     private Map<String, String> listThesoAsAdmin;    
@@ -70,6 +64,7 @@ public class RoleOnThesoBean implements Serializable {
     private boolean isManagerOnThisTheso = false;
     private boolean isContributorOnThisTheso = false;
 
+    //liste des thesaurus pour l'utilisateur connecté suivant ses droits, inclus aussi ses thésaurus privés 
     private List<String> authorizedTheso;
     
     private List<String> authorizedThesoAsAdmin;
@@ -84,9 +79,20 @@ public class RoleOnThesoBean implements Serializable {
 
     @PostConstruct
     public void init() {
+        int test = 0;
 //        showListTheso();
     }
 
+    public void clear(){
+   /*     nodeUserRoleGroup = null;
+        nodePreference = null;
+        if(authorizedThesoAsAdmin != null)
+            authorizedThesoAsAdmin.clear();
+//        if(authorizedTheso != null)
+//            authorizedTheso.clear();        
+     */   
+    }
+    
     //// restructuration de la classe le 05/04/2018 par Miled Rousset//////    
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////
@@ -150,7 +156,10 @@ public class RoleOnThesoBean implements Serializable {
             this.listTheso = new HashMap();
             return;
         }
-        authorizedTheso = new ArrayList<>();
+        if(authorizedTheso == null)
+            authorizedTheso = new ArrayList<>();
+        authorizedTheso.clear();
+        
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         UserHelper currentUserHelper = new UserHelper();
         if (currentUser.getNodeUser().isIsSuperAdmin()) {
@@ -179,7 +188,10 @@ public class RoleOnThesoBean implements Serializable {
         if (authorizedThesoAsAdmin == null) {
             return;
         }
-        nodeListThesoAsAdmin = new ArrayList<>();
+        if(nodeListThesoAsAdmin == null)
+            nodeListThesoAsAdmin = new ArrayList<>();
+        else
+            nodeListThesoAsAdmin.clear();
         HashMap<String, String> authorizedThesoAsAdminHM = new LinkedHashMap();
         
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
@@ -220,7 +232,10 @@ public class RoleOnThesoBean implements Serializable {
         if (authorizedTheso == null) {
             return;
         }
-        nodeListTheso = new ArrayList<>();
+        if(nodeListTheso == null) 
+            nodeListTheso = new ArrayList<>();
+        else
+            nodeListTheso.clear();
         HashMap<String, String> authorizedThesoHM = new LinkedHashMap();
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         String title;
@@ -307,10 +322,10 @@ public class RoleOnThesoBean implements Serializable {
         UserHelper currentUserHelper = new UserHelper();
 
         if (currentUser.getNodeUser().isIsSuperAdmin()) {
-            nodeUserRoleGroup = managerGroupsUsers.getUserRoleOnThisGroup(-1); // cas de superadmin, on a accès à tous les groupes
+            nodeUserRoleGroup = getUserRoleOnThisGroup(-1); // cas de superadmin, on a accès à tous les groupes
         } else {
             int idGroup = currentUserHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-            nodeUserRoleGroup = managerGroupsUsers.getUserRoleOnThisGroup(idGroup);
+            nodeUserRoleGroup = getUserRoleOnThisGroup(idGroup);
         }
         if (nodeUserRoleGroup == null) {
             return;
@@ -330,6 +345,26 @@ public class RoleOnThesoBean implements Serializable {
         }
     }
 
+    /**
+     * retourne le role de l'utilisateur sur le group séléctionné
+     *
+     * #MR
+     *
+     * @param idGroup
+     * @return
+     */
+    private NodeUserRoleGroup getUserRoleOnThisGroup(int idGroup) {
+        UserHelper userHelper = new UserHelper();
+        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+            return userHelper.getUserRoleForSuperAdmin(
+                    connect.getPoolConnexion());
+        }
+        if (idGroup == -1) {
+            return null;
+        }
+        return userHelper.getUserRoleOnThisGroup(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser(), idGroup);
+    }    
+    
     /**
      * permet de récuperer le role de l'utilisateur sur le group applelé en cas
      * où le group n'a aucun thésaurus pour que l'utilisateur puisse créer des
@@ -356,7 +391,7 @@ public class RoleOnThesoBean implements Serializable {
      * permet de savoir si le thésaurus en cours n'est plus dans la liste des thésaurus autorisés
      * alors on nettoie initialise et on nettoie l'écran
      */
-    public void setAndClearThesoInAuthorizedList(){
+    public void setAndClearThesoInAuthorizedList() throws IOException{
         // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
         if(!authorizedTheso.contains(selectedTheso.getCurrentIdTheso())) {
             selectedTheso.setSelectedIdTheso(null);
@@ -454,7 +489,7 @@ public class RoleOnThesoBean implements Serializable {
         boolean changeVisibility = this.thesoInfos.isPrivateTheso();
         this.thesoInfos.setPrivateTheso(!(changeVisibility));
         //       this.addVisibility();
-        System.out.println("visbility change " + this.thesoInfos.isPrivateTheso());
+     //   System.out.println("visbility change " + this.thesoInfos.isPrivateTheso());
     }
 
     public boolean isIsAdminOnThisTheso() {
@@ -505,14 +540,14 @@ public class RoleOnThesoBean implements Serializable {
         this.listThesoAsAdmin = listThesoAsAdmin;
     }
 
-    public List<String> getAuthorizedTheso() {
+/*    public List<String> getAuthorizedTheso() {
         return authorizedTheso;
     }
 
     public void setAuthorizedTheso(List<String> authorizedTheso) {
         this.authorizedTheso = authorizedTheso;
     }
-
+*/
     public List<String> getAuthorizedThesoAsAdmin() {
         return authorizedThesoAsAdmin;
     }

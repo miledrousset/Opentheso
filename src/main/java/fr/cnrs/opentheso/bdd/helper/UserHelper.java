@@ -47,7 +47,7 @@ public class UserHelper {
     public ArrayList<NodeUser> searchUser(HikariDataSource ds, String userName){
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         StringPlus stringPlus = new StringPlus();
 
         ArrayList<NodeUser> nodeUsers = new ArrayList<>();
@@ -74,7 +74,8 @@ public class UserHelper {
                         } 
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -101,7 +102,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -130,7 +131,8 @@ public class UserHelper {
                         nodeUserGroups.add(nodeUserGroup);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -153,7 +155,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -176,7 +178,8 @@ public class UserHelper {
                         nodeUserGroups.add(nodeUserGroup);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -228,7 +231,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -254,7 +257,7 @@ public class UserHelper {
         int idUser = -1;
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
             try {
@@ -267,7 +270,8 @@ public class UserHelper {
                         idUser = resultSet.getInt("id_user");
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -289,7 +293,7 @@ public class UserHelper {
         NodeUser nodeUser = null;
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
             try {
@@ -318,7 +322,8 @@ public class UserHelper {
                         nodeUser.setIsSuperAdmin(resultSet.getBoolean("issuperadmin"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -343,7 +348,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int projectId = -1;
         try {
             conn = ds.getConnection();
@@ -361,7 +366,8 @@ public class UserHelper {
                         projectId = resultSet.getInt("id_group");
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -385,7 +391,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         String groupLabel = null;
         try {
             conn = ds.getConnection();
@@ -403,7 +409,8 @@ public class UserHelper {
                         groupLabel = resultSet.getString("label_group");
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -428,7 +435,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -449,7 +456,8 @@ public class UserHelper {
                         listGroup.put("" + resultSet.getInt("id_group"), resultSet.getString("label_group"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -473,7 +481,7 @@ public class UserHelper {
         HashMap<String, String> sortedHashMap = new LinkedHashMap();
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -486,7 +494,8 @@ public class UserHelper {
                         sortedHashMap.put("" + resultSet.getInt("id_group"), resultSet.getString("label_group"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -509,7 +518,7 @@ public class UserHelper {
             HikariDataSource ds) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
 
         try {
@@ -526,7 +535,8 @@ public class UserHelper {
                         nodeUserGroups.add(nodeUserGroup);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -549,7 +559,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -575,7 +585,8 @@ public class UserHelper {
                         nodeUserGroups.add(nodeUserGroup);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -598,7 +609,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -622,7 +633,8 @@ public class UserHelper {
                         nodeUserGroups.add(nodeUserGroup);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -648,7 +660,7 @@ public class UserHelper {
             String idLang) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         try {
             conn = ds.getConnection();
@@ -673,7 +685,8 @@ public class UserHelper {
                         nodeIdValues.add(nodeIdValue);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -697,7 +710,7 @@ public class UserHelper {
             String idLang) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         Map<String, String> listThesos = null;
         try {
             conn = ds.getConnection();
@@ -720,7 +733,8 @@ public class UserHelper {
                         listThesos.put(resultSet.getString("id_thesaurus"), resultSet.getString("title"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -740,7 +754,7 @@ public class UserHelper {
     public ArrayList<NodeUser> getAllUsers(HikariDataSource ds) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeUser> nodeUsers = new ArrayList<>();
         try {
             conn = ds.getConnection();
@@ -758,7 +772,8 @@ public class UserHelper {
                         nodeUsers.add(nodeUser);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -779,7 +794,7 @@ public class UserHelper {
     public Map<String, String> getAllUsersNotSuperadmin(HikariDataSource ds) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         Map<String, String> listUsers = null;
         try {
             conn = ds.getConnection();
@@ -794,7 +809,8 @@ public class UserHelper {
                         listUsers.put(resultSet.getString("id_user"), resultSet.getString("username"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -817,7 +833,7 @@ public class UserHelper {
     public List<String> getThesaurusOfUser(HikariDataSource ds, int idUser) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<String> nodeUserGroupThesauruses = new ArrayList<>();
         try {
             conn = ds.getConnection();
@@ -832,14 +848,15 @@ public class UserHelper {
                             + " WHERE "
                             + "  user_role_group.id_group = user_group_thesaurus.id_group AND"
                             + "  user_role_group.id_user = " + idUser
-                            + " order by id_thesaurus";
+                            + " order by id_thesaurus DESC";
                     resultSet = stmt.executeQuery(query);
 
                     while (resultSet.next()) {
                         nodeUserGroupThesauruses.add(resultSet.getString("id_thesaurus"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -862,7 +879,7 @@ public class UserHelper {
     public List<String> getThesaurusOfUserAsAdmin(HikariDataSource ds, int idUser) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<String> nodeUserGroupThesauruses = new ArrayList<>();
         try {
             conn = ds.getConnection();
@@ -879,14 +896,15 @@ public class UserHelper {
                                 " user_role_group.id_user =  " + idUser +
                                 " AND" +
                                 " user_role_group.id_role = 2" +
-                                " order by id_thesaurus;";
+                                " order by id_thesaurus DESC";
                     resultSet = stmt.executeQuery(query);
 
                     while (resultSet.next()) {
                         nodeUserGroupThesauruses.add(resultSet.getString("id_thesaurus"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -908,7 +926,7 @@ public class UserHelper {
     public ArrayList<NodeUserGroupThesaurus> getAllGroupTheso(HikariDataSource ds, String idLangSource) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeUserGroupThesaurus> nodeUserGroupThesauruses = new ArrayList<>();
         try {
             conn = ds.getConnection();
@@ -941,7 +959,8 @@ public class UserHelper {
                         nodeUserGroupThesauruses.add(nodeUserGroupThesaurus);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -963,7 +982,7 @@ public class UserHelper {
     public ArrayList<NodeUserGroupThesaurus> getAllThesoWithoutGroup(HikariDataSource ds, String idLangSource) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
 
         /// fonction prête à intégrer        
         ArrayList<NodeUserGroupThesaurus> nodeUserGroupThesauruses = new ArrayList<>();
@@ -990,7 +1009,8 @@ public class UserHelper {
                         nodeUserGroupThesauruses.add(nodeUserGroupThesaurus);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1013,7 +1033,7 @@ public class UserHelper {
     public ArrayList<NodeUserGroupUser> getAllGroupUser(HikariDataSource ds, String idLangSource) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
 
         ArrayList<NodeUserGroupUser> nodeUserGroupUsers = new ArrayList<>();
         try {
@@ -1050,7 +1070,8 @@ public class UserHelper {
                         nodeUserGroupUsers.add(nodeUserGroupUser);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1072,7 +1093,7 @@ public class UserHelper {
     public ArrayList<NodeUserGroupUser> getAllGroupUserWithoutGroup(HikariDataSource ds, String idLangSource) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
 
         ArrayList<NodeUserGroupUser> nodeUserGroupUsers = new ArrayList<>();
         try {
@@ -1102,7 +1123,8 @@ public class UserHelper {
                         nodeUserGroupUsers.add(nodeUserGroupUser);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1140,7 +1162,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1162,7 +1184,7 @@ public class UserHelper {
     public boolean isUserGroupExist(HikariDataSource ds, String userGroupName) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         try {
             conn = ds.getConnection();
@@ -1175,7 +1197,8 @@ public class UserHelper {
                         existe = true;
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1222,7 +1245,7 @@ public class UserHelper {
 //                    }                  
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -1259,7 +1282,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1284,7 +1307,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -1315,7 +1338,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -1339,7 +1362,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -1368,7 +1391,8 @@ public class UserHelper {
                         nodeUserRoles.add(nodeUserRole);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1445,7 +1469,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -1523,7 +1547,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -1583,7 +1607,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -1613,7 +1637,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -1645,7 +1669,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -1686,7 +1710,7 @@ public class UserHelper {
                     conn.commit();
                     conn.close();
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 if (status == false) {
@@ -1712,7 +1736,7 @@ public class UserHelper {
     public ArrayList<NodeUserRoleGroup> getUserRoleGroup(HikariDataSource ds, int idUser) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = new ArrayList<>();
         try {
             conn = ds.getConnection();
@@ -1751,7 +1775,8 @@ public class UserHelper {
                         nodeUserRoleGroups.add(nodeUserRoleGroup);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1772,7 +1797,7 @@ public class UserHelper {
     public int getGroupOfThisTheso(HikariDataSource ds, String idTheso) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int idGroup = -1;
         try {
             conn = ds.getConnection();
@@ -1788,7 +1813,8 @@ public class UserHelper {
                         idGroup = resultSet.getInt("id_group");
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1812,7 +1838,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -1834,7 +1860,8 @@ public class UserHelper {
                         listUser.add(nodeUserRole);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1870,7 +1897,7 @@ public class UserHelper {
         /*
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -1906,7 +1933,7 @@ public class UserHelper {
                             nodeUserRoleGroup.setIsContributor(true);                        
                     }
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1934,7 +1961,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -1969,7 +1996,8 @@ public class UserHelper {
                         listUser.add(nodeUserRole);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -1996,7 +2024,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -2036,7 +2064,8 @@ public class UserHelper {
                         }
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2061,7 +2090,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -2083,7 +2112,8 @@ public class UserHelper {
                         nodeUserRoleGroup.setRoleName(resultSet.getString("name"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2117,7 +2147,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -2151,7 +2181,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2193,7 +2223,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
             }
@@ -2233,7 +2263,7 @@ public class UserHelper {
 
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
 
@@ -2261,7 +2291,8 @@ public class UserHelper {
                         nodeUserRoleGroup.setIdGroup(resultSet.getInt("id_group"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2289,7 +2320,7 @@ public class UserHelper {
         ArrayList<String> lesMails = new ArrayList<>();
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
 
         try {
             conn = ds.getConnection();
@@ -2315,7 +2346,8 @@ public class UserHelper {
                         lesMails.add(resultSet.getString("mail"));
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2369,7 +2401,7 @@ public class UserHelper {
                         mail.add(rs.getString("mail"));
                     }
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2384,7 +2416,7 @@ public class UserHelper {
     public boolean isUserMailExist(HikariDataSource ds, String mail) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
             try {
@@ -2397,7 +2429,8 @@ public class UserHelper {
                         return true;
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2422,7 +2455,7 @@ public class UserHelper {
         String name = "";
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
 
         try {
             conn = ds.getConnection();
@@ -2437,7 +2470,8 @@ public class UserHelper {
                         name = resultSet.getString("username");
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2464,7 +2498,7 @@ public class UserHelper {
                         need = rs.getBoolean("passtomodify");
                     }
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2488,7 +2522,7 @@ public class UserHelper {
     public boolean isUserExist(HikariDataSource ds, String login, String pwd) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         try {
             conn = ds.getConnection();
@@ -2503,7 +2537,8 @@ public class UserHelper {
                         existe = true;
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2530,7 +2565,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2557,7 +2592,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2573,7 +2608,7 @@ public class UserHelper {
         String name = "";
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
 
         try {
             conn = ds.getConnection();
@@ -2588,7 +2623,8 @@ public class UserHelper {
                         name = resultSet.getString("username");
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2629,7 +2665,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2656,7 +2692,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2687,7 +2723,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 // conn.close();
@@ -2720,7 +2756,7 @@ public class UserHelper {
                     stmt.executeUpdate(query);
                     status = true;
                 } finally {
-                    stmt.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2741,7 +2777,7 @@ public class UserHelper {
     public boolean isPseudoExist(HikariDataSource ds, String pseudo) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean existe = false;
         try {
             conn = ds.getConnection();
@@ -2756,7 +2792,8 @@ public class UserHelper {
                         existe = true;
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2771,7 +2808,7 @@ public class UserHelper {
     public boolean isMailExist(HikariDataSource ds, String mail) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         boolean status = false;
         try {
             conn = ds.getConnection();
@@ -2785,7 +2822,8 @@ public class UserHelper {
                         status = true;
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2810,7 +2848,7 @@ public class UserHelper {
             int idUser, int idGroup) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         try {
             conn = ds.getConnection();
             try {
@@ -2830,7 +2868,8 @@ public class UserHelper {
                         return true;
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2856,7 +2895,7 @@ public class UserHelper {
             int idRoleFrom) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         Map map = new HashMap();
 
         try {
@@ -2877,7 +2916,8 @@ public class UserHelper {
                         }
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2903,7 +2943,7 @@ public class UserHelper {
             int myIdRole) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
         try {
@@ -2925,7 +2965,8 @@ public class UserHelper {
                         nodeIdValues.add(nodeIdValue);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();
@@ -2949,7 +2990,7 @@ public class UserHelper {
             int idUser) {
         Connection conn;
         Statement stmt;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         
         try {
@@ -2975,7 +3016,8 @@ public class UserHelper {
                         nodeIdValues.add(nodeIdValue);
                     }
                 } finally {
-                    stmt.close();
+                    if (resultSet != null) resultSet.close();
+                    if (stmt != null) stmt.close();
                 }
             } finally {
                 conn.close();

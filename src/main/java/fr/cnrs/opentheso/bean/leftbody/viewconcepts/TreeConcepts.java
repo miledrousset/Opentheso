@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
-import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -45,14 +44,13 @@ public class TreeConcepts implements Serializable {
     private RightBodySetting rightBodySetting;
 
     @Inject
-    ConceptView conceptView;
+    private ConceptView conceptView;
 
     @Inject
-    GroupView groupView;
-    @Inject private SelectedTheso selectedTheso;
+    private GroupView groupView;
 
     @Inject
-    private LeftBodySetting leftBodySetting;
+    private SelectedTheso selectedTheso;
 
     private DataService dataService;
 
@@ -68,6 +66,9 @@ public class TreeConcepts implements Serializable {
         selectedNode = null;
         rightBodySetting.init();
         noedSelected = false;
+        dataService = null;
+        idTheso = null;
+        idLang = null;
     }
 
     public void initialise(String idTheso, String idLang) {

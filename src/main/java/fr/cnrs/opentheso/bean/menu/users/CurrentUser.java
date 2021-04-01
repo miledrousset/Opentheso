@@ -6,14 +6,21 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
+import fr.cnrs.opentheso.bean.candidat.CandidatBean;
+import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenTheso;
+import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
+import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
+import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import javax.inject.Named;
@@ -21,6 +28,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -36,14 +45,35 @@ public class CurrentUser implements Serializable {
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private IndexSetting indexSetting;
 
+    @Inject
+    private Tree tree;
+
+    @Inject
+    private TreeGroups treeGroups;
+
+    @Inject
+    private TreeConcepts treeConcepts;
+
+    @Inject
+    private ListIndex listIndex;
+
+    @Inject
+    private EditFacet editFacet;
+
+    @Inject
+    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+
+    @Inject
+    private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
+
+    @Inject
+    private CandidatBean candidatBean;
+
     private NodeUser nodeUser;
     private String username;
     private String password;
     
-    private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;  
-
-    public CurrentUser() {
-    }
+    private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
 
     public void setUsername(String name) {
         this.username = name;
@@ -61,7 +91,7 @@ public class CurrentUser implements Serializable {
         this.password = password;
     }
 
-    public void disconnect() {
+    public void disconnect() throws IOException {
         FacesMessage facesMessage;
         facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
@@ -69,7 +99,21 @@ public class CurrentUser implements Serializable {
         roleOnThesoBean.showListTheso();
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
-        
+
+        // On set à null les variables utilisés dans la session on cours.
+        tree.reset();
+        listIndex.reset();
+        treeGroups.reset();
+        treeConcepts.reset();
+        viewEditorThesoHomeBean.reset();
+        copyAndPasteBetweenTheso.reset();
+
+        editFacet.reset();
+        candidatBean.reset();
+
+        // On appelle Garbage Collector pour libérer la mémoire occupé par les variables qui ont une valeur "null"
+        System.gc();
+
         
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
@@ -89,10 +133,6 @@ public class CurrentUser implements Serializable {
         initHtmlPages();
     }
 
-    public void disconnect(String msg) {
-
-    }
-
     /**
      * Connect l'utilisateur si son compte en récupérant toutes les informations
      * lui concernant
@@ -102,8 +142,9 @@ public class CurrentUser implements Serializable {
      * le login normal (usuaire, pass), une 2 si on fait le login avec le
      * motpasstemp (et nous sommes dirigées a la page web de changer le
      * motpasstemp) #MR
+     * @throws java.io.IOException
      */
-    public void login() {
+    public void login() throws IOException {
         UserHelper userHelper = new UserHelper();
         FacesMessage facesMessage;
         
@@ -144,7 +185,8 @@ public class CurrentUser implements Serializable {
             pf.ajax().update("formMenu");;
             
         }
-
+        System.gc ();
+        System.runFinalization ();
         
         /*   if (nodeUser.isPasstomodify()) {
             return "changePass.xhtml?faces-redirect=true";// nouvelle pass web pour changer le motpasstemp
@@ -200,7 +242,10 @@ public class CurrentUser implements Serializable {
     private void initAllAuthorizedProjectAsAdmin(){
         UserHelper userHelper = new UserHelper();
         ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdminTemp = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
-        allAuthorizedProjectAsAdmin = new ArrayList<>();
+        if(allAuthorizedProjectAsAdmin == null)
+            allAuthorizedProjectAsAdmin = new ArrayList<>();
+        else
+            allAuthorizedProjectAsAdmin.clear();
         for (NodeUserRoleGroup nodeUserRoleGroup : allAuthorizedProjectAsAdminTemp) {
             if(nodeUserRoleGroup.isIsAdmin())
                 allAuthorizedProjectAsAdmin.add(nodeUserRoleGroup);

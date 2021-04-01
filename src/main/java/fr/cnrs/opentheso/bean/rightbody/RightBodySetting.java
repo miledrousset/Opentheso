@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.rightbody;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -26,6 +27,11 @@ public class RightBodySetting implements Serializable {
     /**
      * Creates a new instance of ViewsBean
      */
+    
+    @PostConstruct
+    public void postInit(){
+        int test = 0;
+    }    
     public RightBodySetting() {
     }
 
