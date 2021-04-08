@@ -2612,8 +2612,8 @@ public class Rest_new {
             if (ds == null) {
                 return null;
             }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.findDatasForGraph(ds,
+            D3jsHelper deD3jsHelper = new D3jsHelper();
+            datas = deD3jsHelper.findDatasForGraph(ds,
                     idConcept, idTheso, idLang);
             ds.close();
         }

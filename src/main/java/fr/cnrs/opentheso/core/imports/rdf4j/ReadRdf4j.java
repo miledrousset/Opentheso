@@ -132,7 +132,7 @@ public class ReadRdf4j {
             readStruct.property = st.getPredicate();
 
             // pour exclure les balises de type (shema.org) sinon, ca produit une erreur quand on a un tableau
-            if(!readStruct.property.getNamespace().contains("schema.org")) {
+            if(!readStruct.property.getNamespace().contains("schema.org") && !readStruct.property.getNamespace().contains("skos-xl")) {
                 if (readStruct.value instanceof Literal) {
                     readStruct.literal = (Literal) readStruct.value;
                 }
@@ -224,7 +224,10 @@ public class ReadRdf4j {
                                                                 //debug
                                                                 if (!nonReco.contains(readStruct.property.getLocalName())) {
                                                                     //System.out.println("non reconue : " + readStruct.property.getLocalName());
-                                                                    nonReco.add(readStruct.property.getLocalName());
+                                                                    if(!readStruct.property.getLocalName().contains("superOrdinate") 
+                                                                            && !readStruct.property.getLocalName().contains("subordinateArray")
+                                                                            && !readStruct.property.getLocalName().contains("description"))
+                                                                       nonReco.add(readStruct.property.getLocalName());
                                                                 }
                                                             }
                                                         }

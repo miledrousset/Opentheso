@@ -19,8 +19,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import org.primefaces.PrimeFaces;
 
 @Named(value = "selectedTheso")
@@ -94,6 +97,21 @@ public class SelectedTheso implements Serializable {
             System.err.println("Erreur de connexion BDD");
             return;
         }
+        
+        ///////
+        ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        HttpServletRequest req = (HttpServletRequest) externalContext.getRequest();
+        if(!req.getSession().isNew()){
+            System.gc();
+            System.runFinalization();
+        }        
+        ///////
+        ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire        
+        
+        
+        
+        
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
     }
@@ -126,7 +144,6 @@ public class SelectedTheso implements Serializable {
      */
 //    public void setSelectedTheso() throws IOException {
     public void setSelectedTheso() {        
-
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();

@@ -4,7 +4,6 @@ package fr.cnrs.opentheso.bean.session;
  *
  * @author miled.rousset
  */
-import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import javax.faces.context.ExceptionHandlerWrapper;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
-import javax.inject.Inject;
 
 public class ViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
     private ExceptionHandler handler;
@@ -55,7 +53,7 @@ public class ViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
                     facesContext.renderResponse();
                     System.gc();
                     System.gc();
-                //    System.runFinalization ();
+                    System.runFinalization ();
                 } finally {
                     i.remove();
                 }

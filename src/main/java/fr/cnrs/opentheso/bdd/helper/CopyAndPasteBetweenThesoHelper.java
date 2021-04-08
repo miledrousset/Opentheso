@@ -118,12 +118,15 @@ public class CopyAndPasteBetweenThesoHelper {
             HikariDataSource ds,
             String fromIdTheso,
             String fromIdConcept) {
-        RDFFormat format = RDFFormat.RDFXML;
+    //    RDFFormat format = RDFFormat.RDFXML;
 
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, fromIdTheso);
         if (nodePreference == null) {
             return null;
         }
+        nodePreference.setOriginalUriIsArk(false);
+        nodePreference.setOriginalUriIsHandle(false);   
+        nodePreference.setOriginalUriIsDoi(false);
 
         ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
         exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, fromIdTheso, nodePreference.getCheminSite());

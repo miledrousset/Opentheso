@@ -1327,9 +1327,6 @@ public class ConceptHelper {
 
             privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
 
-            if (idConcept.equalsIgnoreCase("122812")) {
-                int i = 1;
-            }
             /// cas où on n'a pas d'idArk dans le concept, il faut alors le créer sur Arkeo
             if (concept.getIdArk() == null || concept.getIdArk().isEmpty()) {
                 // création d'un identifiant Ark + (Handle avec le serveur Ark de la MOM)

@@ -25,6 +25,7 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
+import javax.servlet.http.HttpServletRequest;
 
 
 @Named(value = "sessionControl")
@@ -87,10 +88,12 @@ public class SessionControl implements Serializable {
         PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
 
+        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI()); 
 
         System.gc();
         System.gc();
         System.runFinalization ();
+       
     }
 
     public void clearComponent() {

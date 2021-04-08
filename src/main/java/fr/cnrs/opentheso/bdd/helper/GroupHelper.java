@@ -34,6 +34,7 @@ import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.ark.ArkHelper;
+import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -213,6 +214,13 @@ public class GroupHelper {
             String idGroup,
             String labelGroup) {
         if (nodePreference != null) {
+            
+            ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
+            if (!arkHelper2.login()) {
+                message = "Erreur de connexion !!";
+                return false;
+            }            
+            
             Connection conn;
             try {
                 // Get connection from pool
@@ -223,6 +231,30 @@ public class GroupHelper {
                     nodeMetaData.setCreator("");
                     nodeMetaData.setTitle(labelGroup);
                     nodeMetaData.setDcElementsList(new ArrayList<>());
+                    
+                    String privateUri = "?idg=" + idGroup + "&idt=" + idTheso;
+                    if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
+                        message = arkHelper2.getMessage();
+                        message = arkHelper2.getMessage() + "  idGroup = " + idGroup;
+                        conn.rollback();
+                        conn.close();
+                        return false;
+                    }
+                    if (!updateArkIdOfGroup(conn, idGroup, idTheso, arkHelper2.getIdArk())) {
+                        conn.rollback();
+                        conn.close();                        
+                        return false;
+                    }
+                    if (nodePreference.isGenerateHandle()) {
+                        if (!updateHandleIdOfGroup(conn, idGroup, idTheso, arkHelper2.getIdHandle())) {
+                            conn.rollback();
+                            conn.close();                             
+                            return false;
+                        }
+                    }                    
+                    
+                    
+                    /*
                     if (!addIdArk__(conn,
                             idGroup,
                             idTheso,
@@ -231,7 +263,7 @@ public class GroupHelper {
                         conn.close();
                         Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Ark a échouée");
                         return false;
-                    }
+                    }*/
                 }
                 conn.commit();
                 conn.close();
@@ -537,26 +569,30 @@ public class GroupHelper {
         if (!nodePreference.isUseArk()) {
             return false;
         }
-        ArkHelper arkHelper = new ArkHelper(nodePreference);
-        if (!arkHelper.login()) {
+        ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
+        if (!arkHelper2.login()) {
+            message = "Erreur de connexion !!";
             return false;
         }
 
         String privateUri = "?idg=" + idGroup + "&idt=" + idThesaurus;
-        if (!arkHelper.addArk(privateUri, nodeMetaData)) {
-            message = arkHelper.getMessage();
+        if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
+            message = arkHelper2.getMessage();
             return false;
         }
 
-        String idArk = arkHelper.getIdArk();
-        String idHandle = arkHelper.getIdHandle();
+        String idArk = arkHelper2.getIdArk();
+        String idHandle = arkHelper2.getIdHandle();
         if (idHandle == null) {
             idHandle = "";
         }
         if (!updateArkIdOfGroup(conn, idGroup, idThesaurus, idArk)) {
             return false;
         }
-        return updateHandleIdOfGroup(conn, idGroup, idThesaurus, idHandle);
+        if (nodePreference.isGenerateHandle()) {
+            return updateHandleIdOfGroup(conn, idGroup, idThesaurus, idHandle);
+        } else
+            return true;
     }
 
     /**
