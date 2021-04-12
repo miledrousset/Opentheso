@@ -28,6 +28,7 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PreDestroy;
 
 /**
  *
@@ -60,7 +61,11 @@ public class TreeConcepts implements Serializable {
 
     private boolean noedSelected;
 
-
+    @PreDestroy
+    public void destroy(){
+        reset();
+    }
+    
     public void reset() {
         root = null;
         selectedNode = null;

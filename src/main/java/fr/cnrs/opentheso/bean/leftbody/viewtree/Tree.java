@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PreDestroy;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -86,6 +87,13 @@ public class Tree implements Serializable {
     private TreeNodeData treeNodeDataSelect;
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
+    
+    @PreDestroy
+    public void destroy(){
+        reset();
+    }
+    
+    
     public void reset() {
         root = null;
         selectedNode = null;

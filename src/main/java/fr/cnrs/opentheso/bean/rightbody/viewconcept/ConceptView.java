@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -101,9 +102,31 @@ public class ConceptView implements Serializable {
 
     @PostConstruct
     public void postInit(){
-        int test = 0;
+     //   int test = 0;
     }    
 
+    @PreDestroy
+    public void destroy(){
+        init();
+        reset();
+    }    
+    
+    public void reset() {
+        nodeConcept = null;
+        selectedLang = null;
+        notes = null;
+        scopeNotes = null;
+        changeNotes = null;        
+        definitions = null;
+        editorialNotes = null;      
+        examples = null;     
+        historyNotes = null;      
+        sizeToShowNT = 0;
+        nodeCorpuses = null;
+        countOfBranch = 0;
+        mapModel = null;
+    }    
+    
     /**
      * Creates a new instance of ConceptBean
      */

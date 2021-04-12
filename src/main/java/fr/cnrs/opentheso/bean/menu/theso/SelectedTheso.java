@@ -338,7 +338,7 @@ public class SelectedTheso implements Serializable {
             }
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang);
             actionFromConceptToOn();
-            tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
+        //    tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
             initIdsFromUri();
             return;
         }
@@ -351,9 +351,9 @@ public class SelectedTheso implements Serializable {
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
                     actionFromConceptToOn();
-                    if (conceptBean.getNodeConcept() != null) {
+                /*    if (conceptBean.getNodeConcept() != null) {
                         tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
-                    }
+                    }*/
                 }
             } else {
                 return;

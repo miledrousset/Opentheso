@@ -62,9 +62,18 @@ public class PreferencesHelper {
 
     /**
      * permet de retourner les préferences d'un thésaurus
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public NodePreference getThesaurusPreferences(HikariDataSource ds, String idThesaurus) {
         NodePreference np = null;
+        
+        if(idThesaurus == null || idThesaurus.isEmpty()) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, "IdThesaurus = " + idThesaurus + " Erreur à vérifier");
+            return np;
+        }
+        
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM preferences where id_thesaurus = '" + idThesaurus + "'");

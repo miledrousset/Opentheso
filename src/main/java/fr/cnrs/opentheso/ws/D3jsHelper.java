@@ -8,7 +8,6 @@ package fr.cnrs.opentheso.ws;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import java.util.ArrayList;
 import javax.json.Json;

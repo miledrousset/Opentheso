@@ -23,6 +23,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -65,6 +66,11 @@ public class TreeGroups implements Serializable {
     public void postInit(){
         int test = 0;
     }   
+    
+    @PreDestroy
+    public void destroy(){
+        reset();
+    }    
     
     public void reset() {
         root = null;

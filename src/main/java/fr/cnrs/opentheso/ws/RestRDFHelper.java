@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
@@ -125,6 +126,14 @@ public class RestRDFHelper {
         if(idConcept == null || idTheso == null) {
             return null;
         }
+        if(idConcept.isEmpty() || idTheso.isEmpty()) {
+            return null;
+        }
+        idConcept = idConcept.replaceAll("\"", "");
+        idTheso = idTheso.replaceAll("\"", "");
+        idConcept = idConcept.replaceAll("'", "");
+        idTheso = idTheso.replaceAll("'", "");        
+        
         NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if(nodePreference == null) return null;
         
