@@ -2594,14 +2594,12 @@ public class Rest_new {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }        
 
-        String datas;
-        
-        datas = getDatasForGraph__(idTheso, idConcept, idLang, idGroup);
+        String datas = getDatasForGraph__(idTheso, idConcept, idLang, idGroup);
 
         if (datas == null) {
             return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-       // return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+
         return Response
          .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
          .header("Access-Control-Allow-Origin", "*")
@@ -2611,16 +2609,7 @@ public class Rest_new {
     private String getDatasForGraph__(String idTheso, String idConcept, String idLang, String idGroup) {
         String datas;
         try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            D3jsHelper deD3jsHelper = new D3jsHelper();
-            datas = deD3jsHelper.findDatasForGraph(ds,
-                    idConcept, idTheso, idLang);
-            ds.close();
-        }
-        if (datas == null) {
-            return null;
+            datas = new D3jsHelper().findDatasForGraph__(ds, idConcept, idTheso, idLang);
         }
         return datas;        
     }

@@ -19,39 +19,9 @@ import javax.json.JsonObjectBuilder;
  * @author miledrousset
  */
 public class D3jsHelper {
-    
-    
-    /**
-     * Permet de retourner une branche au format Json pour le graphe D3js
-     * 
-     * @param ds
-     * @param idConcept
-     * @param idTheso
-     * @param idLang
-     * @return  
-     */
-    public String findDatasForGraph(HikariDataSource ds,
-            String idConcept, String idTheso, String idLang) {
 
-        String datas = findDatasForGraph__(ds,
-                 idConcept, idTheso, idLang);
-        if(datas == null) return null;
-        return datas;
-    }    
-    
-    
-    /**
-     * recherche par valeur
-     * @param ds
-     * @param value
-     * @param idTheso
-     * @param lang
-     * @return 
-     */
-    private String findDatasForGraph__(
-            HikariDataSource ds,
-            String idConcept, String idTheso,
-            String idLang) {
+
+    public String findDatasForGraph__(HikariDataSource ds, String idConcept, String idTheso, String idLang) {
 
         if(idTheso == null || idTheso.isEmpty()) {
             return null;
@@ -68,25 +38,19 @@ public class D3jsHelper {
         }
         ConceptHelper conceptHelper = new ConceptHelper();
         
-    //    ArrayList<String> listIds = conceptHelper.getIdsOfBranch(ds, idConcept, idTheso);
-        
         ArrayList<String> listChilds = conceptHelper.getListChildrenOfConcept(ds, idConcept, idTheso);
         
         if(listChilds == null || listChilds.isEmpty())
             return null;
         
         NodeJsonD3js nodeJsonD3js = new NodeJsonD3js();        
-        nodeJsonD3js.setRoot("tree");
-        nodeJsonD3js.setNodeDatas(getRootNode(
-                ds,
-                idTheso, idLang,
-                idConcept, listChilds));
+        //nodeJsonD3js.setRoot("tree");
+        nodeJsonD3js.setNodeDatas(getRootNode(ds, idTheso, idLang, idConcept, listChilds));
 
         return getJsonFromNodeJsonD3js(nodeJsonD3js); 
     }       
 
-    private NodeDatas getRootNode(HikariDataSource ds,
-            String idTheso, String idLang,
+    private NodeDatas getRootNode(HikariDataSource ds, String idTheso, String idLang,
             String idTopConcept, ArrayList<String> listIds){
         
         NodeDatas nodeDatas = getNodeDatas(ds, idTopConcept, idTheso, idLang);
@@ -126,48 +90,41 @@ public class D3jsHelper {
     
     
     private String getJsonFromNodeJsonD3js(NodeJsonD3js nodeJsonD3js) {
-        String datas;
-        JsonObjectBuilder root = Json.createObjectBuilder();
- 
-            JsonObjectBuilder nodeRoot = Json.createObjectBuilder();
-            nodeRoot.add("nodeName", nodeJsonD3js.getNodeDatas().getNodeName());
-            nodeRoot.add("type", "type1");
-            nodeRoot.add("url", nodeJsonD3js.getNodeDatas().getUrl());
-            nodeRoot.add("definition", nodeJsonD3js.getNodeDatas().getDefinition());
-            
-            
-            JsonArrayBuilder jsonArrayBuilderSynonyms = Json.createArrayBuilder();
-            for (String synonym : nodeJsonD3js.getNodeDatas().getSynonym()) {
-                jsonArrayBuilderSynonyms.add(synonym);
-            }
-            nodeRoot.add("synonym", jsonArrayBuilderSynonyms.build());
-        
-            JsonArrayBuilder jsonArrayBuilderChilds = Json.createArrayBuilder();
-            
-            for (NodeDatas nodeData : nodeJsonD3js.getNodeDatas().getChildrens()) {
-                jsonArrayBuilderChilds.add(getChild(nodeData).build()); 
-            }
-            nodeRoot.add("children", jsonArrayBuilderChilds.build());
-            
-        root.add("tree", nodeRoot.build());        
 
-        
-        datas = root.build().toString();        
-        return datas;
+        JsonObjectBuilder nodeRoot = Json.createObjectBuilder();
+        nodeRoot.add("name", nodeJsonD3js.getNodeDatas().getName());
+        nodeRoot.add("type", "type1");
+        nodeRoot.add("url", nodeJsonD3js.getNodeDatas().getUrl());
+        nodeRoot.add("definition", nodeJsonD3js.getNodeDatas().getDefinition());
+
+        JsonArrayBuilder jsonArrayBuilderSynonyms = Json.createArrayBuilder();
+        for (String synonym : nodeJsonD3js.getNodeDatas().getSynonym()) {
+            jsonArrayBuilderSynonyms.add(synonym);
+        }
+
+        nodeRoot.add("synonym", jsonArrayBuilderSynonyms.build());
+        JsonArrayBuilder jsonArrayBuilderChilds = Json.createArrayBuilder();
+            
+        for (NodeDatas nodeData : nodeJsonD3js.getNodeDatas().getChildrens()) {
+            jsonArrayBuilderChilds.add(getChild(nodeData).build());
+        }
+
+        nodeRoot.add("children", jsonArrayBuilderChilds.build());
+
+        return nodeRoot.build().toString();
     }     
     
     
     private JsonObjectBuilder getChild(NodeDatas nodeData) {
-     //   JsonArrayBuilder child = Json.createArrayBuilder();
- 
-            JsonObjectBuilder nodeChild = Json.createObjectBuilder();
-            nodeChild.add("nodeName", nodeData.getNodeName());
-            nodeChild.add("type", nodeData.getType());
-            nodeChild.add("url", nodeData.getUrl());
-            nodeChild.add("definition", nodeData.getDefinition());
+
+        JsonObjectBuilder nodeChild = Json.createObjectBuilder();
+        nodeChild.add("name", nodeData.getName());
+        nodeChild.add("type", nodeData.getType());
+        nodeChild.add("url", nodeData.getUrl());
+        nodeChild.add("definition", nodeData.getDefinition());
         
-            JsonArrayBuilder jsonArrayBuilderSynonyms = Json.createArrayBuilder();
-            for (String synonym : nodeData.getSynonym()) {
+        JsonArrayBuilder jsonArrayBuilderSynonyms = Json.createArrayBuilder();
+        for (String synonym : nodeData.getSynonym()) {
                 jsonArrayBuilderSynonyms.add(synonym);
             }
             nodeChild.add("synonym", jsonArrayBuilderSynonyms.build());
@@ -179,14 +136,7 @@ public class D3jsHelper {
                 }
             }
             nodeChild.add("children", jsonArrayBuilderChilds.build());
-//            if(nodeData.getChildrens() != null && !nodeData.getChildrens().isEmpty()){
-//                nodeChild.addNull("children");
-//            } else {
-//                nodeChild.addNull("children");
-//            }
-                
-      //  child.add(nodeChild.build());
- 
+
         return nodeChild;
     }      
     
@@ -198,7 +148,7 @@ public class D3jsHelper {
         ConceptHelper conceptHelper = new ConceptHelper();
         String label = conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
         NodeDatas nodeDatas = new NodeDatas();
-        nodeDatas.setNodeName(label);
+        nodeDatas.setName(label);
         nodeDatas.setUrl("https://" + label);
         nodeDatas.setDefinition("def " + label);
         if(conceptHelper.haveChildren(ds, idTheso, idConcept)) {
