@@ -27,12 +27,15 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
+import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import javax.enterprise.context.SessionScoped;
@@ -40,8 +43,11 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.DefaultStreamedContent;
 
 /**
  *
@@ -506,9 +512,53 @@ public class ImportFileBean implements Serializable {
                     error.append(System.getProperty("line.separator"));
                     error.append(ex.getMessage());
                 }
-                ReadRdf4j readRdf4j = null;
+                ReadRdf4j readRdf4j;
                 try {
                     readRdf4j = new ReadRdf4j(is, 0, isCandidatImport, connect.getWorkLanguage());
+                    warning = readRdf4j.getMessage();
+                    sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
+                    total = sKOSXmlDocument.getConceptList().size();
+                    uri = sKOSXmlDocument.getTitle();
+                    loadDone = true;
+                    BDDinsertEnable = true;
+                    info = "File correctly loaded";  
+                    
+                    ////////////////////////
+                    /////// test pour convertir le format RDF en turtle ///////////
+                    ////////////////////////
+             /*       RDFFormat format = null;
+                    String extention = ".xml";
+
+                    switch (type.toLowerCase()) {
+                        case "rdf":
+                            format = RDFFormat.RDFXML;
+                            extention = ".rdf";
+                            break;
+                        case "jsonld":
+                            format = RDFFormat.JSONLD;
+                            extention = ".json";
+                            break;
+                        case "turtle":
+                            format = RDFFormat.TURTLE;
+                            extention = ".ttl";
+                            break;
+                        case "json":
+                            format = RDFFormat.RDFJSON;
+                            extention = ".json";
+                            break;
+                    }*/
+                    
+         /*           ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    Rio.write(new WriteRdf4j(sKOSXmlDocument).getModel(), out, RDFFormat.TURTLE);
+                    System.out.print(out.toString());*/
+                  /*  return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
+                            .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();        */            
+                    ////////////////////////
+                    /////// test ///////////
+                    ////////////////////////                    
+                    
+                    
+                    
                 } catch (IOException ex) {
                     error.append(System.getProperty("line.separator"));
                     error.append(ex.getMessage());
@@ -516,21 +566,6 @@ public class ImportFileBean implements Serializable {
                     error.append(System.getProperty("line.separator"));
                     error.append(ex.toString());
                 }
-                if(readRdf4j==null) {
-                    error.append(System.getProperty("line.separator"));
-                    error.append("Erreur de format RDF !!!");
-                    showError();
-                    return;
-                }
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-
-                info = "File correctly loaded";
-
             } catch (Exception e) {
                 System.out.println("erreur :" + e.getMessage());
                 error.append(System.getProperty("line.separator"));
@@ -723,7 +758,8 @@ public class ImportFileBean implements Serializable {
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
                 progressStep++;
                 progress = progressStep / total * 100;
-                importRdf4jHelper.addConcept(sKOSResource, idTheso, isCandidatImport);
+                if(!sKOSResource.getLabelsList().isEmpty())
+                    importRdf4jHelper.addConcept(sKOSResource, idTheso, isCandidatImport);
             }
 
             importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);

@@ -124,7 +124,7 @@ public class ReadRdf4j {
         readStruct.resource = null;
         boolean validProperty = false;
         //pour le debug : 
-        ArrayList<String> nonReco = new ArrayList();
+        ArrayList<String> nonReco = new ArrayList<>();
 
         for (Statement st : model) {
 
@@ -243,14 +243,9 @@ public class ReadRdf4j {
                     }
                 }
             }
-
-            if (!nonReco.isEmpty()) {
-                String balises = "";
-                for (String b : nonReco) {
-                    balises += "    " + b + "\n";
-                }
-                message = message + "Not readed RDF tag\n" + balises;//fileBean.setWarning("Not readed RDF tag\n" + balises);
-            }
+        }
+        if (!nonReco.isEmpty()) {
+            message = message + " Not readed RDF tag \n " +  nonReco.toString();
         }
     }
 
