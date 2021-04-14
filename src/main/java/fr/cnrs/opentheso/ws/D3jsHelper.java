@@ -20,6 +20,7 @@ import javax.json.JsonObjectBuilder;
  */
 public class D3jsHelper {
 
+    private NodePreference nodePreference;
 
     public String findDatasForGraph__(HikariDataSource ds, String idConcept, String idTheso, String idLang) {
 
@@ -32,7 +33,7 @@ public class D3jsHelper {
         if(idLang == null || idLang.isEmpty()) {
             return null;
         }        
-        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -95,7 +96,7 @@ public class D3jsHelper {
         nodeRoot.add("name", nodeJsonD3js.getNodeDatas().getName());
         nodeRoot.add("type", "type1");
         nodeRoot.add("url", nodeJsonD3js.getNodeDatas().getUrl());
-        nodeRoot.add("definition", nodeJsonD3js.getNodeDatas().getDefinition());
+        nodeRoot.add("definition", nodeJsonD3js.getNodeDatas().getDefinition().toString());
 
         JsonArrayBuilder jsonArrayBuilderSynonyms = Json.createArrayBuilder();
         for (String synonym : nodeJsonD3js.getNodeDatas().getSynonym()) {
@@ -121,7 +122,7 @@ public class D3jsHelper {
         nodeChild.add("name", nodeData.getName());
         nodeChild.add("type", nodeData.getType());
         nodeChild.add("url", nodeData.getUrl());
-        nodeChild.add("definition", nodeData.getDefinition());
+        nodeChild.add("definition", nodeData.getDefinition().toString());
         
         JsonArrayBuilder jsonArrayBuilderSynonyms = Json.createArrayBuilder();
         for (String synonym : nodeData.getSynonym()) {
@@ -146,21 +147,13 @@ public class D3jsHelper {
     private NodeDatas getNodeDatas(HikariDataSource ds,
             String idConcept, String idTheso, String idLang){
         ConceptHelper conceptHelper = new ConceptHelper();
-        String label = conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
-        NodeDatas nodeDatas = new NodeDatas();
-        nodeDatas.setName(label);
-        nodeDatas.setUrl("https://" + label);
-        nodeDatas.setDefinition("def " + label);
+        conceptHelper.setNodePreference(nodePreference);
+        
+        NodeDatas nodeDatas = conceptHelper.getConceptForGraph(ds, idConcept, idTheso, idLang);
         if(conceptHelper.haveChildren(ds, idTheso, idConcept)) {
             nodeDatas.setType("type2");
         } else
             nodeDatas.setType("type3");
-        ArrayList<String> synonyms =  new ArrayList<>();
-        synonyms.add(0, "Syno1");
-        synonyms.add(1, "Syno2");
-        synonyms.add(2,"Syno3");
-        
-        nodeDatas.setSynonym(synonyms);
         return nodeDatas;
     }    
     

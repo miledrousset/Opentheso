@@ -19,7 +19,7 @@ public class NodeDatas {
     private String name;
     private String type;
     private String url;
-    private String definition;
+    private ArrayList<String> definition;
     private ArrayList<String> synonym;
 
     private ArrayList<NodeDatas> childrens;
@@ -43,11 +43,11 @@ public class NodeDatas {
         this.type = type;
     }
 
-    public String getDefinition() {
+    public ArrayList<String> getDefinition() {
         return definition;
     }
 
-    public void setDefinition(String definition) {
+    public void setDefinition(ArrayList<String> definition) {
         this.definition = definition;
     }
 

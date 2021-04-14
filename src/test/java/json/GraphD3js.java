@@ -37,7 +37,7 @@ public class GraphD3js {
         nodeDatas.setName("Root");
         nodeDatas.setType("type1");
         nodeDatas.setUrl("http://root");
-        nodeDatas.setDefinition("definition");
+  //      nodeDatas.setDefinition("definition");
         
         //Synonymes
         ArrayList<String> nodeIdValues = new ArrayList<>();
@@ -63,7 +63,7 @@ public class GraphD3js {
         nodeDatas.setName("fils" + i);
         nodeDatas.setType("type2");
         nodeDatas.setUrl("http://fils" +i);
-        nodeDatas.setDefinition("definition");
+   //     nodeDatas.setDefinition("definition");
         
         ArrayList<String> nodeIdValues = new ArrayList<>();
         nodeIdValues.add("Syn_1");

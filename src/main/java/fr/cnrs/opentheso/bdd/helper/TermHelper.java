@@ -2011,6 +2011,42 @@ public class TermHelper {
 
         return nodeEMList;
     }
+    
+    /**
+     * Cette fonction permet de récupérer les termes synonymes suivant un
+     * id_term et son thésaurus et sa langue sous forme de classe NodeEM
+     *
+     * @param ds
+     * @param idTerm
+     * @param idThesaurus
+     * @param idLang
+     * @return Objet class Concept
+     */
+    public ArrayList<String> getNonPreferredTermsLabel(HikariDataSource ds,
+            String idTerm, String idThesaurus, String idLang) {
+
+        ArrayList<String> listAltLabel = new ArrayList<>();
+        
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT lexical_value"
+                            + " FROM non_preferred_term"
+                            + " WHERE non_preferred_term.id_term = '" + idTerm + "'"
+                            + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                            + " and non_preferred_term.lang ='" + idLang + "'"
+                            + " order by lexical_value ASC");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        listAltLabel.add(resultSet.getString("lexical_value"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting NonPreferedTerm of Term : " + idTerm, sqle);
+        }        
+        return listAltLabel;
+    }    
 
     /**
      * Cette fonction permet de récupérer l'historique des termes synonymes d'un

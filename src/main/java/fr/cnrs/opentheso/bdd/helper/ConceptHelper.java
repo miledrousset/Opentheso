@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptArkId;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -40,12 +41,14 @@ import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
+import fr.cnrs.opentheso.ws.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -70,10 +73,67 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
+    
+    /**
+     * permet de retourner un noeud de données optimisées pour l'affichage du graphe D3Js
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @param idLang
+     * @return 
+     */
+    public NodeDatas getConceptForGraph(HikariDataSource ds,
+            String idConcept, String idTheso, String idLang){
+        NodeDatas nodeDatas = new NodeDatas();
+
+        nodeDatas.setName(getLexicalValueOfConcept(ds, idConcept, idTheso, idLang));
+        nodeDatas.setUrl(getUri(idConcept, idTheso));
+        nodeDatas.setDefinition(new NoteHelper().getDefinition(ds, idConcept, idTheso, idLang));
+        nodeDatas.setSynonym(new TermHelper().getNonPreferredTermsLabel(ds, idTheso, idTheso, idLang));
+        return nodeDatas;        
+    }
+    /**
+     * Cette fonction permet de retourner l'URI du concept 
+     * en s'adaptant au format défini pour le thésaurus 
+     *
+     * @param nodeConceptExport
+     * @return
+     */
+    private String getUri(String idConcept, String idTheso) {
+        if (idConcept == null || idTheso == null) {
+            return "";
+        }
+        return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;
+    }
+    
+       
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Cette fonction permet de récupérer la liste des concepts suivant l'id du
      * Concept-Père et le thésaurus sous forme de classe NodeConceptTree (sans
      * les relations) elle fait le tri alphabétique ou par notation
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param isSortByNotation
+     * @param idLang
+     * @return 
      */
     public ArrayList<NodeConceptTree> getListConcepts(HikariDataSource ds, String idConcept, String idThesaurus,
             String idLang, boolean isSortByNotation) {
@@ -2994,6 +3054,11 @@ public class ConceptHelper {
     /**
      * Cette fonction permet d'exporter tous les concepts d'un thésaurus et les
      * charger dans la classe No
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param nodeConceptExports
+     * @return 
      */
     public ArrayList<NodeConceptExport> exportAllConcepts(HikariDataSource ds,
             String idConcept, String idThesaurus,

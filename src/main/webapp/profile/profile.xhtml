@@ -10,7 +10,7 @@
                 <b:panel style="margin-top: -20px; height: 700px; background-color: #43B572; border: none;">
                     <b:row>
                         <b:column span="11" offset="1">
-                            <b:navCommandLink value="Mon compte" style="color: #{profileBean.myAccountColor}"
+                            <b:navCommandLink value="#{langueBean.getMsg('profile.my_account')}" style="color: #{profileBean.myAccountColor}"
                                               action="#{profileBean.setIsMyAccountActive(true)}"
                                               actionListener="#{myAccountBean.reset()}"
                                               update="profileForm profileForm:myAccountForm"/>
@@ -19,8 +19,8 @@
                     <p:spacer/>
                     <b:row >
                         <b:column span="11" offset="1">
-                            <b:navCommandLink value="Mes projets/utilisateurs" style="color: #{profileBean.myProjectColor}"
-                                              tooltip="Projets et utilisateurs + les rôles"
+                            <b:navCommandLink value="#{langueBean.getMsg('profile.my_projects_users')}" style="color: #{profileBean.myProjectColor}"
+                                              tooltip="#{langueBean.getMsg('profile.tooltip_my_projects_users')}"
                                               action="#{profileBean.setIsMyProjectActive(true)}"
                                               actionListener="#{myProjectBean.init()}"
                                               update="profileForm profileForm:myProjectForm"/>
@@ -32,8 +32,8 @@
                     
                     <b:row  rendered="#{currentUser.nodeUser.isSuperAdmin}">
                         <b:column span="11" offset="1">
-                            <b:navCommandLink value="Tous les utilisateurs" style="color: #{profileBean.usersColor}"
-                                              tooltip="Tous les utilisateurs"
+                            <b:navCommandLink value="#{langueBean.getMsg('profile.all_users')}" style="color: #{profileBean.usersColor}"
+                                              tooltip="#{langueBean.getMsg('profile.tooltip_all_users')}"
                                               action="#{profileBean.setIsUsersActive(true)}"
                                               actionListener="#{superAdminBean.init()}"
                                               update="profileForm profileForm:usersForm"/>
@@ -42,8 +42,8 @@
                     <p:spacer/>
                     <b:row  rendered="#{currentUser.nodeUser.isSuperAdmin}">
                         <b:column span="11" offset="1">
-                            <b:navCommandLink value="Tous les projets" style="color: #{profileBean.projectsColor}"
-                                              tooltip="Tous les projets"
+                            <b:navCommandLink value="#{langueBean.getMsg('profile.all_projects')}" style="color: #{profileBean.projectsColor}"
+                                              tooltip="#{langueBean.getMsg('profile.tooltip_all_projects')}"
                                               action="#{profileBean.setIsProjectsActive(true)}"
                                               actionListener="#{superAdminBean.init()}"
                                               update="profileForm profileForm:projectsForm"/>
@@ -52,8 +52,8 @@
                     <p:spacer/>
                     <b:row  rendered="#{currentUser.nodeUser.isSuperAdmin}">
                         <b:column span="11" offset="1">
-                            <b:navCommandLink value="Tous les thésaurus" style="color: #{profileBean.thesaurusColor}"
-                                              tooltip="Tous les thésaurus"
+                            <b:navCommandLink value="#{langueBean.getMsg('profile.all_thesauri')}" style="color: #{profileBean.thesaurusColor}"
+                                              tooltip="#{langueBean.getMsg('profile.tooltip_all_thesauri')}"
                                               action="#{profileBean.setIsThesaurusActive(true)}"
                                               actionListener="#{superAdminBean.init()}"
                                               update="profileForm profileForm:thesaurusForm"/>
