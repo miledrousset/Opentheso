@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class NodeDatas {
 
-    private String nodeName;
+    private String name;
     private String type;
     private String url;
     private String definition;
@@ -27,12 +27,12 @@ public class NodeDatas {
     public NodeDatas() {
     }
 
-    public String getNodeName() {
-        return nodeName;
+    public String getName() {
+        return name;
     }
 
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getType() {

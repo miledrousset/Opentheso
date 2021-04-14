@@ -34,7 +34,7 @@ public class GraphD3js {
     
     private NodeDatas getRootNode(){
         NodeDatas nodeDatas = new NodeDatas();
-        nodeDatas.setNodeName("Root");
+        nodeDatas.setName("Root");
         nodeDatas.setType("type1");
         nodeDatas.setUrl("http://root");
         nodeDatas.setDefinition("definition");
@@ -60,7 +60,7 @@ public class GraphD3js {
     
     private NodeDatas getNode(int i){
         NodeDatas nodeDatas = new NodeDatas();
-        nodeDatas.setNodeName("fils" + i);
+        nodeDatas.setName("fils" + i);
         nodeDatas.setType("type2");
         nodeDatas.setUrl("http://fils" +i);
         nodeDatas.setDefinition("definition");
