@@ -9,6 +9,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
@@ -31,10 +32,21 @@ public class ProfileBean implements Serializable {
     private String usersColor;
     private String projectsColor;
     private String thesaurusColor;    
+
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        myAccountColor = null;
+        myProjectColor = null;
+        usersColor = null;
+        projectsColor = null;
+        thesaurusColor = null;       
+    }
     
     @PostConstruct
     public void postInit(){
-        int test = 0;
     }    
     
     public ProfileBean() {

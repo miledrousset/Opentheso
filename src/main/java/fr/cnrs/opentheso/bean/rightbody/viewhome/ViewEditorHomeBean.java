@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 //import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -26,12 +27,10 @@ import javax.inject.Inject;
 @SessionScoped
 public class ViewEditorHomeBean implements Serializable {
     @Inject private Connect connect;
-//    @Inject private ConceptView conceptBean;
     @Inject private LanguageBean languageBean;    
     
     @PostConstruct
     public void postInit(){
-        int test = 0;
     }    
     public ViewEditorHomeBean() {
     }
@@ -47,6 +46,17 @@ public class ViewEditorHomeBean implements Serializable {
     
     private String codeGoogleAnalitics;
     private boolean isInEditingGoogleAnalytics;    
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        text = null;
+        colorOfHtmlButton = null;
+        colorOfTextButton = null;      
+        codeGoogleAnalitics = null;         
+    }      
     
     public void reset(){
         isInEditing = false;

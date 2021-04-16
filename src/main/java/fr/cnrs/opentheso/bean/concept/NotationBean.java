@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -21,21 +22,23 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Named(value = "notationBean")
-//@javax.enterprise.context.RequestScoped
-//// on ne peut pas relancer plusieurs actions avec cette déclaration
-
 @javax.enterprise.context.SessionScoped
-public class NotationBean implements Serializable {
 
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
+public class NotationBean implements Serializable {
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
 
     private String notation;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        notation = null;
+    }     
+    
     public NotationBean() {
     }
 

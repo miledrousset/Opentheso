@@ -14,6 +14,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -26,27 +27,32 @@ import javax.inject.Inject;
 @SessionScoped
 public class ModifyRoleBean implements Serializable {
     @Inject private Connect connect;
-    @Inject private CurrentUser currentUser;
     @Inject private MyProjectBean myProjectBean;
     
     private NodeUser nodeSelectedUser;
-    
-    // liste des projets où l'utilisateur est Admin pour générer la distribution des rôles dessus
-//    private ArrayList<NodeIdValue> myAuthorizedProjects;
-  
-    
     private String selectedProject;
     private String roleOfSelectedUser;
 
-
     // pour l'ajout d'un utilisateur existant au projet
     private NodeUser selectedUser;
-       
-            
-            
-    
+
     // liste des (rôle -> projet) qui existent déjà pour l'utilisateur     
     ArrayList<NodeUserRoleGroup> allMyRoleProject;
+
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(allMyRoleProject!= null){
+            allMyRoleProject.clear();
+            allMyRoleProject = null;
+        }
+        nodeSelectedUser = null;
+        selectedProject = null;
+        roleOfSelectedUser = null;
+        selectedUser = null;        
+    }   
     
     public ModifyRoleBean() {
     }

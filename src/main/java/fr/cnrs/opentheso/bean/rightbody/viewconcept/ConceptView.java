@@ -79,7 +79,6 @@ public class ConceptView implements Serializable {
     private NodeConcept nodeConcept;
     private String selectedLang;
     private ArrayList <NodeCorpus> nodeCorpuses;
-
     private ArrayList<NodePath> pathLabel;
     
     /// pagination
@@ -87,7 +86,6 @@ public class ConceptView implements Serializable {
     
     // total de la branche
     private int countOfBranch;
-    
     
     /// Notes concept
     private ArrayList<NodeNote> notes;
@@ -102,28 +100,55 @@ public class ConceptView implements Serializable {
 
     @PostConstruct
     public void postInit(){
-     //   int test = 0;
     }    
 
     @PreDestroy
     public void destroy(){
-        init();
-        reset();
+        clear();
     }    
     
-    public void reset() {
-        nodeConcept = null;
-        selectedLang = null;
-        notes = null;
-        scopeNotes = null;
-        changeNotes = null;        
-        definitions = null;
-        editorialNotes = null;      
-        examples = null;     
-        historyNotes = null;      
-        sizeToShowNT = 0;
-        nodeCorpuses = null;
-        countOfBranch = 0;
+    public void clear() {
+        if(nodeCorpuses != null){
+            nodeCorpuses.clear();
+            nodeCorpuses = null;
+        }   
+        if(pathLabel != null){
+            pathLabel.clear();
+            pathLabel = null;
+        }  
+        if(notes != null){
+            notes.clear();
+            notes = null;
+        }
+        if(scopeNotes != null){
+            scopeNotes.clear();
+            scopeNotes = null;
+        }
+        if(changeNotes != null){
+            changeNotes.clear();
+            changeNotes = null;
+        }
+        if(definitions != null){
+            definitions.clear();
+            definitions = null;
+        }
+        if(editorialNotes != null){
+            editorialNotes.clear();
+            editorialNotes = null;
+        }
+        if(examples != null){
+            examples.clear();
+            examples = null;
+        }
+        if(historyNotes != null){
+            historyNotes.clear();
+            historyNotes = null;
+        }
+        if(nodeConcept != null) {
+            nodeConcept.clear();
+            nodeConcept = null;
+        }
+        selectedLang = null;                
         mapModel = null;
     }    
     
@@ -164,7 +189,8 @@ public class ConceptView implements Serializable {
         if(mapModel == null) 
             mapModel = new Map();
     }
-
+    
+    
     /**
      * récuparation des informations pour le concept sélectionné
      * c'est pour la navigation entre les concepts dans la vue de droite avec deployement de l'arbre
@@ -266,14 +292,15 @@ public class ConceptView implements Serializable {
                 nodeConcept.getNodeGps().getLongitude()+"");
 
         String titre = nodeConcept.getTerm() != null ? nodeConcept.getTerm().getLexical_value() : "";
-
+        titre = titre.replaceAll("'", "_");
+        mapModel = null;
         //Configure Map
- //       mapModel = new Map();
+        mapModel = new Map();
         mapModel.setWidth("100%");
         mapModel.setHeight("250px");
         mapModel.setCenter(place);
         mapModel.setZoom(13);
-        mapModel.setAttribution(nodeConcept.getTerm().getLexical_value());
+        mapModel.setAttribution(titre);
         mapModel.setMiniMap(false);
         mapModel.setLayerControl(false);
         mapModel.setDraggingEnabled(true);

@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -22,6 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -45,9 +45,19 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
     @Inject private GroupView groupView;    
 
     private ArrayList <NodeGroup> nodeGroups;
+
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeGroups!= null){
+            nodeGroups.clear();
+            nodeGroups = null;
+        }    
+    }
     
     public RemoveConceptAndChildFromGroupBean() {
-
     }
 
     public void init() {

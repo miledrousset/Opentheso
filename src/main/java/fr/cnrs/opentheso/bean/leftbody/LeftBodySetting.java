@@ -21,7 +21,6 @@ public class LeftBodySetting implements Serializable {
     private String index;
     @PostConstruct
     public void postInit(){
-        int test = 0;
     }    
     
     public LeftBodySetting() {

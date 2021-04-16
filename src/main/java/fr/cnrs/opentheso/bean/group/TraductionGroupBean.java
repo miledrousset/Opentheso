@@ -17,6 +17,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -31,25 +32,38 @@ import org.primefaces.PrimeFaces;
 @Named(value = "traductionGroupBean")
 @SessionScoped
 public class TraductionGroupBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private GroupView groupView;
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private GroupView groupView;
+    @Inject private SelectedTheso selectedTheso;
 
     private String selectedLang;
-    
     private ArrayList<NodeLangTheso> nodeLangs;
     private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits
-    
     private ArrayList<NodeGroupTraductions> nodeGroupTraductionses;
-    
     private String traductionValue;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        selectedLang = null;
+        traductionValue = null;
+        if(nodeLangs!= null){
+            nodeLangs.clear();
+            nodeLangs = null;
+        }    
+        if(nodeLangsFiltered!= null){
+            nodeLangsFiltered.clear();
+            nodeLangsFiltered = null;
+        } 
+        if(nodeGroupTraductionses!= null){
+            nodeGroupTraductionses.clear();
+            nodeGroupTraductionses = null;
+        } 
+    }     
+    
     public TraductionGroupBean() {
     }
 

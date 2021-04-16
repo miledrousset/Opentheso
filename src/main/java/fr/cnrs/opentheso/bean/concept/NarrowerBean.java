@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -38,25 +39,32 @@ import org.primefaces.PrimeFaces;
 @Named(value = "narrowerBean")
 @SessionScoped
 public class NarrowerBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private Tree tree;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private Tree tree;
 
     private NodeSearchMini searchSelected;
-    
     private ArrayList<NodeNT> nodeNTs;
-    
-    
     private ArrayList<NodeTypeRelation> typesRelationsNT;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeNTs != null){
+            nodeNTs.clear();
+            nodeNTs = null;
+        }
+        if(typesRelationsNT != null){
+            typesRelationsNT.clear();
+            typesRelationsNT = null;
+        }
+        searchSelected = null;
+    }  
+    
     public NarrowerBean() {
     }
 

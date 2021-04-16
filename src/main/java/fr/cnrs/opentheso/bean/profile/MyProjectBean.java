@@ -18,6 +18,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
@@ -47,6 +48,34 @@ public class MyProjectBean implements Serializable {
     
     private String selectedProject;
     private String selectedProjectName;    
+
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(listeThesoOfProject!= null){
+            listeThesoOfProject.clear();
+            listeThesoOfProject = null;
+        }
+        if(listeGroupsOfUser!= null){
+            listeGroupsOfUser.clear();
+            listeGroupsOfUser = null;
+        }
+        if(listeUser!= null){
+            listeUser.clear();
+            listeUser = null;
+        }
+        if(myAuthorizedRoles!= null){
+            myAuthorizedRoles.clear();
+            myAuthorizedRoles = null;
+        }        
+        nodeUserRoleOnThisGroup = null;
+        nodeUserRoleSuperAdmin = null;
+        myRoleOnThisProject = null;  
+        selectedProject = null;  
+        selectedProjectName = null;  
+    }  
     
     public MyProjectBean() {
     }

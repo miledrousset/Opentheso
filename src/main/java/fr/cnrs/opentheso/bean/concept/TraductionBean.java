@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -29,25 +30,38 @@ import org.primefaces.PrimeFaces;
 @Named(value = "traductionBean")
 @SessionScoped
 public class TraductionBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
 
     private String selectedLang;
-    
     private ArrayList<NodeLangTheso> nodeLangs;
     private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits
-    
     private ArrayList<NodeTermTraduction> nodeTermTraductions;
-    
     private String traductionValue;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeLangs != null){
+            nodeLangs.clear();
+            nodeLangs = null;
+        }
+        if(nodeLangsFiltered != null){
+            nodeLangsFiltered.clear();
+            nodeLangsFiltered = null;
+        }
+        if(nodeTermTraductions != null){
+            nodeTermTraductions.clear();
+            nodeTermTraductions = null;
+        }        
+        selectedLang = null;
+        traductionValue = null;
+    }      
+    
     public TraductionBean() {
     }
 

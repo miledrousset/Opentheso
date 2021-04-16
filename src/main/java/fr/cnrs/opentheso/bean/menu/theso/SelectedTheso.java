@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -30,45 +31,18 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 
 public class SelectedTheso implements Serializable {
-
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private IndexSetting indexSetting;
-
-    @Inject
-    private CandidatBean candidatBean;
-
-    @Inject
-    private TreeGroups treeGroups;
-
-    @Inject
-    private TreeConcepts treeConcepts;
-
-    @Inject
-    private Tree tree;
-
-    @Inject
-    private ListIndex listIndex;
-
-    @Inject
-    private ConceptView conceptBean;
-
-    @Inject
-    private SearchBean searchBean;
-
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Inject
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-
-    @Inject
-    private ViewEditorHomeBean viewEditorHomeBean;
-
-    @Inject
-    private RightBodySetting rightBodySetting;
+    @Inject private Connect connect;
+    @Inject private IndexSetting indexSetting;
+    @Inject private TreeGroups treeGroups;
+    @Inject private TreeConcepts treeConcepts;
+    @Inject private Tree tree;
+    @Inject private ListIndex listIndex;
+    @Inject private ConceptView conceptBean;
+    @Inject private SearchBean searchBean;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private ViewEditorHomeBean viewEditorHomeBean;
+    @Inject private RightBodySetting rightBodySetting;
 
     private static final long serialVersionUID = 1L;
 
@@ -89,10 +63,28 @@ public class SelectedTheso implements Serializable {
     private String thesoName;
     private boolean sortByNotation;
 
+    @PreDestroy
+    public void destroy(){
+        /// c'est le premier composant qui se détruit
+        clear();
+    }  
+    public void clear(){
+        if(nodeLangs!= null){
+            nodeLangs.clear();
+            nodeLangs = null;
+        }
+        selectedIdTheso = null;
+        currentIdTheso = null;
+        selectedLang = null;
+        currentLang = null;
+        idThesoFromUri = null;      
+        thesoName = null;   
+    //    System.gc();
+    //    System.runFinalization();        
+    }      
+    
     @PostConstruct
     public void initializing() {
-    //    System.gc();
-    //    System.runFinalization();
         if (!connect.isConnected()) {
             System.err.println("Erreur de connexion BDD");
             return;
@@ -108,9 +100,6 @@ public class SelectedTheso implements Serializable {
         }        
         ///////
         ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire        
-        
-        
-        
         
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
@@ -159,6 +148,7 @@ public class SelectedTheso implements Serializable {
             roleOnThesoBean.showListTheso();
             treeGroups.reset();
             tree.reset();
+            treeConcepts.reset();
             listIndex.reset();
             conceptBean.init();
             init();
@@ -280,6 +270,7 @@ public class SelectedTheso implements Serializable {
         tree.initialise(selectedIdTheso, selectedLang);
 
         listIndex.reset();
+        conceptBean.clear();
         conceptBean.init();
     }
 

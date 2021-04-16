@@ -16,6 +16,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -23,7 +24,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -32,27 +32,38 @@ import org.apache.commons.lang3.StringUtils;
 @Named(value = "noteBean")
 @SessionScoped
 public class NoteBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
     private ArrayList<NodeLangTheso> nodeLangs;
-
     private String selectedTypeNote;
     private String noteValue;
-
     private NodeNote selectedNodeNote;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(noteTypes != null){
+            noteTypes.clear();
+            noteTypes = null;
+        }
+        if(nodeLangs != null){
+            nodeLangs.clear();
+            nodeLangs = null;
+        }
+        selectedLang = null;
+        selectedTypeNote = null;
+        noteValue = null;
+        selectedNodeNote = null;
+    }     
+    
     public NoteBean() {
     }
 

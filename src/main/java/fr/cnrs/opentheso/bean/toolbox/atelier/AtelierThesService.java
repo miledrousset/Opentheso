@@ -35,16 +35,9 @@ import org.primefaces.event.FileUploadEvent;
 @Named
 @ViewScoped
 public class AtelierThesService implements Serializable {
-    
-
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private LanguageBean languageBean;
-    
-    @Inject
-    private CurrentUser currentUser;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private CurrentUser currentUser;
     
     
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {

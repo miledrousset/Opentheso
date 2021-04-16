@@ -39,28 +39,13 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 //@ViewScoped
 public class DragAndDrop implements Serializable {
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private CurrentUser currentUser;
+    @Inject private Tree tree;
 
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private CurrentUser currentUser;
-    @Inject
-    private Tree tree;
-
-
-    /*   private String movedFromId;
-    private boolean isBranch = true;
-    
-    // pour distinguer un group d'un concept 
-    private boolean isCopyOfGroup = false;
-
-     */
     private boolean isCopyOn;
     private boolean isValidPaste;
     private NodeConcept nodeConceptDrag;
@@ -73,16 +58,24 @@ public class DragAndDrop implements Serializable {
 
     public DragAndDrop() {
     }
+
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeBTsToCut != null){
+            nodeBTsToCut.clear();
+            nodeBTsToCut = null;
+        }
+        nodeConceptDrag.clear();
+        nodeConceptDrag = null;
+        nodeConceptDrop.clear();
+        nodeConceptDrop = null;
+    } 
     
     @PostConstruct
     public void init(){
-        int i = 0;
-    }
-
-    /// est appelé avant la destruction de la session, c'est le moment idéal pour nettoyer les variables
-    @PreDestroy
-    public void destroy(){
-        int i = 0;
     }
 
     public void reset() {

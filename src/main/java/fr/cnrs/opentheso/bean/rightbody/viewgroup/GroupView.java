@@ -18,6 +18,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
@@ -27,15 +28,10 @@ import javax.inject.Inject;
 @Named(value = "groupView")
 @SessionScoped
 public class GroupView implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private IndexSetting indexSetting;     
-    @Inject
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject
-    private ViewEditorHomeBean viewEditorHomeBean;       
+    @Inject private Connect connect;
+    @Inject private IndexSetting indexSetting;     
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private ViewEditorHomeBean viewEditorHomeBean;       
 
     private NodeGroup nodeGroup;
     private ArrayList<NodeGroupTraductions> nodeGroupTraductions;
@@ -43,6 +39,19 @@ public class GroupView implements Serializable {
     
     private int count;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeGroupTraductions!= null){
+            nodeGroupTraductions.clear();
+            nodeGroupTraductions = null;
+        }
+        nodeGroup = null;
+        nodeGroupType = null;
+    }      
+    
     /**
      * Creates a new instance of ConceptBean
      */

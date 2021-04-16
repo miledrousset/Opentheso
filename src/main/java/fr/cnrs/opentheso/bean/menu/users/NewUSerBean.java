@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -34,6 +35,18 @@ public class NewUSerBean implements Serializable {
     private String selectedProject;
     private String selectedRole;
             
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        nodeUser = null;
+        passWord1 = null;
+        passWord2 = null;
+        selectedProject = null;
+        selectedRole = null;        
+    }     
+    
     public NewUSerBean() {
     }
     

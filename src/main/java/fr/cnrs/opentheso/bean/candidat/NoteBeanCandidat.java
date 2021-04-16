@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -30,14 +31,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "noteBeanCandidat")
 @SessionScoped
 public class NoteBeanCandidat implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private NoteBeanCandidat noteBeanCandidat;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject CandidatBean candidatBean;
+    @Inject private Connect connect;
+    @Inject private NoteBeanCandidat noteBeanCandidat;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private CandidatBean candidatBean;
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
@@ -51,6 +48,26 @@ public class NoteBeanCandidat implements Serializable {
     private boolean visible;
     private boolean isEditMode;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(noteTypes!= null){
+            noteTypes.clear();
+            noteTypes = null;
+        } 
+        if(nodeLangs!= null){
+            nodeLangs.clear();
+            nodeLangs = null;
+        }         
+        selectedLang = null;        
+        selectedTypeNote = null;
+        noteValue = null;
+        selectedNodeNote = null;
+        noteValueToChange = null;
+    }
+    
     public NoteBeanCandidat() {
     }
 

@@ -780,6 +780,27 @@ public class CsvReadHelper {
             
             members = new ArrayList<>();            
         }
+        public void clear(){
+            if(prefLabels != null) prefLabels.clear();
+            if(altLabels != null) altLabels.clear();
+            if(hiddenLabels != null) hiddenLabels.clear();
+            if(note != null) note.clear();
+            if(definitions != null) definitions.clear();
+            if(scopeNotes != null) scopeNotes.clear();
+            if(examples != null) examples.clear();
+            if(historyNotes != null) historyNotes.clear();
+            if(changeNotes != null) changeNotes.clear();
+            if(editorialNotes != null) editorialNotes.clear();
+            if(broaders != null) broaders.clear();    
+            if(narrowers != null) narrowers.clear();   
+            if(relateds != null) relateds.clear();  
+            if(exactMatchs != null) exactMatchs.clear();  
+            if(closeMatchs != null) closeMatchs.clear();  
+            if(broadMatchs != null) broadMatchs.clear();  
+            if(narrowMatchs != null) narrowMatchs.clear();  
+            if(relatedMatchs != null) relatedMatchs.clear();  
+            if(members != null) members.clear();  
+        }        
 
         public String getIdConcept() {
             return idConcept;

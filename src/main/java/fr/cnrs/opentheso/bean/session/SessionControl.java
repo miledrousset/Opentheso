@@ -31,34 +31,15 @@ import javax.servlet.http.HttpServletRequest;
 @Named(value = "sessionControl")
 @SessionScoped
 public class SessionControl implements Serializable {
-
-    @Inject
-    private CurrentUser currentUser;
-
-    @Inject
-    private TreeGroups treeGroups;
-
-    @Inject
-    private TreeConcepts treeConcepts;
-
-    @Inject
-    private Tree tree;
-
-    @Inject
-    private ListIndex listIndex;
-
-    @Inject
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-
-    @Inject
-    private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
-
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Inject
-    private IndexSetting indexSetting;
-
+    @Inject private CurrentUser currentUser;
+    @Inject private TreeGroups treeGroups;
+    @Inject private TreeConcepts treeConcepts;
+    @Inject private Tree tree;
+    @Inject private ListIndex listIndex;
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private IndexSetting indexSetting;
     
     public void isTimeout() throws IOException {
 

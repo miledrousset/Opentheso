@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import java.io.ByteArrayInputStream;
 import javax.faces.view.ViewScoped;
 
@@ -9,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
@@ -24,22 +24,44 @@ import org.primefaces.model.StreamedContent;
 @Named("atelierThesBean")
 @ViewScoped
 public class AtelierThesBean implements Serializable {
-
-    @Inject
-    private AtelierThesService atelierThesService;
+    @Inject private AtelierThesService atelierThesService;
 
     private List<String> titles;
     private List<List<String>> values = new ArrayList<>();
-
     private NodeIdValue thesoSelected;
     private ArrayList<NodeIdValue> nodeListTheso;
     private ArrayList<ConceptResultNode> result;
-
     private int spanTable;
     private int choiceDelimiter = 0;    
     private char delimiterCsv = ',';
     private String selectedColumn;
     private String actionSelected;
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(titles!= null){
+            titles.clear();
+            titles = null;
+        }
+        if(values!= null){
+            values.clear();
+            values = null;
+        }
+        if(nodeListTheso!= null){
+            nodeListTheso.clear();
+            nodeListTheso = null;
+        }
+        if(result!= null){
+            result.clear();
+            result = null;
+        }        
+        thesoSelected = null;
+        selectedColumn = null;        
+        actionSelected = null;
+    }    
     
     @PostConstruct
     public void init() {
@@ -52,9 +74,18 @@ public class AtelierThesBean implements Serializable {
     }
     
     public void clearAll() {
-        titles = new ArrayList<>();
-        values = new ArrayList<>();
-        result = new ArrayList<>();
+        if(titles == null)
+            titles = new ArrayList<>();
+        else
+            titles.clear();
+        if(values == null)
+            values = new ArrayList<>();
+        else
+            values.clear();        
+        if(result == null)
+            result = new ArrayList<>();
+        else
+            result.clear();  
         nodeListTheso = atelierThesService.searchAllThesaurus();   
     }
     

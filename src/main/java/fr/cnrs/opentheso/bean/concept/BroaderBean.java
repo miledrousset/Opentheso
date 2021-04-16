@@ -42,20 +42,13 @@ import org.primefaces.PrimeFaces;
 @javax.enterprise.context.SessionScoped
 
 public class BroaderBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private Tree tree;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private Tree tree;
 
     private NodeSearchMini searchSelected;
-
     private ArrayList<NodeBT> nodeBTs;
 
     public BroaderBean() {
@@ -63,27 +56,19 @@ public class BroaderBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        int test = 1;
-
-        /*       try {
-            clearCache();
-        } catch (IOException ex) {
-            Logger.getLogger(BroaderBean.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-
     }
 
     @PreDestroy
-    public void clear() {
-//        if (toto == null) {
-//            toto = new ArrayList<>();
-//        }        
-//        if (toto != null) {
-//            toto.clear();
-//            toto=null;
-//        }
-//        System.gc();
-    }
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        searchSelected = null;
+        if(nodeBTs!= null){
+            nodeBTs.clear();
+            nodeBTs = null;
+        }         
+    }    
 
 
 

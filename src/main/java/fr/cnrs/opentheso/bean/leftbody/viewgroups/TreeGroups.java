@@ -55,16 +55,12 @@ public class TreeGroups implements Serializable {
 
 
     private DataService dataService;
-
     private TreeNode root, selectedNode;
-
     private String idTheso, idLang;
-
     private boolean noedSelected;
 
     @PostConstruct
     public void postInit(){
-        int test = 0;
     }   
     
     @PreDestroy
@@ -74,6 +70,7 @@ public class TreeGroups implements Serializable {
     
     public void reset() {
         root = null;
+        dataService = null;
         selectedNode = null;
         rightBodySetting.init();
         noedSelected = false;

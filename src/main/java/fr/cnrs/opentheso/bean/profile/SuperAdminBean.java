@@ -19,6 +19,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
@@ -38,6 +39,25 @@ public class SuperAdminBean implements Serializable {
     
     private ArrayList<NodeUserGroup> allProjects;
     private ArrayList<NodeUserGroupThesaurus> allThesoProject;     
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(allUsers!= null){
+            allUsers.clear();
+            allUsers = null;
+        }
+        if(allProjects!= null){
+            allProjects.clear();
+            allProjects = null;
+        }
+        if(allThesoProject!= null){
+            allThesoProject.clear();
+            allThesoProject = null;
+        }        
+    }    
     
     public SuperAdminBean() {
     }

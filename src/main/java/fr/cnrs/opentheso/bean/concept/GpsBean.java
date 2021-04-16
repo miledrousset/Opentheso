@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -29,18 +30,21 @@ import org.primefaces.PrimeFaces;
 
 @javax.enterprise.context.SessionScoped
 public class GpsBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptView;
-    @Inject
-    private SelectedTheso selectedTheso;    
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptView;
+    @Inject private SelectedTheso selectedTheso;    
 
     private NodeGps nodeGps;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        nodeGps = null;
+    }   
+    
     public GpsBean() {
     }
 

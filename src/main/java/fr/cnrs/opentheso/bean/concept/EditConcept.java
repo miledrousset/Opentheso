@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -37,19 +38,12 @@ import org.primefaces.model.TreeNode;
 
 @javax.enterprise.context.SessionScoped
 public class EditConcept implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptView;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private Tree tree;
+    @Inject private Connect connect;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptView;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private Tree tree;
 
     private String prefLabel;
     private String notation;
@@ -64,6 +58,20 @@ public class EditConcept implements Serializable {
     // dépréciation
     private ArrayList<NodeIdValue> nodeReplaceBy;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeReplaceBy != null){
+            nodeReplaceBy.clear();
+            nodeReplaceBy = null;
+        }
+        prefLabel = null;
+        notation = null;
+        source = null;
+    }     
+    
     public EditConcept() {
     }
 

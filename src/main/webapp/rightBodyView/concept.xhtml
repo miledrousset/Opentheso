@@ -103,7 +103,7 @@
                                       oncomplete="PF('deleteHandle').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>                    
-                    
+
 
 
                     <!-- partie pour générer les identifiants ARK d'un thésaurus à déplacer par la suite vers la boite à outils -->
@@ -239,7 +239,7 @@
         <!-- Partie pour distinguer les concepts dépréciés -->
         <p:spacer rendered="#{conceptView.nodeConcept.concept.isDeprecated}"/>
         <p:panel id="idDeprecated" rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
-                  style="background-color: #C63632;">
+                 style="background-color: #C63632;">
             <b:row>
                 <b:column span="12" colXs="12" style="color: white">
                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.concept_deprecated')}" />
@@ -252,7 +252,7 @@
                         <h:outputText value=" #{replace.value}" title="#{replace.id}"/>
                         <h:outputText rendered="#{!status.last}" value=", " style="color: white"/>
                     </ui:repeat>
-                 </b:column>
+                </b:column>
             </b:row>
         </p:panel>
         <p:spacer rendered="#{conceptView.nodeConcept.concept.isDeprecated}"/>
@@ -286,22 +286,22 @@
                             icon-awesome="fa-plus-circle" icon-size="s"  value=" " iconAlign="right"
                             style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px;">
                     <b:navCommandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                     actionListener="#{newConcept.reset()}"                    
-                                     update="idAddNT addNTForm"
-                                     oncomplete="PF('addNT').show();"
-                                     value="#{langueBean.getMsg('rightbody.concept.new_concept')}" 
-                                     tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_new_concept')}" tooltip-delay-show="500"
-                                     style="font-size: 12px;"
-                                     styleClass="buttonIconOrange"/>
+                                      actionListener="#{newConcept.reset()}"                    
+                                      update="idAddNT addNTForm"
+                                      oncomplete="PF('addNT').show();"
+                                      value="#{langueBean.getMsg('rightbody.concept.new_concept')}" 
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_new_concept')}" tooltip-delay-show="500"
+                                      style="font-size: 12px;"
+                                      styleClass="buttonIconOrange"/>
 
                     <b:navCommandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                       actionListener="#{editFacet.initNewFacet()}"
-                                     update="idAddFacet addFacetForm"
-                                     oncomplete="PF('addFacet').show();"
-                                     value="#{langueBean.getMsg('rightbody.concept.new_facet')}" 
-                                     tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_new_facet')}" tooltip-delay-show="500"
-                                     style="font-size: 12px;"
-                                     styleClass="buttonIconOrange"/>
+                                      update="idAddFacet addFacetForm"
+                                      oncomplete="PF('addFacet').show();"
+                                      value="#{langueBean.getMsg('rightbody.concept.new_facet')}" 
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_new_facet')}" tooltip-delay-show="500"
+                                      style="font-size: 12px;"
+                                      styleClass="buttonIconOrange"/>
                 </b:dropMenu>
             </b:column>
         </b:row>
@@ -351,15 +351,15 @@
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.replace_with2')}"  update="idReplaceBy replaceByForm"
-                               action="#{relatedBean.reset()}"
-                               actionListener="#{editConcept.reset('')}"
-                               oncomplete="PF('replaceBy').show();"
-                               style="font-size: 12px;"/>
+                                      action="#{relatedBean.reset()}"
+                                      actionListener="#{editConcept.reset('')}"
+                                      oncomplete="PF('replaceBy').show();"
+                                      style="font-size: 12px;"/>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delere_replace_with')}"  update="idDeleteReplaceBy deleteReplaceByForm"
-                               action="#{relatedBean.reset()}"
-                               actionListener="#{editConcept.reset('')}"
-                               oncomplete="PF('deleteReplaceBy').show();"
-                               style="font-size: 12px;"/>
+                                      action="#{relatedBean.reset()}"
+                                      actionListener="#{editConcept.reset('')}"
+                                      oncomplete="PF('deleteReplaceBy').show();"
+                                      style="font-size: 12px;"/>
                 </b:dropMenu>
             </b:column>
             <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.replacedBy.size() == 0}">
@@ -576,7 +576,7 @@
             <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
                 <b:iconAwesome value="level-down-alt" size="m" style="color:#143a1e;"/>                 
             </b:column>  
-            
+
             <h:panelGroup id="idConceptNarrower" >            
                 <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}">
                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
@@ -637,7 +637,7 @@
 
 
 
-       <!-- ligne RT -->
+        <!-- ligne RT -->
         <b:row >
             <b:column span="3" colXs="3">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.related')}" title="#{langueBean.getMsg('rightbody.concept.related')}"/>
@@ -1039,9 +1039,15 @@
 
         <!-- ligne images -->        
         <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0)}">
-            <b:column span="3" colXs="3">
+            <b:column span="3" colXs="3" rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.image')}" />
             </b:column>
+            <b:column span="3" colXs="3" rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.image')} " />
+                <h:outputText value="( #{conceptView.nodeConcept.nodeimages.size()} )" style="color: #43B572; margin-left: 10px;"/>
+            </b:column>            
+            
+            
             <b:column span="1">
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_image')}" tooltip-delay-show="1000"
@@ -1069,20 +1075,17 @@
                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
                 </b:column> 
-                <b:column span="7" colXs="7" offset="1" offset-md="0" offsetSm="0" offset-xs="0" rendered="#{conceptView.nodeConcept.nodeimages.size() !=0}">
 
-                    <p:imageSwitch effect="fade" id="fadeEffect">
-                        <ui:repeat var="images" value="#{conceptView.nodeConcept.nodeimages}" >
 
-                            <p:graphicImage value="#{images.uri}"
-                                            title="#{images.copyRight}"
-                                            url="#{images.uri}"
-                                            alt="#{images.uri}"
-                                            height="130px"
-                                            style="cursor: pointer;"/>
-                        </ui:repeat>
-                    </p:imageSwitch>
-
+                <b:column span="6" colXs="6"  offset-md="0" offsetSm="0" offset-xs="0" rendered="#{conceptView.nodeConcept.nodeimages.size() !=0}">
+                    <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="images" panelWidth="450" panelHeight="110" showCaption="false">
+                        <p:graphicImage value="#{images.uri}"
+                                        title="#{images.copyRight}"
+                                        url="#{images.uri}"
+                                        alt="#{images.uri}"
+                                        height="100"
+                                        style="cursor: pointer;"/>
+                    </p:galleria>                        
                     <p:separator styleClass="separator" style="margin-top: 5px"/>
                 </b:column>
             </h:panelGroup>
@@ -1380,7 +1383,7 @@
                             target="_blank"
                             icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
                 </b:column>
-                
+
                 <!-- Cas d'uri de type Doi -->
                 <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsDoi}">
                     <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}"
@@ -1423,7 +1426,7 @@
                             value="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
                             target="_blank"
                             icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
-                     -->
+                    -->
                 </b:column>
             </b:row >
 
@@ -1455,7 +1458,7 @@
             </b:column>
         </b:row>
 
-   
+
         <h:panelGroup  rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
             <!-- Dialogues -->        
             <ui:include src="/dialog/concept/addNT.xhtml" /> 

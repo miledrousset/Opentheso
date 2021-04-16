@@ -13,6 +13,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -32,6 +33,18 @@ public class NewProjectBean implements Serializable {
     private String projectName;
     private ArrayList<NodeUserGroup> listeProjectOfUser;
             
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(listeProjectOfUser!= null){
+            listeProjectOfUser.clear();
+            listeProjectOfUser = null;
+        }
+        projectName = null;
+    }    
+    
     public NewProjectBean() {
     }
     

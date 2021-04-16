@@ -29,13 +29,13 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
-import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -44,43 +44,56 @@ import org.primefaces.model.TreeNode;
 @Named(value = "newConcept")
 @SessionScoped
 public class NewConcept implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private Tree tree;
+    @Inject private Connect connect;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private Tree tree;
 
     private String prefLabel;
-
     private String notation;
     private String idNewConcept; // l'utilisateur peut choisir un identifiant à la création.
-
     private String source;
-
     private ArrayList<NodeTypeRelation> typesRelationsNT;
     private String relationType;
-
     private ArrayList<NodeGroup> nodeGroups;
     private String idGroup; // facultatif    
-
     private boolean isCreated;
     private boolean duplicate;
-
     private List<NodeSearchMini> nodeSearchMinis;
-
-    
+   
     /// partie pour les concepts à créer sous une Facette 
     private String idBTfacet;
     private String idFacet;
     private boolean isConceptUnderFacet;
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(typesRelationsNT != null){
+            typesRelationsNT.clear();
+            typesRelationsNT = null;
+        }
+        if(nodeGroups != null){
+            nodeGroups.clear();
+            nodeGroups = null;
+        }
+        if(nodeSearchMinis != null){
+            nodeSearchMinis.clear();
+            nodeSearchMinis = null;
+        }        
+        prefLabel = null;
+        notation = null;
+        idNewConcept = null;
+        source = null;
+        relationType = null;
+        idGroup = null;
+        idBTfacet = null;
+        idFacet = null;        
+    }      
     
     public NewConcept() {
     }
@@ -103,12 +116,6 @@ public class NewConcept implements Serializable {
         nodeGroups = groupHelper.getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang());
-
-        /*    PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("addNTForm1:relationTypeNT"); 
-        }*/
-        //    infos();
     }
     
     public void resetForFacet(NodeFacet nodeFacet){

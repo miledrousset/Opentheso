@@ -55,21 +55,32 @@ public class SKOSXmlDocument {
                 sKOSResource.clear();
             });
             groupList.clear();
+            groupList = null;
         }
         if(conceptList != null){
             conceptList.forEach(sKOSResource -> {
                 sKOSResource.clear();
             });
             conceptList.clear();
+            conceptList = null;
         }        
         if(facetList != null){
             facetList.forEach(sKOSResource -> {
                 sKOSResource.clear();
             });
             facetList.clear();
+            facetList = null;
         }   
-        if(equivalenceUriArkHandle != null)
-            equivalenceUriArkHandle.clear();           
+        if(equivalenceUriArkHandle != null){
+            equivalenceUriArkHandle.clear();
+            equivalenceUriArkHandle = null;
+        }
+        if(conceptScheme != null) {
+            conceptScheme.clear();
+            conceptScheme = null;
+        }
+        title = null;
+            
     }
     
     public void addGroup(SKOSResource r) {

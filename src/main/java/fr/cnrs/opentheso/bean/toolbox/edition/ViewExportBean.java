@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import org.primefaces.event.ToggleSelectEvent;
 
@@ -28,18 +29,10 @@ import org.primefaces.event.ToggleSelectEvent;
 @Named(value = "viewExportBean")
 @SessionScoped
 public class ViewExportBean implements Serializable {
-
-    @Inject
-    private SelectedTheso selectedTheso;
-    
-    @Inject
-    private Connect connect;
-    
-    @Inject
-    private ExportFileBean downloadBean;
-
-    @Inject
-    private LanguageBean languageBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private ExportFileBean downloadBean;
+    @Inject private LanguageBean languageBean;
 
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<NodeGroup> groupList;
@@ -66,6 +59,41 @@ public class ViewExportBean implements Serializable {
         
     private boolean exportDone;
     
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }    
+    
+    public void clear() {
+        nodePreference = null;    
+        nodeIdValueOfTheso = null;            
+        csvDelimiter = null;  
+        formatFile = null;  
+        typeSelected = null;  
+        selectedExportFormat = null;  
+        selectedLang1_PDF = null;  
+        selectedLang2_PDF = null;  
+
+        
+        if(languagesOfTheso != null){
+            languagesOfTheso.clear();
+            languagesOfTheso = null;
+        }
+        if(groupList != null){
+            groupList.clear();
+            groupList = null;
+        }
+        if(selectedLanguages != null){
+            selectedLanguages.clear();
+            selectedLanguages = null;
+        }
+        if(selectedGroups != null){
+            selectedGroups.clear();
+            selectedGroups = null;
+        }
+        exportFormat = null;
+        types = null;
+    }    
     
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
@@ -95,17 +123,21 @@ public class ViewExportBean implements Serializable {
 
         groupList = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
 
-        selectedLanguages = new ArrayList<>();
+        if(selectedLanguages == null)
+            selectedLanguages = new ArrayList<>();
+        else
+            selectedLanguages.clear();
         for (NodeLangTheso nodeLang : languagesOfTheso) {
             selectedLanguages.add(nodeLang);
         }
 
-        selectedGroups = new ArrayList<>();
+        if(selectedGroups == null)
+            selectedGroups = new ArrayList<>();
+        else
+            selectedGroups.clear();        
         for (NodeGroup nodeGroup : groupList) {
             selectedGroups.add(nodeGroup);
         }
-
- //       nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
 
         exportUriArk = false;
         exportUriHandle = false;

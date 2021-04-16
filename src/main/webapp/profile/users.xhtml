@@ -9,7 +9,7 @@
         <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
             <b:row style="margin-left: 30px; margin-right: 30px;">
                 <b:column span="3">
-                    <h:outputText value="Liste de tous les utilisateurs " style="font-size: 12px;" />
+                    <h:outputText value="#{langueBean.getMsg('profile.list_of_all_users')}" style="font-size: 12px;" />
                 </b:column>
             </b:row >
 
@@ -26,10 +26,10 @@
                                          value="#{superAdminBean.allUsers}" var="listUser" scrollable="true" resizableColumns="true" scrollHeight="450"
                                          style="font-size: 12px;">
 
-                                <p:column width="50" headerText="Pseudo" rendered="#{!listUser.isActive}">
-                                    <h:outputText title="user désactivé" value="#{listUser.name}" style="color: red; font-style: oblique" />
+                                <p:column width="50" headerText="#{langueBean.getMsg('profile.pseudo')}" rendered="#{!listUser.isActive}">
+                                    <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" value="#{listUser.name}" style="color: red; font-style: oblique" />
                                 </p:column>
-                                <p:column width="50" headerText="Pseudo" rendered="#{listUser.isActive}">
+                                <p:column width="50" headerText="#{langueBean.getMsg('profile.pseudo')}" rendered="#{listUser.isActive}">
                                     <h:outputText value="#{listUser.name}"/>
                                 </p:column>
 

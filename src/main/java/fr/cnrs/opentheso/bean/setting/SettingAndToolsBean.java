@@ -5,10 +5,10 @@
  */
 package fr.cnrs.opentheso.bean.setting;
 
-import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
@@ -18,7 +18,6 @@ import javax.inject.Inject;
 @Named(value = "settingAndToolsBean")
 @SessionScoped
 public class SettingAndToolsBean implements Serializable {
-
     @Inject private PreferenceBean preferenceBean;
     
     private boolean isPreferenceActive;
@@ -30,6 +29,17 @@ public class SettingAndToolsBean implements Serializable {
     private String identifierColor;
     private String corpusColor;
     private String maintenanceColor;
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        preferenceColor = null;
+        identifierColor = null;        
+        corpusColor = null;
+        maintenanceColor = null;          
+    }     
     
     public SettingAndToolsBean() {
     }

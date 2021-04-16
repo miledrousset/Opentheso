@@ -30,7 +30,6 @@ public class RightBodySetting implements Serializable {
     
     @PostConstruct
     public void postInit(){
-        int test = 0;
     }    
     public RightBodySetting() {
     }

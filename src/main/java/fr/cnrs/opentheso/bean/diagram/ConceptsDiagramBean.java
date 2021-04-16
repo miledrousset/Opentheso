@@ -32,6 +32,7 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 
 @Named("conceptsDiagramBean")
@@ -44,12 +45,9 @@ public class ConceptsDiagramBean implements Serializable {
     private final float GAP_BETWEEN_NODES = 3.1f;
     private final float GAP_BETWEEN_LEVELS = 4;
 
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private SelectedTheso selectedTheso;
-
+    @Inject private Connect connect;
+    @Inject private SelectedTheso selectedTheso;
+    
     private String elementSelected;
     private ConceptHelper conceptHelper;
     private DefaultDiagramModel model;
@@ -58,10 +56,33 @@ public class ConceptsDiagramBean implements Serializable {
     private Map<TextInBox, List> elementsTreeMap;
     private DefaultTreeForTreeLayout<TextInBox> defaultTreeForTreeLayout;
 
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeConceptSelected != null){
+            nodeConceptSelected.clear();
+            nodeConceptSelected = null;
+        }
+        if(elements != null){
+            elements.clear();
+            elements = null;
+        }      
+        if(elementsTreeMap != null){
+            elementsTreeMap.clear();
+            elementsTreeMap = null;
+        }        
+        elementSelected = null;
+        model = null;
+        defaultTreeForTreeLayout = null;
+        conceptHelper = null;
+    }     
+    
     @PostConstruct
     public void postInit(){
-        int test = 0;
-    }    
+    }
     
     /**
      * Initialisation du diagram des concepts
@@ -73,19 +94,14 @@ public class ConceptsDiagramBean implements Serializable {
      * @param idLang
      */
     public void init(String conceptId, String idTheso, String idLang) {
-
-        conceptHelper = new ConceptHelper();
-
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
         nodeConceptSelected = conceptHelper.getConcept(connect.getPoolConnexion(), conceptId, idTheso, idLang);
-        
         elementSelected = nodeConceptSelected.getTerm().getLexical_value();
-
         TextInBox root = new TextInBox(nodeConceptSelected.getTerm().getLexical_value(),
                 WIDTH_ELEMENT, HEIGHT_ELEMENT);
-
         elementsTreeMap = new HashMap<>();
         defaultTreeForTreeLayout = new DefaultTreeForTreeLayout<>(root);
-
         drowDiagram();
     }
 
@@ -203,7 +219,6 @@ public class ConceptsDiagramBean implements Serializable {
     private Connection createConnection(EndPoint from, EndPoint to) {
         Connection conn = new Connection(from, to);
         conn.getOverlays().add(new ArrowOverlay(8, 8, 1, 1));
-
         return conn;
     }
 

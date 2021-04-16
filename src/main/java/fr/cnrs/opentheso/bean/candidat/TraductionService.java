@@ -16,19 +16,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 
 @Named(value = "traductionService")
 @SessionScoped
 public class TraductionService implements Serializable {
-
-    @Inject
-    private CandidatBean candidatBean;
-
-    @Inject
-    private LanguageBean languageBean;
-    
+    @Inject private CandidatBean candidatBean;
+    @Inject private LanguageBean languageBean;
     @Inject private SelectedTheso selectedTheso;
 
     private String langage;
@@ -44,8 +40,30 @@ public class TraductionService implements Serializable {
     private ArrayList<NodeLangTheso> nodeLangs;
     private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits    
     
-    StringBuilder messages;
+    private StringBuilder messages;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeLangs!= null){
+            nodeLangs.clear();
+            nodeLangs = null;
+        } 
+        if(nodeLangsFiltered!= null){
+            nodeLangsFiltered.clear();
+            nodeLangsFiltered = null;
+        }         
+        langage = null;
+        traduction = null;
+        langageOld = null;
+        traductionOld = null;
+        newLangage = null;
+        newTraduction = null;
+        messages = null;
+    }       
+    
     public TraductionService() {
         langage = null;
         traduction = null;

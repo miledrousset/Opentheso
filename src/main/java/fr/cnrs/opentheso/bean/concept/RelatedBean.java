@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -36,20 +37,26 @@ import org.primefaces.PrimeFaces;
 @Named(value = "relatedBean")
 @SessionScoped
 public class RelatedBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
 
     private NodeSearchMini searchSelected;
-    
     private ArrayList<NodeRT> nodeRTs;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeRTs != null){
+            nodeRTs.clear();
+            nodeRTs = null;
+        }
+        searchSelected = null;
+    }     
+    
     public RelatedBean() {
     }
 

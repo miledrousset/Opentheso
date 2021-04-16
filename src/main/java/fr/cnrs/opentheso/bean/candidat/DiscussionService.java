@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.mail.*;
 import javax.mail.internet.*;
 
@@ -33,23 +34,25 @@ import org.primefaces.PrimeFaces;
 @Named(value = "discussionService")
 @SessionScoped
 public class DiscussionService implements Serializable {
-
-    @Inject
-    private CandidatBean candidatBean;
-    
-    @Inject
-    private LanguageBean langueBean;
-
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private LanguageBean languageBean;
+    @Inject private CandidatBean candidatBean;
+    @Inject private LanguageBean langueBean;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
 
     private String email;
-    
     private List<String> participants;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(participants!= null){
+            participants.clear();
+            participants = null;
+        } 
+        email = null;
+    }       
 
     public List<String> getParticipantsInConversation() {
         

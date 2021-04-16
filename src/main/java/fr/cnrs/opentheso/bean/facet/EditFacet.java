@@ -18,6 +18,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -43,23 +44,72 @@ public class EditFacet implements Serializable {
 
     private ArrayList<NodeLangTheso> nodeLangs, nodeLangsFiltered;
     private ArrayList<NodeIdValue> conceptList;
-    private NodeIdValue termeParentAssocie;
     private List<NodeFacet> facetTraductions; 
+    
     private String newFacetName, conceptParentTerme, selectedLang, traductionValue;
+    private NodeIdValue termeParentAssocie;
     private NodeConcept concepParent;
     private NodeFacet facetSelected;
-    
     private NodeIdValue conceptSelected;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeLangs != null){
+            nodeLangs.clear();
+            nodeLangs = null;
+        }
+        if(nodeLangsFiltered != null){
+            nodeLangsFiltered.clear();
+            nodeLangsFiltered = null;
+        }      
+        if(conceptList != null){
+            conceptList.clear();
+            conceptList = null;
+        }        
+        if(facetTraductions != null){
+            facetTraductions.clear();
+            facetTraductions = null;
+        }
+        if(concepParent != null) {
+            concepParent.clear();
+            concepParent = null;
+        }
+        
+        newFacetName = null;
+        conceptParentTerme = null;
+        selectedLang = null;
+        traductionValue = null;
+        termeParentAssocie = null;
+        facetSelected = null;
+        conceptSelected = null;
+    }       
 
     public void reset() {
-        nodeLangs = null;
-        nodeLangsFiltered = null;
-        conceptList = null;
+        if(nodeLangs != null){
+            nodeLangs.clear();
+        }
+        if(nodeLangsFiltered != null){
+            nodeLangsFiltered.clear();
+        }      
+        if(conceptList != null){
+            conceptList.clear();
+        }        
+        if(facetTraductions != null){
+            facetTraductions.clear();
+        }
+        if(concepParent != null)
+            concepParent.clear();
+        
+        newFacetName = null;
+        conceptParentTerme = null;
+        selectedLang = null;
+        traductionValue = null;
         termeParentAssocie = null;
-        facetTraductions = null;
-        concepParent = null;
         facetSelected = null;
+        conceptSelected = null;
     }
 
     public void initEditFacet(String facetId, String idTheso, String idLang) {

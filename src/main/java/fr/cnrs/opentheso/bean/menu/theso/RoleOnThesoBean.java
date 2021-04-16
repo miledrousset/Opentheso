@@ -24,9 +24,9 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-//import fr.cnrs.opentheso.bean.menu.users.ManagerGroupsUsers;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,7 +41,6 @@ import javax.inject.Named;
 public class RoleOnThesoBean implements Serializable {
     @Inject private Connect connect;
     @Inject private CurrentUser currentUser;
-    //@Inject private ManagerGroupsUsers managerGroupsUsers;
     @Inject private LanguageBean languageBean;
     @Inject private SelectedTheso selectedTheso;
 
@@ -77,22 +76,47 @@ public class RoleOnThesoBean implements Serializable {
 
     }
 
-    @PostConstruct
-    public void init() {
-        int test = 0;
-//        showListTheso();
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }      
+    public void clear(){
+        nodeUserRoleGroup = null;
+        nodePreference = null;
+        thesoInfos = null;
+       
+        if(listTheso != null){
+            listTheso.clear();
+            listTheso = null;
+        }
+        if(listThesoAsAdmin != null){
+            listThesoAsAdmin.clear();
+            listThesoAsAdmin = null;
+        }
+        if(nodeListTheso != null){
+            nodeListTheso.clear();
+            nodeListTheso = null;
+        }
+        if(nodeListThesoAsAdmin != null){
+            nodeListThesoAsAdmin.clear();
+            nodeListThesoAsAdmin = null;
+        }
+        if(authorizedTheso != null){
+            authorizedTheso.clear();
+            authorizedTheso = null;
+        }
+        if(authorizedThesoAsAdmin != null){
+            authorizedThesoAsAdmin.clear();
+            authorizedThesoAsAdmin = null;
+        }
     }
 
-    public void clear(){
-   /*     nodeUserRoleGroup = null;
-        nodePreference = null;
-        if(authorizedThesoAsAdmin != null)
-            authorizedThesoAsAdmin.clear();
-//        if(authorizedTheso != null)
-//            authorizedTheso.clear();        
-     */   
-    }
     
+    @PostConstruct
+    public void init() {
+    }
+
+   
     //// restructuration de la classe le 05/04/2018 par Miled Rousset//////    
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////

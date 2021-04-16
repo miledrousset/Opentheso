@@ -17,6 +17,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -28,19 +29,29 @@ import javax.inject.Inject;
 @Named(value = "preferenceBean")
 @SessionScoped
 public class PreferenceBean implements Serializable {
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private SelectedTheso selectedTheso;
     
     private NodePreference nodePreference; 
     private ArrayList<NodeLangTheso> languagesOfTheso;
     
     private String uriType;
-            
+           
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(languagesOfTheso!= null){
+            languagesOfTheso.clear();
+            languagesOfTheso = null;
+        }
+        nodePreference = null;
+        uriType = null;        
+    }      
+    
     /**
      * Creates a new instance of preferenceBean
      */

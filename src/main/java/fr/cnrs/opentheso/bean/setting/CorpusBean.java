@@ -13,6 +13,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -32,6 +33,19 @@ public class CorpusBean implements Serializable {
     
     private String oldName;
     private NodeCorpus nodeCorpusForEdit;
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeCorpuses!= null){
+            nodeCorpuses.clear();
+            nodeCorpuses = null;
+        }
+        oldName = null;
+        nodeCorpusForEdit = null;        
+    }     
     
     public CorpusBean() {
     }

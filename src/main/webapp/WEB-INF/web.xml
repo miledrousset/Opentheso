@@ -11,11 +11,17 @@
         <param-value>21.04</param-value>
     </context-param>
 
-    <!-- thème de Primefaces omega -->
+    <!-- thème de Primefaces omega (n'est plus supporté dans la version 10 de primefaces) -->
     <context-param>
         <param-name>primefaces.THEME</param-name>
         <param-value>omega</param-value>
     </context-param>  
+    
+    <!-- thème de Primefaces saga (devient le thème par defaut à partir de la 10 -->    
+    <!--<context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>saga</param-value>
+    </context-param>  -->
 
     <!-- pour éviter une erreur de type javax.faces.application.ViewExpiredException: viewId:/index.xhtml -->
    <!-- <context-param>

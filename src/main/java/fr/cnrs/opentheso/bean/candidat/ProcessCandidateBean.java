@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -37,6 +38,19 @@ public class ProcessCandidateBean implements Serializable {
     
     private List<CandidatDto> selectedCandidates;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(selectedCandidates!= null){
+            selectedCandidates.clear();
+            selectedCandidates = null;
+        } 
+        selectedCandidate = null;
+        adminMessage = null;
+    }    
+    
     public ProcessCandidateBean() {
     }
 

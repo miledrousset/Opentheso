@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -27,20 +28,25 @@ import org.primefaces.PrimeFaces;
 @javax.enterprise.context.SessionScoped
 
 public class RemoveFromGroupBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private ConceptView conceptView;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private ConceptView conceptView;
 
     private ArrayList <NodeGroup> nodeGroups;
+
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeGroups!= null){
+            nodeGroups.clear();
+            nodeGroups = null;
+        }    
+    }    
     
     public RemoveFromGroupBean() {
-
     }
 
     public void init() {

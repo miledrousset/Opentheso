@@ -18,6 +18,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -30,27 +31,32 @@ import org.primefaces.PrimeFaces;
 @Named(value = "alignmentManualBean")
 @SessionScoped
 public class AlignmentManualBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptView;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private CurrentUser currentUser;     
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptView;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private CurrentUser currentUser;     
     
     private ArrayList<NodeAlignmentType> nodeAlignmentTypes;
-    
     
     // pour l'aligenement manuel
     private String manualAlignmentSource;
     private String manualAlignmentUri;
     private int manualAlignmentType;
     
-
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeAlignmentTypes!= null){
+            nodeAlignmentTypes.clear();
+            nodeAlignmentTypes = null;
+        }        
+        manualAlignmentSource = null;
+        manualAlignmentUri = null;
+    }
+    
     public AlignmentManualBean() {
     }
 

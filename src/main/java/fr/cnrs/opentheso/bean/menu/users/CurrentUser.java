@@ -30,6 +30,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import javax.annotation.PreDestroy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -44,30 +45,14 @@ public class CurrentUser implements Serializable {
     @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private IndexSetting indexSetting;
-
-    @Inject
-    private Tree tree;
-
-    @Inject
-    private TreeGroups treeGroups;
-
-    @Inject
-    private TreeConcepts treeConcepts;
-
-    @Inject
-    private ListIndex listIndex;
-
-    @Inject
-    private EditFacet editFacet;
-
-    @Inject
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-
-    @Inject
-    private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
-
-    @Inject
-    private CandidatBean candidatBean;
+    @Inject private Tree tree;
+    @Inject private TreeGroups treeGroups;
+    @Inject private TreeConcepts treeConcepts;
+    @Inject private ListIndex listIndex;
+    @Inject private EditFacet editFacet;
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
+    @Inject private CandidatBean candidatBean;
 
     private NodeUser nodeUser;
     private String username;
@@ -75,6 +60,21 @@ public class CurrentUser implements Serializable {
     
     private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
 
+    @PreDestroy
+    public void destroy(){
+        /// c'est le premier composant qui se détruit
+        clear();
+    }  
+    public void clear(){
+        if(allAuthorizedProjectAsAdmin!= null){
+            allAuthorizedProjectAsAdmin.clear();
+            allAuthorizedProjectAsAdmin = null;
+        }
+        nodeUser = null;
+        username = null;
+        password = null;
+    }    
+    
     public void setUsername(String name) {
         this.username = name;
     }
@@ -109,7 +109,7 @@ public class CurrentUser implements Serializable {
         copyAndPasteBetweenTheso.reset();
 
         editFacet.reset();
-        candidatBean.reset();
+        candidatBean.clear();
 
         // On appelle Garbage Collector pour libérer la mémoire occupé par les variables qui ont une valeur "null"
         System.gc();

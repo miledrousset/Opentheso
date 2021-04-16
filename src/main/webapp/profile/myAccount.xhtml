@@ -12,10 +12,10 @@
             <!-- Compte d'utilisateur -->
             <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                 <b:column span="2">
-                    <h:outputText value="Utilisateur : "  title="Pseudo de l'utilisateur" style="font-size: 12px;"/>
+                    <h:outputText value="#{langueBean.getMsg('profile.user')} : "  title="#{langueBean.getMsg('profile.tootltip_user')}" style="font-size: 12px;"/>
                 </b:column>
                 <b:column span="6">
-                    <b:inputText value="#{myAccountBean.nodeUser.name}"  title="Pseudo de l'utilisateur" style="height: 25px;font-size: 12px;" />
+                    <b:inputText value="#{myAccountBean.nodeUser.name}"  title="#{langueBean.getMsg('profile.tootltip_user')}" style="height: 25px;font-size: 12px;" />
                 </b:column>
                 <b:column span="2">
                     <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
@@ -34,7 +34,7 @@
             <!-- Passe de l'utilisateur -->
             <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                 <b:column span="2">
-                    <h:outputText value="Nouveau passe : "  style="font-size: 12px;"/>
+                    <h:outputText value="#{langueBean.getMsg('profile.new_password')} : "  style="font-size: 12px;"/>
                 </b:column>
                 <b:column span="6">
                     <b:inputSecret  value="#{myAccountBean.passWord1}" style="height: 25px;font-size: 12px;"/>
@@ -42,7 +42,7 @@
             </b:row>
             <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                 <b:column span="2">
-                    <h:outputText value="Confirmation : "  style="font-size: 12px;"/>
+                    <h:outputText value="#{langueBean.getMsg('profile.confirmation')} : "  style="font-size: 12px;"/>
                 </b:column>
                 <b:column span="6">
                     <b:inputSecret  value="#{myAccountBean.passWord2}"  style="height: 25px;font-size: 12px;" />
@@ -63,7 +63,7 @@
             <!-- Email -->
             <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                 <b:column span="2">
-                    <h:outputText value="Email : "  style="font-size: 12px;"/>
+                    <h:outputText value="#{langueBean.getMsg('profile.email')} : "  style="font-size: 12px;"/>
                 </b:column>
                 <b:column span="6">
                     <b:inputText  value="#{myAccountBean.nodeUser.mail}"  style="height: 25px;font-size: 12px;" />
@@ -78,7 +78,7 @@
             <!-- Alertes -->
             <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                 <b:column span="2">
-                    <h:outputText value="Alerte par mail : "  style="font-size: 12px;"/>
+                    <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : "  style="font-size: 12px;"/>
                 </b:column>
                 <b:column span="1" offset="5">
                     <p:toggleSwitch value="#{myAccountBean.nodeUser.isAlertMail}" style="font-size: 12px;" /> 
@@ -99,7 +99,7 @@
             <!-- Les rôles existants de l'utilisateur --> 
             <b:row style="margin-left: 10px; "> 
                 <b:column span="11">
-                    <h:outputText value="Liste des rôles de l'utilisateur" style="font-size: 12px;" />
+                    <h:outputText value="#{langueBean.getMsg('profile.list_user_roles')}" style="font-size: 12px;" />
                 </b:column>
             </b:row>
             
@@ -109,10 +109,10 @@
                         <p:dataTable id="tabUser" 
                                      value="#{myAccountBean.allMyRoleProject}" var="allRoleProject"  scrollable="true" resizableColumns="true" scrollHeight="450"
                              style="font-size: 12px;">
-                            <p:column width="30%" headerText="Rôle">
+                            <p:column width="30%" headerText="#{langueBean.getMsg('profile.role')}">
                                 <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
                             </p:column>
-                            <p:column width="70%" headerText="Projet" >
+                            <p:column width="70%" headerText="#{langueBean.getMsg('profile.project')}" >
                                 <h:outputText value="#{allRoleProject.groupName}" style="font-size: 12px;" />
                             </p:column>                              
                         </p:dataTable>                            

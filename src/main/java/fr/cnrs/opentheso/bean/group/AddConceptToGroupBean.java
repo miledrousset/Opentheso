@@ -16,6 +16,7 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -29,18 +30,20 @@ import org.primefaces.PrimeFaces;
 @javax.enterprise.context.SessionScoped
 
 public class AddConceptToGroupBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private ConceptView conceptView;
-    
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private ConceptView conceptView;
     
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
+
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        selectedNodeAutoCompletionGroup = null;
+    }
     
     public AddConceptToGroupBean() {
 

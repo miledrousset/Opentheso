@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -25,21 +26,38 @@ import javax.inject.Inject;
 @Named(value = "historyBean")
 @SessionScoped
 public class HistoryBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
 
     private ArrayList<HistoryHelper.HistoryValue> historyLabels;
     private ArrayList<HistoryHelper.HistoryValue> historySynonyms;
     private ArrayList<HistoryHelper.HistoryValue> historyRelations;      
     private ArrayList<HistoryHelper.HistoryValue> historyNotes;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(historyLabels != null){
+            historyLabels.clear();
+            historyLabels = null;
+        }
+        if(historySynonyms != null){
+            historySynonyms.clear();
+            historySynonyms = null;
+        }
+        if(historyRelations != null){
+            historyRelations.clear();
+            historyRelations = null;
+        }
+        if(historyNotes != null){
+            historyNotes.clear();
+            historyNotes = null;
+        }        
+    }       
     
     public HistoryBean() {
     }

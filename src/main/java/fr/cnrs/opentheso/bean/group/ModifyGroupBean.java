@@ -17,6 +17,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.List;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -31,31 +32,35 @@ import org.primefaces.PrimeFaces;
 @javax.enterprise.context.SessionScoped
 
 public class ModifyGroupBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-    @Inject
-    private TreeGroups treeGroups;   
-    @Inject
-    private GroupView groupView;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private CurrentUser currentUser;
-    
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private TreeGroups treeGroups;   
+    @Inject private GroupView groupView;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private CurrentUser currentUser;
     
     private String selectedGroupType;
     private String idGroup;
     private String titleGroup;    
     private String notation;    
     private List<SelectItem> listGroupType;    
+
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        selectedGroupType = null;
+        titleGroup = null;      
+        titleGroup = null;    
+        notation = null;         
+        if(listGroupType!= null){
+            listGroupType.clear();
+            listGroupType = null;
+        }    
+    }
     
     public ModifyGroupBean() {
-
     }
 
     public void init() {

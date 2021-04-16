@@ -18,6 +18,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Optional;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -30,17 +31,11 @@ import org.primefaces.PrimeFaces;
 @Named(value = "setAlignmentSourceBean")
 @SessionScoped
 public class SetAlignmentSourceBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptView;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private AlignmentBean alignmentBean;       
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptView;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private AlignmentBean alignmentBean;       
     
     private ArrayList<AlignementSource> allAlignementSources;
     private ArrayList<NodeSelectedAlignment> selectedAlignmentsOfTheso;
@@ -54,6 +49,28 @@ public class SetAlignmentSourceBean implements Serializable {
     private String sourceIdTheso;
     private String description;
     
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(allAlignementSources!= null){
+            allAlignementSources.clear();
+            allAlignementSources = null;
+        } 
+        if(selectedAlignmentsOfTheso!= null){
+            selectedAlignmentsOfTheso.clear();
+            selectedAlignmentsOfTheso = null;
+        }         
+        if(nodeSelectedAlignmentsAll!= null){
+            nodeSelectedAlignmentsAll.clear();
+            nodeSelectedAlignmentsAll = null;
+        }     
+        sourceName = null;
+        sourceUri = null;
+        sourceIdTheso = null;
+        description = null;
+    }    
 
     public SetAlignmentSourceBean() {
     }

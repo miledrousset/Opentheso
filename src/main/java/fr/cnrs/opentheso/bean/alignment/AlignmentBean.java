@@ -39,6 +39,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -51,24 +52,15 @@ import org.primefaces.PrimeFaces;
 @Named(value = "alignmentBean")
 @SessionScoped
 public class AlignmentBean implements Serializable {
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptView;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private AlignmentManualBean alignmentManualBean;       
 
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptView;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private AlignmentManualBean alignmentManualBean;       
-    
-    
-//    private List<String> selectedOptions;
     private boolean withLang;
     private boolean withNote;
     private boolean withImage;
-    
     
     private boolean isViewResult = true;
     private boolean isViewSelection = false;
@@ -127,6 +119,82 @@ public class AlignmentBean implements Serializable {
     
     //les alignements existants
     private ArrayList <NodeAlignment> existingAlignments;    
+    
+    
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }    
+    
+    public void clear() {
+        if(alignementSources!= null){
+            alignementSources.clear();
+            alignementSources = null;
+        }
+        selectedAlignement = null;
+        selectedAlignementSource = null;
+        if(listAlignValues!= null){
+            listAlignValues.clear();
+            listAlignValues = null;
+        }        
+        selectedNodeAlignment = null;
+        if(alignmentTypes!= null){
+            alignmentTypes.clear();
+            alignmentTypes = null;
+        }         
+        nom = null;
+        prenom = null;
+        if(thesaurusUsedLanguageWithoutCurrentLang!= null){
+            thesaurusUsedLanguageWithoutCurrentLang.clear();
+            thesaurusUsedLanguageWithoutCurrentLang = null;
+        }         
+        if(thesaurusUsedLanguage!= null){
+            thesaurusUsedLanguage.clear();
+            thesaurusUsedLanguage = null;
+        }  
+        if(allIdsOfBranch!= null){
+            allIdsOfBranch.clear();
+            allIdsOfBranch = null;
+        }  
+        if(idsAndValues!= null){
+            idsAndValues.clear();
+            idsAndValues = null;
+        }    
+        if(idsToGet!= null){
+            idsToGet.clear();
+            idsToGet = null;
+        }             
+        idConceptSelectedForAlignment = null;
+        conceptValueForAlignment = null;
+        if(nodeTermTraductions!= null){
+            nodeTermTraductions.clear();
+            nodeTermTraductions = null;
+        } 
+        if(nodeNotes!= null){
+            nodeNotes.clear();
+            nodeNotes = null;
+        } 
+        if(nodeImages!= null){
+            nodeImages.clear();
+            nodeImages = null;
+        } 
+        if(traductionsOfAlignment!= null){
+            traductionsOfAlignment.clear();
+            traductionsOfAlignment = null;
+        }         
+        if(descriptionsOfAlignment!= null){
+            descriptionsOfAlignment.clear();
+            descriptionsOfAlignment = null;
+        }    
+        if(imagesOfAlignment!= null){
+            imagesOfAlignment.clear();
+            imagesOfAlignment = null;
+        }  
+        if(nodeAlignmentSmall!= null){
+            nodeAlignmentSmall.clear();
+            nodeAlignmentSmall = null;
+        }         
+    }    
     
     public AlignmentBean() {
     }

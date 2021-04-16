@@ -40,23 +40,12 @@ import org.primefaces.model.StreamedContent;
 @Named(value = "exportFileBean")
 @SessionScoped
 public class ExportFileBean implements Serializable {
-
     private final static String DATE_FORMAT = "dd-mm-yyyy";
-
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private ViewExportBean viewExportBean;
-
-    @Inject
-    private CandidatBean candidatBean;
-
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private Connect connect;
+    @Inject private ViewExportBean viewExportBean;
+    @Inject private CandidatBean candidatBean;
+    @Inject private SelectedTheso selectedTheso;
 
     // progressBar
     private int sizeOfTheso;
@@ -195,6 +184,7 @@ public class ExportFileBean implements Serializable {
         if (datas == null) {
             return null;
         }
+        
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(new WriteRdf4j(datas).getModel(), out, format);
 
@@ -215,18 +205,19 @@ public class ExportFileBean implements Serializable {
         sizeOfTheso = allConcepts.size();
         progressStep = (float) 100 / sizeOfTheso;
 
-        ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
-        resources.setInfos(nodePreference, DATE_FORMAT, false, false);
-        resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
-        resources.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
-        resources.exportFacettes(connect.getPoolConnexion(), idTheso);
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
+        exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
+        exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
 
         for (String idConcept : allConcepts) {
             progressBar += progressStep;
-            resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
+            exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
         }
         viewExportBean.setExportDone(true);
-        return resources.getSkosXmlDocument();
+    //    viewExportBean.clear();
+        return exportRdf4jHelperNew.getSkosXmlDocument();
     }
 
     public float getProgressBar() {

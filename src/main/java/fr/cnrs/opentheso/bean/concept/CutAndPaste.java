@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -34,19 +35,12 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 //@ViewScoped
 public class CutAndPaste implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private CurrentUser currentUser;
-    @Inject
-    private Tree tree;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private CurrentUser currentUser;
+    @Inject private Tree tree;
 
 
     /*   private String movedFromId;
@@ -65,6 +59,19 @@ public class CutAndPaste implements Serializable {
 
     private boolean isDropToRoot;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        nodeConceptDrag = null;
+        nodeConceptDrop = null;        
+        if(nodeBTsToCut!= null){
+            nodeBTsToCut.clear();
+            nodeBTsToCut = null;
+        }    
+    }      
+    
     public CutAndPaste() {
     }
 

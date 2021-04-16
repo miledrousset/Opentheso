@@ -51,33 +51,15 @@ import org.primefaces.model.TreeNode;
 @Named(value = "tree")
 @SessionScoped
 public class Tree implements Serializable {
-
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private RightBodySetting rightBodySetting;
-
-    @Inject
-    private LeftBodySetting leftBodySetting;
-
-    @Inject
-    private ConceptView conceptBean;
-
-    @Inject
-    private SelectedTheso selectedTheso;
-
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Inject
-    private ConceptsDiagramBean conceptsDiagramBean;
-
-    @Inject
-    private IndexSetting indexSetting;
-
-    @Inject
-    private EditFacet editFacet;
+    @Inject private Connect connect;
+    @Inject private RightBodySetting rightBodySetting;
+    @Inject private LeftBodySetting leftBodySetting;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private ConceptsDiagramBean conceptsDiagramBean;
+    @Inject private IndexSetting indexSetting;
+    @Inject private EditFacet editFacet;
 
     private DataService dataService;
     private TreeNode selectedNode; // le neoud sélectionné par clique
@@ -86,24 +68,25 @@ public class Tree implements Serializable {
     private boolean noedSelected, diagramVisisble;
     private TreeNodeData treeNodeDataSelect;
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
-
     
     @PreDestroy
     public void destroy(){
         reset();
     }
-    
-    
     public void reset() {
+        if(selectedNodes!= null){
+            selectedNodes.clear();
+            selectedNodes = null;
+        }         
         root = null;
         selectedNode = null;
         rightBodySetting.init();
         noedSelected = false;
         dataService = null;
         treeNodeDataSelect = null;
-        selectedNodes = null;
-//        System.gc();
-//        System.runFinalization();
+        idTheso = null;
+        idConceptParent = null;
+        idLang = null;        
     }
 
     public void initialise(String idTheso, String idLang) {
@@ -728,8 +711,10 @@ public class Tree implements Serializable {
         }
 
         diagramVisisble = status;
-
-        conceptsDiagramBean.init(treeNodeDataSelect.getNodeId(), idTheso, idLang);
+        if(status)
+            conceptsDiagramBean.init(treeNodeDataSelect.getNodeId(), idTheso, idLang);
+        else
+            conceptsDiagramBean.clear();
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());

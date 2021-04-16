@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.stream.Collectors;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -33,15 +34,9 @@ import org.primefaces.model.StreamedContent;
 @Named(value = "statistiqueBean")
 @SessionScoped
 public class StatistiqueBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private SelectedTheso selectedTheso;
-
-    @Inject
-    private LanguageBean languageBean;
+    @Inject private Connect connect;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private LanguageBean languageBean;
 
     private boolean selectLanguageVisible, genericTypeVisible, conceptTypeVisible;
     private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;
@@ -55,6 +50,37 @@ public class StatistiqueBean implements Serializable {
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<DomaineDto> groupList;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(genericStatistiques!= null){
+            genericStatistiques.clear();
+            genericStatistiques = null;
+        }
+        if(conceptStatistic!= null){
+            conceptStatistic.clear();
+            conceptStatistic = null;
+        }
+        if(languagesOfTheso!= null){
+            languagesOfTheso.clear();
+            languagesOfTheso = null;
+        }
+        if(groupList!= null){
+            groupList.clear();
+            groupList = null;
+        }        
+        selectedStatistiqueTypeCode = null;
+        selectedCollection = null;        
+        nbrResultat = null;
+        dateDebut = null;
+        dateFin = null;        
+        derniereModification = null;
+        selectedLanguage = null;
+        canceptStatistiqueSelected = null;        
+    }    
+    
     public void inti() {
 
         selectLanguageVisible = false;

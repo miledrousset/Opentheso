@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -28,15 +29,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "imageBean")
 @SessionScoped
 public class ImageBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
-    @Inject
-    private ConceptView conceptBean;
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private Connect connect;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
 
     private String uri;
     private String copyright;
@@ -44,6 +40,23 @@ public class ImageBean implements Serializable {
     private ArrayList<NodeImage> nodeImages;
     private ArrayList<NodeImage> nodeImagesForEdit;    
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(nodeImages != null){
+            nodeImages.clear();
+            nodeImages = null;
+        }
+        if(nodeImagesForEdit != null){
+            nodeImagesForEdit.clear();
+            nodeImagesForEdit = null;
+        }
+        uri = null;
+        copyright = null;
+    }      
+    
     public ImageBean() {
     }
 

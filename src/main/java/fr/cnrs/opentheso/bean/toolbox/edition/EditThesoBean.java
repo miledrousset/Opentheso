@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -37,15 +38,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "editThesoBean")
 @SessionScoped
 public class EditThesoBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private CurrentUser currentUser;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-    @Inject
-    private ViewEditionBean viewEditionBean;
+    @Inject private Connect connect;
+    @Inject private CurrentUser currentUser;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
 
     private ArrayList<Languages_iso639> allLangs;
     private ArrayList<NodeLangTheso> languagesOfTheso;
@@ -56,6 +51,25 @@ public class EditThesoBean implements Serializable {
     private NodeIdValue nodeIdValueOfTheso;
     private String preferredLang;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(allLangs!= null){
+            allLangs.clear();
+            allLangs = null;
+        }
+        if(languagesOfTheso!= null){
+            languagesOfTheso.clear();
+            languagesOfTheso = null;
+        }
+        title = null;
+        selectedLang = null;        
+        nodeIdValueOfTheso = null;
+        preferredLang = null;        
+    }      
+    
     /**
      * Creates a new instance of DeleteThesoBean
      */

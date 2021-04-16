@@ -27,27 +27,22 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
-import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.Rio;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.DefaultStreamedContent;
 
 /**
  *
@@ -64,12 +59,8 @@ public class ImportFileBean implements Serializable {
     @Inject private ViewEditionBean viewEditionBean;    
     @Inject private ConceptView conceptView;
     @Inject private Tree tree;    
-
-    @Inject
-    private CandidatBean candidatBean;
-    
-    @Inject
-    private SelectedTheso selectedTheso;
+    @Inject private CandidatBean candidatBean;
+    @Inject private SelectedTheso selectedTheso;
     
     
     private double progress = 0;
@@ -111,21 +102,34 @@ public class ImportFileBean implements Serializable {
     private String selectedLang;
     
     private boolean haveError;
-    /**
-     *
-     */
+
+    @PreDestroy
+    public void destroy(){
+        clearMemory();
+    }  
     
     private void clearMemory(){
-        if(conceptObjects != null)
+        if(conceptObjects != null) {
+            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                conceptObject.clear();
+            }
             conceptObjects.clear();
+        }
+        conceptObjects = null;
+        
         if(langs != null)
             langs.clear();
+        langs = null;
+        
         if(allLangs != null)
-            allLangs.clear();        
+            allLangs.clear();
+        allLangs = null;
         if(nodeUserProjects != null)
             nodeUserProjects.clear();
+        nodeUserProjects = null;
         if(sKOSXmlDocument != null)
             sKOSXmlDocument.clear();
+        sKOSXmlDocument = null;
     }
     
     public void init() {

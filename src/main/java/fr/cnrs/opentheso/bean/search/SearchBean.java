@@ -19,6 +19,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
@@ -28,34 +29,47 @@ import javax.inject.Inject;
 @Named(value = "searchBean")
 @SessionScoped
 public class SearchBean implements Serializable {
-
     @Inject private Connect connect;
     @Inject private SelectedTheso selectedTheso;
     @Inject private RightBodySetting rightBodySetting;
     @Inject private LeftBodySetting leftBodySetting;
     @Inject private ConceptView conceptBean;    
     
- 
-    
     private NodeSearchMini searchSelected;
-    
     private ArrayList<NodeSearchMini> listResultAutoComplete;    
     private ArrayList<NodeConceptSearch> nodeConceptSearchs;
-    
     private String searchValue;
     
     // sert à afficher ou non le total de résultat
     private boolean isSelectedItem;
-    
     private SearchHelper searchHelper;
     private ConceptHelper conceptHelper;
-    
     
     // filter search
     private boolean exactMatch;
     private boolean withNote;
     private boolean withId;
 
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }  
+    public void clear(){
+        if(listResultAutoComplete!= null){
+            listResultAutoComplete.clear();
+            listResultAutoComplete = null;
+        }
+        if(nodeConceptSearchs!= null){
+            nodeConceptSearchs.clear();
+            nodeConceptSearchs = null;
+        }        
+        searchSelected = null;
+        searchValue = null;
+        searchHelper = null;
+        conceptHelper = null;
+    }     
+    
+    
     public void activateExactMatch(){
         withId = false;
         withNote = false;

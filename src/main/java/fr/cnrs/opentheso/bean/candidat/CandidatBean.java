@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.faces.context.ExternalContext;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -46,23 +47,12 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CandidatBean implements Serializable {
 
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private CurrentUser currentUser;
-
-    @Inject
-    private SelectedTheso selectedTheso;
-
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Inject
-    private LanguageBean languageBean;
-
-    @Inject
-    private ConceptView conceptView;
+    @Inject private Connect connect;
+    @Inject private CurrentUser currentUser;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptView;
 
     private final CandidatService candidatService = new CandidatService();
 
@@ -84,7 +74,12 @@ public class CandidatBean implements Serializable {
     private List<CandidatDto> selectedCandidates;
     private boolean listSelected;
 
-    public void reset() {
+    @PreDestroy
+    public void destroy(){
+        clear();
+    }    
+    
+    public void clear() {
         candidatSelected = null;
         initialCandidat = null;
         exportFormat = null;
