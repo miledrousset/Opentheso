@@ -79,8 +79,8 @@ public class SelectedTheso implements Serializable {
         currentLang = null;
         idThesoFromUri = null;      
         thesoName = null;   
-    //    System.gc();
-    //    System.runFinalization();        
+        System.gc();
+        System.runFinalization();        
     }      
     
     @PostConstruct
