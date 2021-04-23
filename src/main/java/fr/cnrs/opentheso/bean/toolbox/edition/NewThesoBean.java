@@ -107,7 +107,6 @@ public class NewThesoBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-
         int idProject = -1;
         try {
             if (selectedProject != null) {
@@ -187,7 +186,7 @@ public class NewThesoBean implements Serializable {
             pf.ajax().update("toolBoxForm");
             pf.ajax().update("toolBoxForm:listThesoForm");
             pf.ajax().update("messageIndex");           
-        }        
+        }  
     }
 
     public String getTitle() {
