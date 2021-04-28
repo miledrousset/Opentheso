@@ -5,7 +5,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idAddBroaderLink" header="#{langueBean.getMsg('rightbody.conceptdialog.add_generic_relationship')}" widgetVar="addBroaderLink" 
-              modal="true" resizable="true" closable="true" position="top" width="400" style="margin-top: 150px" >        
+              modal="true" resizable="true" closable="true" position="top" width="400" style="margin-top: 50px" >        
         <h:form id="addBroaderLinkForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
             <b:row>

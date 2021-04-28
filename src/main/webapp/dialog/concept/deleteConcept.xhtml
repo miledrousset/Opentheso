@@ -8,7 +8,7 @@
                  style="font-size: 12px;">
     -->
 
-    <p:dialog id="idDeleteConcept" header="Supprimer le concept" widgetVar="deleteConcept" 
+    <p:dialog id="idDeleteConcept" header="#{langueBean.getMsg('rightbody.concept.delete_concept')}" widgetVar="deleteConcept" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >         
 
         <h:form id="deleteConceptForm">           
@@ -26,8 +26,8 @@
                 <b:column span="6" >
                     <b:messages for="currentPrefLabelToDelete" id="messageDeleteConcept" autoUpdate="true"/> 
                     <b:column span="6" >
-                        <b:commandButton rendered="#{editConcept.forDelete}" id="buttonConfirmDeleteConcept" value="Confirmer" update="deleteConceptForm"
-                                         class="btn btn-primary"
+                        <b:commandButton rendered="#{editConcept.forDelete}" id="buttonConfirmDeleteConcept" value="#{langueBean.getMsg('rightbody.conceptdialog.confirm')}" update="deleteConceptForm"
+                                         class="btn btn-primary" 
                                          action="#{editConcept.deleteConcept(
                                                    selectedTheso.currentIdTheso,
                                                    currentUser.nodeUser.idUser)}" 
@@ -55,7 +55,7 @@
             
             <b:row style="margin-bottom: 20px;">
                 <b:column span="4" offset="1" >
-                    <b:commandButton rendered="#{!editConcept.forDelete}" id="buttonDeleteConcept" value="Supprimer" update="deleteConceptForm"
+                    <b:commandButton rendered="#{!editConcept.forDelete}" id="buttonDeleteConcept" value="#{langueBean.getMsg('candidat.remove')}" update="deleteConceptForm" 
                                      class="btn btn-primary"
                                      action="#{editConcept.infosDelete()}" 
                                      style="width:100%; font-size: 12px;color: white; background: #43B572;"/>

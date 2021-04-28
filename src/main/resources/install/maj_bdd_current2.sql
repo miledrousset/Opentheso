@@ -228,6 +228,15 @@ end
 $$language plpgsql;
 
 
+-- Ajout d'une nouvelle langue à la liste ISO 
+--
+create or replace function update_table_languages() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1='fro') THEN
+        execute 'INSERT INTO languages_iso639 (iso639_1, iso639_2, english_name, french_name, id) VALUES (''fro'', ''fro'', ''Old French (842—ca. 1400)'', ''ancien français (842-environ 1400)'', 190);';
+    END IF;
+end
+$$language plpgsql;
 
 ----------------------------------------------------------------------------
 -- exécution des fonctions
@@ -243,6 +252,7 @@ SELECT update_table_corpus_link();
 SELECT delete_table_thesaurus_array();
 SELECT update_table_concept_doi();
 SELECT update_table_concept_group_doi();
+SELECT update_table_languages();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -258,7 +268,7 @@ SELECT delete_fonction('update_table_corpus_link','');
 SELECT delete_fonction('delete_table_thesaurus_array','');
 SELECT delete_fonction('update_table_concept_doi','');
 SELECT delete_fonction('update_table_concept_group_doi','');
-
+SELECT delete_fonction('update_table_languages','');
 
 
 -- auto_suppression de nettoyage

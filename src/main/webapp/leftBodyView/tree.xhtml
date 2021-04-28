@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:b="http://bootsfaces.net/ui">
 
-    
+
 
 
     <b:row>
@@ -16,17 +16,17 @@
         <!-- affichage du graphe -->
         <b:column span="1" >
             <b:navCommandLink iconAwesome="fas fa-project-diagram" icon-size="sm" 
-                  tooltip="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" tooltip-delay-show="500"
-                  update="containerIndex"
-                  ajax="true" style="color: #F47B2A; float: right; margin-top: 2px;"
-                  action= "#{tree.showDiagram(true)}"/>                
+                              tooltip="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" tooltip-delay-show="500"
+                              href="#{request.contextPath}/graph/index.html"
+                              target="_blank"
+                              style="color: #F47B2A; float: right; margin-top: 2px;"
+                              />                
         </b:column>        
     </b:row>
 
-    
     <!-- Arbre du thésaurus il faut intégrer  dropRestrict="sibling" par la suite -->
     <b:row>
-         <b:column span="12">
+        <b:column span="12">
             <p:tree id="tree" value="#{tree.root}"  dynamic="true" var="nodetree" selectionMode="single"  selection="#{tree.selectedNode}"
                     style="width: auto; border: none; font-size: 12px;  min-height: 700px; max-height: 800px;overflow-y:scroll" animate="true"
                     styleClass="tree_custom" disabled="#{tree.noedSelected}" cache="#{roleOnTheso.nodePreference.tree_cache}"
@@ -36,14 +36,14 @@
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});" />
                 <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-                
+
                 <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle"
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
 
                 <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="messageIndex tree" />
-                
-                
+
+
                 <p:treeNode  expandedIcon="far fa-folder-open fa_custom_open" collapsedIcon="far fa-folder fa_custom_collapse" >
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>

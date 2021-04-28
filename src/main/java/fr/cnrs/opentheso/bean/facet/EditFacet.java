@@ -28,6 +28,7 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.TreeNode;
 
 
 @Named(value = "editFacet")
@@ -304,34 +305,21 @@ public class EditFacet implements Serializable {
         
         if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
                 facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(), conceptSelected.getId())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " La création a échoué !!!");
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " L'ajout a échoué !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
         String label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(),
                 conceptSelected.getId(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
-/*        facetHelper.deleteAllConceptAssocietedToFacet(connect.getPoolConnexion(), 
-                facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso());
-                */
-
-    //    tree.getSelectedNode().clearParent();
-        
- /*       for (NodeIdValue concept : conceptList) {
-            
-            facetHelper.addConceptToFacet(connect.getPoolConnexion(), facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(),
-                    concept.getId());
-            label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(), concept.getId(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-          */
-            TreeNodeData data = new TreeNodeData(conceptSelected.getId(), label, "", false,
-                    false, true, false, "term");
-            data.setIdFacetParent(facetSelected.getIdFacet());
-            if(conceptHelper.haveChildren(connect.getPoolConnexion(),
-                    selectedTheso.getCurrentIdTheso(), conceptSelected.getId())) {
-                tree.getDataService().addNodeWithChild("concept", data, tree.getSelectedNode());
-            } else {
-                tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
-            }
-    //    }
+        TreeNodeData data = new TreeNodeData(conceptSelected.getId(), label, "", false,
+                false, true, false, "term");
+        data.setIdFacetParent(facetSelected.getIdFacet());
+        if(conceptHelper.haveChildren(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), conceptSelected.getId())) {
+            tree.getDataService().addNodeWithChild("concept", data, tree.getSelectedNode());
+        } else {
+            tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+        }
 
         initDataAfterAction();
 
@@ -348,6 +336,60 @@ public class EditFacet implements Serializable {
 
         showMessage(FacesMessage.SEVERITY_INFO, "Facet mise à jour avec sucée !");
     }
+    
+    /**
+     * permet de supprimer un membre de la facette
+     * @param idConceptToRemove
+     */
+    public void removeMemberFromFacet(String idConceptToRemove) {
+        FacetHelper facetHelper = new FacetHelper();
+  //      ConceptHelper conceptHelper = new ConceptHelper();
+
+        FacesMessage msg;
+        
+        if(idConceptToRemove == null || idConceptToRemove.isEmpty()){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " pas de concept sélectionné !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        
+        if(!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                facetSelected.getIdFacet(), 
+                idConceptToRemove,
+                selectedTheso.getCurrentIdTheso())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " La suppression a échoué !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+        /// suppression du concept de la facette
+     /*   TreeNode parent = tree.getSelectedNode();
+        if (parent != null) {
+            List <TreeNode> childrens = parent.getChildren();
+            for (TreeNode children : childrens) {
+                if(((TreeNodeData)children).getNodeId().equalsIgnoreCase(idConceptToRemove)) {
+                     childrens.remove(children);
+                     break;
+                }
+            }
+        }*/
+
+        initDataAfterAction();
+
+        tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+        tree.expandTreeToPath2(facetSelected.getIdConceptParent(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getSelectedLang(),
+                facetSelected.getIdFacet());
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formLeftTab:tabTree:tree");
+        }
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Facet mise à jour avec sucée !");
+    }    
+    
     
     public void modifierConceptParent() {
         

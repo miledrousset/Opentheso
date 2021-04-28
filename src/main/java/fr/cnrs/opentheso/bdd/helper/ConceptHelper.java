@@ -1857,30 +1857,31 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de supprimer un Concept avec ses relations et
      * traductions
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @param idUser
+     * @return 
      */
     public boolean deleteConcept(HikariDataSource ds,
-            String idConcept, String idThesaurus, int idUser) {
+            String idConcept, String idTheso, int idUser) {
 
         RelationsHelper relationsHelper = new RelationsHelper();
 
         // controle si le Concept a des fils avant de le supprimer
-        if (relationsHelper.isRelationNTExist(ds, idConcept, idThesaurus)) {
+        if (relationsHelper.isRelationNTExist(ds, idConcept, idTheso)) {
             return false;
         }
-        if (!deleteConcept__(ds, idConcept, idThesaurus, idUser)) {
-            return false;
-        }
-        return true;
+        TermHelper termHelper = new TermHelper();
+        NoteHelper noteHelper = new NoteHelper();
+        AlignmentHelper alignmentHelper = new AlignmentHelper();         
+        return  deleteConcept__(ds, idConcept, idTheso, idUser,
+                    termHelper, relationsHelper, noteHelper, alignmentHelper);
     }
 
-    private boolean deleteConcept__(HikariDataSource ds, String idConcept, String idThesaurus, int idUser) {
-
-        TermHelper termHelper = new TermHelper();
-        RelationsHelper relationsHelper = new RelationsHelper();
-        NoteHelper noteHelper = new NoteHelper();
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-
-        String idTerm = new TermHelper().getIdTermOfConcept(ds, idConcept, idThesaurus);
+    private boolean deleteConcept__(HikariDataSource ds, String idConcept, String idThesaurus, int idUser,
+            TermHelper termHelper, RelationsHelper relationsHelper, NoteHelper noteHelper, AlignmentHelper alignmentHelper) {
+        String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
         if (idTerm == null) {
             return false;
         }
@@ -1970,15 +1971,38 @@ public class ConceptHelper {
             return false;
         }
     }
-
+    
     /**
      * Cette fonction permet de supprimer un Concept avec ses relations et
-     * traductions, notes, alignements, ... pas de controle s'il a des fils,
-     * c'est une suppression définitive
+     * traductions, notes, alignements, ...pas de controle s'il a des fils, c'est une suppression définitive
+     * @param ds
+     * @param idConceptTop
+     * @param idUser
+     * @param idTheso
+     * @return 
      */
-    public boolean deleteConceptWithoutControl(HikariDataSource ds,
-            String idConcept, String idThesaurus, int idUser) {
-        return deleteConcept__(ds, idConcept, idThesaurus, idUser);
+    public boolean deleteBranchConcept(HikariDataSource ds,
+            String idConceptTop, String idTheso, int idUser) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        TermHelper termHelper = new TermHelper();
+        RelationsHelper relationsHelper = new RelationsHelper();
+        NoteHelper noteHelper = new NoteHelper();
+        AlignmentHelper alignmentHelper = new AlignmentHelper();        
+        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(
+                ds,
+                idConceptTop,
+                idTheso);
+
+        // supprimer les concepts
+        for (String idConcept : idConcepts) {
+            if(!conceptHelper.deleteConcept__(ds,
+                    idConcept, idTheso, idUser,
+                    termHelper, relationsHelper, noteHelper, alignmentHelper)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -2003,8 +2027,13 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet de supprimer le concept par ID de la table Concept
+     * @param conn
+     * @param idConcept
+     * @param idThesaurus
+     * @param idUser
+     * @return 
      */
-    public boolean deleteConceptFromTable(Connection conn, String idConcept, String idThesaurus, int idUser) {
+    private boolean deleteConceptFromTable(Connection conn, String idConcept, String idThesaurus, int idUser) {
 
         boolean status = false;
         String idterm = "";

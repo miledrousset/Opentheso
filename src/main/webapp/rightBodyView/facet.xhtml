@@ -73,9 +73,14 @@
 
                             <b:navCommandLink value="Ajouter des concepts existants"
                                               tooltip="Ajouter des concepts existants comme membres à cette facette" tooltip-delay-show="500"
-                                              update="idManageMembers manageMembersForm"
-                                              oncomplete="PF('manageMembers').show();"
+                                              update="idAddMembers addMembersForm"
+                                              oncomplete="PF('addMembers').show();"
                                               style="font-size: 12px;"/>
+                            <b:navCommandLink value="Supprimer des membres de la facette"
+                                              tooltip="Permet de supprimer des membres de cette facette, le concept ne sera pas supprimé" tooltip-delay-show="500"
+                                              update="idRemoveMembers removeMembersForm"
+                                              oncomplete="PF('removeMembers').show();"
+                                              style="font-size: 12px;"/>   
                         </b:dropMenu>
                     </b:column>
 
@@ -98,7 +103,7 @@
                                               style="color: #43B572;" styleClass="textOpentheso"
                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                         concept.id, conceptView.selectedLang)}" update="formRightTab formRightTab:viewTabConcept:conceptView indexTitle"/>
-                            <h:outputText value=" ; "/>
+                            <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                         </ui:repeat>
                         <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
                     </b:column>
@@ -168,11 +173,8 @@
             </b:column>
 
         </b:row>
-
+ 
     </h:panelGroup>
-    <ui:include src="/dialog/concept/addNT.xhtml" /> 
-    <ui:include src="/dialog/facet/manageConcepts.xhtml" /> 
-    
     
     <p:dialog header="Modifier le concept parent"  widgetVar="addConceptParentToFacet"
               minHeight="40" id="idAddConceptParentToFacet" modal="true" resizable="true"
@@ -330,7 +332,9 @@
         </b:row>
     </p:dialog>
 
-    <ui:include src="/dialog/facet/renameFacet.xhtml" />
-    <ui:include src="/dialog/facet/removeConceptFromFacet.xhtml" />
-
+    <ui:include src="/dialog/concept/addNT.xhtml" /> 
+    <ui:include src="/dialog/facet/addMembers.xhtml" /> 
+    <ui:include src="/dialog/facet/renameFacet.xhtml" />    
+    <ui:include src="/dialog/facet/removeMembers.xhtml" />  
+    
 </ui:fragment>

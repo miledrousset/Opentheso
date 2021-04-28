@@ -20,6 +20,7 @@ import javax.json.JsonObjectBuilder;
  */
 public class D3jsHelper {
 
+    private int count = 0;
     private NodePreference nodePreference;
 
     public String findDatasForGraph__(HikariDataSource ds, String idConcept, String idTheso, String idLang) {
@@ -59,6 +60,9 @@ public class D3jsHelper {
         //Children        
         ArrayList<NodeDatas> childrens = new ArrayList<>();
         
+        // pour limiter les noeuds à 3000, sinon, c'est invisible sur le graphe
+        count = 0;
+        
         // boucle récursive pour récupérer les fils
         for (String idConcept : listIds) {
             childrens.add(getNode(ds, idConcept, idTheso, idLang));
@@ -71,24 +75,22 @@ public class D3jsHelper {
             String idConcept, String idTheso, String idLang){
         NodeDatas nodeDatas = getNodeDatas(ds, idConcept, idTheso, idLang);
         
+        count++;
         //Children        
         ArrayList<NodeDatas> childrens = new ArrayList<>();
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> listChilds = conceptHelper.getListChildrenOfConcept(ds, idConcept, idTheso);
-        if(listChilds != null && !listChilds.isEmpty()) {
-            for (String child : listChilds) {
-                childrens.add(getNode(ds, child, idTheso, idLang));
-                nodeDatas.setChildren(childrens);
+        if(count < 3000) {
+            ArrayList<String> listChilds = conceptHelper.getListChildrenOfConcept(ds, idConcept, idTheso);
+            if(listChilds != null && !listChilds.isEmpty()) {
+                for (String child : listChilds) {
+                    childrens.add(getNode(ds, child, idTheso, idLang));
+                    count++;
+                    nodeDatas.setChildren(childrens);
+                }
             }
         }
         return nodeDatas;
     }     
-/////////////////////////////////
-///////// OK jusqu'ici //////////
-/////////////////////////////////    
-    
-    
-    
     
     private String getJsonFromNodeJsonD3js(NodeJsonD3js nodeJsonD3js) {
 

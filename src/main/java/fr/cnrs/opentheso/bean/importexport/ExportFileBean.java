@@ -200,8 +200,15 @@ public class ExportFileBean implements Serializable {
         if (nodePreference == null) {
             return null;
         }
-
-        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        
+        /// permet de filtrer par collection
+        ArrayList<String> allConcepts;
+        if("all".equalsIgnoreCase(viewExportBean.getSelectedGroup())){
+            allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);            
+        } else
+           allConcepts = new ConceptHelper().getAllIdConceptOfThesaurusByGroup(connect.getPoolConnexion(), idTheso, viewExportBean.getSelectedGroup());  
+        if(allConcepts == null || allConcepts.isEmpty() ) return null;
+        
         sizeOfTheso = allConcepts.size();
         progressStep = (float) 100 / sizeOfTheso;
 

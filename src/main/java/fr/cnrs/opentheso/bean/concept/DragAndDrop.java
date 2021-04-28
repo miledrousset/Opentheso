@@ -84,8 +84,10 @@ public class DragAndDrop implements Serializable {
         isCopyOn = false;
         isValidPaste = false;
         
-        nodeConceptDrag.clear();
-        nodeConceptDrop.clear();
+        if(nodeConceptDrag != null)
+            nodeConceptDrag.clear();
+        if(nodeConceptDrop != null)
+            nodeConceptDrop.clear();
         
         isdragAndDrop = false;
         isDropToRoot = false;
@@ -154,6 +156,7 @@ public class DragAndDrop implements Serializable {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 rollBackAfterErrorOrCancelDragDrop();
+                updateMessage();
                 return;
             }
             String idFacet = ((TreeNodeData) dropNode.getData()).getNodeId();
@@ -162,13 +165,19 @@ public class DragAndDrop implements Serializable {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 rollBackAfterErrorOrCancelDragDrop();
+                updateMessage();
                 return;                
             }
 
-            facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+            if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
                     idFacet,
                     selectedTheso.getCurrentIdTheso(),
-                    ((TreeNodeData) dragNode.getData()).getNodeId());
+                    ((TreeNodeData) dragNode.getData()).getNodeId())){
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur dans le déplacement !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                rollBackAfterErrorOrCancelDragDrop();
+                return;                
+            }
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concept ajouté à la facette");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } else {
@@ -207,6 +216,13 @@ public class DragAndDrop implements Serializable {
                 pf.executeScript("PF('dragAndDrop').show();");
             }
         }
+    }
+    
+    private void updateMessage(){
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+        }        
     }
 
     /**
