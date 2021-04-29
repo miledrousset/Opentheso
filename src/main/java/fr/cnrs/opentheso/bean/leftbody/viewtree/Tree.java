@@ -37,6 +37,7 @@ import javax.inject.Named;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
@@ -64,11 +65,11 @@ public class Tree implements Serializable {
     private DataService dataService;
     private TreeNode selectedNode; // le neoud sélectionné par clique
     private TreeNode root;
-    private String idTheso, idConceptParent, idLang;
+    private String idTheso, idConceptParent, idLang, idConceptSelected;
     private boolean noedSelected, diagramVisisble;
     private TreeNodeData treeNodeDataSelect;
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
-    
+
     @PreDestroy
     public void destroy(){
         reset();
@@ -186,6 +187,10 @@ public class Tree implements Serializable {
             }
             noedSelected = false;
         }
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
     }
 
     /// l'évennement ne focntionne pas avec tree dynamic="true"
@@ -419,6 +424,8 @@ public class Tree implements Serializable {
                             ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
                 }
 
+                idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
+
                 rightBodySetting.setIndex("0");
             } else {
                 indexSetting.setIsFacetSelected(true);
@@ -431,6 +438,14 @@ public class Tree implements Serializable {
 
             treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
         }
+    }
+
+    public String getIdConceptSelected() {
+        return idConceptSelected;
+    }
+
+    public boolean isGrapheLinkVisible() {
+        return !StringUtils.isEmpty(idConceptSelected);
     }
 
     /**
