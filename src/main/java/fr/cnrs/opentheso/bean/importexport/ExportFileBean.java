@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,17 +114,16 @@ public class ExportFileBean implements Serializable {
 
     public StreamedContent exportThesorus() {
 
-        initProgressBar();
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
             SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                     viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
-            WritePdf writePdf = new WritePdf(skosxd, 
-                    viewExportBean.getSelectedLang1_PDF(),
-                    viewExportBean.getSelectedLang2_PDF(), 
-                    viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected()));
+
             return DefaultStreamedContent.builder().contentType("application/pdf")
                     .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
-                    .stream(() -> new ByteArrayInputStream(writePdf.getOutput().toByteArray()))
+                    .stream(() -> new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
+                            viewExportBean.getSelectedLang1_PDF(),
+                            viewExportBean.getSelectedLang2_PDF(),
+                            viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected()))))
                     .build();
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
@@ -131,11 +131,10 @@ public class ExportFileBean implements Serializable {
                     viewExportBean.getSelectedGroups(),
                     viewExportBean.getSelectedLanguages());
             char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
-            WriteCSV writeCsv = new WriteCSV(skosxd, viewExportBean.getSelectedLanguages(), separateur);
 
             return DefaultStreamedContent.builder().contentType("text/csv")
                     .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
-                    .stream(() -> new ByteArrayInputStream(writeCsv.getOutput().toByteArray()))
+                    .stream(() -> new ByteArrayInputStream(new WriteCSV().exportCsvFile(skosxd, viewExportBean.getSelectedLanguages(), separateur)))
                     .build();
         } else {
             return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedLanguages(),
@@ -155,8 +154,6 @@ public class ExportFileBean implements Serializable {
      */
     private StreamedContent thesoToRdf(String idTheso, List<NodeLangTheso> selectedLanguages,
             List<NodeGroup> selectedGroups, String type) {
-
-        initProgressBar();
 
         RDFFormat format = null;
         String extention = ".xml";
@@ -184,13 +181,17 @@ public class ExportFileBean implements Serializable {
         if (datas == null) {
             return null;
         }
-        
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Rio.write(new WriteRdf4j(datas).getModel(), out, format);
 
-        datas.clear();
-        return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
-                .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
+        try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Rio.write(new WriteRdf4j(datas).getModel(), out, format);
+
+            datas.clear();
+            return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
+                    .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
+        } catch(Exception ex) {
+            return null;
+        }
+
     }
 
     private SKOSXmlDocument getThesorusDatas(String idTheso, List<NodeGroup> selectedGroups, List<NodeLangTheso> selectedLanguages) {
