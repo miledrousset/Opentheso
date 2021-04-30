@@ -60,7 +60,7 @@
                 <h:inputHidden id="id_theso" value="#{tree.selectedTheso.currentIdTheso}" />
                 <h:inputHidden id="id_concept" value="#{tree.idConceptSelected}" />
                 <h:inputHidden id="langue" value="#{tree.selectedTheso.selectedLang}" />
-                <h:inputHidden id="base_url" value="#{request.contextPath}" />
+                <h:inputHidden id="base_url" value="#{roleOnTheso.nodePreference.cheminSite}" />
             </h:form>
             <script type="text/javascript">
                 var idTheso = document.getElementById("formId:id_theso").value;
@@ -70,7 +70,7 @@
 
 
                 dataLoading({
-                    url: baseUrl + '/api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language
+                    url: baseUrl + 'api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language
                 });
             </script>
             <script type="text/javascript" src="resources/js/diagram-params.js"></script>

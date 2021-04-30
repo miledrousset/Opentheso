@@ -203,6 +203,18 @@ public class DragAndDrop implements Serializable {
                 
             }
             
+            if(isDroppedToAnotherGroup()) {
+                // si oui, on affiche une boite de dialogue pour choisir les branches à couper
+                ///choix de l'option pour deplacer la collection ou non 
+                
+                PrimeFaces pf = PrimeFaces.current();
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("formRightTab:viewTabConcept:idDragAndDrop");
+                }
+                pf.executeScript("PF('dragAndDrop').show();");
+                return;
+            }
+            
             // on controle s'il y a plusieurs branches, 
             if (nodeConceptDrag.getNodeBT().size() < 2) {
                 // sinon, on applique le changement direct 
@@ -216,6 +228,27 @@ public class DragAndDrop implements Serializable {
                 pf.executeScript("PF('dragAndDrop').show();");
             }
         }
+    }
+    
+    private boolean isDroppedToAnotherGroup(){
+        if(nodeConceptDrag == null || nodeConceptDrop == null) return false;
+        if(nodeConceptDrag.getNodeConceptGroup() == null || nodeConceptDrop.getNodeConceptGroup() == null) return false;
+        
+        //cas où les deux concepts n'ont pas de collections, donc pas de changement de collection
+        if(nodeConceptDrag.getNodeConceptGroup().isEmpty() && nodeConceptDrop.getNodeConceptGroup().isEmpty())
+            return false;
+        
+        //cas où l'un des deux concepts n'a pas de collection, alors il y a changement de collection
+        if(nodeConceptDrag.getNodeConceptGroup().isEmpty() || nodeConceptDrop.getNodeConceptGroup().isEmpty())
+            return true;
+        
+        //cas où il y a plusieurs collections, alors il peut y avoir changement de collection        
+        if(nodeConceptDrag.getNodeConceptGroup().size() > 1 || nodeConceptDrop.getNodeConceptGroup().size() >1)
+            return true;
+        
+        //cas où les deux collections sont identiques ou non 
+        return !nodeConceptDrag.getNodeConceptGroup().get(0).getConceptGroup().getIdgroup().equalsIgnoreCase(
+                nodeConceptDrop.getNodeConceptGroup().get(0).getConceptGroup().getIdgroup());
     }
     
     private void updateMessage(){

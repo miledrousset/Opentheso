@@ -34,19 +34,19 @@ var tailleSelected = document.getElementById('taille');
 tailleSelected.addEventListener('change', function () {
     var indexTaille = tailleSelected.selectedIndex;
     if (indexTaille === 0) {
-        console.log("Taille normal");
+       // console.log("Taille normal");
         this.width = window.innerWidth - margin.right - margin.left;
         this.height = 800 - margin.top - margin.bottom;
     } else if (indexTaille === 1) {
-        console.log("Taille moyenne");
+       // console.log("Taille moyenne");
         this.width  = 2000 - margin.right - margin.left;
         this.height = 1400 - margin.top - margin.bottom;
     } else if (indexTaille === 2) {
-        console.log("Taille GRANDE");
+      //  console.log("Taille GRANDE");
         this.width  = 2400 - margin.right - margin.left;
         this.height = 2400 - margin.top - margin.bottom;
     } else {
-        console.log("Taille très GRANDE");
+      //  console.log("Taille très GRANDE");
         this.width  = 4000 - margin.right - margin.left;
         this.height = 6000 - margin.top - margin.bottom;
     }
