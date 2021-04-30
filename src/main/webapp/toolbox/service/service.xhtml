@@ -1,0 +1,17 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <h:outputText value="en cours" />
+    
+
+    <p:blockUI block="toolBoxForm" widgetVar="bui">
+        Chargement ...<br />
+        <p:progressBar style="height:6px" mode="indeterminate"/>
+    </p:blockUI>
+
+</ui:fragment>
