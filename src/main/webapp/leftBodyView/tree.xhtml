@@ -4,9 +4,6 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:b="http://bootsfaces.net/ui">
 
-
-
-
     <b:row>
         <b:column  span="1" offset="8" >
         </b:column>
@@ -14,13 +11,13 @@
         <ui:include src="/leftBodyView/globalActionsTree.xhtml" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}"/>        
 
         <!-- affichage du graphe -->
-        <b:column span="1" >
-            <b:navCommandLink iconAwesome="fas fa-project-diagram" icon-size="sm" 
+        <b:column span="1">
+            <b:navCommandLink iconAwesome="fas fa-project-diagram" icon-size="sm"
                               tooltip="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" tooltip-delay-show="500"
-                              href="#{request.contextPath}/graph/index.html"
-                              target="_blank"
-                              style="color: #F47B2A; float: right; margin-top: 2px;"
-                              />                
+                              href="#{request.contextPath}/graph/index.xhtml"
+                              target="_blank" id="link_graphe"
+                              rendered="#{tree.isGrapheLinkVisible()}"
+                              style="color: #F47B2A; float: right; margin-top: 2px;"/>
         </b:column>        
     </b:row>
 
@@ -37,7 +34,7 @@
                         oncomplete="$(document.body).css({'cursor' : 'default'});" />
                 <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
 
-                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle"
+                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle formLeftTab"
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
 
@@ -62,6 +59,5 @@
             </p:tree>
         </b:column>
     </b:row>
-
 
 </ui:fragment>
