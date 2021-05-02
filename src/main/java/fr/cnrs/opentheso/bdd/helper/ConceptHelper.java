@@ -3765,18 +3765,14 @@ public class ConceptHelper {
             String idConcept, String idThesaurus, boolean isArkActive, boolean isCandidatExport) {
 
         NodeConceptExport nodeConceptExport = new NodeConceptExport();
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-        RelationsHelper relationsHelper = new RelationsHelper();
         TermHelper termHelper = new TermHelper();
-        GroupHelper groupHelper = new GroupHelper();
         NoteHelper noteHelper = new NoteHelper();
-        GpsHelper gpsHelper = new GpsHelper();
         ImagesHelper imagesHelper = new ImagesHelper();
 
         String htmlTagsRegEx = "<[^>]*>";
 
         // les relations BT, NT, RT
-        ArrayList<NodeHieraRelation> nodeListRelations = relationsHelper.getAllRelationsOfConcept(ds, idConcept, idThesaurus);
+        ArrayList<NodeHieraRelation> nodeListRelations = new RelationsHelper().getAllRelationsOfConcept(ds, idConcept, idThesaurus);
 
         nodeConceptExport.setNodeListOfBT(getRelations(nodeListRelations, nodeConceptExport.getRelationsBT()));
         nodeConceptExport.setNodeListOfNT(getRelations(nodeListRelations, nodeConceptExport.getRelationsNT()));
@@ -3790,7 +3786,7 @@ public class ConceptHelper {
         nodeConceptExport.setConcept(concept);
 
         //récupération les aligenemnts 
-        nodeConceptExport.setNodeAlignmentsList(alignmentHelper.getAllAlignmentOfConceptNew(ds, idConcept, idThesaurus));
+        nodeConceptExport.setNodeAlignmentsList(new AlignmentHelper().getAllAlignmentOfConceptNew(ds, idConcept, idThesaurus));
 
         //récupération des traductions        
         nodeConceptExport.setNodeTermTraductions(termHelper.getAllTraductionsOfConcept(ds, idConcept, idThesaurus));
@@ -3799,14 +3795,11 @@ public class ConceptHelper {
         nodeConceptExport.setNodeEM(termHelper.getAllNonPreferredTerms(ds, idConcept, idThesaurus));
 
         //récupération des Groupes ou domaines 
-        nodeConceptExport.setNodeListIdsOfConceptGroup(groupHelper.getListGroupOfConceptArk(ds, idThesaurus, idConcept));
+        nodeConceptExport.setNodeListIdsOfConceptGroup(new GroupHelper().getListGroupOfConceptArk(ds, idThesaurus, idConcept));
 
         //récupération des notes du Terme
-//#### SQL #### //        
         String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
-//#### SQL #### //        
 
-//#### SQL #### //
         ArrayList<NodeNote> noteTerm = noteHelper.getListNotesTermAllLang(ds, idTerm, idThesaurus);
         if (isCandidatExport) {
             for (NodeNote note : noteTerm) {
@@ -3815,10 +3808,7 @@ public class ConceptHelper {
             }
         }
         nodeConceptExport.setNodeNoteTerm(noteTerm);
-//#### SQL #### //        
 
-        //récupération des Notes du Concept
-//#### SQL #### //      
         ArrayList<NodeNote> noteConcept = noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus);
         if (isCandidatExport) {
             for (NodeNote note : noteConcept) {
@@ -3827,12 +3817,9 @@ public class ConceptHelper {
             }
         }
         nodeConceptExport.setNodeNoteConcept(noteConcept);
-//#### SQL #### //
 
         //récupération des coordonnées GPS
-//#### SQL #### //        
-        NodeGps nodeGps = gpsHelper.getCoordinate(ds, idConcept, idThesaurus);
-//#### SQL #### //        
+        NodeGps nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
 
         if (nodeGps != null) {
             nodeConceptExport.setNodeGps(nodeGps);
@@ -3853,8 +3840,7 @@ public class ConceptHelper {
         }
 
         // pour les facettes
-        FacetHelper facetHelper = new FacetHelper();
-        List<String> idFacettes = facetHelper.getAllIdFacetsOfConcept(ds, idConcept, idThesaurus);
+        List<String> idFacettes = new FacetHelper().getAllIdFacetsOfConcept(ds, idConcept, idThesaurus);
         if (!idFacettes.isEmpty()) {
             nodeConceptExport.setListFacetsOfConcept(idFacettes);
         }

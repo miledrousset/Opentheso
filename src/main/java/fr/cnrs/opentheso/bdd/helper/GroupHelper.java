@@ -595,14 +595,6 @@ public class GroupHelper {
             return true;
     }
 
-    /**
-     *
-     * @param conn
-     * @param idConcept
-     * @param idThesaurus
-     * @param urlSite
-     * @return
-     */
     private boolean addIdHandle(Connection conn,
             String idGroup,
             String idThesaurus) {
@@ -2187,8 +2179,7 @@ public class GroupHelper {
      * @param idThesaurus
      * @return Objet ArrayLis ConceptGroupLabel
      */
-    public NodeGroupLabel getNodeGroupLabel(HikariDataSource ds,
-            String idConceptGroup, String idThesaurus) {
+    public NodeGroupLabel getNodeGroupLabel(HikariDataSource ds, String idConceptGroup, String idThesaurus) {
 
         NodeGroupLabel nodeGroupLabel = new NodeGroupLabel();
 
@@ -2683,36 +2674,22 @@ public class GroupHelper {
      * @param idConcept
      * @return Objet Class ArrayList NodeGroup #MR
      */
-    public ArrayList<NodeUri> getListGroupOfConceptArk(HikariDataSource ds,
-            String idThesaurus, String idConcept) {
+    public ArrayList<NodeUri> getListGroupOfConceptArk(HikariDataSource ds, String idThesaurus, String idConcept) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         ArrayList<NodeUri> nodeUris = new ArrayList<>();
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT "
-                            + "  concept_group.idgroup,"
-                            + "  concept_group.id_ark,"
-                            + "  concept_group.id_handle, "
-                            + "  concept_group.id_doi "
-                            + " FROM "
-                            + "  concept_group_concept,"
-                            + "  concept_group"
-                            + " WHERE"
-                            + "  concept_group.idgroup = concept_group_concept.idgroup AND"
-                            + "  concept_group.idthesaurus = concept_group_concept.idthesaurus AND"
-                            + "  concept_group_concept.idconcept = '" + idConcept + "' AND"
-                            + "  concept_group_concept.idthesaurus = '" + idThesaurus + "'";
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
 
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+                stmt.executeQuery("SELECT concept_group.idgroup, concept_group.id_ark, concept_group.id_handle, concept_group.id_doi "
+                        + " FROM concept_group_concept, concept_group"
+                        + " WHERE concept_group.idgroup = concept_group_concept.idgroup"
+                        + " AND concept_group.idthesaurus = concept_group_concept.idthesaurus"
+                        + " AND concept_group_concept.idconcept = '" + idConcept
+                        + "' AND concept_group_concept.idthesaurus = '" + idThesaurus + "'");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+
                     while (resultSet.next()) {
                         NodeUri nodeUri = new NodeUri();
                         nodeUri.setIdConcept(resultSet.getString("idgroup"));
@@ -2733,15 +2710,7 @@ public class GroupHelper {
                         }
                         nodeUris.add(nodeUri);
                     }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -2818,36 +2787,19 @@ public class GroupHelper {
      */
     public String getIdArkOfGroup(HikariDataSource ds, String idGroup, String idThesaurus) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         String ark = "";
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select id_ark from concept_group where"
-                            + " idthesaurus = '" + idThesaurus + "'"
-                            + " and idgroup = '" + idGroup + "'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select id_ark from concept_group where idthesaurus = '" + idThesaurus
+                        + "' and idgroup = '" + idGroup + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         ark = resultSet.getString("id_ark");
                     }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
+
             }
         } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while getting idArk of Group : " + idGroup, sqle);
         }
         return ark;
@@ -3267,8 +3219,7 @@ public class GroupHelper {
      * @param idThesaurus
      * @return
      */
-    public boolean isEmptyDomain(HikariDataSource ds,
-            String idGroup, String idThesaurus) {
+    public boolean isEmptyDomain(HikariDataSource ds, String idGroup, String idThesaurus) {
 
         Connection conn;
         Statement stmt;

@@ -70,38 +70,23 @@ public class FacetHelper {
      * @return 
      * #MR
      */
-    public List<String> getAllIdFacetsOfConcept(HikariDataSource ds,
-            String idConcept, String idThesaurus) {
+    public List<String> getAllIdFacetsOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
-        Connection conn;
-        ResultSet resultSet = null;
         List<String> listIdFacets = new ArrayList<>();
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
+        try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-                try {
-                    String query = "SELECT  thesaurus_array.id_facet" +
-                    " FROM thesaurus_array " +
-                    " WHERE" +
-                    " thesaurus_array.id_thesaurus = '" + idThesaurus + "'" +
-                    " AND" +
-                    " thesaurus_array.id_concept_parent = '" + idConcept + "'";
-                    
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+                stmt.executeQuery("SELECT thesaurus_array.id_facet" +
+                        " FROM thesaurus_array " +
+                        " WHERE thesaurus_array.id_thesaurus = '" + idThesaurus + "'" +
+                        " AND thesaurus_array.id_concept_parent = '" + idConcept + "'");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         listIdFacets.add(resultSet.getString("id_facet"));
                     }
-                } finally {
-                    if (resultSet != null) resultSet.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while getting All id facets of concept : " + idConcept, sqle);
         }
         return listIdFacets;

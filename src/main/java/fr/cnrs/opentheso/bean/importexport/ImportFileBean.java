@@ -172,9 +172,6 @@ public class ImportFileBean implements Serializable {
                 selectedUserProject = "" + nodeUserProject.getIdGroup();
             }
         }
-
-   
-        
     }
     
     public void actionChoice() {
