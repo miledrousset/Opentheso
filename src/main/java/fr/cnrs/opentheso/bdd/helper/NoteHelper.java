@@ -527,31 +527,20 @@ public class NoteHelper {
      * @param idThesaurus
      * @return ArrayList des notes sous forme de Class NodeNote
      */
-    public ArrayList<NodeNote> getListNotesConceptAllLang(HikariDataSource ds, String idConcept,
-            String idThesaurus) {
+    public ArrayList<NodeNote> getListNotesConceptAllLang(HikariDataSource ds, String idConcept, String idThesaurus) {
 
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
         StringPlus stringPlus = new StringPlus();
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT note.id, note.notetypecode,"
-                            + " note.lexicalvalue, note.created,"
-                            + " note.modified, note.lang FROM note, note_type"
-                            + " WHERE note.notetypecode = note_type.code"
-                            + " and note_type.isconcept = true"
-                            + " and note.id_concept = '" + idConcept + "'"
-                            + " and note.id_thesaurus = '" + idThesaurus + "'";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang"
+                        + " FROM note, note_type"
+                        + " WHERE note.notetypecode = note_type.code"
+                        + " and note_type.isconcept = true"
+                        + " and note.id_concept = '" + idConcept + "'"
+                        + " and note.id_thesaurus = '" + idThesaurus + "'");
+                try (ResultSet resultSet = stmt.getResultSet()){
                     while (resultSet.next()) {
                         NodeNote nodeNote = new NodeNote();
                         nodeNote.setId_concept(idConcept);
@@ -566,12 +555,7 @@ public class NoteHelper {
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
                         nodeNotes.add(nodeNote);
                     }
-
-                } finally {
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -649,31 +633,20 @@ public class NoteHelper {
      * @param idTerm
      * @return ArrayList des notes sous forme de Class NodeNote
      */
-    public ArrayList<NodeNote> getListNotesTermAllLang(HikariDataSource ds,
-            String idTerm, String idThesaurus) {
+    public ArrayList<NodeNote> getListNotesTermAllLang(HikariDataSource ds, String idTerm, String idThesaurus) {
 
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
         StringPlus stringPlus = new StringPlus();
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT note.id, note.notetypecode,"
-                            + " note.lexicalvalue, note.created,"
-                            + " note.modified, note.lang FROM note, note_type"
-                            + " WHERE note.notetypecode = note_type.code"
-                            + " and note_type.isterm = true"
-                            + " and note.id_term = '" + idTerm + "'"
-                            + " and note.id_thesaurus = '" + idThesaurus + "'";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang"
+                        + " FROM note, note_type"
+                        + " WHERE note.notetypecode = note_type.code"
+                        + " AND note_type.isterm = true"
+                        + " AND note.id_term = '" + idTerm + "'"
+                        + " AND note.id_thesaurus = '" + idThesaurus + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeNote nodeNote = new NodeNote();
                         nodeNote.setId_term(idTerm);
@@ -688,15 +661,9 @@ public class NoteHelper {
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
                         nodeNotes.add(nodeNote);
                     }
-
-                } finally {
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while getting All Notes of Term : " + idTerm, sqle);
         }
         return nodeNotes;

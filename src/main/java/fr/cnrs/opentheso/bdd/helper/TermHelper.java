@@ -1908,44 +1908,24 @@ public class TermHelper {
      * @param idThesaurus
      * @return idTermCandidat
      */
-    public String getIdTermOfConcept(HikariDataSource ds,
-            String idConcept, String idThesaurus) {
+    public String getIdTermOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        String idTerm = null;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT id_term"
-                            + " FROM preferred_term"
-                            + " WHERE id_thesaurus = '" + idThesaurus + "'"
-                            + " and id_concept = '" + idConcept + "'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
+                        + "' and id_concept = '" + idConcept + "'");
+                try (ResultSet resultSet = stmt.getResultSet()){
                     if (resultSet.next()) {
-                        idTerm = resultSet.getString("id_term");
+                        return resultSet.getString("id_term");
                     } else {
                         return null;
                     }
-
-                } finally {
-                    if (resultSet != null) resultSet.close();
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while getting idTerm of idConcept : " + idConcept, sqle);
+            return null;
         }
-        return idTerm;
     }
 
     /**
@@ -2324,62 +2304,34 @@ public class TermHelper {
      * @param idThesaurus
      * @return Objet class Concept #MR
      */
-    public ArrayList<NodeEM> getAllNonPreferredTerms(HikariDataSource ds,
-            String idConcept, String idThesaurus) {
+    public ArrayList<NodeEM> getAllNonPreferredTerms(HikariDataSource ds, String idConcept, String idThesaurus) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         ArrayList<NodeEM> nodeEMList = null;
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT \n"
-                            + "  non_preferred_term.lexical_value, \n"
-                            + "  non_preferred_term.created, \n"
-                            + "  non_preferred_term.modified, \n"
-                            + "  non_preferred_term.source, \n"
-                            + "  non_preferred_term.status, \n"
-                            + "  non_preferred_term.hiden, \n"
-                            + "  non_preferred_term.lang\n"
-                            + " FROM \n"
-                            + "  non_preferred_term, \n"
-                            + "  preferred_term\n"
-                            + " WHERE \n"
-                            + "  preferred_term.id_term = non_preferred_term.id_term AND\n"
-                            + "  preferred_term.id_thesaurus = non_preferred_term.id_thesaurus AND\n"
-                            + "  preferred_term.id_concept = '" + idConcept + "' AND \n"
-                            + "  non_preferred_term.id_thesaurus = '" + idThesaurus + "'\n"
-                            + " ORDER BY\n"
-                            + "  non_preferred_term.lexical_value ASC;";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    if (resultSet != null) {
-                        nodeEMList = new ArrayList<>();
-                        while (resultSet.next()) {
-                            NodeEM nodeEM = new NodeEM();
-                            nodeEM.setLexical_value(resultSet.getString("lexical_value"));
-                            nodeEM.setCreated(resultSet.getDate("created"));
-                            nodeEM.setModified(resultSet.getDate("modified"));
-                            nodeEM.setSource(resultSet.getString("source"));
-                            nodeEM.setStatus(resultSet.getString("status"));
-                            nodeEM.setHiden(resultSet.getBoolean("hiden"));
-                            nodeEM.setLang(resultSet.getString("lang"));
-                            nodeEMList.add(nodeEM);
-                        }
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT  non_preferred_term.lexical_value, non_preferred_term.created, non_preferred_term.modified,"
+                        + " non_preferred_term.source,  non_preferred_term.status, non_preferred_term.hiden, non_preferred_term.lang"
+                        + " FROM non_preferred_term, preferred_term"
+                        + " WHERE preferred_term.id_term = non_preferred_term.id_term "
+                        + " AND preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
+                        + " AND preferred_term.id_concept = '" + idConcept
+                        + "' AND non_preferred_term.id_thesaurus = '" + idThesaurus
+                        + "' ORDER BY non_preferred_term.lexical_value ASC;");
+                try (ResultSet resultSet = stmt.getResultSet()){
+                    nodeEMList = new ArrayList<>();
+                    while (resultSet.next()) {
+                        NodeEM nodeEM = new NodeEM();
+                        nodeEM.setLexical_value(resultSet.getString("lexical_value"));
+                        nodeEM.setCreated(resultSet.getDate("created"));
+                        nodeEM.setModified(resultSet.getDate("modified"));
+                        nodeEM.setSource(resultSet.getString("source"));
+                        nodeEM.setStatus(resultSet.getString("status"));
+                        nodeEM.setHiden(resultSet.getBoolean("hiden"));
+                        nodeEM.setLang(resultSet.getString("lang"));
+                        nodeEMList.add(nodeEM);
                     }
-
-                } finally {
-                    if (resultSet != null) resultSet.close();
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -3197,42 +3149,25 @@ public class TermHelper {
      * @param idThesaurus
      * @return Objet class NodeConceptTree
      */
-    public ArrayList<NodeTermTraduction> getAllTraductionsOfConcept(HikariDataSource ds,
-            String idConcept, String idThesaurus) {
+    public ArrayList<NodeTermTraduction> getAllTraductionsOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         ArrayList<NodeTermTraduction> nodeTraductionsList = new ArrayList<>();
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT term.id_term, term.lexical_value, term.lang FROM"
-                            + " term, preferred_term WHERE"
-                            + " term.id_term = preferred_term.id_term"
-                            + " and term.id_thesaurus = preferred_term.id_thesaurus"
-                            + " and preferred_term.id_concept = '" + idConcept + "'"
-                            + " and term.id_thesaurus = '" + idThesaurus + "'"
-                            + " order by term.lexical_value";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("SELECT term.id_term, term.lexical_value, term.lang FROM"
+                        + " term, preferred_term WHERE term.id_term = preferred_term.id_term"
+                        + " and term.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and preferred_term.id_concept = '" + idConcept + "'"
+                        + " and term.id_thesaurus = '" + idThesaurus + "' order by term.lexical_value");
+                try (ResultSet resultSet = stmt.getResultSet()){
                     while (resultSet.next()) {
                         NodeTermTraduction nodeTraductions = new NodeTermTraduction();
                         nodeTraductions.setLang(resultSet.getString("lang"));
                         nodeTraductions.setLexicalValue(resultSet.getString("lexical_value"));
                         nodeTraductionsList.add(nodeTraductions);
                     }
-                } finally {
-                    if (resultSet != null) resultSet.close();
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception

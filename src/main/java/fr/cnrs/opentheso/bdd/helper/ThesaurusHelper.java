@@ -381,9 +381,7 @@ public class ThesaurusHelper {
     public NodeThesaurus getNodeThesaurus(HikariDataSource ds, String idThesaurus) {
 
         ArrayList<Languages_iso639> listLangTheso = getLanguagesOfThesaurus(ds, idThesaurus);
-
         NodeThesaurus nodeThesaurus = new NodeThesaurus();
-
         ArrayList<Thesaurus> thesaurusTraductionsList = new ArrayList<>();
 
         for (int i = 0; i < listLangTheso.size(); i++) {
