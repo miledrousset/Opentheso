@@ -114,10 +114,13 @@ public class ExportFileBean implements Serializable {
 
     public StreamedContent exportThesorus() {
 
-        if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
+        SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
+                viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
+        if (skosxd == null) {
+            return null;
+        }
 
-            SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
+        if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
             try (ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
@@ -135,9 +138,7 @@ public class ExportFileBean implements Serializable {
             }
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-            SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewExportBean.getSelectedGroups(),
-                    viewExportBean.getSelectedLanguages());
+
             char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
 
             try (ByteArrayInputStream flux = new ByteArrayInputStream(new WriteCSV()
@@ -150,8 +151,7 @@ public class ExportFileBean implements Serializable {
                 return new DefaultStreamedContent();
             }
         } else {
-            return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedLanguages(),
-                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedExportFormat());
+            return thesoToRdf(skosxd, viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedExportFormat());
         }
     }
 
@@ -160,13 +160,10 @@ public class ExportFileBean implements Serializable {
      * langues choisies - des groupes choisis
      *
      * @param idTheso
-     * @param selectedLanguages
-     * @param selectedGroups
      * @param type
      * @return
      */
-    private StreamedContent thesoToRdf(String idTheso, List<NodeLangTheso> selectedLanguages,
-            List<NodeGroup> selectedGroups, String type) {
+    private StreamedContent thesoToRdf(SKOSXmlDocument datas, String idTheso, String type) {
 
         RDFFormat format = null;
         String extention = ".xml";
@@ -190,17 +187,16 @@ public class ExportFileBean implements Serializable {
                 break;
         }
 
-        SKOSXmlDocument datas = getThesorusDatas(idTheso, selectedGroups, selectedLanguages);
-        if (datas == null) {
-            return null;
-        }
-
         try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            Rio.write(new WriteRdf4j(datas).getModel(), out, format);
-
-            datas.clear();
-            return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
-                    .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
+            try (ByteArrayInputStream stream = new ByteArrayInputStream(out.toByteArray())) {
+                Rio.write(new WriteRdf4j(datas).getModel(), out, format);
+                datas.clear();
+                return DefaultStreamedContent
+                        .builder()
+                        .contentType("application/xml")
+                        .name(idTheso + extention)
+                        .stream(() -> stream).build();
+            }
         } catch(Exception ex) {
             return new DefaultStreamedContent();
         }

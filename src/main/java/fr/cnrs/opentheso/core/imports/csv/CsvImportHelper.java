@@ -88,10 +88,7 @@ public class CsvImportHelper {
      * @param nodeUser
      * @return
      */
-    public String createTheso(HikariDataSource ds,
-            String thesoName, String idLang,
-            int idProject,
-            NodeUser nodeUser) {
+    public String createTheso(HikariDataSource ds, String thesoName, String idLang, int idProject, NodeUser nodeUser) {
         try (Connection conn = ds.getConnection()){
             Thesaurus thesaurus = new Thesaurus();
 
@@ -125,8 +122,7 @@ public class CsvImportHelper {
             // ajouter le thésaurus dans le group de l'utilisateur
             if (idProject != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
                 UserHelper userHelper = new UserHelper();
-                if (!userHelper.addThesoToGroup(conn, thesaurus.getId_thesaurus(),
-                        idProject)) {
+                if (!userHelper.addThesoToGroup(conn, thesaurus.getId_thesaurus(), idProject)) {
                     conn.rollback();
                     conn.close();
                     return null;
@@ -187,9 +183,6 @@ public class CsvImportHelper {
                 } else {
                     conceptObject.setIdConcept(idConcept);
                     idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idTheso);
-                    //                    if (idTerm == null) {
-                    //                        message = message + "\n" + "erreur dans l'intégration du concept " + prefLabel.getLabel();
-                    //                    }
                     conceptObject.setIdTerm(idTerm);
                     first = false;
                 }
@@ -537,8 +530,7 @@ public class CsvImportHelper {
             term.setStatus("Hiddden");
             term.setSource("");
 
-            if (!termHelper.addNonPreferredTerm(ds,
-                    term, idUser)) {
+            if (!termHelper.addNonPreferredTerm(ds, term, idUser)) {
                 message = message + "\n" + "erreur dans l'intégration du synonyme : " + altLabel.getLabel();
             }
         }

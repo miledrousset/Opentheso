@@ -48,7 +48,6 @@ import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -96,7 +95,6 @@ public class ConceptHelper {
      * Cette fonction permet de retourner l'URI du concept 
      * en s'adaptant au format défini pour le thésaurus 
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUri(String idConcept, String idTheso) {
@@ -1631,9 +1629,8 @@ public class ConceptHelper {
             Concept concept, Term term, int idUser) {
 
         ArrayList<String> idConcepts = new ArrayList<>();
-        Connection conn = null;
-        try {
-            conn = ds.getConnection();
+
+        try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
 
             TermHelper termHelper = new TermHelper();
@@ -1737,13 +1734,7 @@ public class ConceptHelper {
             return idConcept;
 
         } catch (SQLException ex) {
-            try {
-                Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex1) {
-            }
+            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -2608,7 +2599,6 @@ public class ConceptHelper {
         }
 
         try ( Connection conn = ds.getConnection()) {
-            conn.setAutoCommit(false);
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into concept "
                         + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi)"
@@ -2625,8 +2615,6 @@ public class ConceptHelper {
                         + ",'" + concept.getIdDoi() + "'"
                         + ")");
                 status = true;
-                conn.commit();
-                conn.close();
             }
         } catch (SQLException sqle) {
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {

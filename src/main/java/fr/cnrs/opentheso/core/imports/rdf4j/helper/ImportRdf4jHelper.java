@@ -153,10 +153,7 @@ public class ImportRdf4jHelper {
      * @param langueSource
      * @return
      */
-    public boolean setInfos(HikariDataSource ds,
-            String formatDate, int idUser,
-            int idGroupUser,
-            String langueSource) {
+    public boolean setInfos(HikariDataSource ds, String formatDate, int idUser, int idGroupUser, String langueSource) {
         this.ds = ds;
         this.formatDate = formatDate;
         this.idUser = idUser;
@@ -197,59 +194,58 @@ public class ImportRdf4jHelper {
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         thesaurusHelper.setIdentifierType("2");
-        Connection conn = ds.getConnection();
-        conn.setAutoCommit(false);
+
         String idTheso1;
-        if (thesaurus.getLanguage() == null) {
-            thesaurus.setLanguage(langueSource);
-        }
-        if ((idTheso1 = thesaurusHelper.addThesaurusRollBack(conn, "", false)) == null) {
-            conn.rollback();
-            conn.close();
-            message.append("Erreur lors de la création du thésaurus");
-            return null;
-        }
-        conn.commit();
-        // Si le Titre du thésaurus n'est pas detecter, on donne un nom par defaut
-        if (skosXmlDocument.getConceptScheme().getLabelsList().isEmpty()) {
-            if (thesaurus.getTitle().isEmpty()) {
-                thesaurus.setTitle("theso_" + idTheso1);
-                //thesaurusHelper.addThesaurusTraduction(ds, thesaurus);
-            }
-        }
+        try(Connection conn = ds.getConnection()) {
 
-        thesaurus.setId_thesaurus(idTheso1);
-
-        // boucler pour les traductions
-        for (SKOSLabel label : skosXmlDocument.getConceptScheme().getLabelsList()) {
-            thesaurus.setTitle(label.getLabel());
-            thesaurus.setLanguage(label.getLanguage());
+            conn.setAutoCommit(false);
             if (thesaurus.getLanguage() == null) {
-                thesaurus.setLanguage("fr"); // cas où la langue n'est pas définie dans le SKOS
+                thesaurus.setLanguage(langueSource);
             }
-            if (!thesaurusHelper.addThesaurusTraductionRollBack(conn, thesaurus)) {
+            if ((idTheso1 = thesaurusHelper.addThesaurusRollBack(conn, "", false)) == null) {
                 conn.rollback();
                 conn.close();
-                message.append("Erreur lors de la création des traductions du thésaurus");
+                message.append("Erreur lors de la création du thésaurus");
                 return null;
             }
             conn.commit();
-        }
-//        conn.commit();
-        // ajouter le thésaurus dans le group de l'utilisateur
-        if (idGroupUser != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
-            UserHelper userHelper = new UserHelper();
-            if (!userHelper.addThesoToGroup(conn, thesaurus.getId_thesaurus(),
-                    idGroupUser)) {
-                conn.rollback();
-                conn.close();
-                message.append("Erreur lors de l'ajout du thésaurus au projet");
-                return null;
+
+            // Si le Titre du thésaurus n'est pas detecter, on donne un nom par defaut
+            if (skosXmlDocument.getConceptScheme().getLabelsList().isEmpty()) {
+                if (thesaurus.getTitle().isEmpty()) {
+                    thesaurus.setTitle("theso_" + idTheso1);
+                }
             }
+
+            thesaurus.setId_thesaurus(idTheso1);
+
+            // boucler pour les traductions
+            for (SKOSLabel label : skosXmlDocument.getConceptScheme().getLabelsList()) {
+                thesaurus.setTitle(label.getLabel());
+                thesaurus.setLanguage(label.getLanguage());
+                if (thesaurus.getLanguage() == null) {
+                    thesaurus.setLanguage("fr"); // cas où la langue n'est pas définie dans le SKOS
+                }
+                if (!thesaurusHelper.addThesaurusTraductionRollBack(conn, thesaurus)) {
+                    conn.rollback();
+                    conn.close();
+                    message.append("Erreur lors de la création des traductions du thésaurus");
+                    return null;
+                }
+                conn.commit();
+            }
+
+            // ajouter le thésaurus dans le group de l'utilisateur
+            if (idGroupUser != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
+                if (!new UserHelper().addThesoToGroup(conn, thesaurus.getId_thesaurus(), idGroupUser)) {
+                    conn.rollback();
+                    conn.close();
+                    message.append("Erreur lors de l'ajout du thésaurus au projet");
+                    return null;
+                }
+            }
+            conn.commit();
         }
-        conn.commit();
-        conn.close();
-//        idGroupDefault = "orphans";//getNewGroupId();
 
         for (SKOSRelation relation : skosXmlDocument.getConceptScheme().getRelationsList()) {
             hasTopConcceptList.add(relation.getTargetUri());
@@ -259,15 +255,11 @@ public class ImportRdf4jHelper {
     }
     
     private void setPreferences(String idTheso, String uri){
+
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         if (nodePreference == null) {
-            preferencesHelper.initPreferences(
-                    ds,
-                    idTheso,
-                    langueSource);
-            nodePreference = preferencesHelper.getThesaurusPreferences(
-                    ds,
-                    idTheso);
+            preferencesHelper.initPreferences(ds, idTheso, langueSource);
+            nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
             nodePreference.setOriginalUri(uri);
@@ -339,6 +331,7 @@ public class ImportRdf4jHelper {
             } else {
                 notationValue = notation.getNotation();
             }
+
             switch (group.getProperty()) {
                 case SKOSProperty.Collection:
                     type = "C";
@@ -369,6 +362,7 @@ public class ImportRdf4jHelper {
             
             if(idArkHandle == null)
                 idArkHandle = "";
+
             groupHelper.insertGroup(ds, idGroup, idTheso, idArkHandle, type, notationValue, "", false, idUser);
             
             // group/sous_group
@@ -380,24 +374,14 @@ public class ImportRdf4jHelper {
                         groupHelper.addSubGroup(ds, idGroup, idSubGroup, idTheso);
                         break;
                     case SKOSProperty.member:
-                        // option cochée
-                        /*   if(identifierType.equalsIgnoreCase("sans")){
-                            idSubConcept = getIdFromUri(relation.getTargetUri());
-                        } else {*/
                         // Récupération de l'Id d'origine sauvegardé à l'import (idArk -> identifier)
                         idSubConcept = getOriginalId(relation.getTargetUri());
-                        //     }
                         groupSubGroup.put(idSubConcept, idGroup);
                         groupHelper.addConceptGroupConcept(ds, idGroup, idSubConcept, idTheso);
-                //        memberHashMap.put(relation.getTargetUri(), idGroup);
                         break;
-             //       case SKOSProperty.hasTopConcept:
-              //          hasTopConcceptList.add(relation.getTargetUri());
-               //         break;
                     default:
                         break;
                 }
-
             }
 
             for (SKOSLabel label : group.getLabelsList()) {
@@ -412,25 +396,6 @@ public class ImportRdf4jHelper {
             }
         }
         addGroupConceptGroup(idTheso);
-        /*
-        groupHelper.insertGroup(ds,
-                idGroupDefault,
-                thesaurus.getId_thesaurus(),
-                "MT",
-                "", //notation
-                adressSite,
-                useArk,
-                idUser);
-         */
-        // Création du domaine par défaut 
-        // ajouter les traductions des Groupes
-        /*ConceptGroupLabel conceptGroupLabel = new ConceptGroupLabel();
-        conceptGroupLabel.setIdgroup(idGroupDefault);
-        conceptGroupLabel.setIdthesaurus(thesaurus.getId_thesaurus());
-        
-        conceptGroupLabel.setLang(langueSource);
-        conceptGroupLabel.setLexicalvalue("groupDefault");
-        groupHelper.addGroupTraduction(ds, conceptGroupLabel, idUser);*/
     }  
     
     /**
@@ -447,7 +412,6 @@ public class ImportRdf4jHelper {
               groupHelper.addSubGroup(ds, groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
           } else
               groupHelper.addConceptGroupConcept(ds, groupSubGroup.get(idSubGroup), idSubGroup, idTheso);
-    //      System.out.println("key: " + i + " value: " + capitalCities.get(i));
         }
     }    
 
@@ -460,35 +424,9 @@ public class ImportRdf4jHelper {
         if (isCandidatImport) {
             acs.concept.setStatus("CA");
         }
-        //acs.concept.setStatus("DE");
 
         // envoie du concept à la BDD
         addConceptToBdd(acs, idTheso, isCandidatImport);
- /*       if (!isConceptEmpty(acs.nodeTermTraductionList)) {
-            if (acs.idGrps.isEmpty()) {
-                acs.concept.setTopConcept(acs.isTopConcept);
-                acs.concept.setIdGroup(idGroupDefault);
-                acs.conceptHelper.insertConceptInTable(ds, acs.concept, idUser);
-
-                new GroupHelper().addConceptGroupConcept(ds, idGroupDefault, acs.concept.getIdConcept(), acs.concept.getIdThesaurus());
-                defaultGroupToAdd = true;
-            } else {
-                for (String idGrp : acs.idGrps) {
-                    acs.concept.setTopConcept(acs.isTopConcept);
-                    acs.concept.setIdGroup(idGrp);
-
-                    if (!acs.conceptHelper.insertConceptInTable(ds, acs.concept, idUser)) {
-                        System.out.println("Erreur sur le Concept = " + acs.concept.getIdConcept());
-                    }
-                }
-            }
-
-            finalizeAddConceptStruct(acs, idTheso);
-
-        }*/
-
-   //     addLangsToThesaurus(ds, idTheso);
-   //     addGroupDefault();
     }
     
     private void initAddConceptsStruct(AddConceptsStruct acs, SKOSResource conceptResource,
@@ -739,37 +677,7 @@ public class ImportRdf4jHelper {
                     break;                     
             }
         }
-        
-    //    addRelationNoBTHiera(acs); 
-    
 
-        // For Concept : customnote ; scopeNote ; historyNote
-        // For Term : definition; editorialNote; historyNote;
-       /* if (isCandidatImport) {
-            for (NodeNote nodeNoteList1 : acs.nodeNotes) {
-
-                String str = formatLinkToHtmlTag(nodeNoteList1.getLexicalvalue());
-
-                if (nodeNoteList1.getNotetypecode().equals("customnote") || nodeNoteList1.getNotetypecode().equals("scopeNote") || nodeNoteList1.getNotetypecode().equals("note")) {
-                    acs.noteHelper.addConceptNote(ds, acs.concept.getIdConcept(), nodeNoteList1.getLang(),
-                            idTheso, str, nodeNoteList1.getNotetypecode(), idUser);
-                }
-
-                if (nodeNoteList1.getNotetypecode().equals("definition") || nodeNoteList1.getNotetypecode().equals("historyNote") || nodeNoteList1.getNotetypecode().equals("editorialNote")) {
-                    acs.noteHelper.addTermNote(ds, acs.nodeTerm.getIdTerm(), nodeNoteList1.getLang(),
-                            idTheso, str, nodeNoteList1.getNotetypecode(), idUser);
-                }
-
-                for (VoteDto vote : acs.votes) {
-                    if (vote.getIdNote() != null) {
-                        NodeNote newNote = acs.noteHelper.getNoteByValue(ds, str.replaceAll("'", "''"));
-                        vote.setIdNote(newNote.getId_note()+"");
-                        break;
-                    }
-                }
-
-            }
-        } else {*/
             for (NodeNote nodeNoteList1 : acs.nodeNotes) {
 
                 if (nodeNoteList1.getNotetypecode().equals("customnote") || nodeNoteList1.getNotetypecode().equals("scopeNote") || nodeNoteList1.getNotetypecode().equals("note")) {
@@ -788,11 +696,6 @@ public class ImportRdf4jHelper {
                 }
 
             }
-       // }
-
-      /*  if (!isCandidatImport && !StringUtils.isEmpty(acs.collectionToAdd)) {
-            new ConceptHelper().addNewGroupOfConcept(ds, acs.concept.getIdConcept(), acs.collectionToAdd, idTheso);
-        }*/
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
             acs.alignmentHelper.addNewAlignment(ds, nodeAlignment);
@@ -835,12 +738,7 @@ public class ImportRdf4jHelper {
                 new MessageDao().addNewMessage(ds, message.getMsg(), message.getIdUser(), acs.concept.getIdConcept(),
                         idTheso, message.getDate());
             }
-//            int status = 1;
-//            try {
-//                status = Integer.parseInt(acs.status.getIdStatus());
-//            } catch (Exception ex) { }
-//            new CandidatDao().setStatutForCandidat(ds, status, acs.status.getIdConcept(), idTheso,
-//                    acs.status.getIdUser(), acs.status.getDate());
+
             for (VoteDto vote : acs.votes) {
                 new CandidatDao().addVote(ds, idTheso, vote.getIdConcept(), vote.getIdUser(), vote.getIdNote(), vote.getTypeVote());
             }
@@ -1315,39 +1213,8 @@ public class ImportRdf4jHelper {
                 thesaurusHelper.addThesaurusTraduction(ds, thesaurus1);
             }            
         }
-/*        ArrayList<String> tabListLang = thesaurusHelper.getAllUsedLanguagesOfThesaurus(ds, idThesaurus); 
-        for (int i = 0; i < tabListLang.size(); i++) {
-            if (!thesaurusHelper.isLanguageExistOfThesaurus(ds, idThesaurus, tabListLang.get(i).trim())) {
-                Thesaurus thesaurus1 = new Thesaurus();
-                thesaurus1.setId_thesaurus(idThesaurus);
-                thesaurus1.setContributor("");
-                thesaurus1.setCoverage("");
-                thesaurus1.setCreator("");
-                thesaurus1.setDescription("");
-                thesaurus1.setFormat("");
-                thesaurus1.setLanguage(tabListLang.get(i));
-                thesaurus1.setPublisher("");
-                thesaurus1.setRelation("");
-                thesaurus1.setRights("");
-                thesaurus1.setSource("");
-                thesaurus1.setSubject("");
-                thesaurus1.setTitle("theso_" + idThesaurus);
-                thesaurus1.setType("");
-                thesaurusHelper.addThesaurusTraduction(ds, thesaurus1);
-            }
-        }*/
-
     }
 
-    /*    private String getNewGroupId(HikariDataSource ds) {
-        GroupHelper groupHelper = new GroupHelper();
-        ToolsHelper toolsHelper = new ToolsHelper();
-        String id = toolsHelper.getNewId(10);
-        while (groupHelper.isIdGroupExiste(ds.getConnection(), id)) {
-            id = toolsHelper.getNewId(10);
-        }
-        return id;
-    }*/
     public SKOSXmlDocument getRdf4jThesaurus() {
         return skosXmlDocument;
     }
