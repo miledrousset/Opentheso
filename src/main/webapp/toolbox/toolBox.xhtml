@@ -28,6 +28,16 @@
                     <p:spacer/>
                     <b:row>
                         <b:column span="11" offset="1">
+                            <b:navCommandLink value="Maintenance" style="color: #{toolBoxBean.serviceColor}"
+                                              tooltip="Permet de corriger les incohérences dans le thésaurus" tooltip-delay-show="500"
+                                              action="#{toolBoxBean.setIsServiceActive(true)}"
+                                              actionListener="#{atelierThesBean.init()}"
+                                              update="toolBoxForm toolBoxForm:listThesoForm"/>
+                        </b:column>
+                    </b:row>
+                    <p:spacer/>                    
+                    <b:row>
+                        <b:column span="11" offset="1">
                             <b:navCommandLink value="Statistique" style="color: #{toolBoxBean.statisticColor}"
                                               action="#{toolBoxBean.setIsStatisticActive(true)}"
                                               actionListener="#{statistiqueBean.inti()}"
@@ -43,11 +53,14 @@
             <b:column span="9" rendered="#{toolBoxBean.isEditionActive}">
                 <ui:include src="/toolbox/edition/edition.xhtml" />
             </b:column>
-            <b:column span="9" rendered="#{toolBoxBean.isStatisticActive}">
-                <ui:include src="/toolbox/statistic.xhtml" />
-            </b:column>
             <b:column span="9" rendered="#{toolBoxBean.isAtelierActive}">
                 <ui:include src="/toolbox/atelier/atelier.xhtml" />
+            </b:column>
+            <b:column span="9" rendered="#{toolBoxBean.isServiceActive}">
+                <ui:include src="/toolbox/service/service.xhtml" />
+            </b:column>            
+            <b:column span="9" rendered="#{toolBoxBean.isStatisticActive}">
+                <ui:include src="/toolbox/statistic.xhtml" />
             </b:column>
 
         </b:row>

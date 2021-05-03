@@ -156,7 +156,7 @@ public ArrayList<Languages_iso639> getAllLanguages(HikariDataSource ds) {
         ArrayList<Languages_iso639> language = new ArrayList<>();
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select distinct * from languages_iso639 ORDER BY french_name");
+                stmt.executeQuery("select distinct * from languages_iso639 ORDER BY iso639_1");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet != null) {
                         language = new ArrayList<>();
