@@ -5,12 +5,93 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idDragAndDrop" header="Drag and Drop control" widgetVar="dragAndDrop" 
-              modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 150px" >        
+              modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >        
         <h:form id="dragAndDropForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
 
+            
+            <p:spacer />
+            <p:spacer />
+            <b:row style="font-size: 12px; color: black">
+                <b:column span="5" style="margin-left: 10px;">
+                    <h:outputText value="Déplacer le concept/branche: " title="terme à couper"/>
+                </b:column>           
+                <b:column span="6" >
+                    <b:iconAwesome value="fas fa-cut" style="color: red"/>
+                    <h:outputText value=" #{dragAndDrop.cuttedConcept.term.lexical_value} (#{dragAndDrop.cuttedConcept.concept.idConcept})" title="terme à couper"/>
+                </b:column>                   
+            </b:row>
+            
+            <p:spacer />
+
+            
+            
+            <b:row rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}" style="font-size: 12px; color: black">
+                <b:column span="11" style="margin-left: 10px;">
+                    <h:outputText value="Poly-hiérarchie à supprimer / garder ? : " title="Cochez la case pour supprimer la relation"/>
+                </b:column>                  
+            </b:row>            
+            <b:row rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}">
+                <b:column span="11" style="margin-left: 5px; font-size: 12px;">
+                    <p:dataTable value="#{dragAndDrop.nodeBTsToCut}"
+                                 var="broader"
+                                 rowStyleClass="textOpenthesoColorOrange"  >
+                        <p:column headerText="id" width="100">
+                            <h:outputText value="#{broader.idConcept}" />
+                        </p:column>                        
+                        <p:column headerText="Terme générique">
+                            <h:outputText value="#{broader.title}" />
+                        </p:column>
+                        <p:column headerText="à couper" width="80">
+                            <p:selectBooleanCheckbox value="#{broader.isSelected}" />
+                        </p:column>                                 
+                    </p:dataTable>
+                </b:column>            
+            </b:row>
+            
+            <p:spacer />
+            
+            
+           
+            <b:row style="font-size: 12px; color: black">
+                <b:column span="11" style="margin-left: 10px;">
+                    <h:outputText value="Collections / groupes à supprimer / garder ? : " title="Cochez la case pour supprimer la relation"/>
+                </b:column>                  
+            </b:row>            
+            <b:row rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}">
+                <b:column span="11" style="margin-left: 5px; font-size: 12px;">
+                    <p:dataTable value="#{dragAndDrop.nodeBTsToCut}"
+                                 var="broader"
+                                 rowStyleClass="textOpenthesoColorOrange"  >
+                        <p:column headerText="id" width="100">
+                            <h:outputText value="#{broader.idConcept}" />
+                        </p:column>                        
+                        <p:column headerText="Terme générique">
+                            <h:outputText value="#{broader.title}" />
+                        </p:column>
+                        <p:column headerText="à couper" width="80">
+                            <p:selectBooleanCheckbox value="#{broader.isSelected}" />
+                        </p:column>                                 
+                    </p:dataTable>
+                </b:column>            
+            </b:row>
+            
+            <p:spacer />            
+            
+            
+            <b:row style="font-size: 12px; color: black">
+                <b:column span="5" style="margin-left: 10px;">
+                    <h:outputText value="vers le concept : " title="Vers ce concept"/>
+                </b:column>                  
+                <b:column span="6">
+                    <b:iconAwesome value="fas fa-arrow-right" style="color: green"/>
+                    <h:outputText value=" #{dragAndDrop.dropppedConcept.term.lexical_value} (#{dragAndDrop.dropppedConcept.concept.idConcept})" title="Vers ce concept"/>
+                </b:column>                  
+            </b:row>
+              
+            
             <b:row>
-                <b:column span="12" style="margin-left: 5px;font-size: 12px;">
+                <b:column span="11" style="margin-left: 5px;font-size: 12px;">
                     <b:dataTable value="#{dragAndDrop.cuttedConcept}" paginated="false" 
                                  var="cuttedConcept"
                                  caption="Déplacer le concept/branche: "
@@ -21,38 +102,8 @@
                   
                     </b:dataTable>
                 </b:column>            
-            </b:row>
-
-            <b:row rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}">
-                <b:column span="12" style="margin-left: 5px; font-size: 12px;">
-                    <b:dataTable value="#{dragAndDrop.nodeBTsToCut}" paginated="false" 
-                                 var="broader"
-                                 caption="Supprimer des parents: "
-                                 searching="false" info="false" rowStyleClass="textOpenthesoColorOrange"  >
-                        <b:dataTableColumn value="#{broader.idConcept}" label="id"/>
-                        <b:dataTableColumn value="#{broader.title}" label="label" />
-                        <b:dataTableColumn label="à couper" >
-                            <b:selectBooleanCheckbox value="#{broader.isSelected}" fieldSize="xs" style="margin-top: -10px; "/>
-                        </b:dataTableColumn>
-                        
-                    </b:dataTable>
-                </b:column>            
             </b:row>            
-
-            <b:row style="margin-top: 30px; font-size: 14px;">
-                <b:column span="1" >
-                    
-                </b:column>
-                <b:column span="3" >
-                    <b:iconAwesome value="fas fa-cut" style="color: red"/>
-                    <h:outputText value=" #{dragAndDrop.cuttedConcept.term.lexical_value}" title="terme à couper"/>
-                </b:column>  
-
-                <b:column span="4">
-                    <b:iconAwesome value="fas fa-arrow-right" style="color: green"/>
-                    <h:outputText value=" #{dragAndDrop.dropppedConcept.term.lexical_value}" title="Vers ce concept"/>
-                </b:column>                
-            </b:row>
+            
             
             <b:row >
                 <b:column span="11" offset="1" >

@@ -124,6 +124,7 @@ public class DragAndDrop implements Serializable {
      * @param event
      */
     public void onDragDrop(TreeDragDropEvent event) {
+        reset();
         TreeNode dragNode = (TreeNode) event.getDragNode();
         TreeNode dropNode = (TreeNode) event.getDropNode();
 
@@ -203,6 +204,7 @@ public class DragAndDrop implements Serializable {
                 
             }
             
+            // cas de changement de groupe, on propose de garder / supprimer / ajouter le groupe
             if(isDroppedToAnotherGroup()) {
                 // si oui, on affiche une boite de dialogue pour choisir les branches à couper
                 ///choix de l'option pour deplacer la collection ou non 
@@ -210,6 +212,8 @@ public class DragAndDrop implements Serializable {
                 PrimeFaces pf = PrimeFaces.current();
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("formRightTab:viewTabConcept:idDragAndDrop");
+                    pf.ajax().update("formRightTab:viewTabConcept:dragAndDropForm");
+                    
                 }
                 pf.executeScript("PF('dragAndDrop').show();");
                 return;
