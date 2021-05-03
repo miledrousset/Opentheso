@@ -1275,46 +1275,29 @@ public class TermHelper {
      * @param idUser
      * @return boolean
      */
-    public boolean addNonPreferredTerm(HikariDataSource ds,
-            Term term, int idUser) {
+    public boolean addNonPreferredTerm(HikariDataSource ds, Term term, int idUser) {
 
-        Connection conn;
-        boolean status;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
+        try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
             if (!addUSE(conn, term, idUser)) {
                 conn.rollback();
                 conn.close();
                 return false;
             }
+
             if (!addUSEHistorique(conn, term, idUser, "ADD")) {
                 conn.rollback();
                 conn.close();
                 return false;
             }
-            // cette fonction permet de remplir la table Permutée de NonPreferredTerm
-/*
-            String idConcept = new ConceptHelper().getIdConceptOfTerm(ds, term.getId_term(), term.getId_thesaurus());
-            String idGroup = new ConceptHelper().getGroupIdOfConcept(ds, idConcept, term.getId_thesaurus());
-            splitConceptForNonPermuted(ds,
-                    idConcept,
-                    idGroup,
-                    term.getId_thesaurus(),
-                    term.getLang(),
-                    term.getLexical_value());
-             */
 
             conn.commit();
             conn.close();
-            status = true;
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(TermHelper.class.getName()).log(Level.SEVERE, null, ex);
-            status = false;
+            return false;
         }
-        return status;
     }
 
     /**
@@ -1371,44 +1354,28 @@ public class TermHelper {
      * @param action
      * @return idTerm
      */
-    private boolean addUSEHistorique(Connection conn,
-            Term term, int idUser, String action) {
-        boolean status = false;
-        //     Connection conn; 
-        Statement stmt;
-        term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
-        try {
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into non_preferred_term_historique "
-                            + "(id_term, lexical_value, lang, "
-                            + "id_thesaurus, source, status, id_user, action)"
-                            + " values ("
-                            + "'" + term.getId_term() + "'"
-                            + ",'" + term.getLexical_value() + "'"
-                            + ",'" + term.getLang() + "'"
-                            + ",'" + term.getId_thesaurus() + "'"
-                            + ",'" + term.getSource() + "'"
-                            + ",'" + term.getStatus() + "'"
-                            + ",'" + idUser + "'"
-                            + ",'" + action + "')";
+    private boolean addUSEHistorique(Connection conn, Term term, int idUser, String action) {
 
-                    stmt.executeUpdate(query);
-                    status = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                //    conn.close();
-            }
+        term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
+        try (Statement stmt = conn.createStatement()){
+            String query = "Insert into non_preferred_term_historique "
+                    + "(id_term, lexical_value, lang, "
+                    + "id_thesaurus, source, status, id_user, action)"
+                    + " values ("
+                    + "'" + term.getId_term() + "'"
+                    + ",'" + term.getLexical_value() + "'"
+                    + ",'" + term.getLang() + "'"
+                    + ",'" + term.getId_thesaurus() + "'"
+                    + ",'" + term.getSource() + "'"
+                    + ",'" + term.getStatus() + "'"
+                    + ",'" + idUser + "'"
+                    + ",'" + action + "')";
+
+            stmt.executeUpdate(query);
+            return true;
         } catch (SQLException sqle) {
-            // Log exception
-            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
-                status = false;
-            }
+            return false;
         }
-        return status;
     }
 
     /**

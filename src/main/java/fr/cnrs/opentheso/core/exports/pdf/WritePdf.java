@@ -193,11 +193,8 @@ public class WritePdf {
                 String indentation = "";
                 writeHieraTermInfo(conceptID, indentation, paragraphs, idToDoc);
                 writeHieraTermRecursif(conceptID, indentation, paragraphs, idToDoc);
-
             }
-
         }
-
     }
 
     /**

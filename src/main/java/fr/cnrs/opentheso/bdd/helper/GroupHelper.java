@@ -1268,43 +1268,20 @@ public class GroupHelper {
      * @param idThesaurus
      * @return
      */
-    public boolean addSubGroup(HikariDataSource ds,
-            String fatherNodeID, String childNodeID, String idThesaurus) {
+    public boolean addSubGroup(HikariDataSource ds, String fatherNodeID, String childNodeID, String idThesaurus) {
 
-        Connection conn;
-        Statement stmt;
-        boolean status = false;
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            String relation = "sub";
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into relation_group "
-                            + "(id_group1, id_thesaurus, relation, id_group2)"
-                            + "values ("
-                            + "'" + fatherNodeID + "'"
-                            + ",'" + idThesaurus + "'"
-                            + ",'" + relation + "'"
-                            + ",'" + childNodeID + "'"
-                            + ")";
-
-                    stmt.executeUpdate(query);
-                    status = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("Insert into relation_group (id_group1, id_thesaurus, relation, id_group2) values ('"
+                        + fatherNodeID + "','" + idThesaurus + "','sub','" + childNodeID + "')");
+                return true;
             }
         } catch (SQLException sqle) {
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
                 log.error("Error while adding relation : " + sqle);
             }
-
+            return false;
         }
-        return status;
     }
 
     /**
@@ -1316,42 +1293,22 @@ public class GroupHelper {
      * @param idThesaurus
      * @return
      */
-    public boolean addConceptGroupConcept(HikariDataSource ds,
-            String groupID, String conceptID, String idThesaurus) {
+    public boolean addConceptGroupConcept(HikariDataSource ds, String groupID, String conceptID, String idThesaurus) {
 
-        Connection conn;
-        Statement stmt;
-        boolean status = false;
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into concept_group_concept "
-                            + "(idgroup, idthesaurus, idconcept)"
-                            + "values ("
-                            + "'" + groupID + "'"
-                            + ",'" + idThesaurus + "'"
-                            + ",'" + conceptID + "'"
-                            + ")";
-
-                    stmt.executeUpdate(query);
-                    status = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("Insert into concept_group_concept (idgroup, idthesaurus, idconcept) values ('"
+                        + groupID + "','" + idThesaurus + "','" + conceptID + "')");
+                return true;
             }
         } catch (SQLException sqle) {
             if (sqle.getSQLState().equalsIgnoreCase("23505")) {
-                status = true;
+                return true;
             } else {
                 log.error("Error while addConceptGroupConcept : " + sqle);
+                return false;
             }
         }
-        return status;
     }
 
     /**
@@ -1668,74 +1625,31 @@ public class GroupHelper {
      * @param idUser
      * @return
      */
-    public boolean insertGroup(HikariDataSource ds,
-            String idGroup,
-            String idThesaurus,
-            String idArk,
-            String typeCode,
-            String notation,
-            String urlSite, boolean isArkActive,
-            int idUser) {
+    public boolean insertGroup(HikariDataSource ds, String idGroup, String idThesaurus, String idArk, String typeCode,
+            String notation, String urlSite, boolean isArkActive, int idUser) {
 
-        //     idGroup = "MT_" + idGroup;//"ark:/66666/srvq9a5Ll41sk";
-        Connection conn;
-        Statement stmt;
-        boolean status = false;
         if (idArk == null) {
             idArk = "";
         }
         /*
-         * récupération de l'identifiant Ark pour le ConceptGroup
-         * de type : ark:/66666/srvq9a5Ll41sk
-         */
-        /**
+         * récupération de l'identifiant Ark pour le ConceptGroup de type : ark:/66666/srvq9a5Ll41sk
          * Controler si l'identifiant du Group existe
          */
         // à faire
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-
-                    if (isArkActive) {
-                        /*    ArrayList<DcElement> dcElementsList = new ArrayList<>();
-                        ArkClient ark_Client = new ArkClient();
-                        idArk = ark_Client.getArkId(
-                                new FileUtilities().getDate(),
-                                urlSite + "?idc=" + idGroup + "&idt=" + idThesaurus,
-                                "", "", dcElementsList, "pcrt"); // pcrt : p= pactols, crt=code DCMI pour collection*/
-                    }
-
-                    /**
-                     * Ajout des informations dans la table de ConceptGroup
-                     */
-                    String query = "Insert into concept_group values ("
-                            + "'" + idGroup + "'"
-                            + ",'" + idArk + "'"
-                            + ",'" + idThesaurus + "'"
-                            + ",'" + typeCode + "'"
-                            + ",'" + notation + "'"
-                            + ")";
-
-                    stmt.executeUpdate(query);
-                    status = true;
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("Insert into concept_group values ('" + idGroup + "','" + idArk + "','"
+                        + idThesaurus + "','" + typeCode + "','" + notation + "')");
+                return true;
             }
         } catch (SQLException sqle) {
             if (sqle.getSQLState().equalsIgnoreCase("23505")) {
-                status = true;
+                return true;
             } else {
                 log.error("Error while adding ConceptGroup : " + idGroup, sqle);
+                return false;
             }
         }
-        return status;
     }
 
     /**
@@ -1908,48 +1822,27 @@ public class GroupHelper {
      * @param idUser
      * @return
      */
-    public boolean addGroupTraduction(HikariDataSource ds,
-            ConceptGroupLabel conceptGroupLabel, int idUser) {
+    public boolean addGroupTraduction(HikariDataSource ds, ConceptGroupLabel conceptGroupLabel, int idUser) {
 
-        Connection conn;
-        Statement stmt;
-        boolean status = false;
         conceptGroupLabel.setLexicalvalue(
                 new StringPlus().convertString(conceptGroupLabel.getLexicalvalue()));
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-
-                    String query = "Insert into concept_group_label "
-                            + "(lexicalvalue, created, modified,lang, idthesaurus, idgroup)"
-                            + "values ("
-                            + "'" + conceptGroupLabel.getLexicalvalue() + "'"
-                            + ",current_date"
-                            + ",current_date"
-                            + ",'" + conceptGroupLabel.getLang() + "'"
-                            + ",'" + conceptGroupLabel.getIdthesaurus() + "'"
-                            + ",'" + conceptGroupLabel.getIdgroup() + "'" + ")";
-
-                    stmt.executeUpdate(query);
-                    status = true;
-                    addGroupTraductionHistorique(ds, conceptGroupLabel, idUser);
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("Insert into concept_group_label (lexicalvalue, created, modified,lang, idthesaurus, idgroup)"
+                        + "values ('" + conceptGroupLabel.getLexicalvalue() + "',current_date,current_date,'"
+                        + conceptGroupLabel.getLang() + "','" + conceptGroupLabel.getIdthesaurus() + "','"
+                        + conceptGroupLabel.getIdgroup() + "'" + ")");
+                addGroupTraductionHistorique(ds, conceptGroupLabel, idUser);
+                return true;
             }
         } catch (SQLException sqle) {
             if (sqle.getSQLState().equalsIgnoreCase("23505")) {
-                status = true;
+               return true;
             } else {
                 log.error("Error while adding traduction to ConceptGroupLabel : " + conceptGroupLabel.getIdgroup(), sqle);
+                return false;
             }
         }
-        return status;
     }
 
     /**

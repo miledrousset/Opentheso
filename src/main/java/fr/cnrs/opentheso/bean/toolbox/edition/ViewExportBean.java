@@ -144,9 +144,6 @@ public class ViewExportBean implements Serializable {
 
         exportFormat = Arrays.asList("rdf", "json", "jsonLd", "turtle");
         selectedExportFormat = "rdf";
-
-        downloadBean.setProgressBar(0);
-        downloadBean.setProgressStep(0); 
     }
     
     /**

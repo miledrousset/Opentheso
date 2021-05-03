@@ -67,19 +67,8 @@ public class CsvReadHelper {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withTrim().parse(in);
             String uri1;
-  //          boolean first = true;
             
             for (CSVRecord record : records) {
-//                if(first) {
-//                    // set the Uri
-//                    try {
-//                        uri = record.get("URI");
-//                        uri = uri.substring(0, uri.lastIndexOf("/"));
-//                    } catch (Exception e) {
-//                        //System.err.println("");
-//                    }
-//                    first = false;
-//                }
                 ConceptObject conceptObject = new ConceptObject();
                 
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
@@ -489,9 +478,7 @@ public class CsvReadHelper {
      * @param record
      * @return 
      */
-    private ConceptObject getLabels(
-            ConceptObject conceptObject,
-            CSVRecord record) {
+    private ConceptObject getLabels(ConceptObject conceptObject, CSVRecord record) {
         String value;
         Label label;
         String values[];
@@ -539,7 +526,6 @@ public class CsvReadHelper {
                     }
                 }
             } catch (Exception e) {
-                //System.err.println("");
             }             
         }
 

@@ -45,40 +45,26 @@ public class UserHelper {
      * @return 
      */
     public ArrayList<NodeUser> searchUser(HikariDataSource ds, String userName){
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        StringPlus stringPlus = new StringPlus();
 
         ArrayList<NodeUser> nodeUsers = new ArrayList<>();
-        userName = stringPlus.convertString(userName);
+        userName = new StringPlus().convertString(userName);
 
-        String query;
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    query = "select id_user, username from users where " +
-                            " username ilike '%" + userName + "%' order by username";
-
-                    resultSet = stmt.executeQuery(query);
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select id_user, username from users where username ilike '%"
+                        + userName + "%' order by username");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeUser nodeUser = new NodeUser();
                         nodeUser.setIdUser(resultSet.getInt("id_user"));
                         nodeUser.setName(resultSet.getString("username"));
                         if (userName.trim().equalsIgnoreCase(resultSet.getString("username"))) {
-                            nodeUsers.add(0, nodeUser);                        
+                            nodeUsers.add(0, nodeUser);
                         } else {
                             nodeUsers.add(nodeUser);
-                        } 
+                        }
                     }
-                } finally {
-                    if (resultSet != null) resultSet.close();
-                    if (stmt != null) stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException ex) {
             Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
@@ -94,48 +80,26 @@ public class UserHelper {
      * @param projectName
      * @return 
      */
-    public ArrayList<NodeUserGroup> searchMyProject(
-            HikariDataSource ds,
-            int idUser,
-            String projectName) {
+    public ArrayList<NodeUserGroup> searchMyProject(HikariDataSource ds, int idUser, String projectName) {
+
         ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        try {
-            conn = ds.getConnection();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                try (ResultSet resultSet = stmt.executeQuery("SELECT user_group_label.id_group, user_group_label.label_group " +
+                            "FROM user_role_group, user_group_label " +
+                            "WHERE user_role_group.id_group = user_group_label.id_group " +
+                            "AND user_role_group.id_user = " + idUser +
+                            " AND user_role_group.id_role = 2" +
+                            " AND user_group_label.label_group ilike '%" + projectName + "%' order by label_group")) {
 
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT " +
-                            " user_group_label.id_group," +
-                            " user_group_label.label_group" +
-                            " FROM" +
-                            " user_role_group," +
-                            " user_group_label" +
-                            " WHERE" +
-                            " user_role_group.id_group = user_group_label.id_group" +
-                            " AND" +
-                            " user_role_group.id_user = " + idUser + 
-                            " AND" +
-                            " user_role_group.id_role = 2" +
-                            " and user_group_label.label_group ilike '%" + projectName + "%'" +
-                            " order by label_group";
-                    resultSet = stmt.executeQuery(query);
                     while (resultSet.next()) {
                         NodeUserGroup nodeUserGroup = new NodeUserGroup();
                         nodeUserGroup.setGroupName(resultSet.getString("label_group"));
                         nodeUserGroup.setIdGroup(resultSet.getInt("id_group"));
                         nodeUserGroups.add(nodeUserGroup);
                     }
-                } finally {
-                    if (resultSet != null) resultSet.close();
-                    if (stmt != null) stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
@@ -1655,28 +1619,16 @@ public class UserHelper {
      * @param idGroup
      * @return #MR
      */
-    public boolean addThesoToGroup(Connection conn,
-            String idTheso, int idGroup) {
-        Statement stmt;
-        boolean status = false;
-        try {
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "insert into user_group_thesaurus"
-                            + " (id_group, id_thesaurus) values ("
-                            + idGroup + ",'" + idTheso + "')";
-                    stmt.executeUpdate(query);
-                    status = true;
-                } finally {
-                    if (stmt != null) stmt.close();
-                }
-            } finally {
-            }
+    public boolean addThesoToGroup(Connection conn, String idTheso, int idGroup) {
+
+        try (Statement stmt = conn.createStatement()){
+            stmt.executeUpdate("insert into user_group_thesaurus (id_group, id_thesaurus) values ("
+                    + idGroup + ",'" + idTheso + "')");
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-        return status;
     }
 
     /**

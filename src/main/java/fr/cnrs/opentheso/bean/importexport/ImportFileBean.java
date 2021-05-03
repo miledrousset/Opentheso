@@ -8,7 +8,6 @@ package fr.cnrs.opentheso.bean.importexport;
 import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -567,7 +566,7 @@ public class ImportFileBean implements Serializable {
             importInProgress = true;
             ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
             importRdf4jHelper.setInfos(connect.getPoolConnexion(),
-                    formatDate, 
+                    formatDate,
                     currentUser.getNodeUser().getIdUser(),
                     idGroup,
                     connect.getWorkLanguage());
