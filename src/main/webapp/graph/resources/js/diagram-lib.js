@@ -21,32 +21,67 @@ function seatchDatas(url) {
         url: url,
         type: 'GET',
         dataType: 'html',
-        success: function (arrayOfObjects) {
-            try {
-                arrayOfObjects = JSON.parse(arrayOfObjects);
+        statusCode: {
+            202: function(responseObject, textStatus, jqXHR) {
+                try {
+                    arrayOfObjects = JSON.parse(responseObject);
 
-                root = arrayOfObjects;
-                root.x0 = window.innerHeight / 2;
-                root.y0 = 0;
+                    root = arrayOfObjects;
+                    root.x0 = window.innerHeight / 2;
+                    root.y0 = 0;
 
-                update(root);
-                collapseAll();
-            } catch (error) {
-                alert("Erreur pendant la recherche des données...");
-                root = null;
-                update(root);
+                    initGraphe();
+                } catch (error) {
+                    window.alert("Erreur pendant la recherche des données, veuillez réessayer ultérieurement...");
+                    root = null;
+                    update(root);
+                }
+                document.getElementById("loader-annel").style.display = "none";
+                document.getElementById("myDiv").style.display = "block";
+            },
+            204: function(responseObject, textStatus, errorThrown) {
+                erreur("La recherche n'a rien trouvée !");
+            },
+            500: function(responseObject, textStatus, errorThrown) {
+                erreur("Erreur technique pendant la recherche des données, veuillez réessayer ultérieurement...");
             }
-            document.getElementById("loader-annel").style.display = "none";
-            document.getElementById("myDiv").style.display = "block";
         },
         error: function (resultat, statut, erreur) {
-            document.getElementById("loader-annel").style.display = "none";
-            document.getElementById("myDiv").style.display = "block";
-            alert("Erreur pendant la recherche des données...");
-            root = null;
-            update(root);
+            erreur("Erreur pendant la recherche des données, veuillez réessayer ultérieurement...");
         }
     });
+}
+
+function erreur(msg) {
+    document.getElementById("loader-annel").style.display = "none";
+    document.getElementById("myDiv").style.display = "block";
+
+    window.alert(msg);
+
+    root = null;
+    initGraphe();
+}
+
+function initGraphe() {
+
+    tree = d3.layout.tree().size([this.height, this.width]);
+
+    diagonal = d3.svg.diagonal()
+        .projection(function (d) {
+            return [d.y, d.x];
+        });
+
+    //Taille de la plaque
+    d3.select("svg").remove();
+    svg = d3.select("body")
+        .append("svg")
+        .attr("width", this.width + margin.right + margin.left)
+        .attr("height", this.height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    update(root);
+    collapseAll();
 }
 
 function update(source) {
