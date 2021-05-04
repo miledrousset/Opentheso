@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.core.imports.csv;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -55,12 +50,6 @@ public class CsvImportHelper {
 
     /**
      * initialisation des paramètres d'import
-     *
-     * @param formatDate
-     * @param idGroupUser
-     * @param idUser
-     * @param langueSource
-     * @return
      */
     public boolean setInfos(
             String formatDate, int idUser,
@@ -80,26 +69,21 @@ public class CsvImportHelper {
     /**
      * Cette fonction permet de créer un thésaurus avec ses traductions (Import)
      * elle retourne l'identifiant du thésaurus, sinon Null
-     *
-     * @param ds
-     * @param thesoName
-     * @param idLang
-     * @param idProject
-     * @param nodeUser
-     * @return
      */
     public String createTheso(HikariDataSource ds, String thesoName, String idLang, int idProject, NodeUser nodeUser) {
+
         try (Connection conn = ds.getConnection()){
             Thesaurus thesaurus = new Thesaurus();
 
             thesaurus.setCreator(nodeUser.getName());
             thesaurus.setContributor(nodeUser.getName());
+            thesaurus.setLanguage(idLang);
 
             ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
             thesaurusHelper.setIdentifierType("2");
             conn.setAutoCommit(false);
+
             String idTheso1;
-            thesaurus.setLanguage(idLang);
             if ((idTheso1 = thesaurusHelper.addThesaurusRollBack(conn, "", false)) == null) {
                 conn.rollback();
                 conn.close();
@@ -136,12 +120,7 @@ public class CsvImportHelper {
         return null;
     }
 
-    public void addSingleConcept(
-            HikariDataSource ds,
-            String idTheso,
-            String idConceptPere,
-            String idGroup,
-            int idUser,
+    public void addSingleConcept(HikariDataSource ds, String idTheso, String idConceptPere, String idGroup, int idUser,
             CsvReadHelper.ConceptObject conceptObject) {
 
         boolean first = true;
@@ -234,11 +213,8 @@ public class CsvImportHelper {
      * @param langs
      * @return
      */
-    public boolean addTheso(HikariDataSource ds,
-            ImportFileBean fileBean,
-            String thesoName,
-            ArrayList<CsvReadHelper.ConceptObject> conceptObject,
-            ArrayList<String> langs) {
+    public boolean addTheso(HikariDataSource ds, ImportFileBean fileBean, String thesoName,
+            ArrayList<CsvReadHelper.ConceptObject> conceptObject, ArrayList<String> langs) {
         // création du thésaurus
         String idTheso = "";//createTheso(ds, thesoName);
         if (idTheso == null) {
@@ -252,9 +228,6 @@ public class CsvImportHelper {
         }
         idDefaultGroup = "orphans";
         for (CsvReadHelper.ConceptObject conceptObject1 : conceptObject) {
-            //     fileBean.setAbs_progress(fileBean.getAbs_progress() + 1);
-            //    fileBean.setProgress(fileBean.getAbs_progress() / fileBean.getTotal() * 100);
-
             switch (conceptObject1.getType().trim().toLowerCase()) {
                 case "skos:concept":
                     // ajout de concept
@@ -262,12 +235,6 @@ public class CsvImportHelper {
                         return false;
                     }
                     break;
-                /*           case "":
-                    // ajout de concept
-                    if (!addConcept(ds, idTheso, conceptObject1)) {
-                        return false;
-                    }
-                    break;*/
                 case "skos:collection":
                     // ajout de groupe
                     if (!addGroup(ds, idTheso, conceptObject1)) {
@@ -328,9 +295,7 @@ public class CsvImportHelper {
      * @param conceptObject
      * @return
      */
-    public boolean addGroup(HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    public boolean addGroup(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
         // récupération des groups ou domaine
         GroupHelper groupHelper = new GroupHelper();
 
@@ -346,9 +311,7 @@ public class CsvImportHelper {
                 groupHelper.addSubGroup(ds, idFatherGroup, idGroup, idTheso);
             }
         } 
-            groupHelper.insertGroup(ds, idGroup,
-                    idTheso, "", "C",
-                    conceptObject.getNotation(),
+            groupHelper.insertGroup(ds, idGroup, idTheso, "", "C", conceptObject.getNotation(),
                     "", false, idUser);        
 
         ConceptGroupLabel conceptGroupLabel = new ConceptGroupLabel();
@@ -364,9 +327,7 @@ public class CsvImportHelper {
         return true;
     }
 
-    public boolean addConcept(HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    public boolean addConcept(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         conceptObject.setIdTerm(conceptObject.getIdConcept());
 
@@ -401,10 +362,7 @@ public class CsvImportHelper {
         return true;
     }
 
-    private boolean addPrefLabel(
-            HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    private boolean addPrefLabel(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
             message = message + "\n" + "concept sans identifiant : " + conceptObject.getPrefLabels().toString();
@@ -442,9 +400,8 @@ public class CsvImportHelper {
         term.setCreator(idUser);
         term.setSource("");
         term.setStatus("");
-        Connection conn = null;
-        try {
-            conn = ds.getConnection();
+
+        try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
             // ajout de la relation entre le concept et le terme
             if (!termHelper.addLinkTerm(conn, term, conceptObject.getIdConcept(), idUser)) {
@@ -472,21 +429,9 @@ public class CsvImportHelper {
                     return false;
                 }
                 conn.commit();
-                /*if (!conceptHelper.addConceptTraduction(ds, term, idUser)) {
-                    message = message + "\n" + "erreur dans l'intégration du terme " + prefLabel.getLabel();
-                }*/
             }
-            conn.close();
-
         } catch (SQLException ex) {
             Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
             return false;
         }
 
@@ -501,10 +446,7 @@ public class CsvImportHelper {
      * @param conceptObject
      * @return
      */
-    private boolean addAltLabels(
-            HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    private boolean addAltLabels(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
         Term term = new Term();
         TermHelper termHelper = new TermHelper();
         for (CsvReadHelper.Label altLabel : conceptObject.getAltLabels()) {
@@ -516,8 +458,7 @@ public class CsvImportHelper {
             term.setStatus("USE");
             term.setSource("");
 
-            if (!termHelper.addNonPreferredTerm(ds,
-                    term, idUser)) {
+            if (!termHelper.addNonPreferredTerm(ds, term, idUser)) {
                 message = message + "\n" + "erreur dans l'intégration du synonyme : " + altLabel.getLabel();
             }
         }
@@ -545,128 +486,77 @@ public class CsvImportHelper {
      * @param conceptObject
      * @return
      */
-    private boolean addNotes(
-            HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    private boolean addNotes(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
+
         NoteHelper noteHelper = new NoteHelper();
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
-            noteHelper.addConceptNote(ds, conceptObject.getIdTerm(),
-                    note.getLang(),
-                    idTheso,
-                    note.getLabel(),
+            noteHelper.addConceptNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
                     "note", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(),
-                    note.getLang(),
-                    idTheso,
-                    note.getLabel(),
+            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
                     "definition", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(),
-                    note.getLang(),
-                    idTheso,
-                    note.getLabel(),
+            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
                     "changeNote", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(),
-                    note.getLang(),
-                    idTheso,
-                    note.getLabel(),
+            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
                     "editorialNote", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(),
-                    note.getLang(),
-                    idTheso,
-                    note.getLabel(),
+            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
                     "historyNote", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
-            noteHelper.addConceptNote(ds, conceptObject.getIdConcept(),
-                    note.getLang(),
-                    idTheso,
-                    note.getLabel(),
+            noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "scopeNote", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getExamples()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(),
-                    note.getLang(),
-                    idTheso,
-                    note.getLabel(),
+            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
                     "example", idUser);
         }
         return true;
     }
 
-    private boolean addRelations(
-            HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    private boolean addRelations(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         RelationsHelper relationsHelper = new RelationsHelper();
 
         for (String idConcept2 : conceptObject.getBroaders()) {
-            if (!relationsHelper.insertHierarchicalRelation(ds,
-                    conceptObject.getIdConcept(),
-                    idTheso,
-                    "BT",
-                    idConcept2)) {
+            if (!relationsHelper.insertHierarchicalRelation(ds, conceptObject.getIdConcept(), idTheso, "BT", idConcept2)) {
                 message = message + "\n" + "erreur dans de la relation BT: " + conceptObject.getIdConcept();
             }
             // pour créer la relation réciproque si elle n'existe pas
-            if (!relationsHelper.insertHierarchicalRelation(ds,
-                    idConcept2,
-                    idTheso,
-                    "NT",
-                    conceptObject.getIdConcept())) {
+            if (!relationsHelper.insertHierarchicalRelation(ds, idConcept2, idTheso, "NT", conceptObject.getIdConcept())) {
                 message = message + "\n" + "erreur dans de la relation BT: " + conceptObject.getIdConcept();
             }
         }
+
         for (String idConcept2 : conceptObject.getNarrowers()) {
-            if (!relationsHelper.insertHierarchicalRelation(ds,
-                    conceptObject.getIdConcept(),
-                    idTheso,
-                    "NT",
-                    idConcept2)) {
+            if (!relationsHelper.insertHierarchicalRelation(ds, conceptObject.getIdConcept(), idTheso,"NT", idConcept2)) {
                 message = message + "\n" + "erreur dans de la relation NT: " + conceptObject.getIdConcept();
             }
             // pour créer la relation réciproque si elle n'existe pas
-            if (!relationsHelper.insertHierarchicalRelation(ds,
-                    idConcept2,
-                    idTheso,
-                    "BT",
-                    conceptObject.getIdConcept())) {
+            if (!relationsHelper.insertHierarchicalRelation(ds, idConcept2, idTheso, "BT", conceptObject.getIdConcept())) {
                 message = message + "\n" + "erreur dans de la relation NT: " + conceptObject.getIdConcept();
             }
         }
+
         for (String idConcept2 : conceptObject.getRelateds()) {
-            if (!relationsHelper.insertHierarchicalRelation(ds,
-                    conceptObject.getIdConcept(),
-                    idTheso,
-                    "RT",
-                    idConcept2)) {
+            if (!relationsHelper.insertHierarchicalRelation(ds, conceptObject.getIdConcept(), idTheso, "RT", idConcept2)) {
                 message = message + "\n" + "erreur dans de la relation RT: " + conceptObject.getIdConcept();
             }
 //            // pour créer la relation réciproque si elle n'existe pas
-            if (!relationsHelper.insertHierarchicalRelation(ds,
-                    idConcept2,
-                    idTheso,
-                    "RT",
-                    conceptObject.getIdConcept())) {
+            if (!relationsHelper.insertHierarchicalRelation(ds, idConcept2, idTheso,"RT", conceptObject.getIdConcept())) {
                 message = message + "\n" + "erreur dans de la relation RT: " + conceptObject.getIdConcept();
             }
         }
         return true;
     }
 
-    private boolean addAlignments(
-            HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    private boolean addAlignments(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         NodeAlignment nodeAlignment = new NodeAlignment();
@@ -720,10 +610,7 @@ public class CsvImportHelper {
         return true;
     }
 
-    private boolean addGeoLocalisation(
-            HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    private boolean addGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         Double latitude;
         Double longitude;
@@ -740,25 +627,15 @@ public class CsvImportHelper {
         } catch (Exception e) {
             return true;
         }
-        GpsHelper gpsHelper = new GpsHelper();
-        gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(),
-                idTheso,
-                latitude, longitude);
+        new GpsHelper().insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
         return true;
     }
 
-    private boolean addMembers(
-            HikariDataSource ds,
-            String idTheso,
-            CsvReadHelper.ConceptObject conceptObject) {
+    private boolean addMembers(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        GroupHelper groupHelper = new GroupHelper();
-        if (conceptObject.getMembers().isEmpty()) {
-            // ajout dans le groupe par defaut (NoGroup)
-            //   groupHelper.addConceptGroupConcept(ds, idDefaultGroup, conceptObject.getIdConcept(), idTheso);
-        } else {
+        if (!conceptObject.getMembers().isEmpty()) {
             for (String member : conceptObject.getMembers()) {
-                groupHelper.addConceptGroupConcept(ds, member.trim(), conceptObject.getIdConcept(), idTheso);
+                new GroupHelper().addConceptGroupConcept(ds, member.trim(), conceptObject.getIdConcept(), idTheso);
             }
         }
         return true;

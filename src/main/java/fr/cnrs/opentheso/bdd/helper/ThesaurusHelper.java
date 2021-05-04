@@ -231,7 +231,6 @@ public class ThesaurusHelper {
      */
     public boolean addThesaurusTraduction(HikariDataSource ds, Thesaurus thesaurus) {
 
-        boolean status = false;
         thesaurus = addQuotes(thesaurus);
 
         try ( Connection conn = ds.getConnection()) {
@@ -259,12 +258,12 @@ public class ThesaurusHelper {
                         + ",'" + thesaurus.getSubject() + "'"
                         + ",'" + thesaurus.getTitle() + "'"
                         + ",'" + thesaurus.getType() + "')");
-                status = true;
+                return true;
             }
         } catch (SQLException sqle) {
             log.error("Error while adding Traduction Thesaurus : " + thesaurus.getTitle(), sqle);
+            return false;
         }
-        return status;
     }
 
     /**

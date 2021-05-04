@@ -190,7 +190,14 @@
         </h:panelGroup>
 
         <p:spacer/>
-        
+        <b:row >
+            <b:column span="10" offset="1">
+                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}"
+                               labelTemplate="{value}%" styleClass="animated" global="false"
+                               style="font-size: 12px; height: 20px;"/>
+            </b:column>
+        </b:row>
+
         <p:spacer/>
         <!-- infos -->
         <b:row rendered="#{importFileBean.loadDone or importFileBean.importDone}" style="margin-left: 30px; margin-right: 30px;">
