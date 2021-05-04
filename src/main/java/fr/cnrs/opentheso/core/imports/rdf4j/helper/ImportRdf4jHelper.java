@@ -170,7 +170,6 @@ public class ImportRdf4jHelper {
      */
     public String addThesaurus() throws SQLException {
 
-
         SKOSResource conceptScheme = skosXmlDocument.getConceptScheme();
         Thesaurus thesaurus = conceptScheme.getThesaurus();
         if (conceptScheme == null) {

@@ -1633,8 +1633,6 @@ public class ConceptHelper {
         try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
 
-            TermHelper termHelper = new TermHelper();
-
             if (idParent == null) {
                 concept.setTopConcept(true);
             }
@@ -1649,7 +1647,7 @@ public class ConceptHelper {
                 new GroupHelper().addConceptGroupConcept(ds, concept.getIdGroup(), concept.getIdConcept(), concept.getIdThesaurus());
             }
 
-            String idTerm = termHelper.addTerm(conn, term, idConcept, idUser);
+            String idTerm = new TermHelper().addTerm(conn, term, idConcept, idUser);
             if (idTerm == null) {
                 conn.rollback();
                 conn.close();
@@ -1658,8 +1656,7 @@ public class ConceptHelper {
             term.setId_term(idTerm);
 
             /**
-             * ajouter le lien hiérarchique avec le concept partent sauf si ce
-             * n'est pas un TopConcept
+             * ajouter le lien hiérarchique avec le concept partent sauf si ce n'est pas un TopConcept
              */
             if (!concept.isTopConcept()) {
                 String inverseRelation = "BT";
@@ -2112,48 +2109,32 @@ public class ConceptHelper {
      */
     public boolean addConceptTraduction(HikariDataSource ds, Term term, int idUser) {
 
-        Connection conn = null;
-        try {
-            TermHelper termHelper = new TermHelper();
-            conn = ds.getConnection();
+        try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
-            if (!termHelper.addTermTraduction(conn, term, idUser)) {
+            if (!new TermHelper().addTermTraduction(conn, term, idUser)) {
                 conn.rollback();
                 conn.close();
                 return false;
             }
             conn.commit();
-            conn.close();
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex1) {
-                Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex1);
-            }
+            return false;
         }
-        return false;
     }
 
     /**
      * Cette fonction permet d'ajouter une relation à la table
      * hierarchicalRelationship
      */
-    public boolean addLinkHierarchicalRelation(Connection conn,
-            HierarchicalRelationship hierarchicalRelationship, int idUser) {
+    public boolean addLinkHierarchicalRelation(Connection conn, HierarchicalRelationship hierarchicalRelationship, int idUser) {
 
         try ( Statement stmt = conn.createStatement()) {
-            if (!new RelationsHelper().addRelationHistorique(conn,
+            new RelationsHelper().addRelationHistorique(conn,
                     hierarchicalRelationship.getIdConcept1(), hierarchicalRelationship.getIdThesaurus(),
                     hierarchicalRelationship.getIdConcept2(), hierarchicalRelationship.getRole(),
-                    idUser, "ADD")) {
-                /*  conn.rollback();
-                        conn.close();
-                        return false;*/
-            }
+                    idUser, "ADD");
             stmt.executeUpdate("Insert into hierarchical_relationship"
                     + "(id_concept1, id_thesaurus, role, id_concept2)"
                     + " values ("
@@ -2162,8 +2143,6 @@ public class ConceptHelper {
                     + ",'" + hierarchicalRelationship.getRole() + "'"
                     + ",'" + hierarchicalRelationship.getIdConcept2() + "')");
         } catch (SQLException sqle) {
-            // To avoid dupplicate Key
-            //   System.out.println(sqle.toString());
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
                 System.out.println(sqle.toString());
                 return false;
@@ -2186,7 +2165,6 @@ public class ConceptHelper {
         }
 
         try ( Statement stmt = conn.createStatement()) {
-            String query;
             if (concept.getIdConcept() == null) {
                 if (nodePreference.getIdentifierType() == 1) { // identifiants types alphanumérique
                     idConcept = getAlphaNumericId(conn);
@@ -2410,8 +2388,7 @@ public class ConceptHelper {
             message = handleHelper.getMessage();
             return false;
         }
-        return updateHandleIdOfConcept(conn, idConcept,
-                idThesaurus, idHandle);
+        return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);
     }
 
     /**
@@ -2547,8 +2524,6 @@ public class ConceptHelper {
      */
     public boolean insertConceptInTable(HikariDataSource ds, Concept concept, int idUser) {
 
-        boolean status = false;
-
         if (concept.getCreated() == null) {
             concept.setCreated(new java.util.Date());
         }
@@ -2585,16 +2560,16 @@ public class ConceptHelper {
                         + ",'" + concept.getIdHandle() + "'"
                         + ",'" + concept.getIdDoi() + "'"
                         + ")");
-                status = true;
+                return true;
             }
         } catch (SQLException sqle) {
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
                 log.error("Error while adding Concept : " + concept.getIdConcept(), sqle);
             } else {
-                status = true;
+                return true;
             }
         }
-        return status;
+        return false;
     }
 
     public NodeStatus getNodeStatus(HikariDataSource ds, String idConcept, String idThesaurus) {
@@ -3086,8 +3061,7 @@ public class ConceptHelper {
      * Cette fonction permet de récupérer le nom d'un Concept sinon renvoie une
      * chaine vide
      */
-    public String getLexicalValueOfConcept(HikariDataSource ds, String idConcept,
-            String idThesaurus, String idLang) {
+    public String getLexicalValueOfConcept(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
         String lexicalValue = "";
         try ( Connection conn = ds.getConnection()) {
@@ -4361,15 +4335,14 @@ public class ConceptHelper {
      */
     public boolean updateHandleIdOfConcept(Connection conn, String idConcept, String idTheso, String idHandle) {
 
-        boolean status = false;
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("UPDATE concept set id_handle='" + idHandle + "' WHERE id_concept ='"
                     + idConcept + "' AND id_thesaurus='" + idTheso + "'");
-            status = true;
+            return true;
         } catch (SQLException sqle) {
             log.error("Error while updating or adding HandleId of Concept : " + idConcept, sqle);
+            return false;
         }
-        return status;
     }
 
     /**

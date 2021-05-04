@@ -1824,8 +1824,7 @@ public class GroupHelper {
      */
     public boolean addGroupTraduction(HikariDataSource ds, ConceptGroupLabel conceptGroupLabel, int idUser) {
 
-        conceptGroupLabel.setLexicalvalue(
-                new StringPlus().convertString(conceptGroupLabel.getLexicalvalue()));
+        conceptGroupLabel.setLexicalvalue(new StringPlus().convertString(conceptGroupLabel.getLexicalvalue()));
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into concept_group_label (lexicalvalue, created, modified,lang, idthesaurus, idgroup)"

@@ -130,8 +130,9 @@ public class GpsHelper {
         if (isHaveCoordinate(ds, id_concept, id_theso)) {
             try ( Connection conn = ds.getConnection()) {
                 try ( Statement stmt = conn.createStatement()) {
-                    try ( ResultSet resultSet = stmt.executeQuery("select latitude, longitude from gps where id_concept ='"
-                            + id_concept + "' and id_theso = '" + id_theso + "'")) {
+                    stmt.executeQuery("select latitude, longitude from gps where id_concept ='"
+                            + id_concept + "' and id_theso = '" + id_theso + "'");
+                    try ( ResultSet resultSet = stmt.getResultSet()) {
                         if (resultSet.next()) {
                             coordonnees = new NodeGps();
                             coordonnees.setLatitude(resultSet.getDouble("latitude"));

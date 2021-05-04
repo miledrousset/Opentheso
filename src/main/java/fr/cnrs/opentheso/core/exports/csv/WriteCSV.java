@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.core.exports.csv;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
@@ -15,14 +10,17 @@ import fr.cnrs.opentheso.skosapi.SKOSNotation;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
-import java.io.ByteArrayOutputStream;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+
+import java.io.ByteArrayOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 
 
@@ -44,11 +42,11 @@ public class WriteCSV {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()){
             try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output))) {
 
+                this.seperate = seperate;
                 this.writer = writer;
 
                 StringBuilder header = new StringBuilder();
-                header.append("URI").append(seperate)
-                        .append("rdf:type").append(seperate);
+                header.append("URI").append(seperate).append("rdf:type").append(seperate);
 
                 List<String> langs = selectedLanguages.stream().map(lang -> lang.getCode()).collect(Collectors.toList());
 
@@ -119,8 +117,7 @@ public class WriteCSV {
                         System.err.println(e.toString());
                     }
                 });
-
-
+                this.writer.close();
                 return output.toByteArray();
             }
         } catch (IOException ex) {

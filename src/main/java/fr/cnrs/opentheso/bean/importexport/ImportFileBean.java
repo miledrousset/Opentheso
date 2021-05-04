@@ -196,7 +196,7 @@ public class ImportFileBean implements Serializable {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
             try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
 
-                if(! csvReadHelper.setLangs(reader1)){
+                if(!csvReadHelper.setLangs(reader1)){
                     error.append(csvReadHelper.getMessage());
                 }
 
@@ -241,20 +241,24 @@ public class ImportFileBean implements Serializable {
      *
      */
     public void addCsvThesoToBDD() {
-        if(conceptObjects == null || conceptObjects.isEmpty()) return;
-        if(importInProgress) return;
-        initError();
+
         loadDone = false;
         progressStep = 0;
         progress = 0;
+
+        if(conceptObjects == null || conceptObjects.isEmpty()) return;
+
+        if(importInProgress) return;
+
+        initError();
         
         // préparer le projet pour le thésaurus
         int idProject; 
         if(selectedUserProject == null || selectedUserProject.isEmpty()) {
             idProject = -1;
+        } else {
+            idProject = Integer.parseInt(selectedUserProject);
         }
-        else
-            idProject = Integer.parseInt(selectedUserProject);        
         
         // préparer la langue source 
         if(selectedLang == null || selectedLang.isEmpty()) {
@@ -283,25 +287,20 @@ public class ImportFileBean implements Serializable {
                 switch (conceptObject.getType().trim().toLowerCase()) {
                     case "skos:concept":
                         // ajout de concept
-                        if (!csvImportHelper.addConcept(connect.getPoolConnexion(), idNewTheso, conceptObject)) {
-                            //return false;
-                        }
+                        csvImportHelper.addConcept(connect.getPoolConnexion(), idNewTheso, conceptObject);
                         break;
                     case "skos:collection":
                         // ajout de groupe
-                        if (!csvImportHelper.addGroup(connect.getPoolConnexion(),
-                                idNewTheso, conceptObject)) {
-                       //     return false;
-                        }
+                        csvImportHelper.addGroup(connect.getPoolConnexion(), idNewTheso, conceptObject);
                         break;
                     default:
                         break;
                 }
                 
                 progressStep++;
-                progress = progressStep / total * 100;                
-
+                progress = progressStep / total * 100;
             }
+
             loadDone = false;
             importDone = true;
             BDDinsertEnable = false;
@@ -313,11 +312,12 @@ public class ImportFileBean implements Serializable {
             info = info + "\n" + csvImportHelper.getMessage();
             roleOnThesoBean.showListTheso();
             viewEditionBean.init();
+
             PrimeFaces pf = PrimeFaces.current();
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("toolBoxForm");
                 pf.ajax().update("toolBoxForm:listThesoForm");
-            }              
+            }
 
         } catch (Exception e) {
                 error.append(System.getProperty("line.separator"));
@@ -325,6 +325,12 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
+
+        conceptObjects = null;
+        csvImportHelper = null;
+        System.gc();
+        System.gc();
+
         onComplete();
     }
     
@@ -362,19 +368,13 @@ public class ImportFileBean implements Serializable {
                 // si le BT est renseigné, alors on intègre le concept sous ce BT,
                 // sinon, c'est le père du dossier en cours qui est pris en compte
                 if(conceptObject.getBroaders().isEmpty()) {
-                    csvImportHelper.addSingleConcept(connect.getPoolConnexion(),
-                        nodeConcept.getConcept().getIdThesaurus(),
-                        idPere,
-                        nodeConcept.getConcept().getIdGroup(),
-                        currentUser.getNodeUser().getIdUser(),
+                    csvImportHelper.addSingleConcept(connect.getPoolConnexion(), nodeConcept.getConcept().getIdThesaurus(),
+                        idPere, nodeConcept.getConcept().getIdGroup(), currentUser.getNodeUser().getIdUser(),
                         conceptObject);
                 } else {
                     for (String idBT : conceptObject.getBroaders()) {
-                        csvImportHelper.addSingleConcept(connect.getPoolConnexion(),
-                            nodeConcept.getConcept().getIdThesaurus(),
-                            idBT,
-                            nodeConcept.getConcept().getIdGroup(),
-                            currentUser.getNodeUser().getIdUser(),
+                        csvImportHelper.addSingleConcept(connect.getPoolConnexion(), nodeConcept.getConcept().getIdThesaurus(),
+                            idBT, nodeConcept.getConcept().getIdGroup(), currentUser.getNodeUser().getIdUser(),
                             conceptObject);
                     }
                 }
@@ -609,8 +609,8 @@ public class ImportFileBean implements Serializable {
             roleOnThesoBean.showListTheso();
             viewEditionBean.init();
         } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
         } finally {
             showError();
         }

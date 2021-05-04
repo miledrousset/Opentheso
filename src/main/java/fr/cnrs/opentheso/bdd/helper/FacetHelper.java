@@ -772,8 +772,7 @@ public class FacetHelper {
      * @param idThesaurus
      * @return ArrayList de NodeFacet
      */
-    public ArrayList<NodeFacet> getAllFacetsDetailsOfThesaurus(HikariDataSource ds,
-            String idThesaurus) {
+    public ArrayList<NodeFacet> getAllFacetsDetailsOfThesaurus(HikariDataSource ds, String idThesaurus) {
 
         Connection conn;
         Statement stmt;
