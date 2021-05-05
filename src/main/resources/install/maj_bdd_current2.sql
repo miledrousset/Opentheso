@@ -17,8 +17,8 @@
 
 
 --- fonctions à appliquer en premier et à part depuis la version 4.4.1
- SET ROLE = opentheso;
-
+SET ROLE = opentheso;
+SET schema 'public';
 ----------------------------------------------------------------------------
 -- ne pas modifier, ces sont les fonctions de base
 ----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ $$ LANGUAGE plpgsql;
 -- Tables pour la gestion des facettes
 --
 
-CREATE TABLE IF NOT EXISTS public.concept_facet
+CREATE TABLE IF NOT EXISTS concept_facet
 (
     id_facet character varying NOT NULL,
     id_thesaurus text COLLATE pg_catalog."default" NOT NULL,

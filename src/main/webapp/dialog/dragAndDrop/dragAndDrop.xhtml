@@ -2,7 +2,8 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idDragAndDrop" header="Drag and Drop control" widgetVar="dragAndDrop" 
               modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >        
@@ -12,19 +13,29 @@
             
             <p:spacer />
             <p:spacer />
-            <b:row style="font-size: 12px; color: black">
+            <b:row style="font-size: 14px; color: black">
                 <b:column span="5" style="margin-left: 10px;">
                     <h:outputText value="Déplacer le concept/branche: " title="terme à couper"/>
                 </b:column>           
                 <b:column span="6" >
-                    <b:iconAwesome value="fas fa-cut" style="color: red"/>
-                    <h:outputText value=" #{dragAndDrop.cuttedConcept.term.lexical_value} (#{dragAndDrop.cuttedConcept.concept.idConcept})" title="terme à couper"/>
+                    <b:iconAwesome value="fas fa-cut" style="color: red; margin-right: 20px;" />
+                    <h:outputText value="  #{dragAndDrop.cuttedConcept.term.lexical_value} (#{dragAndDrop.cuttedConcept.concept.idConcept})  "
+                                  title="terme à couper" style="background-color: #C63632; color: #ffffff"/>
                 </b:column>                   
             </b:row>
+
+            <b:row style="font-size: 14px; color: black">
+                <b:column span="5" style="margin-left: 10px;">
+                    <h:outputText value="vers le concept : " title="Vers ce concept" />
+                </b:column>                  
+                <b:column span="6">
+                    <b:iconAwesome value="fas fa-arrow-right" style="color: green; margin-right: 20px;"/>
+                    <h:outputText value=" #{dragAndDrop.dropppedConcept.term.lexical_value} (#{dragAndDrop.dropppedConcept.concept.idConcept})" 
+                                  title="Vers ce concept" style="background-color: #54a90a; color: #ffffff"/>
+                </b:column>                  
+            </b:row>            
             
             <p:spacer />
-
-            
             
             <b:row rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}" style="font-size: 12px; color: black">
                 <b:column span="11" style="margin-left: 10px;">
@@ -55,72 +66,61 @@
            
             <b:row style="font-size: 12px; color: black">
                 <b:column span="11" style="margin-left: 10px;">
-                    <h:outputText value="Collections / groupes à supprimer / garder ? : " title="Cochez la case pour supprimer la relation"/>
+                    <h:outputText value="Collections à supprimer ? " title="Cochez la case pour supprimer la relation"/>
                 </b:column>                  
             </b:row>            
-            <b:row rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}">
+            <b:row rendered="#{dragAndDrop.nodeGroupsToCut.size() > 0}">
                 <b:column span="11" style="margin-left: 5px; font-size: 12px;">
-                    <p:dataTable value="#{dragAndDrop.nodeBTsToCut}"
-                                 var="broader"
-                                 rowStyleClass="textOpenthesoColorOrange"  >
+                    <p:dataTable value="#{dragAndDrop.nodeGroupsToCut}"
+                                 var="group"
+                                 rowStyleClass="from" >
                         <p:column headerText="id" width="100">
-                            <h:outputText value="#{broader.idConcept}" />
+                            <h:outputText value="#{group.conceptGroup.idgroup}" />
                         </p:column>                        
-                        <p:column headerText="Terme générique">
-                            <h:outputText value="#{broader.title}" />
+                        <p:column headerText="Collection/groupe">
+                            <h:outputText value="#{group.lexicalValue}"/>
                         </p:column>
-                        <p:column headerText="à couper" width="80">
-                            <p:selectBooleanCheckbox value="#{broader.isSelected}" />
-                        </p:column>                                 
+                        <p:column headerText="à supprimer" width="80">
+                            <p:selectBooleanCheckbox value="#{group.isSelected}" />
+                        </p:column>
                     </p:dataTable>
                 </b:column>            
             </b:row>
-            
-            <p:spacer />            
-            
+            <p:spacer />
             
             <b:row style="font-size: 12px; color: black">
-                <b:column span="5" style="margin-left: 10px;">
-                    <h:outputText value="vers le concept : " title="Vers ce concept"/>
+                <b:column span="11" style="margin-left: 10px;">
+                    <h:outputText value="Collections à ajouter ? " title="Cochez la case pour ajouter la relation"/>
                 </b:column>                  
-                <b:column span="6">
-                    <b:iconAwesome value="fas fa-arrow-right" style="color: green"/>
-                    <h:outputText value=" #{dragAndDrop.dropppedConcept.term.lexical_value} (#{dragAndDrop.dropppedConcept.concept.idConcept})" title="Vers ce concept"/>
-                </b:column>                  
-            </b:row>
-              
-            
-            <b:row>
-                <b:column span="11" style="margin-left: 5px;font-size: 12px;">
-                    <b:dataTable value="#{dragAndDrop.cuttedConcept}" paginated="false" 
-                                 var="cuttedConcept"
-                                 caption="Déplacer le concept/branche: "
-                                 searching="false" info="false" rowStyleClass="textOpenthesoColorOrange">
-                        <b:dataTableColumn value="#{cuttedConcept.concept.idConcept}" label="id"/>
-                        <b:dataTableColumn value="#{cuttedConcept.term.lexical_value}" label="label" />
-                        <b:dataTableColumn value="#{dragAndDrop.getLabelOfGroupes()}"  label="collections"/>
-                  
-                    </b:dataTable>
-                </b:column>            
             </b:row>            
-            
-            
-            <b:row >
-                <b:column span="11" offset="1" >
-                    <b:messages autoUpdate="true"/>
-                </b:column>
+            <b:row rendered="#{dragAndDrop.nodeGroupsToAdd.size() > 0}">
+                <b:column span="11" style="margin-left: 5px; font-size: 12px;">
+                    <p:dataTable value="#{dragAndDrop.nodeGroupsToAdd}"
+                                 var="group"
+                                 rowStyleClass="to" >
+                        <p:column headerText="id" width="100">
+                            <h:outputText value="#{group.conceptGroup.idgroup}" />
+                        </p:column>                        
+                        <p:column headerText="Collection/groupe">
+                            <h:outputText value="#{group.lexicalValue}"/>
+                        </p:column>
+                        <p:column headerText="à ajouter" width="80">
+                            <p:selectBooleanCheckbox value="#{group.isSelected}" />
+                        </p:column>
+                    </p:dataTable>
+                </b:column>            
             </b:row>
-
+            <p:spacer />            
 
             <b:row style="margin-bottom: 10px; margin-top: 30px">
-                <b:column span="4" offset="4" >
+                <b:column span="4" offset="3" >
                     <b:commandButton 
                         id="buttonSubmitCut" value="#{langueBean.getMsg('btnValidate')}" 
                         style="width:100%; font-size: 13px; 
                         font-weight: normal;
                         color: white; background: #43B572; border: none; box-shadow: none;"
                         class="btn btn-primary"
-                        action="#{dragAndDrop.paste()}"
+                        action="#{dragAndDrop.drop()}"
                         update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex dragAndDropForm"/>
                 </b:column>
              
@@ -137,5 +137,17 @@
             </b:row>
             
         </h:form>
+        <style type="text/css">
+            .from {
+                background-color: #C63632 !important;
+                background-image: none !important;
+                color: #ffffff !important;
+            }
+            .to {
+                background-color: #54a90a !important;
+                background-image: none !important;
+                color: #ffffff !important;
+            }            
+        </style>        
     </p:dialog>   
 </ui:fragment>
