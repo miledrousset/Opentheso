@@ -19,30 +19,28 @@
 
                     <b:navCommandLink  value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_branch')}" tooltip-delay-show="1000"
-                                       action="#{cutAndPaste.onStartCut(conceptView.nodeConcept)}"
+                                       actionListener="#{dragAndDrop.setDragNode(tree.selectedNode)}"
+                                       action="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
                                        styleClass="buttonIconOrange"
                                        style="font-size: 12px;"
                                        update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
                     </b:navCommandLink>
-                    <b:navCommandLink  rendered="#{(cutAndPaste.isCopyOn) and
-                                                   (cutAndPaste.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
+                    <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and
+                                                   (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.as_specific')}" 
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_under_concept')}" tooltip-delay-show="1000"
-                                       actionListener="#{cutAndPaste.setDropppedConcept(conceptView.nodeConcept)}"
-                                       action="#{cutAndPaste.validatePaste()}"
-                                       oncomplete="PF('cutAndPaste').show();"
+                                       actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
+                                       action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
                                        styleClass="buttonIconOrange"
-                                       style="font-size: 12px;"
-                                       update="idCutAndPaste cutAndPasteForm">
+                                       style="font-size: 12px;">
                     </b:navCommandLink>
-                    <b:navCommandLink  rendered="#{(cutAndPaste.isCopyOn) and (!cutAndPaste.cuttedConcept.concept.topConcept)}"
+                    <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}" 
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_as_topterm')}" tooltip-delay-show="1000"
                                        actionListener="#{cutAndPaste.setIsDropToRoot(true)}"
                                        action="#{cutAndPaste.paste()}"
                                        styleClass="buttonIconOrange"
-                                       style="font-size: 12px;"
-                                       update="idCutAndPaste cutAndPasteForm">
+                                       style="font-size: 12px;">
                     </b:navCommandLink>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_concept')}" 
                                       tooltip="#{langueBean.getMsg('rightbody.concept.toottip_delete_concept')}"

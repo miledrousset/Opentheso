@@ -332,6 +332,7 @@ public class CutAndPaste implements Serializable {
     public void paste() {
         FacesMessage msg;  
      
+        
         if(isDropToRoot) {
             // cas de déplacement d'un concept à la racine   
             if(!moveFromConceptToRoot()) return;
