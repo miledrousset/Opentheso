@@ -10,7 +10,7 @@
         <b:row rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and !(viewEditorThesoHomeBean.isInEditing)}">
             <b:column span="2" offset="10">
                 <b:commandButton 
-                    value="#{langueBean.getMsg('candidat.edit')}" 
+                    value="#{langueBean.getMsg('candidat.edit')}"
                     update="formRightTab thesoHomePageForm"
                     class="btn btn-primary"
                     action="#{viewEditorThesoHomeBean.initText()}"
@@ -25,23 +25,23 @@
             <b:row style="margin-top: -20px">
                 <b:column span="8">
                     <h:outputText value="#{langueBean.getMsg('thesohome.totalConcepts')} " style="font-size: 12px;"/>
-                    <h:outputText value="#{selectedTheso.thesoName} : " style="font-size: 12px; font-weight: bold"/>  
-                    <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" style="font-size: 12px; color:  #FF7979;"/>                    
-                </b:column>  
+                    <h:outputText value="#{selectedTheso.thesoName} : " style="font-size: 12px; font-weight: bold"/>
+                    <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" style="font-size: 12px; color:  #FF7979;"/>
+                </b:column>
                 <b:column span="4">
                     <h:outputText value="#{langueBean.getMsg('thesohome.lastModification')} : " style="font-size: 12px;"/>
-                    <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 12px; color: #FF7979;"/>                    
-                </b:column>                  
+                    <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 12px; color: #FF7979;"/>
+                </b:column>
             </b:row>
             <b:row >
                 <b:column span="12">
                     <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')} : " style="font-size: 12px;"/>
                     <ui:repeat var="value" varStatus="status1" value="#{viewEditorThesoHomeBean.lastModifiedConcepts}">
                         <h:outputText value="#{value.value}" title="#{value.id}" style="font-size: 12px; color: #43B572;"/>
-                        <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>                         
+                        <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>
                     </ui:repeat>
                 </b:column>                
-            </b:row>             
+            </b:row>
             <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/>             
             <b:row >
                 <b:column span="12">
@@ -55,7 +55,7 @@
             <b:row>
                 <b:column span="3" offset="6">
                     <b:commandButton 
-                        value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}" 
+                        value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
                         update="formRightTab thesoHomePageForm"
                         class="btn btn-primary"
                         action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"
@@ -63,7 +63,7 @@
                 </b:column>
                 <b:column span="3" >
                     <b:commandButton 
-                        value="#{langueBean.getMsg('thesohome.rawHTMLView')}" 
+                        value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
                         class="btn btn-primary"
                         update="formRightTab thesoHomePageForm"
                         action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"
@@ -93,7 +93,7 @@
                 <b:column span="2">
                     <b:commandButton 
                         look="success"
-                        value="#{langueBean.getMsg('candidat.save')}" 
+                        value="#{langueBean.getMsg('candidat.save')}"
                         update="formRightTab thesoHomePageForm"
                         class="btn btn-primary"
                         style="width: 100%;font-size: 12px;"
