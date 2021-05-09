@@ -213,7 +213,7 @@ public class ImportFileBean implements Serializable {
                             if(conceptObjects.get(0).getPrefLabels().isEmpty()) {
                                 haveError = true;
                                 error.append(System.getProperty("line.separator"));
-                                error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");  
+                                error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
                                 warning = "";
                             } else {
                                 langs = csvReadHelper.getLangs();
@@ -221,7 +221,7 @@ public class ImportFileBean implements Serializable {
                                 uri = "";//csvReadHelper.getUri();
                                 loadDone = true;
                                 BDDinsertEnable = true;
-                                info = "File correctly loaded";                                
+                                info = "File correctly loaded";
                             }
                         }
                     }
@@ -251,7 +251,7 @@ public class ImportFileBean implements Serializable {
         if(importInProgress) return;
 
         initError();
-        
+
         // préparer le projet pour le thésaurus
         int idProject; 
         if(selectedUserProject == null || selectedUserProject.isEmpty()) {
@@ -259,7 +259,7 @@ public class ImportFileBean implements Serializable {
         } else {
             idProject = Integer.parseInt(selectedUserProject);
         }
-        
+
         // préparer la langue source 
         if(selectedLang == null || selectedLang.isEmpty()) {
             selectedLang = connect.getWorkLanguage();
@@ -460,8 +460,9 @@ public class ImportFileBean implements Serializable {
                 loadDone = true;
                 BDDinsertEnable = true;
                 info = "File correctly loaded";
+                readRdf4j.clean();
+                System.gc();
             } catch (Exception e) {
-                System.out.println("erreur :" + e.getMessage());
                 error.append(System.getProperty("line.separator"));
                 error.append(e.toString());
             } finally {

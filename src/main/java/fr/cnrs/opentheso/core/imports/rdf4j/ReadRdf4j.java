@@ -1,18 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.core.imports.rdf4j;
 
-import fr.cnrs.opentheso.bdd.tools.FileUtilities;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.bdd.tools.FileUtilities;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
+
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
@@ -20,7 +17,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
-import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,75 +30,44 @@ import org.slf4j.LoggerFactory;
  */
 public class ReadRdf4j {
 
-    private static Model model;
+    private Model model;
     private SKOSXmlDocument sKOSXmlDocument;
     private String message = "";
     private String workLanguage;
     
     Logger logger = LoggerFactory.getLogger(ReadRdf4j.class);
- 
-    /**
-     * constucteur
-     */
+
+
     /**
      * Chargement des données rdf d'après un InputStream
-     *
-     * @param is
-     * @param type 0 pour skos 1 pour jsonld 2 pour turtle
-     * @param isCandidatImport
-     * @param workLanguage
-     * @throws java.io.IOException
      */
     public ReadRdf4j(InputStream is, int type, boolean isCandidatImport, String workLanguage) throws IOException {
+        model = null;
         this.workLanguage = workLanguage;
         sKOSXmlDocument = new SKOSXmlDocument();
         switch (type) {
             case 0:
-                laodSkosModel(is);
+                model = Rio.parse(is, "", RDFFormat.RDFXML);
                 break;
             case 1:
-                laodJsonLdModel(is);
+                model = Rio.parse(is, "", RDFFormat.JSONLD);
                 break;
             case 2:
-                laodTurtleModel(is);
+                model = Rio.parse(is, "", RDFFormat.TURTLE);
                 break;
             case 3:
-                laodJsonModel(is);
+                model = Rio.parse(is, "", RDFFormat.RDFJSON);
                 break;                
         }
         readModel(isCandidatImport);
     }
-    
-    
 
-    /**
-     * Cette fonction permet de charger un fichier RDF puis le parcourir avec
-     * RIO (une API RDF4J)
-     *
-     * @param is
-     */
-    private void laodSkosModel(InputStream is) throws IOException {
+    public void clean() {
+        model.clear();
         model = null;
-        model = Rio.parse(is, "", RDFFormat.RDFXML);
-
+        sKOSXmlDocument = null;
+        message = workLanguage = null;
     }
-
-    private void laodJsonLdModel(InputStream is) throws IOException {
-        model = null;
-        model = Rio.parse(is, "", RDFFormat.JSONLD);
-
-    }
-
-    private void laodTurtleModel(InputStream is) throws IOException {
-        model = null;
-        model = Rio.parse(is, "", RDFFormat.TURTLE);
-
-    }
-    
-    private void laodJsonModel(InputStream is) throws IOException {
-        model = null;
-        model = Rio.parse(is, "", RDFFormat.RDFJSON);
-   }    
 
     /**
      * structure qui contiens des informations pour la lecture de fichier RDF
@@ -122,7 +88,7 @@ public class ReadRdf4j {
 
         ReadStruct readStruct = new ReadStruct();
         readStruct.resource = null;
-        boolean validProperty = false;
+        boolean validProperty;
         //pour le debug : 
         ArrayList<String> nonReco = new ArrayList<>();
 
@@ -170,7 +136,6 @@ public class ReadRdf4j {
                     }
                     if(validProperty) {
                         String uri = st.getSubject().stringValue();
-                //        System.out.println("URI = " + uri);
                         readStruct.resource = new SKOSResource(uri, prop);
                         if (prop == SKOSProperty.ConceptScheme) {
                             sKOSXmlDocument.setConceptScheme(readStruct.resource);
@@ -182,7 +147,6 @@ public class ReadRdf4j {
                             sKOSXmlDocument.addconcept(readStruct.resource);
                         }else {
                                 logger.info("This is how you configure Java Logging with SLF4J");
-                //            System.out.println("Erreur de type : " + prop);
                         }
                     }
 

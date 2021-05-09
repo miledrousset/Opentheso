@@ -30,96 +30,102 @@ public class WriteCSV {
     
     private char seperate;
     private BufferedWriter writer;
-    private ByteArrayOutputStream output;
 
-
-    public byte[] exportCsvFile(SKOSXmlDocument xmlDocument, List<NodeLangTheso> selectedLanguages, char seperate) {
-
+    /**
+     * export un thésaurus en format csv
+     *
+     * @param xmlDocument
+     * @param selectedLanguages
+     * @param seperate
+     */
+    public byte[] importCsv (SKOSXmlDocument xmlDocument, List<NodeLangTheso> selectedLanguages, char seperate) {
         if(selectedLanguages == null || selectedLanguages.isEmpty()) {
             return null;
         }
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output))){
 
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream()){
-            try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output))) {
+            this.writer = writer;
+            this.seperate = seperate;
 
-                this.seperate = seperate;
-                this.writer = writer;
+            // write header record
+            //URI rdf:type
+            StringBuilder header = new StringBuilder();
+            header.append("URI").append(seperate)
+                    .append("rdf:type").append(seperate);
 
-                StringBuilder header = new StringBuilder();
-                header.append("URI").append(seperate).append("rdf:type").append(seperate);
+            List<String> langs = selectedLanguages.stream().map(lang -> lang.getCode()).collect(Collectors.toList());
 
-                List<String> langs = selectedLanguages.stream().map(lang -> lang.getCode()).collect(Collectors.toList());
+            //skos:prefLabel
+            langs.forEach((lang) -> {
+                header.append("skos:prefLabel@").append(lang).append(seperate);
+            });
 
-                //skos:prefLabel
-                langs.forEach((lang) -> {
-                    header.append("skos:prefLabel@").append(lang).append(seperate);
-                });
+            //skos:altLabel
+            langs.forEach((lang) -> {
+                header.append("skos:altLabel@").append(lang).append(seperate);
+            });
 
-                //skos:altLabel
-                langs.forEach((lang) -> {
-                    header.append("skos:altLabel@").append(lang).append(seperate);
-                });
+            //skos:hiddenLabel
+            langs.forEach((lang) -> {
+                header.append("skos:hiddenLabel@").append(lang).append(seperate);
+            });
 
-                //skos:hiddenLabel
-                langs.forEach((lang) -> {
-                    header.append("skos:hiddenLabel@").append(lang).append(seperate);
-                });
+            //skos:definition
+            langs.forEach((lang) -> {
+                header.append("skos:definition@").append(lang).append(seperate);
+            });
 
-                //skos:definition
-                langs.forEach((lang) -> {
-                    header.append("skos:definition@").append(lang).append(seperate);
-                });
+            //skos:scopeNote
+            langs.forEach((lang) -> {
+                header.append("skos:scopeNote@").append(lang).append(seperate);
+            });
 
-                //skos:scopeNote
-                langs.forEach((lang) -> {
-                    header.append("skos:scopeNote@").append(lang).append(seperate);
-                });
+            //skos:note
+            langs.forEach((lang) -> {
+                header.append("skos:note@").append(lang).append(seperate);
+            });
 
-                //skos:note
-                langs.forEach((lang) -> {
-                    header.append("skos:note@").append(lang).append(seperate);
-                });
-
-                //skos:historyNote
-                langs.forEach((lang) -> {
-                    header.append("skos:historyNote@").append(lang).append(seperate);
-                });
+            //skos:historyNote
+            langs.forEach((lang) -> {
+                header.append("skos:historyNote@").append(lang).append(seperate);
+            });
 
 
-                header.append("skos:notation").append(seperate)
-                        .append("skos:narrower").append(seperate)
-                        .append("skos:broader").append(seperate)
-                        .append("skos:related").append(seperate)
-                        .append("skos:exactMatch").append(seperate)
-                        .append("skos:closeMatch").append(seperate)
-                        .append("geo:lat").append(seperate)
-                        .append("geo:long").append(seperate)
-                        .append("skos:member").append(seperate)
-                        .append("dct:created").append(seperate)
-                        .append("dct:modified").append(seperate);
+            header.append("skos:notation").append(seperate)
+                    .append("skos:narrower").append(seperate)
+                    .append("skos:broader").append(seperate)
+                    .append("skos:related").append(seperate)
+                    .append("skos:exactMatch").append(seperate)
+                    .append("skos:closeMatch").append(seperate)
+                    .append("geo:lat").append(seperate)
+                    .append("geo:long").append(seperate)
+                    .append("skos:member").append(seperate)
+                    .append("dct:created").append(seperate)
+                    .append("dct:modified").append(seperate);
 
-                writer.write(header.toString());
-                writer.newLine();
+            writer.write(header.toString());
+            writer.newLine();
 
-                xmlDocument.getGroupList().forEach(groupe -> {
-                    try {
-                        writeResource(groupe, "skos:Collection", langs);
-                    } catch (IOException e){
-                        System.err.println(e.toString());
-                    }
-                });
+            xmlDocument.getGroupList().forEach(groupe -> {
+                try {
+                    writeResource(groupe, "skos:Collection", langs);
+                } catch (IOException e){
+                    System.err.println(e.toString());
+                }
+            });
 
-                // write all concepts
-                xmlDocument.getConceptList().forEach(concept -> {
-                    try {
-                        writeResource(concept, "skos:Concept", langs);
-                    } catch (IOException e){
-                        System.err.println(e.toString());
-                    }
-                });
-                this.writer.close();
-                return output.toByteArray();
-            }
+            // write all concepts
+            xmlDocument.getConceptList().forEach(concept -> {
+                try {
+                    writeResource(concept, "skos:Concept", langs);
+                } catch (IOException e){
+                    System.err.println(e.toString());
+                }
+            });
+
+            return output.toByteArray();
+
         } catch (IOException ex) {
             return null;
         }
@@ -288,10 +294,6 @@ public class WriteCSV {
                 .filter(document -> document.getProperty() == propertie && document.getLanguage().equals(lang))
                 .map(document -> document.getText())
                 .collect(Collectors.joining(delim_multi_datas));
-    }
-
-    public ByteArrayOutputStream getOutput() {
-        return output;
     }
 
 }
