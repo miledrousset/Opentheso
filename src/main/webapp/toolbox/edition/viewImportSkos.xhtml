@@ -184,7 +184,8 @@
                                      actionListener="#{importFileBean.addSkosThesoToBDD()}"
                                      ajax="true"
                                      value="Importer"
-                                     disabled="#{!importFileBean.loadDone}" />
+                                     disabled="#{!importFileBean.loadDone}"
+                                      />
                 </b:column> 
             </b:row>
         </h:panelGroup>
@@ -192,9 +193,9 @@
         <p:spacer/>
         <b:row >
             <b:column span="10" offset="1">
-                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}"
-                               labelTemplate="{value}%" styleClass="animated" global="false"
-                               style="font-size: 12px; height: 20px;"/>
+                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" labelTemplate="{value}%" styleClass="animated" global="false" style="font-size: 12px; height: 20px;"
+                               >
+                </p:progressBar>
             </b:column>
         </b:row>
 

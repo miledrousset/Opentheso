@@ -134,21 +134,15 @@ public class ExportFileBean implements Serializable {
             }
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-
             SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
-
+                    viewExportBean.getSelectedGroups(),
+                    viewExportBean.getSelectedLanguages());
             char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
 
-            try (ByteArrayInputStream flux = new ByteArrayInputStream(new WriteCSV()
-                    .exportCsvFile(skosxd, viewExportBean.getSelectedLanguages(), separateur))) {
-                return DefaultStreamedContent.builder().contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
-                        .stream(() -> flux)
-                        .build();
-            } catch (Exception ex) {
-                return new DefaultStreamedContent();
-            }
+            return DefaultStreamedContent.builder().contentType("text/csv")
+                    .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                    .stream(() -> new ByteArrayInputStream(new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur)))
+                    .build();
         } else {
             return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedLanguages(),
                     viewExportBean.getSelectedGroups(), viewExportBean.getSelectedExportFormat());
