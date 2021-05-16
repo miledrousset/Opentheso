@@ -113,10 +113,15 @@ public class ExportFileBean implements Serializable {
 
     public StreamedContent exportThesorus() {
 
-        if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
+        SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
+                viewExportBean.getSelectedGroups(),
+                viewExportBean.getSelectedLanguages());
 
-            SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedLanguages());
+        if (skosxd == null) {
+            return null;
+        }
+
+        if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
             try (ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
@@ -134,67 +139,57 @@ public class ExportFileBean implements Serializable {
             }
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-            SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewExportBean.getSelectedGroups(),
-                    viewExportBean.getSelectedLanguages());
+
             char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
 
-            return DefaultStreamedContent.builder().contentType("text/csv")
-                    .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
-                    .stream(() -> new ByteArrayInputStream(new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur)))
-                    .build();
+            try(ByteArrayInputStream flux = new ByteArrayInputStream(new WriteCSV()
+                    .importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur))) {
+
+                return DefaultStreamedContent.builder().contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> flux)
+                        .build();
+            } catch (Exception ex) {
+                return new DefaultStreamedContent();
+            }
         } else {
-            return thesoToRdf(viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedLanguages(),
-                    viewExportBean.getSelectedGroups(), viewExportBean.getSelectedExportFormat());
+            initProgressBar();
+
+            RDFFormat format = null;
+            String extention = ".xml";
+
+            switch (viewExportBean.getSelectedExportFormat().toLowerCase()) {
+                case "rdf":
+                    format = RDFFormat.RDFXML;
+                    extention = ".rdf";
+                    break;
+                case "jsonld":
+                    format = RDFFormat.JSONLD;
+                    extention = ".json";
+                    break;
+                case "turtle":
+                    format = RDFFormat.TURTLE;
+                    extention = ".ttl";
+                    break;
+                case "json":
+                    format = RDFFormat.RDFJSON;
+                    extention = ".json";
+                    break;
+            }
+
+            try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                Rio.write(new WriteRdf4j(skosxd).getModel(), out, format);
+
+                skosxd.clear();
+                return DefaultStreamedContent.builder()
+                        .contentType("application/xml")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)
+                        .stream(() -> new ByteArrayInputStream(out.toByteArray()))
+                        .build();
+            } catch (Exception ex) {
+                return new DefaultStreamedContent();
+            }
         }
-    }
-
-    /**
-     * permet d'exporter un thésaurus complet au format RDF avec filtres : - des
-     * langues choisies - des groupes choisis
-     *
-     * @param idTheso
-     * @param type
-     * @return
-     */
-    private StreamedContent thesoToRdf(String idTheso, List<NodeLangTheso> selectedLanguages,
-            List<NodeGroup> selectedGroups, String type) {
-
-        initProgressBar();
-
-        RDFFormat format = null;
-        String extention = ".xml";
-
-        switch (type.toLowerCase()) {
-            case "rdf":
-                format = RDFFormat.RDFXML;
-                extention = ".rdf";
-                break;
-            case "jsonld":
-                format = RDFFormat.JSONLD;
-                extention = ".json";
-                break;
-            case "turtle":
-                format = RDFFormat.TURTLE;
-                extention = ".ttl";
-                break;
-            case "json":
-                format = RDFFormat.RDFJSON;
-                extention = ".json";
-                break;
-        }
-
-        SKOSXmlDocument datas = getThesorusDatas(idTheso, selectedGroups, selectedLanguages);
-        if (datas == null) {
-            return null;
-        }
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Rio.write(new WriteRdf4j(datas).getModel(), out, format);
-
-        datas.clear();
-        return DefaultStreamedContent.builder().contentType("application/xml").name(idTheso + extention)
-                .stream(() -> new ByteArrayInputStream(out.toByteArray())).build();
     }
 
     private SKOSXmlDocument getThesorusDatas(String idTheso, List<NodeGroup> selectedGroups, List<NodeLangTheso> selectedLanguages) {
