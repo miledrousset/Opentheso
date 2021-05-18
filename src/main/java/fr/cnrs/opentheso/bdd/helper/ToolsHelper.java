@@ -18,8 +18,9 @@ public class ToolsHelper {
 
     private final Log log = LogFactory.getLog(ThesaurusHelper.class);
 
+    private int countOfActions;
     public ToolsHelper() {
-
+        countOfActions = 0;
     }
 
     /**
@@ -396,6 +397,10 @@ public class ToolsHelper {
      * Permet de supprimer les relations en boucle qui sont interdites (100 ->
      * BT -> 100) ou (100 -> NT -> 100)ou (100 -> RT -> 100) c'est incohérent et
      * ca provoque une boucle à l'infini
+     * @param ds
+     * @param role
+     * @param idThesaurus
+     * @return 
      */
     public boolean removeLoopRelations(HikariDataSource ds, String role, String idThesaurus) {
 

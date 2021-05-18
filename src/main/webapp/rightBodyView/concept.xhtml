@@ -19,9 +19,10 @@
 
                     <b:navCommandLink  value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_branch')}" tooltip-delay-show="1000"
-                                       actionListener="#{dragAndDrop.setDragNode(tree.selectedNode)}"
-                                       action="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
+                                       action="#{dragAndDrop.setDragNode(tree.selectedNode)}"
+                                       actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
                                        styleClass="buttonIconOrange"
+                                       ajax="true"
                                        style="font-size: 12px;"
                                        update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
                     </b:navCommandLink>
@@ -32,15 +33,19 @@
                                        actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
                                        action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
                                        styleClass="buttonIconOrange"
-                                       style="font-size: 12px;">
+                                       ajax="true"
+                                       style="font-size: 12px;"
+                                       update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
                     </b:navCommandLink>
                     <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}" 
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_as_topterm')}" tooltip-delay-show="1000"
-                                       actionListener="#{cutAndPaste.setIsDropToRoot(true)}"
-                                       action="#{cutAndPaste.paste()}"
+                                       actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
+                                       action="#{dragAndDrop.paste(null)}"
                                        styleClass="buttonIconOrange"
-                                       style="font-size: 12px;">
+                                       ajax="true"
+                                       style="font-size: 12px;"
+                                       update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
                     </b:navCommandLink>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_concept')}" 
                                       tooltip="#{langueBean.getMsg('rightbody.concept.toottip_delete_concept')}"
@@ -218,8 +223,7 @@
             </b:column>
 
         </b:row> 
-        <ui:include src="/dialog/dragAndDrop/dragAndDrop.xhtml" />
-        <ui:include src="/dialog/dragAndDrop/cutAndPaste.xhtml" />
+
         <ui:include src="/dialog/concept/deleteConcept.xhtml" />   
         <ui:include src="/dialog/concept/deprecateConcept.xhtml" />
         <ui:include src="/dialog/concept/approveConcept.xhtml" />

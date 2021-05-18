@@ -157,8 +157,6 @@ public class SearchBean implements Serializable {
      * recherche de la valeur saisie en respectant les filtres 
      */
     public void applySearch(){
-   //     if(listResultAutoComplete == null) return;
-  //      nodeConceptSearchs. = new ArrayList<>();
         if(nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
         } else 
@@ -203,7 +201,6 @@ public class SearchBean implements Serializable {
             if(nodeConceptSearchs.size() > 0) {
                 onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
             }            
-         
         }
         
         if(exactMatch) {
@@ -244,9 +241,230 @@ public class SearchBean implements Serializable {
             }
         }
         
-        setViewsSerach();
-        isSelectedItem = false;
+
+        if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+            if(nodeConceptSearchs.size() == 1) {
+                isSelectedItem = true;
+                setViewsConcept();
+            }
+            else {
+                setViewsSerach();
+                isSelectedItem = false;
+            }
+        }
     }
+    
+    /**
+     * permet de retourner la liste des concepts qui ont une poly-hiérarchie
+     */
+    public void getAllPolyierarchy(){
+        if(nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else 
+            nodeConceptSearchs.clear();
+        
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
+        if(searchHelper == null) 
+            searchHelper = new SearchHelper();        
+        
+        ArrayList<String> nodeSearchsId = searchHelper.searchAllPolyierarchy(
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        
+        for (String idConcept : nodeSearchsId) {
+            nodeConceptSearchs.add(
+                conceptHelper.getConceptForSearch(
+                connect.getPoolConnexion(),
+                idConcept,
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang()));
+        }
+        if(nodeConceptSearchs.size() > 0) {
+            onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+        }
+        if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+            if(nodeConceptSearchs.size() == 1) {
+                isSelectedItem = true;
+                setViewsConcept();
+            }
+            else {
+                setViewsSerach();
+                isSelectedItem = false;
+            }
+        }        
+    }
+    
+    /**
+     * permet de retourner la liste des concepts qui ont plusieurs Groupes
+     */
+    public void searchConceptWithMultiGroup(){
+        if(nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else 
+            nodeConceptSearchs.clear();
+        
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
+        if(searchHelper == null) 
+            searchHelper = new SearchHelper();        
+        
+        ArrayList<String> nodeSearchsId = searchHelper.searchConceptWithMultiGroup(
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        
+        for (String idConcept : nodeSearchsId) {
+            nodeConceptSearchs.add(
+                conceptHelper.getConceptForSearch(
+                connect.getPoolConnexion(),
+                idConcept,
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang()));
+        }
+        if(nodeConceptSearchs.size() > 0) {
+            onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+        }
+        if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+            if(nodeConceptSearchs.size() == 1) {
+                isSelectedItem = true;
+                setViewsConcept();
+            }
+            else {
+                setViewsSerach();
+                isSelectedItem = false;
+            }
+        }        
+    }    
+    
+    /**
+     * permet de retourner la liste des concepts qui ont plusieurs Groupes
+     */
+    public void searchConceptWithoutGroup(){
+        if(nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else 
+            nodeConceptSearchs.clear();
+        
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
+        if(searchHelper == null) 
+            searchHelper = new SearchHelper();        
+        
+        ArrayList<String> nodeSearchsId = searchHelper.searchConceptWithoutGroup(
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        
+        for (String idConcept : nodeSearchsId) {
+            nodeConceptSearchs.add(
+                conceptHelper.getConceptForSearch(
+                connect.getPoolConnexion(),
+                idConcept,
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang()));
+        }
+        if(nodeConceptSearchs.size() > 0) {
+            onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+        }
+        if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+            if(nodeConceptSearchs.size() == 1) {
+                isSelectedItem = true;
+                setViewsConcept();
+            }
+            else {
+                setViewsSerach();
+                isSelectedItem = false;
+            }
+        }        
+    } 
+
+    /**
+     * permet de retourner la liste des concepts qui sont en doublons
+     */
+    public void searchConceptDuplicated(){
+        if(nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else 
+            nodeConceptSearchs.clear();
+        
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
+        if(searchHelper == null) 
+            searchHelper = new SearchHelper();        
+        
+        ArrayList<String> nodeSearchLabels = searchHelper.searchConceptDuplicated(
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentLang());
+        
+        for (String label : nodeSearchLabels) {
+            nodeConceptSearchs.addAll(
+                conceptHelper.getConceptForSearchFromLabel(
+                connect.getPoolConnexion(),
+                label,
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang()));
+        }
+        if(nodeConceptSearchs.size() > 0) {
+            onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+        }
+        if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+            if(nodeConceptSearchs.size() == 1) {
+                isSelectedItem = true;
+                setViewsConcept();
+            }
+            else {
+                setViewsSerach();
+                isSelectedItem = false;
+            }
+        }        
+    }    
+    
+    /**
+     * permet de retourner la liste des concepts qui sont une relation RT et NT ou BT
+     * ce qui est interdit
+     */
+    public void searchConceptWithRTandBT(){
+        if(nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else 
+            nodeConceptSearchs.clear();
+        
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
+        if(searchHelper == null) 
+            searchHelper = new SearchHelper();        
+        ArrayList<String> allIdConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        
+        ArrayList<String> nodeSearchsId = new ArrayList<>();
+        for (String idConcept : allIdConcepts) {
+            if(searchHelper.isConceptHaveRTandBT(
+                    connect.getPoolConnexion(),
+                    idConcept,
+                    selectedTheso.getCurrentIdTheso())) {
+                nodeSearchsId.add(idConcept);
+            }
+        }
+        for (String idConcept : nodeSearchsId) {
+            nodeConceptSearchs.add(
+                conceptHelper.getConceptForSearch(
+                connect.getPoolConnexion(),
+                idConcept,
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang()));
+        }
+        if(nodeConceptSearchs.size() > 0) {
+            onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+        }
+        if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+            if(nodeConceptSearchs.size() == 1) {
+                isSelectedItem = true;
+                setViewsConcept();
+            }
+            else {
+                setViewsSerach();
+                isSelectedItem = false;
+            }
+        }        
+    }    
+    
+    
+    
     
     private void setViewsSerach(){
         rightBodySetting.setShowResultSearchToOn();

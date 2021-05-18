@@ -7,7 +7,6 @@
 
     <p:panel id="statisticForm" style="margin-top: -20px; margin-left: -20px; 
              border: none; padding: 20px;">
-
         <b:row>
             <b:column span="3" style="margin-top: 5px">
                 <h:outputText style="font-size: 13px;" value="#{langueBean.getMsg('statistique.choix_mode')}"/>
@@ -95,6 +94,7 @@
                         <h:outputText style="font-size: 14px; margin-top: 10px" value="#{langueBean.getMsg('statistique.filtre_modification_date.end')}"/>
                         <p:datePicker value="#{statistiqueBean.dateFin}" style="font-size: 13px; margin-left: 10px; 
                                       margin-top: 10px;  background: white; border-color: #43B572"/>
+
                     </h:panelGrid>
                 </p:tab>
                 <p:tab title="#{langueBean.getMsg('statistique.filtre_collection')}">

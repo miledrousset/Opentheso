@@ -91,7 +91,7 @@ public class StatistiqueBean implements Serializable {
         canceptStatistiqueSelected = null;        
     }    
     
-    public void inti() {
+    public void init() {
 
         selectLanguageVisible = false;
         genericTypeVisible = false;

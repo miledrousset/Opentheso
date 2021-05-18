@@ -1,0 +1,31 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="idClearSession" header="#{langueBean.getMsg('menu.cleanSession')}" widgetVar="clearSession" 
+              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >         
+
+        <h:form id="clearSessionForm">   
+            <b:row >
+                <b:column span="11" offset="1" >
+                    <h:outputText value="#{langueBean.getMsg('menu.confirm_cleanSession')}" style="font-size: 13px; color: black;"/>                    
+                </b:column>
+            </b:row>
+            <p:spacer/>
+            <b:row style="margin-bottom: 20px; margin-top: 15px">
+                <b:column span="4" offset="4" >
+                    <b:commandButton value="#{langueBean.getMsg('menu.delete_session')}" 
+                                     ajax="true"
+                                     class="btn btn-primary"
+                                             action="#{sessionControl.isTimeout()}"
+                                             update="messageIndex"
+                                     oncomplete="PF('clearSession').hide();"
+                                     style="width:100%; font-size: 12px;
+                                     color: white; background: #C63632;"/>
+                </b:column>
+            </b:row>    
+        </h:form>  
+    </p:dialog>     
+</ui:fragment>
