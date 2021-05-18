@@ -599,6 +599,11 @@ public class ConceptHelper {
      * Cette fonction permet de récupérer toutes les informations concernant un
      * Concept par son id et son thésaurus et la langue le résultat est allégé
      * pour l'adapter à la recherche
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return 
      */
     public NodeConceptSearch getConceptForSearch(HikariDataSource ds,
             String idConcept, String idThesaurus, String idLang) {
@@ -635,6 +640,96 @@ public class ConceptHelper {
 
         return nodeConceptSerach;
     }
+    
+    /**
+     * permet de trouver les idConcepts en partant d'un label
+     * @param ds
+     * @param idTheso
+     * @param idLang
+     * @return 
+     */
+    private ArrayList<String> getIdConceptsFromLabel(HikariDataSource ds,
+            String idTheso, String label, String idLang) {
+        ArrayList<String> conceptLabels = new ArrayList<>();
+        
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select concept.id_concept from concept, preferred_term, term " +
+                        " where" +
+                        " concept.id_concept = preferred_term.id_concept" +
+                        " and" +
+                        " concept.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_term = term.id_term" +
+                        " and" +
+                        " preferred_term.id_thesaurus = term.id_thesaurus" +
+                        " and" +
+                        " term.id_thesaurus = '" + idTheso + "'" +
+                        " and " +
+                        " term.lang = '" +idLang + "'" +
+                        " and" +
+                        " term.lexical_value = '" + label + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        conceptLabels.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting idConcepts from labels of theso : " + idTheso, sqle);
+        }
+        return conceptLabels;
+    }               
+            
+    /**
+     * Cette fonction permet de récupérer toutes les informations concernant un
+     * Concept en partant de son label 
+     * C'est la fonction qui permet de récupérer les doublons
+     * @param ds
+     * @param label
+     * @param idThesaurus
+     * @param idLang
+     * @return 
+     */
+    public ArrayList<NodeConceptSearch> getConceptForSearchFromLabel(HikariDataSource ds,
+            String label, String idThesaurus, String idLang) {
+        ArrayList<NodeConceptSearch> nodeConceptSearchs = new ArrayList<>();
+
+        TermHelper termHelper = new TermHelper();
+        RelationsHelper relationsHelper = new RelationsHelper();
+        GroupHelper groupHelper = new GroupHelper();
+        ArrayList<String> conceptIds = getIdConceptsFromLabel(ds, idThesaurus, label, idLang);
+        for (String conceptId : conceptIds) {
+            NodeConceptSearch nodeConceptSearch = new NodeConceptSearch();
+                    
+            nodeConceptSearch.setIdConcept(conceptId);
+
+            //récupération du PrefLabel
+            nodeConceptSearch.setPrefLabel(getLexicalValueOfConcept(ds, conceptId, idThesaurus, idLang));
+
+            //récupération des traductions
+            nodeConceptSearch.setNodeTermTraductions(termHelper.getTraductionsOfConcept(ds, conceptId, idThesaurus, idLang));
+
+            //récupération des termes génériques
+            nodeConceptSearch.setNodeBT(relationsHelper.getListBT(ds, conceptId, idThesaurus, idLang));
+
+            //récupération des termes spécifiques
+            nodeConceptSearch.setNodeNT(relationsHelper.getListNT(ds, conceptId, idThesaurus, idLang));
+
+            //récupération des termes associés
+            nodeConceptSearch.setNodeRT(relationsHelper.getListRT(ds, conceptId, idThesaurus, idLang));
+
+            String idTerm = termHelper.getIdTermOfConcept(ds, conceptId, idThesaurus);
+
+            if (idTerm != null) {
+                //récupération des Non Prefered Term
+                nodeConceptSearch.setNodeEM(termHelper.getNonPreferredTerms(ds, idTerm, idThesaurus, idLang));
+            }
+            nodeConceptSearch.setNodeConceptGroup(groupHelper.getListGroupOfConcept(ds, idThesaurus, conceptId, idLang));  
+            nodeConceptSearchs.add(nodeConceptSearch);
+        }
+        return nodeConceptSearchs;
+    }    
 
     /**
      * permet de retourner la liste des Top concepts pour un group donné retour

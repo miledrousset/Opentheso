@@ -15,6 +15,7 @@
             <b:navCommandLink iconAwesome="fas fa-project-diagram" icon-size="sm"
                               tooltip="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" tooltip-delay-show="500"
                               href="#{request.contextPath}/graph/index.xhtml"
+                              
                               target="_blank" id="link_graphe"
                               rendered="#{tree.isGrapheLinkVisible()}"
                               style="color: #F47B2A; float: right; margin-top: 2px;"/>
@@ -38,7 +39,7 @@
                         onstart="$(document.body).css({'cursor' : 'wait'});"
                         oncomplete="$(document.body).css({'cursor' : 'default'});"/>
 
-                <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="messageIndex tree" />
+                <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree" />
 
 
                 <p:treeNode  expandedIcon="far fa-folder-open fa_custom_open" collapsedIcon="far fa-folder fa_custom_collapse" >

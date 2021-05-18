@@ -196,19 +196,20 @@ public class RelationsHelper {
                             + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "' and"
                             + " (hierarchical_relationship.role not like 'BT%'"
                             + " AND "
-                            + " hierarchical_relationship.role not like 'RT%'))";
+                            + " hierarchical_relationship.role != 'RT'))";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
                         listIds.add(resultSet.getString("id_concept1"));
                     }
                     query = "select id_concept from concept where concept.id_thesaurus = '" + idThesaurus + "'"
+                            + " and concept.status != 'CA'"
                             + " and concept.id_concept not in "
                             + " ("
                             + " select DISTINCT hierarchical_relationship.id_concept1 from hierarchical_relationship where"
                             + " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
                             + " AND"
-                            + " hierarchical_relationship.role not like 'RT%'"
+                            + " hierarchical_relationship.role != 'RT'"
                             + " )";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -2731,7 +2732,7 @@ public class RelationsHelper {
                             + " where id_thesaurus = '" + idThesaurus + "'"
                             + " and id_concept1 = '" + idConcept1 + "'"
                             + " and id_concept2 = '" + idConcept2 + "'"
-                            + " and role LIKE 'RT%'";
+                            + " and role = 'RT'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     existe = resultSet.next();

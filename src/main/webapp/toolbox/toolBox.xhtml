@@ -22,7 +22,7 @@
                             <b:navCommandLink value="Atelier thésaurus" style="color: #{toolBoxBean.atelierColor}"
                                               action="#{toolBoxBean.setIsAtelierActive(true)}"
                                               actionListener="#{atelierThesBean.init()}"
-                                              update="toolBoxForm toolBoxForm:listThesoForm"/>
+                                              update="toolBoxForm"/>
                         </b:column>
                     </b:row>
                     <p:spacer/>
@@ -32,7 +32,7 @@
                                               tooltip="Permet de corriger les incohérences dans le thésaurus" tooltip-delay-show="500"
                                               action="#{toolBoxBean.setIsServiceActive(true)}"
                                               actionListener="#{atelierThesBean.init()}"
-                                              update="toolBoxForm toolBoxForm:listThesoForm"/>
+                                              update="toolBoxForm"/>
                         </b:column>
                     </b:row>
                     <p:spacer/>                    
@@ -40,7 +40,7 @@
                         <b:column span="11" offset="1">
                             <b:navCommandLink value="Statistique" style="color: #{toolBoxBean.statisticColor}"
                                               action="#{toolBoxBean.setIsStatisticActive(true)}"
-                                              actionListener="#{statistiqueBean.inti()}"
+                                              actionListener="#{statistiqueBean.init()}"
                                               update="toolBoxForm"/>
                         </b:column>
                     </b:row>

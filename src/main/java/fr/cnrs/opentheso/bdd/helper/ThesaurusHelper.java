@@ -238,29 +238,27 @@ public class ThesaurusHelper {
     }
 
     /**
-     * Cette focntion permet de nettoyer un thésaurus
+     * Cette focntion permet de nettoyer un thésaurus des espaces et des null 
+     * @param ds
+     * @param idTheso
+     * @return 
      */
-    public boolean cleaningTheso(Connection conn, String idTheso) {
-
+    public boolean cleaningTheso(HikariDataSource ds, String idTheso) {
         boolean status = false;
-
-        try ( Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("delete from term where id_term = ''"
-                    + " and id_thesaurus = '" + idTheso + "'");
-
-            stmt.executeUpdate("delete from concept_group_label where idgroup = ''"
-                    + " and idthesaurus = '" + idTheso + "'");
-
-            stmt.executeUpdate("UPDATE concept_group SET notation = '' WHERE notation ilike 'null'");
-
-            stmt.executeUpdate("UPDATE concept_group SET idtypecode = 'MT' WHERE idtypecode ilike 'null'");
-
-            stmt.executeUpdate("UPDATE concept SET notation = '' WHERE notation ilike 'null'");
-
-            status = true;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from term where id_term = ''"
+                        + " and id_thesaurus = '" + idTheso + "'");
+                stmt.executeUpdate("delete from concept_group_label where idgroup = ''"
+                        + " and idthesaurus = '" + idTheso + "'");
+                stmt.executeUpdate("UPDATE concept_group SET notation = '' WHERE notation ilike 'null'");
+                stmt.executeUpdate("UPDATE concept_group SET idtypecode = 'MT' WHERE idtypecode ilike 'null'");
+                stmt.executeUpdate("UPDATE concept SET notation = '' WHERE notation ilike 'null'");   
+                status = true;
+            }
         } catch (SQLException sqle) {
             log.error("Error while reorganizing theso : " + idTheso, sqle);
-        }
+        }        
         return status;
     }
 

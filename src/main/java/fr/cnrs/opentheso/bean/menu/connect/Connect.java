@@ -26,7 +26,7 @@ public class Connect implements Serializable{
     private HikariDataSource poolConnexion = null;
     private String workLanguage = "fr";
     private String defaultThesaurusId;
-
+    private String localUri;
     
     
     @PostConstruct
@@ -36,6 +36,7 @@ public class Connect implements Serializable{
         workLanguage = bundlePref.getString("workLanguage");
         defaultThesaurusId = bundlePref.getString("defaultThesaurusId");
     }    
+
     
     /**
      * retourne la version actuelle d'Opentheso d'après le WAR
@@ -51,24 +52,26 @@ public class Connect implements Serializable{
      * @return
      */
     public String getBrowserName() {
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        String userAgent = externalContext.getRequestHeaderMap().get("User-Agent");
+        if(FacesContext.getCurrentInstance() != null){
+            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            String userAgent = externalContext.getRequestHeaderMap().get("User-Agent");
 
-        // Yahoo
-        if (userAgent.toLowerCase().contains("Slurp")) {
-            return "agent";
-        }
-        //Bing
-        if (userAgent.toLowerCase().contains("bingbot")) {
-            return "agent";
-        }
-        
-        if (userAgent.toLowerCase().contains("msnbot")) {
-            return "agent";
-        }
-        //Google
-        if (userAgent.toLowerCase().contains("googlebot")) {
-            return "agent";
+            // Yahoo
+            if (userAgent.toLowerCase().contains("Slurp")) {
+                return "agent";
+            }
+            //Bing
+            if (userAgent.toLowerCase().contains("bingbot")) {
+                return "agent";
+            }
+
+            if (userAgent.toLowerCase().contains("msnbot")) {
+                return "agent";
+            }
+            //Google
+            if (userAgent.toLowerCase().contains("googlebot")) {
+                return "agent";
+            }
         }
         return "notagent";
     }    
@@ -157,6 +160,14 @@ public class Connect implements Serializable{
             minNbr = DEFAULT_TIMEOUT_IN_MIN;
         }
         return (minNbr * 60 * 1000);
+    }
+
+    public String getLocalUri() {
+        return localUri;
+    }
+
+    public void setLocalUri(String localUri) {
+        this.localUri = localUri;
     }
    
 }

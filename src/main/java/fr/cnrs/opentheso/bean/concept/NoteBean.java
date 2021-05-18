@@ -11,7 +11,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
@@ -31,9 +30,9 @@ import org.primefaces.PrimeFaces;
  */
 @Named(value = "noteBean")
 @SessionScoped
+
 public class NoteBean implements Serializable {
     @Inject private Connect connect;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private LanguageBean languageBean;
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
@@ -228,7 +227,7 @@ public class NoteBean implements Serializable {
             //    pf.ajax().update("messageIndex");
             pf.ajax().update("formRightTab:viewTabConcept:idConceptNotes");
             pf.ajax().update("formRightTab:viewTabConcept:editNoteForm");
-        }        
+        }
     }
     
     public ArrayList<NodeNote> nodeToEdit() {

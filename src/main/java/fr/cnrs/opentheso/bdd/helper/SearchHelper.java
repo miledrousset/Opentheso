@@ -799,7 +799,167 @@ public class SearchHelper {
         }
         return nodeSearchMinis;
     }
+    
+    
+    /**
+     * Permet de chercher les concepts qui ont une poly-hiérérachie
+     *
+     * @param ds
+     * @param idTheso
+     * @return
+     * #MR
+     */
+    public ArrayList<String> searchAllPolyierarchy(HikariDataSource ds, String idTheso) {
+        ArrayList<String> idConcepts = new ArrayList<>();
+        
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept1 from hierarchical_relationship where role = 'BT'" +
+                            " and id_thesaurus = '" + idTheso + "'" +
+                            " group by id_concept1 having count(id_concept1) > 1;");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        idConcepts.add(resultSet.getString("id_concept1"));
+                    }
+                }                  
+            }
+      
+        } catch (SQLException sqle) {
+            log.error("Error while getting PolyHierarchie of theso : " + idTheso, sqle);
+        }
+        return idConcepts;
+    }    
+  
+    /**
+     * Permet de chercher les concepts qui ont plusieurs Groupes
+     *
+     * @param ds
+     * @param idTheso
+     * @return
+     * #MR
+     */
+    public ArrayList<String> searchConceptWithMultiGroup(HikariDataSource ds, String idTheso) {
+        ArrayList<String> idConcepts = new ArrayList<>();
+        
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select idconcept from concept_group_concept where idthesaurus = '" + idTheso + "'" +
+                                " group by idconcept having count(idconcept) > 1 limit 500");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        idConcepts.add(resultSet.getString("idconcept"));
+                    }
+                }                  
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Multi Group of theso : " + idTheso, sqle);
+        }
+        return idConcepts;
+    }    
+    
+    /**
+     * Permet de chercher les concepts qui n'ont pas de Groupes
+     *
+     * @param ds
+     * @param idTheso
+     * @return
+     * #MR
+     */
+    public ArrayList<String> searchConceptWithoutGroup(HikariDataSource ds, String idTheso) {
+        ArrayList<String> idConcepts = new ArrayList<>();
+        
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select concept.id_concept from concept where concept.id_thesaurus = '" + idTheso + "'" +
+                        " and concept.id_concept not in (" +
+                        " select concept_group_concept.idconcept from concept_group_concept where idthesaurus = '" + idTheso + "') limit 200");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        idConcepts.add(resultSet.getString("id_concept"));
+                    }
+                }                  
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Concept without Group of theso : " + idTheso, sqle);
+        }
+        return idConcepts;
+    }        
+    
+    /**
+     * Permet de chercher les libellés qui sont en doublons
+     *
+     * @param ds
+     * @param idTheso
+     * @param idLang
+     * @return
+     * #MR
+     */
+    public ArrayList<String> searchConceptDuplicated(HikariDataSource ds, String idTheso, String idLang) {
+        ArrayList<String> conceptLabels = new ArrayList<>();
+        
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select lexical_value from term " +
+                        " where" +
+                        " id_thesaurus = '" + idTheso + "'" +
+                        " and" +
+                        " lang = '" + idLang + "'" +
+                        " group by lexical_value having count(*) > 1 limit 100");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        conceptLabels.add(resultSet.getString("lexical_value"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting dupplicated labels of theso : " + idTheso, sqle);
+        }
+        return conceptLabels;
+    }       
 
+    /**
+     * Permet de chercher les concepts qui ont RT et BT ou NT à la fois, ce qui est interdit
+     *
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @return
+     * #MR
+     */
+    public boolean isConceptHaveRTandBT(HikariDataSource ds, String idConcept, String idTheso) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept1" +
+                        " from hierarchical_relationship" +
+                        " where" +
+                        " id_thesaurus = '" + idTheso + "'" +
+                        " and id_concept1 = '" + idConcept + "'" +
+                        " and (role = 'NT' or role = 'BT')" +
+                        " and id_concept2 in " +
+                        " (select id_concept2 " +
+                        " from hierarchical_relationship" +
+                        " where" +
+                        " id_thesaurus = '" + idTheso + "'" +
+                        " and id_concept1 = '" + idConcept +"'" +
+                        " and role = 'RT')");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        return true;
+                    }
+                }                  
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting relationn RT and BT of theso : " + idTheso, sqle);
+        }
+        return false;
+    }      
+    
+    
+    
+    
+    
+    
+    
     /**
      * Cette fonction permet de faire une recherche par value sur les termes
      * Préférés et les synonymes (la recherche porte sur les termes exactes en

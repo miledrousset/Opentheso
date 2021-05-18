@@ -73,6 +73,11 @@ public class ValidateActionHelper {
     
     /**
      * vérifie la cohérence des relations avant l'action
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @param idConceptToAdd
+     * @return 
      */
     public boolean isMoveConceptToConceptValid(HikariDataSource ds, String idTheso, 
             String idConcept, String idConceptToAdd) {
