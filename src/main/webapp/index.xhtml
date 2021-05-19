@@ -118,8 +118,8 @@
 
         <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
         <p:dialog widgetVar="waitDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" position="top"
-                  style="margin-top: 250px; background: #666666;" >
-            <i class="pi pi-spin pi-spinner" style="font-size: 3rem; color: #F47B2A"></i>
+                  style="margin-top: 250px; border: none" >
+            <p:graphicImage value="/images/wait.gif" width="70" />
         </p:dialog>
 
 
