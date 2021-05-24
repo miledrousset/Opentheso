@@ -42,10 +42,9 @@ public class WriteCSV {
         if(selectedLanguages == null || selectedLanguages.isEmpty()) {
             return null;
         }
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output))){
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()){
 
-            this.writer = writer;
+            this.writer = new BufferedWriter(new OutputStreamWriter(output));
             this.seperate = seperate;
 
             // write header record
@@ -123,6 +122,8 @@ public class WriteCSV {
                     System.err.println(e.toString());
                 }
             });
+
+            writer.close();
 
             return output.toByteArray();
 
