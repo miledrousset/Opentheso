@@ -142,8 +142,13 @@ public class ExportFileBean implements Serializable {
 
             char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
 
-            try(ByteArrayInputStream flux = new ByteArrayInputStream(new WriteCSV()
-                    .importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur))) {
+            byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
+
+            try(ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+
+                str = null;
+                skosxd = null;
+                System.gc();
 
                 return DefaultStreamedContent.builder().contentType("text/csv")
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
@@ -153,8 +158,6 @@ public class ExportFileBean implements Serializable {
                 return new DefaultStreamedContent();
             }
         } else {
-            initProgressBar();
-
             RDFFormat format = null;
             String extention = ".xml";
 
@@ -178,14 +181,21 @@ public class ExportFileBean implements Serializable {
             }
 
             try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
                 Rio.write(new WriteRdf4j(skosxd).getModel(), out, format);
 
                 skosxd.clear();
-                return DefaultStreamedContent.builder()
-                        .contentType("application/xml")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)
-                        .stream(() -> new ByteArrayInputStream(out.toByteArray()))
-                        .build();
+                skosxd = null;
+                System.gc();
+
+                try (ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
+                    out.close();
+                    return DefaultStreamedContent.builder()
+                            .contentType("application/xml")
+                            .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)
+                            .stream(() -> input)
+                            .build();
+                }
             } catch (Exception ex) {
                 return new DefaultStreamedContent();
             }
