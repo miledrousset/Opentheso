@@ -10,6 +10,9 @@
     <name>opentheso2</name>
 
     <properties>
+        <sonar.projectKey>miledrousset_Opentheso2</sonar.projectKey>
+        <sonar.organization>miledrousset</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -112,11 +115,17 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>8.0</version>
-        </dependency>         
+            <version>10.0.0-RC1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.primefaces.themes</groupId>
+            <artifactId>all-themes</artifactId>
+            <version>1.0.10</version>
+        </dependency>
 
         
-        
+
         <!-- https://mvnrepository.com/artifact/net.bootsfaces/bootsfaces -->
         <dependency>
             <groupId>net.bootsfaces</groupId>
