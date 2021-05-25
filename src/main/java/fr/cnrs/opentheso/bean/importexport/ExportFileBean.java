@@ -182,7 +182,9 @@ public class ExportFileBean implements Serializable {
 
             try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-                Rio.write(new WriteRdf4j(skosxd).getModel(), out, format);
+                WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
+                Rio.write(writeRdf4j.getModel(), out, format);
+                writeRdf4j.closeCache();
 
                 skosxd.clear();
                 skosxd = null;
