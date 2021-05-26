@@ -31,14 +31,10 @@
                     styleClass="tree_custom" disabled="#{tree.noedSelected}" cache="#{roleOnTheso.nodePreference.tree_cache}"
                     draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
                     widgetVar="treeWidget">
-                <p:ajax event="expand"  listener="#{tree.onNodeExpand}"
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
-                        oncomplete="$(document.body).css({'cursor' : 'default'});" />
+                <p:ajax event="expand"  listener="#{tree.onNodeExpand}"/>
                 <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
 
-                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle formLeftTab"
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
-                        oncomplete="$(document.body).css({'cursor' : 'default'});"/>
+                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle formLeftTab"/>
 
                 <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree" />
 
