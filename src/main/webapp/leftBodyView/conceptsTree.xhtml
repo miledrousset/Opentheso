@@ -8,12 +8,8 @@
         <b:column span="12">
             <p:tree id="treeConcepts" value="#{treeConcepts.root}"  dynamic="true" var="node" selectionMode="single"  selection="#{treeConcepts.selectedNode}"
                     style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll" widgetVar="conceptTreeWidget" >
-                <p:ajax event="expand"  listener="#{treeConcepts.onNodeExpand}" 
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
-                        oncomplete="$(document.body).css({'cursor' : 'default'});"/>
-                <p:ajax event="select" listener="#{treeConcepts.onNodeSelect}" update="formRightTab indexTitle"
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
-                        oncomplete="$(document.body).css({'cursor' : 'default'});"/>
+                <p:ajax event="expand"  listener="#{treeConcepts.onNodeExpand}"/>
+                <p:ajax event="select" listener="#{treeConcepts.onNodeSelect}" update="formRightTab indexTitle"/>
 
                 <p:treeNode  expandedIcon="far fa-folder-open fa_custom_open fa-1x" collapsedIcon="far fa-folder fa_custom_collapse fa-1x" >
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>

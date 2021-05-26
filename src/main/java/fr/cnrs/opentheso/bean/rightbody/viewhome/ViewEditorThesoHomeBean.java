@@ -5,12 +5,16 @@
  */
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.Serializable;
+import java.sql.Date;
+import java.util.ArrayList;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -112,6 +116,19 @@ public class ViewEditorThesoHomeBean implements Serializable {
         int count = statisticHelper.getNbCpt(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         return "" + count;
     }    
+    
+    public String getLastModifiedDate(){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        Date date = conceptHelper.getLastModification(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        if(date != null)
+            return date.toString();
+        return "";
+    }
+    
+    public ArrayList<NodeIdValue> getLastModifiedConcepts(){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        return conceptHelper.getLastModifiedConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+    }        
     
     public void setViewPlainTextTo(boolean status){
         if(status) {

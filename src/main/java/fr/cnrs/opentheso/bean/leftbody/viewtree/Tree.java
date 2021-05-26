@@ -70,6 +70,8 @@ public class Tree implements Serializable {
     private TreeNodeData treeNodeDataSelect;
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
+    private boolean manySiblings = false;
+    
     @PreDestroy
     public void destroy(){
         reset();
@@ -87,10 +89,12 @@ public class Tree implements Serializable {
         treeNodeDataSelect = null;
         idTheso = null;
         idConceptParent = null;
-        idLang = null;        
+        idLang = null;
+        manySiblings = false;        
     }
 
     public void initialise(String idTheso, String idLang) {
+        manySiblings = false;
         this.idTheso = idTheso;
         this.idLang = idLang;
         selectedTheso.setSelectedLang(idLang);
@@ -102,6 +106,7 @@ public class Tree implements Serializable {
         selectedNodes = new ArrayList<>();
         leftBodySetting.setIndex("0");
         noedSelected = false;
+
     }
 
     public boolean isDragAndDrop(NodeUser nodeUser) {
@@ -126,7 +131,10 @@ public class Tree implements Serializable {
         ArrayList<NodeConceptTree> nodeConceptTrees
                 = conceptHelper.getListOfTopConcepts(connect.getPoolConnexion(),
                         idTheso, idLang, selectedTheso.isSortByNotation());
-
+        
+        if(nodeConceptTrees.size() >= 2000) 
+            manySiblings = true;
+        
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
             data = new TreeNodeData(
                     nodeConceptTree.getIdConcept(),
@@ -161,7 +169,8 @@ public class Tree implements Serializable {
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
-
+        leftBodySetting.setIndex("0");
+        manySiblings = false;
         if (noedSelected) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
                     "Un noeud est en cours de chargement !"));
@@ -195,7 +204,8 @@ public class Tree implements Serializable {
 
     /// l'évennement ne focntionne pas avec tree dynamic="true"
     public void onNodeCollapse(NodeCollapseEvent event) {
-         event.getTreeNode().setExpanded(false);
+        leftBodySetting.setIndex("0");        
+        event.getTreeNode().setExpanded(false);
     }    
 
     private void addMembersOfFacet(TreeNode parent) {
@@ -241,6 +251,9 @@ public class Tree implements Serializable {
                 selectedTheso.getCurrentLang(),
                 selectedTheso.isSortByNotation());
 
+        if(nodeConceptTrees.size() >= 2000) 
+            manySiblings = true;        
+        
 //        boolean haveConceptChild;
 //        boolean haveFacet;
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
@@ -400,6 +413,7 @@ public class Tree implements Serializable {
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
+        leftBodySetting.setIndex("0");
         if (noedSelected) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
                     "Un noeud est en cours de chargement !"));
@@ -742,4 +756,14 @@ public class Tree implements Serializable {
     public void setTreeNodeDataSelect(TreeNodeData treeNodeDataSelect) {
         this.treeNodeDataSelect = treeNodeDataSelect;
     }
+
+    public boolean isManySiblings() {
+        return manySiblings;
+    }
+
+    public void setManySiblings(boolean manySiblings) {
+        this.manySiblings = manySiblings;
+    }
+    
+    
 }

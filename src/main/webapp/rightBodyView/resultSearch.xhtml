@@ -19,10 +19,10 @@
                     <b:commandLink value="#{result.prefLabel}" tooltip="#{result.idConcept}" tooltip-delay-show="500"
                                    actionListener="#{searchBean.onSelectConcept(result.idConcept)}"
                                    update="formRightTab:viewTabConcept formRightTab"
-                                   style="color: #43B572; font-size: 14px"/>
+                                   style="color: #43B572; font-size: 13px"/>
                 </b:column>
                 
-                <b:column span="1" rendered="#{result.nodeBT.size() != 0}">
+                <b:column span="1" rendered="#{result.nodeEM.size() != 0}">
                     <h:outputText value="SYN : " title="#{langueBean.getMsg('rightbody.concept.synonym')}" style="color: #8C8C8C; font-size: 12px"/>
                 </b:column>                
                 <b:column span="11" rendered="#{result.nodeEM.size() != 0}">

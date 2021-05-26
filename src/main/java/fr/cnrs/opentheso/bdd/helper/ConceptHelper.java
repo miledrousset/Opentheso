@@ -20,7 +20,6 @@ import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptArkId;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -155,7 +154,7 @@ public class ConceptHelper {
                                 + " hierarchical_relationship.role ILIKE 'NT%'"
                                 + " and concept.status != 'CA'"
                                 + " ORDER BY"
-                                + " concept.notation ASC;";
+                                + " concept.notation ASC limit 2000";
                     } else {
                         // alphabétique Sort
                         query = "select id_concept2 from hierarchical_relationship, concept"
@@ -164,7 +163,7 @@ public class ConceptHelper {
                                 + " and hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
                                 + " and id_concept1 = '" + idConcept + "'"
                                 + " and role LIKE 'NT%'"
-                                + " and concept.status != 'CA'";
+                                + " and concept.status != 'CA' limit 2000";
                     }
 
                     stmt.executeQuery(query);
@@ -522,6 +521,11 @@ public class ConceptHelper {
      * Cette fonction permet de récupérer la liste des Topconcepts suivant l'id
      * du thésaurus sous forme de classe NodeConceptTree (sans les relations) La
      * liste est triée
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @param isSortByNotation
+     * @return 
      */
     public ArrayList<NodeConceptTree> getListOfTopConcepts(HikariDataSource ds, String idThesaurus,
             String idLang, boolean isSortByNotation) {
@@ -536,12 +540,12 @@ public class ConceptHelper {
                             + " FROM concept WHERE"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND"
                             + " concept.top_concept = true and status != 'CA'"
-                            + " ORDER BY concept.notation ASC";
+                            + " ORDER BY concept.notation ASC limit 2000";
                 } else {
                     query = "SELECT concept.status, concept.id_concept"
                             + " FROM concept WHERE"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND"
-                            + " concept.top_concept = true";
+                            + " concept.top_concept = true limit 2000";
                 }
 
                 stmt.executeQuery(query);
@@ -1039,8 +1043,11 @@ public class ConceptHelper {
 
     /**
      * Permet de retourner la date de la dernière modification sur un thésaurus
+     * @param ds
+     * @param idTheso
+     * @return 
      */
-    public Date getLastModifcation(HikariDataSource ds, String idTheso) {
+    public Date getLastModification(HikariDataSource ds, String idTheso) {
 
         Date date = null;
         try ( Connection conn = ds.getConnection()) {
@@ -1058,6 +1065,45 @@ public class ConceptHelper {
         }
         return date;
     }
+    /**
+     * Permet de retourner la date de la dernière modification sur un thésaurus
+     * @param ds
+     * @param idTheso
+     * @return 
+     */
+    public ArrayList<NodeIdValue> getLastModifiedConcept(HikariDataSource ds, String idTheso, String idLang) {
+
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select concept.id_concept, term.lexical_value from concept, preferred_term, term" +
+                            " where" +
+                            " concept.id_concept = preferred_term.id_concept" +
+                            " and" +
+                            " concept.id_thesaurus = preferred_term.id_thesaurus" +
+                            " and" +
+                            " preferred_term.id_term = term.id_term" +
+                            " and" +
+                            " preferred_term.id_thesaurus = term.id_thesaurus" +
+                            " and" +
+                            " concept.id_thesaurus = '" + idTheso + "'" +
+                            " and" +
+                            " term.lang = '" + idLang + "'" +
+                            " order by concept.modified DESC limit 10");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(resultSet.getString("id_concept"));
+                        nodeIdValue.setValue(resultSet.getString("lexical_value"));
+                        nodeIdValues.add(nodeIdValue);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeIdValues;
+    }    
 
     /**
      * Permet de retourner la liste des concepts qui ont plusieurs groupes en

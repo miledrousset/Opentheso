@@ -108,19 +108,28 @@ public class SearchBean implements Serializable {
             listResultAutoComplete.clear();
 
         if(selectedTheso == null) return listResultAutoComplete;
-        
-        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
+
+
+            
+        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getSelectedLang() != null) {
+            String idLang;
+            if(selectedTheso.getSelectedLang().equalsIgnoreCase("all"))
+                idLang = null;
+            else {
+                idLang = selectedTheso.getSelectedLang();
+            }
+            
             if(exactMatch) {
                 listResultAutoComplete = searchHelper.searchExactMatch(connect.getPoolConnexion(),
                             value,
-                            selectedTheso.getCurrentLang(),
+                            idLang,
                             selectedTheso.getCurrentIdTheso());
             }
             else {
                 if(!withId && !withNote) {
                     listResultAutoComplete = searchHelper.searchFullTextElastic(connect.getPoolConnexion(),
                                 value,
-                                selectedTheso.getCurrentLang(),
+                                idLang,
                                 selectedTheso.getCurrentIdTheso());
                 }
             }
