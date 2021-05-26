@@ -5,7 +5,10 @@
              xmlns:b="http://bootsfaces.net/ui">
 
     <b:row>
-        <b:column  span="1" offset="8" >
+        <b:column  span="7" offset="1" >
+            <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
+                          title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
+                          style="color: red; font-style: italic; background-color: yellow"/>
         </b:column>
         <!-- Actions sur l'arbre -->
         <ui:include src="/leftBodyView/globalActionsTree.xhtml" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}"/>        
@@ -22,7 +25,6 @@
         </b:column>        
     </b:row>
 
-    <!-- Arbre du thésaurus il faut intégrer  dropRestrict="sibling" par la suite -->
     <b:row>
         <b:column span="12">
             <p:tree id="tree" value="#{tree.root}"  dynamic="true" var="nodetree" selectionMode="single"  selection="#{tree.selectedNode}"
@@ -30,14 +32,10 @@
                     styleClass="tree_custom" disabled="#{tree.noedSelected}" cache="#{roleOnTheso.nodePreference.tree_cache}"
                     draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
                     widgetVar="treeWidget">
-                <p:ajax event="expand"  listener="#{tree.onNodeExpand}"
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
-                        oncomplete="$(document.body).css({'cursor' : 'default'});" />
+                <p:ajax event="expand"  listener="#{tree.onNodeExpand}"/>
                 <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
 
-                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle formLeftTab"
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
-                        oncomplete="$(document.body).css({'cursor' : 'default'});"/>
+                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle formLeftTab"/>
 
                 <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree" />
 

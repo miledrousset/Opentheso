@@ -1220,35 +1220,23 @@ public class FacetHelper {
      * @return 
      */
     public boolean isConceptHaveFacet(HikariDataSource ds, String idConcept, String idTheso) {
-        Statement stmt;
-        ResultSet resultSet = null;
         boolean existe = false;
-
-        try {
-            Connection conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select id_facet from thesaurus_array where "
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select count(id_facet) from thesaurus_array where "
                             + " id_thesaurus = '" + idTheso + "'"
-                            + " and id_concept_parent ='" + idConcept + "'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+                            + " and id_concept_parent ='" + idConcept + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
-                        existe = resultSet.getRow() != 0;
+                        if (resultSet.getInt(1) != 0) {
+                            existe = resultSet.getRow() != 0;
+                        }
                     }
-
-                } finally {
-                    if (resultSet != null) resultSet.close();
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while asking if Concept have Facets : " + idConcept, sqle);
-        }
+        }        
         return existe;        
     }
     

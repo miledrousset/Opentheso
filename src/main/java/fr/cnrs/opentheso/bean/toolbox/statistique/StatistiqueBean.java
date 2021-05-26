@@ -175,7 +175,7 @@ public class StatistiqueBean implements Serializable {
 
             nbrCanceptByThes = conceptHelper.getNbrOfCanceptByThes(connect.getPoolConnexion().getConnection(), selectedTheso.getCurrentIdTheso());
 
-            derniereModification = conceptHelper.getLastModifcation(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            derniereModification = conceptHelper.getLastModification(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
 
             genericTypeVisible = true;
             conceptTypeVisible = false;

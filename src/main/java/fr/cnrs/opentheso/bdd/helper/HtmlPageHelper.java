@@ -33,31 +33,19 @@ public class HtmlPageHelper {
      */
     public String getHomePage(HikariDataSource ds, String idLang) {
         String homePage = "";
-        String query;
-        Statement stmt;
-        ResultSet resultSet;
-        Connection conn;
 
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    query = "SELECT htmlcode from homepage where lang ='" + idLang + "'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT htmlcode from homepage where lang ='" + idLang + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         homePage = resultSet.getString("htmlcode");
                     }
-                } finally {
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
-        } catch (SQLException ex) {
-            this.log.error("error while trying to get homepage", ex);
-        }
+        } catch (SQLException sqle) {
+            log.error("error while trying to get homepage ", sqle);
+        }        
         return homePage;
     }
 
@@ -170,34 +158,22 @@ public class HtmlPageHelper {
     public String getThesoHomePage(HikariDataSource ds,
             String idTheso, String idLang) {
         String homePage = "";
-        String query;
-        Statement stmt;
-        ResultSet resultSet;
-        Connection conn;
 
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    query = "SELECT htmlcode from thesohomepage where"
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT htmlcode from thesohomepage where"
                             + " lang ='" + idLang + "'"
                             + " and"
-                            + " idtheso = '" + idTheso + "'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+                            + " idtheso = '" + idTheso + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         homePage = resultSet.getString("htmlcode");
                     }
-                } finally {
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
-        } catch (SQLException ex) {
-            this.log.error("error while trying to get thesoHomepage", ex);
-        }
+        } catch (SQLException sqle) {
+            log.error("error while trying to get thesoHomepage : " + idTheso, sqle);
+        }        
         return homePage;
     }
 

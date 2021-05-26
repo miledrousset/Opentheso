@@ -2527,7 +2527,7 @@ public class Rest_new {
 
     private String getInfoLastUpdate__(HikariDataSource ds, String idTheso) {
         ConceptHelper conceptHelper = new ConceptHelper();
-        Date date = conceptHelper.getLastModifcation(ds, idTheso);
+        Date date = conceptHelper.getLastModification(ds, idTheso);
         if (date == null) {
             return messageEmptyJson();
         }

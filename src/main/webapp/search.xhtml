@@ -11,8 +11,9 @@
                                  style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
                                  title="#{langueBean.getMsg('search.change_thesaurus_language')}">
                                 <p:ajax event="valueChange" update="formSearch formLeftTab formRightTab" 
-                                             listener="#{selectedTheso.changeLang()}" />                    
-                    <f:selectItems  value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                                             listener="#{selectedTheso.changeLang()}" />        
+                    <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                    <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all" />                     
                 </p:selectOneMenu>                
             </b:column>
 

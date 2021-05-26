@@ -239,6 +239,10 @@ public class SelectedTheso implements Serializable {
             isActionFromConcept = false;
             return;
         }
+        if (selectedLang.equalsIgnoreCase("all")) {
+            isActionFromConcept = false;
+            return;
+        }        
         startNewLang();
     }
 

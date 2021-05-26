@@ -14,12 +14,8 @@
                     style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll"
                     disabled="#{treeGroups.noedSelected}" widgetVar="groupWidget">
 
-                <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
-                        oncomplete="$(document.body).css({'cursor' : 'default'});"/>
-                <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabGroups:idGlobalActionsGroup"
-                        onstart="$(document.body).css({'cursor' : 'wait'});"
-                        oncomplete="$(document.body).css({'cursor' : 'default'});"/>
+                <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
+                <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabGroups:idGlobalActionsGroup"/>
 
                 <p:treeNode  expandedIcon="far fa-object-group" collapsedIcon="fas fa-object-group" >
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>
