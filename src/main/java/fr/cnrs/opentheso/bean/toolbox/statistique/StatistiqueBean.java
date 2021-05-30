@@ -30,6 +30,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.charts.ChartData;
+import org.primefaces.model.charts.donut.DonutChartDataSet;
+import org.primefaces.model.charts.donut.DonutChartModel;
+
+
 
 @Named(value = "statistiqueBean")
 @SessionScoped
@@ -50,10 +55,15 @@ public class StatistiqueBean implements Serializable {
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<DomaineDto> groupList;
 
+    //private DonutChartModel donutModel = new DonutChartModel();
+
+    private List<String> colors = new ArrayList<>(List.of("rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"));
+
     @PreDestroy
     public void destroy(){
         clear();
-    }  
+    }
+
     public void clear(){
         if(genericStatistiques!= null){
             genericStatistiques.clear();
@@ -87,6 +97,8 @@ public class StatistiqueBean implements Serializable {
         genericTypeVisible = false;
         conceptTypeVisible = false;
 
+        //donutModel = new DonutChartModel();
+
         genericStatistiques = new ArrayList<>();
         conceptStatistic = new ArrayList<>();
 
@@ -104,6 +116,48 @@ public class StatistiqueBean implements Serializable {
         selectedCollection = "";
         conceptStatistic = new ArrayList<>();
         genericStatistiques = new ArrayList<>();
+    }
+
+    public DonutChartModel createChartModel(int model) {
+
+        DonutChartModel donutModel = new DonutChartModel();
+        ChartData data = new ChartData();
+
+        DonutChartDataSet dataSet = new DonutChartDataSet();
+
+        List<Number> values = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<String> bgColors = new ArrayList<>();
+
+        int pos = 0;
+        for (GenericStatistiqueData genericStatistiqueData : genericStatistiques) {
+            switch(model) {
+                case 1:
+                    values.add(genericStatistiqueData.getConceptsNbr());
+                    break;
+                case 2:
+                    values.add(genericStatistiqueData.getSynonymesNbr());
+                    break;
+                case 3:
+                    values.add(genericStatistiqueData.getTermesNonTraduitsNbr());
+                    break;
+                case 4:
+                    values.add(genericStatistiqueData.getNotesNbr());
+                    break;
+            }
+            labels.add(genericStatistiqueData.getCollection());
+            bgColors.add(colors.get(pos));
+            pos ++;
+            if (pos == colors.size()) pos = 0;
+        }
+
+        dataSet.setData(values);
+        dataSet.setBackgroundColor(bgColors);
+        data.addChartDataSet(dataSet);
+        data.setLabels(labels);
+        donutModel.setData(data);
+
+        return donutModel;
     }
     
     private void initChamps() {
@@ -180,7 +234,6 @@ public class StatistiqueBean implements Serializable {
             genericTypeVisible = true;
             conceptTypeVisible = false;
 
-            PrimeFaces.current().executeScript("PF('bui').hide();");
         } else {
 
             genericTypeVisible = false;
@@ -198,7 +251,7 @@ public class StatistiqueBean implements Serializable {
                 selectedLanguage.getCode(), dateDebut, dateFin, 
                 searchGroupIdFromLabel(selectedCollection), nbrResultat);
 
-        PrimeFaces.current().executeScript("PF('bui').hide();");
+        //PrimeFaces.current().executeScript("PF('bui').hide();");
     }
 
     public StreamedContent exportStatiqituque() {

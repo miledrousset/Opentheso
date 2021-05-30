@@ -16,7 +16,7 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <dependencies>
         
         <!-- https://mvnrepository.com/artifact/org.webjars/d3js -->
@@ -28,11 +28,11 @@
         </dependency>        
         <!-- En cours d'intégration -->
 
-        <dependency>
+        <!--<dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
-        </dependency>        
+        </dependency> -->
         
         <dependency>
             <groupId>com.github.themrleon</groupId>
@@ -72,18 +72,18 @@
             <type>jar</type>
         </dependency>
         <!-- https://mvnrepository.com/artifact/postgresql/postgresql -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.9</version>
-        </dependency>     
+        </dependency>-->
         
-        <!-- Icons Awesome -->
+        <!-- Icons Awesome
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>font-awesome</artifactId>
             <version>5.15.1</version>
-        </dependency>         
+        </dependency> -->
         
         <!-- CDI beans inject dependency -->
         <dependency>
@@ -117,11 +117,11 @@
             <version>10.0.0-RC1</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.primefaces.themes</groupId>
             <artifactId>all-themes</artifactId>
             <version>1.0.10</version>
-        </dependency>
+        </dependency>-->
 
         
 
@@ -185,12 +185,12 @@
             <version>1.7</version>
             <type>jar</type>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
             <version>3.4.4</version>
             <type>jar</type>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-core</artifactId>
