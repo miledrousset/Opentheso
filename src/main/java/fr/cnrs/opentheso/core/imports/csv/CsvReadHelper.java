@@ -66,30 +66,16 @@ public class CsvReadHelper {
         try {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withTrim().parse(in);
-            String uri1;
-  //          boolean first = true;
             
             for (CSVRecord record : records) {
-//                if(first) {
-//                    // set the Uri
-//                    try {
-//                        uri = record.get("URI");
-//                        uri = uri.substring(0, uri.lastIndexOf("/"));
-//                    } catch (Exception e) {
-//                        //System.err.println("");
-//                    }
-//                    first = false;
-//                }
                 ConceptObject conceptObject = new ConceptObject();
                 
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 // puis on génère un nouvel identifiant
                 try {
-                    uri1 = record.get("URI");
+                    String uri1 = record.get("URI");
                     conceptObject.setIdConcept(getId(uri1));
-                } catch (Exception e) {
-                    //message = message + " Erreur à la ligne :" + record.toString(); //System.err.println("");
-                }
+                } catch (Exception e) { }
 
                 
                 // on récupère les labels
@@ -203,7 +189,6 @@ public class CsvReadHelper {
     
     /**
      * permet de récupérer l'identifiant d'près une URI
-     * @param record
      * @return 
      */
     private String getId(String uri) {
@@ -273,9 +258,8 @@ public class CsvReadHelper {
      * @param record
      * @return 
      */
-    private ConceptObject getDates(
-            ConceptObject conceptObject,
-            CSVRecord record) {
+    private ConceptObject getDates(ConceptObject conceptObject, CSVRecord record) {
+
         String value;
         
         // dct:created
@@ -306,9 +290,8 @@ public class CsvReadHelper {
      * @param record
      * @return 
      */
-    private ConceptObject getMembers(
-            ConceptObject conceptObject,
-            CSVRecord record) {
+    private ConceptObject getMembers(ConceptObject conceptObject, CSVRecord record) {
+
         String value;
         String values[];
         
@@ -489,9 +472,7 @@ public class CsvReadHelper {
      * @param record
      * @return 
      */
-    private ConceptObject getLabels(
-            ConceptObject conceptObject,
-            CSVRecord record) {
+    private ConceptObject getLabels(ConceptObject conceptObject, CSVRecord record) {
         String value;
         Label label;
         String values[];
@@ -539,16 +520,13 @@ public class CsvReadHelper {
                     }
                 }
             } catch (Exception e) {
-                //System.err.println("");
             }             
         }
 
         return conceptObject;
     }
     
-    private ConceptObject getNotes(
-            ConceptObject conceptObject,
-            CSVRecord record){
+    private ConceptObject getNotes(ConceptObject conceptObject, CSVRecord record){
         
         String value;
         String values[];

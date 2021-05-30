@@ -30,7 +30,7 @@ public class BasicDao {
     public boolean executDeleteRequest(Statement stmt, String sqlRequest) throws SQLException {
              return stmt.execute(sqlRequest);
     }
-    
+
     protected void openDataBase(HikariDataSource hikariDataSource) throws SQLException {
         connection = hikariDataSource.getConnection();
         stmt = connection.createStatement();

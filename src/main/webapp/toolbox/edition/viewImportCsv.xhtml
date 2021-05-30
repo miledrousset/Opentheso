@@ -154,7 +154,7 @@
                     <p:commandButton id="buttonImportCsv" class="btn btn-success" widgetVar="buttonImportCsv"
                                      icon="fas fa-check-circle fas 2x"
                                      update="toolBoxForm toolBoxForm:listThesoForm"
-                                     onclick="PF('pbAjax').start(); PF('buttonImportCsv').disable();"
+                                     onclick="PrimeFaces.monitorDownload(start, stop);"
                                      style="width: 100%; background-color: #5CB85C; border: none;"
                                      actionListener="#{importFileBean.addCsvThesoToBDD()}"
                                      ajax="true"
@@ -201,5 +201,82 @@
         </b:row>                
         <ui:include src="/dialog/import/csvImportHelp.xhtml" />      
     </h:panelGroup>
+
+    <script type="text/javascript">
+        function start() {
+            PF('statusDialog').show();
+        }
+
+        function stop() {
+            PF('statusDialog').hide();
+        }
+    </script>
+
+
+    <p:dialog modal="true" widgetVar="statusDialog" header="     Importation du fichier     " draggable="false" closable="false" resizable="false"
+              style="width: 400px">
+
+        <div id='laodingDiv' class="loader" >Loading...</div>
+
+        <style type="text/css">
+            .loader,
+            .loader:before,
+            .loader:after {
+                border-radius: 50%;
+                width: 2.5em;
+                height: 2.5em;
+                -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+                -webkit-animation: load7 1.8s infinite ease-in-out;
+                animation: load7 1.8s infinite ease-in-out;
+            }
+            .loader {
+                color: #f47b2a;
+                font-size: 10px;
+                margin: 80px auto;
+                position: relative;
+                text-indent: -9999em;
+                -webkit-transform: translateZ(0);
+                -ms-transform: translateZ(0);
+                transform: translateZ(0);
+                -webkit-animation-delay: -0.16s;
+                animation-delay: -0.16s;
+            }
+            .loader:before,
+            .loader:after {
+                content: '';
+                position: absolute;
+                top: 0;
+            }
+            .loader:before {
+                left: -3.5em;
+                -webkit-animation-delay: -0.32s;
+                animation-delay: -0.32s;
+            }
+            .loader:after {
+                left: 3.5em;
+            }
+            @-webkit-keyframes load7 {
+                0%,
+                80%,
+                100% {
+                    box-shadow: 0 2.5em 0 -1.3em;
+                }
+                40% {
+                    box-shadow: 0 2.5em 0 0;
+                }
+            }
+            @keyframes load7 {
+                0%,
+                80%,
+                100% {
+                    box-shadow: 0 2.5em 0 -1.3em;
+                }
+                40% {
+                    box-shadow: 0 2.5em 0 0;
+                }
+            }
+        </style>
+    </p:dialog>
 
 </ui:fragment>

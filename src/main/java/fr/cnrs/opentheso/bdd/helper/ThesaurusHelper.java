@@ -81,8 +81,7 @@ public class ThesaurusHelper {
         boolean status = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select private from thesaurus where id_thesaurus = '"
-                        + idTheso + "'");
+                stmt.executeQuery("select private from thesaurus where id_thesaurus = '" + idTheso + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         status = resultSet.getBoolean("private");
@@ -114,14 +113,6 @@ public class ThesaurusHelper {
 
                     //récupération du code Ark via WebServices
                     String idArk = "";
-                    if (isArkActive) {
-                        /*    ArrayList<DcElement> dcElementsList = new ArrayList<>();
-                        ArkClient ark_Client = new ArkClient();
-                        idArk = ark_Client.getArkId(
-                                new FileUtilities().getDate(),
-                                urlSite + "?idt=" + idThesaurus,
-                                "", "", dcElementsList, "pcrt"); // pcrt : p= pactols, crt=code DCMI pour collection*/
-                    }
                     stmt.executeUpdate("Insert into thesaurus (id_thesaurus, id_ark, created, modified)"
                             + " values ('" + idThesaurus + "','" + idArk + "'"
                             + "," + "current_date, current_date)");
@@ -167,19 +158,6 @@ public class ThesaurusHelper {
                     }
                 }
             }
-            /**
-             * récupération du code Ark via WebServices
-             *
-             */
-            if (isArkActive) {
-                /*    ArrayList<DcElement> dcElementsList = new ArrayList<>();
-                        ArkClient ark_Client = new ArkClient();
-                        idArk = ark_Client.getArkId(
-                                new FileUtilities().getDate(),
-                                urlSite + "?idt=" + idThesaurus,
-                                "", "", dcElementsList, "pcrt"); // pcrt : p= pactols, crt=code DCMI pour collection
-                 */
-            }
             stmt.executeUpdate("Insert into thesaurus (id_thesaurus, id_ark, created, modified)"
                     + " values ('" + idThesaurus + "', '" + idArk + "'," + "current_date, current_date)");
         } catch (SQLException sqle) {
@@ -197,44 +175,26 @@ public class ThesaurusHelper {
      */
     public boolean addThesaurusTraductionRollBack(Connection conn, Thesaurus thesaurus) {
 
-        boolean status = false;
         thesaurus = addQuotes(thesaurus);
         try ( Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("Insert into thesaurus_label ("
-                    + " id_thesaurus,"
-                    + " contributor, coverage,"
-                    + " creator, created, modified, description,"
-                    + " format,lang, publisher, relation,"
-                    + " rights, source, subject, title,"
-                    + " type)"
-                    + " values ("
-                    + "'" + thesaurus.getId_thesaurus() + "'"
-                    + ",'" + thesaurus.getContributor() + "'"
-                    + ",'" + thesaurus.getCoverage() + "'"
-                    + ",'" + thesaurus.getCreator() + "'"
-                    + ",current_date"
-                    + ",current_date"
-                    + ",'" + thesaurus.getDescription() + "'"
-                    + ",'" + thesaurus.getFormat() + "'"
-                    + ",'" + thesaurus.getLanguage().trim() + "'"
-                    + ",'" + thesaurus.getPublisher() + "'"
-                    + ",'" + thesaurus.getRelation() + "'"
-                    + ",'" + thesaurus.getRights() + "'"
-                    + ",'" + thesaurus.getSource() + "'"
-                    + ",'" + thesaurus.getSubject() + "'"
-                    + ",'" + thesaurus.getTitle() + "'"
-                    + ",'" + thesaurus.getType() + "')");
-            status = true;
+            stmt.executeUpdate("Insert into thesaurus_label (id_thesaurus, contributor, coverage,"
+                    + " creator, created, modified, description, format,lang, publisher, relation,"
+                    + " rights, source, subject, title, type) values ('" + thesaurus.getId_thesaurus() + "', '"
+                    + thesaurus.getContributor() + "', '" + thesaurus.getCoverage() + "','" + thesaurus.getCreator()
+                    + "',current_date, current_date, '" + thesaurus.getDescription() + "','" + thesaurus.getFormat()
+                    + "','" + thesaurus.getLanguage().trim() + "','" + thesaurus.getPublisher() + "','"
+                    + thesaurus.getRelation() + "','" + thesaurus.getRights() + "','" + thesaurus.getSource()
+                    + "','" + thesaurus.getSubject() + "','" + thesaurus.getTitle() + "','" + thesaurus.getType() + "')");
+            return true;
         } catch (SQLException sqle) {
             // Log exception
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
                 log.error("Error while adding Traduction Thesaurus : " + thesaurus.getTitle(), sqle);
                 return false;
             } else {
-                status = true;
+                return true;
             }
         }
-        return status;
     }
 
     /**
@@ -269,7 +229,6 @@ public class ThesaurusHelper {
      */
     public boolean addThesaurusTraduction(HikariDataSource ds, Thesaurus thesaurus) {
 
-        boolean status = false;
         thesaurus = addQuotes(thesaurus);
 
         try ( Connection conn = ds.getConnection()) {
@@ -297,12 +256,12 @@ public class ThesaurusHelper {
                         + ",'" + thesaurus.getSubject() + "'"
                         + ",'" + thesaurus.getTitle() + "'"
                         + ",'" + thesaurus.getType() + "')");
-                status = true;
+                return true;
             }
         } catch (SQLException sqle) {
             log.error("Error while adding Traduction Thesaurus : " + thesaurus.getTitle(), sqle);
+            return false;
         }
-        return status;
     }
 
     /**
@@ -379,9 +338,7 @@ public class ThesaurusHelper {
     public NodeThesaurus getNodeThesaurus(HikariDataSource ds, String idThesaurus) {
 
         ArrayList<Languages_iso639> listLangTheso = getLanguagesOfThesaurus(ds, idThesaurus);
-
         NodeThesaurus nodeThesaurus = new NodeThesaurus();
-
         ArrayList<Thesaurus> thesaurusTraductionsList = new ArrayList<>();
 
         for (int i = 0; i < listLangTheso.size(); i++) {
