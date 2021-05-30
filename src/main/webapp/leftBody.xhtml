@@ -34,8 +34,9 @@
         
         <b:row>
             <b:column span="12" col-xs="0">
-                <b:tabView activeIndex="#{leftBodySetting.index}" content-style="margin-left:-14px; margin-right:-14px;font-size: 12px;">
-                    <b:tab id="tabTree" title="#{langueBean.getMsg('leftbody.concept')}" style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px;"
+                <b:tabView activeIndex="#{leftBodySetting.index}" content-style="margin-left:-14px; margin-right:-14px;font-size: 12px;" >
+                    <b:tab id="tabTree" title="#{langueBean.getMsg('leftbody.concept')}"
+                           style="font-size: 12px; color: #43B572; padding-top: 1px; padding-bottom: 1px;"
                            tooltip="#{langueBean.getMsg('leftbody.concept_tree_view')}" tooltip-delay-show="500">
                         <f:facet name="anchor"><b:iconAwesome name="sitemap" style="color: #f47b2a" size="xs"/></f:facet>
                         <ui:include src="leftBodyView/tree.xhtml"/>
@@ -65,5 +66,5 @@
             </b:column>
         </b:row>
     </b:form>
-
+        <ui:include src="/dialog/dragAndDrop/dragAndDrop.xhtml" />
 </ui:fragment>

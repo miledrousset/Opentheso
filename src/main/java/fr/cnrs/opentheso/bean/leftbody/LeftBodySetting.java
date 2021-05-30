@@ -33,5 +33,4 @@ public class LeftBodySetting implements Serializable {
     public void setIndex(String index) {
         this.index = index;
     }
-   
 }

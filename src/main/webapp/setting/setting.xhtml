@@ -37,7 +37,7 @@
                     <p:spacer/>
                     <b:row>
                         <b:column span="11" offset="1">
-                            <b:navCommandLink value="Maintenance" style="color: #{settingAndToolsBean.maintenanceColor}"
+                            <b:navCommandLink value="En cours" style="color: #{settingAndToolsBean.maintenanceColor}"
                                               action="#{settingAndToolsBean.setIsMaintenanceActive(true)}"
                                               update="settingForm"/>
                         </b:column>
@@ -57,7 +57,7 @@
             </b:column>              
             
             <b:column span="9" rendered="#{settingAndToolsBean.isMaintenanceActive}">
-                <ui:include src="/setting/maintenance.xhtml" />
+                <ui:include src="/setting/encours.xhtml" />
             </b:column>      
   
           

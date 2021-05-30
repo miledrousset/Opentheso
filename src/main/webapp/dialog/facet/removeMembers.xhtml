@@ -4,10 +4,11 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idRemoveConceptFromFacet" header="Supprimer le concept d'un groupe" widgetVar="removeConceptFromFacet" 
+    <p:dialog id="idRemoveMembers" header="Supprimer un membre" widgetVar="removeMembers" 
               modal="true" resizable="true" position="top" width="320" style="margin-top: 150px" >         
 
-        <h:form id="removeFromFacetForm">   
+        <h:form id="removeMembersForm"
+                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">            
             
             <b:row >
                 <b:column span="11" offset="1" >
@@ -19,21 +20,19 @@
             </b:row>              
                                   
             <b:row style="font-size: 12px;">
-                <ui:repeat var="domaines" value="#{removeFromGroupBean.nodeGroups}" >
+                <ui:repeat var="member" value="#{editFacet.conceptList}" >
                     <b:column span="8" offset="1" style="background: #FAFAFA">
-                        <h:outputText rendered="#{domaines.lexicalValue != ''}"
-                                      value="#{domaines.lexicalValue}" title="#{domaines.conceptGroup.idgroup}"
+                        <h:outputText rendered="#{member.value != ''}"
+                                      value="#{member.value}" title="#{member.id}"
                                       style="color: #43B572"/>                    
-                        <h:outputText rendered="#{domaines.lexicalValue == ''}" 
-                                      value="(#{domaines.conceptGroup.idgroup})" 
+                        <h:outputText rendered="#{member.value == ''}" 
+                                      value="(#{member.id})" 
                                       style="color: #FF7979"/>
                     </b:column>
                     <b:column span="2" style="background: #FAFAFA">
                         <b:navCommandLink icon-awesome="fas fa-trash-alt" style="color: #FF7979"
-                                         action="#{removeFromGroupBean.removeConceptFromGroup(
-                                                   domaines.conceptGroup.idgroup,
-                                                   currentUser.nodeUser.idUser)}"
-                                         update="formRightTab:viewTabConcept:removeFromGroupForm"/>
+                                         action="#{editFacet.removeMemberFromFacet(member.id)}"
+                                         update="formRightTab:removeMembersForm messageIndex"/>
                     </b:column>
 
                     <p:spacer height="20" />
@@ -42,5 +41,4 @@
             <p:spacer height="30" />            
         </h:form>
     </p:dialog> 
-    <!--  </b:modal> -->    
 </ui:fragment>

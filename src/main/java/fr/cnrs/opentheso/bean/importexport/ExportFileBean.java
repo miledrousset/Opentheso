@@ -214,6 +214,16 @@ public class ExportFileBean implements Serializable {
 
         ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
 
+        /// permet de filtrer par collection
+        if("all".equalsIgnoreCase(viewExportBean.getSelectedGroup())){
+            allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        } else
+           allConcepts = new ConceptHelper().getAllIdConceptOfThesaurusByGroup(connect.getPoolConnexion(), idTheso, viewExportBean.getSelectedGroup());
+        if(allConcepts == null || allConcepts.isEmpty() ) return null;
+
+        sizeOfTheso = allConcepts.size();
+        progressStep = (float) 100 / sizeOfTheso;
+
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);

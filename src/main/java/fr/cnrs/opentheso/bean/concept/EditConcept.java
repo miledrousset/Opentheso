@@ -232,9 +232,9 @@ public class EditConcept implements Serializable {
     public void infosDelete() {
         String message;
         if (conceptView.getNodeConcept().getNodeNT().isEmpty()) { // pas d'enfants
-            message = "La suppression du concept est définitive !!";
+            message = languageBean.getMsg("rightbody.conceptdialog.infoDeleteConcept");// rightbody.conceptdialog.infoDeleteConcept "La suppression du concept est définitive !!";
         } else {
-            message = "La suppression de la branche est définitive !!";
+            message = languageBean.getMsg("rightbody.conceptdialog.infoDeleteBranch"); //"La suppression de la branche est définitive !!";
         }
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention !", message);
@@ -275,7 +275,7 @@ public class EditConcept implements Serializable {
             }
         } else {
             /// suppression d'une branche
-            deleteBranch(
+            conceptHelper.deleteBranchConcept(connect.getPoolConnexion(),
                     conceptView.getNodeConcept().getConcept().getIdConcept(),
                     idTheso, idUser);
         }
@@ -315,28 +315,7 @@ public class EditConcept implements Serializable {
         PrimeFaces.current().executeScript("PF('deleteConcept').hide();");
         reset("");
     }
-
-    /**
-     * permet de supprimer toute la branche avec ses concepts
-     *
-     * @param selectedNode
-     */
-    private void deleteBranch(String idConceptTop, String idTheso, int idUser) {
-        ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
-                idConceptTop,
-                idTheso);
-
-        // supprimer les concepts
-        for (String idConcept : idConcepts) {
-            conceptHelper.deleteConceptWithoutControl(connect.getPoolConnexion(),
-                    idConcept,
-                    idTheso,
-                    idUser);
-        }
-    }
-    
+   
     
 ///////////////////////////////////////////////////////////////////////////////
 //////// gestion des concepts dépérciés    

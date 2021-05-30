@@ -100,19 +100,22 @@ public class CurrentUser implements Serializable {
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
 
-        // On set à null les variables utilisés dans la session on cours.
-        tree.reset();
-        listIndex.reset();
-        treeGroups.reset();
-        treeConcepts.reset();
-        viewEditorThesoHomeBean.reset();
-        copyAndPasteBetweenTheso.reset();
-
-        editFacet.reset();
-        candidatBean.clear();
-
-        // On appelle Garbage Collector pour libérer la mémoire occupé par les variables qui ont une valeur "null"
-        System.gc();
+        
+//// désactivé par Miled, il ne faut pas nettoyer l'arbre après la déconnexion, on passe seulment en mode consultation 
+        
+//        // On set à null les variables utilisés dans la session on cours.
+//        tree.reset();
+//        listIndex.reset();
+//        treeGroups.reset();
+//        treeConcepts.reset();
+//        viewEditorThesoHomeBean.reset();
+//        copyAndPasteBetweenTheso.reset();
+//
+//        editFacet.reset();
+//        candidatBean.clear();
+//
+//        // On appelle Garbage Collector pour libérer la mémoire occupé par les variables qui ont une valeur "null"
+//        System.gc();
 
         
         indexSetting.setIsThesoActive(true);

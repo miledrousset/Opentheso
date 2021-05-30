@@ -28,10 +28,6 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -2531,7 +2527,7 @@ public class Rest_new {
 
     private String getInfoLastUpdate__(HikariDataSource ds, String idTheso) {
         ConceptHelper conceptHelper = new ConceptHelper();
-        Date date = conceptHelper.getLastModifcation(ds, idTheso);
+        Date date = conceptHelper.getLastModification(ds, idTheso);
         if (date == null) {
             return messageEmptyJson();
         }

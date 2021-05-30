@@ -8,6 +8,19 @@
     <h:form id="preferenceForm">
         <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
 
+            
+            <!-- Url du site local -->
+            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px; margin-top: 10px;">
+                <b:column span="2">
+                    <h:outputText value="Url du site local" title="L'URL local du serveur qui héberge Opentheso, elle sert aussi à générer les identifiants pérennes (exp: https://monsite.fr/opentheso/)"/>
+                </b:column>                
+                <b:column span="6" >
+                    <b:inputText value="#{preferenceBean.nodePreference.cheminSite}" style="height: 25px;font-size: 12px;"
+                                 title="L'URL local du serveur qui héberge Opentheso, elle sert aussi à générer les identifiants pérennes (exp: https://monsite.fr/opentheso/)"/>
+                </b:column>              
+            </b:row>
+            <p:spacer/>            
+            
             <!-- Uri d'origine -->
             <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                 <b:column span="2">

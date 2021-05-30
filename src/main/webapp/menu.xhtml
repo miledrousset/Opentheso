@@ -15,6 +15,14 @@
                           brandHref="index.xhtml" fluid="true"> -->              
                     
                     <b:navbarLinks pull="left" rendered="#{currentUser.nodeUser != null}">
+                        
+                        <!--Clean Session-->
+                        <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{langueBean.getMsg('menu.cleanSession')}"
+                                          icon-awesome="fa-broom" icon-size="l" style="color: #C63632;"
+                                          ajax="true"
+                                        update="idClearSession clearSessionForm"
+                                        oncomplete="PF('clearSession').show();" />    
+                        
                         <b:navCommandLink 
                             value="#{langueBean.getMsg('menu.thesaurus')}"  
                             action="#{indexSetting.setIsThesoActive(true)}"
@@ -128,4 +136,5 @@
     <ui:include src="dialog/login/login.xhtml" />    
     <ui:include src="dialog/help.xhtml" />
     <ui:include src="dialog/helpAlignment.xhtml" />    
+    <ui:include src="dialog/session/clearSession.xhtml" />  
 </ui:fragment>

@@ -20,10 +20,12 @@ public class ToolBoxBean implements Serializable {
     
     private boolean isEditionActive;
     private boolean isAtelierActive;
+    private boolean isServiceActive;    
     private boolean isStatisticActive;
 
     private String editionColor;
     private String atelierColor;
+    private String serviceColor;    
     private String statisticColor;
 
     @PreDestroy
@@ -32,7 +34,8 @@ public class ToolBoxBean implements Serializable {
     }  
     public void clear(){
         editionColor = null;
-        atelierColor = null;        
+        atelierColor = null;
+        serviceColor = null;
         statisticColor = null;
     }      
     
@@ -40,6 +43,7 @@ public class ToolBoxBean implements Serializable {
         isEditionActive = true;
         isStatisticActive = false;
         isAtelierActive = false;
+        isServiceActive = false;
         
         // activation de la couleur pour edition
         resetColor();
@@ -56,6 +60,7 @@ public class ToolBoxBean implements Serializable {
         this.isEditionActive = isEditionActive;
         isStatisticActive = false;
         isAtelierActive = false;
+        isServiceActive = false;
         resetColor();
         editionColor = "white";          
     }
@@ -68,6 +73,7 @@ public class ToolBoxBean implements Serializable {
         this.isStatisticActive = isStatisticActive;
         isEditionActive = false;
         isAtelierActive = false;
+        isServiceActive = false;
         resetColor();
         statisticColor = "white";          
     }
@@ -80,14 +86,30 @@ public class ToolBoxBean implements Serializable {
         this.isAtelierActive = isAtelierActive;
         isEditionActive = false;
         isStatisticActive = false;
+        isServiceActive = false;
         resetColor();
         atelierColor = "white";
         atelierThesBean.init();
+    }
+
+    public boolean isIsServiceActive() {
+        return isServiceActive;
+    }
+
+    public void setIsServiceActive(boolean isServiceActive) {
+        this.isServiceActive = isServiceActive;
+        isAtelierActive = false;
+        isEditionActive = false;
+        isStatisticActive = false;
+        resetColor();
+        serviceColor = "white";
+        atelierThesBean.init();        
     }
     
     private void resetColor(){
         editionColor = "#B3DDC4";
         atelierColor = "#B3DDC4";
+        serviceColor = "#B3DDC4";        
         statisticColor = "#B3DDC4";
     }
 
@@ -114,5 +136,15 @@ public class ToolBoxBean implements Serializable {
     public void setAtelierColor(String atelierColor) {
         this.atelierColor = atelierColor;
     }
+
+    public String getServiceColor() {
+        return serviceColor;
+    }
+
+    public void setServiceColor(String serviceColor) {
+        this.serviceColor = serviceColor;
+    }
+    
+    
     
 }

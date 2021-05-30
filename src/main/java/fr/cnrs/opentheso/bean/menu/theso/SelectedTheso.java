@@ -62,6 +62,8 @@ public class SelectedTheso implements Serializable {
 
     private String thesoName;
     private boolean sortByNotation;
+    
+    private String localUri;
 
     @PreDestroy
     public void destroy(){
@@ -79,6 +81,7 @@ public class SelectedTheso implements Serializable {
         currentLang = null;
         idThesoFromUri = null;      
         thesoName = null;   
+        localUri = null;
         System.gc();
         System.runFinalization();        
     }      
@@ -112,6 +115,7 @@ public class SelectedTheso implements Serializable {
         selectedIdTheso = null;
         currentIdTheso = null;
         thesoName = null;
+        localUri = null;
     }
 
     private void initIdsFromUri() {
@@ -132,7 +136,11 @@ public class SelectedTheso implements Serializable {
      * l'application
      */
 //    public void setSelectedTheso() throws IOException {
-    public void setSelectedTheso() {        
+    public void setSelectedTheso() {
+        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
+        connect.setLocalUri(localUri);        
+        
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -231,6 +239,10 @@ public class SelectedTheso implements Serializable {
             isActionFromConcept = false;
             return;
         }
+        if (selectedLang.equalsIgnoreCase("all")) {
+            isActionFromConcept = false;
+            return;
+        }        
         startNewLang();
     }
 
@@ -444,6 +456,14 @@ public class SelectedTheso implements Serializable {
 
     public void setSortByNotation(boolean sortByNotation) {
         this.sortByNotation = sortByNotation;
+    }
+
+    public String getLocalUri() {
+        return localUri;
+    }
+
+    public void setLocalUri(String localUri) {
+        this.localUri = localUri;
     }
 
 }

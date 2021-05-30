@@ -1,0 +1,45 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+        <b:row>
+            <b:column span="10" offset="1">
+                <h:outputText value="Thesaurus séléctionné : #{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
+            </b:column>
+        </b:row>
+        
+        <p:spacer/>
+        
+        <b:row>
+            <b:column span="10" offset="1">
+                <div class="p-my-3">
+                    <p:commandButton value="Correction type1" icon="pi pi-check" iconPos="right"
+                                     action="#{restoreTheso.reorganizing(selectedTheso.currentIdTheso)}"/>
+                </div>           
+            </b:column>
+        </b:row>        
+        <b:row>
+            <b:column span="10" offset="1">
+                <p:outputPanel deferred="true">
+                    <h4>La coorection de (Type1) permet de corriger les incohérences dans le thésaurus en cours :</h4>
+                    <p>1- detecter les concepts TT erronnés : si le concept n'a pas de BT, alors, il est forcement TopTerme.<br/>
+                       2- compléter le thésaurus par les relations qui manquent NT ou BT.<br/>
+                       3- supprimer les relations en boucle (100 -> BT -> 100) ou  (100 -> NT -> 100)ou (100 -> RT -> 100).
+                    </p>
+                    <p style="color:red;">!!! Ne pas oublier de recharger le thésaurus à la fin du traitement !!!</p>                   
+                </p:outputPanel>                
+            </b:column>
+        </b:row>  
+
+        <p:spacer/>
+        
+        <b:row>
+            <b:column span="11" offset="1" >
+                <b:messages autoUpdate="true"/>
+            </b:column>             
+        </b:row>
+
+</ui:fragment>

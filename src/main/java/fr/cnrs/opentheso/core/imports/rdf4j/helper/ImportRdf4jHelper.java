@@ -753,19 +753,43 @@ public class ImportRdf4jHelper {
 
 
         // initialisation des variables
+        acs.concept = null;
         acs.concept = new Concept();
+        
+        acs.nodeTerm = null;
         acs.nodeTerm = new NodeTerm();
-        acs.nodeTermTraductionList = new ArrayList<>();
-        acs.nodeEMList = new ArrayList<>();
-        acs.nodeNotes = new ArrayList<>();
-        acs.nodeAlignments = new ArrayList<>();
-        acs.hierarchicalRelationships = new ArrayList<>();
-        acs.idGrps = new ArrayList<>();
+        
+        if(acs.nodeTermTraductionList != null)
+            acs.nodeTermTraductionList.clear();
+        
+        if(acs.nodeEMList != null)
+            acs.nodeEMList.clear();        
+
+        if(acs.nodeNotes != null)
+            acs.nodeNotes.clear();           
+
+        if(acs.nodeAlignments != null)
+            acs.nodeAlignments.clear();            
+
+        if(acs.hierarchicalRelationships != null)
+            acs.hierarchicalRelationships.clear();          
+
+        if(acs.idGrps != null)
+            acs.idGrps.clear();         
+
         acs.isTopConcept = false;
+        
+        acs.nodeGps = null;        
         acs.nodeGps = new NodeGps();
-        acs.nodeImages = new ArrayList<>();
-        acs.replacedBy = new ArrayList<>();
-        acs.replaces = new ArrayList<>();
+        
+        if(acs.nodeImages != null)
+            acs.nodeImages.clear();           
+
+        if(acs.replacedBy != null)
+            acs.replacedBy.clear();            
+
+        if(acs.replaces != null)
+            acs.replaces.clear();         
         acs.conceptStatus = "";
         
     }
@@ -1070,16 +1094,11 @@ public class ImportRdf4jHelper {
 
             } else if (prop == SKOSProperty.memberOf) {
                 acs.collectionToAdd = getIdFromUri(relation.getTargetUri());
-            } if (hasTopConcceptList.contains(acs.conceptResource.getUri())) {
-                acs.isTopConcept = true;
             }
-    /*        String uri = acs.conceptResource.getUri();
-            String idPere = memberHashMap.get(uri);
-
-            if (idPere != null) {
-                acs.idGrps.add(idPere);
-                memberHashMap.remove(uri);
-            }*/
+            if (hasTopConcceptList.contains(acs.conceptResource.getUri())) {
+                if(!acs.isTopConcept == false)
+                    acs.isTopConcept = true;
+            }
         }
     }
 

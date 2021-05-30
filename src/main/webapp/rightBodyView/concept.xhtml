@@ -19,30 +19,33 @@
 
                     <b:navCommandLink  value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_branch')}" tooltip-delay-show="1000"
-                                       action="#{cutAndPaste.onStartCut(conceptView.nodeConcept)}"
+                                       action="#{dragAndDrop.setDragNode(tree.selectedNode)}"
+                                       actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
                                        styleClass="buttonIconOrange"
+                                       ajax="true"
                                        style="font-size: 12px;"
                                        update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
                     </b:navCommandLink>
-                    <b:navCommandLink  rendered="#{(cutAndPaste.isCopyOn) and
-                                                   (cutAndPaste.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
+                    <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and
+                                                   (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.as_specific')}" 
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_under_concept')}" tooltip-delay-show="1000"
-                                       actionListener="#{cutAndPaste.setDropppedConcept(conceptView.nodeConcept)}"
-                                       action="#{cutAndPaste.validatePaste()}"
-                                       oncomplete="PF('cutAndPaste').show();"
+                                       actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
+                                       action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
                                        styleClass="buttonIconOrange"
+                                       ajax="true"
                                        style="font-size: 12px;"
-                                       update="idCutAndPaste cutAndPasteForm">
+                                       update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
                     </b:navCommandLink>
-                    <b:navCommandLink  rendered="#{(cutAndPaste.isCopyOn) and (!cutAndPaste.cuttedConcept.concept.topConcept)}"
+                    <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}" 
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_as_topterm')}" tooltip-delay-show="1000"
-                                       actionListener="#{cutAndPaste.setIsDropToRoot(true)}"
-                                       action="#{cutAndPaste.paste()}"
+                                       actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
+                                       action="#{dragAndDrop.paste(null)}"
                                        styleClass="buttonIconOrange"
+                                       ajax="true"
                                        style="font-size: 12px;"
-                                       update="idCutAndPaste cutAndPasteForm">
+                                       update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
                     </b:navCommandLink>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_concept')}" 
                                       tooltip="#{langueBean.getMsg('rightbody.concept.toottip_delete_concept')}"
@@ -220,8 +223,7 @@
             </b:column>
 
         </b:row> 
-        <ui:include src="/dialog/dragAndDrop/dragAndDrop.xhtml" />
-        <ui:include src="/dialog/dragAndDrop/cutAndPaste.xhtml" />
+
         <ui:include src="/dialog/concept/deleteConcept.xhtml" />   
         <ui:include src="/dialog/concept/deprecateConcept.xhtml" />
         <ui:include src="/dialog/concept/approveConcept.xhtml" />
@@ -250,7 +252,7 @@
                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.replaced_by')}" title="Preferred Term" />
                     <ui:repeat var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status" >
                         <h:outputText value=" #{replace.value}" title="#{replace.id}"/>
-                        <h:outputText rendered="#{!status.last}" value=", " style="color: white"/>
+                        <h:outputText rendered="#{!status.last}" value=" , " style="color: white"/>
                     </ui:repeat>
                 </b:column>
             </b:row>
@@ -380,7 +382,7 @@
                                       update="formLeftTab formRightTab indexTitle"
                                       style="color: #C63632;"></b:navCommandLink>
 
-                    <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
+                    <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                 </ui:repeat>
             </b:column>
             <p:spacer/>
@@ -406,7 +408,7 @@
                                       update="formLeftTab formRightTab indexTitle"
                                       style="color: #C63632;"></b:navCommandLink>
 
-                    <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
+                    <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                 </ui:repeat>
             </b:column>
             <p:spacer/>
@@ -467,7 +469,7 @@
                                       update="formLeftTab formRightTab indexTitle"
                                       style="color: #43B572;"></b:navCommandLink>                                        
 
-                    <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
+                    <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                 </ui:repeat>
             </b:column>            
         </b:row>
@@ -533,7 +535,7 @@
                                                     value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #FF7979;"
                                           styleClass="textOpentheso"/>   
-                        <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/> 
+                        <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/> 
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
                 </b:column>    
@@ -600,7 +602,7 @@
                                                     value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #FF7979;"
                                           styleClass="textOpentheso"/> 
-                        <h:outputText rendered="#{!status1.last}" value=", " style="color: #FF7979"/>    
+                        <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>    
                     </ui:repeat>
 
                     <!-- plus de 20 NT -->
@@ -620,7 +622,7 @@
                                                     value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #FF7979;"
                                           styleClass="textOpentheso"/>  
-                        <h:outputText  value=", " style="color: #FF7979"/>
+                        <h:outputText  value=" , " style="color: #FF7979"/>
                     </ui:repeat>
 
                     <b:navCommandLink rendered="#{conceptView.nodeConcept.nodeNT.size() gt (conceptView.sizeToShowNT)}"
@@ -684,7 +686,7 @@
                                                     rt.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #FF7979; background: none; box-shadow: none; border: none;"
                                           styleClass="textOpentheso"/>   
-                        <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
+                        <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                     </ui:repeat>
                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
                 </b:column>  
@@ -734,7 +736,7 @@
                         <b:column span="12">
                             <ui:repeat var="em" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
                                 <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
-                                <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=", " style="color: #FF7979"/>
+                                <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979"/>
                             </ui:repeat>
                         </b:column>
                     </b:row>
@@ -744,7 +746,7 @@
                                            title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}" style="font-size: 12px; color: #FF7979; font-style: italic " />
                             <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
                                 <h:outputText rendered="#{em2.hiden}" value="#{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
-                                <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=", " style="color: #FF7979"/>
+                                <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=" , " style="color: #FF7979"/>
                             </ui:repeat>
                         </b:column>
                     </b:row>                    
@@ -1078,7 +1080,8 @@
 
 
                 <b:column span="6" colXs="6"  offset-md="0" offsetSm="0" offset-xs="0" rendered="#{conceptView.nodeConcept.nodeimages.size() !=0}">
-                    <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="images" panelWidth="450" panelHeight="110" showCaption="false">
+                    <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="images" panelWidth="450" panelHeight="110" 
+                                autoPlay="false" showCaption="false">
                         <p:graphicImage value="#{images.uri}"
                                         title="#{images.copyRight}"
                                         url="#{images.uri}"
