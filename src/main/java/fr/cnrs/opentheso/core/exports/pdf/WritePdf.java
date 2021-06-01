@@ -49,7 +49,6 @@ public class WritePdf {
     ArrayList<Paragraph> paragraphList = new ArrayList<>();
     ArrayList<Paragraph> paragraphTradList = new ArrayList<>();
 
-    ByteArrayOutputStream output;
     HashMap<String, String> idToNameHashMap;
     HashMap<String, ArrayList<String>> idToChildId = new HashMap<>();
     HashMap<String, ArrayList<String>> idToDocumentation = new HashMap<>();
@@ -73,16 +72,8 @@ public class WritePdf {
     Font relationFont;
     Font hieraInfoFont;
 
-    /**
-     * export un thésaurus en format pdf
-     *
-     * @param xmlDocument
-     * @param codeLang
-     * @param codeLang2
-     * @param type 1 pour alphabetique / 2 pour hierarchique
-     */
-    public WritePdf(SKOSXmlDocument xmlDocument, String codeLang, String codeLang2, int type) {
 
+    public byte[] createPdfFile(SKOSXmlDocument xmlDocument, String codeLang, String codeLang2, int type) {
         try {
             bf = BaseFont.createFont(FONT, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (DocumentException | IOException ex) {
@@ -104,29 +95,23 @@ public class WritePdf {
         if (codeLang2 != null && !codeLang2.equals("")) {
             document.setPageSize(PageSize.LETTER.rotate());
         }
-        try {
-            output = new ByteArrayOutputStream();
+
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             PdfWriter.getInstance(document, output);
 
-        } catch (DocumentException ex) {
-            Logger.getLogger(WritePdf.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        document.open();
-        writeConceptSheme();
-        if (type == 1) {
-            writeAlphabetiquePDF(paragraphList, codeLang, codeLang2, false);
-        } else if (type == 0) {
-            writeHieraPDF(paragraphList, codeLang, codeLang2, false, idToDocumentation);
-        }
-        try {
+            document.open();
+            writeConceptSheme();
+
+            if (type == 1) {
+                writeAlphabetiquePDF(paragraphList, codeLang, codeLang2, false);
+            } else if (type == 0) {
+                writeHieraPDF(paragraphList, codeLang, codeLang2, false, idToDocumentation);
+            }
 
             if (codeLang2 != null && codeLang2.equals("")) {
                 for (Paragraph paragraph : paragraphList) {
-
                     document.add(paragraph);
-
                 }
-
             } else {
                 if (type == 1) {
                     writeAlphabetiquePDF(paragraphTradList, codeLang2, codeLang, true);
@@ -155,16 +140,18 @@ public class WritePdf {
                     table.addCell(cell2);
 
                 }
-
                 document.add(table);
-
             }
 
-        } catch (DocumentException ex) {
+            document.close();
+            return output.toByteArray();
+        } catch (Exception ex) {
+            if (document != null) {
+                document.close();
+            }
             Logger.getLogger(WritePdf.class.getName()).log(Level.SEVERE, null, ex);
+            return new byte[0];
         }
-
-        document.close();
     }
 
     /**
@@ -206,11 +193,8 @@ public class WritePdf {
                 String indentation = "";
                 writeHieraTermInfo(conceptID, indentation, paragraphs, idToDoc);
                 writeHieraTermRecursif(conceptID, indentation, paragraphs, idToDoc);
-
             }
-
         }
-
     }
 
     /**
@@ -586,14 +570,6 @@ public class WritePdf {
 
         }
 
-    }
-
-    /**
-     *
-     * @return un ByteArrayOutputStream pour télécharcher le pdf
-     */
-    public ByteArrayOutputStream getOutput() {
-        return output;
     }
 
     public static String getIdFromUri(String uri) {

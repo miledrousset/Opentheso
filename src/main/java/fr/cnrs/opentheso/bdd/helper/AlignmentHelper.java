@@ -315,48 +315,31 @@ public class AlignmentHelper {
      *
      * @return
      */
-    public boolean addNewAlignment(HikariDataSource ds,
-            NodeAlignment nodeAlignment) {
-
-        Connection conn;
-        Statement stmt;
+    public boolean addNewAlignment(HikariDataSource ds, NodeAlignment nodeAlignment) {
 
         nodeAlignment.setConcept_target(new StringPlus().convertString(nodeAlignment.getConcept_target()));
         nodeAlignment.setUri_target(new StringPlus().convertString(nodeAlignment.getUri_target()));
 
-        boolean status = false;
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into alignement "
-                            + "(author, concept_target, thesaurus_target,"
-                            + " uri_target, alignement_id_type,"
-                            + " internal_id_thesaurus, internal_id_concept)"
-                            + " values ("
-                            + nodeAlignment.getId_author()
-                            + ",'" + nodeAlignment.getConcept_target() + "'"
-                            + ",'" + nodeAlignment.getThesaurus_target() + "'"
-                            + ",'" + nodeAlignment.getUri_target() + "'"
-                            + "," + nodeAlignment.getAlignement_id_type()
-                            + ",'" + nodeAlignment.getInternal_id_thesaurus() + "'"
-                            + ",'" + nodeAlignment.getInternal_id_concept() + "')";
-
-                    stmt.executeUpdate(query);
-                    status = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("Insert into alignement "
+                        + "(author, concept_target, thesaurus_target,"
+                        + " uri_target, alignement_id_type,"
+                        + " internal_id_thesaurus, internal_id_concept)"
+                        + " values ("
+                        + nodeAlignment.getId_author()
+                        + ",'" + nodeAlignment.getConcept_target() + "'"
+                        + ",'" + nodeAlignment.getThesaurus_target() + "'"
+                        + ",'" + nodeAlignment.getUri_target() + "'"
+                        + "," + nodeAlignment.getAlignement_id_type()
+                        + ",'" + nodeAlignment.getInternal_id_thesaurus() + "'"
+                        + ",'" + nodeAlignment.getInternal_id_concept() + "')");
+                return true;
             }
         } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while adding external alignement with target : " + nodeAlignment.getUri_target(), sqle);
+            return false;
         }
-        return status;
     }
 
     /**
@@ -731,13 +714,10 @@ public class AlignmentHelper {
      * @param currentIdTheso
      * @return
      */
-    public boolean addNewAlignmentSource(HikariDataSource ds, AlignementSource alignement,
-            int id_user, String currentIdTheso) {
+    public boolean addNewAlignmentSource(HikariDataSource ds, AlignementSource alignement, int id_user, String currentIdTheso) {
         int id_alignement;
-        boolean status = false;
 
-        try {
-            Connection conn = ds.getConnection();
+        try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
 
             if (!insertAlignementSource(conn, alignement, id_user)) {
@@ -753,18 +733,13 @@ public class AlignmentHelper {
                     return false;
                 }
             }
-            status = true;
-
             conn.commit();
-            if (!conn.isClosed()) {
-                conn.close();
-            }
-
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(AlignmentHelper.class.getName()).log(Level.SEVERE, null, ex);
             message = ex.toString();
+            return false;
         }
-        return status;
     }
 
     public boolean isThesoEnCours(String idTheso, String currentIdTheso) {

@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.core.exports.rdf4j;
 
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.ArrayList;
 
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.*;
@@ -27,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
@@ -56,9 +57,7 @@ public class ExportRdf4jHelperNew {
         superGroupHashMap = new HashMap();
     }
 
-    public boolean setInfos(
-            NodePreference nodePreference,
-            String formatDate, boolean useUriArk, boolean useUriHandle) {
+    public boolean setInfos(NodePreference nodePreference, String formatDate, boolean useUriArk, boolean useUriHandle) {
         this.formatDate = formatDate;
         this.useUriArk = useUriArk;
         this.useUriHandle = useUriHandle;
@@ -91,7 +90,6 @@ public class ExportRdf4jHelperNew {
         NodeThesaurus nodeThesaurus = new ThesaurusHelper().getNodeThesaurus(ds, idTheso);
         String uri = getUriFromId(nodeThesaurus.getIdThesaurus());
         SKOSResource conceptScheme = new SKOSResource(uri, SKOSProperty.ConceptScheme);
-//        idTheso = nodeThesaurus.getIdThesaurus();
         String creator;
         String contributor;
         String title;
@@ -164,9 +162,9 @@ public class ExportRdf4jHelperNew {
         }
     }
     
-    private void addFacetMembers(HikariDataSource ds, 
-            FacetHelper facetHelper, SKOSResource sKOSResource,
+    private void addFacetMembers(HikariDataSource ds, FacetHelper facetHelper, SKOSResource sKOSResource,
             NodeFacet nodeFacet, String idTheso){
+
         ConceptHelper conceptHelper = new ConceptHelper();
         NodeUri nodeUri;
         List<String> members = facetHelper.getAllMembersOfFacet(ds, nodeFacet.getIdFacet(), idTheso);
@@ -202,8 +200,7 @@ public class ExportRdf4jHelperNew {
         }
     }
 
-    private void writeGroupInfo(HikariDataSource ds, SKOSResource sKOSResource,
-            String idTheso, String idOfGroupChild) {
+    private void writeGroupInfo(HikariDataSource ds, SKOSResource sKOSResource, String idTheso, String idOfGroupChild) {
 
         NodeGroupLabel nodeGroupLabel;
         nodeGroupLabel = new GroupHelper().getNodeGroupLabel(ds, idOfGroupChild, idTheso);
@@ -228,13 +225,10 @@ public class ExportRdf4jHelperNew {
         }
 
         ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idOfGroupChild, idTheso);
-//        ArrayList<NodeUri> nodeUris = new ConceptHelper().getListIdsOfTopConceptsForExport(ds, idOfGroupChild, idTheso);
-
         ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
-      //      addMember(ds, nodeUri.getIdConcept(), idTheso, sKOSResource);
         }
 
         for (String id : childURI) {
@@ -243,7 +237,6 @@ public class ExportRdf4jHelperNew {
         }
 
         String idSuperGroup = superGroupHashMap.get(idOfGroupChild);
-
         if (idSuperGroup != null) {
             sKOSResource.addRelation(getUriFromId(idSuperGroup), SKOSProperty.superGroup);
             superGroupHashMap.remove(idOfGroupChild);
@@ -256,17 +249,6 @@ public class ExportRdf4jHelperNew {
         }
         skosXmlDocument.addGroup(sKOSResource);
     }
-    private void addMember(HikariDataSource ds,
-            String id, String idThesaurus, SKOSResource resource) {
-
-        RelationsHelper relationsHelper = new RelationsHelper();
-        ArrayList<NodeHieraRelation> listChildren = relationsHelper.getListNT(ds, id, idThesaurus);
-
-        for (NodeHieraRelation idChildren : listChildren) {
-            resource.addRelation(getUriFromNodeUri(idChildren.getUri(), idThesaurus), SKOSProperty.member);
-            addMember(ds, idChildren.getUri().getIdConcept(), idThesaurus, resource);
-        }
-    }
 
 
     /**
@@ -278,11 +260,10 @@ public class ExportRdf4jHelperNew {
      * @param isCandidatExport
      */
     public void exportConcept(HikariDataSource ds, String idTheso, String idConcept, boolean isCandidatExport) {
-        SKOSResource sKOSResource = new SKOSResource();
 
+        SKOSResource sKOSResource = new SKOSResource();
         ConceptHelper conceptHelper = new ConceptHelper();
         NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, false, isCandidatExport);
-
 
         if (nodeConcept == null) {
             messages = messages + ("Erreur concept non exporté importé: " + idConcept + "\n");
@@ -296,9 +277,6 @@ public class ExportRdf4jHelperNew {
         //    concept.setUri(getUriFromId(idConcept));
         sKOSResource.setUri(getUri(nodeConcept));
         sKOSResource.setProperty(SKOSProperty.Concept);
-
-        //// définir le status du Concept (CA=candidat, DEP= déprécié, autre= concept)
-        setStatusOfConcept(nodeConcept.getConcept().getStatus(), sKOSResource);
 
         // ajout des concepts de remplacements ReplacedBy et Replaces
         if(nodeConcept.getReplacedBy() != null && !nodeConcept.getReplacedBy().isEmpty()) {
@@ -343,12 +321,7 @@ public class ExportRdf4jHelperNew {
         if (nodeConcept.getConcept().getNotation() != null && !nodeConcept.getConcept().getNotation().equals("null")) {
             sKOSResource.addNotation(nodeConcept.getConcept().getNotation());
         }
-        if (nodeConcept.getConcept().getCreated().toString() != null) {
-            sKOSResource.addDate(nodeConcept.getConcept().getCreated().toString(), SKOSProperty.created);
-        }
-        if (nodeConcept.getConcept().getModified().toString() != null) {
-            sKOSResource.addDate(nodeConcept.getConcept().getModified().toString(), SKOSProperty.modified);
-        }
+
         sKOSResource.addRelation(getUriFromId(idTheso), SKOSProperty.inScheme);
         for (NodeUri nodeUri : nodeConcept.getNodeListIdsOfConceptGroup()) {
             sKOSResource.addRelation(getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.memberOf);
@@ -371,7 +344,6 @@ public class ExportRdf4jHelperNew {
         if (!pathFromArray.isEmpty()) {
             sKOSResource.setPaths(pathFromArray);
         }
-        //    sKOSResource.setPath("A/B/C/D/"+idConcept);
         
         // les images
         if(nodeConcept.getNodeimages() != null || (!nodeConcept.getNodeimages().isEmpty())) {
@@ -381,21 +353,6 @@ public class ExportRdf4jHelperNew {
         }
         
         skosXmlDocument.addconcept(sKOSResource);
-    }
-    
-    private void setStatusOfConcept(String status, SKOSResource sKOSResource){
-        switch (status.toLowerCase()) {
-            case "ca":
-                sKOSResource.setStatus(SKOSProperty.candidate);
-                break;
-            case "dep":
-                sKOSResource.setStatus(SKOSProperty.deprecated);
-                break;
-            default:
-                sKOSResource.setStatus(SKOSProperty.Concept);
-                break;              
-        }
-        
     }
 
     private SKOSStatus addStatut(NodeStatus nodeStatus) {
@@ -675,16 +632,12 @@ public class ExportRdf4jHelperNew {
             uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept()
                         + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         }
-//        uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
 
         return uri;
     }
 
     /**
-     * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
-     * : si renseigné sinon l'URL du Site
-     *
-     * @return
+     * Cette fonction permet de retourner l'URI du concept avec identifiant Ark : si renseigné sinon l'URL du Site
      */
     private String getUriFromGroup(NodeGroupLabel nodeGroupLabel) {
         String uri = "";

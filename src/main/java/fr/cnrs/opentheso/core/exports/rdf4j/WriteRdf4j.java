@@ -34,10 +34,10 @@ public class WriteRdf4j {
     public final static String DISCUSSION_TAG = "message";
     public final static String VOTE_TAG = "vote";
 
-    private static Model model;
-    private static ModelBuilder builder;
+    private Model model;
+    private ModelBuilder builder;
     private SKOSXmlDocument xmlDocument;
-    ValueFactory vf;
+    private ValueFactory vf;
 
     /**
      *
@@ -49,6 +49,14 @@ public class WriteRdf4j {
         loadModel();
         writeModel();
         model = builder.build();
+    }
+
+    public void closeCache() {
+        model.clear();
+        model = null;
+        vf = null;
+        builder = null;
+        System.gc();
     }
 
     private void loadModel() {

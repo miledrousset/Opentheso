@@ -51,9 +51,9 @@ public class ViewExportBean implements Serializable {
     
     // ajouté par Miled
     private boolean isAllGroupsSelected; 
-    private boolean isAllLangsSelected; 
+    private boolean isAllLangsSelected;
     private String selectedGroup;
-    
+
     
     // pour le format PDF
     private String selectedLang1_PDF; // pour comparer entre 2 langues maxi pour le PDF
@@ -148,8 +148,8 @@ public class ViewExportBean implements Serializable {
         selectedExportFormat = "rdf";
 
         downloadBean.setProgressBar(0);
-        downloadBean.setProgressStep(0); 
-        
+        downloadBean.setProgressStep(0);
+
         selectedGroup = "all";
     }
     
@@ -351,5 +351,5 @@ public class ViewExportBean implements Serializable {
         this.selectedGroup = selectedGroup;
     }
 
-    
+
 }

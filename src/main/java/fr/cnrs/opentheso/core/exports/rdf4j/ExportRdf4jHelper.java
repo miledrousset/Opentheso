@@ -600,8 +600,6 @@ public class ExportRdf4jHelper {
         
         sKOSResource.addIdentifier(nodeConcept.getConcept().getIdConcept(), SKOSProperty.identifier);
 
-        downloadBean.setProgressBar(downloadBean.getProgressStep() + downloadBean.getProgressBar());
-
         skosXmlDocument.addconcept(sKOSResource);
 
     }

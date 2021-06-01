@@ -146,13 +146,10 @@ public final class ArkClientRest {
         // il faut vérifier la connexion avant 
         if(loginJson == null) return false;
 
-        Client client= ClientBuilder.newClient();        
-        WebTarget webTarget = client
-                .target(propertiesArk.getProperty("serverHost"))
-                .path("rest/v1/ark/add");
-        
-        Response response =  webTarget.request(MediaType.APPLICATION_JSON).put(Entity.json(arkString));  
-        try {
+        Client client= ClientBuilder.newClient();
+        WebTarget webTarget = client.target(propertiesArk.getProperty("serverHost")).path("rest/v1/ark/add");
+
+        try(Response response =  webTarget.request(MediaType.APPLICATION_JSON).put(Entity.json(arkString))) {
             if (response.getStatus() != 200) {
                 message =  "Erreur lors de l'ajout d'un Ark" + response.getStatus();
                 response.close();
@@ -160,10 +157,8 @@ public final class ArkClientRest {
                 return false;
             }
             jsonArk = response.readEntity(String.class);
-        } finally {
-            response.close();
-            client.close();
         }
+        client.close();
         return setIdArkHandle();
     }
     

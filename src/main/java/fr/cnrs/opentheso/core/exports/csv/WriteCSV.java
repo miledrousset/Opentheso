@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.core.exports.csv;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
@@ -15,14 +10,17 @@ import fr.cnrs.opentheso.skosapi.SKOSNotation;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
-import java.io.ByteArrayOutputStream;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+
+import java.io.ByteArrayOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 
 
@@ -32,7 +30,6 @@ public class WriteCSV {
     
     private char seperate;
     private BufferedWriter writer;
-    private ByteArrayOutputStream output;
 
     /**
      * export un thésaurus en format csv
@@ -41,15 +38,14 @@ public class WriteCSV {
      * @param selectedLanguages
      * @param seperate
      */
-    public WriteCSV(SKOSXmlDocument xmlDocument, List<NodeLangTheso> selectedLanguages, char seperate) {
+    public byte[] importCsv (SKOSXmlDocument xmlDocument, List<NodeLangTheso> selectedLanguages, char seperate) {
         if(selectedLanguages == null || selectedLanguages.isEmpty()) {
-            return;
+            return null;
         }
-        try {
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()){
+
+            this.writer = new BufferedWriter(new OutputStreamWriter(output));
             this.seperate = seperate;
-            // create a writer
-            output = new ByteArrayOutputStream();
-            writer = new BufferedWriter(new OutputStreamWriter(output));
 
             // write header record
             //URI rdf:type
@@ -68,7 +64,7 @@ public class WriteCSV {
             langs.forEach((lang) -> {
                 header.append("skos:altLabel@").append(lang).append(seperate);
             });
-            
+
             //skos:hiddenLabel
             langs.forEach((lang) -> {
                 header.append("skos:hiddenLabel@").append(lang).append(seperate);
@@ -78,23 +74,23 @@ public class WriteCSV {
             langs.forEach((lang) -> {
                 header.append("skos:definition@").append(lang).append(seperate);
             });
-            
+
             //skos:scopeNote
             langs.forEach((lang) -> {
                 header.append("skos:scopeNote@").append(lang).append(seperate);
             });
-            
+
             //skos:note
             langs.forEach((lang) -> {
                 header.append("skos:note@").append(lang).append(seperate);
-            });     
-            
+            });
+
             //skos:historyNote
             langs.forEach((lang) -> {
                 header.append("skos:historyNote@").append(lang).append(seperate);
-            });  
-            
-            
+            });
+
+
             header.append("skos:notation").append(seperate)
                     .append("skos:narrower").append(seperate)
                     .append("skos:broader").append(seperate)
@@ -113,7 +109,7 @@ public class WriteCSV {
             xmlDocument.getGroupList().forEach(groupe -> {
                 try {
                     writeResource(groupe, "skos:Collection", langs);
-                } catch (IOException e){ 
+                } catch (IOException e){
                     System.err.println(e.toString());
                 }
             });
@@ -123,15 +119,16 @@ public class WriteCSV {
                 try {
                     writeResource(concept, "skos:Concept", langs);
                 } catch (IOException e){
-                    System.err.println(e.toString());                    
+                    System.err.println(e.toString());
                 }
             });
 
-            //close the writer
             writer.close();
 
-        } catch (IOException ex) {
+            return output.toByteArray();
 
+        } catch (IOException ex) {
+            return null;
         }
     }
 
@@ -298,10 +295,6 @@ public class WriteCSV {
                 .filter(document -> document.getProperty() == propertie && document.getLanguage().equals(lang))
                 .map(document -> document.getText())
                 .collect(Collectors.joining(delim_multi_datas));
-    }
-
-    public ByteArrayOutputStream getOutput() {
-        return output;
     }
 
 }
