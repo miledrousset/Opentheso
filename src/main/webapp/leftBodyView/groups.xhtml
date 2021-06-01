@@ -12,7 +12,7 @@
         <b:column span="12">   
             <p:tree id="treeGroups" value="#{treeGroups.root}" dynamic="true" var="node" selectionMode="single" selection="#{treeGroups.selectedNode}"
                     style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll"
-                    disabled="#{treeGroups.noedSelected}" widgetVar="groupWidget">
+                    widgetVar="groupWidget">
 
                 <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
                 <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabGroups:idGlobalActionsGroup"/>

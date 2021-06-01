@@ -57,7 +57,6 @@ public class TreeGroups implements Serializable {
     private DataService dataService;
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
-    private boolean noedSelected;
 
     @PostConstruct
     public void postInit(){
@@ -73,7 +72,6 @@ public class TreeGroups implements Serializable {
         dataService = null;
         selectedNode = null;
         rightBodySetting.init();
-        noedSelected = false;
     }
 
     public void initialise(String idTheso, String idLang) {
@@ -82,7 +80,6 @@ public class TreeGroups implements Serializable {
         dataService = new DataService();
         root = dataService.createRoot();
         addFirstNodes();
-        noedSelected = false;
     }
 
     private boolean addFirstNodes() {
@@ -123,21 +120,11 @@ public class TreeGroups implements Serializable {
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
-
-        if (noedSelected) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
-                    "Un noeud est en cours de chargement !"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
-        } else {
-            noedSelected = true;
-            DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
-            if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
-                parent.getChildren().remove(0);
-                addGroupsChild(parent);
-                addConceptsChild(parent);
-            }
-            noedSelected = false;
+        DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
+        if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+            parent.getChildren().remove(0);
+            addGroupsChild(parent);
+            addConceptsChild(parent);
         }
     }
 
@@ -295,25 +282,16 @@ public class TreeGroups implements Serializable {
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
-        if (noedSelected) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
-                    "Un noeud est en cours de chargement !"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
-        } else {
-            noedSelected = true;
-            if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
-                rightBodySetting.setShowConceptToOn();
-                conceptView.getConceptForTree(idTheso,
-                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-                rightBodySetting.setIndex("0");
-            }
-            if (((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup()) {
-                rightBodySetting.setShowGroupToOn();
-                groupView.getGroup(idTheso, ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-                rightBodySetting.setIndex("1");
-            }
-            noedSelected = false;
+        if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
+            rightBodySetting.setShowConceptToOn();
+            conceptView.getConceptForTree(idTheso,
+                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+            rightBodySetting.setIndex("0");
+        }
+        if (((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup()) {
+            rightBodySetting.setShowGroupToOn();
+            groupView.getGroup(idTheso, ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+            rightBodySetting.setIndex("1");
         }
     }
     
@@ -344,14 +322,4 @@ public class TreeGroups implements Serializable {
                 ((TreeNodeData) selectedNode.getData()).getNodeId());
     }       
     
-    
-    
-
-    public boolean isNoedSelected() {
-        return noedSelected;
-    }
-
-    public void setNoedSelected(boolean noedSelected) {
-        this.noedSelected = noedSelected;
-    }
 }

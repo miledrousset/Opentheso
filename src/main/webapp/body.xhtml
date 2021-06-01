@@ -2,8 +2,7 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui">
 
-    <b:row rendered="#{!tree.diagramVisisble}">
-
+    <b:row >
         <b:column span="4" col-xs="0" col-sm="4" style="background: #FAEDE5" id="thesaurusTreeBlock">
             <b:panel look="success" style="margin-top: 5px; margin-left: -15px; margin-right: -15px; margin-bottom: -20px;" >
                 <ui:include src="leftBody.xhtml" />
@@ -17,10 +16,5 @@
             </b:panel>
         </b:column>
     </b:row>
-
-    <b:row rendered="#{tree.diagramVisisble}">
-        <ui:include src="/rightBodyView/conceptsDiagram.xhtml" />
-    </b:row>
-
 
 </ui:fragment>

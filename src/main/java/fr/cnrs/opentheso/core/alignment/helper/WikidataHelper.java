@@ -5,8 +5,7 @@
  */
 package fr.cnrs.opentheso.core.alignment.helper;
 
-import com.bordercloud.sparql.Endpoint;
-import com.bordercloud.sparql.EndpointException;
+import com.bordercloud.sparql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +35,7 @@ public class WikidataHelper {
         messages = new StringBuffer();
     }
     
+
     /**
      * Alignement du thésaurus vers la source Wikidata en Sparql et en retour du Json
      * @param idC
@@ -57,16 +57,22 @@ public class WikidataHelper {
                                     "  ?item rdfs:label \"fibula\"@en." +
                                     "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }" +
                                     "}";*/
-
+            //sp.setUserAgentRequestHeader("WDQS-Example Java"); 
             requete = requete.replaceAll("##value##", lexicalValue);
             requete = requete.replaceAll("##lang##", lang);
+            System.err.println("Je suis après la requete = " + requete);  
+            
             HashMap<String, HashMap> rs = sp.query(requete);
-
+            System.err.println("Je suis après sp.query");
             if(rs == null) return null;
 
 
             ArrayList<HashMap<String, Object>> rows_queryWikidata = (ArrayList) rs.get("result").get("rows");
+            
+            System.err.println("Je suis après rs.get()");            
+            
             for (HashMap<String, Object> hashMap : rows_queryWikidata) {
+                System.err.println("Je suis dans la boucle");                
                 NodeAlignment na = new NodeAlignment();
                 na.setInternal_id_concept(idC);
                 na.setInternal_id_thesaurus(idTheso);
@@ -92,13 +98,16 @@ public class WikidataHelper {
                     continue;
                 
                 listAlignValues.add(na);
+                System.err.println("Je suis à la fin de la boucle");                  
             }
         } catch (EndpointException eex) {
             messages.append(eex.toString());
             return null;
         }
         catch (Exception e) {
-            messages.append("pas de connexion internet !! " );
+            messages.append(requete);
+            messages.append(e.toString());
+            messages.append(" ou pas de connexion internet !! " );
             return null;
         }
         return listAlignValues;
