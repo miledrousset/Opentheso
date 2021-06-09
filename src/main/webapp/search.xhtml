@@ -4,7 +4,6 @@
              xmlns:p="http://primefaces.org/ui">
     <b:form id="formSearch">
         <b:row >
-            <!-- <b:column span="6" contentDisabled="false" offset-md="3">-->
             <b:column span="2" offset-lg="3" offset-md="3" offset-sm="0" colXs="4">
                 
                 <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}" 
@@ -38,30 +37,14 @@
 
             </b:column>     
             <b:column span="1" colXs="1">
-                <b:commandButton id="buttonSearch" action="#{searchBean.applySearch()}" 
-                                 update="formRightTab" 
-                            
-                                 iconAwesome="search" icon-size="l" style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; font-size: 12px"/>                
+                <b:commandButton id="buttonSearch" action="#{searchBean.applySearch()}"
+                                 update="formRightTab" iconAwesome="search" icon-size="l"
+                                 style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; font-size: 12px"/>
             </b:column>
-
-            
-            
-            <!--test-->
-            <!--
-            <b:column span="1" colXs="1">
-                <b:commandButton id="buttonTest" action="# {testMemory.testGetConcept()}" 
-                                 update="formSearch formRightTab"
-                                 iconAwesome="search" icon-size="l" style="color: red; background: #F7A269; border: none; height: 27px; font-size: 12px"/>
-            </b:column>     
-            -->
-            
-            
-            
                         
         </b:row>
 
         <b:row >
-            <!-- <b:column span="6" contentDisabled="false" offset-md="3">-->
             <b:column span="1" offset="5" offset-lg="5" offset-md="4" offset-xs="4" colXs="2"
                       style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
                 <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
