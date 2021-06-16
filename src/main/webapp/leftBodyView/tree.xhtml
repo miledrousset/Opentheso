@@ -3,7 +3,6 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
              xmlns:b="http://bootsfaces.net/ui">
-
     <b:row>
         <b:column  span="7" offset="1" >
             <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
@@ -40,19 +39,19 @@
                 <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree" />
 
 
-                <p:treeNode  expandedIcon="far fa-folder-open fa_custom_open" collapsedIcon="far fa-folder fa_custom_collapse" >
+                <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
                 </p:treeNode>                
-                <p:treeNode type="concept" expandedIcon="far fa-folder-open fa_custom_open fa-1x" collapsedIcon="far fa-folder fa_custom_collapse fa-1x" >
+                <p:treeNode type="concept" expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
                 </p:treeNode>
-                <p:treeNode type="file" icon="far fa-file fa_custom_file">
+                <p:treeNode type="file" icon="pi pi-file">
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}"  style="font-size: 12px"/>
                 </p:treeNode>   
-                <p:treeNode type="facet" icon="fas fa-magnet fa_custom_magnet fas-1x">
+                <p:treeNode type="facet" icon="pi pi-star">
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
                 </p:treeNode>
             </p:tree>

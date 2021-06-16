@@ -17,19 +17,19 @@
                 <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
                 <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabGroups:idGlobalActionsGroup"/>
 
-                <p:treeNode  expandedIcon="far fa-object-group" collapsedIcon="fas fa-object-group" >
+                <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>
                     <h:outputText title="#{node.nodeId}" value="#{node.name}" style="font-size: 12px"/>
                 </p:treeNode>                
-                <p:treeNode type="group" expandedIcon="far fa-object-group far_custom_open" collapsedIcon="fas fa-object-group far_custom_collapse" >
+                <p:treeNode type="group" expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>
                     <h:outputText title="#{node.nodeId}" value="#{node.name}" style="font-size: 12px"/>
                 </p:treeNode>
-                <p:treeNode type="subGroup" expandedIcon="far fa-object-group far_custom_open" collapsedIcon="fas fa-object-group far_custom_collapse">
+                <p:treeNode type="subGroup" expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>
                     <h:outputText title="#{node.nodeId}" value="#{node.name}" style="font-size: 12px"/>
                 </p:treeNode>                
-                <p:treeNode type="file" icon="far fa-file far_custom_file">
+                <p:treeNode type="file" icon="pi pi-file">
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>                        
                     <h:outputText title="#{node.nodeId}" value="#{node.name}"  style="font-size: 12px"/>
                 </p:treeNode>                    

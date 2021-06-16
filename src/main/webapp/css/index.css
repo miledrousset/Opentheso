@@ -165,3 +165,11 @@ margin-right: -1px;
     background-color: #43B572;
 }
 
+.ui-widget-content {
+    font-style: normal;
+}
+
+.ui-dialog-title {
+    color: #43B572;
+}
+
