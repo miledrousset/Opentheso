@@ -40,6 +40,7 @@ delete from thesaurus;
 delete from thesaurus_array;
 delete from thesaurus_label;
 delete from concept_facet;
+delete from corpus_link;
 
 --delete from user_role;
 delete from users;

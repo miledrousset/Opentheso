@@ -1,10 +1,11 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:b="http://bootsfaces.net/ui"
-             xmlns:f="http://java.sun.com/jsf/core">
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
 
 
-    <b:form id="formLeftTab">
+    <h:form id="formLeftTab">
         
         <b:row id="sortOption">
             <!-- Option de tri -->
@@ -65,6 +66,6 @@
                 </b:tabView>
             </b:column>
         </b:row>
-    </b:form>
+    </h:form>
         <ui:include src="/dialog/dragAndDrop/dragAndDrop.xhtml" />
 </ui:fragment>

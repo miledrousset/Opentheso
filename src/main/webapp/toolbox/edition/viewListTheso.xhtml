@@ -103,6 +103,11 @@
                                                       action="#{viewEditionBean.setIsViewExportCSV(true)}"
                                                       update="toolBoxForm"
                                                       style="font-size: 12px;"/>
+                                    <b:navCommandLink value="Identifiants en CSV" ajax="false" tooltip="Exporter les labels, identifiants, definitions au format CSV" tooltip-delay-show="1000"
+                                                      actionListener="#{viewExportBean.init(listTheso, 'CSV_id')}"
+                                                      action="#{viewEditionBean.setIsViewExportCSV(true)}"
+                                                      update="toolBoxForm"
+                                                      style="font-size: 12px;"/>                                    
                                 </b:dropMenu> 
                             </b:column>
 

@@ -608,14 +608,24 @@ public class AlignmentBean implements Serializable {
             }
         }
         // si l'alignement est de type Wikidata, on récupère la liste des concepts pour préparer le choix de l'utilisateur
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata")) {
-            getAlignmentWikidata(
+        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_sparql")) {
+            getAlignmentWikidata_sparql(
                     selectedAlignementSource,
                     idTheso,
                     idConcept,
                     lexicalValue,
                     idLang);
         }
+        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_rest")) {
+            getAlignmentWikidata_rest(
+                    selectedAlignementSource,
+                    idTheso,
+                    idConcept,
+                    lexicalValue,
+                    idLang);
+        }        
+        
+        
 
         // ici  IdRef pour les sujets
         if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefSujets")) {
@@ -715,7 +725,7 @@ public class AlignmentBean implements Serializable {
                     lexicalValue,
                     idLang);
         }
-        
+       // System.out.println("fin");
         
         if(listAlignValues != null) {
             if(listAlignValues.isEmpty()){
@@ -735,7 +745,7 @@ public class AlignmentBean implements Serializable {
      * @param lexicalValue
      * @param idLang
      */
-    private void getAlignmentWikidata(
+    private void getAlignmentWikidata_rest(
             AlignementSource alignementSource,
             String idTheso,
             String idConcept,
@@ -751,14 +761,49 @@ public class AlignmentBean implements Serializable {
 
         // action JSON (HashMap (Wikidata)
         //ici il faut appeler le filtre de Wikidata 
-        listAlignValues = wikidataHelper.queryWikidata(idConcept, idTheso, lexicalValue.trim(),
+        listAlignValues = wikidataHelper.queryWikidata_rest(idConcept, idTheso, lexicalValue.trim(),
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", wikidataHelper.getMessages()));
         }
     }
+    /**
+     * Cette fonction permet de récupérer les concepts à aligner de la source
+     * juste la liste des concepts avec une note pour distinguer les concepts/
+     *
+     * @param alignementSource
+     * @param idTheso
+     * @param idConcept
+     * @param lexicalValue
+     * @param idLang
+     */
+    private void getAlignmentWikidata_sparql(
+            AlignementSource alignementSource,
+            String idTheso,
+            String idConcept,
+            String lexicalValue,
+            String idLang) {
 
+        if (alignementSource == null) {
+            listAlignValues = null;
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Source :", "Pas de source sélectionnée"));
+            return;
+        }
+        WikidataHelper wikidataHelper = new WikidataHelper();
+
+        // action JSON (HashMap (Wikidata)
+        //ici il faut appeler le filtre de Wikidata 
+        listAlignValues = wikidataHelper.queryWikidata_sparql(idConcept, idTheso, lexicalValue.trim(),
+                idLang, alignementSource.getRequete(),
+                alignementSource.getSource());
+        if (listAlignValues == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", wikidataHelper.getMessages()));
+        }
+    }
+    
+    
+    
     /**
      * Cette fonction permet de récupérer les concepts à aligner de la source
      * juste la liste des concepts avec une note pour distinguer les concepts/

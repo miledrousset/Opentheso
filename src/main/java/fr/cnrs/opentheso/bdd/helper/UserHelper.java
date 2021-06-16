@@ -2555,6 +2555,12 @@ public class UserHelper {
         return status;
     }
 
+    /**
+     * permet de retourner le nom de l'utilisateur
+     * @param ds
+     * @param iden
+     * @return 
+     */
     public String getNameUser(HikariDataSource ds, int iden) {
 
         String name = "";

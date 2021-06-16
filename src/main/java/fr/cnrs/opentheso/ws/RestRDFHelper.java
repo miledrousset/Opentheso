@@ -16,16 +16,23 @@ import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 
@@ -34,6 +41,226 @@ import org.eclipse.rdf4j.rio.Rio;
  * @author miled.rousset
  */
 public class RestRDFHelper {
+    
+    
+    public String getInfosOfConcept(HikariDataSource ds,
+            String idTheso,
+            String idConcept,
+            String idLang){
+        if(idTheso == null || idConcept == null || idLang == null) {
+            return null;
+        }        
+        String datas = getInfosOfConcept__(ds,
+                 idTheso, idConcept, idLang);
+        if(datas == null) return null;
+        return datas;        
+    }    
+    
+    /**
+     * @param ds
+     * @param idTheso
+     * @param lang
+     * @return 
+     */
+    private String getInfosOfConcept__(
+            HikariDataSource ds,
+            String idTheso,
+            String idConcept,
+            String idLang) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        NodeConcept nodeConcept = conceptHelper.getConcept(ds, idConcept, idTheso, idLang);
+        if(nodeConcept == null) return null;
+        
+        JsonObjectBuilder job = Json.createObjectBuilder();
+
+        /// Id
+        job.add("id", nodeConcept.getConcept().getIdConcept());
+        if(nodeConcept.getConcept().getIdArk() != null && !nodeConcept.getConcept().getIdArk().isEmpty()) {
+            job.add("ark", nodeConcept.getConcept().getIdArk()); 
+        }
+        if(nodeConcept.getConcept().getIdHandle() != null && !nodeConcept.getConcept().getIdHandle().isEmpty()) {
+            job.add("handle", nodeConcept.getConcept().getIdHandle()); 
+        }        
+          
+        // label
+        job.add("label", nodeConcept.getTerm().getLexical_value());
+        
+        // synonymes
+        JsonArrayBuilder jsonArrayBuilderSyno = Json.createArrayBuilder();         
+        for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
+            jsonArrayBuilderSyno.add(nodeEM.getLexical_value());
+        }
+        if(jsonArrayBuilderSyno != null)
+            job.add("altLabel", jsonArrayBuilderSyno.build());
+
+        // Associés 
+        JsonArrayBuilder jsonArrayBuilderRelate = Json.createArrayBuilder();         
+        String labelRT;
+        for (NodeRT nodeRT : nodeConcept.getNodeRT()) {
+            labelRT = conceptHelper.getLexicalValueOfConcept(ds, nodeRT.getIdConcept(), idTheso, idLang);
+            if(labelRT != null && !labelRT.isEmpty())
+                jsonArrayBuilderRelate.add(labelRT);
+        }
+        if(jsonArrayBuilderRelate != null)
+            job.add("related", jsonArrayBuilderRelate.build());
+        
+        
+        // traductions 
+        JsonArrayBuilder jsonArrayBuilderTrad = Json.createArrayBuilder();         
+        for (NodeTermTraduction nodeTermTraduction : nodeConcept.getNodeTermTraductions()) {
+            JsonObjectBuilder jobTrad = Json.createObjectBuilder();
+            jobTrad.add("lang", nodeTermTraduction.getLang());
+            jobTrad.add("label", nodeTermTraduction.getLexicalValue());
+         
+            jsonArrayBuilderTrad.add(jobTrad.build());            
+        }
+        if(jsonArrayBuilderTrad != null)
+            job.add("traduction", jsonArrayBuilderTrad.build());
+        
+        // Alignements 
+        JsonArrayBuilder jsonArrayBuilderAlign = Json.createArrayBuilder();         
+        for (NodeAlignment nodeAlignment : nodeConcept.getNodeAlignments()) {
+            JsonObjectBuilder jobAlign = Json.createObjectBuilder();
+            jobAlign.add("type", nodeAlignment.getAlignmentLabelType());
+            jobAlign.add("uri", nodeAlignment.getUri_target());
+         
+            jsonArrayBuilderAlign.add(jobAlign.build());            
+        }
+        if(jsonArrayBuilderAlign != null)
+            job.add("Alignment", jsonArrayBuilderAlign.build());         
+        
+        
+        // définitions 
+        JsonArrayBuilder jsonArrayBuilderDef = Json.createArrayBuilder();         
+        for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
+            if("definition".equalsIgnoreCase(nodeNote.getNotetypecode())) {
+                jsonArrayBuilderDef.add(nodeNote.getLexicalvalue());
+            }
+        }
+        if(jsonArrayBuilderDef != null)
+            job.add("definition", jsonArrayBuilderDef.build());
+
+
+
+
+        if(job != null)
+            return job.build().toString();
+        else 
+            return null;        
+    }       
+    
+    
+    /**
+     * Permet de récupérer la liste des topTerms d'un thésaurus
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @param idLang
+     * @return 
+     */
+    public String getNarrower(HikariDataSource ds,
+            String idTheso,
+            String idConcept,
+            String idLang) {
+        if(idTheso == null || idConcept == null || idLang == null) {
+            return null;
+        }        
+        String datas = getNarrower__(ds,
+                 idTheso, idConcept, idLang);
+        if(datas == null) return null;
+        return datas;
+    }
+    /**
+     * recherche par valeur
+     * @param ds
+     * @param idTheso
+     * @param lang
+     * @return 
+     */
+    private String getNarrower__(
+            HikariDataSource ds,
+            String idTheso,
+            String idConcept,
+            String idLang) {
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConcepts(
+                ds,
+                idConcept,
+                idTheso,
+                idLang,
+                false);
+
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();        
+        
+        for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
+            JsonObjectBuilder job = Json.createObjectBuilder();
+            job.add("id", nodeConceptTree.getIdConcept());
+            job.add("label", nodeConceptTree.getTitle());
+            job.add("haveChildren", nodeConceptTree.isHaveChildren());            
+            jsonArrayBuilder.add(job.build());
+        }
+        if(jsonArrayBuilder != null)
+            return jsonArrayBuilder.build().toString();
+        else 
+            return null;        
+    }         
+        
+    
+    /**
+     * Permet de récupérer la liste des topTerms d'un thésaurus
+     * @param ds
+     * @param idTheso
+     * @param idLang
+     * @return 
+     */
+    public String getTopTerms(HikariDataSource ds,
+            String idTheso,
+            String idLang) {
+        if(idTheso == null || idLang == null) {
+            return null;
+        }        
+        String datas = getTopTerms__(ds,
+                 idTheso, idLang);
+        if(datas == null) return null;
+        return datas;
+    }
+    /**
+     * recherche par valeur
+     * @param ds
+     * @param idTheso
+     * @param lang
+     * @return 
+     */
+    private String getTopTerms__(
+            HikariDataSource ds,
+            String idTheso,
+            String idLang) {
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListOfTopConcepts(ds,
+                        idTheso, idLang, false);
+        if(nodeConceptTrees == null) return null;
+
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();        
+        
+        for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
+            JsonObjectBuilder job = Json.createObjectBuilder();
+            job.add("id", nodeConceptTree.getIdConcept());
+            job.add("label", nodeConceptTree.getTitle());
+            job.add("haveChildren", nodeConceptTree.isHaveChildren());            
+            jsonArrayBuilder.add(job.build());
+        }
+        if(jsonArrayBuilder != null)
+            return jsonArrayBuilder.build().toString();
+        else 
+            return null;        
+        
+    }      
+    
+    
     
     /**
      * Permet de retourner le prefLabel d'après un idArk avec la langue donnée
@@ -644,7 +871,6 @@ public class RestRDFHelper {
         else 
             return null;
     }    
-    
     
     /**
      * Fonction qui permet de récupérer une branche complète en partant d'un

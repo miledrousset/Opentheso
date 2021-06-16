@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
+import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.exports.csv.WriteCSV;
 import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
@@ -19,6 +20,7 @@ import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,17 +42,22 @@ import org.primefaces.model.StreamedContent;
 @Named(value = "exportFileBean")
 @SessionScoped
 public class ExportFileBean implements Serializable {
+
     private final static String DATE_FORMAT = "dd-mm-yyyy";
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private Connect connect;
-    @Inject private ViewExportBean viewExportBean;
-    @Inject private CandidatBean candidatBean;
-    @Inject private SelectedTheso selectedTheso;
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+    @Inject
+    private Connect connect;
+    @Inject
+    private ViewExportBean viewExportBean;
+    @Inject
+    private CandidatBean candidatBean;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     // progressBar
     private int sizeOfTheso;
     private float progressBar, progressStep;
-
 
     public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
@@ -112,7 +119,24 @@ public class ExportFileBean implements Serializable {
     }
 
     public StreamedContent exportThesorus() {
+        if ("CSV_id".equalsIgnoreCase(viewExportBean.getFormat())) {
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas = csvWriteHelper.writeCsvByIdTheso(connect.getPoolConnexion(),
+                    viewExportBean.getNodeIdValueOfTheso().getId(),
+                    viewExportBean.getSelectedIdLangTheso());
 
+            try (ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+                System.err.println(ex.toString());
+                return new DefaultStreamedContent();
+            }
+        }
+        
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                 viewExportBean.getSelectedGroups(),
                 viewExportBean.getSelectedLanguages());
@@ -138,13 +162,13 @@ public class ExportFileBean implements Serializable {
                 return new DefaultStreamedContent();
             }
 
-        } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-
+        }
+        if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
             char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
 
             byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
 
-            try(ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+            try (ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
 
                 str = null;
                 skosxd = null;
@@ -155,9 +179,12 @@ public class ExportFileBean implements Serializable {
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
+                System.err.println(ex.toString());
                 return new DefaultStreamedContent();
             }
-        } else {
+        }
+
+        if ("RDF".equalsIgnoreCase(viewExportBean.getFormat())) {
             RDFFormat format = null;
             String extention = ".xml";
 
@@ -180,7 +207,7 @@ public class ExportFileBean implements Serializable {
                     break;
             }
 
-            try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
                 WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
                 Rio.write(writeRdf4j.getModel(), out, format);
@@ -202,7 +229,9 @@ public class ExportFileBean implements Serializable {
                 return new DefaultStreamedContent();
             }
         }
+        return null;
     }
+
 
     private SKOSXmlDocument getThesorusDatas(String idTheso, List<NodeGroup> selectedGroups, List<NodeLangTheso> selectedLanguages) {
 
@@ -215,11 +244,14 @@ public class ExportFileBean implements Serializable {
         ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
 
         /// permet de filtrer par collection
-        if("all".equalsIgnoreCase(viewExportBean.getSelectedGroup())){
+        if ("all".equalsIgnoreCase(viewExportBean.getSelectedGroup())) {
             allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
-        } else
-           allConcepts = new ConceptHelper().getAllIdConceptOfThesaurusByGroup(connect.getPoolConnexion(), idTheso, viewExportBean.getSelectedGroup());
-        if(allConcepts == null || allConcepts.isEmpty() ) return null;
+        } else {
+            allConcepts = new ConceptHelper().getAllIdConceptOfThesaurusByGroup(connect.getPoolConnexion(), idTheso, viewExportBean.getSelectedGroup());
+        }
+        if (allConcepts == null || allConcepts.isEmpty()) {
+            return null;
+        }
 
         sizeOfTheso = allConcepts.size();
         progressStep = (float) 100 / sizeOfTheso;

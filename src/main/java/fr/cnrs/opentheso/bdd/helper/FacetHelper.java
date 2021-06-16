@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class FacetHelper {
 
-    private final Log log = LogFactory.getLog(ThesaurusHelper.class);
+    private final Log log = LogFactory.getLog(FacetHelper.class);
 
     public FacetHelper() {
     }

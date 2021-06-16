@@ -238,6 +238,31 @@ begin
 end
 $$language plpgsql;
 
+
+-- Ajout d'une nouvelle source à la table sources d'alignements 
+--
+create or replace function update_table_alignement_source() returns void as $$
+begin
+    IF EXISTS(SELECT *  FROM alignement_source where source='Wikidata') THEN
+        execute 'DELETE FROM public.alignement_source where source = ''Wikidata'';';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM alignement_source where source='Wikidata_sparql') THEN
+        execute 'INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id_user, description, gps, source_filter)
+                 VALUES (''Wikidata_sparql'', ''SELECT ?item ?itemLabel ?itemDescription WHERE {
+                            ?item rdfs:label "##value##"@##lang##.
+                            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],##lang##". }
+                }'', ''SPARQL'', ''json'', 1, ''alignement avec le vocabulaire Wikidata SPARQL'', false, ''Wikidata_sparql'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM alignement_source where source='Wikidata_rest') THEN
+        execute 'INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id_user, description, gps, source_filter) 
+                VALUES (''Wikidata_rest'',
+                ''https://www.wikidata.org/w/api.php?action=wbsearchentities&language=##lang##&search=##value##&format=json&limit=10'',
+                ''REST'', ''json'', 1, ''alignement avec le vocabulaire Wikidata REST'', false, ''Wikidata_rest'');';
+    END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -253,6 +278,7 @@ SELECT delete_table_thesaurus_array();
 SELECT update_table_concept_doi();
 SELECT update_table_concept_group_doi();
 SELECT update_table_languages();
+SELECT update_table_alignement_source();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -269,6 +295,7 @@ SELECT delete_fonction('delete_table_thesaurus_array','');
 SELECT delete_fonction('update_table_concept_doi','');
 SELECT delete_fonction('update_table_concept_group_doi','');
 SELECT delete_fonction('update_table_languages','');
+SELECT delete_fonction('update_table_alignement_source','');
 
 
 -- auto_suppression de nettoyage

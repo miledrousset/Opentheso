@@ -1181,6 +1181,10 @@ public class Rest_new {
          .build();         
     //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
+    
+    
+    
+    
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
 
@@ -2534,6 +2538,165 @@ public class Rest_new {
 
         return "{\"lastUpdate\": \"" + date.toString() + "\"}";
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ///////////// Fonctions qui  permettent de naviguer dans le thésaurus /////////////////  
+    //////////////récupération des Toptermes et les fils à la demande//////////////////////
+    ////////////// sert pour le widget à distance /////////////////////////////////////////    
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+    //http://localhost:8082/opentheso2/api/topterm?theso=th19&lang=fr
+    /**
+     * permet de récupérer les TopTerms d'un thésaurus dans une langue donnée
+     * en précisant l'Id du thésaurus et la langue sont obligatoires,
+     * @param uri
+     * @return 
+     */
+    @Path("/topterm")
+    @GET
+    @Produces("application/ld+json;charset=UTF-8")
+    public Response getTopterms(@Context UriInfo uri) {
+        String idLang = null;
+        String idTheso = null;  
+
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("lang")) {
+                    idLang = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("theso")) {
+                    idTheso = valeur;
+                }
+            }
+        }
+        if (idTheso == null || idLang == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }        
+
+        String datas = getTopterms__(idTheso, idLang);
+
+        if (datas == null) {
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();
+    }
+    private String getTopterms__(String idTheso, String idLang) {
+        String datas;
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+        try (HikariDataSource ds = connect()) {
+            datas = restRDFHelper.getTopTerms(ds, idTheso, idLang);
+        }
+        return datas;        
+    }
+
+    //http://localhost:8082/opentheso2/api/narrower?theso=th19&id=300&lang=fr
+    /**
+     * permet de récupérer les TopTerms d'un thésaurus dans une langue donnée
+     * en précisant l'Id du thésaurus, id du concept et la langue sont obligatoires,
+     * @param uri
+     * @return 
+     */
+    @Path("/narrower")
+    @GET
+    @Produces("application/ld+json;charset=UTF-8")
+    public Response getNarrower(@Context UriInfo uri) {
+        String idLang = null;
+        String idTheso = null;
+        String idConcept = null;
+
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("lang")) {
+                    idLang = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("theso")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("id")) {
+                    idConcept = valeur;
+                }                
+            }
+        }
+        if (idTheso == null || idConcept == null || idLang == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }        
+
+        String datas = getNarrower__(idTheso, idConcept, idLang);
+
+        if (datas == null) {
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();
+    }
+    private String getNarrower__(String idTheso, String idConcept, String idLang) {
+        String datas;
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+        try (HikariDataSource ds = connect()) {
+            datas = restRDFHelper.getNarrower(ds, idTheso, idConcept, idLang);
+        }
+        return datas;        
+    }
+    
+    
+    
+    /**
+     * Pour récupérer les informations sur un concept
+     * au format Json, les identifiants sont remplacés par les labels
+     *
+     * @param idTheso
+     * @param idConcept
+     * @return #MR
+     */
+    @Path("/{idTheso}.{idConcept}.labels")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response getJsonFromIdConceptWithLabels(
+            @PathParam("idTheso") String idTheso,
+            @PathParam("idConcept") String idConcept) {
+
+        if (idConcept == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        if (idConcept.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        HikariDataSource ds = connect();
+        if (ds == null) {
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+        String datas = restRDFHelper.getInfosOfConcept(ds,
+                idTheso, idConcept, "fr");
+        ds.close();
+        if (datas == null) {
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();         
+   //     return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+    }        
+    
+    
     
     
     

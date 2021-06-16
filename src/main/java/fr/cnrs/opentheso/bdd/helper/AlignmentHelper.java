@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class AlignmentHelper {
 
-    private final Log log = LogFactory.getLog(ThesaurusHelper.class);
+    private final Log log = LogFactory.getLog(AlignmentHelper.class);
     private String message = "";
 
     /**
@@ -45,18 +45,14 @@ public class AlignmentHelper {
 
         ArrayList<NodeSelectedAlignment> listAlignementSourceSelected = new ArrayList<>();
 
-        try {
-            Connection conn = ds.getConnection();
-
+        try (Connection conn = ds.getConnection()){
             try ( Statement stmt = conn.createStatement()) {
-
-                String query = "select alignement_source.source, alignement_source.description, id_alignement_source"
+                stmt.executeQuery("select alignement_source.source, alignement_source.description, id_alignement_source"
                         + " from thesaurus_alignement_source, alignement_source"
                         + " WHERE alignement_source.id = thesaurus_alignement_source.id_alignement_source"
-                        + " and thesaurus_alignement_source.id_thesaurus = '" + idTheso + "'";
+                        + " and thesaurus_alignement_source.id_thesaurus = '" + idTheso + "'");
 
-                try ( ResultSet resultSet = stmt.executeQuery(query)) {
-
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeSelectedAlignment nodeSelectedAlignment = new NodeSelectedAlignment();
                         nodeSelectedAlignment.setIdAlignmnetSource(resultSet.getInt("id_alignement_source"));

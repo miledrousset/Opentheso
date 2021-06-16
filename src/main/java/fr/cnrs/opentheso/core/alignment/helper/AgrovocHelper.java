@@ -33,6 +33,7 @@ import fr.cnrs.opentheso.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import javax.net.ssl.HttpsURLConnection;
 
 
 /**
@@ -92,8 +93,9 @@ public class AgrovocHelper {
             value = URLEncoder.encode(value, "UTF-8");
             query = query.replace("##lang##", lang);
             query = query.replace("##value##", newValue);
+            query = query.replace("http://", "https://");
             URL url = new URL(query);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 

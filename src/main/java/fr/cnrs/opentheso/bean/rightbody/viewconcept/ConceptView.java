@@ -13,6 +13,7 @@ import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
@@ -333,22 +334,6 @@ public class ConceptView implements Serializable {
                     nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
                 }
                 setCorpusCount(nodeCorpuse);
-            /*    // recherche par Id
-                if(nodeCorpuse.getUriLink().contains("##id##")){
-                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
-
-                    if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
-                        nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
-                        setCorpusCount(nodeCorpuse);
-                    }
-                }
-                // recherche par value
-                if(nodeCorpuse.getUriLink().contains("##value##")){
-                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
-                    nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
-                    setCorpusCount(nodeCorpuse);
-                }  */              
-                
             }
         }
     }
@@ -570,6 +555,16 @@ public class ConceptView implements Serializable {
         pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
     }
 
+    public String getCreator() {
+        UserHelper userHelper = new UserHelper();
+        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getCreator());
+    }
+    
+    public String getContributor(){
+        UserHelper userHelper = new UserHelper();
+        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getContributor());        
+    }
+            
 
     
     

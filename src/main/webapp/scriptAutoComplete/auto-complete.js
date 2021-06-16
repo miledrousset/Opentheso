@@ -182,7 +182,8 @@ var autoComplete = (function () {
                 var element = document.getElementById(options['loading']);
                 element.style.visibility = 'hidden';
                     
-                document.getElementById("output").innerHTML = data.get(that.value);
+             //   document.getElementById("output").innerHTML = data.get(that.value);
+                document.getElementById(options['output']).innerHTML = data.get(that.value);
                     
                 try {
                     var over_sb = document.querySelector('.autocomplete-suggestions:hover');

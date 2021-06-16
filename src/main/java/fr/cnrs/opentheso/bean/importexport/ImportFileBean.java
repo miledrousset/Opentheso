@@ -227,6 +227,7 @@ public class ImportFileBean implements Serializable {
                     }
                 }
             } catch (Exception e) {
+                haveError = true;
                 error.append(System.getProperty("line.separator"));
                 error.append(e.toString());
             } finally {

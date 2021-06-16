@@ -1231,7 +1231,7 @@
             </b:column>            
             <b:column span="8" colXs="8">
                 <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
-                    <b:row rendered="#{corpus.count != 0 }">
+                    <b:row rendered="#{corpus.count != 0 and corpus.count!= -1}">
                         <b:column >
                             <b:link href="#{corpus.uriLink}"
                                     value="#{corpus.corpusName} (#{corpus.count} #{langueBean.getMsg('rightbody.concept.notices')})" icon="link" 
@@ -1450,6 +1450,9 @@
                 <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')} "/>
                 <h:outputText value="#{conceptView.nodeConcept.concept.modified}" style="color: #666666"/>
 
+                <h:outputText value="#{conceptView.contributor}" style="color: #666666"/>      
+                <h:outputText value="#{conceptView.creator}" style="color: #666666"/>                  
+                
                 <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                  icon="fas fa-history" 
                                  actionListener="#{historyBean.reset()}"                    

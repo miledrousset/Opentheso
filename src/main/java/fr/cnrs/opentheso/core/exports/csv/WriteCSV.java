@@ -101,7 +101,7 @@ public class WriteCSV {
                     .append("geo:long").append(seperate)
                     .append("skos:member").append(seperate)
                     .append("dct:created").append(seperate)
-                    .append("dct:modified").append(seperate);
+                    .append("dct:modified");
 
             writer.write(header.toString());
             writer.newLine();
@@ -208,7 +208,7 @@ public class WriteCSV {
                 .append(getLongValue(skosResource.getGPSCoordinates())).append(seperate)//geo:long
                 .append(getMemberValue(skosResource.getRelationsList())).append(seperate)//skos:member
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.created)).append(seperate)//sdct:created
-                .append(getDateValue(skosResource.getDateList(), SKOSProperty.modified)).append(seperate);//dct:modified
+                .append(getDateValue(skosResource.getDateList(), SKOSProperty.modified));//dct:modified
         writer.write(stringBuffer.toString());
         writer.newLine();
     }
