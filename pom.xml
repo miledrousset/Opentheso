@@ -15,45 +15,26 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>d3js</artifactId>
-            <version>6.2.0</version>
-        </dependency>        
-        <!-- En cours d'intégration -->
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
+            <version>${d3js.version}</version>
         </dependency>
         
         <dependency>
             <groupId>com.github.themrleon</groupId>
             <artifactId>JSF2Leaf</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
-            <version>2.33</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.jersey.inject</groupId>
-            <artifactId>jersey-hk2</artifactId>
-            <version>2.33</version>
+            <version>${jsf2leaf.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
-            <version>1.1.4</version>
+            <version>${javax.json.version}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.4.1</version>
+            <version>${hikariCP.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -104,18 +85,13 @@
         <dependency>
             <groupId>net.bootsfaces</groupId>
             <artifactId>bootsfaces</artifactId>
-            <version>1.4.2</version>
+            <version>${bootsfaces.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.7.26</version>
-            <type>jar</type>
-        </dependency>
+
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4</version>
+            <version>${mail.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -132,12 +108,7 @@
             <version>${sparql.version}</version>
             <type>jar</type>
         </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>3.0.9</version>
-            <type>jar</type>
-        </dependency>
+
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
@@ -158,12 +129,7 @@
             <version>${rdf4j.version}</version>
             <type>pom</type>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>1.7</version>
-            <type>jar</type>
-        </dependency>
+
         <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
@@ -177,28 +143,11 @@
             <version>${jena.version}</version>
             <type>jar</type>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <scope>test</scope>
-            <version>2.44.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.opera</groupId>
-            <artifactId>operadriver</artifactId>
-            <scope>test</scope>
-            <version>1.5</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-remote-driver</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>${junit.version}</version>
         </dependency>
 
         <dependency>
@@ -211,13 +160,7 @@
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-shaded</artifactId>
-            <version>3.1.2.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
+            <version>${weld-servlet-shaded.version}</version>
         </dependency>
         
         <dependency>
@@ -229,7 +172,7 @@
         <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>all-themes</artifactId>
-            <version>1.0.8</version>
+            <version>${all.themes.version}</version>
             <scope>compile</scope>
         </dependency>
 
