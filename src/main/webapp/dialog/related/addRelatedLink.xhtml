@@ -26,7 +26,7 @@
                                             forceSelection="true"
                                             completeMethod="#{relatedBean.getAutoComplet}"                                  
                                             minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
-                                            scrollHeight="600" inputStyle="font-size: 12px;min-width: 180px; height: 34px;box-shadow: none;border-color: #43B572"
+                                            scrollHeight="600" inputStyle="font-size: 12px;min-width: 180px; height: 28px;box-shadow: none;border-color: #43B572"
                                             style="font-size: 12px;">
                                 <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
                                     <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
@@ -41,13 +41,21 @@
                             </p:autoComplete>  
                         </b:column>                             
                     </b:row>
+                    <p:spacer/>
+                    <b:row>
+                        <b:column span="12" style="font-size: 12px; color: #C63632">
+                            <p:selectBooleanCheckbox value="#{relatedBean.tagPrefLabel}"  itemLabel="taguer le prefLabel" 
+                                title="Permet d'ajouter le label du terme associé au prefLabel en ajoutant des parenthèses !! exp: si on associe roche à pierre, le prefLabel devient = roche (pierre)"/> 
+                        </b:column>                    
+                    </b:row>
+                    
                 </b:column>
 
                 <b:column span="5" >
                     <b:messages autoUpdate="true"/>
                 </b:column>                
             </b:row>
-
+            <p:spacer/>
             <b:row style="margin-bottom: 10px;" >
                 <b:column span="4" offset="8" >
                     <b:commandButton 

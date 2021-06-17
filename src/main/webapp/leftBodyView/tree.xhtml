@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:b="http://bootsfaces.net/ui">
 
-    <b:row>
+    <b:row id="treeActions">
         <b:column  span="7" offset="1" >
             <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
                           title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
@@ -14,7 +14,7 @@
         <ui:include src="/leftBodyView/globalActionsTree.xhtml" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}"/>        
 
         <!-- affichage du graphe -->
-        <b:column span="1">
+        <b:column span="1" rendered="#{!tree.selectedNode.leaf}">
             <b:navCommandLink iconAwesome="fas fa-project-diagram" icon-size="sm"
                               tooltip="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" tooltip-delay-show="500"
                               href="#{request.contextPath}/graph/index.xhtml"
@@ -34,7 +34,7 @@
                     widgetVar="treeWidget">
                 <p:ajax event="expand"  listener="#{tree.onNodeExpand}"/>
                 <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle"/>
+                <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabTree:treeActions"/>
                 <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree" />
 
                 <p:treeNode  expandedIcon="fa fa-folder-open-o fa_custom_open" collapsedIcon="fa fa-folder-o fa_custom_collapse" >

@@ -1446,13 +1446,9 @@
         <b:row>    
             <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: " />
-                <h:outputText value="#{conceptView.nodeConcept.concept.created}" style="color: #666666"/>
-                <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')} "/>
-                <h:outputText value="#{conceptView.nodeConcept.concept.modified}" style="color: #666666"/>
-
-                <h:outputText value="#{conceptView.contributor}" style="color: #666666"/>      
-                <h:outputText value="#{conceptView.creator}" style="color: #666666"/>                  
-                
+                <h:outputText value="#{conceptView.nodeConcept.concept.created}" style="color: #43B572"/>
+                <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')}: "/>
+                <h:outputText value="#{conceptView.nodeConcept.concept.modified}" style="color: #43B572"/>
                 <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                  icon="fas fa-history" 
                                  actionListener="#{historyBean.reset()}"                    
@@ -1463,7 +1459,17 @@
                                  styleClass="buttonIconOrange"/>
             </b:column>
         </b:row>
-
+        <b:row rendered="#{(currentUser.nodeUser != null)}">    
+            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">                   
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.createdBy')} : " style="color: #666666"/> 
+                <h:outputText value="#{conceptView.creator}" style="color: #43B572"/>                 
+            </b:column>            
+            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">        
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.last_modificationBy')} : " style="color: #666666"/>   
+                <h:outputText value="#{conceptView.contributor}" style="color: #43B572"/>                
+            </b:column> 
+        </b:row>            
+        
 
         <h:panelGroup  rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
             <!-- Dialogues -->        

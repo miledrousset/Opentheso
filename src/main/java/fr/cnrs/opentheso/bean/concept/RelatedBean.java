@@ -8,10 +8,13 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -41,10 +44,12 @@ public class RelatedBean implements Serializable {
     @Inject private LanguageBean languageBean;
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
-
+    @Inject private Tree tree;
+   
     private NodeSearchMini searchSelected;
     private ArrayList<NodeRT> nodeRTs;
-
+    private boolean tagPrefLabel = false;
+    
     @PreDestroy
     public void destroy(){
         clear();
@@ -63,6 +68,7 @@ public class RelatedBean implements Serializable {
     public void reset() {
         nodeRTs = conceptBean.getNodeConcept().getNodeRT();
         searchSelected = null;
+        tagPrefLabel = false;
     }
    
     public void infos() {
@@ -142,6 +148,22 @@ public class RelatedBean implements Serializable {
             return;                
         }
         
+        // mettre à jour le label du concept si l'option TAG est activée
+        if(tagPrefLabel) {
+            TermHelper termHelper = new TermHelper();
+            ConceptHelper conceptHelper = new ConceptHelper();
+            String taggedValue = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(),
+                    searchSelected.getIdConcept(),
+                    selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getSelectedLang());
+            termHelper.updateTraduction(connect.getPoolConnexion(),
+                    conceptBean.getNodeConcept().getTerm().getLexical_value() + " (" + taggedValue + ")",
+                    conceptBean.getNodeConcept().getTerm().getId_term(),
+                    conceptBean.getSelectedLang(),
+                    selectedTheso.getCurrentIdTheso(),
+                    idUser);
+        }
+        
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -153,8 +175,28 @@ public class RelatedBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept());        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        reset();
 
+        if(tagPrefLabel) {
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("formRightTab:viewTabConcept:idPrefLabelRow");
+            }
+
+            if (tree.getSelectedNode() != null) {
+                // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+                if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+                        conceptBean.getNodeConcept().getConcept().getIdConcept())) {
+                    tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(), 
+                            selectedTheso.getCurrentIdTheso(),
+                            conceptBean.getSelectedLang());
+                }
+                ((TreeNodeData) tree.getSelectedNode().getData()).setName(conceptBean.getNodeConcept().getTerm().getLexical_value());
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("formLeftTab:tabTree:tree");
+                }
+            }            
+        }
+        reset();
+        
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
             pf.ajax().update("formRightTab:viewTabConcept:idConceptRelated");
@@ -222,6 +264,14 @@ public class RelatedBean implements Serializable {
 
     public void setNodeRTs(ArrayList<NodeRT> nodeRTs) {
         this.nodeRTs = nodeRTs;
+    }
+
+    public boolean isTagPrefLabel() {
+        return tagPrefLabel;
+    }
+
+    public void setTagPrefLabel(boolean tagPrefLabel) {
+        this.tagPrefLabel = tagPrefLabel;
     }
 
 
