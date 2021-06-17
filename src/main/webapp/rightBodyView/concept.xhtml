@@ -330,7 +330,7 @@
                 <p:separator styleClass="separator" style="margin-top: 10px; margin-bottom: 3px"/> 
             </b:column>
             <b:column span="2" colXs="0" rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}">
-                <b:commandButton icon-awesome="fa-sitemap" icon-size="s" 
+                <b:commandButton icon-awesome="fa-anchor"  
                                  action="#{tree.expandTreeToPath(
                                            conceptView.nodeConcept.concept.idConcept,
                                            conceptView.nodeConcept.concept.idThesaurus,
@@ -805,8 +805,8 @@
         <b:row  rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
             <b:column span="3" colXs="3">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.notes')}" style="font-size: 12px; color: grey; font-style: italic "/>
-                <p:commandButton
-                    icon="fas fa-plus-circle fa-s" 
+                <p:commandButton 
+                    icon="fa fa-plus-circle fa-s" 
                     actionListener="#{noteBean.reset()}"                    
                     update="idAddNote addNoteForm"
                     oncomplete="PF('addNote').show();"
@@ -1451,7 +1451,7 @@
                 <h:outputText value="#{conceptView.nodeConcept.concept.modified}" style="color: #666666"/>
 
                 <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                 icon="fas fa-history" 
+                                 icon="fa fa-history" 
                                  actionListener="#{historyBean.reset()}"                    
                                  update="idHistoricalView"
                                  oncomplete="PF('historicalView').show();"

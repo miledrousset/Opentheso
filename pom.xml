@@ -183,7 +183,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>2.3</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -280,7 +280,7 @@
         <javax.json.version>1.1.4</javax.json.version>
         <postgresql.version>42.2.9</postgresql.version>
         <font-awesome.version>5.15.1</font-awesome.version>
-        <primefaces.version>10.0.0-RC1</primefaces.version>
+        <primefaces.version>10.0.0</primefaces.version>
         <javaee-web-api.version>8.0.1</javaee-web-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
