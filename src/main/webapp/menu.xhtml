@@ -19,7 +19,7 @@
                         
                         <!--Clean Session-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{langueBean.getMsg('menu.cleanSession')}"
-                                          icon-awesome="fa-broom" icon-size="l" style="color: #C63632;"
+                                          icon-awesome="fa-paint-brush" icon-size="l" style="color: #C63632;"
                                           ajax="true"
                                         update="idClearSession clearSessionForm"
                                         oncomplete="PF('clearSession').show();" />    
@@ -92,7 +92,7 @@
 
                         <!--Not connected-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser == null}"
-                                          tooltip="#{langueBean.getMsg('menu.login')}" icon-awesome="fa-sign-in"  icon-size="l"
+                                          tooltip="#{langueBean.getMsg('menu.login')}" icon-awesome="fa-key"  icon-size="l"
                                           oncomplete="PF('login').show();" style="color: #FFFFFF"
                                           styleClass="buttonIconOrange"
                                           update="idLogin loginForm"/>
