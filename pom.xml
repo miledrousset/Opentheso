@@ -6,12 +6,27 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>21.05</version>
+    <version>21.06</version>
     <packaging>war</packaging>
     <name>opentheso2</name>
 
     <dependencies>
 
+        <!-- ne marche pas au delà de cette version 2.25 pour java 8-->
+        <!-- ne marche pas au delà de cette version 2.33 pour java 11-->        
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.33</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>2.33</version>
+        </dependency>        
+        
+        
+        
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>d3js</artifactId>
@@ -183,7 +198,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -196,7 +211,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.3.1</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -205,7 +220,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.1.2</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -285,6 +300,7 @@
         <javax.faces-api.version>2.3</javax.faces-api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <weld-servlet-shaded.version>3.1.2.Final</weld-servlet-shaded.version>
+        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>        
     </properties>
 
 </project>
