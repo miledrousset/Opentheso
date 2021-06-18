@@ -53,12 +53,12 @@ public class ViewExportBean implements Serializable {
     private boolean isAllGroupsSelected; 
     private boolean isAllLangsSelected;
     private String selectedGroup;
-    private String selectedIdLangTheso;
+
     
     // pour le format PDF
     private String selectedLang1_PDF; // pour comparer entre 2 langues maxi pour le PDF
     private String selectedLang2_PDF;
-     
+        
     private boolean exportDone;
     
     @PreDestroy
@@ -75,7 +75,7 @@ public class ViewExportBean implements Serializable {
         selectedExportFormat = null;  
         selectedLang1_PDF = null;  
         selectedLang2_PDF = null;  
-        selectedIdLangTheso = null;
+
         
         if(languagesOfTheso != null){
             languagesOfTheso.clear();
@@ -179,6 +179,9 @@ public class ViewExportBean implements Serializable {
         }
     }
 
+    public void test(){
+        String test = "";
+    }
     
     public boolean isPdfExport() {
         return "PDF".equals(formatFile);
@@ -190,10 +193,6 @@ public class ViewExportBean implements Serializable {
 
     public boolean isCsvExport() {
         return "CSV".equals(formatFile);
-    }
-    
-    public boolean isCsvIdExport() {
-        return "CSV_id".equals(formatFile);
     }
     
     public String getFormat() {
@@ -352,12 +351,5 @@ public class ViewExportBean implements Serializable {
         this.selectedGroup = selectedGroup;
     }
 
-    public String getSelectedIdLangTheso() {
-        return selectedIdLangTheso;
-    }
-
-    public void setSelectedIdLangTheso(String selectedIdLangTheso) {
-        this.selectedIdLangTheso = selectedIdLangTheso;
-    }
 
 }
