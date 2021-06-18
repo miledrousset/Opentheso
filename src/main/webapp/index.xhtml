@@ -118,9 +118,9 @@
     <h:body>
 
         <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
-        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" position="top"
-                  style="margin-top: 250px; border: none" >
-            <p:graphicImage value="/images/wait.gif" width="70" />
+        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" width="85"  closable="false" resizable="false" showHeader="false" position="top"
+                  style="margin-top: 250px; border: none">
+            <p:graphicImage value="/images/wait.gif" width="100%" height="100%"/>
         </p:dialog>
 
         <p:idleMonitor timeout="#{connect.timeout}">
