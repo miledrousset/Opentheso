@@ -21,10 +21,14 @@
                     <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.par_concept')}" itemValue="1" />
                     <f:facet name="append">
                         <b:commandButton look="success" iconAwesome="thumbs-up" icon-align="right" ajax="true"
-                                         update="toolBoxForm toolBoxForm:statisticForm" 
+                                         update="toolBoxForm toolBoxForm:statisticForm"
                                          actionListener="#{statistiqueBean.onSelectStatType()}"/>
                     </f:facet>
                 </b:selectOneMenu>
+                <b:commandButton value="Success" styleClass="ui-button-success"
+                          iconAwesome="thumbs-up" icon-align="right" ajax="true"
+                          update="toolBoxForm toolBoxForm:statisticForm"
+                          actionListener="#{statistiqueBean.onSelectStatType()}"/>
             </b:column>
         </b:row>
 
@@ -41,7 +45,7 @@
 
                     <f:facet name="append">
                         <b:commandButton look="success" iconAwesome="thumbs-up" icon-align="right"
-                                         update="toolBoxForm toolBoxForm:statisticForm" onclick="PF('bui').show()"
+                                         update="toolBoxForm toolBoxForm:statisticForm"
                                          actionListener="#{statistiqueBean.onSelectLanguageType()}"/>
                     </f:facet>
                 </b:selectOneMenu>
@@ -107,7 +111,7 @@
                 <b:column>
                     <b:commandButton value="#{langueBean.getMsg('statistique.validate')}" look="success" iconAwesome="thumbs-up"
                                      style="margin-top: 10px; float: right" update="toolBoxForm toolBoxForm:statisticForm" 
-                                     onclick="PF('bui').show()" actionListener="#{statistiqueBean.getStatisticByConcept()}"/>
+                                     actionListener="#{statistiqueBean.getStatisticByConcept()}"/>
                 </b:column>
             </b:row>
 
@@ -136,6 +140,7 @@
             </b:row>
 
             <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+
             <b:row style="font-size: 12px; color: #666666; margin-top: 10px;">
                 <b:column span="12">
                     <p:scrollPanel mode="native" style=" height:290px" 
@@ -212,16 +217,24 @@
                                 <h:outputText style="font-weight: bold; margin-left: 10px" value="#{langueBean.getMsg('statistique.collection')}"/>
                             </b:column>
                             <b:column span="2">
-                                <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
+                                <b:navCommandLink oncomplete="PF('conceptChart').show();" style="color: #f47b2a;" update="toolBoxForm">
+                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
+                                </b:navCommandLink>
                             </b:column>
                             <b:column span="2">
-                                <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.synonyms')}"/>
+                                <b:navCommandLink oncomplete="PF('synonymChart').show();" style="color: #f47b2a;" update="toolBoxForm">
+                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.synonyms')}"/>
+                                </b:navCommandLink>
                             </b:column> 
                             <b:column span="2">
-                                <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.untranslated_terms')}"/>
+                                <b:navCommandLink oncomplete="PF('termChart').show();" style="color: #f47b2a;" update="toolBoxForm">
+                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.untranslated_terms')}"/>
+                                </b:navCommandLink>
                             </b:column> 
                             <b:column span="2">
-                                <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.notes')}"/>
+                                <b:navCommandLink oncomplete="PF('noteChart').show();" style="color: #f47b2a;" update="toolBoxForm">
+                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.notes')}"/>
+                                </b:navCommandLink>
                             </b:column>                        
                         </b:row>
 
@@ -250,6 +263,7 @@
                                 </b:row>   
                             </ui:repeat>
                         </p:scrollPanel>
+
                     </h:form>
                 </b:column>
             </b:row>
@@ -262,12 +276,36 @@
             <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
         </p:commandButton>
 
-    </p:panel> 
+    </p:panel>
 
-    <p:blockUI block="statisticForm" widgetVar="bui">
-        Recherche des données...<br />
-        <p:progressBar style="height:6px" mode="indeterminate"/>
-    </p:blockUI>
+    <p:dialog widgetVar="noteChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px"
+                closable="false">
+        <div class="card">
+            <p:donutChart widgetVar="chart" model="#{statistiqueBean.createChartModel(4)}" style="width: 100%; height: 500px;"/>
+        </div>
+        <b:row>
+            <p:commandButton type="button" value="Export" icon="pi pi-home" onclick="$('#output').empty().append(PF('chart').exportAsImage());PF('dlg').show();" oncomplete="PF('noteChart').hide();"/>
+            <p:button value="Fermer" onclick="PF('noteChart').hide();" />
+        </b:row>
+    </p:dialog>
+
+    <p:dialog widgetVar="termChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+        <div class="card">
+            <p:donutChart model="#{statistiqueBean.createChartModel(3)}" style="width: 100%; height: 500px;"/>
+        </div>
+    </p:dialog>
+
+    <p:dialog widgetVar="synonymChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+        <div class="card">
+            <p:donutChart model="#{statistiqueBean.createChartModel(2)}" style="width: 100%; height: 500px;"/>
+        </div>
+    </p:dialog>
+
+    <p:dialog widgetVar="conceptChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+        <div class="card">
+            <p:donutChart model="#{statistiqueBean.createChartModel(1)}" style="width: 100%; height: 500px;"/>
+        </div>
+    </p:dialog>
 
     <p:dialog id="idConceptStat" header="Détail du concept '#{statistiqueBean.canceptStatistiqueSelected.label}'" 
               widgetVar="conceptDdetail" modal="true" resizable="true" position="top" width="400" 

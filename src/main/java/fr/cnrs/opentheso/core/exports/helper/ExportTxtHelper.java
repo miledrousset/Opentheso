@@ -1,21 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.core.exports.helper;
 
-/*import com.k_int.IR.IRQuery;
-import com.k_int.IR.QueryModels.PrefixString;
-import com.k_int.IR.SearchException;
-import com.k_int.IR.SearchTask;
-import com.k_int.IR.Searchable;
-import com.k_int.IR.TimeoutExceededException;
-import com.k_int.hss.HeterogeneousSetOfSearchable;*/
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
@@ -34,9 +21,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.bdd.tools.AsciiUtils;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -273,7 +259,7 @@ public class ExportTxtHelper {
         }
         // indentation des concepts par hiérarchie
         indentation += "\t";
-        int tot = StringUtils.countMatches(indentation, "\t");
+        int tot = org.apache.commons.lang3.StringUtils.countMatches(indentation, "\t");
         if (tot > indentationConcept) {
             indentationConcept = tot;
         }
@@ -340,12 +326,7 @@ public class ExportTxtHelper {
     }
 
     /**
-     * fonction recursive qui sert a ecrire tout les fils des term
-     *
-     * @param id
-     * @param indentation
-     * @param paragraphs
-     * @param idToDoc
+     * fonction recursive qui sert a ecrire tout les fils des terms
      */
     private void writeConceptRecursive(String idConcept, String indentation) {
         ArrayList<NodeNT> childList = new RelationsHelper().getListNT(ds, idConcept, idTheso, selectedLang);
@@ -559,46 +540,6 @@ public class ExportTxtHelper {
             txtBuff.append("\t");
         }
     }
-
-    /**
-     * fonction temporaire qui ne marche qu'avec Koha
-     */
-/*    private int totalOfNotices(String idConcept) {
-        int tot = 0;
-        if (nodePreference == null) {
-            return 0;
-        }
-
-        if (nodePreference.isZ3950actif()) {
-            Properties p = new Properties();
-            p.put("CollectionDataSourceClassName", "com.k_int.util.Repository.XMLDataSource");
-            p.put("RepositoryDataSourceURL", "file:" + nodePreference.getPathNotice1());
-            p.put("XSLConverterConfiguratorClassName", "com.k_int.IR.Syntaxes.Conversion.XMLConfigurator");
-            p.put("ConvertorConfigFile", nodePreference.getPathNotice2());
-
-            Searchable federated_search_proxy = new HeterogeneousSetOfSearchable();
-            federated_search_proxy.init(p);
-
-            try {
-                IRQuery e = new IRQuery();
-                //   e.collections = new Vector<String>();
-                e.collections.add("KOHA/biblios");
-                e.hints.put("default_element_set_name", "f");
-                e.hints.put("small_set_setname", "f");
-                e.hints.put("record_syntax", "unimarc");
-
-                e.query = new PrefixString((new StringBuilder("@attrset bib-1 @attr 1=Koha-Auth-Number \"")).append(AsciiUtils.convertNonAscii("" + idConcept)).append("\"").toString());
-                SearchTask st = federated_search_proxy.createTask(e, null);
-                st.evaluate(5000);
-                tot = st.getTaskResultSet().getFragmentCount();
-                st.destroyTask();
-                federated_search_proxy.destroy();
-            } catch (TimeoutExceededException | SearchException srch_e) {
-                // srch_e.printStackTrace();
-            }
-        }
-        return tot;
-    }*/
 
     public StringBuffer getTxtBuff() {
         return txtBuff;

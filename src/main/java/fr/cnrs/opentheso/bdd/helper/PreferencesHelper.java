@@ -86,7 +86,7 @@ public class PreferencesHelper {
                     np.setAuto_expand_tree(resultSet.getBoolean("auto_expand_tree"));
 
                     np.setSort_by_notation(resultSet.getBoolean("sort_by_notation"));
-                    np.setTree_cache(resultSet.getBoolean("tree_cache"));
+                    //np.setTree_cache(resultSet.getBoolean("tree_cache"));
 
                     // Ark
                     np.setUseArk(resultSet.getBoolean("use_ark"));
@@ -125,7 +125,7 @@ public class PreferencesHelper {
                     np.setOriginalUri(resultSet.getString("original_uri"));
                     np.setOriginalUriIsArk(resultSet.getBoolean("original_uri_is_ark"));
                     np.setOriginalUriIsHandle(resultSet.getBoolean("original_uri_is_handle"));
-                    np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
+                    //np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
                 }
             }
         } catch (SQLException ex) {

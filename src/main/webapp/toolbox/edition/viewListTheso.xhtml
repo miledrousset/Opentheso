@@ -71,7 +71,7 @@
                                 <p:toggleSwitch id="toggleThesoStatus" value="#{listTheso.status}" style="font-size: 10px" disabled="true" />
                             </b:column>
                             <b:column span="2">
-                                <b:navCommandLink iconAwesome="fa-pencil-alt" icon-size="lg"
+                                <b:navCommandLink iconAwesome="fa-pencil" icon-size="lg"
                                                   actionListener="#{editThesoBean.init(listTheso)}"
                                                   action="#{viewEditionBean.setIsViewModifyTheso(true)}"
                                                   tooltip="Modifier le thésaurus" tooltip-delay-show="1000"
@@ -83,7 +83,7 @@
                             <!-- export des thésaurus -->
                             <b:column span="2">
                                 <b:dropMenu  
-                                    icon-awesome="fas fa-file-export" icon-size="lg"  value="" iconAlign="right"
+                                    icon-awesome="fa-upload" icon-size="lg"  value="" iconAlign="right"
                                     style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px;" contentStyle="font-size: 12px;">
                                     <b:navCommandLink value="Skos" ajax="false"
                                                       tooltip="Exporter le thésaurus au format Skos" tooltip-delay-show="1000"
@@ -112,7 +112,7 @@
                             </b:column>
 
                             <b:column span="2">
-                                <b:navCommandLink iconAwesome="fas fa-trash-alt" icon-size="lg"
+                                <b:navCommandLink iconAwesome="fa-trash" icon-size="lg"
                                                   actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
                                                  update="toolBoxForm:idConfirmDelete toolBoxForm:confirmDeleteForm"
                                                  oncomplete="PF('confirmDelete').show();"

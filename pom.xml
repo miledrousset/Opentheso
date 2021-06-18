@@ -1,43 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
     <version>21.06</version>
     <packaging>war</packaging>
-
     <name>opentheso2</name>
 
-    <properties>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    
     <dependencies>
-        
-        
-        <!-- https://mvnrepository.com/artifact/org.webjars/d3js -->
-        <!-- En cours d'intégration -->
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>d3js</artifactId>
-            <version>6.2.0</version>
-        </dependency>        
-        <!-- En cours d'intégration -->
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-        </dependency>        
-        
-        <dependency>
-            <groupId>com.github.themrleon</groupId>
-            <artifactId>JSF2Leaf</artifactId>
-            <version>1.0</version>
-        </dependency>
-
 
         <!-- ne marche pas au delà de cette version 2.25 pour java 8-->
         <!-- ne marche pas au delà de cette version 2.33 pour java 11-->        
@@ -50,231 +23,204 @@
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
             <version>2.33</version>
-        </dependency>
-    
-    
+        </dependency>        
         
-        <!-- Pour le webservices de ARK de la MOM-->
+        
+        
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>d3js</artifactId>
+            <version>${d3js.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.github.themrleon</groupId>
+            <artifactId>JSF2Leaf</artifactId>
+            <version>${jsf2leaf.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
-            <version>1.1.4</version>
+            <version>${javax.json.version}</version>
             <type>jar</type>
         </dependency>
 
-        <!-- BDD postgresql -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.4.1</version>
+            <version>${hikariCP.version}</version>
             <type>jar</type>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/postgresql/postgresql -->
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.9</version>
-        </dependency>     
-        
-        <!-- Icons Awesome -->
+            <version>${postgresql.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>font-awesome</artifactId>
-            <version>5.15.2</version>
-        </dependency>         
-        
-        <!-- CDI beans inject dependency -->
+            <version>${font-awesome.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>2.0</version>
+            <version>${cdi-api.version}</version>
             <scope>provided</scope>
         </dependency>
-        
-        <!-- JSF dependency -->
+
         <dependency>
             <groupId>javax.faces</groupId>
             <artifactId>javax.faces-api</artifactId>
-            <version>2.3</version>
+            <version>${javax.faces-api.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
-            <version>2.2.20</version>
+            <version>${jsf-api.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-impl</artifactId>
-            <version>2.2.20</version>
+            <version>${jsf.version}</version>
         </dependency>        
         
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>8.0</version>
-        </dependency>         
+            <version>${primefaces.version}</version>
+        </dependency>
 
-        
-        
-        <!-- https://mvnrepository.com/artifact/net.bootsfaces/bootsfaces -->
         <dependency>
             <groupId>net.bootsfaces</groupId>
             <artifactId>bootsfaces</artifactId>
-            <version>1.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.7.26</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.jdom</groupId>
-            <artifactId>jdom2</artifactId>
-            <version>2.0.6</version>
-            <type>jar</type>
-        </dependency>
-   <!--     <dependency>
-            <groupId>SPARQL-JAVA</groupId>
-            <artifactId>SPARQL-JAVA</artifactId>
-            <version>1.1</version>
-            <type>jar</type>
-        </dependency>
-       -->      
-       <dependency>
-            <groupId>SPARQL-JAVA</groupId>
-            <artifactId>SPARQL-JAVA</artifactId>
-            <version>1.1</version>
-            <type>jar</type>
-        </dependency>       
-       
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>3.0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itextpdf</artifactId>
-            <version>5.1.2</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-model</artifactId>
-            <version>3.6.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-runtime</artifactId>
-            <version>3.6.3</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>1.8</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.icu</groupId>
-            <artifactId>icu4j</artifactId>
-            <version>3.4.4</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-            <version>3.3.0</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <scope>test</scope>
-            <version>2.44.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.opera</groupId>
-            <artifactId>operadriver</artifactId>
-            <scope>test</scope>
-            <version>1.5</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-remote-driver</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>8.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        
-        <dependency>
-            <groupId>org.jboss.weld.servlet</groupId>
-            <artifactId>weld-servlet-shaded</artifactId>
-            <version>3.1.2.Final</version>
+            <version>${bootsfaces.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
+            <version>${jdom2.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>SPARQL-JAVA</groupId>
+            <artifactId>SPARQL-JAVA</artifactId>
+            <version>${sparql.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>${itextpdf.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-model</artifactId>
+            <version>${rdf4j.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-runtime</artifactId>
+            <version>${rdf4j.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>${icu4j.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>${jena.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>${javaee-web-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
+            <version>${weld-servlet-shaded.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.abego.treelayout</groupId>
             <artifactId>org.abego.treelayout.core</artifactId>
-            <version>1.0.3</version>
+            <version>${treelayout.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.primefaces.extensions</groupId>
+            <artifactId>all-themes</artifactId>
+            <version>${all.themes.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
-
-
     <build>
-       
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.3.1</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.1.2</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -313,6 +259,7 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
+
     <repositories>
         <repository>
             <id>central</id>
@@ -323,6 +270,37 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-    </repositories>    
+    </repositories>
+
+    <properties>
+        <faces.api>2.3</faces.api>
+        <java.version>11</java.version>
+        <mail.version>1.4</mail.version>
+        <jsf.version>2.2.20</jsf.version>
+        <d3js.version>6.2.0</d3js.version>
+        <jena.version>3.3.0</jena.version>
+        <icu4j.version>3.4.4</icu4j.version>
+        <rdf4j.version>3.6.2</rdf4j.version>
+        <jdom2.version>2.0.6</jdom2.version>
+        <sparql.version>1.1</sparql.version>
+        <junit.version>4.13.1</junit.version>
+        <cdi-api.version>2.0</cdi-api.version>
+        <jsf2leaf.version>1.0</jsf2leaf.version>
+        <jsf-api.version>2.2.20</jsf-api.version>
+        <itextpdf.version>5.1.2</itextpdf.version>
+        <hikariCP.version>3.4.1</hikariCP.version>
+        <treelayout.version>1.0.3</treelayout.version>
+        <bootsfaces.version>1.4.2</bootsfaces.version>
+        <all.themes.version>1.0.8</all.themes.version>
+        <javax.json.version>1.1.4</javax.json.version>
+        <postgresql.version>42.2.9</postgresql.version>
+        <font-awesome.version>5.15.1</font-awesome.version>
+        <primefaces.version>10.0.0</primefaces.version>
+        <javaee-web-api.version>8.0.1</javaee-web-api.version>
+        <javax.faces-api.version>2.3</javax.faces-api.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <weld-servlet-shaded.version>3.1.2.Final</weld-servlet-shaded.version>
+        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>        
+    </properties>
 
 </project>

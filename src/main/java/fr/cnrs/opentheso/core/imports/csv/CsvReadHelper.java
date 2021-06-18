@@ -40,7 +40,7 @@ public class CsvReadHelper {
     public boolean setLangs(Reader in){
         langs = new ArrayList<>();
         try {
-            Map<String, Integer> headers = CSVFormat.RFC4180.withFirstRecordAsHeader().withIgnoreHeaderCase().withIgnoreEmptyLines().withDelimiter(delimiter).parse(in).getHeaderMap();
+            Map<String, Integer> headers = CSVFormat.RFC4180.withFirstRecordAsHeader().withDelimiter(delimiter).parse(in).getHeaderMap();
             String values[];
             for (String columnName : headers.keySet()) {
                 if(columnName.contains("@")) {
@@ -65,7 +65,7 @@ public class CsvReadHelper {
     public boolean readFile(Reader in){
         try {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
-                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withTrim().parse(in);
             
             for (CSVRecord record : records) {
                 ConceptObject conceptObject = new ConceptObject();
