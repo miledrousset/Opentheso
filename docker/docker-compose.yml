@@ -2,16 +2,8 @@ version: '3.1'
 
 services:
 
-  opentheso:
-    image: miledrousset/opentheso2
-    restart: always
-    depends_on:
-      - opentheso2-db
-    ports:
-      - 8080:8080
-
   opentheso2-db:
-    image: miledrouset/opentheso2-postgres
+    image: miledrousset/opentheso2-postgres
     restart: always
     ports:
       - 5432:5432
@@ -20,9 +12,15 @@ services:
       POSTGRES_PASSWORD: opentheso
       PGDATA: /pgdata
     volumes:
-      - type: volume
-        source: opentheso2-pgdata
-        target: /pgdata
+      - /docker-entrypoint-initdb.d/opentheso2-pgdata
+
+  opentheso:
+    image: miledrousset/opentheso2
+    restart: always
+    depends_on:
+      - opentheso2-db
+    ports:
+      - 8080:8080
 
 volumes:
   opentheso-pgdata:
