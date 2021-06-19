@@ -20,8 +20,19 @@ public class ImagesHelper {
     ////////////////// Nouvelles fontions #MR//////////////////////////////
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////      
+
     /**
+     *
      * Permet d'ajouter un lien vers une image externe lien de type URI
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesausus
+     * @param imageName
+     * @param copyRight
+     * @param uri
+     * @param idUser
+     * @return 
      */
     public boolean addExternalImage(HikariDataSource ds, String idConcept, String idThesausus,
             String imageName, String copyRight, String uri, int idUser) {
