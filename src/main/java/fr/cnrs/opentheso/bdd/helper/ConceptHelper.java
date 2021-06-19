@@ -353,6 +353,9 @@ public class ConceptHelper {
     /**
      * Cettte fonction permet de retourner la liste des TopConcept avec IdArk et
      * handle
+     * @param ds
+     * @param idTheso
+     * @return 
      */
     public ArrayList<NodeUri> getAllTopConcepts(HikariDataSource ds, String idTheso) {
 
@@ -545,7 +548,7 @@ public class ConceptHelper {
                     query = "SELECT concept.status, concept.id_concept"
                             + " FROM concept WHERE"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND"
-                            + " concept.top_concept = true limit 2000";
+                            + " concept.top_concept = true and status != 'CA' limit 2000";
                 }
 
                 stmt.executeQuery(query);
@@ -1069,6 +1072,7 @@ public class ConceptHelper {
      * Permet de retourner la date de la dernière modification sur un thésaurus
      * @param ds
      * @param idTheso
+     * @param idLang
      * @return 
      */
     public ArrayList<NodeIdValue> getLastModifiedConcept(HikariDataSource ds, String idTheso, String idLang) {
@@ -4150,8 +4154,15 @@ public class ConceptHelper {
     }
 
     /**
+     *
      * Cette fonction permet de récupérer toutes les informations concernant un
      * Concept par son id et son thésaurus et la langue
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return 
      */
     public NodeConcept getConcept(HikariDataSource ds,
             String idConcept, String idThesaurus, String idLang) {

@@ -893,30 +893,28 @@ public class TermHelper {
         String idTerm = null;
         term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
         try (Statement stmt = conn.createStatement()) {
+            stmt.executeQuery("select max(id) from term");
             try (ResultSet resultSet = stmt.getResultSet()){
-
-                stmt.executeQuery("select max(id) from term");
-                resultSet.next();
-                int idTermNum = resultSet.getInt(1);
-
-                idTermNum++;
-                idTerm = "" + (idTermNum);
-
-                // si le nouveau Id existe, on l'incrémente
-                while (isIdOfTermExist(conn, idTerm, term.getId_thesaurus())) {
-                    idTerm = "" + (++idTermNum);
+                if(resultSet.next()) {
+                    int idTermNum = resultSet.getInt(1);
+                    idTermNum++;
+                    idTerm = "" + (idTermNum);
+                    // si le nouveau Id existe, on l'incrémente
+                    while (isIdOfTermExist(conn, idTerm, term.getId_thesaurus())) {
+                        idTerm = "" + (++idTermNum);
+                    }                    
                 }
-
                 term.setId_term(idTerm);
-
-                stmt.executeUpdate("Insert into term (id_term, lexical_value, lang, id_thesaurus, source, status, contributor, creator)"
-                        + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
-                        + ",'" + term.getId_thesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
-                        + ", " + idUser + ", " + idUser + ")");
-                if (!addNewTermHistorique(conn, term, idUser)) {
-                    return null;
-                }
             }
+            if(term.getId_term() == null || term.getId_term().isEmpty()) return null;
+            
+            stmt.executeUpdate("Insert into term (id_term, lexical_value, lang, id_thesaurus, source, status, contributor, creator)"
+                    + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
+                    + ",'" + term.getId_thesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
+                    + ", " + idUser + ", " + idUser + ")");
+            if (!addNewTermHistorique(conn, term, idUser)) {
+                return null;
+            }            
         } catch (SQLException sqle) {
             // Log exception
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {

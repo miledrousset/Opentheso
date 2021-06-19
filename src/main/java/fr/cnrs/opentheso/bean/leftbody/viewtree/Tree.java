@@ -66,7 +66,6 @@ public class Tree implements Serializable {
     private TreeNode selectedNode; // le neoud sélectionné par clique
     private TreeNode root;
     private String idTheso, idConceptParent, idLang, idConceptSelected;
-    private boolean noedSelected, diagramVisisble;
     private TreeNodeData treeNodeDataSelect;
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
@@ -84,7 +83,6 @@ public class Tree implements Serializable {
         root = null;
         selectedNode = null;
         rightBodySetting.init();
-        noedSelected = false;
         dataService = null;
         treeNodeDataSelect = null;
         idTheso = null;
@@ -102,11 +100,12 @@ public class Tree implements Serializable {
 
         dataService = new DataService();
         root = dataService.createRoot();
+        
         addFirstNodes();
-        selectedNodes = new ArrayList<>();
-        leftBodySetting.setIndex("0");
-        noedSelected = false;
+    //    expandAllNode();        
 
+    selectedNodes = new ArrayList<>();
+        leftBodySetting.setIndex("0");
     }
 
     public boolean isDragAndDrop(NodeUser nodeUser) {
@@ -171,30 +170,22 @@ public class Tree implements Serializable {
     public void onNodeExpand(NodeExpandEvent event) {
         leftBodySetting.setIndex("0");
         manySiblings = false;
-        if (noedSelected) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
-                    "Un noeud est en cours de chargement !"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
-        } else {
-            noedSelected = true;
-            DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
 
-            if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
-                parent.getChildren().remove(0);
-                idConceptParent = ((TreeNodeData) parent.getData()).getNodeId();
-                FacetHelper facetHelper = new FacetHelper();
-                if ("facet".equals(parent.getType())) {
-                    addMembersOfFacet(parent);
+        DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
+
+        if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+            parent.getChildren().remove(0);
+            idConceptParent = ((TreeNodeData) parent.getData()).getNodeId();
+            FacetHelper facetHelper = new FacetHelper();
+            if ("facet".equals(parent.getType())) {
+                addMembersOfFacet(parent);
+            } else {
+                if (facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), idConceptParent, idTheso)) {
+                    addConceptsChildWithFacets(parent);
                 } else {
-                    if (facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), idConceptParent, idTheso)) {
-                        addConceptsChildWithFacets(parent);
-                    } else {
-                        addConceptsChild(parent);
-                    }
+                    addConceptsChild(parent);
                 }
             }
-            noedSelected = false;
         }
     }
 
@@ -377,14 +368,6 @@ public class Tree implements Serializable {
         dataService.addNodeWithoutChild("facet", data, parent);
     }
 
-    public boolean isNoedSelected() {
-        return noedSelected;
-    }
-
-    public void setNoedSelected(boolean noedSelected) {
-        this.noedSelected = noedSelected;
-    }
-
     private void addFacettes(TreeNode parent) {
         FacetHelper facetHelper = new FacetHelper();
         List<NodeIdValue> nodeIdValues = facetHelper.getAllIdValueFacetsOfConcept(
@@ -414,44 +397,33 @@ public class Tree implements Serializable {
 
     public void onNodeSelect(NodeSelectEvent event) {
         leftBodySetting.setIndex("0");
-        if (noedSelected) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
-                    "Un noeud est en cours de chargement !"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
-        } else {
-            noedSelected = true;
-            DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
+        DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
 
-            if (!"facet".equals(parent.getType())) {
-                indexSetting.setIsFacetSelected(false);
-                idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
+        if (!"facet".equals(parent.getType())) {
+            indexSetting.setIsFacetSelected(false);
+            idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
 
-                if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
-                    rightBodySetting.setShowConceptToOn();
-                    conceptBean.getConceptForTree(idTheso,
-                            ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-                }
-                if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {
-                    rightBodySetting.setShowConceptToOn();
-                    conceptBean.getConceptForTree(idTheso,
-                            ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-                }
-
-                idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
-
-                rightBodySetting.setIndex("0");
-            } else {
-                indexSetting.setIsFacetSelected(true);
-                //    String idFacet = ((TreeNodeData) parent.getData()).getNodeId();
-                editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
-                PrimeFaces.current().ajax().update("formRightTab");
+            if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
+                rightBodySetting.setShowConceptToOn();
+                conceptBean.getConceptForTree(idTheso,
+                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+            }
+            if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {
+                rightBodySetting.setShowConceptToOn();
+                conceptBean.getConceptForTree(idTheso,
+                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
             }
 
-            noedSelected = false;
+            idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
 
-            treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
+            rightBodySetting.setIndex("0");
+        } else {
+            indexSetting.setIsFacetSelected(true);
+            //    String idFacet = ((TreeNodeData) parent.getData()).getNodeId();
+            editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
+            PrimeFaces.current().ajax().update("formRightTab");
         }
+        treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
     }
 
     public String getIdConceptSelected() {
@@ -722,15 +694,7 @@ public class Tree implements Serializable {
         this.idConceptParent = idConcept;
     }
 
-    public boolean isDiagramVisisble() {
-        return diagramVisisble;
-    }
-
-    public void setDiagramVisisble(boolean diagramVisisble) {
-        this.diagramVisisble = diagramVisisble;
-    }
-
-    public void showDiagram(boolean status) throws IOException {
+/*    public void showDiagram(boolean status) throws IOException {
         if (treeNodeDataSelect == null) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "", "Vous devez selectioner un élement de l'arbre"));
@@ -747,7 +711,7 @@ public class Tree implements Serializable {
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
-    }
+    }*/
 
     public TreeNodeData getTreeNodeDataSelect() {
         return treeNodeDataSelect;
@@ -765,5 +729,50 @@ public class Tree implements Serializable {
         this.manySiblings = manySiblings;
     }
     
+    
+    
+    
+    
+    
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+////// pour tester la mémoire occupée par l'arbre ////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * permet de déplier tout l'arbre 
+     *
+     * #MR
+     */
+    public void expandAllNode() {
+        dataService = null;
+        dataService = new DataService();
+        root = dataService.createRoot();        
+        addFirstNodes();
+        List<TreeNode> treeNodes = root.getChildren();
+       
+        for (TreeNode treeNode : treeNodes) {
+            expandedAllRecursively(treeNode, true);
+        }
+    }    
+    private void expandedAllRecursively(TreeNode node, boolean expanded) {
+        if (node.getChildCount() == 1 && node.getChildren().get(0).getData().toString().equals("DUMMY")) {
+            node.getChildren().remove(0);
+            addConceptsChild(node);
+        }      
+        for (TreeNode child : node.getChildren()) {
+            
+//            addConceptsChild(node);
+            expandedAllRecursively(child, expanded);
+        }
+        node.setExpanded(expanded);
+    }
+    
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+////// pour tester la mémoire occupée par l'arbre ////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////      
     
 }
