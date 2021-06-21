@@ -35,7 +35,7 @@ import fr.cnrs.opentheso.skosapi.SKOSResource;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
-import org.apache.commons.lang3.StringUtils;
+
 
 /**
  *

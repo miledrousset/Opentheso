@@ -19,7 +19,7 @@
                         
                         <!--Clean Session-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{langueBean.getMsg('menu.cleanSession')}"
-                                          icon-awesome="fa-broom" icon-size="l" style="color: #C63632;"
+                                          icon-awesome="fa-paint-brush" icon-size="l" style="color: #C63632;"
                                           ajax="true"
                                         update="idClearSession clearSessionForm"
                                         oncomplete="PF('clearSession').show();" />    
@@ -74,7 +74,7 @@
                         <!-- liste des thésaurus -->                 
                         <b:navLink style="height: 30px; margin-top: -3px; margin-right: -10px;">
                             <p:selectOneMenu id="idListTheso" value="#{selectedTheso.selectedIdTheso}"
-                                 style="font-size: 12px;  width: 180px;"
+                                 style="font-size: 12px;  width: 180px; color: #43B572"
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;">
                                 <p:ajax event="valueChange" update="containerIndex candidatForm formMenu"
                                              listener="#{selectedTheso.setSelectedTheso()}" />
@@ -83,27 +83,26 @@
                             </p:selectOneMenu>
                         </b:navLink>                        
                         <!-- Relaod Theso -->
-                        <b:navCommandLink  tooltip="#{langueBean.getMsg('menu.reload_thesaurus')}"
-                                           tooltip-delay-show="500"
-                                          icon-awesome="fas fa-sync" icon-size="l" style=" color: #C63632"
+                        <b:navCommandLink tooltip="#{langueBean.getMsg('menu.reload_thesaurus')}"
+                                          tooltip-delay-show="500"
+                                          icon-awesome="fa-refresh" icon-size="l" style=" color: #FFFFFF"
                                           ajax="true" action="#{selectedTheso.reloadSelectedTheso()}" 
-                                          update="containerIndex candidatForm formMenu formLeftTab" />     
-                        
+                                          update="containerIndex candidatForm formMenu formLeftTab" />
+
 
                         <!--Not connected-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser == null}"
-                                          tooltip="#{langueBean.getMsg('menu.login')}" icon-awesome="key"  icon-size="l"
-                                         
-                                          oncomplete="PF('login').show();"
+                                          tooltip="#{langueBean.getMsg('menu.login')}" icon-awesome="fa-key"  icon-size="l"
+                                          oncomplete="PF('login').show();" style="color: #FFFFFF"
                                           styleClass="buttonIconOrange"
                                           update="idLogin loginForm"/>
 
                         <!--is connected-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{currentUser.nodeUser.name} !! #{langueBean.getMsg('menu.logout')}"
-                                          icon-awesome="sign-out-alt" icon-size="l" style="color: #C63632;"
-                                          ajax="true" action="#{currentUser.disconnect()}"/>              
-                        
-                        
+                                          icon-awesome="fa-sign-out" icon-size="l" style="color: #FFFFFF;"
+                                          ajax="true" action="#{currentUser.disconnect()}"/>
+
+
                         <!-- Langues -->
                         <b:dropMenu value="#{langueBean.idLangue}"  style="font-size: 12px; margin-right: -10px;" 
                                     tooltip="#{langueBean.getMsg('menu.change_interface_language')}" tooltip-delay-show="500">

@@ -9,7 +9,7 @@
     <h:head>
 
         <!--Code Google Analytics, l'intégration ou la modification est gérée dans l'appli -->
-        <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>        
+        <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
 
         <h:panelGroup id="indexTitle" >
             <title>
@@ -21,8 +21,8 @@
 
             <meta name="description" content="#{langueBean.getMsg('index.Opentheso_info')}"/>
         </h:panelGroup>
-        
-        <!-- 
+
+        <!--
          <script type="application/ld+json">
             {
       "@context": "https://schema.org",
@@ -44,7 +44,7 @@
       }]
     }
 </script>  -->
-        
+
     <!--    <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
@@ -55,7 +55,7 @@
                 "image": "https://www.wikimedia.fr/wp-content/uploads/2020/04/Novel_Coronavirus_SARS-CoV-2_49679608176-350x245.jpg",
                 "description": "une courte définition"
             }
-        </script>         
+        </script>
 -->
         <!-- <script type="application/ld+json">
              {
@@ -100,6 +100,8 @@
         <link rel="stylesheet" type="text/css" href="css/autocomplete.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="css/composants.css" media="screen" />
 
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+
         <script type="text/javascript" src="javascript/scrollToSelectedScript.js"></script>
 
         <script>
@@ -109,21 +111,17 @@
             $.blockUI.defaults.css.borderRadius = '10px';
             $.blockUI.defaults.overlayCSS.opacity = 0.5;
             $.blockUI.defaults.message = '<div style="padding-top:1em"><b:spinner name="circle-o-notch" size="2x" /> Please wait ... </div>';
-        </script>       
+        </script>
     </h:head>
 
     <h:body>
-    <!-- <h:body style="background-color: antiquewhite"> -->
 
         <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
-        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" position="top"
-                  style="margin-top: 250px; border: none" >
-            <p:graphicImage value="/images/wait.gif" width="70" />
+        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" width="85"  closable="false" resizable="false" showHeader="false" position="top"
+                  style="margin-top: 250px; border: none">
+            <p:graphicImage value="/images/wait.gif" width="100%" height="100%"/>
         </p:dialog>
 
-
-
-        
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
@@ -132,26 +130,10 @@
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
             <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
             <f:viewAction action="#{selectedTheso.preRenderView}"/>
-            <!--   <f:event listener="{selectedTheso.preRenderView}" type="preRenderView"/> -->
-
         </f:metadata>
 
         <b:growl id="messageIndex" globalOnly="true" showDetail="true" placementFrom="bottom"/>
 
-        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
-        <h:outputStylesheet name="fa/font-awesome.css" library="primefaces"/>
-
-        <!--
-        <h:outputStylesheet name="font-awesome/5.15.1/css/all.min-jsf.css" library="webjars"/>
-        <h:outputStylesheet name="font-awesome/5.15.1/css/v4-shims.min-jsf.css" library="webjars"/>
-        -->
-        <!--
-        Provoque une fuite de mémoire ou une augmentaiton impressionnante de la mémoire-->
-        <!--<h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />-->
-        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all-jsf.css" />
-        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/v4-shims.min-jsf.css" />
-        
-        
         <b:container id="containerIndex" rendered="#{(connect.browserName != 'agent')}">
             <ui:include src="menu.xhtml" />
 
@@ -185,10 +167,7 @@
         </b:container>
  
         <b:container id="containerBot" rendered="#{(connect.browserName == 'agent')}">
-            <!-- <h:outputText value="# {conceptView.getMetaData()}"/> -->
-
         </b:container>
-
 
     </h:body>
 
