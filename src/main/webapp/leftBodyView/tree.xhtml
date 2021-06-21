@@ -14,11 +14,11 @@
         <ui:include src="/leftBodyView/globalActionsTree.xhtml" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}"/>        
 
         <!-- affichage du graphe -->
-        <b:column span="1">
+        <b:column span="1" rendered="#{!tree.selectedNode.leaf}">
             <b:navCommandLink iconAwesome="fa-sitemap" icon-size="sm"
                               tooltip="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" tooltip-delay-show="500"
                               href="#{request.contextPath}/graph/index.xhtml"
-
+                              
                               target="_blank" id="link_graphe"
                               rendered="#{tree.isGrapheLinkVisible()}"
                               style="color: #F47B2A; float: right; margin-top: 2px;"/>

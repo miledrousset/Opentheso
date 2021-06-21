@@ -74,7 +74,7 @@
                         <!-- liste des thésaurus -->                 
                         <b:navLink style="height: 30px; margin-top: -3px; margin-right: -10px;">
                             <p:selectOneMenu id="idListTheso" value="#{selectedTheso.selectedIdTheso}"
-                                 style="font-size: 12px;  width: 180px; color: #43B572"
+                                 style="font-size: 12px;  width: 180px; "
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;">
                                 <p:ajax event="valueChange" update="containerIndex candidatForm formMenu"
                                              listener="#{selectedTheso.setSelectedTheso()}" />
@@ -99,7 +99,7 @@
 
                         <!--is connected-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser != null}" tooltip="#{currentUser.nodeUser.name} !! #{langueBean.getMsg('menu.logout')}"
-                                          icon-awesome="fa-sign-out" icon-size="l" style="color: #FFFFFF;"
+                                          icon-awesome="fa-sign-out" icon-size="l" style="color: #C63632;"
                                           ajax="true" action="#{currentUser.disconnect()}"/>
 
 

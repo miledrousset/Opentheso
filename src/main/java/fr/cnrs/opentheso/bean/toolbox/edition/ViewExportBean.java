@@ -133,13 +133,20 @@ public class ViewExportBean implements Serializable {
             selectedLanguages.add(nodeLang);
         }
 
-        if(selectedGroups == null)
+        
+        
+        selectedGroups = null;
+        selectedGroups = new ArrayList<>();
+/*        if(selectedGroups == null)
             selectedGroups = new ArrayList<>();
-        else
-            selectedGroups.clear();        
-        for (NodeGroup nodeGroup : groupList) {
-            selectedGroups.add(nodeGroup);
-        }
+        else 
+            selectedGroups.clear();
+        
+        if(groupList != null) {
+            for (NodeGroup nodeGroup : groupList) {
+                selectedGroups.add(nodeGroup);
+            }
+        }*/
 
         exportUriArk = false;
         exportUriHandle = false;
