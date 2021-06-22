@@ -141,9 +141,9 @@
             <p:spacer/>    
             <b:row >
                 <b:column span="2" offset="3"> 
-                    <p:commandButton id="cancelCsv" icon="fas fa-undo"  
+                    <p:commandButton id="cancelCsv" icon="fa fa-undo"  
                                      value="#{langueBean.getMsg('btnBack')}"
-                                     class="fas fa-undo"
+                                     class="btn btn-success"
                                      style="width: 100%; background-color: #FFC107; color: black; border: none;"
                                      actionListener="#{viewEditionBean.init()}"
                                      action="#{importFileBean.init()}"
@@ -152,7 +152,7 @@
                 </b:column>
                 <b:column span="2" offset="2" > 
                     <p:commandButton id="buttonImportCsv" class="btn btn-success" widgetVar="buttonImportCsv"
-                                     icon="fas fa-check-circle fas 2x"
+                                     icon="fa fa-download"
                                      update="toolBoxForm toolBoxForm:listThesoForm"
                                      onclick="PrimeFaces.monitorDownload(start, stop);"
                                      style="width: 100%; background-color: #5CB85C; border: none;"

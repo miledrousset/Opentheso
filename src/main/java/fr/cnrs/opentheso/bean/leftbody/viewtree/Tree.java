@@ -13,7 +13,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
-import fr.cnrs.opentheso.bean.diagram.ConceptsDiagramBean;
+//import fr.cnrs.opentheso.bean.diagram.ConceptsDiagramBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -21,7 +21,6 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
-import java.io.IOException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,13 +28,9 @@ import java.util.List;
 import javax.annotation.PreDestroy;
 
 import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -58,7 +53,7 @@ public class Tree implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private ConceptsDiagramBean conceptsDiagramBean;
+//    @Inject private ConceptsDiagramBean conceptsDiagramBean;
     @Inject private IndexSetting indexSetting;
     @Inject private EditFacet editFacet;
 
@@ -104,7 +99,7 @@ public class Tree implements Serializable {
         addFirstNodes();
     //    expandAllNode();        
 
-    selectedNodes = new ArrayList<>();
+        selectedNodes = new ArrayList<>();
         leftBodySetting.setIndex("0");
     }
 

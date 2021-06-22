@@ -150,14 +150,14 @@
             <b:column span="6">
                 <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" ajax="false"
                                  onclick="PrimeFaces.monitorDownload(start, stop);"
-                                 icon="pi pi-arrow-down" class="btn btn-success"
+                                 icon="fa fa-upload" class="btn btn-success"
                                  style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;">
                     <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                 </p:commandButton>
             </b:column>
 
             <b:column span="6">
-                <p:commandButton icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
+                <p:commandButton icon="fa fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
                                  style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
                                  actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
                                  update="toolBoxForm toolBoxForm:listThesoForm"/>

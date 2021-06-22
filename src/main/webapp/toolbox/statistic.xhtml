@@ -8,48 +8,45 @@
     <p:panel id="statisticForm" style="margin-top: -20px; margin-left: -20px; 
              border: none; padding: 20px;">
         <b:row>
-            <b:column span="3" style="margin-top: 5px">
+            <b:column span="4" style="margin-top: 5px">
                 <h:outputText style="font-size: 13px;" value="#{langueBean.getMsg('statistique.choix_mode')}"/>
             </b:column>
-            <b:column span="3">
+            <b:column span="3" style="font-size: 12px;">
                 <b:selectOneMenu value="#{statistiqueBean.selectedStatistiqueTypeCode}" 
-                                 styleClass="selectOneMenu_custom" style="font-size: 12px;
-                                 background: white; border-color: #43B572"
+                                 style="font-size: 12px; height: 28px;
+                                 background: white; border-color: #43B572; width: 100%"
                                  onchange="ajax:statistiqueBean.inti()" update="statisticForm" >
 
                     <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.general')}" itemValue="0" />
                     <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.par_concept')}" itemValue="1" />
-                    <f:facet name="append">
-                        <b:commandButton look="success" iconAwesome="thumbs-up" icon-align="right" ajax="true"
-                                         update="toolBoxForm toolBoxForm:statisticForm"
-                                         actionListener="#{statistiqueBean.onSelectStatType()}"/>
-                    </f:facet>
                 </b:selectOneMenu>
-                <b:commandButton value="Success" styleClass="ui-button-success"
-                          iconAwesome="thumbs-up" icon-align="right" ajax="true"
-                          update="toolBoxForm toolBoxForm:statisticForm"
-                          actionListener="#{statistiqueBean.onSelectStatType()}"/>
+            </b:column>
+            <b:column span="4">
+                <b:commandButton value="OK" styleClass="ui-button-success"
+                          iconAwesome="fa-check" icon-align="right" ajax="true"
+                          update="toolBoxForm toolBoxForm:statisticForm" style="font-size: 12px; height: 28px; color: #43B572"
+                          actionListener="#{statistiqueBean.onSelectStatType()}"/>            
             </b:column>
         </b:row>
 
         <b:row rendered="#{statistiqueBean.selectLanguageVisible}">
-            <b:column span="3" style="margin-top: 5px">
+            <b:column span="4" style="margin-top: 5px">
                 <h:outputText class="control-label" style="font-size: 13px; height: 34px; margin-top: 7px; vertical-align: central" 
                               value="#{langueBean.getMsg('statistique.choix_lang')}"/>
             </b:column>
             <b:column span="3">
                 <b:selectOneMenu value="#{statistiqueBean.selectedLanguage}"
-                                 style="font-size: 12px; background: white; border-color: #43B572">
+                                 style="font-size: 12px; background: white; border-color: #43B572; height: 28px;">
                     <f:selectItems value="#{statistiqueBean.languagesOfTheso}" var="langue"
                                    itemLabel="#{statistiqueBean.formatLanguage(langue.value)}" itemValue="#{langue}"/>
-
-                    <f:facet name="append">
-                        <b:commandButton look="success" iconAwesome="thumbs-up" icon-align="right"
-                                         update="toolBoxForm toolBoxForm:statisticForm"
-                                         actionListener="#{statistiqueBean.onSelectLanguageType()}"/>
-                    </f:facet>
                 </b:selectOneMenu>
             </b:column>
+            <b:column span="4">
+                <b:commandButton value="OK" styleClass="ui-button-success"
+                          iconAwesome="fa-check" icon-align="right" ajax="true"
+                          update="toolBoxForm toolBoxForm:statisticForm" style="font-size: 12px; height: 28px; color: #43B572"
+                          actionListener="#{statistiqueBean.onSelectLanguageType()}"/>            
+            </b:column>            
         </b:row>
                
         <p:separator styleClass="separator" style="margin-top: 10px;" rendered="#{statistiqueBean.conceptTypeVisible || statistiqueBean.genericTypeVisible}"/>
