@@ -1,17 +1,15 @@
 package fr.cnrs.opentheso.virtuoso;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.primefaces.model.DefaultStreamedContent;
@@ -28,15 +26,14 @@ import java.util.List;
 @SessionScoped
 public class DownloadBean implements Serializable {
 
-    private final Log LOG = LogFactory.getLog(DownloadBean.class);
+    @Inject
+    private Connect connect;
 
     @Inject
     private LanguageBean languageBean;
 
     @Inject
     private RoleOnThesoBean roleOnTheso;
-
-    private HikariDataSource hikariDataSource;
 
 
     public StreamedContent thesoToFile(String idTheso, List<NodeLangTheso> selectedLanguages,
@@ -86,15 +83,15 @@ public class DownloadBean implements Serializable {
 
     private WriteRdf4j loadExportHelper(String idTheso, List<NodeLangTheso> selectedLanguages, List<NodeGroup> selectedGroups) {
 
-        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(hikariDataSource, idTheso);
+        NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
         if(nodePreference == null) {
-            LOG.error("Thésaurus est manquant !");
+            System.out.println("Veuillez selectionner un thésaurus");
             return null;
         }
 
         ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
         exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(hikariDataSource, "dd-mm-yyyy", false, idTheso,
+        exportRdf4jHelper.setInfos(connect.getPoolConnexion(), "dd-mm-yyyy", false, idTheso,
                 nodePreference.getCheminSite());
         exportRdf4jHelper.addThesaurus(idTheso, selectedLanguages);
         exportRdf4jHelper.addGroup(idTheso, selectedLanguages, selectedGroups);
@@ -119,7 +116,4 @@ public class DownloadBean implements Serializable {
         this.roleOnTheso = roleOnTheso;
     }
 
-    public void setConnect(HikariDataSource hikariDataSource) {
-        this.hikariDataSource = hikariDataSource;
-    }
 }

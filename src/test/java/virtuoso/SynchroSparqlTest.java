@@ -1,66 +1,37 @@
 package virtuoso;
 
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.RDFNode;
-import org.junit.Ignore;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
+import fr.cnrs.opentheso.virtuoso.SparqlStruct;
 import org.junit.Test;
-import virtuoso.jena.driver.VirtGraph;
-import virtuoso.jena.driver.VirtuosoQueryExecutionFactory;
-import virtuoso.jena.driver.VirtuosoUpdateFactory;
-import virtuoso.jena.driver.VirtuosoUpdateRequest;
+import fr.cnrs.opentheso.virtuoso.SynchroSparql;
 
-@Ignore
+import java.util.ArrayList;
+import java.util.List;
+
 public class SynchroSparqlTest {
 
     @Test
-    public void virtuosoTest() {
+    public void runVirtuosoTest() {
 
-        /*			STEP 1			*/
-        VirtGraph set = new VirtGraph ("jdbc:virtuoso://localhost:1111", "dba", "dba");
+        SynchroSparql synchroSparql = new SynchroSparql();
 
-        /*			STEP 2			*/
-        System.out.println("\nexecute: CLEAR GRAPH <th1>");
-        VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <th1>", set);
-        vur.exec();
+        SparqlStruct sparqlStruct = new SparqlStruct();
+        sparqlStruct.setAdresseServeur("http://localhost");
+        sparqlStruct.setNom_d_utilisateur("dba");
+        sparqlStruct.setMot_de_passe("dba");
+        sparqlStruct.setThesaurus("th1");
+        sparqlStruct.setGraph("Firas_TEST");
 
-        //set.clear();
+        synchroSparql.setSparqlStruct(sparqlStruct);
 
-        //System.out.println("\nexecute: INSERT INTO GRAPH <http://test1> { <aa> <bb> 'cc' . <aa1> <bb1> 123. }");
-        //vur = VirtuosoUpdateFactory.create("INSERT INTO GRAPH <http://test1> { <aa> <bb> 'cc' . <aa1> <bb1> 123. }", set);
-        //vur.exec();
+        NodeLangTheso nodeLangTheso = new NodeLangTheso();
+        nodeLangTheso.setCode("fr");
+        nodeLangTheso.setValue("fr");
+        synchroSparql.setListe_lang(List.of(nodeLangTheso));
 
-        /*			STEP 3			*/
-        /*		Select all data in virtuoso	*/
-        System.out.println("\nexecute: SELECT * FROM <th1> WHERE { ?s ?p ?o }");
-        Query sparql = QueryFactory.create("SELECT * FROM <th1> WHERE { ?s ?p ?o }");
+        synchroSparql.setListe_group(new ArrayList<>());
 
-        /*			STEP 4			*/
-        QueryExecution vqe = VirtuosoQueryExecutionFactory.create (sparql, set);
-
-        ResultSet results = vqe.execSelect();
-        while (results.hasNext()) {
-            QuerySolution rs = results.nextSolution();
-            RDFNode s = rs.get("s");
-            RDFNode p = rs.get("p");
-            RDFNode o = rs.get("o");
-            System.out.println(" { " + s + " " + p + " " + o + " . }");
-        }
-/*
-        System.out.println("\nexecute: DELETE FROM GRAPH <http://test1> { <aa> <bb> 'cc' }");
-        vur = VirtuosoUpdateFactory.create("DELETE FROM GRAPH <http://test1> { <aa> <bb> 'cc' }" , set);
-        vur.exec();
-
-        System.out.println("\nexecute: SELECT * FROM <http://test1> WHERE { ?s ?p ?o }");
-        vqe = VirtuosoQueryExecutionFactory.create (sparql, set);
-        results = vqe.execSelect();
-        while (results.hasNext()) {
-            QuerySolution rs = results.nextSolution();
-            RDFNode s = rs.get("s");
-            RDFNode p = rs.get("p");
-            RDFNode o = rs.get("o");
-            System.out.println(" { " + s + " " + p + " " + o + " . }");
-        }
-*/
+        synchroSparql.run();
 
     }
 
