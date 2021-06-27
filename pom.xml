@@ -11,22 +11,18 @@
     <name>opentheso2</name>
 
     <dependencies>
-
-        <!-- ne marche pas au delà de cette version 2.25 pour java 8-->
-        <!-- ne marche pas au delà de cette version 2.33 pour java 11-->        
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>2.33</version>
         </dependency>
+
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
             <version>2.33</version>
         </dependency>        
-        
-        
-        
+
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>d3js</artifactId>
@@ -189,6 +185,24 @@
             <artifactId>all-themes</artifactId>
             <version>${all.themes.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.openlink.virtuoso</groupId>
+            <artifactId>virt_jena2</artifactId>
+            <version>6.1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.openlink.virtuoso</groupId>
+            <artifactId>virt_jena</artifactId>
+            <version>6.1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>4.1.0</version>
         </dependency>
 
     </dependencies>
