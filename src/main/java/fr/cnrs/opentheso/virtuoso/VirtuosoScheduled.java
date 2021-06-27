@@ -23,15 +23,6 @@ public class VirtuosoScheduled implements ServletContextListener {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         SynchroSparql synchroSparql = new SynchroSparql();
 
-        SparqlStruct sparqlStruct = new SparqlStruct();
-        sparqlStruct.setAdresseServeur("http://localhost");
-        sparqlStruct.setNom_d_utilisateur("dba");
-        sparqlStruct.setMot_de_passe("dba");
-        sparqlStruct.setThesaurus("th1");
-        sparqlStruct.setGraph("Firas_TEST");
-
-        synchroSparql.setSparqlStruct(sparqlStruct);
-
         NodeLangTheso nodeLangTheso = new NodeLangTheso();
         nodeLangTheso.setCode("fr");
         nodeLangTheso.setValue("fr");
