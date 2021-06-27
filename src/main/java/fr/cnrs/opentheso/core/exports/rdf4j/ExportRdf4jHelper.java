@@ -35,6 +35,8 @@ import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.virtuoso.DownloadBean;
+
 import javax.faces.context.FacesContext;
 
 /**
@@ -251,32 +253,139 @@ public class ExportRdf4jHelper {
     /////////////////////Fin des nouvelles fonctions ///////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////// 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void addConcept(String idThesaurus, DownloadBean downloadBean, List<NodeLangTheso> selectedLanguages) {
+        // récupération de tous les concepts
+        for (NodeUri nodeTT1 : nodeTTs) {
+            SKOSResource sKOSResource = new SKOSResource();
+            sKOSResource.addRelation(getUriFromId(idTheso), SKOSProperty.topConceptOf);
+            //fils top concept
+            addFilsConceptRecursif(idThesaurus, nodeTT1.getIdConcept(), sKOSResource, downloadBean, selectedLanguages);
+        }
+    }
+
+    private void addFilsConceptRecursif(String idThesaurus, String idPere, SKOSResource sKOSResource,
+                                        DownloadBean downloadBean, List<NodeLangTheso> selectedLanguages) {
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+
+        ArrayList<String> listIdsOfConceptChildren = conceptHelper.getListChildrenOfConcept(ds, idPere, idThesaurus);
+
+        writeConceptInfo(conceptHelper, sKOSResource, idThesaurus, idPere, downloadBean, selectedLanguages);
+
+        for (String idOfConceptChildren : listIdsOfConceptChildren) {
+            sKOSResource = new SKOSResource();
+            //writeConceptInfo(conceptHelper, concept, idThesaurus, idOfConceptChildren, downloadBean, selectedLanguages);
+
+            //if (conceptHelper.haveChildren(ds, idThesaurus, idOfConceptChildren)) {
+            addFilsConceptRecursif(idThesaurus, idOfConceptChildren, sKOSResource, downloadBean, selectedLanguages);
+            //}
+        }
+    }
+
+    private void writeConceptInfo(ConceptHelper conceptHelper, SKOSResource sKOSResource,
+                                   String idThesaurus, String idOfConceptChildren, DownloadBean downloadBean,
+                                  List<NodeLangTheso> selectedLanguages) {
+
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idOfConceptChildren, idThesaurus,
+                false, false);
+
+        if (nodeConcept == null) {
+            return;
+        }
+
+        sKOSResource.setUri(getUri(nodeConcept));
+        sKOSResource.setProperty(SKOSProperty.Concept);
+
+        // prefLabel
+        for (NodeTermTraduction traduction : nodeConcept.getNodeTermTraductions()) {
+
+            boolean isInselectedLanguages = false;
+            for (NodeLangTheso nodeLang : selectedLanguages) {
+                if (nodeLang.getCode().equals(traduction.getLang())) {
+                    isInselectedLanguages = true;
+
+                    break;
+                }
+
+            }
+            if (isInselectedLanguages) {
+                sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.prefLabel);
+            }
+        }
+        // altLabel
+        for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
+            boolean isInselectedLanguages = false;
+            for (NodeLangTheso nodeLang : selectedLanguages) {
+                if (nodeLang.getCode().equals(nodeEM.getLang())) {
+                    isInselectedLanguages = true;
+
+                    break;
+                }
+
+            }
+            if (isInselectedLanguages) {
+                if(nodeEM.isHiden())
+                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.hiddenLabel);
+                else
+                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.altLabel);
+            }
+        }
+        ArrayList<NodeNote> nodeNotes = nodeConcept.getNodeNoteConcept();
+        nodeNotes.addAll(nodeConcept.getNodeNoteTerm());
+        addNoteGiven(nodeNotes, sKOSResource, selectedLanguages);
+        addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
+        addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
+        addRelationGiven(nodeConcept.getNodeListOfBT(), nodeConcept.getNodeListOfNT(),
+                nodeConcept.getNodeListIdsOfRT(), sKOSResource, nodeConcept.getConcept().getIdThesaurus());
+
+        String notation = nodeConcept.getConcept().getNotation();
+        String created = nodeConcept.getConcept().getCreated().toString();
+        String modified = nodeConcept.getConcept().getModified().toString();
+
+        if (notation != null && !notation.equals("null")) {
+            sKOSResource.addNotation(notation);
+        }
+        if (created != null) {
+            sKOSResource.addDate(created, SKOSProperty.created);
+        }
+        if (modified != null) {
+            sKOSResource.addDate(modified, SKOSProperty.modified);
+        }
+
+        sKOSResource.addRelation(getUriFromId(idTheso), SKOSProperty.inScheme);
+        for (NodeUri nodeUri : nodeConcept.getNodeListIdsOfConceptGroup()) {
+            sKOSResource.addRelation(getUriGroupFromNodeUri(nodeUri,idTheso), SKOSProperty.memberOf);
+        }
+
+        sKOSResource.addIdentifier(nodeConcept.getConcept().getIdConcept(), SKOSProperty.identifier);
+        skosXmlDocument.addconcept(sKOSResource);
+
+    }
 
     public void addConcept(String idThesaurus, ExportFileBean downloadBean, List<NodeLangTheso> selectedLanguages) {
         // récupération de tous les concepts
