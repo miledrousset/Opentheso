@@ -595,7 +595,7 @@ public class ImportFileBean implements Serializable {
                 if(!sKOSResource.getLabelsList().isEmpty())
                     importRdf4jHelper.addConcept(sKOSResource, idTheso, isCandidatImport);
             }
-
+            importRdf4jHelper.addFacets(sKOSXmlDocument.getFacetList(), idTheso);
             importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
             importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);
             

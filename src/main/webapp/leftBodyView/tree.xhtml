@@ -4,17 +4,15 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:b="http://bootsfaces.net/ui">
 
-    <b:row id="treeActions">
-        <b:column  span="7" offset="1" >
+    <b:row id="treeActions" style="height: 5px;" >
+        <b:column span="6" colLg="6" colMd="5" colSm="2" colXs="2">
             <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
                           title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
                           style="color: red; font-style: italic; background-color: yellow"/>
         </b:column>
-        <!-- Actions sur l'arbre -->
-        <ui:include src="/leftBodyView/globalActionsTree.xhtml" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}"/>        
 
         <!-- affichage du graphe -->
-        <b:column span="1" >
+        <b:column span="1" colLg="1" colMd="1" colSm="1" colXs="1" style="font-size: 12px;" >
             <b:navCommandLink rendered="#{!tree.selectedNode.leaf and tree.selectedNode != null}" 
                               iconAwesome="fa-sitemap" icon-size="sm"
                               tooltip="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" tooltip-delay-show="500"
@@ -28,7 +26,31 @@
                               target="_blank" id="link_graphe_disabled"
                               disabled="true"
                               style="color: #999; float: right; margin-top: 2px;"/>            
-        </b:column>        
+        </b:column>
+        <!-- Option de tri -->
+        <b:column span="2"  colLg="2" colMd="2" colSm="2" colXs="2">
+            <b:dropMenu value="" icon-awesome="fa-sort-amount-asc" 
+                style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px; margin-top: 2px;"
+                            class="dropdown-submenu pull-left"                        >
+                <b:navCommandLink iconAwesome="fa-sort-alpha-asc" value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
+                                  actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="false"
+                                  action="#{selectedTheso.reloadSelectedTheso()}"
+                                  style="font-size: 12px"
+                                  active="#{!selectedTheso.sortByNotation}"
+                                  update="containerIndex candidatForm formMenu formLeftTab">
+                </b:navCommandLink>
+                <b:navCommandLink iconAwesome="fa-sort-amount-asc" value="#{langueBean.getMsg('leftbody.notation_sort')}"
+                                  actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="false"
+                                  action="#{selectedTheso.reloadSelectedTheso()}"
+                                  style="font-size: 12px;"
+                                  active="#{selectedTheso.sortByNotation}"
+                                  update="containerIndex candidatForm formMenu formLeftTab">
+                </b:navCommandLink>
+            </b:dropMenu>
+        </b:column>
+        
+        <!-- Actions sur l'arbre -->
+        <ui:include src="/leftBodyView/globalActionsTree.xhtml" rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null)}"/>           
     </b:row>
 
     <b:row>

@@ -116,7 +116,9 @@ public class ReadRdf4j {
                     } else if (type.contains("ConceptGroup".toUpperCase())) {
                         prop = SKOSProperty.ConceptGroup;
                         validProperty = true;
-
+                    } else if (type.contains("ThesaurusArray".toUpperCase())) {
+                        prop = SKOSProperty.FACET;
+                        validProperty = true;
                     } else if (type.contains("Theme".toUpperCase())) {
                         prop = SKOSProperty.Theme;
                         validProperty = true;
@@ -124,11 +126,7 @@ public class ReadRdf4j {
                         prop = SKOSProperty.MicroThesaurus;
                         validProperty = true;
                     } else if (type.contains("Collection".toUpperCase())) {
-                        if (st.getSubject().toString().contains("Facet".toUpperCase())) {
-                            prop = SKOSProperty.FACET;
-                        } else {
-                            prop = SKOSProperty.Collection;
-                        }
+                        prop = SKOSProperty.Collection;
                         validProperty = true;
                     } else if (type.contains("Concept".toUpperCase())) {
                         prop = SKOSProperty.Concept;
@@ -360,7 +358,10 @@ public class ReadRdf4j {
         } else if (readStruct.property.getLocalName().equals("mainConceptOf")) {
             readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.mainConceptOf);
             return false;
-        } else {
+        } else if (readStruct.property.getLocalName().equals("superOrdinate")) {
+            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.superOrdinate);
+            return false;
+        } else {            
             return true;
         }
     }

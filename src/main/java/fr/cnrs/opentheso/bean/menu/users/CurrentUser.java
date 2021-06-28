@@ -255,13 +255,6 @@ public class CurrentUser implements Serializable {
         }
     }
 
-    public void forgotPassword() {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Default user name: BootsFaces");
-        FacesContext.getCurrentInstance().addMessage("loginForm:username", msg);
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Default password: rocks!");
-        FacesContext.getCurrentInstance().addMessage("loginForm:password", msg);
-    }
-
     public NodeUser getNodeUser() {
         return nodeUser;
     }

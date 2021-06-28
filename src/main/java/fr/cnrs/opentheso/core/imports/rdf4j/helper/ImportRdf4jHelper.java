@@ -21,6 +21,7 @@ import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
+import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GpsHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
@@ -298,6 +299,49 @@ public class ImportRdf4jHelper {
         nodePreference.setOriginalUri(uri);
         preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);  
     }    
+    
+    public void addFacets(ArrayList<SKOSResource> facetResources, String idTheso) {
+        FacetHelper facetHelper = new FacetHelper();
+        String idFacet;
+        String idConceptParent = null;
+        
+        boolean first = true;
+        
+        for (SKOSResource facetSKOSResource : facetResources) {
+            idFacet = getIdFromUri(facetSKOSResource.getUri());
+            if(idFacet == null) continue;
+            for (SKOSRelation relation : facetSKOSResource.getRelationsList()) {
+                if(relation.getProperty() == SKOSProperty.superOrdinate) {
+                    idConceptParent = getIdFromUri(relation.getTargetUri());
+                }
+            }
+            if(idConceptParent == null) continue;
+            if(facetSKOSResource.getLabelsList().isEmpty()) continue;
+            
+            for (SKOSLabel sKOSLabel : facetSKOSResource.getLabelsList()) {
+                if(first) {
+                    facetHelper.addNewFacet(ds,
+                        idFacet,
+                        idTheso,
+                        idConceptParent,
+                        sKOSLabel.getLabel(),
+                        sKOSLabel.getLanguage(),
+                        null);                    
+                    first = false;
+                } else {
+                    facetHelper.addFacetTraduction(ds, idFacet, idTheso, sKOSLabel.getLabel(), sKOSLabel.getLanguage());                  
+                }
+            }
+            for (SKOSRelation member : facetSKOSResource.getRelationsList()) {
+                if(member.getProperty() == SKOSProperty.member) {
+                    facetHelper.addConceptToFacet(ds,
+                        idFacet, idTheso, getIdFromUri(member.getTargetUri()));
+                }
+            }
+            first = true;
+        }
+        
+    }
     
     public void addGroups(ArrayList<SKOSResource> groupResource, String idTheso) {
         // récupération des groupes ou collections

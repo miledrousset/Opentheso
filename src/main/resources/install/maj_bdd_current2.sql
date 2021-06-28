@@ -263,6 +263,21 @@ end
 $$language plpgsql;
 
 
+--
+-- mise a jour de la note pour accepter le texte de gros volume
+--
+create or replace function update_table_note_constraint() returns void as $$
+begin
+    if exists (SELECT * from information_schema.table_constraints where table_name = 'note' 
+	and constraint_name ='note_notetypecode_id_thesaurus_id_concept_lang_key') then 
+	execute
+	'ALTER TABLE ONLY note drop CONSTRAINT note_notetypecode_id_thesaurus_id_concept_lang_key;
+         ALTER TABLE ONLY note drop CONSTRAINT note_notetypecode_id_thesaurus_id_term_lang_key;';
+    END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -279,6 +294,7 @@ SELECT update_table_concept_doi();
 SELECT update_table_concept_group_doi();
 SELECT update_table_languages();
 SELECT update_table_alignement_source();
+SELECT update_table_note_constraint();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -296,7 +312,7 @@ SELECT delete_fonction('update_table_concept_doi','');
 SELECT delete_fonction('update_table_concept_group_doi','');
 SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_alignement_source','');
-
+SELECT delete_fonction('update_table_note_constraint','');
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');

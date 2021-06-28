@@ -512,7 +512,7 @@
                 </b:dropMenu>                  
             </b:column>
             <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
-                <b:iconAwesome value="level-up-alt" size="m" style="color:#143a1e; "/>
+                <b:iconAwesome value="fa-level-up" size="m" style="color:#143a1e; "/>
             </b:column>            
 
             <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeBT.size() == 0}">
@@ -576,7 +576,7 @@
                 </b:dropMenu>                  
             </b:column>
             <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
-                <b:iconAwesome value="level-down-alt" size="m" style="color:#143a1e;"/>                 
+                <b:iconAwesome value="fa-level-down" size="m" style="color:#143a1e;"/>                 
             </b:column>  
 
             <h:panelGroup id="idConceptNarrower" >            
@@ -663,7 +663,7 @@
                 </b:dropMenu>                  
             </b:column>
             <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
-                <b:iconAwesome value="exchange-alt" size="m" style="color:#143a1e"/>                
+                <b:iconAwesome value="fa-exchange" size="m" style="color:#143a1e"/>                
             </b:column>            
 
             <h:panelGroup id="idConceptRelated" >
@@ -724,11 +724,12 @@
 
             <h:panelGroup id="idConceptSynonyms" >
                 <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
-                    <b:iconAwesome value="fa-equals" size="m" style="color:#143a1e"/>                
+                    <b:iconAwesome value="fa-arrows-h" size="m" style="color:#143a1e"/>                
                 </b:column> 
 
                 <b:column span="8" colXs="8" rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}">
                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
+                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
                 </b:column>  
 
                 <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
@@ -749,14 +750,71 @@
                                 <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=" , " style="color: #FF7979"/>
                             </ui:repeat>
                         </b:column>
-                    </b:row>                    
+                    </b:row>  
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                     
                 </b:column>
             </h:panelGroup>                
         </b:row>         
-        <p:separator styleClass="separator" style="margin-top: 20px; margin-bottom: 20px;"/>         
 
 
 
+
+        
+        
+        <!-- ligne Traductions -->
+        <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
+            <b:column span="3" colXs="3">
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" />
+            </b:column>
+            <b:column span="1" rendered="#{(currentUser.nodeUser != null)}">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_traduction')}" tooltip-delay-show="1000"
+                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" 
+                                      actionListener="#{traductionBean.reset()}"
+                                      action = "#{traductionBean.setLangWithNoTraduction()}"
+                                      oncomplete="PF('addTraduction').show();"
+                                      update="idAddTraduction addTraductionForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" 
+                                      actionListener="#{traductionBean.reset()}"
+                                      oncomplete="PF('renameTraduction').show();"
+                                      update="idRenameTraduction renameTraductionForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
+                                      actionListener="#{traductionBean.reset()}"
+                                      oncomplete="PF('deleteTraduction').show();"
+                                      update="idDeleteTraduction deleteTraductionForm"
+                                      style="font-size: 12px;"></b:navCommandLink>
+                </b:dropMenu> 
+            </b:column>
+            <h:panelGroup id="idConceptTraductions">
+                <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
+                    <b:iconAwesome value="fa-language" size="m" style="color:#143a1e"/>                
+                </b:column> 
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}">
+                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
+                </b:column>
+
+
+                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}">
+                    <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
+                        <b:navCommandLink value="#{trad.lexicalValue} (#{trad.lang})"
+                                          tooltip="#{conceptView.nodeConcept.concept.idConcept}" tooltip-delay-show="1000"
+                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                    conceptView.nodeConcept.concept.idConcept,
+                                                    trad.lang)}"
+                                          update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                          style="color: #43B572;"
+                                          styleClass="textOpentheso"/>  
+                        <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
+                    </ui:repeat> 
+                </b:column>
+            </h:panelGroup>
+        </b:row>            
+        
+        
+        <p:separator styleClass="separator" style="margin-top: 20px; margin-bottom: 20px;"/>           
         <!--                               -->        
         <!--              Fin              -->        
         <!-- Navigation entre les concepts -->
@@ -1095,60 +1153,7 @@
         </b:row>
 
 
-        <!-- ligne Traductions -->
-        <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
-            <b:column span="3" colXs="3">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" />
-            </b:column>
-            <b:column span="1">
-                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                            icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_traduction')}" tooltip-delay-show="1000"
-                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" 
-                                      actionListener="#{traductionBean.reset()}"
-                                      action = "#{traductionBean.setLangWithNoTraduction()}"
-                                      oncomplete="PF('addTraduction').show();"
-                                      update="idAddTraduction addTraductionForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
-                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" 
-                                      actionListener="#{traductionBean.reset()}"
-                                      oncomplete="PF('renameTraduction').show();"
-                                      update="idRenameTraduction renameTraductionForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
-                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
-                                      actionListener="#{traductionBean.reset()}"
-                                      oncomplete="PF('deleteTraduction').show();"
-                                      update="idDeleteTraduction deleteTraductionForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
-                </b:dropMenu> 
-            </b:column>
-            <h:panelGroup id="idConceptTraductions">
 
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}">
-                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
-                    <p:separator styleClass="separator" style="margin-top: 2px;"/> 
-                </b:column>
-
-
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}">
-                    <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" >
-                        <b:row>
-                            <b:column >
-                                <b:navCommandLink value="#{trad.lexicalValue} (#{trad.lang})"
-                                                  tooltip="#{conceptView.nodeConcept.concept.idConcept}" tooltip-delay-show="1000"
-                                                  action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                            conceptView.nodeConcept.concept.idConcept,
-                                                            trad.lang)}"
-                                                  update="formRightTab:viewTabConcept:conceptView indexTitle"
-                                                  style="color: #43B572;"
-                                                  styleClass="textOpentheso"/>                        
-                            </b:column> 
-                        </b:row> 
-                    </ui:repeat> 
-                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
-                </b:column>
-            </h:panelGroup>
-        </b:row>    
 
 
         <!-- ligne GPS -->
@@ -1222,7 +1227,7 @@
 
 
         <!-- ligne Corpus liés -->        
-        <b:row rendered="#{conceptView.nodeCorpuses != null and conceptView.nodeCorpuses.size() != 0}">
+        <b:row rendered="#{conceptView.nodeCorpuses != null and conceptView.haveCorpus}">
             <b:column span="3" colXs="3">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.linked_corpus')}" />
             </b:column>

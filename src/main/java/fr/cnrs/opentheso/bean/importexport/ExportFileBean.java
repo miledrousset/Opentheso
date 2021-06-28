@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -212,12 +213,13 @@ public class ExportFileBean implements Serializable {
             return null;
         }
 
+        ConceptHelper conceptHelper = new ConceptHelper();
         /// permet de filtrer par collection
         ArrayList<String> allConcepts;
         if("all".equalsIgnoreCase(viewExportBean.getSelectedGroup())){
-            allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+            allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         } else
-           allConcepts = new ConceptHelper().getAllIdConceptOfThesaurusByGroup(connect.getPoolConnexion(), idTheso, viewExportBean.getSelectedGroup());
+           allConcepts = conceptHelper.getAllIdConceptOfThesaurusByGroup(connect.getPoolConnexion(), idTheso, viewExportBean.getSelectedGroup());
         if(allConcepts == null || allConcepts.isEmpty() ) return null;
 
         sizeOfTheso = allConcepts.size();
@@ -226,7 +228,13 @@ public class ExportFileBean implements Serializable {
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
-        exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
+        
+        if("all".equalsIgnoreCase(viewExportBean.getSelectedGroup())){
+            exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
+        } else {
+            exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);            
+        }
+        
         exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
 
         for (String idConcept : allConcepts) {

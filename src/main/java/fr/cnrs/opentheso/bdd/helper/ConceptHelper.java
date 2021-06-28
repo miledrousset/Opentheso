@@ -1056,7 +1056,7 @@ public class ConceptHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select modified from concept where id_thesaurus = '"
-                        + idTheso + "' order by modified DESC limit 1 ");
+                        + idTheso + "' and status != 'CA' order by modified DESC limit 1 ");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         date = resultSet.getDate("modified");
@@ -1093,7 +1093,7 @@ public class ConceptHelper {
                             " concept.id_thesaurus = '" + idTheso + "'" +
                             " and" +
                             " term.lang = '" + idLang + "'" +
-                            " order by concept.modified DESC limit 10");
+                            " and concept.status != 'CA' order by concept.modified DESC limit 10");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();

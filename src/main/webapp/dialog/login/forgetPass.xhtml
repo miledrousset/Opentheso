@@ -1,0 +1,30 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+     <p:dialog id="idForgetPass" header="Passe oublié" widgetVar="forgetPass" 
+              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >        
+
+        <h:form id="forgetPassForm">
+            <b:row >
+                <b:column span="10" offset="1" >
+                    <p:inputText  placeholder="votre adresse mail" value="#{forgetPassBean.mail}"
+                                   style="font-size: 12px; width: 100%">
+                    </p:inputText>
+                </b:column>
+            </b:row>
+            <p:spacer/>
+            <b:row >
+                <b:column span="6" offset="3">
+                    <p:commandButton value="renvoyer" action="#{forgetPassBean.sendMail()}"
+                                     styleClass="ui-button-success" style="height: 28px; width: 100%"
+                                     oncomplete="PF('forgetPass').hide();"
+                                     update="idForgetPass messageIndex"/>
+                </b:column>
+            </b:row>    
+        </h:form>
+
+    </p:dialog>    
+</ui:fragment>

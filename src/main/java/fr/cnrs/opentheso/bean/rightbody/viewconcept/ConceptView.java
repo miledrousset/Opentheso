@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
-
+import com.jsf2leaf.model.Polyline;
 import com.jsf2leaf.model.LatLong;
 import com.jsf2leaf.model.Layer;
 import com.jsf2leaf.model.Map;
@@ -87,6 +87,9 @@ public class ConceptView implements Serializable {
     
     // total de la branche
     private int countOfBranch;
+    
+    // pour savoir si le concept a des relations vers des corpus
+    private boolean haveCorpus;
     
     /// Notes concept
     private ArrayList<NodeNote> notes;
@@ -186,6 +189,7 @@ public class ConceptView implements Serializable {
         sizeToShowNT = 0;
         nodeCorpuses = null;
         countOfBranch = 0;
+        haveCorpus = false;
         
         if(mapModel == null) 
             mapModel = new Map();
@@ -219,8 +223,8 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
-
-
+        
+        haveCorpus = false;
         nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
             setCorpus();
@@ -262,6 +266,7 @@ public class ConceptView implements Serializable {
         }
         // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
+        haveCorpus = false;        
         nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
             setCorpus();
@@ -307,7 +312,19 @@ public class ConceptView implements Serializable {
         mapModel.setDraggingEnabled(true);
         mapModel.setZoomEnabled(true);
 
-        //addMarker
+        
+    /* code pour superposer un polygone sur la carte */
+        /*        Layer placesLayer = (new Layer()).setLabel("Places");
+		placesLayer.addMarker(new Marker(new LatLong("42.120000","-72.540000"),"<b>Krusty Burger</b><br>Phone: 555-5555"));
+		placesLayer.addMarker(new Marker(new LatLong("42.114556","-72.526309"),"<b>Elementary School</b><br>Skinner&#39;s Phone: 555-5555"));
+		placesLayer.addMarker(new Marker(new LatLong("42.120286","-72.547488"),"<b>Hospital</b><br>Dr. Hibbert lol"));
+		
+                Layer polycircleLayer = (new Layer()).setLabel("Polyline/Circle");
+		polycircleLayer.addPolyline((new Polyline()).addPoint(new LatLong("42.114556","-72.526309")).addPoint(new LatLong("42.120000","-72.540000")));
+                mapModel.setWidth("350px").setHeight("250px").setCenter(new LatLong("42.111707","-72.541008")).setZoom(13);
+                mapModel.addLayer(placesLayer).addLayer(polycircleLayer);
+          */      
+                
         mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
     }
 
@@ -464,7 +481,9 @@ public class ConceptView implements Serializable {
             JsonReader reader = Json.createReader(new StringReader(jsonText));
             jsonObject = reader.readObject();
    //         System.err.println(jsonText + " #### " + nodeConcept.getConcept().getIdConcept());
-            return jsonObject.getInt("count");            
+            int count = jsonObject.getInt("count");
+            if(count > 0) haveCorpus = true;
+            return count;            
         } catch (Exception e) {
             System.err.println(e + " " + jsonText + " " + nodeConcept.getConcept().getIdConcept());
            // Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, e + " " + jsonText);            
@@ -491,7 +510,6 @@ public class ConceptView implements Serializable {
     public void setCountOfBranch(int countOfBranch) {
         this.countOfBranch = countOfBranch;
     }
-
 
 
 
@@ -718,6 +736,14 @@ public class ConceptView implements Serializable {
 
     public Map getMapModel() {
         return mapModel;
+    }
+
+    public boolean isHaveCorpus() {
+        return haveCorpus;
+    }
+
+    public void setHaveCorpus(boolean haveCorpus) {
+        this.haveCorpus = haveCorpus;
     }
     
     

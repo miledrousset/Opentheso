@@ -43,8 +43,10 @@
                                      color: white; background: #43B572; border: none; box-shadow: none; "/>
                 </b:column>
                 <b:column span="5">
-                    <p:commandButton disabled="true" value="#{langueBean.getMsg('menu.forgotten_pass')}" action="#{currentUser.forgotPassword()}"
+                    <p:commandButton disabled="false" value="#{langueBean.getMsg('menu.forgotten_pass')}"
                                      class="btn btn-primary"
+                                     oncomplete="PF('login').hide(); PF('forgetPass').show();"
+                                     update="idForgetPass forgetPassForm"
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
                                      color: white; background: #C63632; border: none; box-shadow: none; "/>

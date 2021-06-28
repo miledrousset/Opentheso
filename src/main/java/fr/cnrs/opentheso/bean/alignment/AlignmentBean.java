@@ -1198,7 +1198,7 @@ public class AlignmentBean implements Serializable {
          * sélectionnées : traductions, notes, images
          */
         // si l'alignement est de type Wikidata
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata")) {
+        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_sparql") || selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_rest")) {
             WikidataHelper wikidataHelper = new WikidataHelper();
             resetVariables();
 

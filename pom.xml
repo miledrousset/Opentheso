@@ -275,7 +275,7 @@
     <properties>
         <faces.api>2.3</faces.api>
         <java.version>11</java.version>
-        <mail.version>1.4</mail.version>
+        <mail.version>1.4.7</mail.version>
         <jsf.version>2.2.20</jsf.version>
         <d3js.version>6.2.0</d3js.version>
         <jena.version>3.3.0</jena.version>
