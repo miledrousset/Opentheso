@@ -186,7 +186,7 @@ public class AlignmentHelper {
     }
 
     /**
-     * Permet de savoir si on besoin faire une update ou un insert dans la BDD
+     * Permet de savoir si on besoin faire un update ou un insert dans la BDD
      *
      * @param ds
      * @param author
@@ -196,8 +196,7 @@ public class AlignmentHelper {
      * @param idTypeAlignment
      * @param idConcept
      * @param idThesaurus
-     * @param id_alignement_source parametre que on prende de la BDD, si c'est 0
-     * c'est alignement manuel
+     * @param id_alignement_source
      * @return
      */
     public boolean addNewAlignment(HikariDataSource ds,
@@ -304,7 +303,7 @@ public class AlignmentHelper {
      */
     /**
      * Cette fonction permet d'ajouter un nouvel alignement sur un thésaurus
-     * distant pour ce concept
+     * distant pour ce concept, utilisée uniquement pour les imports 
      *
      * @param ds
      * @param nodeAlignment

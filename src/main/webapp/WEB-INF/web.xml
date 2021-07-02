@@ -8,7 +8,7 @@
 
     <context-param>
         <param-name>version</param-name>
-        <param-value>21.06</param-value>
+        <param-value>21.07</param-value>
     </context-param>
 
     <!-- thème de Primefaces omega (n'est plus supporté dans la version 10 de primefaces) -->
@@ -25,13 +25,13 @@
 
 
     <!-- thème de Primefaces saga (devient le thème par defaut à partir de la 10 -->
-    <!--<context-param>
+    <!-- <context-param>
         <param-name>primefaces.THEME</param-name>
         <param-value>saga</param-value>
     </context-param>  -->
 
     <!-- pour éviter une erreur de type javax.faces.application.ViewExpiredException: viewId:/index.xhtml -->
-   <!-- <context-param>
+    <!-- <context-param>
        <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
        <param-value>true</param-value>
     </context-param>     -->

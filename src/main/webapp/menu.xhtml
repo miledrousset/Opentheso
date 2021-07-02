@@ -91,9 +91,8 @@
 
                         <!--Not connected-->
                         <b:navCommandLink rendered="#{currentUser.nodeUser == null}"
-                                          tooltip="#{langueBean.getMsg('menu.login')}" icon-awesome="fa-key"  icon-size="l"
-                                          oncomplete="PF('login').show();" style="color: #FFFFFF"
-                                          styleClass="buttonIconOrange"
+                                          tooltip="#{langueBean.getMsg('menu.login')}" icon-awesome="fa-key"  icon-size="l" style="color: #FFFFFF"
+                                          oncomplete="PF('login').show();" 
                                           update="idLogin loginForm"/>
 
                         <!--is connected-->

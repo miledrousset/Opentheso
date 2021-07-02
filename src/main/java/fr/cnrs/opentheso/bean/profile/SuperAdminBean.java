@@ -5,12 +5,11 @@
  */
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupThesaurus;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -36,6 +35,7 @@ public class SuperAdminBean implements Serializable {
     @Inject private SelectedTheso selectedTheso;
     
     private ArrayList<NodeUser> allUsers;// la liste de tous les utilisateurs  
+    private ArrayList<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
     
     private ArrayList<NodeUserGroup> allProjects;
     private ArrayList<NodeUserGroupThesaurus> allThesoProject;     
@@ -56,7 +56,12 @@ public class SuperAdminBean implements Serializable {
         if(allThesoProject!= null){
             allThesoProject.clear();
             allThesoProject = null;
-        }        
+        }    
+        if(nodeUserGroupUsers!= null){
+            nodeUserGroupUsers.clear();
+            nodeUserGroupUsers = null;
+        }         
+        
     }    
     
     public SuperAdminBean() {
@@ -66,7 +71,9 @@ public class SuperAdminBean implements Serializable {
         allUsers = null;
         allProjects = null;
         allThesoProject = null;
+        nodeUserGroupUsers = null;
         listAllUsers();
+        listAllUsersProjectRole();
         listAllProjects();
         listAllThesaurus();
     }
@@ -81,6 +88,20 @@ public class SuperAdminBean implements Serializable {
             allUsers = userHelper.getAllUsers(connect.getPoolConnexion());
         } 
     }    
+    
+    /**
+     * permet de récupérer la liste de tous les utilisateurs avec les roles pour chaque projet
+     */
+    private void listAllUsersProjectRole(){
+        UserHelper userHelper = new UserHelper();
+        String idLang = connect.getWorkLanguage();
+        if(selectedTheso.getCurrentLang() != null)
+            idLang = selectedTheso.getCurrentLang();
+        
+        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+            nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);    
+        } 
+    }      
     
     /**
      * permet de retourner la liste de tous les projets
@@ -126,6 +147,14 @@ public class SuperAdminBean implements Serializable {
 
     public void setAllThesoProject(ArrayList<NodeUserGroupThesaurus> allThesoProject) {
         this.allThesoProject = allThesoProject;
+    }
+
+    public ArrayList<NodeUserGroupUser> getNodeUserGroupUsers() {
+        return nodeUserGroupUsers;
+    }
+
+    public void setNodeUserGroupUsers(ArrayList<NodeUserGroupUser> nodeUserGroupUsers) {
+        this.nodeUserGroupUsers = nodeUserGroupUsers;
     }
 
 

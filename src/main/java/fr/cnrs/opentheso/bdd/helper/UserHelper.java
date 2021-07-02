@@ -832,7 +832,7 @@ public class UserHelper {
                             + " WHERE"
                             + " user_role_group.id_user = users.id_user AND"
                             + " user_group_label.id_group = user_role_group.id_group AND"
-                            + " roles.id = user_role_group.id_role");
+                            + " roles.id = user_role_group.id_role order by lower (users.username) ASC");
                 try (ResultSet resultSet = stmt.getResultSet()) {     
                     while (resultSet.next()) {
                         NodeUserGroupUser nodeUserGroupUser = new NodeUserGroupUser();

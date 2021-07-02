@@ -45,6 +45,9 @@ public class ThesaurusHelper {
 
     /**
      * Retourne la liste de tous les thésaurus dans la langue sélectionnée
+     * @param ds
+     * @param idLang
+     * @return 
      */
     public ArrayList<NodeIdValue> getAllTheso(HikariDataSource ds, String idLang) {
 
@@ -76,6 +79,9 @@ public class ThesaurusHelper {
 
     /**
      * permet de savoir si le thésaurus est public ou privé
+     * @param ds
+     * @param idTheso
+     * @return 
      */
     public boolean isThesoPrivate(HikariDataSource ds, String idTheso) {
         boolean status = false;
@@ -97,6 +103,11 @@ public class ThesaurusHelper {
     /**
      * Permet de créer un nouveau Thésaurus. Retourne l'identifiant du thésaurus
      * ou null
+     * @param ds
+     * @param thesaurus
+     * @param urlSite
+     * @param isArkActive
+     * @return 
      */
     public String addThesaurus(HikariDataSource ds, Thesaurus thesaurus,
             String urlSite, boolean isArkActive) {
@@ -172,6 +183,9 @@ public class ThesaurusHelper {
      * Permet de rajouter une traduction à un Thésaurus existant suivant un l'id
      * du thésaurus et la langue retourne yes or No si l'opération a réussie ou
      * non
+     * @param conn
+     * @param thesaurus
+     * @return 
      */
     public boolean addThesaurusTraductionRollBack(Connection conn, Thesaurus thesaurus) {
 
@@ -226,6 +240,9 @@ public class ThesaurusHelper {
      * Permet de rajouter une traduction à un Thésaurus existant suivant un l'id
      * du thésaurus et la langue retourne yes or No si l'opération a réussie ou
      * non
+     * @param ds
+     * @param thesaurus
+     * @return 
      */
     public boolean addThesaurusTraduction(HikariDataSource ds, Thesaurus thesaurus) {
 
@@ -267,6 +284,10 @@ public class ThesaurusHelper {
     /**
      * Permet de retourner un thésaurus par identifiant et par langue / ou null
      * si rien cette fonction ne retourne pas les détails et les traductions
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @return 
      */
     public Thesaurus getThisThesaurus(HikariDataSource ds, String idThesaurus, String idLang) {
         idLang = idLang.trim();
@@ -312,6 +333,10 @@ public class ThesaurusHelper {
 
     /**
      * Permet de retourner le titre du thésaurus par identifiant et par langue
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @return 
      */
     public String getTitleOfThesaurus(HikariDataSource ds, String idThesaurus, String idLang) {
         String title = null;
@@ -334,6 +359,9 @@ public class ThesaurusHelper {
     /**
      * Permet de retourner un thésaurus par identifiant sous forme de
      * NodeThesaurus avec les traductions
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public NodeThesaurus getNodeThesaurus(HikariDataSource ds, String idThesaurus) {
 
@@ -356,6 +384,9 @@ public class ThesaurusHelper {
      * Retourne la liste des langues sous forme de MAP (nom + id) si le
      * thesaurus n'existe pas dans la langue demandée, on récupère seulement son
      * id
+     * @param ds
+     * @param idLang
+     * @return 
      */
     public Map getListThesaurus(HikariDataSource ds, String idLang) {
 
@@ -404,6 +435,9 @@ public class ThesaurusHelper {
 
     /**
      * Retourne la liste des Ids des thésaurus existants
+     * @param ds
+     * @param withPrivateTheso
+     * @return 
      */
     public List<String> getAllIdOfThesaurus(HikariDataSource ds, boolean withPrivateTheso) {
 
@@ -431,6 +465,10 @@ public class ThesaurusHelper {
 
     /**
      * retourne la liste des thésaurus d'un utilisateur
+     * @param ds
+     * @param idUser
+     * @param idLang
+     * @return 
      */
     public Map getListThesaurusOfUser(HikariDataSource ds, int idUser, String idLang) {
         Map map = new HashMap();
@@ -511,6 +549,9 @@ public class ThesaurusHelper {
     /**
      * Retourne la liste des traductions d'un thesaurus sous forme de MAP (lang
      * + title)
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public Map getMapTraduction(HikariDataSource ds, String idThesaurus) {
 
@@ -536,6 +577,9 @@ public class ThesaurusHelper {
     /**
      * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une
      * chaine vide
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public String getIdArkOfThesaurus(HikariDataSource ds, String idThesaurus) {
         String ark = "";
@@ -557,6 +601,9 @@ public class ThesaurusHelper {
     /**
      * Retourne la liste des traductions d'un thesaurus sous forme de ArrayList
      * avec le code iso de la langue
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public ArrayList<String> getIsoLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
 
@@ -582,6 +629,9 @@ public class ThesaurusHelper {
     /**
      * Retourne la liste des traductions d'un thesaurus sous forme de ArrayList
      * d'Objet Languages_iso639
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public ArrayList<Languages_iso639> getLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
 
@@ -622,9 +672,12 @@ public class ThesaurusHelper {
     }
 
     /**
-     * Cette fonction permet de retourner toutes les langues utilisées par les
-     * Concepts d'un thésaurus (sous forme de NodeLang, un objet complet)
-     */
+    * Cette fonction permet de retourner toutes les langues utilisées par les
+    * Concepts d'un thésaurus (sous forme de NodeLang, un objet complet)
+    * @param ds
+    * @param idThesaurus
+    * @return 
+    */
     public ArrayList<NodeLangTheso> getAllUsedLanguagesOfThesaurusNode(HikariDataSource ds,
             String idThesaurus) {
 
@@ -659,10 +712,14 @@ public class ThesaurusHelper {
         return nodeLangs;
     }
 
+
     /**
      * Cette fonction permet de retourner toutes les langues utilisées par les
      * Concepts d'un thésaurus !!! seulement les code iso des langues sert
      * essentiellement à l'import
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public ArrayList<String> getAllUsedLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
 
@@ -685,6 +742,10 @@ public class ThesaurusHelper {
 
     /**
      * Cette fonction permet de savoir si le terme existe ou non
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @return 
      */
     public boolean isLanguageExistOfThesaurus(HikariDataSource ds, String idThesaurus, String idLang) {
 
@@ -711,6 +772,9 @@ public class ThesaurusHelper {
 
     /**
      * Cette fonction permet de savoir si le thesaurus existe ou non
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public boolean isThesaurusExiste(HikariDataSource ds, String idThesaurus) {
         boolean existe = false;
@@ -731,6 +795,9 @@ public class ThesaurusHelper {
 
     /**
      * Cette fonction permet de savoir si le thesaurus existe ou non
+     * @param conn
+     * @param idThesaurus
+     * @return 
      */
     public boolean isThesaurusExiste(Connection conn, String idThesaurus) {
         boolean existe = false;
@@ -776,6 +843,9 @@ public class ThesaurusHelper {
     /**
      * Permet de mettre à jour un thésaurus suivant un identifiant et une langue
      * donnés
+     * @param ds
+     * @param thesaurus
+     * @return 
      */
     public boolean UpdateThesaurus(HikariDataSource ds, Thesaurus thesaurus) {
 
@@ -817,15 +887,17 @@ public class ThesaurusHelper {
 
     /**
      * Permet de supprimer un thésaurus
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public boolean deleteThesaurus(HikariDataSource ds, String idThesaurus) {
         StringPlus text = new StringPlus();
         idThesaurus = text.convertString(idThesaurus);
         boolean state = false;
-
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                String query = "delete from thesaurus where id_thesaurus = '" + idThesaurus + "';"
+                stmt.executeUpdate("delete from thesaurus where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from thesaurus_label where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from thesaurus_array where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from node_label where id_thesaurus = '" + idThesaurus + "';"
@@ -856,10 +928,8 @@ public class ThesaurusHelper {
                         + "delete from thesaurus_alignement_source where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from concept_group_concept where idthesaurus = '" + idThesaurus + "';"
                         + "delete from relation_group where id_thesaurus = '" + idThesaurus + "';"
-                        + "delete from preferences where id_thesaurus = '" + idThesaurus + "';";
-                stmt.executeUpdate(query);
+                        + "delete from preferences where id_thesaurus = '" + idThesaurus + "';");
                 state = true;
-
             }
         } catch (SQLException ex) {
             Logger.getLogger(ThesaurusHelper.class
@@ -870,6 +940,10 @@ public class ThesaurusHelper {
 
     /**
      * Permet de supprimer une traduction d'un thésaurus
+     * @param ds
+     * @param idThesaurus
+     * @param id_lang
+     * @return 
      */
     public boolean deleteThesaurusTraduction(HikariDataSource ds, String idThesaurus, String id_lang) {
         StringPlus text = new StringPlus();

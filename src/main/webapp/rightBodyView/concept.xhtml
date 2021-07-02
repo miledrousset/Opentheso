@@ -1156,7 +1156,7 @@
 
 
 
-        <!-- ligne GPS -->
+        <!-- ligne GPS MAP-->
         <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
             <b:column span="3" colXs="3">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}" />
@@ -1210,10 +1210,9 @@
                                 </p:tab>
                             </p:accordionPanel>
                             -->
-                            <p:panel header="Map" toggleable="true" closable="false" toggleSpeed="500" 
-                                     style="margin-top: 10px; margin-bottom: 10px">
+
                                 <leaf:mapAdvanced map="#{conceptView.mapModel}" />
-                            </p:panel>
+
                         </b:column>
                     </b:row>
                     <b:row>

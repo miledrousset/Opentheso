@@ -306,7 +306,7 @@ public class ConceptView implements Serializable {
         mapModel.setHeight("250px");
         mapModel.setCenter(place);
         mapModel.setZoom(13);
-        mapModel.setAttribution(titre);
+        mapModel.setAttribution("©<a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>");
         mapModel.setMiniMap(false);
         mapModel.setLayerControl(false);
         mapModel.setDraggingEnabled(true);
