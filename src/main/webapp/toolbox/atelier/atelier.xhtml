@@ -14,13 +14,40 @@
                 <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
                     <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
                     <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
+                    <f:selectItem itemLabel="Fusionner deux thésaurus" itemValue="opt3"/>
                 </p:selectOneRadio>
             </p:panel>
         </p:tab>
 
         <p:tab id="entre" title="Entrées" titleStyleClass="tabCostum">
 
-            <p:panel header="Les données de comparaison" styleClass="redColoredPanel">
+            <p:panel id="fussion" header="Importation du thésorus source" styleClass="redColoredPanel" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}">
+                <b:row style="margin-left: 30px; margin-right: 30px; ">
+                    <b:column span="12" >
+                        <p:fileUpload listener="#{fusionService.importTheso}"
+                                      label="parcourir"
+                                      mode="advanced" auto="true"
+                                      allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
+                                      update="fussion" disabled="#{importFileBean.loadDone}"
+                                      style="font-size: 12px;" />
+                    </b:column>
+                </b:row>
+
+                <b:row id="uri" rendered="#{fusionService.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                    <b:column span="5">
+                        <h:outputText value="URI: " />
+                        <h:outputText value="#{fusionService.uri}" style="color: #C63632"/>
+                    </b:column>
+                </b:row>
+                <b:row id="nbr_concepts" rendered="#{fusionService.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                    <b:column span="5">
+                        <h:outputText value="Total des concepts: " />
+                        <h:outputText value="#{fusionService.total}" style="color: #C63632"/>
+                    </b:column>
+                </b:row>
+            </p:panel>
+
+            <p:panel header="Les données de comparaison" styleClass="redColoredPanel" rendered="#{atelierThesBean.isRubriqueSelected('opt1')}">
                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
                     <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px" />
                     <p:selectOneMenu value="#{atelierThesBean.choiceDelimiter}" style="font-size: 12px; background: white; border-color: #43B572">
@@ -41,7 +68,7 @@
                     <h:form style="margin-top: 15px">
 
                         <p:scrollPanel mode="native" style="width: 100%; max-height: 200px; border-width: 0">
-                            
+
                             <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
 
                             <b:row rendered="#{atelierThesBean.values.size() == 0}">
@@ -58,7 +85,7 @@
                                 </ui:repeat>
                             </b:row>
 
-                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px" 
+                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"
                                          rendered="#{atelierThesBean.values.size() > 0}"/>
 
                             <ui:repeat var="ligne" value="#{atelierThesBean.values}">
@@ -72,7 +99,7 @@
                             </ui:repeat>
 
                             <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-                            
+
                         </p:scrollPanel>
 
                     </h:form>
@@ -82,7 +109,7 @@
                         <p:selectOneMenu value="#{atelierThesBean.selectedColumn}" style="font-size: 12px; background: white; border-color: #43B572">
                             <f:selectItems value="#{atelierThesBean.titles}" var="titre"
                                            itemLabel="#{titre}" itemValue="#{titre}"/>
-                        </p:selectOneMenu> 
+                        </p:selectOneMenu>
                     </h:panelGrid>
 
                 </p:panel>
@@ -112,7 +139,35 @@
 
         <p:tab id="resultat" title="Résultat" titleStyleClass="tabCostum">
 
-            <p:panel header="Résultat">
+            <p:panel header="Résultat" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}">
+                <h:outputText value="Vous êtes sur le point de fussioner le thésaurus '#{atelierThesBean.selectedColumn}'
+                        dans la thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
+                <br/>
+
+                <p:commandButton value="Lancer la fussion" icon="fa-search" actionListener="#{atelierThesBean.fusionner()}"
+                                 update="toolBoxForm" onclick="PF('bui').show()" style="margin-top: 10px"/>
+
+                <br/>
+                <br/>
+
+                <p:panel id="statistiques" rendered="#{fusionService.fusionDone}">
+                    <b:row>
+                        <b:column span="6">
+                            <h5>Conceptes ajoutés : #{fusionService.conceptsAjoutes.size()}</h5>
+                            <p:orderList value="#{fusionService.conceptsAjoutes}" var="concepte1" controlsLocation="none"
+                                         itemLabel="#{concepte1}" itemValue="#{concepte1}" />
+                        </b:column>
+                        <b:column span="6">
+                            <h5>Conceptes modifiés : #{fusionService.conceptsModifies.size()}</h5>
+                            <p:orderList value="#{fusionService.conceptsModifies}" var="concepte2" controlsLocation="none"
+                                         itemLabel="#{concepte2}" itemValue="#{concepte2}" />
+                        </b:column>
+                    </b:row>
+                    <br/>
+                </p:panel>
+            </p:panel>
+
+            <p:panel header="Résultat" rendered="#{atelierThesBean.isRubriqueSelected('opt1')}">
 
                 <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemle des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
 

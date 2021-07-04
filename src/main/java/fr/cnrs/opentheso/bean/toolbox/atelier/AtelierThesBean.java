@@ -13,6 +13,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.inject.Inject;
+
+import fr.cnrs.opentheso.bean.fusion.FusionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -24,7 +26,12 @@ import org.primefaces.model.StreamedContent;
 @Named("atelierThesBean")
 @ViewScoped
 public class AtelierThesBean implements Serializable {
-    @Inject private AtelierThesService atelierThesService;
+
+    @Inject
+    private AtelierThesService atelierThesService;
+
+    @Inject
+    private FusionService fusionService;
 
     private List<String> titles;
     private List<List<String>> values = new ArrayList<>();
@@ -72,7 +79,7 @@ public class AtelierThesBean implements Serializable {
         result = new ArrayList<>();
         nodeListTheso = atelierThesService.searchAllThesaurus();
     }
-    
+
     public void clearAll() {
         if(titles == null)
             titles = new ArrayList<>();
@@ -96,6 +103,10 @@ public class AtelierThesBean implements Serializable {
             delimiterCsv = ';';
         if(choiceDelimiter == 2)
             delimiterCsv = '\t';         
+    }
+
+    public void fusionner() {
+        fusionService.lancerFussion(thesoSelected);
     }
     
     public void comparer() {
@@ -184,19 +195,27 @@ public class AtelierThesBean implements Serializable {
             if (StringUtils.isEmpty(actionSelected)) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionnez une action !");
                 return event.getOldStep();
-            } else if (!"opt1".equals(actionSelected)) {
+            } else if ("opt2".equals(actionSelected)) {
                 showMessage(FacesMessage.SEVERITY_INFO, "Cette action n'est pas disponible pour le moment ..");
                 return event.getOldStep();
             } else {
                 return event.getNewStep();
             }
         } else if ("entre".equals(event.getOldStep())) {
-            if ("actions".equals(event.getNewStep())) {
-                return event.getNewStep();
-            } else if (CollectionUtils.isEmpty(values)) {
-                showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez ajouter des données d'entrées !");
-                return event.getOldStep();
+            if ("opt1".equals(actionSelected)) {
+                if ("actions".equals(event.getNewStep())) {
+                    return event.getNewStep();
+                } else if (CollectionUtils.isEmpty(values)) {
+                    showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez ajouter des données d'entrées !");
+                    return event.getOldStep();
+                } else {
+                    return event.getNewStep();
+                }
             } else {
+                if (!fusionService.isLoadDone()) {
+                    showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez importer un thesaurus !");
+                    return event.getOldStep();
+                }
                 return event.getNewStep();
             }
         } else if ("thesaurus".equals(event.getOldStep())) {
@@ -229,6 +248,10 @@ public class AtelierThesBean implements Serializable {
 
     public String getActionSelected() {
         return actionSelected;
+    }
+
+    public boolean isRubriqueSelected(String nomAction) {
+        return nomAction.equals(actionSelected);
     }
 
     public void setActionSelected(String actionSelected) {

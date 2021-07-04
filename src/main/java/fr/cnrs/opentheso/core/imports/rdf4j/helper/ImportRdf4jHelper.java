@@ -96,53 +96,6 @@ public class ImportRdf4jHelper {
         isFirst = true;
     }
 
-    /**
-     * Classe pour construire un concept sépcifique
-     */
-    class AddConceptsStruct {
-
-        Concept concept;
-        String conceptStatus = "";
-        ConceptHelper conceptHelper;
-        SKOSResource conceptResource;
-        NodeStatus status;
-        String collectionToAdd;
-        // pour intégrer les coordonnées GPS 
-        NodeGps nodeGps = new NodeGps();
-        GpsHelper gpsHelper = new GpsHelper();
-        //ajout des termes et traductions
-        NodeTerm nodeTerm = new NodeTerm();
-        ArrayList<NodeTermTraduction> nodeTermTraductionList = new ArrayList<>();
-        //Enregister les synonymes et traductions
-        ArrayList<NodeEM> nodeEMList = new ArrayList<>();
-        // ajout des notes
-        ArrayList<NodeNote> nodeNotes = new ArrayList<>();
-        //ajout des relations 
-        ArrayList<HierarchicalRelationship> hierarchicalRelationships = new ArrayList<>();
-        // ajout des relations Groups
-        ArrayList<String> idGrps = new ArrayList<>();
-        
-        /// objects pour les concepts dépréciés
-        //concepts à utiliser pour un concept déprécié
-        private ArrayList <NodeIdValue> replacedBy = new ArrayList<>();
-
-        // les concepts dépréciés qui sont reliés à ce concept
-        private ArrayList <NodeIdValue> replaces = new ArrayList<>();         
-        
-        // ajout des alignements 
-        ArrayList<NodeAlignment> nodeAlignments = new ArrayList<>();
-        TermHelper termHelper = new TermHelper();
-        NoteHelper noteHelper = new NoteHelper();
-        boolean isTopConcept = false;
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-        ImagesHelper imagesHelper = new ImagesHelper();
-        List<VoteDto> votes = new ArrayList<>();
-        List<MessageDto> messages = new ArrayList<>();
-        
-        ArrayList<String> nodeImages = new ArrayList<>();
-        Term term = new Term();
-
-    }
 
     /**
      * initialisation des paramètres d'import
@@ -472,7 +425,7 @@ public class ImportRdf4jHelper {
         addConceptToBdd(acs, idTheso, isCandidatImport);
     }
     
-    private void initAddConceptsStruct(AddConceptsStruct acs, SKOSResource conceptResource,
+    public void initAddConceptsStruct(AddConceptsStruct acs, SKOSResource conceptResource,
             String idTheso, boolean isCandidatImport) {
 
         acs.conceptResource = conceptResource;
@@ -1025,6 +978,10 @@ public class ImportRdf4jHelper {
 
     private void addDate(AddConceptsStruct acs) {
         try {
+            if (StringUtils.isEmpty(formatDate)) {
+                formatDate = "dd-mm-yyyy";
+            }
+
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);
             for (SKOSDate date : acs.conceptResource.getDateList()) {
                 if (date.getProperty() == SKOSProperty.created) {
@@ -1059,7 +1016,7 @@ public class ImportRdf4jHelper {
         }
     }    
  
-    private void addRelation(AddConceptsStruct acs, String idTheso) {
+    public void addRelation(AddConceptsStruct acs, String idTheso) {
         HierarchicalRelationship hierarchicalRelationship;
         int prop;
         String idConcept2;
