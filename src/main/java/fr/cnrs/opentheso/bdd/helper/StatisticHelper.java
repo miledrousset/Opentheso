@@ -29,6 +29,34 @@ public class StatisticHelper {
         this.nombreConcept = nombreConcept;
     }
     
+    public int getNbAlignWikidata(HikariDataSource ds, String idThesaurus, String idGroup) {
+        int count = 0;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
+                    " where" +
+                    " concept_group_concept.idconcept = alignement.internal_id_concept" +
+                    " and" +
+                    " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
+                    " and" +
+                    " concept_group_concept.idgroup = '" + idGroup + "'" +
+                    " and" +
+                    " concept_group_concept.idthesaurus = '" + idThesaurus + "'" +
+                    " and" +
+                    " uri_target like '%www.wikidata.org%'");                
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        count = resultSet.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting count of concept of thesaurus : " + idThesaurus, sqle);
+        }
+        return count;
+    }    
+    
     /**
      * méthode pour récupérer tous les concepts modifiés triés par date décroissant
      * @param ds

@@ -9,6 +9,7 @@ public class GenericStatistiqueData {
     private int synonymesNbr;
     private int termesNonTraduitsNbr;
     private int notesNbr;
+    private int wikidataAlignNbr;
 
     public String getCollection() {
         return collection;
@@ -56,6 +57,14 @@ public class GenericStatistiqueData {
 
     public void setIdCollection(String idCollection) {
         this.idCollection = idCollection;
+    }
+
+    public int getWikidataAlignNbr() {
+        return wikidataAlignNbr;
+    }
+
+    public void setWikidataAlignNbr(int wikidataAlignNbr) {
+        this.wikidataAlignNbr = wikidataAlignNbr;
     }
 
 }

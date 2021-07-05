@@ -101,7 +101,7 @@
         <link rel="stylesheet" type="text/css" href="css/composants.css" media="screen" />
 
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
-
+        
         <script type="text/javascript" src="javascript/scrollToSelectedScript.js"></script>
 
         <script>
@@ -136,6 +136,7 @@
         <b:growl id="messageIndex" globalOnly="true" showDetail="true" placementFrom="bottom"/>
 
         <b:container id="containerIndex" rendered="#{(connect.browserName != 'agent')}">
+            
             <ui:include src="menu.xhtml" />
 
             <h:panelGroup  rendered="#{indexSetting.isThesoActive and indexSetting.isSelectedTheso}">
