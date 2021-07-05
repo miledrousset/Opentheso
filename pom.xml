@@ -198,12 +198,6 @@
 
         <dependency>
             <groupId>com.openlink.virtuoso</groupId>
-            <artifactId>virt_jena2</artifactId>
-            <version>6.1.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.openlink.virtuoso</groupId>
             <artifactId>virt_jena</artifactId>
             <version>6.1.6</version>
         </dependency>
