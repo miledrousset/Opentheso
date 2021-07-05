@@ -1,17 +1,18 @@
 package virtuoso;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
+import org.junit.Ignore;
 import org.junit.Test;
 import fr.cnrs.opentheso.virtuoso.SynchroSparql;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Ignore
 public class SynchroSparqlTest {
 
     @Test
-    public void runVirtuosoTest() {
+    public void virtuosoTest() {
 
         SynchroSparql synchroSparql = new SynchroSparql();
 
