@@ -80,46 +80,52 @@ public class FusionService implements Serializable {
                 } else {
 
                     //alignment : existe -> on ne fait rien; ,n'existe pas -> on l'ajout
-                    if (CollectionUtils.isEmpty(conceptFound.getNodeAlignments())) {
+                    if (!CollectionUtils.isEmpty(acs.nodeAlignments)) {
                         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
-                            new AlignmentHelper().addNewAlignment(connect.getPoolConnexion(),
-                                    nodeAlignment.getId_author(),
-                                    nodeAlignment.getConcept_target(),
-                                    nodeAlignment.getThesaurus_target(),
-                                    nodeAlignment.getUri_target(),// URI
-                                    nodeAlignment.getAlignement_id_type(),
-                                    conceptSource.getIdentifier(),
-                                    conceptFound.getConcept().getIdThesaurus(),
-                                    nodeAlignment.getId_alignement());
+                            if (isAlignementExist(nodeAlignment, conceptFound)) {
+                                new AlignmentHelper().addNewAlignment(connect.getPoolConnexion(),
+                                        nodeAlignment.getId_author(),
+                                        nodeAlignment.getConcept_target(),
+                                        nodeAlignment.getThesaurus_target(),
+                                        nodeAlignment.getUri_target(),// URI
+                                        nodeAlignment.getAlignement_id_type(),
+                                        conceptSource.getIdentifier(),
+                                        conceptFound.getConcept().getIdThesaurus(),
+                                        nodeAlignment.getId_alignement());
+                            }
                         }
                     }
 
                     // Synonymes
-                    for (NodeEM nodeEM : acs.nodeEMList) {
-                        if (!isSynonymeExist(nodeEM, conceptFound)) {
-                            Term term = new Term();
-                            term.setId_concept(conceptSource.getIdentifier());
-                            term.setLexical_value(nodeEM.getLexical_value());
-                            term.setLang(nodeEM.getLang());
-                            term.setId_thesaurus(conceptFound.getConcept().getIdThesaurus());
-                            term.setSource(nodeEM.getSource());
-                            term.setStatus(nodeEM.getStatus());
-                            term.setHidden(nodeEM.isHiden());
-                            new TermHelper().addNonPreferredTerm(connect.getPoolConnexion(), term,
-                                    currentUser.getNodeUser().getIdUser());
+                    if (!CollectionUtils.isEmpty(acs.nodeEMList)) {
+                        for (NodeEM nodeEM : acs.nodeEMList) {
+                            if (!isSynonymeExist(nodeEM, conceptFound)) {
+                                Term term = new Term();
+                                term.setId_concept(conceptSource.getIdentifier());
+                                term.setLexical_value(nodeEM.getLexical_value());
+                                term.setLang(nodeEM.getLang());
+                                term.setId_thesaurus(conceptFound.getConcept().getIdThesaurus());
+                                term.setSource(nodeEM.getSource());
+                                term.setStatus(nodeEM.getStatus());
+                                term.setHidden(nodeEM.isHiden());
+                                new TermHelper().addNonPreferredTerm(connect.getPoolConnexion(), term,
+                                        currentUser.getNodeUser().getIdUser());
+                            }
                         }
                     }
 
                     //Definition
-                    for (NodeNote nodeNote : acs.nodeNotes) {
-                        if (!isDefinitionExist(nodeNote, conceptFound)) {
-                            new NoteHelper().addConceptNote(connect.getPoolConnexion(),
-                                    conceptFound.getConcept().getIdThesaurus(),
-                                    nodeNote.getLang(),
-                                    conceptFound.getConcept().getIdThesaurus(),
-                                    nodeNote.getLexicalvalue(),
-                                    nodeNote.getNotetypecode(),
-                                    nodeNote.getIdUser());
+                    if (!CollectionUtils.isEmpty(acs.nodeNotes)) {
+                        for (NodeNote nodeNote : acs.nodeNotes) {
+                            if (!isDefinitionExist(nodeNote, conceptFound)) {
+                                new NoteHelper().addConceptNote(connect.getPoolConnexion(),
+                                        conceptFound.getConcept().getIdThesaurus(),
+                                        nodeNote.getLang(),
+                                        conceptFound.getConcept().getIdThesaurus(),
+                                        nodeNote.getLexicalvalue(),
+                                        nodeNote.getNotetypecode(),
+                                        nodeNote.getIdUser());
+                            }
                         }
                     }
 
@@ -132,6 +138,19 @@ public class FusionService implements Serializable {
             }
         }
 
+    }
+
+    private boolean isAlignementExist(NodeAlignment nodeAlignement, NodeConcept concept) {
+        if (CollectionUtils.isEmpty(concept.getNodeEM()))
+            return false;
+
+        for(NodeAlignment node : concept.getNodeAlignments()){
+            if (nodeAlignement.getAlignement_id_type() == node.getAlignement_id_type()
+                    && (nodeAlignement.getName() != null && nodeAlignement.getName().equals(node.getName()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isDefinitionExist(NodeNote nodeNote, NodeConcept concept) {
