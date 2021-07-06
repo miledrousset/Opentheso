@@ -48,6 +48,9 @@ public class StatistiqueService {
             data.setWikidataAlignNbr(statisticHelper.getNbAlignWikidata(
                     connect.getPoolConnexion(), idTheso, group.getConceptGroup().getIdgroup()));  
             
+            data.setTotalAlignment(statisticHelper.getNbAlign(
+                    connect.getPoolConnexion(), idTheso, group.getConceptGroup().getIdgroup()));              
+            
             result.add(data);
         });
 

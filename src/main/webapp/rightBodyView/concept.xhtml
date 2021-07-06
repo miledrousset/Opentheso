@@ -218,7 +218,20 @@
                                       action="#{importFileBean.init()}"
                                       oncomplete="PF('listImportCsv').show();"
                                       style="font-size: 12px; ">
-                    </b:navCommandLink>                     
+                    </b:navCommandLink>
+                    
+                    
+                    <!--Pour importer des alignements de Wikidata -->
+                    <b:navLink rendered="#{currentUser.nodeUser.isSuperAdmin}"/>
+                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}"
+                                      value="importer des alignements de Wikidata"
+                                      actionListener="#{editConcept.infosDelete()}"
+                                      update="idListAlignmentCsv listAlignmentCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('listAlignmentCsv').show();"
+                                      style="font-size: 12px; ">
+                    </b:navCommandLink>                    
+                    
                 </b:dropMenu>        
             </b:column>
 
@@ -228,6 +241,7 @@
         <ui:include src="/dialog/concept/deprecateConcept.xhtml" />
         <ui:include src="/dialog/concept/approveConcept.xhtml" />
         <ui:include src="/dialog/import/listImportCsv.xhtml" />
+        <ui:include src="/dialog/import/listAlignmentCsv.xhtml" />        
         <ui:include src="/dialog/concept/generateArk.xhtml" /> 
         <ui:include src="/dialog/concept/generateHandle.xhtml" />    
         <ui:include src="/dialog/concept/deleteHandle.xhtml" />           

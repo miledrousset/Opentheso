@@ -170,7 +170,7 @@ public class AlignmentHelper {
                 String query = "SELECT internal_id_concept from alignement"
                         + " where internal_id_concept = '" + id_Concept + "'"
                         + " and internal_id_thesaurus = '" + id_Theso + "'"
-                        + " and id_alignement_source = '" + id_alignement_source + "'"
+//                        + " and id_alignement_source = '" + id_alignement_source + "'"
                         + " and alignement_id_type = '" + alignement_id_type + "'"
                         + " and uri_target = '" + urlTarget + "'";
                 try ( ResultSet rs = stmt.executeQuery(query)) {
@@ -186,7 +186,7 @@ public class AlignmentHelper {
     }
 
     /**
-     * Permet de savoir si on besoin faire un update ou un insert dans la BDD
+     * Permet de savoir si on a besoin de faire un update ou un insert dans la BDD
      *
      * @param ds
      * @param author
@@ -332,9 +332,11 @@ public class AlignmentHelper {
                 return true;
             }
         } catch (SQLException sqle) {
-            log.error("Error while adding external alignement with target : " + nodeAlignment.getUri_target(), sqle);
-            return false;
+            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
+                log.error("Error while adding external alignement with target : " + nodeAlignment.getUri_target(), sqle);
+            }
         }
+        return false;
     }
 
     /**
