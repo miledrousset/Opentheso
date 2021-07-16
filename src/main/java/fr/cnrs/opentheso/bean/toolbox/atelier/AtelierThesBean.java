@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.toolbox.atelier;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import java.io.ByteArrayInputStream;
 import javax.faces.view.ViewScoped;
 
@@ -14,7 +13,9 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.inject.Inject;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.fusion.FusionService;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -22,6 +23,7 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+
 
 @Named("atelierThesBean")
 @ViewScoped
@@ -38,7 +40,7 @@ public class AtelierThesBean implements Serializable {
     private NodeIdValue thesoSelected;
     private ArrayList<NodeIdValue> nodeListTheso;
     private ArrayList<ConceptResultNode> result;
-    private int spanTable;
+    private int spanTable, currentStep;
     private int choiceDelimiter = 0;    
     private char delimiterCsv = ',';
     private String selectedColumn;
@@ -131,6 +133,8 @@ public class AtelierThesBean implements Serializable {
         } else {
             showMessage(FacesMessage.SEVERITY_ERROR, "Aucune donnée trouvées !");
         }
+
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
     }
 
     public StreamedContent exportResultat() {
@@ -228,6 +232,7 @@ public class AtelierThesBean implements Serializable {
                 return event.getNewStep();
             }
         } else {
+            fusionService.initFusionResult();
             return event.getNewStep();
         }
     }
@@ -257,5 +262,7 @@ public class AtelierThesBean implements Serializable {
     public void setActionSelected(String actionSelected) {
         this.actionSelected = actionSelected;
     }
+
+
 
 }

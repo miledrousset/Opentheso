@@ -346,15 +346,17 @@ public class ImportRdf4jHelper {
             
             String idArkHandle = null;
             // option cochée
-            if (selectedIdentifier.equalsIgnoreCase("ark")) {
-                idArkHandle = getIdArkFromUri(group.getUri());
+            if (!StringUtils.isEmpty(selectedIdentifier)) {
+                if (selectedIdentifier.equalsIgnoreCase("ark")) {
+                    idArkHandle = getIdArkFromUri(group.getUri());
+                }
+                if (selectedIdentifier.equalsIgnoreCase("handle")) {
+                    idArkHandle = getIdHandleFromUri(group.getUri());
+                }
+                if (selectedIdentifier.equalsIgnoreCase("doi")) {
+                    idArkHandle = getIdDoiFromUri(group.getUri());
+                }
             }
-            if (selectedIdentifier.equalsIgnoreCase("handle")) {
-                idArkHandle = getIdHandleFromUri(group.getUri());
-            }
-            if (selectedIdentifier.equalsIgnoreCase("doi")) {
-                idArkHandle = getIdDoiFromUri(group.getUri());
-            }            
             
             if(idArkHandle == null)
                 idArkHandle = "";
@@ -499,7 +501,7 @@ public class ImportRdf4jHelper {
         }
     }
     
-    private void addConceptToBdd(AddConceptsStruct acs, String idTheso, boolean isCandidatImport) {
+    public void addConceptToBdd(AddConceptsStruct acs, String idTheso, boolean isCandidatImport) {
         if (!acs.conceptHelper.insertConceptInTable(ds, acs.concept, idUser)) {
             System.out.println("Erreur sur le Concept = " + acs.concept.getIdConcept());
         }
@@ -1268,6 +1270,12 @@ public class ImportRdf4jHelper {
     public void setPrefixDoi(String prefixDoi) {
         this.prefixDoi = prefixDoi;
     }
-    
 
+    public HikariDataSource getDs() {
+        return ds;
+    }
+
+    public void setDs(HikariDataSource ds) {
+        this.ds = ds;
+    }
 }
