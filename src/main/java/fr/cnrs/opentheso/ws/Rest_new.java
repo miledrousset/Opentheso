@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.ws;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
@@ -2543,7 +2545,69 @@ public class Rest_new {
     
     
     
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ///////////// Fonctions spécifiques pour Ontome  //////////////////////////////////////  
+    ////////récupération des Toptermes qui sont liés à une classe CIDOC-CRM////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Pour retourner les concepts de la branche qui est liée à une classe CIDOC-CRM pour Ontome
+     * le lien se fait par l'alignement en ExactMatch
+     * Si la classe est renseignée, on retourne uniquement le concept en question
+     * http://localhost:8082/opentheso2/api/ontome/linkedConcept?theso=th1&class=56
+     * http://localhost:8082/opentheso2/api/ontome/linkedConcept?theso=th1
+     * @param uri
+     * @return
+     */
+    @Path("ontome/linkedConcept/")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response getAllLinkedConceptsWithOntome(@Context UriInfo uri) {
+        String idTheso = null;
+        String cidocClass = null;      
+        
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("theso")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("class")) {
+                    cidocClass = valeur;
+                }                  
+            }
+        }
+
+        if (idTheso == null || idTheso.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+        }
+
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            }   RestRDFHelper restRDFHelper = new RestRDFHelper();
+            if(cidocClass == null || cidocClass.isEmpty()) {
+                datas = restRDFHelper.getAllLinkedConceptsWithOntome__(ds, idTheso);
+            } else {
+                datas = restRDFHelper.getLinkedConceptWithOntome__(ds, idTheso, cidocClass);
+            }
+        }
+
+        if (datas == null) {
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();
+    }
+   
+   
+
     
+    /////////////////////////////////////////////////////////////////////////////////////// 
+    ///////////////////////////////////////////////////////////////////////////////////////    
+    /////////////////////////////////////////////////////////////////////////////////////// 
+    ///////////////////////////////////////////////////////////////////////////////////////    
     
     
     

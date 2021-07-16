@@ -14,6 +14,7 @@ public class NodeAlignmentSmall {
 
     private String uri_target;
     private int alignement_id_type;
+    private String source;    
     
     public NodeAlignmentSmall() {
 
@@ -33,6 +34,14 @@ public class NodeAlignmentSmall {
 
     public void setAlignement_id_type(int alignement_id_type) {
         this.alignement_id_type = alignement_id_type;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
 }

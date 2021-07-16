@@ -18,6 +18,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
@@ -88,6 +90,8 @@ public class ImportFileBean implements Serializable {
     private String thesaurusName;
     private ArrayList<CsvReadHelper.ConceptObject> conceptObjects;
     private ArrayList<String> langs;
+    private ArrayList<NodeAlignmentImport> nodeAlignmentImports; 
+    
 
     private String formatDate = "yyyy-MM-dd";
     private String uri;
@@ -142,6 +146,10 @@ public class ImportFileBean implements Serializable {
             sKOSXmlDocument.clear();
         }
         sKOSXmlDocument = null;
+        if (nodeAlignmentImports != null) {
+            nodeAlignmentImports.clear();
+        }
+        nodeAlignmentImports = null;        
     }
 
     public void init() {
@@ -166,6 +174,9 @@ public class ImportFileBean implements Serializable {
         sKOSXmlDocument = null;
         if (conceptObjects != null) {
             conceptObjects.clear();
+        }
+        if(nodeAlignmentImports != null) {
+            nodeAlignmentImports.clear();
         }
         if (langs != null) {
             langs.clear();
@@ -200,6 +211,51 @@ public class ImportFileBean implements Serializable {
             delimiterCsv = '\t';
         }
     }
+    
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
+    public void loadFileAlignmentCsvToDelete(FileUploadEvent event) {
+        initError();
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+
+                if (!csvReadHelper.readFileAlignmentToDelete(reader)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+
+                warning = csvReadHelper.getMessage();
+                conceptObjects = csvReadHelper.getConceptObjects();
+                if (conceptObjects != null) {
+                    if (conceptObjects.isEmpty()) {
+                        haveError = true;
+                        error.append(System.getProperty("line.separator"));
+                        error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
+                        warning = "";
+                    } else {
+                        total = conceptObjects.size();
+                        uri = "";//csvReadHelper.getUri();
+                        loadDone = true;
+                        BDDinsertEnable = true;
+                        info = "File correctly loaded";
+                    }
+                }
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+        }
+    }    
 
     /**
      * permet de charger un fichier en Csv
@@ -221,15 +277,15 @@ public class ImportFileBean implements Serializable {
                 }
 
                 warning = csvReadHelper.getMessage();
-                conceptObjects = csvReadHelper.getConceptObjects();
-                if (conceptObjects != null) {
-                    if (conceptObjects.isEmpty()) {
+                nodeAlignmentImports = csvReadHelper.getNodeAlignmentImports();
+                if (nodeAlignmentImports != null) {
+                    if (nodeAlignmentImports.isEmpty()) {
                         haveError = true;
                         error.append(System.getProperty("line.separator"));
                         error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
                         warning = "";
                     } else {
-                        total = conceptObjects.size();
+                        total = nodeAlignmentImports.size();
                         uri = "";//csvReadHelper.getUri();
                         loadDone = true;
                         BDDinsertEnable = true;
@@ -410,12 +466,12 @@ public class ImportFileBean implements Serializable {
      * permet d'ajouter une liste d'alignements en CSV au thésaurus
      *
      */
-    public void addAlignmentFromWikidata() {
+    public void addAlignmentList() {
         if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
             warning = "pas de thésaurus sélectionné";
             return;
         }
-        if (conceptObjects == null || conceptObjects.isEmpty()) {
+        if (nodeAlignmentImports == null || nodeAlignmentImports.isEmpty()) {
             warning = "pas de valeurs";
             return;
         }
@@ -427,28 +483,39 @@ public class ImportFileBean implements Serializable {
         progressStep = 0;
         progress = 0;
         total = 0;
-        String idConcept;
+        String idConcept = null;
         ConceptHelper conceptHelper = new ConceptHelper();
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         NodeAlignment nodeAlignment = new NodeAlignment();
 
         try {
-            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
-                if (conceptObject.getIdArk() == null || conceptObject.getIdArk().isEmpty()) {
+            for (NodeAlignmentImport nodeAlignmentImport : nodeAlignmentImports) {
+                if(nodeAlignmentImport == null) continue;
+                if (nodeAlignmentImport.getLocalId()== null || nodeAlignmentImport.getLocalId().isEmpty()) {
                     continue;
                 }
-                idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getIdArk());
+                if("ark".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
+                }
+                if("handle".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
+                } 
+                if("identifier".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = nodeAlignmentImport.getLocalId();
+                }                
+                
                 if (idConcept == null || idConcept.isEmpty()) {
                     continue;
                 }
-                for (NodeIdValue nodeIdValue : conceptObject.getAlignmentWikidata()) {
+                for (NodeAlignmentSmall nodeAlignmentSmall : nodeAlignmentImport.getNodeAlignmentSmalls()) {
+                    if(nodeAlignmentSmall == null) continue;
                     nodeAlignment.setId_author(currentUser.getNodeUser().getIdUser());
                     nodeAlignment.setConcept_target("");
-                    nodeAlignment.setThesaurus_target(nodeIdValue.getId());
+                    nodeAlignment.setThesaurus_target(nodeAlignmentSmall.getSource());
                     nodeAlignment.setInternal_id_concept(idConcept);
                     nodeAlignment.setInternal_id_thesaurus(selectedTheso.getCurrentIdTheso());
-                    nodeAlignment.setAlignement_id_type(1);
-                    nodeAlignment.setUri_target(nodeIdValue.getValue());
+                    nodeAlignment.setAlignement_id_type(nodeAlignmentSmall.getAlignement_id_type());
+                    nodeAlignment.setUri_target(nodeAlignmentSmall.getUri_target());
                     if (alignmentHelper.addNewAlignment(connect.getPoolConnexion(), nodeAlignment)) {
                         total++;
                     }
@@ -468,6 +535,73 @@ public class ImportFileBean implements Serializable {
             showError();
         }
     }
+    
+    
+    /**
+     * permet de supprimer une liste d'alignements en CSV du thésaurus
+     *
+     */
+    public void deleteAlignmentFromCsv() {
+        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
+            warning = "pas de thésaurus sélectionné";
+            return;
+        }
+        if (conceptObjects == null || conceptObjects.isEmpty()) {
+            warning = "pas de valeurs";
+            return;
+        }
+        if (importInProgress) {
+            return;
+        }
+        initError();
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+        String idConcept = null;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+
+        try {
+            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                if (conceptObject.getLocalId() == null || conceptObject.getLocalId().isEmpty()) {
+                    continue;
+                }
+                if("ark".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId());
+                }
+                if("handle".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getLocalId());
+                } 
+                if("identifier".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = conceptObject.getLocalId();
+                }  
+                if (idConcept == null || idConcept.isEmpty()) {
+                    continue;
+                }
+                for (NodeIdValue nodeIdValue : conceptObject.getAlignments()) {
+                    if(alignmentHelper.deleteAlignmentByUri(connect.getPoolConnexion(),
+                            nodeIdValue.getValue().trim(),
+                            idConcept,
+                            selectedTheso.getCurrentIdTheso())) {
+                        total++;
+                    }
+                }
+            }
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            info = "Suppression réussie, alignements supprimés = " + (int)total;            
+            total = 0;
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+    }    
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////Fin Ajout des alignements de Wikidata////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

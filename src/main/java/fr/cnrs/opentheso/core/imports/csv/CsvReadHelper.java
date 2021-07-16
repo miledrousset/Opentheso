@@ -5,6 +5,8 @@
  */
 package fr.cnrs.opentheso.core.imports.csv;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import java.io.IOException;
 import java.io.Reader;
@@ -32,14 +34,52 @@ public class CsvReadHelper {
     private ArrayList<String> langs;
 
     private final ArrayList<ConceptObject> conceptObjects;
-
-    //Concerne le fichier de type alignment
-    private ArrayList<NodeIdValue> headers;    
+    
+    private ArrayList <NodeAlignmentImport> nodeAlignmentImports;
     
     public CsvReadHelper(char delimiter) {
         this.delimiter = delimiter;
         conceptObjects = new ArrayList<>();
     }
+    
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     * @param in
+     * @return 
+     */
+    public boolean readFileAlignmentToDelete(Reader in){
+        try {
+            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            String value;
+            for (CSVRecord record : records) {
+                ConceptObject conceptObject = new ConceptObject();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if(value == null) continue;
+                    conceptObject.setLocalId(value);
+                } catch (Exception e) {continue; }                
+                // on récupère les uris à supprimer
+                try {
+                    value = record.get("Uri");
+                    if(value == null) continue;
+                    NodeIdValue nodeIdValue = new NodeIdValue();
+                    nodeIdValue.setId("");
+                    nodeIdValue.setValue(value.trim());
+                    conceptObject.alignments.add(nodeIdValue);
+                } catch (Exception e) {continue;}                  
+
+                conceptObjects.add(conceptObject);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    
    
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
@@ -51,26 +91,21 @@ public class CsvReadHelper {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
             String value;
+            nodeAlignmentImports = new ArrayList<>();
             for (CSVRecord record : records) {
-                ConceptObject conceptObject = new ConceptObject();
+                NodeAlignmentImport nodeAlignmentImport = new NodeAlignmentImport();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
-                // puis on génère un nouvel identifiant
-                try {
-                    value = record.get("Wikidata");
-                    if(value == null) continue;
-                } catch (Exception e) {continue; }
-
                 try {
                     value = record.get("localId");
                     if(value == null) continue;
-                    conceptObject.setIdArk(value);
+                    nodeAlignmentImport.setLocalId(value);
                 } catch (Exception e) {continue; }                
                 
                 // on récupère les alignements 
                 
-                conceptObject = getNewAlignment(conceptObject, record);
-                
-                conceptObjects.add(conceptObject);
+                nodeAlignmentImport = getNewAlignment(nodeAlignmentImport, record);
+                if(nodeAlignmentImport != null)
+                    nodeAlignmentImports.add(nodeAlignmentImport);
             }
             return true;
         } catch (IOException ex) {
@@ -78,83 +113,80 @@ public class CsvReadHelper {
         }
         return false;
     }      
-    private ConceptObject getNewAlignment(
-            ConceptObject conceptObject,
+    private NodeAlignmentImport getNewAlignment(
+            NodeAlignmentImport nodeAlignmentImport,
             CSVRecord record) {
-        String value;
-        
+        String uri1;
+        String[] valueType;
+        /// types alignements 1=exactMatch ; 2=closeMatch ; 3=broadMatch ; 4=relatedMatch ; 5=narrowMatch
         try {
-            value = record.get("Wikidata");
-            if(value != null && !value.isEmpty()) {
-                NodeIdValue nodeIdValue = new NodeIdValue();                  
-                nodeIdValue.setId("Wikidata");
-                nodeIdValue.setValue(value.trim());
-                conceptObject.alignmentWikidata.add(nodeIdValue);
-            }            
+            uri1 = record.get("Wikidata");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Wikidata", uri1);
         } catch (Exception e) {}        
         
         try {
-            value = record.get("AAT");
-            if(value != null && !value.isEmpty()) {
-                NodeIdValue nodeIdValue = new NodeIdValue();                  
-                nodeIdValue.setId("AAT");
-                nodeIdValue.setValue(value.trim());
-                conceptObject.alignmentWikidata.add(nodeIdValue);
-            }            
+            uri1 = record.get("AAT");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "AAT", uri1);
         } catch (Exception e) {}
         
         try {
-            value = record.get("BNF");
-            if(value != null && !value.isEmpty()) {
-                NodeIdValue nodeIdValue = new NodeIdValue();                 
-                nodeIdValue.setId("BNF");
-                nodeIdValue.setValue(value.trim());
-                conceptObject.alignmentWikidata.add(nodeIdValue);
-            }            
+            uri1 = record.get("BNF");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "BNF", uri1);       
         } catch (Exception e) {}
         
         try {
-            value = record.get("IdRef");
-            if(value != null && !value.isEmpty()) {
-                NodeIdValue nodeIdValue = new NodeIdValue();                  
-                nodeIdValue.setId("IdRef");
-                nodeIdValue.setValue(value.trim());
-                conceptObject.alignmentWikidata.add(nodeIdValue);
-            }            
+            uri1 = record.get("IdRef");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "IdRef", uri1);         
         } catch (Exception e) {}
         
         try {
-            value = record.get("Pleiades");
-            if(value != null && !value.isEmpty()) {
-                NodeIdValue nodeIdValue = new NodeIdValue();                  
-                nodeIdValue.setId("Pleiades");
-                nodeIdValue.setValue(value.trim());
-                conceptObject.alignmentWikidata.add(nodeIdValue);
-            }            
+            uri1 = record.get("Pleiades");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Pleiades", uri1);            
         } catch (Exception e) {}       
         
         try {
-            value = record.get("PeriodO");
-            if(value != null && !value.isEmpty()) {
-                NodeIdValue nodeIdValue = new NodeIdValue();                  
-                nodeIdValue.setId("PeriodO");
-                nodeIdValue.setValue(value.trim());
-                conceptObject.alignmentWikidata.add(nodeIdValue);
-            }            
+            uri1 = record.get("PeriodO");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "PeriodO", uri1);            
         } catch (Exception e) {}       
         try {
-            value = record.get("Geonames");
-            if(value != null && !value.isEmpty()) {
-                NodeIdValue nodeIdValue = new NodeIdValue();                  
-                nodeIdValue.setId("Geonames");
-                nodeIdValue.setValue(value.trim());
-                conceptObject.alignmentWikidata.add(nodeIdValue);
-            }            
+            uri1 = record.get("Geonames");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Geonames", uri1);            
         } catch (Exception e) {}          
         
-        return conceptObject;
+        return nodeAlignmentImport;
     }
-    
+    private NodeAlignmentImport getAlignmentSource(NodeAlignmentImport nodeAlignmentImport, String source, String uri){
+        String[] valueType;
+        /// types alignements 1=exactMatch ; 2=closeMatch ; 3=broadMatch ; 4=relatedMatch ; 5=narrowMatch
+        try {
+            if(source != null && !source.isEmpty()) {
+                NodeAlignmentSmall nodeAlignmentSmall = new NodeAlignmentSmall();
+                nodeAlignmentSmall.setSource(source);
+                
+                //on récupère le type d'alignement (url##1)
+                if(uri.contains("##")) {
+                    valueType = uri.split("##");
+                    if(valueType.length == 2){
+                        nodeAlignmentSmall.setUri_target(valueType[0]);
+                        try {
+                            nodeAlignmentSmall.setAlignement_id_type(Integer.parseInt(valueType[1]));
+                        } catch (Exception e) {
+                            nodeAlignmentSmall.setAlignement_id_type(1);
+                        }
+                    } else {
+                        nodeAlignmentSmall.setUri_target(uri);
+                        nodeAlignmentSmall.setAlignement_id_type(1);
+                    }
+                } else {
+                    nodeAlignmentSmall.setUri_target(uri);
+                    nodeAlignmentSmall.setAlignement_id_type(1);
+                }
+                nodeAlignmentImport.getNodeAlignmentSmalls().add(nodeAlignmentSmall);
+                return nodeAlignmentImport;
+            }
+        } catch (Exception e) {}
+        return null;
+    }
     
     
     
@@ -818,12 +850,20 @@ public class CsvReadHelper {
         return langs;
     }
 
+    public ArrayList<NodeAlignmentImport> getNodeAlignmentImports() {
+        return nodeAlignmentImports;
+    }
+
+    public void setNodeAlignmentImports(ArrayList<NodeAlignmentImport> nodeAlignmentImports) {
+        this.nodeAlignmentImports = nodeAlignmentImports;
+    }
+
     
     
     public class ConceptObject {
         private String idConcept;
         private String uri;
-        private String idArk;
+        private String localId; // peut être Ark, Handle ou identifiant local
         private String idTerm;
         // rdf:type pour distinguer les concepts des collections, groupes ...
         private String type;
@@ -870,8 +910,8 @@ public class CsvReadHelper {
         private String created;
         private String modified;        
         
-        
-        private ArrayList<NodeIdValue> alignmentWikidata; 
+        /// pour récupérer une liste d'alignements (à ajouter ou à supprimer)
+        private ArrayList<NodeIdValue> alignments; 
 
         public ConceptObject() {
             prefLabels = new ArrayList<>();
@@ -897,7 +937,7 @@ public class CsvReadHelper {
             relatedMatchs = new ArrayList<>();
             
             members = new ArrayList<>();      
-            alignmentWikidata = new ArrayList<>();
+            alignments = new ArrayList<>();
         }
         public void clear(){
             if(prefLabels != null) prefLabels.clear();
@@ -919,7 +959,7 @@ public class CsvReadHelper {
             if(narrowMatchs != null) narrowMatchs.clear();  
             if(relatedMatchs != null) relatedMatchs.clear();  
             if(members != null) members.clear();  
-            if(alignmentWikidata != null) alignmentWikidata.clear();
+            if(alignments != null) alignments.clear();
         }        
 
         public String getIdConcept() {
@@ -938,12 +978,12 @@ public class CsvReadHelper {
             this.uri = uri;
         }
 
-        public String getIdArk() {
-            return idArk;
+        public String getLocalId() {
+            return localId;
         }
 
-        public void setIdArk(String idArk) {
-            this.idArk = idArk;
+        public void setLocalId(String localId) {
+            this.localId = localId;
         }
 
         public String getIdTerm() {
@@ -953,8 +993,6 @@ public class CsvReadHelper {
         public void setIdTerm(String idTerm) {
             this.idTerm = idTerm;
         }
-
-
 
         public String getType() {
             return type;
@@ -1156,13 +1194,14 @@ public class CsvReadHelper {
             this.modified = modified;
         }
 
-        public ArrayList<NodeIdValue> getAlignmentWikidata() {
-            return alignmentWikidata;
+        public ArrayList<NodeIdValue> getAlignments() {
+            return alignments;
         }
 
-        public void setAlignmentWikidata(ArrayList<NodeIdValue> alignmentWikidata) {
-            this.alignmentWikidata = alignmentWikidata;
+        public void setAlignments(ArrayList<NodeIdValue> alignments) {
+            this.alignments = alignments;
         }
+
 
 
     }

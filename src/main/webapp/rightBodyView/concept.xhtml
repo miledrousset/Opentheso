@@ -221,16 +221,22 @@
                     </b:navCommandLink>
                     
                     
-                    <!--Pour importer des alignements de Wikidata -->
+                    <!--Pour importer des alignements -->
                     <b:navLink rendered="#{currentUser.nodeUser.isSuperAdmin}"/>
                     <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}"
-                                      value="importer des alignements de Wikidata"
-                                      actionListener="#{editConcept.infosDelete()}"
+                                      value="importer des alignements d'après un tableau CSV"
                                       update="idListAlignmentCsv listAlignmentCsvForm"
                                       action="#{importFileBean.init()}"
                                       oncomplete="PF('listAlignmentCsv').show();"
                                       style="font-size: 12px; ">
-                    </b:navCommandLink>                    
+                    </b:navCommandLink>
+                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}"
+                                      value="Supprimer des alignements d'après un tableau CSV"
+                                      update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('deleteListAlignmentCsv').show();"
+                                      style="font-size: 12px; color: #C63632">
+                    </b:navCommandLink>                        
                     
                 </b:dropMenu>        
             </b:column>
@@ -241,7 +247,8 @@
         <ui:include src="/dialog/concept/deprecateConcept.xhtml" />
         <ui:include src="/dialog/concept/approveConcept.xhtml" />
         <ui:include src="/dialog/import/listImportCsv.xhtml" />
-        <ui:include src="/dialog/import/listAlignmentCsv.xhtml" />        
+        <ui:include src="/dialog/import/listAlignmentCsv.xhtml" />   
+        <ui:include src="/dialog/import/deleteListAlignmentCsv.xhtml" />          
         <ui:include src="/dialog/concept/generateArk.xhtml" /> 
         <ui:include src="/dialog/concept/generateHandle.xhtml" />    
         <ui:include src="/dialog/concept/deleteHandle.xhtml" />           
