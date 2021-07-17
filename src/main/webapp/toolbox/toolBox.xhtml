@@ -13,7 +13,6 @@
                             <b:navCommandLink value="Edition" style="color: #{toolBoxBean.editionColor}"
                                               action="#{toolBoxBean.setIsEditionActive(true)}"
                                               actionListener="#{viewEditionBean.init()}"
-                                              oncomplete="PF('wiz').loadStep(PF('wiz').cfg.steps[0], true);"
                                               update="toolBoxForm toolBoxForm:listThesoForm"/>
                         </b:column>
                     </b:row>

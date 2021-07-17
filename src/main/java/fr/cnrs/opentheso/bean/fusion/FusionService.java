@@ -235,6 +235,8 @@ public class FusionService implements Serializable {
         } catch (Exception e) {
 
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+        PrimeFaces.current().ajax().update("statistiques");
     }
 
     public boolean isLoadDone() {
