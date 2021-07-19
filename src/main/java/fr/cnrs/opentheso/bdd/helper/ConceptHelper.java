@@ -1424,11 +1424,21 @@ public class ConceptHelper {
         return idConcept;
     }
 
+    
     /**
      * Permet de retourner un Id numérique et unique pour le Concept
      */
     private String getNumericConceptId(Connection conn) {
-
+        String idConcept = getNumericConceptId__(conn);
+        while (isIdExiste(conn, idConcept)) {
+            idConcept = getNumericConceptId__(conn);
+        }
+        return idConcept;
+    }    
+    /**
+     * Permet de retourner un Id numérique et unique pour le Concept
+     */
+    private String getNumericConceptId__(Connection conn) {
         String idConcept = null;
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select nextval('concept__id_seq') from concept__id_seq");
@@ -1436,10 +1446,6 @@ public class ConceptHelper {
                 if (resultSet.next()) {
                     int idNumerique = resultSet.getInt(1);
                     idConcept = "" + (idNumerique);
-                    // si le nouveau Id existe, on l'incrémente
-                    while (isIdExiste(conn, idConcept)) {
-                        idConcept = "" + (++idNumerique);
-                    }
                 }
             }
         } catch (SQLException ex) {
@@ -2327,12 +2333,17 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet d'ajouter un Concept à la table Concept, en
-     * paramètre un objet Classe Concept
+     * paramètre un objet Classe Concept 
+     * @param conn
+     * @param concept
+     * @param idUser
+     * @return 
      */
     public String addConceptInTable(Connection conn, Concept concept, int idUser) {
 
         String idConcept = null;
         String idArk = "";
+        int idSequenceConcept = -1;
 
         if (concept.getNotation() == null) {
             concept.setNotation("");
@@ -2346,19 +2357,33 @@ public class ConceptHelper {
                 } else {
                     idConcept = getNumericConceptId(conn);
                     concept.setIdConcept(idConcept);
+                    if(idConcept != null)
+                        idSequenceConcept = Integer.parseInt(idConcept);
                 }
             } else {
                 idConcept = concept.getIdConcept();
             }
-
-            stmt.executeUpdate("Insert into concept (id_concept, id_thesaurus, id_ark, status, notation, top_concept)"
-                    + " values ('" + idConcept + "'"
-                    + ",'" + concept.getIdThesaurus() + "'"
-                    + ",'" + idArk + "'"
-                    + ",'" + concept.getStatus() + "'"
-                    + ",'" + concept.getNotation() + "'"
-                    + "," + concept.isTopConcept() + ")");
-
+            if(idConcept == null) return null;
+            if(idSequenceConcept == -1) {
+                stmt.executeUpdate("Insert into concept (id_concept, id_thesaurus, id_ark, status, notation, top_concept)"
+                        + " values ("
+                        + "'" + idConcept + "'"
+                        + ",'" + concept.getIdThesaurus() + "'"
+                        + ",'" + idArk + "'"
+                        + ",'" + concept.getStatus() + "'"
+                        + ",'" + concept.getNotation() + "'"
+                        + "," + concept.isTopConcept() + ")");                
+            } else {
+                stmt.executeUpdate("Insert into concept (id, id_concept, id_thesaurus, id_ark, status, notation, top_concept)"
+                        + " values (" 
+                        + idSequenceConcept
+                        + ",'" + idConcept + "'"
+                        + ",'" + concept.getIdThesaurus() + "'"
+                        + ",'" + idArk + "'"
+                        + ",'" + concept.getStatus() + "'"
+                        + ",'" + concept.getNotation() + "'"
+                        + "," + concept.isTopConcept() + ")");
+            }
             /**
              * Ajout des informations dans la table Concept
              */
