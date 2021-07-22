@@ -170,6 +170,27 @@ public class ExportFileBean implements Serializable {
             return null;
         }
 
+        if (viewEditionBean.isViewImportVirtuoso()) {
+
+            String msg = null;
+            if (StringUtils.isEmpty(viewEditionBean.getUrlServer())) {
+                msg = "L'URL du serveur Virtuoso est manquant !";
+            } else if (StringUtils.isEmpty(viewEditionBean.getLogin())) {
+                msg = "Le login pour se connecter au serveur Virtuoso est manquant !";
+            } else if (StringUtils.isEmpty(viewEditionBean.getPassword())) {
+                msg = "Le mot de passe pour se connecter au serveur Virtuoso est manquant !";
+            }
+
+            if (!StringUtils.isEmpty(msg)) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", msg));
+                PrimeFaces pf = PrimeFaces.current();
+                pf.ajax().update("messageIndex");
+            }
+
+            exportThesorusToVirtuoso(skosxd, viewExportBean.getNodeIdValueOfTheso().getId(),
+                    viewEditionBean.getUrlServer(), viewEditionBean.getLogin(), viewEditionBean.getPassword());
+        }
+
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
             try (ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
@@ -312,13 +333,13 @@ public class ExportFileBean implements Serializable {
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
-        
+
         if("all".equalsIgnoreCase(viewExportBean.getSelectedGroup())){
             exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
         } else {
-            exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);            
+            exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
         }
-        
+
         exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
 
         for (String idConcept : allConcepts) {
