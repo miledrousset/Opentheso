@@ -21,14 +21,14 @@
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
             <version>2.33</version>
-        </dependency>        
+        </dependency>
 
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>d3js</artifactId>
             <version>${d3js.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.github.themrleon</groupId>
             <artifactId>JSF2Leaf</artifactId>
@@ -85,8 +85,8 @@
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-impl</artifactId>
             <version>${jsf.version}</version>
-        </dependency>        
-        
+        </dependency>
+
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
@@ -173,7 +173,7 @@
             <artifactId>weld-servlet-shaded</artifactId>
             <version>${weld-servlet-shaded.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.abego.treelayout</groupId>
             <artifactId>org.abego.treelayout.core</artifactId>
@@ -189,8 +189,26 @@
 
         <dependency>
             <groupId>com.openlink.virtuoso</groupId>
-            <artifactId>virt_jena</artifactId>
-            <version>6.1.6</version>
+            <artifactId>virt_jena3</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.openlink.virtuoso</groupId>
+            <artifactId>virtjdbc4</artifactId>
+            <version>4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.14.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.21</version>
         </dependency>
 
         <dependency>
@@ -251,7 +269,7 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>    
+    </build>
 
     <pluginRepositories>
         <pluginRepository>
@@ -308,7 +326,7 @@
         <javax.faces-api.version>2.3</javax.faces-api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <weld-servlet-shaded.version>3.1.2.Final</weld-servlet-shaded.version>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>        
+        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
     </properties>
 
 </project>

@@ -1,5 +1,5 @@
 package fr.cnrs.opentheso.virtuoso;
-
+/*
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 
 import javax.servlet.ServletContextEvent;
@@ -39,4 +39,4 @@ public class VirtuosoScheduled implements ServletContextListener {
         scheduler.shutdownNow();
     }
 
-}
+}*/

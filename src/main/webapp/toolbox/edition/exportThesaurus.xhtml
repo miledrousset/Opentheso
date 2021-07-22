@@ -100,6 +100,7 @@
                 </p:selectOneMenu>
             </b:column>
         </b:row>
+
         <b:row rendered="#{viewExportBean.isRdfExport()}">
             <b:column span="3" offset="6">
                 <h:outputText value="Filtre par collection/groupe :" />
@@ -112,8 +113,7 @@
                     <f:selectItems  value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
                 </p:selectOneMenu>
             </b:column>
-        </b:row>            
-        
+        </b:row>
 
         <b:row rendered="#{viewExportBean.isCsvExport()}" style="margin-left: 30px; margin-right: 30px;">
             <b:column span="2">
@@ -142,7 +142,29 @@
                                    itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
                 </p:selectOneMenu>
             </b:column>
-        </b:row>        
+        </b:row>
+
+        <p:panel header="Parametres de connexion du serveur Virtuoso" rendered="#{viewEditionBean.isViewImportVirtuoso()}"
+                 toggleable="true" closable="false" toggleSpeed="500" closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+            <div class="p-field p-grid">
+                <label for="adresse" class="p-col-fixed" style="width:100px">Adresse</label>
+                <div class="p-col">
+                    <p:inputText id="adresse" type="text" value="#{viewEditionBean.urlServer}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="login" class="p-col-fixed" style="width:100px">Login</label>
+                <div class="p-col">
+                    <p:inputText id="login" type="text" value="#{viewEditionBean.login}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="password" class="p-col-fixed" style="width:100px">Password</label>
+                <div class="p-col">
+                    <p:inputText id="password" type="text" value="#{viewEditionBean.password}" />
+                </div>
+            </div>
+        </p:panel>
         
         <br /><br />
 

@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.core.exports.csv.WriteCSV;
 import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
@@ -17,9 +18,8 @@ import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Serializable;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
@@ -27,11 +27,19 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.*;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 
 import org.primefaces.model.StreamedContent;
+import virtuoso.jena.driver.VirtGraph;
+import virtuoso.jena.driver.VirtuosoUpdateFactory;
+import virtuoso.jena.driver.VirtuosoUpdateRequest;
 
 /**
  *
@@ -46,6 +54,7 @@ public class ExportFileBean implements Serializable {
     @Inject private ViewExportBean viewExportBean;
     @Inject private CandidatBean candidatBean;
     @Inject private SelectedTheso selectedTheso;
+    @Inject private ViewEditionBean viewEditionBean;
 
     // progressBar
     private int sizeOfTheso;
@@ -119,6 +128,27 @@ public class ExportFileBean implements Serializable {
 
         if (skosxd == null) {
             return null;
+        }
+
+        if (viewEditionBean.isViewImportVirtuoso()) {
+
+            String msg = null;
+            if (StringUtils.isEmpty(viewEditionBean.getUrlServer())) {
+                msg = "L'URL du serveur Virtuoso est manquant !";
+            } else if (StringUtils.isEmpty(viewEditionBean.getLogin())) {
+                msg = "Le login pour se connecter au serveur Virtuoso est manquant !";
+            } else if (StringUtils.isEmpty(viewEditionBean.getPassword())) {
+                msg = "Le mot de passe pour se connecter au serveur Virtuoso est manquant !";
+            }
+
+            if (!StringUtils.isEmpty(msg)) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", msg));
+                PrimeFaces pf = PrimeFaces.current();
+                pf.ajax().update("messageIndex");
+            }
+
+            exportThesorusToVirtuoso(skosxd, viewExportBean.getNodeIdValueOfTheso().getId(),
+                    viewEditionBean.getUrlServer(), viewEditionBean.getLogin(), viewEditionBean.getPassword());
         }
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
@@ -201,6 +231,39 @@ public class ExportFileBean implements Serializable {
             } catch (Exception ex) {
                 return new DefaultStreamedContent();
             }
+        }
+    }
+
+    private void exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String thesorus, String url, String login, String password){
+
+        VirtGraph virtGraph = null;
+        try{
+            virtGraph = new VirtGraph ("jdbc:virtuoso://"+url, login, password);
+
+            VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <" + thesorus + ">", virtGraph);
+            vur.exec();
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Rio.write(new WriteRdf4j(skosxd).getModel(), out, RDFFormat.RDFXML);
+
+            Model model = ModelFactory.createDefaultModel();
+            model.read(new ByteArrayInputStream(out.toByteArray()),null);
+            StmtIterator iter = model.listStatements();
+            while(iter.hasNext()){
+                Statement stmt=iter.nextStatement();
+                Resource subject=stmt.getSubject();
+                Property predicate=stmt.getPredicate();
+                RDFNode object=stmt.getObject();
+                Triple tri = new Triple(subject.asNode(),predicate.asNode(),object.asNode());
+                virtGraph.add(tri);
+            }
+        } catch(Exception e){
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Problème de communication avec le serveur Virtuoso !"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+        } finally {
+            if (virtGraph != null) virtGraph.close();
         }
     }
 
