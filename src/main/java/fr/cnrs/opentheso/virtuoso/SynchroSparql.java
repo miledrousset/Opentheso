@@ -1,5 +1,5 @@
 package fr.cnrs.opentheso.virtuoso;
-
+/*
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -47,14 +47,10 @@ public class SynchroSparql implements Runnable {
             properties = new Properties();
             properties.load(inputStream);
 
-            graph = new VirtGraph(properties.getProperty("virtuoso.graph"),
-                    properties.getProperty("virtuoso.url").replaceAll("http","jdbc:virtuoso").trim()+":1111",
-                    properties.getProperty("virtuoso.user"),
-                    properties.getProperty("virtuoso.password"));
+            graph = new VirtGraph("jdbc:virtuoso://localhost:1111", "dba", "dba");
 
             LOG.info("Création du graphe !");
-            VirtuosoUpdateFactory.create("CLEAR GRAPH <" + properties.getProperty("virtuoso.graph")
-                    + ">", graph).exec();
+            VirtuosoUpdateFactory.create("CLEAR GRAPH <graph>", graph).exec();
 
             Model model = ModelFactory.createDefaultModel();
 
@@ -133,3 +129,4 @@ public class SynchroSparql implements Runnable {
     }
 
 }
+*/
