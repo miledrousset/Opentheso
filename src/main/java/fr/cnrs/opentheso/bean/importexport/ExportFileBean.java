@@ -185,10 +185,17 @@ public class ExportFileBean implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", msg));
                 PrimeFaces pf = PrimeFaces.current();
                 pf.ajax().update("messageIndex");
+                return null;
             }
 
-            exportThesorusToVirtuoso(skosxd, viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewEditionBean.getUrlServer(), viewEditionBean.getLogin(), viewEditionBean.getPassword());
+            exportThesorusToVirtuoso(skosxd, viewEditionBean.getNomGraphe(), viewEditionBean.getUrlServer(),
+                    viewEditionBean.getLogin(), viewEditionBean.getPassword());
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                    "Exportation du thésaurus '"+viewExportBean.getNodeIdValueOfTheso().getId()+"' est terminée avec succès"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+
         }
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
@@ -300,6 +307,7 @@ public class ExportFileBean implements Serializable {
             out.close();
             if (virtGraph != null) virtGraph.close();
             return true;
+            out.close();
         } catch(Exception e){
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Problème de communication avec le serveur Virtuoso !"));
