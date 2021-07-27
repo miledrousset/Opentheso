@@ -331,26 +331,38 @@ public class ConceptView implements Serializable {
     private void setCorpus(){
         if(nodeConcept != null) {
             for (NodeCorpus nodeCorpuse : nodeCorpuses) {
-                // recherche par Id
-                if(nodeCorpuse.getUriCount().contains("##id##")){
-                    if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
-                        nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                // cas où on compose uniquement une URL de lien vers les notices
+                if(nodeCorpuse.isIsOnlyUriLink()) {
+                    if(nodeCorpuse.getUriLink().contains("##id##")){
+                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                        haveCorpus = true;
                     }
-                }
-                if(nodeCorpuse.getUriLink().contains("##id##")){
-                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
-                }
-                
-                // recherche par value
-                if(nodeCorpuse.getUriCount().contains("##value##")){
-                    if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
-                        nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    if(nodeCorpuse.getUriLink().contains("##value##")){
+                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                        haveCorpus = true;
+                    }                     
+                } else {
+                    // recherche par Id
+                    if(nodeCorpuse.getUriCount().contains("##id##")){
+                        if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                            nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                        }
                     }
-                }                
-                if(nodeCorpuse.getUriLink().contains("##value##")){
-                    nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    if(nodeCorpuse.getUriLink().contains("##id##")){
+                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                    }
+
+                    // recherche par value
+                    if(nodeCorpuse.getUriCount().contains("##value##")){
+                        if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                            nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                        }
+                    }                
+                    if(nodeCorpuse.getUriLink().contains("##value##")){
+                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    }
+                    setCorpusCount(nodeCorpuse);
                 }
-                setCorpusCount(nodeCorpuse);
             }
         }
     }

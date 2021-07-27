@@ -278,6 +278,29 @@ end
 $$language plpgsql;
 
 
+-- Modification de la table Corpus pour gérer l'option URI uniquement et le tri
+--
+create or replace function update_table_corpus_link() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='corpus_link' AND column_name='only_uri_link') THEN
+        execute 'ALTER TABLE corpus_link ADD COLUMN only_uri_link boolean DEFAULT false;
+                 ALTER TABLE corpus_link ADD COLUMN sort integer;';
+    END IF;
+end
+$$language plpgsql;
+
+
+
+-- mise à jour des types de notes --
+delete from public.note_type;
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('note', false, true, 'Note', 'Note');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('historyNote', true, true, 'Note historique', 'History note');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('scopeNote', false, true, 'Note d''aplication', 'Scope note');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('example', true, false, 'Exemple', 'Example');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('editorialNote', true, false, 'Note éditoriale', 'Editorial note');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('definition', true, false, 'Définition', 'Definition');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('changeNote', true, false, 'Note de changement', 'Change note');
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -295,6 +318,8 @@ SELECT update_table_concept_group_doi();
 SELECT update_table_languages();
 SELECT update_table_alignement_source();
 SELECT update_table_note_constraint();
+SELECT update_table_corpus_link();
+
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -313,6 +338,8 @@ SELECT delete_fonction('update_table_concept_group_doi','');
 SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_alignement_source','');
 SELECT delete_fonction('update_table_note_constraint','');
+SELECT delete_fonction('update_table_corpus_link','');
+
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');

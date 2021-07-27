@@ -43,11 +43,11 @@ Creator Miled Rousset
 }
 
 .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
-    background-color: #C63632;
+    background-color: #43B572;
 }
 
 .ui-toggleswitch.ui-toggleswitch-checked:not(.ui-state-disabled):hover .ui-toggleswitch-slider {
-    background-color: #C63632;
+    background-color: #43B572;
 }
 
 

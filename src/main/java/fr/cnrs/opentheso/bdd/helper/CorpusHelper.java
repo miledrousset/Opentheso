@@ -29,7 +29,7 @@ public class CorpusHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select corpus_name, uri_count, uri_link, active from corpus_link where id_theso = '" + idTheso + "'");
+                stmt.executeQuery("select corpus_name, uri_count, uri_link, active,only_uri_link from corpus_link where id_theso = '" + idTheso + "' order by sort");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeCorpus nodeCorpus = new NodeCorpus();
@@ -37,6 +37,7 @@ public class CorpusHelper {
                         nodeCorpus.setUriCount(resultSet.getString("uri_count"));
                         nodeCorpus.setUriLink(resultSet.getString("uri_link"));
                         nodeCorpus.setActive(resultSet.getBoolean("active"));
+                        nodeCorpus.setIsOnlyUriLink(resultSet.getBoolean("only_uri_link"));                        
                         nodeCorpuses.add(nodeCorpus);
                     }
                 }
@@ -51,9 +52,9 @@ public class CorpusHelper {
         ArrayList<NodeCorpus> nodeCorpuses = new ArrayList<>();
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                String query = "select corpus_name, uri_count, uri_link, active from corpus_link"
+                String query = "select corpus_name, uri_count, uri_link, active, only_uri_link from corpus_link"
                         + " where id_theso = '" + idTheso + "'"
-                        + " and active = true";
+                        + " and active = true order by sort";
                 stmt.executeQuery(query);
                 try ( ResultSet resultSet = stmt.getResultSet()) {
 
@@ -63,6 +64,7 @@ public class CorpusHelper {
                         nodeCorpus.setUriCount(resultSet.getString("uri_count"));
                         nodeCorpus.setUriLink(resultSet.getString("uri_link"));
                         nodeCorpus.setActive(resultSet.getBoolean("active"));
+                        nodeCorpus.setIsOnlyUriLink(resultSet.getBoolean("only_uri_link"));
                         nodeCorpuses.add(nodeCorpus);
                     }
                 }
@@ -86,7 +88,8 @@ public class CorpusHelper {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE corpus_link set corpus_name = '" + nodeCorpus.getCorpusName()
                         + "' ,uri_count = '" + nodeCorpus.getUriCount() + "' ,uri_link = '" + nodeCorpus.getUriLink()
-                        + "' ,active = " + nodeCorpus.isActive() + " where id_theso = '" + idTheso
+                        + "' ,active = " + nodeCorpus.isActive() + ", only_uri_link = " + nodeCorpus.isIsOnlyUriLink()
+                        + " where id_theso = '" + idTheso
                         + "' and corpus_name = '" + oldName + "'");
                 status = true;
             }
@@ -103,9 +106,10 @@ public class CorpusHelper {
         boolean status = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("insert into corpus_link (id_theso, corpus_name, uri_count, uri_link, active) values "
+                stmt.executeUpdate("insert into corpus_link (id_theso, corpus_name, uri_count, uri_link, active, only_uri_link) values "
                         + " ('" + idTheso + "','" + nodeCorpus.getCorpusName() + "','" + nodeCorpus.getUriCount()
-                        + "','" + nodeCorpus.getUriLink() + "'," + nodeCorpus.isActive() + ")");
+                        + "','" + nodeCorpus.getUriLink() + "'," + nodeCorpus.isActive()
+                        + "," + nodeCorpus.isIsOnlyUriLink() + ")");
                 status = true;
             }
         } catch (SQLException sqle) {
