@@ -19,8 +19,8 @@ public class SynchroSparqlTest {
         VirtGraph set = new VirtGraph ("jdbc:virtuoso://localhost:1111", "dba", "dba");
 
         /*			STEP 2			*/
-        System.out.println("\nexecute: CLEAR GRAPH <th2>");
-        VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <th2>", set);
+        System.out.println("\nexecute: CLEAR GRAPH <th1>");
+        VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <th1>", set);
         vur.exec();
 
         //set.clear();
@@ -31,8 +31,8 @@ public class SynchroSparqlTest {
 
         /*			STEP 3			*/
         /*		Select all data in virtuoso	*/
-        System.out.println("\nexecute: SELECT * FROM <th2> WHERE { ?s ?p ?o }");
-        Query sparql = QueryFactory.create("SELECT * FROM <th2> WHERE { ?s ?p ?o }");
+        System.out.println("\nexecute: SELECT * FROM <th1> WHERE { ?s ?p ?o }");
+        Query sparql = QueryFactory.create("SELECT * FROM <th1> WHERE { ?s ?p ?o }");
 
         /*			STEP 4			*/
         QueryExecution vqe = VirtuosoQueryExecutionFactory.create (sparql, set);

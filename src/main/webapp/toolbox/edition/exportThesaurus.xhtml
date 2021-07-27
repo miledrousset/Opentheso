@@ -144,8 +144,14 @@
             </b:column>
         </b:row>
 
-        <p:panel header="Parametres de connexion du serveur Virtuoso" rendered="#{viewEditionBean.isViewImportVirtuoso()}"
-                 toggleable="true" closable="false" toggleSpeed="500" closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+        <p:panel rendered="#{viewEditionBean.isViewImportVirtuoso()}" toggleable="true" closable="false"
+                 toggleSpeed="500" closeSpeed="500" style="margin-bottom:20px; margin-top: 20px">
+            <div class="p-field p-grid">
+                <label for="graphe" class="p-col-fixed" style="width:100px">Graphe</label>
+                <div class="p-col">
+                    <p:inputText id="graphe" type="text" value="#{viewEditionBean.nomGraphe}" />
+                </div>
+            </div>
             <div class="p-field p-grid">
                 <label for="adresse" class="p-col-fixed" style="width:100px">Adresse</label>
                 <div class="p-col">
@@ -173,9 +179,16 @@
                 <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" ajax="false"
                                  onclick="PrimeFaces.monitorDownload(start, stop);"
                                  icon="fa fa-upload" class="btn btn-success"
+                                 rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
                                  style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;">
                     <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                 </p:commandButton>
+                <p:commandButton value="Exporter vers Vertuoso" ajax="false"
+                                 onclick="PrimeFaces.monitorDownload(start, stop);"
+                                 icon="fa fa-upload" class="btn btn-success"
+                                 update="messageIndex"
+                                 rendered="#{viewEditionBean.isViewImportVirtuoso()}"
+                                 style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;" />
             </b:column>
 
             <b:column span="6">
