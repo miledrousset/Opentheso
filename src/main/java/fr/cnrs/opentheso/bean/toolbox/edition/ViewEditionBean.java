@@ -14,7 +14,7 @@ public class ViewEditionBean implements Serializable {
 
     private String alternateColor;
 
-    private String login, password, urlServer;
+    private String login, password, urlServer, nomGraphe;
 
     // les vues
     private boolean isViewListTheso;
@@ -51,6 +51,7 @@ public class ViewEditionBean implements Serializable {
         login = "dba";
         password = "dba";
         urlServer = "localhost:1111";
+        nomGraphe = "localhost/test2";
 
         alternateColor = "#C8EAD6";
         isViewListTheso = true;
@@ -267,5 +268,13 @@ public class ViewEditionBean implements Serializable {
 
     public void setUrlServer(String urlServer) {
         this.urlServer = urlServer;
+    }
+
+    public String getNomGraphe() {
+        return nomGraphe;
+    }
+
+    public void setNomGraphe(String nomGraphe) {
+        this.nomGraphe = nomGraphe;
     }
 }

@@ -145,10 +145,17 @@ public class ExportFileBean implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", msg));
                 PrimeFaces pf = PrimeFaces.current();
                 pf.ajax().update("messageIndex");
+                return null;
             }
 
-            exportThesorusToVirtuoso(skosxd, viewExportBean.getNodeIdValueOfTheso().getId(),
-                    viewEditionBean.getUrlServer(), viewEditionBean.getLogin(), viewEditionBean.getPassword());
+            exportThesorusToVirtuoso(skosxd, viewEditionBean.getNomGraphe(), viewEditionBean.getUrlServer(),
+                    viewEditionBean.getLogin(), viewEditionBean.getPassword());
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                    "Exportation du thésaurus '"+viewExportBean.getNodeIdValueOfTheso().getId()+"' est terminée avec succès"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+
         }
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
@@ -234,13 +241,13 @@ public class ExportFileBean implements Serializable {
         }
     }
 
-    private void exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String thesorus, String url, String login, String password){
+    private void exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String nomGraphe, String url, String login, String password){
 
         VirtGraph virtGraph = null;
         try{
-            virtGraph = new VirtGraph ("jdbc:virtuoso://"+url, login, password);
+            virtGraph = new VirtGraph (nomGraphe,"jdbc:virtuoso://"+url, login, password);
 
-            VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <" + thesorus + ">", virtGraph);
+            VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <" + nomGraphe + ">", virtGraph);
             vur.exec();
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -257,6 +264,7 @@ public class ExportFileBean implements Serializable {
                 Triple tri = new Triple(subject.asNode(),predicate.asNode(),object.asNode());
                 virtGraph.add(tri);
             }
+            out.close();
         } catch(Exception e){
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Problème de communication avec le serveur Virtuoso !"));
