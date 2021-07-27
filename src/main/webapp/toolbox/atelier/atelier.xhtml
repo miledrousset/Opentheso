@@ -226,6 +226,11 @@
 
     </p:wizard>
 
+    <p:commandButton id="cancelBtn" icon="fa fa-undo" class="btn btn-success"
+                     style="font-size: 13px; color: white; background: #FFC107; border: #FFC107; margin-top: 10px"
+                     actionListener="#{atelierThesBean.initSteps()}"
+                     onclick="PF('wiz').loadStep(PF('wiz').cfg.steps[0], false);" update="toolBoxForm"/>
+
     <p:blockUI block="toolBoxForm" widgetVar="bui">
         Chargement ...<br />
         <p:progressBar style="height:6px" mode="indeterminate"/>

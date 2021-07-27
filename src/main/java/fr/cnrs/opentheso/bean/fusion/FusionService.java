@@ -246,6 +246,10 @@ public class FusionService implements Serializable {
         return loadDone;
     }
 
+    public void setLoadDone(boolean loadDone) {
+        this.loadDone = loadDone;
+    }
+
     public String getUri() {
         return uri;
     }

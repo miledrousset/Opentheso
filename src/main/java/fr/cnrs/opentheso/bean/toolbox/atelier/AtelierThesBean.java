@@ -194,8 +194,19 @@ public class AtelierThesBean implements Serializable {
         this.selectedColumn = selectedColumn;
     }
 
+    public void initSteps() {
+        actionSelected = null;
+        thesoSelected = null;
+        fusionService.setLoadDone(false);
+        init();
+    }
+
     public String onFlowProcess(FlowEvent event) {
+        if ("actions".equals(event.getNewStep())){
+            return event.getNewStep();
+        }
         if ("actions".equals(event.getOldStep())) {
+            currentStep = 1;
             if (StringUtils.isEmpty(actionSelected)) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionnez une action !");
                 return event.getOldStep();
@@ -206,6 +217,7 @@ public class AtelierThesBean implements Serializable {
                 return event.getNewStep();
             }
         } else if ("entre".equals(event.getOldStep())) {
+            currentStep = 2;
             if ("opt1".equals(actionSelected)) {
                 if ("actions".equals(event.getNewStep())) {
                     return event.getNewStep();
@@ -223,6 +235,7 @@ public class AtelierThesBean implements Serializable {
                 return event.getNewStep();
             }
         } else if ("thesaurus".equals(event.getOldStep())) {
+            currentStep = 3;
             if ("entre".equals(event.getNewStep())) {
                 return event.getNewStep();
             } else if (thesoSelected == null) {
@@ -232,6 +245,7 @@ public class AtelierThesBean implements Serializable {
                 return event.getNewStep();
             }
         } else {
+            currentStep = 4;
             fusionService.initFusionResult();
             return event.getNewStep();
         }
