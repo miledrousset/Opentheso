@@ -186,7 +186,7 @@
                 <p:commandButton value="Exporter vers Vertuoso" ajax="false"
                                  onclick="PrimeFaces.monitorDownload(start, stop);"
                                  icon="fa fa-upload" class="btn btn-success"
-                                 update="messageIndex"
+                                 update="messageIndex" actionListener="#{exportFileBean.exportToVertuoso()}"
                                  rendered="#{viewEditionBean.isViewImportVirtuoso()}"
                                  style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;" />
             </b:column>
