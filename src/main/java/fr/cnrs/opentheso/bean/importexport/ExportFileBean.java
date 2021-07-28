@@ -167,7 +167,7 @@ public class ExportFileBean implements Serializable {
                 viewExportBean.getSelectedLanguages());
 
         if (skosxd == null) {
-            return null;
+            return;
         }
 
         if (viewEditionBean.isViewImportVirtuoso()) {
@@ -183,19 +183,31 @@ public class ExportFileBean implements Serializable {
 
             if (!StringUtils.isEmpty(msg)) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", msg));
-                PrimeFaces pf = PrimeFaces.current();
-                pf.ajax().update("messageIndex");
-                return null;
+                PrimeFaces.current().ajax().update("messageIndex");
+                return;
             }
 
-            exportThesorusToVirtuoso(skosxd, viewEditionBean.getNomGraphe(), viewEditionBean.getUrlServer(),
+            boolean resultat = exportThesorusToVirtuoso(skosxd, viewEditionBean.getNomGraphe(), viewEditionBean.getUrlServer(),
                     viewEditionBean.getLogin(), viewEditionBean.getPassword());
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                    "Exportation du thésaurus '"+viewExportBean.getNodeIdValueOfTheso().getId()+"' est terminée avec succès"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
+            if (resultat) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                        "Exportation du thésaurus '"+viewExportBean.getNodeIdValueOfTheso().getId()+"' est terminée avec succès"));
+                PrimeFaces.current().ajax().update("messageIndex");
+            }
 
+        }
+
+    }
+
+    public StreamedContent exportThesorus() {
+
+        SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
+                viewExportBean.getSelectedGroups(),
+                viewExportBean.getSelectedLanguages());
+
+        if (skosxd == null) {
+            return null;
         }
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
@@ -307,7 +319,6 @@ public class ExportFileBean implements Serializable {
             out.close();
             if (virtGraph != null) virtGraph.close();
             return true;
-            out.close();
         } catch(Exception e){
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Problème de communication avec le serveur Virtuoso !"));
