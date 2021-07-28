@@ -120,14 +120,13 @@ public class ExportFileBean implements Serializable {
         return resources;
     }
 
-    public StreamedContent exportThesorus() {
-
+    public void exportToVertuoso() {
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                 viewExportBean.getSelectedGroups(),
                 viewExportBean.getSelectedLanguages());
 
         if (skosxd == null) {
-            return null;
+            return;
         }
 
         if (viewEditionBean.isViewImportVirtuoso()) {
@@ -143,19 +142,31 @@ public class ExportFileBean implements Serializable {
 
             if (!StringUtils.isEmpty(msg)) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", msg));
-                PrimeFaces pf = PrimeFaces.current();
-                pf.ajax().update("messageIndex");
-                return null;
+                PrimeFaces.current().ajax().update("messageIndex");
+                return;
             }
 
-            exportThesorusToVirtuoso(skosxd, viewEditionBean.getNomGraphe(), viewEditionBean.getUrlServer(),
+            boolean resultat = exportThesorusToVirtuoso(skosxd, viewEditionBean.getNomGraphe(), viewEditionBean.getUrlServer(),
                     viewEditionBean.getLogin(), viewEditionBean.getPassword());
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                    "Exportation du thésaurus '"+viewExportBean.getNodeIdValueOfTheso().getId()+"' est terminée avec succès"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
+            if (resultat) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                        "Exportation du thésaurus '"+viewExportBean.getNodeIdValueOfTheso().getId()+"' est terminée avec succès"));
+                PrimeFaces.current().ajax().update("messageIndex");
+            }
 
+        }
+
+    }
+
+    public StreamedContent exportThesorus() {
+
+        SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
+                viewExportBean.getSelectedGroups(),
+                viewExportBean.getSelectedLanguages());
+
+        if (skosxd == null) {
+            return null;
         }
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
@@ -241,7 +252,7 @@ public class ExportFileBean implements Serializable {
         }
     }
 
-    private void exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String nomGraphe, String url, String login, String password){
+    private boolean exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String nomGraphe, String url, String login, String password){
 
         VirtGraph virtGraph = null;
         try{
@@ -265,13 +276,15 @@ public class ExportFileBean implements Serializable {
                 virtGraph.add(tri);
             }
             out.close();
+            if (virtGraph != null) virtGraph.close();
+            return true;
         } catch(Exception e){
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Problème de communication avec le serveur Virtuoso !"));
             PrimeFaces pf = PrimeFaces.current();
             pf.ajax().update("messageIndex");
-        } finally {
             if (virtGraph != null) virtGraph.close();
+            return false;
         }
     }
 
