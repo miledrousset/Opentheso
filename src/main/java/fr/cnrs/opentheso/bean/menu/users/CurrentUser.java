@@ -111,19 +111,15 @@ public class CurrentUser implements Serializable {
      */
     public void login() throws IOException {
         UserHelper userHelper = new UserHelper();
-        FacesMessage facesMessage;
 
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
-            // utilisateur ou mot de passe n'existent pas
-            facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", "champ vide non autorisé");
-            FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-            return;
+            showErrorMessage("champ vide non autorisé");
         }
 
         int idUser = -1;
         if (ldapEnable) {
-            if (new LDAPUtils().authentificationLdapCheck(username, password)) {
-                idUser = 1;
+            if (!new LDAPUtils().authentificationLdapCheck(username, password)) {
+                showErrorMessage("User or password wrong, please try again");
             }
         } else {
             idUser = userHelper.getIdUser(connect.getPoolConnexion(),
@@ -131,25 +127,15 @@ public class CurrentUser implements Serializable {
         }
 
         if (idUser == -1) {
-            // utilisateur ou mot de passe n'existent pas
-            facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", "User or password wrong, please try again");
-            FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-            return;
+            showErrorMessage("User or password wrong, please try again");
         }
 
         // on récupère le compte de l'utilisatreur
-        if (ldapEnable) {
-            nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
-        } else {
-            NodeUser nodeUser = new NodeUser();
-            nodeUser.setName(username);
-        }
+        nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
         if (nodeUser == null) {
-            facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error!", "incohérence base de données");
-            FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-            return;
+            showErrorMessage("Incohérence base de données");
         }
-        facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         
         PrimeFaces.current().executeScript("PF('login').hide();");
@@ -165,6 +151,13 @@ public class CurrentUser implements Serializable {
         System.gc ();
         System.runFinalization ();
 
+    }
+
+    private void showErrorMessage(String msg) {
+        // utilisateur ou mot de passe n'existent pas
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", msg);
+        FacesContext.getCurrentInstance().addMessage(null, facesMessage);
+        return;
     }
     
     private void initHtmlPages(){
