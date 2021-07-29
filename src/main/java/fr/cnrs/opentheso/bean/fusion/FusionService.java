@@ -270,6 +270,10 @@ public class FusionService implements Serializable {
         return fusionDone;
     }
 
+    public void setFusionDone(boolean fusionDone) {
+        this.fusionDone = fusionDone;
+    }
+
     public List<String> getConceptsExists() {
         return conceptsExists;
     }
@@ -281,5 +285,21 @@ public class FusionService implements Serializable {
     public void initFusionResult() {
         fusionBtnEnable = false;
         fusionDone = false;
+    }
+
+    public void setConceptsAjoutes(List<String> conceptsAjoutes) {
+        this.conceptsAjoutes = conceptsAjoutes;
+    }
+
+    public void setConceptsModifies(List<String> conceptsModifies) {
+        this.conceptsModifies = conceptsModifies;
+    }
+
+    public void setConceptsExists(List<String> conceptsExists) {
+        this.conceptsExists = conceptsExists;
+    }
+
+    public void setFusionBtnEnable(boolean fusionBtnEnable) {
+        this.fusionBtnEnable = fusionBtnEnable;
     }
 }

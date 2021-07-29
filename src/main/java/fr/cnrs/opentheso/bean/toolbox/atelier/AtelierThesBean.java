@@ -40,17 +40,18 @@ public class AtelierThesBean implements Serializable {
     private NodeIdValue thesoSelected;
     private ArrayList<NodeIdValue> nodeListTheso;
     private ArrayList<ConceptResultNode> result;
-    private int spanTable, currentStep;
-    private int choiceDelimiter = 0;    
+    private int spanTable;
+    private int choiceDelimiter = 0;
     private char delimiterCsv = ',';
     private String selectedColumn;
     private String actionSelected;
-    
+
     @PreDestroy
     public void destroy(){
         clear();
-    }  
+    }
     public void clear(){
+
         if(titles!= null){
             titles.clear();
             titles = null;
@@ -66,14 +67,25 @@ public class AtelierThesBean implements Serializable {
         if(result!= null){
             result.clear();
             result = null;
-        }        
+        }
         thesoSelected = null;
-        selectedColumn = null;        
+        selectedColumn = null;
         actionSelected = null;
-    }    
-    
+    }
+
     @PostConstruct
     public void init() {
+
+        fusionService.setConceptsAjoutes(new ArrayList<>());
+        fusionService.setConceptsExists(new ArrayList<>());
+        fusionService.setConceptsModifies(new ArrayList<>());
+
+        thesoSelected = null;
+        actionSelected = null;
+        fusionService.setFusionBtnEnable(false);
+        fusionService.setFusionDone(false);
+        fusionService.setLoadDone(false);
+
         choiceDelimiter = 0;
         delimiterCsv = ',';
         titles = new ArrayList<>();
@@ -90,27 +102,27 @@ public class AtelierThesBean implements Serializable {
         if(values == null)
             values = new ArrayList<>();
         else
-            values.clear();        
+            values.clear();
         if(result == null)
             result = new ArrayList<>();
         else
-            result.clear();  
-        nodeListTheso = atelierThesService.searchAllThesaurus();   
+            result.clear();
+        nodeListTheso = atelierThesService.searchAllThesaurus();
     }
-    
+
     public void actionChoice() {
         if(choiceDelimiter == 0)
             delimiterCsv = ',';
         if(choiceDelimiter == 1)
             delimiterCsv = ';';
         if(choiceDelimiter == 2)
-            delimiterCsv = '\t';         
+            delimiterCsv = '\t';
     }
 
     public void fusionner() {
         fusionService.lancerFussion(thesoSelected);
     }
-    
+
     public void comparer() {
         int position = titles.indexOf(selectedColumn);
         result = atelierThesService.comparer(values, position, thesoSelected);
@@ -194,19 +206,11 @@ public class AtelierThesBean implements Serializable {
         this.selectedColumn = selectedColumn;
     }
 
-    public void initSteps() {
-        actionSelected = null;
-        thesoSelected = null;
-        fusionService.setLoadDone(false);
-        init();
-    }
-
     public String onFlowProcess(FlowEvent event) {
         if ("actions".equals(event.getNewStep())){
             return event.getNewStep();
         }
         if ("actions".equals(event.getOldStep())) {
-            currentStep = 1;
             if (StringUtils.isEmpty(actionSelected)) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionnez une action !");
                 return event.getOldStep();
@@ -217,7 +221,6 @@ public class AtelierThesBean implements Serializable {
                 return event.getNewStep();
             }
         } else if ("entre".equals(event.getOldStep())) {
-            currentStep = 2;
             if ("opt1".equals(actionSelected)) {
                 if ("actions".equals(event.getNewStep())) {
                     return event.getNewStep();
@@ -235,7 +238,6 @@ public class AtelierThesBean implements Serializable {
                 return event.getNewStep();
             }
         } else if ("thesaurus".equals(event.getOldStep())) {
-            currentStep = 3;
             if ("entre".equals(event.getNewStep())) {
                 return event.getNewStep();
             } else if (thesoSelected == null) {
@@ -245,7 +247,6 @@ public class AtelierThesBean implements Serializable {
                 return event.getNewStep();
             }
         } else {
-            currentStep = 4;
             fusionService.initFusionResult();
             return event.getNewStep();
         }

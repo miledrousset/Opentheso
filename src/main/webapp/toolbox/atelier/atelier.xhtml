@@ -121,8 +121,9 @@
         <p:tab id="thesaurus" title="Les thesaurus" titleStyleClass="tabCostum">
             <p:panel header="Liste des thesaurus">
                 <h:outputText value="Veuillez selectionez un thesaurus : " />
-                <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" 
-                             selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-top: 10px">
+                <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" selectionMode="single"
+                             scrollable="true" scrollHeight="250" rowKey="#{thes.id}"
+                             selection="#{atelierThesBean.thesoSelected}" style="margin-top: 10px">
                     <p:column selectionMode="single" style="width: 35px; text-align: center" />
                     <p:column headerText="Id">
                         <h:outputText value="#{thes.id}" />
@@ -228,7 +229,7 @@
 
     <p:commandButton id="cancelBtn" icon="fa fa-undo" class="btn btn-success"
                      style="font-size: 13px; color: white; background: #FFC107; border: #FFC107; margin-top: 10px"
-                     actionListener="#{atelierThesBean.initSteps()}"
+                     actionListener="#{atelierThesBean.init()}"
                      onclick="PF('wiz').loadStep(PF('wiz').cfg.steps[0], false);" update="toolBoxForm"/>
 
     <p:blockUI block="toolBoxForm" widgetVar="bui">
