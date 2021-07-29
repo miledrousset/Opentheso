@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import javax.inject.Named;
@@ -19,6 +14,8 @@ public class ViewEditionBean implements Serializable {
 
     private String alternateColor;
 
+    private String login, password, urlServer, nomGraphe;
+
     // les vues
     private boolean isViewListTheso;
     private boolean isViewExportSkos;
@@ -26,6 +23,7 @@ public class ViewEditionBean implements Serializable {
     private boolean isViewExportCSV;
     private boolean isViewImportSkos;
     private boolean isViewImportCsv;
+    private boolean isViewImportVirtuoso;
 
     private boolean isViewNewTheso;
     private boolean isViewModifyTheso;
@@ -45,9 +43,16 @@ public class ViewEditionBean implements Serializable {
         isViewModifyTheso = false;
         isViewExportPDF = false;
         isViewExportCSV = false;
+        isViewImportVirtuoso = false;
     }
 
     public void init() {
+
+        login = "dba";
+        password = "dba";
+        urlServer = "localhost:1111";
+        nomGraphe = "localhost/test2";
+
         alternateColor = "#C8EAD6";
         isViewListTheso = true;
         isViewExportSkos = false;
@@ -59,6 +64,7 @@ public class ViewEditionBean implements Serializable {
         isViewExportPDF = false;
         isViewModifyTheso = false;
         isViewExportCSV = false;
+        isViewImportVirtuoso = false;
     }
 
     public String getNewAlternateColor() {
@@ -105,6 +111,7 @@ public class ViewEditionBean implements Serializable {
         isViewExportPDF = false;
         isViewModifyTheso = false;
         isViewExportCSV = false;
+        isViewImportVirtuoso = false;
     }
 
     public boolean isIsExportStarted() {
@@ -113,12 +120,6 @@ public class ViewEditionBean implements Serializable {
 
     public void setIsExportStarted(boolean isExportStarted) {
         this.isExportStarted = isExportStarted;
-//        PrimeFaces pf = PrimeFaces.current(); 
-//        if (pf.isAjaxRequest()) {
-//            //    pf.ajax().update("messageIndex");
-//            pf.ajax().update("toolBoxForm");
-//            pf.ajax().update("toolBoxForm:listThesoForm:viewExportSkosForm");
-//        }        
     }
 
     public boolean isIsViewImportSkos() {
@@ -134,6 +135,7 @@ public class ViewEditionBean implements Serializable {
         isViewImportCsv = false;
         isViewExportPDF = false;
         isViewExportCSV = false;
+        isViewImportVirtuoso = false;
     }
 
     public boolean isIsImportStarted() {
@@ -158,6 +160,7 @@ public class ViewEditionBean implements Serializable {
         isViewModifyTheso = false;
         isViewExportPDF = false;
         isViewExportCSV = false;
+        isViewImportVirtuoso = false;
     }
 
     public boolean isIsViewModifyTheso() {
@@ -173,6 +176,7 @@ public class ViewEditionBean implements Serializable {
         isViewImportCsv = false;
         isViewExportPDF = false;
         isViewExportCSV = false;
+        isViewImportVirtuoso = false;
     }
 
     public boolean isIsViewImportCsv() {
@@ -188,10 +192,11 @@ public class ViewEditionBean implements Serializable {
         isViewModifyTheso = false;
         isViewExportPDF = false;
         isViewExportCSV = false;
+        isViewImportVirtuoso = false;
     }
 
     public boolean isExportView() {
-        return isViewExportPDF || isViewExportCSV || isViewExportSkos;
+        return isViewExportPDF || isViewExportCSV || isViewExportSkos || isViewImportVirtuoso;
     }
 
     public boolean isIsViewExportPDF() {
@@ -207,10 +212,23 @@ public class ViewEditionBean implements Serializable {
         isViewModifyTheso = false;
         isViewImportCsv = false;
         isViewExportCSV = false;
+        isViewImportVirtuoso = false;
     }
 
     public void setIsViewExportCSV(boolean isViewExportCSV) {
         this.isViewExportCSV = isViewExportCSV;
+        isViewExportPDF = false;
+        isViewNewTheso = false;
+        isViewExportSkos = false;
+        isViewListTheso = false;
+        isViewImportSkos = false;
+        isViewModifyTheso = false;
+        isViewImportCsv = false;
+        isViewImportVirtuoso = false;
+    }
+
+    public void setIsViewExportVirtuoso(boolean isViewImportVirtuoso) {
+        this.isViewImportVirtuoso = isViewImportVirtuoso;
         isViewExportPDF = false;
         isViewNewTheso = false;
         isViewExportSkos = false;
@@ -224,4 +242,39 @@ public class ViewEditionBean implements Serializable {
         return isViewImportCsv;
     }
 
+    public boolean isViewImportVirtuoso() {
+        return isViewImportVirtuoso;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUrlServer() {
+        return urlServer;
+    }
+
+    public void setUrlServer(String urlServer) {
+        this.urlServer = urlServer;
+    }
+
+    public String getNomGraphe() {
+        return nomGraphe;
+    }
+
+    public void setNomGraphe(String nomGraphe) {
+        this.nomGraphe = nomGraphe;
+    }
 }

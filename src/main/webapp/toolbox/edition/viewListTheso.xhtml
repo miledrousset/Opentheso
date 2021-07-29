@@ -103,11 +103,20 @@
                                                       action="#{viewEditionBean.setIsViewExportCSV(true)}"
                                                       update="toolBoxForm"
                                                       style="font-size: 12px;"/>
+
                                     <b:navCommandLink value="Identifiants en CSV" ajax="false" tooltip="Exporter les labels, identifiants, definitions au format CSV" tooltip-delay-show="1000"
                                                       actionListener="#{viewExportBean.init(listTheso, 'CSV_id')}"
                                                       action="#{viewEditionBean.setIsViewExportCSV(true)}"
                                                       update="toolBoxForm"
-                                                      style="font-size: 12px;"/>                                    
+                                                      style="font-size: 12px;"/>
+
+                                    <b:navCommandLink value="Virtuoso (SKOS)" ajax="false"
+                                                      tooltip="Exporter le thésaurus dans vertuoso au format S"
+                                                      tooltip-delay-show="1000"
+                                                      actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
+                                                      action="#{viewEditionBean.setIsViewExportVirtuoso(true)}"
+                                                      update="toolBoxForm"
+                                                      style="font-size: 12px;"/>
                                 </b:dropMenu> 
                             </b:column>
 
