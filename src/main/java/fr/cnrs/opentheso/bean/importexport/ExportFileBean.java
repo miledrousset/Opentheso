@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -122,46 +121,6 @@ public class ExportFileBean implements Serializable {
     }
 
     public void exportToVertuoso() {
-        SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                viewExportBean.getSelectedGroups(),
-                viewExportBean.getSelectedLanguages());
-
-        if (skosxd == null) {
-            return;
-        }
-
-        if (viewEditionBean.isViewImportVirtuoso()) {
-
-            String msg = null;
-            if (StringUtils.isEmpty(viewEditionBean.getUrlServer())) {
-                msg = "L'URL du serveur Virtuoso est manquant !";
-            } else if (StringUtils.isEmpty(viewEditionBean.getLogin())) {
-                msg = "Le login pour se connecter au serveur Virtuoso est manquant !";
-            } else if (StringUtils.isEmpty(viewEditionBean.getPassword())) {
-                msg = "Le mot de passe pour se connecter au serveur Virtuoso est manquant !";
-            }
-
-            if (!StringUtils.isEmpty(msg)) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", msg));
-                PrimeFaces.current().ajax().update("messageIndex");
-                return;
-            }
-
-            boolean resultat = exportThesorusToVirtuoso(skosxd, viewEditionBean.getNomGraphe(), viewEditionBean.getUrlServer(),
-                    viewEditionBean.getLogin(), viewEditionBean.getPassword());
-
-            if (resultat) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                        "Exportation du thésaurus '"+viewExportBean.getNodeIdValueOfTheso().getId()+"' est terminée avec succès"));
-                PrimeFaces.current().ajax().update("messageIndex");
-            }
-
-        }
-
-    }
-
-    public StreamedContent exportThesorus() {
-
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                 viewExportBean.getSelectedGroups(),
                 viewExportBean.getSelectedLanguages());
