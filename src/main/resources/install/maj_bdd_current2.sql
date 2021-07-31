@@ -348,3 +348,5 @@ SELECT delete_fonction1 ('delete_fonction1','TEXT','TEXT');
 
 
 
+INSERT INTO users (id_user, username, password, active, mail, passtomodify,alertmail, issuperadmin) VALUES
+(1, 'firas', '21232f297a57a5a743894a0e4a801fc3', true, 'admin@domaine.fr', false, false, true);
