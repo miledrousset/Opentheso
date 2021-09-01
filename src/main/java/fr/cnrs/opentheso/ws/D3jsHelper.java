@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.ws;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import java.util.ArrayList;
 import javax.json.Json;
@@ -40,7 +41,7 @@ public class D3jsHelper {
         }
         ConceptHelper conceptHelper = new ConceptHelper();
         
-        ArrayList<String> listChilds = conceptHelper.getListChildrenOfConcept(ds, idConcept, idTheso);
+        ArrayList<NodeIdValue> listChilds = conceptHelper.getListChildrenOfConceptSorted(ds, idConcept, idLang, idTheso);
         
         if(listChilds == null || listChilds.isEmpty())
             return null;
@@ -53,7 +54,7 @@ public class D3jsHelper {
     }       
 
     private NodeDatas getRootNode(HikariDataSource ds, String idTheso, String idLang,
-            String idTopConcept, ArrayList<String> listIds){
+            String idTopConcept, ArrayList<NodeIdValue> listIds){
         
         NodeDatas nodeDatas = getNodeDatas(ds, idTopConcept, idTheso, idLang);
         
@@ -64,8 +65,8 @@ public class D3jsHelper {
         count = 0;
         
         // boucle récursive pour récupérer les fils
-        for (String idConcept : listIds) {
-            childrens.add(getNode(ds, idConcept, idTheso, idLang));
+        for (NodeIdValue nodeIdValue : listIds) {
+            childrens.add(getNode(ds, nodeIdValue.getId(), idTheso, idLang));
         }
         nodeDatas.setChildren(childrens);
         return nodeDatas;
@@ -80,10 +81,10 @@ public class D3jsHelper {
         ArrayList<NodeDatas> childrens = new ArrayList<>();
         ConceptHelper conceptHelper = new ConceptHelper();
         if(count < 3000) {
-            ArrayList<String> listChilds = conceptHelper.getListChildrenOfConcept(ds, idConcept, idTheso);
+            ArrayList<NodeIdValue> listChilds = conceptHelper.getListChildrenOfConceptSorted(ds, idConcept, idLang, idTheso);
             if(listChilds != null && !listChilds.isEmpty()) {
-                for (String child : listChilds) {
-                    childrens.add(getNode(ds, child, idTheso, idLang));
+                for (NodeIdValue idChild : listChilds) {
+                    childrens.add(getNode(ds, idChild.getId(), idTheso, idLang));
                     count++;
                     nodeDatas.setChildren(childrens);
                 }

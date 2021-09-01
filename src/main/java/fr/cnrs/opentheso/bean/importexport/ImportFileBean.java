@@ -402,7 +402,8 @@ public class ImportFileBean implements Serializable {
             preferencesHelper.initPreferences(connect.getPoolConnexion(), idNewTheso, selectedLang);
         } else {
             nodePreference.setPreferredName(thesaurusName);
-            preferencesHelper.updateAllPreferenceUser(connect.getPoolConnexion(), nodePreference, idNewTheso);
+            nodePreference.setSourceLang(selectedLang);
+            preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }
 
         // ajout des concepts et collections

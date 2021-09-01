@@ -271,7 +271,7 @@ public class ImportRdf4jHelper {
             if(selectedIdentifier.equalsIgnoreCase("doi")){
                 nodePreference.setOriginalUriIsDoi(true);
             }             
-            preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);            
+//            preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);            
         } else {
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
@@ -285,8 +285,8 @@ public class ImportRdf4jHelper {
             if(selectedIdentifier.equalsIgnoreCase("doi")){
                 nodePreference.setOriginalUriIsDoi(true);
             }               
-            preferencesHelper.addPreference(ds, nodePreference, idTheso); 
         }
+        preferencesHelper.addPreference(ds, nodePreference, idTheso);         
     }
     
     private void setOriginalUri(String idTheso, String uri){

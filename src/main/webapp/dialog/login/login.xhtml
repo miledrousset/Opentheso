@@ -33,9 +33,9 @@
                 </b:column>
             </b:row>
 
-            <b:row>
+            <b:row rendered="#{selectedTheso.currentIdTheso == 'tetetete'}">
                 <b:column>
-                    <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                    <h:panelGrid  columns="2" style="margin-bottom:10px" cellpadding="5">
                         <h:outputText value="LDAP: " />
                         <p:toggleSwitch value="#{currentUser.ldapEnable}" style="color: #f47b2a; margin-left: 15px" />
                     </h:panelGrid>

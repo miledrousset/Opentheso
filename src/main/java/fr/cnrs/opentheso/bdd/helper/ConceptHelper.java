@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptArkId;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -73,6 +74,65 @@ public class ConceptHelper {
      */
     
     /**
+     * permet de récupérer les concepts dépréciés
+     * @param ds
+     * @param idTheso
+     * @param idLang
+     * @return 
+     */
+    public ArrayList <NodeDeprecated> getAllDeprecatedConceptOfThesaurus(HikariDataSource ds, String idTheso, String idLang) {
+        ArrayList <NodeDeprecated> nodeDeprecateds = new ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select concept.id_concept, term.lexical_value, concept_replacedby.id_concept2 as replacedBy from term, concept, preferred_term, concept_replacedby" +
+                            " where " +
+                            " concept.id_concept = preferred_term.id_concept" +
+                            " and" +
+                            " concept.id_thesaurus = preferred_term.id_thesaurus" +
+                            " and" +
+                            " preferred_term.id_term = term.id_term" +
+                            " and" +
+                            " preferred_term.id_thesaurus = term.id_thesaurus" +
+                            " and" +
+                            " concept_replacedby.id_concept1 = concept.id_concept" +
+                            " and" +
+                            " concept_replacedby.id_thesaurus = concept.id_thesaurus" +
+                            " and" +
+                            " concept.id_thesaurus = '" + idTheso + "'" +
+                            " and" +
+                            " term.lang = '" + idLang + "'" +
+                            " and" +
+                            " concept.status = 'DEP' order by unaccent(lower(lexical_value))");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeDeprecated nodeDeprecated = new NodeDeprecated();
+
+                        nodeDeprecated.setDeprecatedId(resultSet.getString("id_concept"));
+                        nodeDeprecated.setDeprecatedLabel(resultSet.getString("lexical_value"));
+                        nodeDeprecated.setReplacedById(resultSet.getString("replacedBy"));
+                        nodeDeprecateds.add(nodeDeprecated);
+                    }
+                }
+                for (NodeDeprecated nodeDeprecated : nodeDeprecateds) {
+                    nodeDeprecated.setReplacedByLabel(getLexicalValueOfConcept(ds, nodeDeprecated.getReplacedById(), idTheso, idLang));
+                }
+                return nodeDeprecateds;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting deprecated values : " + idTheso, sqle);
+        }
+        return null;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
      * permet de retourner un noeud de données optimisées pour l'affichage du graphe D3Js
      * @param ds
      * @param idConcept
@@ -83,8 +143,11 @@ public class ConceptHelper {
     public NodeDatas getConceptForGraph(HikariDataSource ds,
             String idConcept, String idTheso, String idLang){
         NodeDatas nodeDatas = new NodeDatas();
-
-        nodeDatas.setName(getLexicalValueOfConcept(ds, idConcept, idTheso, idLang));
+        String label = getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
+        if(label == null || label.isEmpty())
+            nodeDatas.setName("("+idConcept+")");
+        else
+            nodeDatas.setName(label);
         nodeDatas.setUrl(getUri(idConcept, idTheso));
         nodeDatas.setDefinition(new NoteHelper().getDefinition(ds, idConcept, idTheso, idLang));
         nodeDatas.setSynonym(new TermHelper().getNonPreferredTermsLabel(ds, idTheso, idTheso, idLang));
@@ -3879,6 +3942,40 @@ public class ConceptHelper {
         return existe;
     }
 
+    /**
+     * Cette fonction permet de récupérer les Ids des concepts suivant l'id du
+     * Concept-Père et le thésaurus sous forme de classe tableau avec tri par label
+     * @param ds
+     * @param idConcept
+     * @param idLang
+     * @param idThesaurus
+     * @return 
+     */
+    
+    public ArrayList<NodeIdValue> getListChildrenOfConceptSorted(HikariDataSource ds, String idConcept, String idLang, String idThesaurus) {
+        ArrayList<String> listIdsOfConcept = getListChildrenOfConcept(ds, idConcept, idThesaurus);
+        ArrayList<NodeIdValue> listIdsTemp =new ArrayList<>();
+                
+        String label;
+        for (String idC : listIdsOfConcept) {
+            label = getLexicalValueOfConcept(ds, idC, idThesaurus, idLang);
+            NodeIdValue nodeIdValue = new NodeIdValue();
+                    
+            if(label == null || label.isEmpty()) {
+                nodeIdValue.setId(idC);
+                nodeIdValue.setValue(idC);
+            }
+            else {
+                nodeIdValue.setId(idC);
+                nodeIdValue.setValue(label);
+            }
+            listIdsTemp.add(nodeIdValue);
+        }
+        Collections.sort(listIdsTemp);
+        return listIdsTemp;
+    }      
+    
+    
     /**
      * Cette fonction permet de récupérer les Ids des concepts suivant l'id du
      * Concept-Père et le thésaurus sous forme de classe tableau pas de tri

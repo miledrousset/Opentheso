@@ -26,9 +26,9 @@ public class PreferencesHelper {
      */
     public String getCodeGoogleAnalytics(HikariDataSource ds) {
         String codeAnalytics = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery("SELECT googleanalytics FROM info")) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet resultSet = stmt.executeQuery("SELECT googleanalytics FROM info")) {
                     if (resultSet.next()) {
                         codeAnalytics = resultSet.getString("googleanalytics");
                     }
@@ -49,8 +49,8 @@ public class PreferencesHelper {
         StringPlus stringPlus = new StringPlus();
         codeJavaScript = stringPlus.addQuotes(codeJavaScript);
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update info set googleanalytics = '" + codeJavaScript + "'");
                 status = true;
             }
@@ -62,70 +62,72 @@ public class PreferencesHelper {
 
     /**
      * permet de retourner les préferences d'un thésaurus
+     *
      * @param ds
      * @param idThesaurus
-     * @return 
+     * @return
      */
     public NodePreference getThesaurusPreferences(HikariDataSource ds, String idThesaurus) {
         NodePreference np = null;
-        
-        if(idThesaurus == null || idThesaurus.isEmpty()) {
+
+        if (idThesaurus == null || idThesaurus.isEmpty()) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, "IdThesaurus = " + idThesaurus + " Erreur à vérifier");
             return np;
         }
-        
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM preferences where id_thesaurus = '" + idThesaurus + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    resultSet.next();
-                    np = new NodePreference();
-                    np.setSourceLang(resultSet.getString("source_lang"));
-                    np.setIdentifierType(resultSet.getInt("identifier_type"));
-                    np.setPreferredName(resultSet.getString("preferredname"));
-                    np.setAuto_expand_tree(resultSet.getBoolean("auto_expand_tree"));
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        np = new NodePreference();
+                        np.setSourceLang(resultSet.getString("source_lang"));
+                        np.setIdentifierType(resultSet.getInt("identifier_type"));
+                        np.setPreferredName(resultSet.getString("preferredname"));
+                        np.setAuto_expand_tree(resultSet.getBoolean("auto_expand_tree"));
 
-                    np.setSort_by_notation(resultSet.getBoolean("sort_by_notation"));
-                    //np.setTree_cache(resultSet.getBoolean("tree_cache"));
+                        np.setSort_by_notation(resultSet.getBoolean("sort_by_notation"));
+                        //np.setTree_cache(resultSet.getBoolean("tree_cache"));
 
-                    // Ark
-                    np.setUseArk(resultSet.getBoolean("use_ark"));
-                    np.setServeurArk(resultSet.getString("server_ark"));
-                    np.setUriArk(resultSet.getString("uri_ark"));
-                    np.setIdNaan(resultSet.getString("id_naan"));
-                    np.setPrefixArk(resultSet.getString("prefix_ark"));
-                    np.setUserArk(resultSet.getString("user_ark"));
-                    np.setPassArk(resultSet.getString("pass_ark"));
-                    np.setGenerateHandle(resultSet.getBoolean("generate_handle"));
+                        // Ark
+                        np.setUseArk(resultSet.getBoolean("use_ark"));
+                        np.setServeurArk(resultSet.getString("server_ark"));
+                        np.setUriArk(resultSet.getString("uri_ark"));
+                        np.setIdNaan(resultSet.getString("id_naan"));
+                        np.setPrefixArk(resultSet.getString("prefix_ark"));
+                        np.setUserArk(resultSet.getString("user_ark"));
+                        np.setPassArk(resultSet.getString("pass_ark"));
+                        np.setGenerateHandle(resultSet.getBoolean("generate_handle"));
 
-                    // Handle
-                    np.setUseHandle(resultSet.getBoolean("use_handle"));
-                    np.setUserHandle(resultSet.getString("user_handle"));
-                    np.setPassHandle(resultSet.getString("pass_handle"));
-                    np.setPathKeyHandle(resultSet.getString("path_key_handle"));
-                    np.setPathCertHandle(resultSet.getString("path_cert_handle"));
-                    np.setUrlApiHandle(resultSet.getString("url_api_handle"));
-                    np.setPrefixIdHandle(resultSet.getString("prefix_handle"));
-                    np.setPrivatePrefixHandle(resultSet.getString("private_prefix_handle"));
+                        // Handle
+                        np.setUseHandle(resultSet.getBoolean("use_handle"));
+                        np.setUserHandle(resultSet.getString("user_handle"));
+                        np.setPassHandle(resultSet.getString("pass_handle"));
+                        np.setPathKeyHandle(resultSet.getString("path_key_handle"));
+                        np.setPathCertHandle(resultSet.getString("path_cert_handle"));
+                        np.setUrlApiHandle(resultSet.getString("url_api_handle"));
+                        np.setPrefixIdHandle(resultSet.getString("prefix_handle"));
+                        np.setPrivatePrefixHandle(resultSet.getString("private_prefix_handle"));
 
-                    np.setPathImage(resultSet.getString("path_image"));
-                    np.setDossierResize(resultSet.getString("dossier_resize"));
-                    np.setBddActive(resultSet.getBoolean("bdd_active"));
-                    np.setBddUseId(resultSet.getBoolean("bdd_use_id"));
-                    np.setUrlBdd(resultSet.getString("url_bdd"));
-                    np.setUrlCounterBdd(resultSet.getString("url_counter_bdd"));
-                    np.setZ3950actif(resultSet.getBoolean("z3950actif"));
-                    np.setCollectionAdresse(resultSet.getString("collection_adresse"));
-                    np.setNoticeUrl(resultSet.getString("notice_url"));
-                    np.setUrlEncode(resultSet.getString("url_encode"));
-                    np.setPathNotice1(resultSet.getString("path_notice1"));
-                    np.setPathNotice2(resultSet.getString("path_notice2"));
-                    np.setCheminSite(resultSet.getString("chemin_site"));
-                    np.setWebservices(resultSet.getBoolean("webservices"));
-                    np.setOriginalUri(resultSet.getString("original_uri"));
-                    np.setOriginalUriIsArk(resultSet.getBoolean("original_uri_is_ark"));
-                    np.setOriginalUriIsHandle(resultSet.getBoolean("original_uri_is_handle"));
-                    //np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
+                        np.setPathImage(resultSet.getString("path_image"));
+                        np.setDossierResize(resultSet.getString("dossier_resize"));
+                        np.setBddActive(resultSet.getBoolean("bdd_active"));
+                        np.setBddUseId(resultSet.getBoolean("bdd_use_id"));
+                        np.setUrlBdd(resultSet.getString("url_bdd"));
+                        np.setUrlCounterBdd(resultSet.getString("url_counter_bdd"));
+                        np.setZ3950actif(resultSet.getBoolean("z3950actif"));
+                        np.setCollectionAdresse(resultSet.getString("collection_adresse"));
+                        np.setNoticeUrl(resultSet.getString("notice_url"));
+                        np.setUrlEncode(resultSet.getString("url_encode"));
+                        np.setPathNotice1(resultSet.getString("path_notice1"));
+                        np.setPathNotice2(resultSet.getString("path_notice2"));
+                        np.setCheminSite(resultSet.getString("chemin_site"));
+                        np.setWebservices(resultSet.getBoolean("webservices"));
+                        np.setOriginalUri(resultSet.getString("original_uri"));
+                        np.setOriginalUriIsArk(resultSet.getBoolean("original_uri_is_ark"));
+                        np.setOriginalUriIsHandle(resultSet.getBoolean("original_uri_is_handle"));
+                        //np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
+                    }
                 }
             }
         } catch (SQLException ex) {
@@ -139,9 +141,9 @@ public class PreferencesHelper {
      */
     public String getWorkLanguageOfTheso(HikariDataSource ds, String idThesourus) {
         String workLanguage = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery(
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet resultSet = stmt.executeQuery(
                         "select source_lang from preferences where id_thesaurus = '" + idThesourus + "'")) {
                     if (resultSet.next()) {
                         workLanguage = resultSet.getString("source_lang");
@@ -161,8 +163,8 @@ public class PreferencesHelper {
 
         boolean status = false;
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update preferences set source_lang = '" + idLang
                         + "' where id_thesaurus = '" + idTheso + "'");
                 status = true;
@@ -175,9 +177,9 @@ public class PreferencesHelper {
 
     public boolean isWebservicesOn(HikariDataSource ds, String idThesaurus) {
         boolean status = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery(
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet resultSet = stmt.executeQuery(
                         "SELECT webservices FROM preferences where id_thesaurus = '" + idThesaurus + "'")) {
                     if (resultSet.next()) {
                         status = resultSet.getBoolean("webservices");
@@ -195,9 +197,9 @@ public class PreferencesHelper {
      */
     public String getIdThesaurusFromName(HikariDataSource ds, String thesoName) {
         String idTheso = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery("select id_thesaurus from preferences where preferredname ilike '"
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet resultSet = stmt.executeQuery("select id_thesaurus from preferences where preferredname ilike '"
                         + thesoName + "'")) {
 
                     if (resultSet.next()) {
@@ -216,8 +218,8 @@ public class PreferencesHelper {
      */
     public void initPreferences(HikariDataSource ds, String idThesaurus, String workLanguage) {
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("insert into preferences (id_thesaurus,source_lang, preferredname)"
                         + " values ('" + idThesaurus + "', '" + workLanguage + "','" + idThesaurus + "')");
             }
@@ -228,13 +230,17 @@ public class PreferencesHelper {
 
     /**
      * Permet de mettre à jour toutes les préférence
+     * @param ds
+     * @param np
+     * @param idThesaurus
+     * @return 
      */
     public boolean updateAllPreferenceUser(HikariDataSource ds, NodePreference np, String idThesaurus) {
         boolean status = false;
         StringPlus stringPlus = new StringPlus();
         np = normalizeDatas(np);
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 String query = "update preferences set "
                         + "source_lang='" + stringPlus.convertString(np.getSourceLang()) + "'"
                         //   + ", nb_alert_cdt='" + np.getNbAlertCdt() + "'"
@@ -294,14 +300,19 @@ public class PreferencesHelper {
     }
 
     /**
-     * Permet de mettre à jour toutes les préférence
+     * Permet d'ajouter une nouvelle préférence
+     *
+     * @param ds
+     * @param np
+     * @param idThesaurus
+     * @return 
      */
     public boolean addPreference(HikariDataSource ds, NodePreference np, String idThesaurus) {
         boolean status = false;
         StringPlus stringPlus = new StringPlus();
         np = normalizeDatas(np);
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 String query = "insert into preferences("
                         + "id_thesaurus, source_lang, identifier_type, path_image,"
                         + " dossier_resize, bdd_active, bdd_use_id, url_bdd,"

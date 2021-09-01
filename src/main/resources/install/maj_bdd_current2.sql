@@ -289,6 +289,30 @@ begin
 end
 $$language plpgsql;
 
+-- Modification de la table preferences pour enlever la limite de taille des langues
+--
+ALTER TABLE preferences ALTER COLUMN source_lang Type character varying;
+ALTER TABLE languages_iso639 ALTER COLUMN iso639_1 Type character varying;
+ALTER TABLE concept_group_label ALTER COLUMN lang Type character varying;
+
+-- Modification de la table des langues iso630, ajout des nouvelles langues
+--
+create or replace function update_table_languages() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Hans') THEN
+        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Hans'', ''zh-Hans'', ''chinese (simplified)'', ''chinois (simplifié)'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Hant') THEN
+        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Hant'', ''zh-Hant'', ''chinese (traditional)'', ''chinois (traditionnel)'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Latn-pinyin') THEN
+        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Latn-pinyin'', ''zh-Latn-pinyin'', ''chinese (pinyin)'', ''chinois (pinyin)'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'bo-x-ewts') THEN
+        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''bo-x-ewts'', ''bo-x-ewts'', ''tibetan (ewts)'', ''tibétain (ewts)'');';
+    END IF;
+end
+$$language plpgsql;
 
 
 -- mise à jour des types de notes --
@@ -319,7 +343,7 @@ SELECT update_table_languages();
 SELECT update_table_alignement_source();
 SELECT update_table_note_constraint();
 SELECT update_table_corpus_link();
-
+SELECT update_table_languages();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -339,6 +363,7 @@ SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_alignement_source','');
 SELECT delete_fonction('update_table_note_constraint','');
 SELECT delete_fonction('update_table_corpus_link','');
+SELECT delete_fonction('update_table_languages','');
 
 
 -- auto_suppression de nettoyage

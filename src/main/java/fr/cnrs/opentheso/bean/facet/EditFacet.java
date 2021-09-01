@@ -28,7 +28,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
 import org.primefaces.PrimeFaces;
-import org.primefaces.model.TreeNode;
 
 
 @Named(value = "editFacet")
@@ -172,9 +171,10 @@ public class EditFacet implements Serializable {
         FacetHelper facetHelper = new FacetHelper();
         ConceptHelper termHelper = new ConceptHelper();
         
-        List<String> concepts = facetHelper.getAllMembersOfFacet(
+        List<String> concepts = facetHelper.getAllMembersOfFacetSorted(
                 connect.getPoolConnexion(), 
                 facetSelected.getIdFacet(), 
+                selectedTheso.getCurrentLang(),
                 selectedTheso.getCurrentIdTheso());    
         
         conceptList = new ArrayList<>();
@@ -334,7 +334,7 @@ public class EditFacet implements Serializable {
             pf.ajax().update("formLeftTab:tabTree:tree");
         }
 
-        showMessage(FacesMessage.SEVERITY_INFO, "Facet mise à jour avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette mise à jour avec succès !");
     }
     
     /**
@@ -387,7 +387,7 @@ public class EditFacet implements Serializable {
             pf.ajax().update("formLeftTab:tabTree:tree");
         }
 
-        showMessage(FacesMessage.SEVERITY_INFO, "Facet mise à jour avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette mise à jour avec succès !");
     }    
     
     

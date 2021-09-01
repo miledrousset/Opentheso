@@ -135,14 +135,14 @@ public class ExportRdf4jHelperNew {
         skosXmlDocument.setConceptScheme(conceptScheme);
     }
     
-    public void exportSelectedCollections(HikariDataSource ds, String idTheso, List<NodeGroup> selectedGroups){
+    public void exportSelectedCollections(HikariDataSource ds, String idTheso, List<String> selectedGroups){
         GroupHelper groupHelper = new GroupHelper();
         NodeGroupLabel nodeGroupLabel;
-        for (NodeGroup group : selectedGroups) {
-            nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, group.getConceptGroup().getIdgroup(), idTheso);
+        for (String idGroup : selectedGroups) {
+            nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
             SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
             sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
-            addChildsGroupRecursive(ds, idTheso, group.getConceptGroup().getIdgroup(), sKOSResource);
+            addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
 
