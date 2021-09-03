@@ -501,6 +501,20 @@ public class ImportRdf4jHelper {
         addDocumentation(acs);
         addDate(acs);
         addReplaces(acs);
+        
+        // ajout des roles
+ //       String creator = "";
+ //       String contributor = "";
+        for (SKOSCreator c : conceptResource.getCreatorList()) {
+            if (c.getProperty() == SKOSProperty.creator) {
+        //        creator = c.getCreator();
+                acs.concept.setCreatorName(c.getCreator());
+            }
+            if (c.getProperty() == SKOSProperty.contributor) {
+        //        contributor = c.getCreator();
+                acs.concept.setContributorName(c.getCreator());
+            }
+        }
 
         if (isCandidatImport) {
             addMessages(acs);

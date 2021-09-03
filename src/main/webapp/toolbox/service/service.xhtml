@@ -5,6 +5,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <h:panelGroup rendered="#{selectedTheso.currentIdTheso != null}" >
         <b:row>
             <b:column span="10" offset="1">
                 <h:outputText value="Thesaurus séléctionné : #{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
@@ -16,7 +17,7 @@
         <b:row>
             <b:column span="10" offset="1">
                 <div class="p-my-3">
-                    <p:commandButton value="Correction type1" icon="pi pi-check" iconPos="right"
+                    <p:commandButton value="Correction type1 - restructuration" icon="pi pi-check" iconPos="right"
                                      action="#{restoreTheso.reorganizing(selectedTheso.currentIdTheso)}"/>
                 </div>           
             </b:column>
@@ -33,8 +34,39 @@
                 </p:outputPanel>                
             </b:column>
         </b:row>  
+        <p:spacer/>
+
+        <b:row>
+            <b:column span="10" offset="1">
+                <div class="p-my-3">
+                    <p:commandButton value="Correction type2 - créateur/contributeur" icon="pi pi-check" iconPos="right"
+                                     action="#{restoreTheso.switchRolesFromTermToConcept(selectedTheso.currentIdTheso)}"/>
+                </div>           
+            </b:column>
+        </b:row>        
+        <b:row>
+            <b:column span="10" offset="1">
+                <p:outputPanel deferred="true">
+                    <h4>La correction de (Type2) permet de corriger les contributreurs et les créateurs des concepts</h4>
+                    <p>Transfert des informations du niveau du terme vers le concept général.<br/>
+                    </p>
+                </p:outputPanel>                
+            </b:column>
+        </b:row>  
 
         <p:spacer/>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{selectedTheso.currentIdTheso == null}" >
+        <b:row style="margin-top: 50px;">
+            <b:column span="10" offset="1">
+                <p:outputPanel deferred="true">
+                    <h4>
+                        <h:outputText value="!!! Choisissez un thésaurus avant !!!" style="color: #C63632"/>
+                    </h4>
+                </p:outputPanel>                
+            </b:column>
+        </b:row>          
+    </h:panelGroup>        
         
         <b:row>
             <b:column span="11" offset="1" >

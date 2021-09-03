@@ -77,7 +77,7 @@ public class AddConceptToGroupBean implements Serializable {
     /**
      * permet d'ajouter le concept à une collection ou groupe
      */
-    public void addConceptToGroup() {
+    public void addConceptToGroup(int idUser) {
 
         // selectedAtt.getIdConcept() est le terme TG à ajouter
         // terme.getIdC() est le terme séléctionné dans l'arbre
@@ -103,7 +103,7 @@ public class AddConceptToGroupBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept());
+                conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),

@@ -758,7 +758,7 @@ public class DragAndDrop implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                nodeConceptDrag.getConcept().getIdConcept());  
+                nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());  
 
         // si le concept n'est pas déployé à doite, alors on ne fait rien
         if(conceptBean.getNodeConcept() != null){

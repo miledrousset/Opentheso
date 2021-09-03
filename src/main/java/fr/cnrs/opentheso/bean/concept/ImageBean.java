@@ -114,7 +114,7 @@ public class ImageBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
@@ -164,7 +164,7 @@ public class ImageBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image_URI modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
@@ -209,7 +209,7 @@ public class ImageBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();

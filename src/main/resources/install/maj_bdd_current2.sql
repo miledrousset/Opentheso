@@ -325,6 +325,19 @@ INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUE
 INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('definition', true, false, 'Définition', 'Definition');
 INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('changeNote', true, false, 'Note de changement', 'Change note');
 
+
+-- Modification de la table Concept, ajout des colonnes creator et contributor
+--
+create or replace function update_table_concept_role() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept' AND column_name='creator') THEN
+        execute 'ALTER TABLE concept ADD COLUMN creator integer DEFAULT -1;
+                 ALTER TABLE concept ADD COLUMN contributor integer DEFAULT -1;';
+    END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -344,6 +357,7 @@ SELECT update_table_alignement_source();
 SELECT update_table_note_constraint();
 SELECT update_table_corpus_link();
 SELECT update_table_languages();
+SELECT update_table_concept_role();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -364,6 +378,7 @@ SELECT delete_fonction('update_table_alignement_source','');
 SELECT delete_fonction('update_table_note_constraint','');
 SELECT delete_fonction('update_table_corpus_link','');
 SELECT delete_fonction('update_table_languages','');
+SELECT delete_fonction('update_table_concept_role','');
 
 
 -- auto_suppression de nettoyage

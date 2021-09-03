@@ -141,7 +141,7 @@ public class TraductionBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -187,7 +187,7 @@ public class TraductionBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -235,7 +235,7 @@ public class TraductionBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -284,7 +284,7 @@ public class TraductionBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);

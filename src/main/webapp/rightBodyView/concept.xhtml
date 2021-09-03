@@ -1496,7 +1496,7 @@
                                  styleClass="buttonIconOrange"/>
             </b:column>
         </b:row>
-        <b:row rendered="#{(currentUser.nodeUser != null)}">
+        <b:row id="infosOnUpdate" rendered="#{(currentUser.nodeUser != null)}">
             <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.createdBy')} : " style="color: #666666"/>
                 <h:outputText value="#{conceptView.creator}" style="color: #43B572"/>

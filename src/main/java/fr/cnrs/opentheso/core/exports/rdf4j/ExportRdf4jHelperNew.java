@@ -352,6 +352,14 @@ public class ExportRdf4jHelperNew {
             }
         }
         
+        // createur et contributeur
+        if (nodeConcept.getConcept().getCreatorName()!= null && !nodeConcept.getConcept().getCreatorName().isEmpty()) {
+            sKOSResource.addCreator(nodeConcept.getConcept().getCreatorName(), SKOSProperty.creator);
+        }
+        if (nodeConcept.getConcept().getContributorName()!= null && !nodeConcept.getConcept().getContributorName().isEmpty()) {
+            sKOSResource.addCreator(nodeConcept.getConcept().getContributorName(), SKOSProperty.contributor);
+        }    
+        
         skosXmlDocument.addconcept(sKOSResource);
     }
 

@@ -260,7 +260,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
   //      return true;
     }
 
-    private void reloadConcept(){
+/*    private void reloadConcept(){
         PrimeFaces pf = PrimeFaces.current();
 
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -277,7 +277,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                 pf.ajax().update("formRightTab:viewTabConcept:conceptView");
             }
         }      
-    }
+    }*/
     
     private void reloadTree(){
         PrimeFaces pf = PrimeFaces.current();

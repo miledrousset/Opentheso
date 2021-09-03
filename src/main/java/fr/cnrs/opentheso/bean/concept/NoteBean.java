@@ -164,7 +164,7 @@ public class NoteBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
 
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
@@ -217,7 +217,7 @@ public class NoteBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
         
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),

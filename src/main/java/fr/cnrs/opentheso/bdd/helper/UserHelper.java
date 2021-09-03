@@ -239,6 +239,33 @@ public class UserHelper {
         }
         return idUser;
     }
+    
+    /**
+     * Permet de récupérer l'Id de l'utilisateur à partir de son mail si
+     * l'ulisateur existe ou si le mot de passe est faux, on retourne (-1)
+     * sinon, on retourne l'ID de l'utilisateur de retourner l'identifiant
+     *
+     * @param ds
+     * @param pseudo
+     * @return
+     */
+    public int getIdUserFromPseudo(HikariDataSource ds, String pseudo) {
+        int idUser = -1;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '"
+                        + pseudo + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        idUser = resultSet.getInt("id_user");
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return idUser;
+    }    
 
     /**
      * cette fonction permet de retourner les informations de l'utilisateur
@@ -1936,16 +1963,16 @@ public class UserHelper {
      * permet de retourner le nom de l'utilisateur
      *
      * @param ds
-     * @param iden
+     * @param userId
      * @return
      */
-    public String getNameUser(HikariDataSource ds, int iden) {
+    public String getNameUser(HikariDataSource ds, int userId) {
         String name = "";
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT username from users "
-                            + " WHERE id_user =" + iden);
+                            + " WHERE id_user =" + userId);
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         name = resultSet.getString("username");

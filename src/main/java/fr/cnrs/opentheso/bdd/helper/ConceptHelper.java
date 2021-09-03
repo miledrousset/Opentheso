@@ -1095,11 +1095,15 @@ public class ConceptHelper {
 
     /**
      * permet de mettre à jour la date du concept quand il y a une modification
+     * @param ds
+     * @param idTheso
+     * @param idConcept 
+     * @param contributor 
      */
-    public void updateDateOfConcept(HikariDataSource ds, String idTheso, String idConcept) {
+    public void updateDateOfConcept(HikariDataSource ds, String idTheso, String idConcept, int contributor) {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set modified = current_date WHERE id_concept ='" + idConcept + "'"
+                stmt.executeUpdate("UPDATE concept set modified = current_date, contributor = " + contributor + " WHERE id_concept ='" + idConcept + "'"
                         + " AND id_thesaurus='" + idTheso + "'");
             }
         } catch (SQLException sqle) {
@@ -2428,16 +2432,17 @@ public class ConceptHelper {
             }
             if(idConcept == null) return null;
             if(idSequenceConcept == -1) {
-                stmt.executeUpdate("Insert into concept (id_concept, id_thesaurus, id_ark, status, notation, top_concept)"
+                stmt.executeUpdate("Insert into concept (id_concept, id_thesaurus, id_ark, status, notation, top_concept, creator)"
                         + " values ("
                         + "'" + idConcept + "'"
                         + ",'" + concept.getIdThesaurus() + "'"
                         + ",'" + idArk + "'"
                         + ",'" + concept.getStatus() + "'"
                         + ",'" + concept.getNotation() + "'"
-                        + "," + concept.isTopConcept() + ")");                
+                        + "," + concept.isTopConcept() 
+                        + "," + idUser + ")");                
             } else {
-                stmt.executeUpdate("Insert into concept (id, id_concept, id_thesaurus, id_ark, status, notation, top_concept)"
+                stmt.executeUpdate("Insert into concept (id, id_concept, id_thesaurus, id_ark, status, notation, top_concept, creator)"
                         + " values (" 
                         + idSequenceConcept
                         + ",'" + idConcept + "'"
@@ -2445,7 +2450,8 @@ public class ConceptHelper {
                         + ",'" + idArk + "'"
                         + ",'" + concept.getStatus() + "'"
                         + ",'" + concept.getNotation() + "'"
-                        + "," + concept.isTopConcept() + ")");
+                        + "," + concept.isTopConcept() 
+                        + "," + idUser + ")");
             }
             /**
              * Ajout des informations dans la table Concept
@@ -2510,7 +2516,57 @@ public class ConceptHelper {
         }
         return existe;
     }
-
+    
+    /**
+     * Cette fonction permet de savoir si l'ID du concept a un createur 
+     * @param ds
+     * @param idThesaurus
+     * @param idConcept
+     * @return 
+     */
+    public boolean isHaveCreator(HikariDataSource ds, String idThesaurus, String idConcept) {
+        boolean existe = false;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select creator from concept where id_thesaurus = '" + idThesaurus + "' and id_concept = '" + idConcept + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        if( (resultSet.getInt("creator") != -1) && (resultSet.getInt("creator") != 0) ) 
+                            existe = true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if creator exist : " + idConcept, sqle);
+        }
+        return existe;
+    }
+    /**
+     * Cette fonction permet de savoir si l'ID du concept a un contributeur 
+     * @param ds
+     * @param idThesaurus
+     * @param idConcept
+     * @return 
+     */
+    public boolean isHaveContributor(HikariDataSource ds, String idThesaurus, String idConcept) {
+        boolean existe = false;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select contributor from concept where id_thesaurus = '" + idThesaurus + "' and id_concept = '" + idConcept + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        if( (resultSet.getInt("contributor") != -1) && (resultSet.getInt("contributor") != 0) )  
+                            existe = true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if contributor exist : " + idConcept, sqle);
+        }
+        return existe;
+    }  
+    
+    
     /**
      * Cette fonction permet d'ajouter l'historique d'un concept
      */
@@ -2805,11 +2861,15 @@ public class ConceptHelper {
         if (concept.getNotation() == null) {
             concept.setNotation("");
         }
+        
+        UserHelper userHelper = new UserHelper();
+        concept.setCreator(userHelper.getIdUserFromPseudo(ds, concept.getCreatorName()));        
+        concept.setContributor(userHelper.getIdUserFromPseudo(ds, concept.getContributorName()));
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into concept "
-                        + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi)"
+                        + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor)"
                         + " values ("
                         + "'" + concept.getIdConcept() + "'"
                         + ",'" + concept.getIdThesaurus() + "'"
@@ -2821,6 +2881,8 @@ public class ConceptHelper {
                         + "," + concept.isTopConcept()
                         + ",'" + concept.getIdHandle() + "'"
                         + ",'" + concept.getIdDoi() + "'"
+                        + "," + concept.getCreator() 
+                        + "," + concept.getContributor() 
                         + ")");
                 return true;
             }
@@ -2879,6 +2941,10 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer un Concept par son id et son thésaurus
      * sous forme de classe Concept (sans les relations) ni le Terme
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
      */
     public Concept getThisConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
@@ -2903,8 +2969,19 @@ public class ConceptHelper {
                         concept.setStatus(resultSet.getString("status"));
                         concept.setNotation(resultSet.getString("notation"));
                         concept.setTopConcept(resultSet.getBoolean("top_concept"));
+                        concept.setCreator(resultSet.getInt("creator"));
+                        concept.setContributor(resultSet.getInt("contributor"));                        
                         concept.setIdGroup("");//resultSet.getString("idgroup"));
                     }
+                }
+                UserHelper userHelper = new UserHelper();
+                if(concept != null) {
+                    String contributor = userHelper.getNameUser(ds, concept.getContributor());
+                    String creator = userHelper.getNameUser(ds, concept.getCreator());
+                    if(contributor != null && !contributor.isEmpty())
+                        concept.setContributorName(contributor);
+                    if(creator != null && !creator.isEmpty())
+                        concept.setCreatorName(creator);                    
                 }
             }
         } catch (SQLException sqle) {
@@ -3899,6 +3976,51 @@ public class ConceptHelper {
     }
 
     /**
+     * Cette fonction permet de mettre à jour le createur
+     * @param ds
+     * @param idThesaurus
+     * @param idConcept
+     * @param idCreator
+     * @return 
+     */
+    public boolean setCreator(HikariDataSource ds, String idThesaurus, String idConcept, int idCreator) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept set creator = " + idCreator 
+                        + " WHERE id_concept ='"
+                        + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating creator of concept : " + idConcept, sqle);
+        }
+        return false;
+    }    
+    
+    /**
+     * Cette fonction permet de mettre à jour le contributeur
+     * @param ds
+     * @param idThesaurus
+     * @param idConcept
+     * @param idContributor
+     * @return 
+     */
+    public boolean setContributor(HikariDataSource ds, String idThesaurus, String idConcept, int idContributor) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept set contributor = " + idContributor 
+                        + " WHERE id_concept ='"
+                        + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating contributor of concept : " + idConcept, sqle);
+        }
+        return false;
+    }      
+    
+    
+    /**
      * Cette fonction permet de savoir si le Concept est un TopConcept
      */
     public boolean isTopConcept(HikariDataSource ds, String idConcept, String idThesaurus, String idGroup) {
@@ -4018,6 +4140,12 @@ public class ConceptHelper {
      * Cette fonction permet de récupérer toutes les informations concernant un
      * Concept par son id et son thésaurus et la langue On récupère aussi les
      * IdArk si Ark est actif
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param isArkActive
+     * @param isCandidatExport
+     * @return 
      */
     public NodeConceptExport getConceptForExport(HikariDataSource ds,
             String idConcept, String idThesaurus, boolean isArkActive, boolean isCandidatExport) {

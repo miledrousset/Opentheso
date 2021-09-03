@@ -188,7 +188,7 @@ public class SynonymBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme ajouté avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -277,7 +277,7 @@ public class SynonymBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -369,7 +369,7 @@ public class SynonymBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -417,7 +417,7 @@ public class SynonymBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);

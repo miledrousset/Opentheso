@@ -588,13 +588,13 @@ public class ConceptView implements Serializable {
     public String getCreator() {
         if(nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) return "";
         UserHelper userHelper = new UserHelper();
-        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getCreator());
+        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getConcept().getCreator());
     }
     
     public String getContributor(){
         if(nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) return "";        
         UserHelper userHelper = new UserHelper();
-        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getContributor());        
+        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getConcept().getContributor());        
     }
             
 

@@ -1432,7 +1432,7 @@ public class AlignmentBean implements Serializable {
                 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 idTheso, 
-                idConcept);
+                idConcept, idUser);
 
         PrimeFaces pf = PrimeFaces.current();         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
