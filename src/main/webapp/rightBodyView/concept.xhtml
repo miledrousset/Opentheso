@@ -1478,14 +1478,24 @@
         <ui:include src="download.xhtml" />
 
 
-        <p:spacer height="20" />
+
         <!-- ligne dates -->        
         <b:row>    
             <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: " />
-                <h:outputText value="#{conceptView.nodeConcept.concept.created}" style="color: #43B572"/>
+                <h:outputText value="#{conceptView.nodeConcept.concept.created} " style="color: #43B572"/>
+                <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
+                <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value="#{conceptView.creator}" style="color: #43B572"/>                
+            </b:column>
+        </b:row>
+        <b:row id="infosOnUpdate" rendered="#{(currentUser.nodeUser != null)}">
+            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
                 <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')}: "/>
-                <h:outputText value="#{conceptView.nodeConcept.concept.modified}" style="color: #43B572"/>
+                <h:outputText value="#{conceptView.nodeConcept.concept.modified} " style="color: #43B572"/>                
+
+                <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
+                <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value="#{conceptView.contributor}" style="color: #43B572"/>
+                
                 <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                  icon="fa fa-history"
                                  actionListener="#{historyBean.reset()}"                    
@@ -1493,17 +1503,7 @@
                                  oncomplete="PF('historicalView').show();"
                                  title="#{langueBean.getMsg('rightbody.concept.view_change_history')}"
                                  style=" font-size: 14px"
-                                 styleClass="buttonIconOrange"/>
-            </b:column>
-        </b:row>
-        <b:row id="infosOnUpdate" rendered="#{(currentUser.nodeUser != null)}">
-            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.createdBy')} : " style="color: #666666"/>
-                <h:outputText value="#{conceptView.creator}" style="color: #43B572"/>
-            </b:column>
-            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.last_modificationBy')} : " style="color: #666666"/>
-                <h:outputText value="#{conceptView.contributor}" style="color: #43B572"/>
+                                 styleClass="buttonIconOrange"/>                
             </b:column>
         </b:row>
 

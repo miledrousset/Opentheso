@@ -272,6 +272,7 @@ public class CandidatBean implements Serializable {
         }
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
+   //     PrimeFaces.current().ajax().update("messageIndex");
     }
 
     public void showRejectCandidatSelected(CandidatDto candidatDto) throws IOException {
@@ -601,8 +602,8 @@ public class CandidatBean implements Serializable {
 
         showMessage(FacesMessage.SEVERITY_INFO, "Vote enregistré");
 
-        PrimeFaces.current().ajax().update("messageIndex");
-        PrimeFaces.current().ajax().update("candidatForm:vote");
+   //     PrimeFaces.current().ajax().update("messageIndex");
+    //    PrimeFaces.current().ajax().update("candidatForm:vote");
     }
 
     /**
@@ -634,7 +635,7 @@ public class CandidatBean implements Serializable {
 
         showMessage(FacesMessage.SEVERITY_INFO, "Vote du note enregistré");
 
-        PrimeFaces.current().ajax().update("messageIndex");
+    //    PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm:vote");
     }
 
