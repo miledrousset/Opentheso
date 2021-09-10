@@ -47,32 +47,32 @@
                                                       action="#{setAlignmentSourceBean.init()}"
                                                       update="addAlignmentForm addAlignmentForm:columnRightPanel
                                                       addAlignmentForm:panelSetting"
-                                                      style="font-size: 12px;"></b:navCommandLink>
+                                                      style="font-size: 12px;" />
                                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.conceptdialog.add_source')}"
                                                       disabled="false"
                                                       tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_add_source')}"
                                                       action="#{setAlignmentSourceBean.initAddSource()}"
                                                       update="addAlignmentForm addAlignmentForm:columnRightPanel
                                                       addAlignmentForm:panelAddNewSource"
-                                                      style="font-size: 12px;"></b:navCommandLink>                                                      
+                                                      style="font-size: 12px;" />                                                      
                                 </b:dropMenu> 
                             </b:navbarLinks>
                         </b:column>                         
 
                         <b:column span="1">
                             <b:navbarLinks pull="right" >
+                                <!-- TODO FIRAS GABSI
                                 <b:navLink ajax="true" update="idHelpAlignment" oncomplete="$('.helpAlignment').modal('show');"  >
                                     <b:iconAwesome value="fas fa-question" size="xl" style="color: #f47b2a;"/>
-                                </b:navLink>
+                                </b:navLink>-->
                             </b:navbarLinks>
                         </b:column>                            
                         <b:column span="2">
                             <b:navbarLinks pull="right" >
-                                    <b:navCommandLink value="#{langueBean.getMsg('btnExit')}"
-                                                      
+                                    <b:navCommandLink value="#{langueBean.getMsg('btnExit')}"                                                      
                                                       iconAwesome="far fa-window-close"
-                                                      update=" formRightTab:viewTabConcept formRightTab"
-                                                      style="color:#C63632;"></b:navCommandLink> 
+                                                      update="containerIndex:formRightTab"
+                                                      style="color:#C63632;"/> 
                             </b:navbarLinks>
                         </b:column>   
 
@@ -124,8 +124,8 @@
                                                 <b:column span="11" offset="1">
                                                     <b:navCommandLink value="#{conceptList.value}"
                                                                       actionListener="#{alignmentBean.selectConceptForAlignment(conceptList.id)}"
-                                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel 
-                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal"/>
+                                                                      update="addAlignmentForm:columnRightPanel 
+                                                                      addAlignmentForm:columnRightPanel:columnRightPanelLocal"/>
                                                 </b:column>
                                             </b:row>
                                         </ui:repeat>
@@ -170,7 +170,7 @@
                                                          title="#{alignmentBean.alertWikidata}"
                                                          panelStyle="font-size: 12px; background: red; border: none; box-shadow: none;">
                                             <f:selectItems  value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>                                
-                                            <p:ajax event="change" listener="#{alignmentBean.actionChoix()}"  update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"/>
+                                            <p:ajax event="change" listener="#{alignmentBean.actionChoix()}"  update="addAlignmentForm:columnRightPanel"/>
                                         </p:selectOneMenu>                                
                                     </b:column>
 
@@ -182,7 +182,7 @@
                                                                     alignmentBean.idConceptSelectedForAlignment,
                                                                     alignmentBean.conceptValueForAlignment,
                                                                     conceptView.selectedLang)}"
-                                                          update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"
+                                                          update="addAlignmentForm:columnRightPanel"
                                                           styleClass="styleButton_db" />
                                     </b:column> 
                                     <b:column span="1" offset="1">
@@ -250,7 +250,7 @@
                                                                              color: white; background: #8C8C8C; border: none; box-shadow: none;"
                                                                              class="btn btn-primary"
                                                                              action="#{alignmentBean.cancelManualAlignment()}"
-                                                                             update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"/>
+                                                                             update="addAlignmentForm:columnRightPanel"/>
                                                         </b:column>                                                              
                                                         <b:column span="4" offset="4" >
                                                             <b:commandButton id="buttonSubmitManual" value="#{langueBean.getMsg('btnValidate')}" 
@@ -258,7 +258,7 @@
                                                                              font-weight: normal;
                                                                              color: white; background: #F7A269; border: none; box-shadow: none;"
                                                                              class="btn btn-primary"
-                                                                             update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel"
+                                                                             update="addAlignmentForm:columnRightPanel"
                                                                              actionListener="#{alignmentManualBean.addManualAlignement()}"
                                                                              action="#{alignmentBean.validManualAlignment()}" />
                                                         </b:column>                    
@@ -322,7 +322,7 @@
                                                                                     nodeAlign,
                                                                                     selectedTheso.selectedIdTheso,
                                                                                     conceptView.nodeConcept.concept.idConcept)}"
-                                                                          update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel">
+                                                                          update="addAlignmentForm:columnRightPanel">
                                                         </b:navCommandLink>
                                                     </b:column>                                            
 
@@ -361,16 +361,16 @@
                                                                                         selectedTheso.selectedIdTheso, 
                                                                                         alignmentBean.idConceptSelectedForAlignment,
                                                                                         currentUser.nodeUser.idUser)}"
-                                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel
-                                                                      formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel:columnRightPanelLocal
-                                                                      formRightTab:viewTabConcept:idConceptGps" >
+                                                                      update="addAlignmentForm:columnRightPanel
+                                                                      addAlignmentForm:columnRightPanel:columnRightPanelLocal
+                                                                      idConceptGps" >
                                                     </b:navCommandLink>
                                                 </b:column>
                                                 <b:column span="1">
                                                     <b:navCommandLink id="#{langueBean.getMsg('btnCancel')}" iconAwesome="fas fa-undo" style="color: #f47b2a"
                                                                       tooltip="Retour sans aligner"  tooltip-delay-show="1000"
                                                                       action="#{alignmentBean.cancelAlignment()}"
-                                                                      update="formRightTab:viewTabConcept:addAlignmentForm:columnRightPanel">
+                                                                      update="addAlignmentForm:columnRightPanel">
                                                     </b:navCommandLink>  
                                                 </b:column>                                            
                                             </b:row>

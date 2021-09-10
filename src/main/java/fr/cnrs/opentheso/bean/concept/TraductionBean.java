@@ -151,8 +151,8 @@ public class TraductionBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("formRightTab:viewTabConcept:addTraductionForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addTraductionForm");
         }
     }
     
@@ -196,8 +196,8 @@ public class TraductionBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("formRightTab:viewTabConcept:renameTraductionForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:renameTraductionForm");
         }
     }    
     
@@ -244,8 +244,8 @@ public class TraductionBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("formRightTab:viewTabConcept:renameTraductionForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:renameTraductionForm");
         }
     }        
     
@@ -293,8 +293,8 @@ public class TraductionBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("formRightTab:viewTabConcept:deleteTraductionForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteTraductionForm");
         }
     }    
 

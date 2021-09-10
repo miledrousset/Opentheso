@@ -81,7 +81,7 @@ public class RemoveFromGroupBean implements Serializable {
         init();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptGroupRow");            
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptGroupRow");            
         }
     }
 

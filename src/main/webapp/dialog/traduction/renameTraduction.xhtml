@@ -37,7 +37,7 @@
                                               action="#{traductionBean.updateTraduction(
                                                        traductionToEdit,
                                                        currentUser.nodeUser.idUser)}"
-                                             update="formRightTab:viewTabConcept:renameTraductionForm"/>
+                                             update="containerIndex:formRightTab:viewTabConcept:renameTraductionForm"/>
                         </b:column>
 
                         <p:spacer height="20" />
@@ -49,7 +49,8 @@
                     <b:commandButton ajax="true"
                                      id="buttonRenameAll" value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}" 
                                      tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_modify_all')}" tooltip-delay-show="500" 
-                                     update="formRightTab:viewTabConcept:renameTraductionForm  formRightTab:viewTabConcept:idRenameTraduction"
+                                     update="containerIndex:formRightTab:viewTabConcept:renameTraductionForm 
+                                                containerIndex:formRightTab:viewTabConcept:idRenameTraduction"
                                      class="btn btn-primary"
                                      action="#{traductionBean.updateAllTraduction(currentUser.nodeUser.idUser)}"
                                      oncomplete="PF('renameTraduction').hide();"

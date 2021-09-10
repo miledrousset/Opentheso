@@ -1439,12 +1439,10 @@ public class AlignmentBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);        
         
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptAlignment");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptImages");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptGps");
-    //        pf.ajax().update("candidatForm");
-     //       pf.ajax().update("formRightTab");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptAlignment");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptImages");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptGps");
         }         
         
         isViewResult = true;
@@ -1702,10 +1700,6 @@ public class AlignmentBean implements Serializable {
         }
         else
             alertWikidata = "";
-        /*        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
-        }*/
     }
 
     public void setSelectedAlignement(String selectedAlignement) {

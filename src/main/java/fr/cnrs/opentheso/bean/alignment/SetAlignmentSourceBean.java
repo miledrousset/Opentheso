@@ -124,9 +124,6 @@ public class SetAlignmentSourceBean implements Serializable {
         alignmentBean.setViewAddNewSource(true);
         alignmentBean.setViewSetting(false);        
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-//            pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
-        }   
     }
 
     public void infos() {
@@ -146,7 +143,7 @@ public class SetAlignmentSourceBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le nom de la source est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+                pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
                 pf.ajax().update("messageIndex");
             }                   
             return;  
@@ -155,7 +152,7 @@ public class SetAlignmentSourceBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+                pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
                 pf.ajax().update("messageIndex");
             }                   
             return;  
@@ -164,7 +161,7 @@ public class SetAlignmentSourceBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'Id. du thésaurus est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
+                pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
                 pf.ajax().update("messageIndex");
             }                   
             return;  
@@ -202,18 +199,10 @@ public class SetAlignmentSourceBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         if (pf.isAjaxRequest()) {
-    //        pf.ajax().update("formRightTab:viewTabConcept:addAlignmentForm");
             pf.ajax().update("messageIndex");
         }           
         alignmentBean.setViewAddNewSource(false);
         alignmentBean.setViewSetting(false);  
-    }
-    
-    private String removeLastCharOptional(String s) {
-        return Optional.ofNullable(s)
-          .filter(str -> str.length() != 0)
-          .map(str -> str.substring(0, str.length() - 1))
-          .orElse(s);
     }
     
     public void updateSelectedAlignment(){

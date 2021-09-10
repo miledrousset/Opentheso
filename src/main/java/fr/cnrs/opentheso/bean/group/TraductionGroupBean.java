@@ -5,9 +5,7 @@
  */
 package fr.cnrs.opentheso.bean.group;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -169,8 +167,8 @@ public class TraductionGroupBean implements Serializable {
         setLangWithNoTraduction();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabGroup:idGroupTraductions");
-            pf.ajax().update("formRightTab:viewTabGroup:addGroupTraductionForm");            
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupTraductions");
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:addGroupTraductionForm");            
         }            
     }
     
@@ -220,8 +218,8 @@ public class TraductionGroupBean implements Serializable {
         reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabGroup:idGroupTraductions");
-            pf.ajax().update("formRightTab:viewTabGroup:renameTraductionGroupForm");            
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupTraductions");
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:renameTraductionGroupForm");            
         }  
     }             
             
@@ -261,8 +259,8 @@ public class TraductionGroupBean implements Serializable {
         reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabGroup:idGroupTraductions");
-            pf.ajax().update("formRightTab:viewTabGroup:deleteTraductionGroupForm");            
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupTraductions");
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:deleteTraductionGroupForm");            
         } 
     }    
    

@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
@@ -122,7 +121,7 @@ public class ModifyGroupBean implements Serializable {
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabGroup:idGroupLable");
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupLable");
         }        
         
         if (treeGroups.getSelectedNode() != null) {
@@ -175,7 +174,7 @@ public class ModifyGroupBean implements Serializable {
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabGroup:idGroupNotation");
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupNotation");
         }
         
         if (treeGroups.getSelectedNode() != null) {
@@ -186,7 +185,7 @@ public class ModifyGroupBean implements Serializable {
                     groupView.getNodeGroup().getConceptGroup().getIdgroup())) {
                 ((TreeNodeData) treeGroups.getSelectedNode().getData()).setNotation(notation);
                 if (pf.isAjaxRequest()) {
-                    pf.ajax().update("formLeftTab:tabGroups:treeGroups");
+                    pf.ajax().update("containerIndex:formLeftTab:tabGroups:treeGroups");
                 }
             }
         }        
@@ -219,7 +218,7 @@ public class ModifyGroupBean implements Serializable {
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabGroup:idGroupType");
+            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupType");
         }         
     }
 

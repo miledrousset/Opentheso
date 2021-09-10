@@ -298,7 +298,7 @@ public class CutAndPaste implements Serializable {
                     nodeConceptDrag.getConcept().getIdConcept(),
                     conceptBean.getSelectedLang());
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:conceptView");
+                pf.ajax().update("containerIndex:formRightTab:viewTabConcept:conceptView");
             }
         }      
     }

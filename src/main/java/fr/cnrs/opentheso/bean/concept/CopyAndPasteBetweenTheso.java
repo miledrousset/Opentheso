@@ -228,55 +228,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "", "Erreur de copie"));
             } 
-        return true;        
-        /*
-        
-        ConceptHelper conceptHelper = new ConceptHelper();         
-        ArrayList<String> oldBtToDelete = new ArrayList<>();*/
-/*
-        // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
-        if (oldBtToDelete.isEmpty()) {
-            if (!conceptHelper.setTopConcept(connect.getPoolConnexion(),
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    selectedTheso.getCurrentIdTheso())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return false;
-            }
-            return true;
-        } 
-        
-        for (String oldIdBT : oldBtToDelete) {
-            if (!conceptHelper.moveBranchFromConceptToRoot(connect.getPoolConnexion(),
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    oldIdBT,
-                    selectedTheso.getCurrentIdTheso(),
-                    currentUser.getNodeUser().getIdUser())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return false;
-            }
-        }*/
-  //      return true;
-    }
-
-    private void reloadConcept(){
-        PrimeFaces pf = PrimeFaces.current();
-
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeConceptDrag.getConcept().getIdConcept());  
-
-        // si le concept n'est pas déployé à doite, alors on ne fait rien
-        if(conceptBean.getNodeConcept() != null){
-            conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    conceptBean.getSelectedLang());
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:conceptView");
-            }
-        }      
+        return true; 
     }
     
     private void reloadTree(){

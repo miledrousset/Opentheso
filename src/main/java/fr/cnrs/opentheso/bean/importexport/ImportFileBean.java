@@ -677,8 +677,8 @@ public class ImportFileBean implements Serializable {
                     conceptView.getSelectedLang());
 
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:idConceptNarrower");
-                pf.ajax().update("formLeftTab:tabTree:tree");
+                pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNarrower");
+                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
             }
 
         } catch (Exception e) {

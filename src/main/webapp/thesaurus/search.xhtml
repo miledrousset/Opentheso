@@ -9,7 +9,7 @@
                 <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}" 
                                  style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
                                  title="#{langueBean.getMsg('search.change_thesaurus_language')}">
-                                <p:ajax event="valueChange" update="formSearch formLeftTab formRightTab" 
+                                <p:ajax event="valueChange" update="formSearch containerIndex:formLeftTab containerIndex:formRightTab" 
                                              listener="#{selectedTheso.changeLang()}" />
                     <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                     <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all" />
@@ -19,7 +19,6 @@
             <b:column span="4" colXs="6">
                 <p:autoComplete id="nomTerme" value="#{searchBean.searchSelected}"
                                 var="values"
-
                                 completeMethod="#{searchBean.completTermFullText}"                                  
                                 minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
                                 scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 27px;box-shadow: none;border-color: #43B572"
@@ -33,13 +32,13 @@
                     <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
                         <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
                     </p:column>
-                    <p:ajax event="itemSelect" listener="#{searchBean.onSelect()}" update="@parent formRightTab"/>
+                    <p:ajax event="itemSelect" listener="#{searchBean.onSelect()}" update="@parent containerIndex:formRightTab"/>
                 </p:autoComplete>           
 
             </b:column>     
             <b:column span="1" colXs="1">
                 <b:commandButton id="buttonSearch" action="#{searchBean.applySearch()}"
-                                 update="formRightTab messageIndex" iconAwesome="search" icon-size="l"
+                                 update="containerIndex:formRightTab messageIndex" iconAwesome="search" icon-size="l"
                                  style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; font-size: 12px"/>
             </b:column>
 
@@ -87,11 +86,11 @@
                                     (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                       span="1" colXs="1"  style="font-size: 12px; margin-top: 2px; margin-left: 30px;">
                 <p:menuButton value="++" style="font-size: 12px;" title="Recherche pré-programmée">
-                    <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" update="formRightTab" style="font-size: 12px;" title="Rechercher les concepts polyhiérarchiques"/>
-                    <p:menuitem value="Multi-groupes" action="#{searchBean.searchConceptWithMultiGroup()}" update="formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont plusieurs groupes"/>
-                    <p:menuitem value="Sans-groupes" action="#{searchBean.searchConceptWithoutGroup()}" update="formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui n'ont pas de groupes"/>
-                    <p:menuitem value="Doublons" action="#{searchBean.searchConceptDuplicated()}" update="formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont un libellé en doublon"/>
-                    <p:menuitem value="Relations interdites" action="#{searchBean.searchConceptWithRTandBT()}" update="formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
+                    <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts polyhiérarchiques"/>
+                    <p:menuitem value="Multi-groupes" action="#{searchBean.searchConceptWithMultiGroup()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont plusieurs groupes"/>
+                    <p:menuitem value="Sans-groupes" action="#{searchBean.searchConceptWithoutGroup()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui n'ont pas de groupes"/>
+                    <p:menuitem value="Doublons" action="#{searchBean.searchConceptDuplicated()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont un libellé en doublon"/>
+                    <p:menuitem value="Relations interdites" action="#{searchBean.searchConceptWithRTandBT()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
                 </p:menuButton>
             </b:column>
         </b:row>    

@@ -5,10 +5,6 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <!--    <b:modal id="idRenameConcept"  class="renameConcept" title="Renommer le concept" close-on-escape="false" backdrop="false"
-                 style="font-size: 12px;">
-    -->
-
     <p:dialog id="idListImportCsv" header="Importer une liste tabulée" widgetVar="listImportCsv" 
               modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" >         
 
@@ -148,15 +144,13 @@
                                              class="btn btn-success"
                                              style="width: 100%; background-color: #FFC107; color: black; border: none;"
                                              action="#{importFileBean.init()}"
-                                             update="formRightTab:viewTabConcept:idListImportCsv"
-                                             oncomplete="PF('listImportCsv').hide();">
-                            </p:commandButton>
+                                             update="containerIndex:formRightTab:viewTabConcept:idListImportCsv"
+                                             oncomplete="PF('listImportCsv').hide();" />
                         </b:column>
                         <b:column span="4" offset="2" > 
                             <p:commandButton id="buttonImportCsv" class="btn btn-success" widgetVar="buttonImportCsv"
                                              icon="fas fa-check-circle fas 2x"
                                              update="panelListCsv"
-
                                              style="width: 100%; background-color: #5CB85C; border: none;"
                                              actionListener="#{importFileBean.addListCsvToConcept(conceptView.nodeConcept)}"
                                              ajax="true"

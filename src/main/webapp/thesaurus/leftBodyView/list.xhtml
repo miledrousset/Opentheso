@@ -27,15 +27,14 @@
                                          tooltip="#{langueBean.getMsg('indexview.synonym_only')}" tooltip-delay="500"
                                          style="margin-top: 2px;"
                                          onclick="ajax:listIndex.onChange()"
-                                         update="formList"
-                                         />
+                                         update="formList"/>
             </b:column>
         </b:row>        
  
         <p:dataTable id="singleDT" var="list" value="#{listIndex.nodeIdValues}" selectionMode="single" styleClass="borderless"
                      selection="#{listIndex.selectedNode}" rowKey="#{list.id}" 
                      style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll">
-            <p:ajax event="rowSelect" listener="#{listIndex.onRowSelect}" update=":formRightTab" />
+            <p:ajax event="rowSelect" listener="#{listIndex.onRowSelect}" update="containerIndex:formRightTab" />
             <p:column >
                 <h:outputText value="#{list.value}" title="#{list.id}" style="font-size: 12px;"/>
             </p:column>

@@ -255,17 +255,10 @@ public class NewConcept implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:conceptView");
-    //        pf.ajax().update("formLeftTab:tabTree:idAddTopConcept");
-    //        pf.ajax().update("formLeftTab:tabTree:idGlobalActionsTree");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:conceptView");
         }
 
         PrimeFaces.current().executeScript("PF('addTopConcept').hide();");        
-        //   if(tree.getSelectedNode() == null) return;
-        // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-        //    if( !((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)){
-
-        //   }
 
         tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
 
@@ -274,16 +267,6 @@ public class NewConcept implements Serializable {
             pf.ajax().update("formLeftTab:tabTree:tree");
         }
         init();
-        // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-        /*    if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
-            tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("formLeftTab");
-            }
-        }*/
-
-        // sinon, on ne fait rien, l'arbre sera déplié automatiquement
-        //    PrimeFaces.current().executeScript("$('.addNT1').modal('hide');"); 
     }
 
     /**
@@ -478,8 +461,7 @@ public class NewConcept implements Serializable {
         isCreated = true;
 
         if (pf.isAjaxRequest()) {
-        //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNarrower");     
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNarrower");     
         }        
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
@@ -489,7 +471,6 @@ public class NewConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg2);                 
         }        
         init();
- //       PrimeFaces.current().executeScript("PF('addNT').hide();");
     }    
 
     private void init(){

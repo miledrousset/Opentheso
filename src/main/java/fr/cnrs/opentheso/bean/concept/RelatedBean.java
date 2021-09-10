@@ -178,7 +178,7 @@ public class RelatedBean implements Serializable {
 
         if(tagPrefLabel) {
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:idPrefLabelRow");
+                pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idPrefLabelRow");
             }
 
             if (tree.getSelectedNode() != null) {
@@ -198,9 +198,8 @@ public class RelatedBean implements Serializable {
         reset();
         
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptRelated");
-            pf.ajax().update("formRightTab:viewTabConcept:addRelatedLinkForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptRelated");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addRelatedLinkForm");
         }        
     }
     
@@ -244,8 +243,8 @@ public class RelatedBean implements Serializable {
         reset();
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptRelated");
-            pf.ajax().update("formRightTab:viewTabConcept:deleteRelatedLinkForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptRelated");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteRelatedLinkForm");
         }  
     }
 

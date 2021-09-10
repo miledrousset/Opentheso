@@ -5,10 +5,6 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <!--    <b:modal id="idRenameConcept"  class="renameConcept" title="Renommer le concept" close-on-escape="false" backdrop="false"
-                 style="font-size: 12px;">
-    -->
-
     <p:dialog id="idDeleteListAlignmentCsv" header="Supprimer une liste d'alignement" widgetVar="deleteListAlignmentCsv" 
               modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" >         
 
@@ -130,26 +126,21 @@
                                              class="btn btn-success"
                                              style="width: 100%; background-color: #FFC107; color: black; border: none;"
                                              action="#{importFileBean.init()}"
-                                             update="formRightTab:viewTabConcept:idDeleteListAlignmentCsv"
-                                             oncomplete="PF('deleteListAlignmentCsv').hide();">
-                            </p:commandButton>
+                                             update="containerIndex:formRightTab:viewTabConcept:idDeleteListAlignmentCsv"
+                                             oncomplete="PF('deleteListAlignmentCsv').hide();" />
                         </b:column>
                         <b:column span="4" offset="2" > 
                             <p:commandButton  class="btn btn-success" widgetVar="buttonImportCsv"
                                              icon="fas fa-check-circle fas 2x"
                                              update="panelDeleteListAlignCsv"
-
                                              style="width: 100%; background-color: #5CB85C; border: none;"
                                              actionListener="#{importFileBean.deleteAlignmentFromCsv()}"
                                              ajax="true"
                                              value="Supprimer"
-                                             disabled="#{!importFileBean.loadDone}">
-                            </p:commandButton>                       
+                                             disabled="#{!importFileBean.loadDone}" />        
                         </b:column> 
                     </b:row>
-
                     <p:spacer/>
-
                 </h:panelGroup>
             </b:panel>
         </h:panelGroup>

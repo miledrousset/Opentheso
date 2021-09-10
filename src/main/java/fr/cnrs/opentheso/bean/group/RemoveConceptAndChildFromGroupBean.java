@@ -103,7 +103,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         init();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptGroupRow");            
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptGroupRow");            
         }
     }
     
@@ -144,7 +144,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
                 parent.getChildren().remove(treeGroups.getSelectedNode());
 
                 if (pf.isAjaxRequest()) {
-                    pf.ajax().update("formLeftTab:tabGroups:treeGroups");
+                    pf.ajax().update("containerIndex:formLeftTab:tabGroups:treeGroups");
                 }
             }
         }

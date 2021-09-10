@@ -28,7 +28,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
 import org.primefaces.PrimeFaces;
-import org.primefaces.model.TreeNode;
 
 
 @Named(value = "editFacet")
@@ -215,7 +214,7 @@ public class EditFacet implements Serializable {
         initEditFacet(facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:facetView");
+            pf.ajax().update("containerIndex:formRightTab:facetView");
         }
         
         initDataAfterAction();
@@ -247,7 +246,7 @@ public class EditFacet implements Serializable {
         initEditFacet(facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:facetView");
+            pf.ajax().update("containerIndex:formRightTab:facetView");
         }
     }
     
@@ -422,8 +421,8 @@ public class EditFacet implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:facetView");
-            pf.ajax().update("formLeftTab:tabTree:tree");
+            pf.ajax().update("containerIndex:formRightTab:facetView");
+            pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
         }
         PrimeFaces.current().executeScript("PF('addConceptParentToFacet').hide();");
         
@@ -452,8 +451,8 @@ public class EditFacet implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formLeftTab:tabTree:tree");
-            pf.ajax().update("formRightTab:facetView");
+            pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+            pf.ajax().update("containerIndex:formRightTab:facetView");
         }
         PrimeFaces.current().executeScript("PF('addFacet').hide();");
         newFacetName = "";
@@ -495,8 +494,8 @@ public class EditFacet implements Serializable {
         newFacetName = "";
 
         PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("formRightTab:facetView");
-        pf.ajax().update("formLeftTab:tabTree:tree");
+        pf.ajax().update("containerIndex:formRightTab:facetView");
+        pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
         PrimeFaces.current().executeScript("PF('renameFacet').hide();");
 
     }

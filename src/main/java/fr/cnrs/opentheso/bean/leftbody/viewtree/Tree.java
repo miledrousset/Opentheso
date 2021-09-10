@@ -13,7 +13,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
-//import fr.cnrs.opentheso.bean.diagram.ConceptsDiagramBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -47,15 +46,30 @@ import org.primefaces.model.TreeNode;
 @Named(value = "tree")
 @SessionScoped
 public class Tree implements Serializable {
-    @Inject private Connect connect;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private LeftBodySetting leftBodySetting;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-//    @Inject private ConceptsDiagramBean conceptsDiagramBean;
-    @Inject private IndexSetting indexSetting;
-    @Inject private EditFacet editFacet;
+    
+    @Inject 
+    private Connect connect;
+    
+    @Inject 
+    private RightBodySetting rightBodySetting;
+    
+    @Inject 
+    private LeftBodySetting leftBodySetting;
+    
+    @Inject 
+    private ConceptView conceptBean;
+    
+    @Inject 
+    private SelectedTheso selectedTheso;
+    
+    @Inject 
+    private RoleOnThesoBean roleOnThesoBean;
+    
+    @Inject 
+    private IndexSetting indexSetting;
+    
+    @Inject 
+    private EditFacet editFacet;
 
     private DataService dataService;
     private TreeNode selectedNode; // le neoud sélectionné par clique
@@ -96,8 +110,7 @@ public class Tree implements Serializable {
         dataService = new DataService();
         root = dataService.createRoot();
         
-        addFirstNodes();
-    //    expandAllNode();        
+        addFirstNodes();      
 
         selectedNodes = new ArrayList<>();
         leftBodySetting.setIndex("0");

@@ -5,8 +5,8 @@
              xmlns:b="http://bootsfaces.net/ui">
 
 
-    <!-- Actions sur les groupes -->
-    <ui:include src="globalActionsGroup.xhtml"/>    
+    <!-- Actions sur les groupes --> 
+    <ui:include src="globalActionsGroup.xhtml"/>
 
     <b:row>
         <b:column span="12">   
@@ -15,7 +15,7 @@
                     widgetVar="groupWidget">
 
                 <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
-                <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabGroups:idGlobalActionsGroup"/>
+                <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formRightTab indexTitle"/>
 
                 <p:treeNode expandedIcon="fa object-group" collapsedIcon="fa object-group" >
                     <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>

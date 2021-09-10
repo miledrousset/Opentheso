@@ -109,9 +109,7 @@ public class EditConcept implements Serializable {
 
         if (prefLabel == null || prefLabel.isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "le label est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
-            //     msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error", "Invalid credentials");
-            //        FacesContext.getCurrentInstance().addMessage(null, msg);
+            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
             return;
         }
 
@@ -126,40 +124,18 @@ public class EditConcept implements Serializable {
         if (idTerm != null) {
             String label = termHelper.getLexicalValue(connect.getPoolConnexion(), idTerm, idTheso, idLang);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", label + " : existe déjà ! voulez-vous continuer ?");
-            FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
             duplicate = true;
             return;
         }
         if(termHelper.isAltLabelExist(connect.getPoolConnexion(), idTerm, idTheso, idLang)) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " un synonyme existe déjà ! voulez-vous continuer ?");
-            FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
             duplicate = true;
             return;
         }
         
-        
         updateForced(idTheso, idLang, idUser);
-
-        //   if(tree.getSelectedNode() == null) return;
-        // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-        //    if( !((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)){
-        //   }
-
-        /*    tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
-
-        tree.expandTreeToPath(idNewConcept, idTheso, idLang);
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("formLeftTab");
-        }*/
-        // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-        /*    if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
-            tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("formLeftTab");
-            }
-        }*/
-        // sinon, on ne fait rien, l'arbre sera déplié automatiquement
-        //    PrimeFaces.current().executeScript("$('.addNT1').modal('hide');"); 
     }
 
     public void updateForced(
@@ -172,7 +148,7 @@ public class EditConcept implements Serializable {
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso);
         if (idTerm == null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-            FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
             return;
         }
 
@@ -181,14 +157,14 @@ public class EditConcept implements Serializable {
             if (!termHelper.updateTraduction(connect.getPoolConnexion(),
                     prefLabel, idTerm, idLang, idTheso, idUser)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-                FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+                FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
                 return;
             }            
         } else {
             if (!termHelper.addTraduction(connect.getPoolConnexion(),
                     prefLabel, idTerm, idLang, "", "", idTheso, idUser)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-                FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+                FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
                 return;
             }
         }
@@ -207,7 +183,7 @@ public class EditConcept implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             // attention, cet update est très important, il faut le faire par composant, sinon, les autres dialogues ne marchent plus
-            pf.ajax().update("formRightTab:viewTabConcept:idPrefLabelRow");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idPrefLabelRow");
         }
 
         if (tree.getSelectedNode() != null) {
@@ -238,7 +214,7 @@ public class EditConcept implements Serializable {
         }
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention !", message);
-        FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
+        FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
         PrimeFaces pf = PrimeFaces.current();
         forDelete = true;
     }
@@ -257,7 +233,7 @@ public class EditConcept implements Serializable {
         if (roleOnThesoBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
-            FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
+            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
             return;
         }
 
@@ -270,7 +246,7 @@ public class EditConcept implements Serializable {
                     idTheso,
                     idUser)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué !!");
-                FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
+                FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
                 return;
             }
         } else {
@@ -310,7 +286,7 @@ public class EditConcept implements Serializable {
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:conceptView");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:conceptView");
         }
         PrimeFaces.current().executeScript("PF('deleteConcept').hide();");
         reset("");
@@ -388,7 +364,7 @@ public class EditConcept implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         
         if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("formRightTab:viewTabConcept:idDeprecatedLabel");
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab:viewTabConcept:idDeprecatedLabel");
         }           
     }
 
@@ -417,7 +393,7 @@ public class EditConcept implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         
         if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("formRightTab:viewTabConcept:idDeprecatedLabel");
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab:viewTabConcept:idDeprecatedLabel");
         }  
         reset("");
         

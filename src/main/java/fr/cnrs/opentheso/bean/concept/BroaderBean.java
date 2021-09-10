@@ -190,8 +190,8 @@ public class BroaderBean implements Serializable {
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptBroader");
-            pf.ajax().update("formRightTab:viewTabConcept:addBroaderLinkForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptBroader");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addBroaderLinkForm");
         }
 
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -263,8 +263,8 @@ public class BroaderBean implements Serializable {
         reset();
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptBroader");
-            pf.ajax().update("formRightTab:viewTabConcept:deleteBroaderLinkForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptBroader");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteBroaderLinkForm");
         }
 
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),

@@ -186,8 +186,8 @@ public class NarrowerBean implements Serializable {
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNarrower");
-            pf.ajax().update("formRightTab:viewTabConcept:addNarrowerLinkForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNarrower");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addNarrowerLinkForm");
         }    
         
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -256,8 +256,8 @@ public class NarrowerBean implements Serializable {
         reset();
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNarrower");
-            pf.ajax().update("formRightTab:viewTabConcept:deleteNarrowerLinkForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNarrower");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteNarrowerLinkForm");
         }  
         
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -332,28 +332,10 @@ public class NarrowerBean implements Serializable {
         initForChangeRelations();
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNarrower");
-            pf.ajax().update("formRightTab:viewTabConcept:changeRelationForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNarrower");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:changeRelationForm");
         }  
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     public NodeSearchMini getSearchSelected() {
         return searchSelected;

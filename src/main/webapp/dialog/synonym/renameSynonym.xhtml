@@ -52,10 +52,8 @@
 
                         <b:column span="2" style="background: #FAFAFA">
                             <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
-                                              action="#{synonymBean.updateSynonym(
-                                                        synonymToEdit,
-                                                        currentUser.nodeUser.idUser)}"
-                                              update="formRightTab:viewTabConcept:renameSynonymForm"/>
+                                              action="#{synonymBean.updateSynonym(synonymToEdit,currentUser.nodeUser.idUser)}"
+                                              update="containerIndex:formRightTab:viewTabConcept:renameSynonymForm"/>
                         </b:column>
                     </b:row>                            
                 </ui:repeat>
@@ -69,15 +67,14 @@
                 <b:column span="5" offset="1" colXs="5" offset-xs="1">
                     <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonRenameForced" 
                                      value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" 
-                                     update="formRightTab:viewTabConcept:renameSynonymForm"
+                                     update="containerIndex:formRightTab:viewTabConcept:renameSynonymForm"
                                      class="btn btn-primary"
-                                     action="#{synonymBean.updateSynonymForced(
-                                               currentUser.nodeUser.idUser)}" 
+                                     action="#{synonymBean.updateSynonymForced(currentUser.nodeUser.idUser)}" 
                                      style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
                 </b:column>                        
                 <b:column span="5" colXs="5">
                     <b:commandButton rendered="#{synonymBean.duplicate}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}"
-                                     update="formRightTab:viewTabConcept:renameSynonymForm"
+                                     update="containerIndex:formRightTab:viewTabConcept:renameSynonymForm"
                                      class="btn btn-primary"
                                      action="#{synonymBean.cancel()}" 
                                      icon-awesome="fas fa-undo" 
@@ -90,11 +87,9 @@
                     <b:commandButton rendered="#{!synonymBean.duplicate}"
                                      id="buttonRenameAll" value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}"
                                      tooltip="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_modify_all')}" tooltip-delay-show="500"
-                                     update="formRightTab:viewTabConcept:renameSynonymForm"
+                                     update="containerIndex:formRightTab:viewTabConcept:renameSynonymForm"
                                      class="btn btn-primary"
-                                     action="#{synonymBean.updateAllSynonyms(
-                                                   currentUser.nodeUser.idUser)}"
-
+                                     action="#{synonymBean.updateAllSynonyms(currentUser.nodeUser.idUser)}"
                                      style="width:100%; font-size: 12px;
                                      color: white; background: #43B572;"/>
                 </b:column>

@@ -96,7 +96,6 @@ public class AddConceptToGroupBean implements Serializable {
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
-        //    FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:addConceptToGroupForm:addConceptToCollection", msg);
             FacesContext.getCurrentInstance().addMessage(null, msg);            
             return;
         }
@@ -116,7 +115,7 @@ public class AddConceptToGroupBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptGroupRow");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptGroupRow");
         }
     }
     

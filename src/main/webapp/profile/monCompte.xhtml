@@ -69,21 +69,16 @@
 
         <div id="wrapper">
 
-            <ui:include src="commun/menu.xhtml" />
+            <ui:include src="../commun/menu.xhtml" />
 
             <div id="content-wrapper" class="d-flex flex-column">
                 <h:form id="containerIndex">
-                    <ui:include src="commun/header.xhtml" />
-                    <p:panel id="thesorusContent">
-                        <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
-                            <ui:include src="thesaurus/main_thesaurus.xhtml" />
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
-                            <ui:include src="thesaurus/details_thesaurus.xhtml" />
-                        </h:panelGroup>
-                    </p:panel>
+                    <ui:include src="../commun/header.xhtml" />
+                    
+                    
+                    
                 </h:form>
-                <ui:include src="commun/footer.xhtml" />
+                <ui:include src="../commun/footer.xhtml" />
             </div>
         </div>
 
@@ -93,20 +88,20 @@
 
         <!-- Bootstrap core JavaScript
         <script src="resources/vendor/jquery/jquery.min.js"></script>-->
-        <script src="resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="../resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
         <!-- Core plugin JavaScript-->
-        <script src="resources/vendor/jquery-easing/jquery.easing.min.js"></script>
+        <script src="../resources/vendor/jquery-easing/jquery.easing.min.js"></script>
 
         <!-- Custom scripts for all pages-->
-        <script src="resources/js/sb-admin-2.min.js"></script>
+        <script src="../resources/js/sb-admin-2.min.js"></script>
 
         <!-- Page level plugins -->
-        <script src="resources/vendor/chart.js/Chart.min.js"></script>
+        <script src="../resources/vendor/chart.js/Chart.min.js"></script>
 
         <!-- Page level custom scripts -->
-        <script src="resources/js/demo/chart-area-demo.js"></script>
-        <script src="resources/js/demo/chart-pie-demo.js"></script>
+        <script src="../resources/js/demo/chart-area-demo.js"></script>
+        <script src="../resources/js/demo/chart-pie-demo.js"></script>
 
     </h:body>
 

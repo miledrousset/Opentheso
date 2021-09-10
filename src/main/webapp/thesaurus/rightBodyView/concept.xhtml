@@ -24,7 +24,7 @@
                                        styleClass="buttonIconOrange"
                                        ajax="true"
                                        style="font-size: 12px;"
-                                       update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
+                                       update="idConceptViewActions messageIndex">
                     </b:navCommandLink>
                     <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and
                                                    (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
@@ -35,7 +35,7 @@
                                        styleClass="buttonIconOrange"
                                        ajax="true"
                                        style="font-size: 12px;"
-                                       update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
+                                       update="idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
                     </b:navCommandLink>
                     <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}" 
@@ -45,7 +45,7 @@
                                        styleClass="buttonIconOrange"
                                        ajax="true"
                                        style="font-size: 12px;"
-                                       update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
+                                       update="idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
                     </b:navCommandLink>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_concept')}" 
                                       tooltip="#{langueBean.getMsg('rightbody.concept.toottip_delete_concept')}"
@@ -183,7 +183,7 @@
                                       action="#{copyAndPasteBetweenTheso.onStartCopy()}"
                                       styleClass="buttonIconOrange"
                                       style="font-size: 12px;"
-                                      update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
+                                      update="idConceptViewActions messageIndex">
                     </b:navCommandLink>
                     <b:navCommandLink rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
                                       value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.here')} !!" 
@@ -201,16 +201,11 @@
                                        action="#{copyAndPasteBetweenTheso.reset()}"
                                        styleClass="buttonIconOrange"
                                        style="font-size: 12px;"
-                                       update="formRightTab:viewTabConcept:idConceptViewActions messageIndex">
+                                       update="idConceptViewActions messageIndex">
                     </b:navCommandLink>                      
 
-
-
-
-
-
-
                     <b:navLink/>
+
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.import_tabulated_list')}"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_import_tabulated_list')} #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
                                       actionListener="#{editConcept.infosDelete()}"
@@ -243,24 +238,20 @@
 
         </b:row> 
 
-        <ui:include src="/dialog/concept/deleteConcept.xhtml" />   
-        <ui:include src="/dialog/concept/deprecateConcept.xhtml" />
-        <ui:include src="/dialog/concept/approveConcept.xhtml" />
-        <ui:include src="/dialog/import/listImportCsv.xhtml" />
-        <ui:include src="/dialog/import/listAlignmentCsv.xhtml" />   
-        <ui:include src="/dialog/import/deleteListAlignmentCsv.xhtml" />          
-        <ui:include src="/dialog/concept/generateArk.xhtml" /> 
-        <ui:include src="/dialog/concept/generateHandle.xhtml" />    
-        <ui:include src="/dialog/concept/deleteHandle.xhtml" />           
-        <ui:include src="/dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />         
-
-
-
-
-
+        <ui:include src="../../dialog/concept/deleteConcept.xhtml" />
+        <ui:include src="../../dialog/concept/deprecateConcept.xhtml" />
+        <ui:include src="../../dialog/concept/approveConcept.xhtml" />
+        <ui:include src="../../dialog/import/listImportCsv.xhtml" />
+        <ui:include src="../../dialog/import/listAlignmentCsv.xhtml" />   
+        <ui:include src="../../dialog/import/deleteListAlignmentCsv.xhtml" />          
+        <ui:include src="../../dialog/concept/generateArk.xhtml" /> 
+        <ui:include src="../../dialog/concept/generateHandle.xhtml" />    
+        <ui:include src="../../dialog/concept/deleteHandle.xhtml" />           
+        <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" /> 
 
         <!-- Partie pour distinguer les concepts dépréciés -->
         <p:spacer rendered="#{conceptView.nodeConcept.concept.isDeprecated}"/>
+
         <p:panel id="idDeprecated" rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
                  style="background-color: #C63632;">
             <b:row>
@@ -278,9 +269,8 @@
                 </b:column>
             </b:row>
         </p:panel>
+
         <p:spacer rendered="#{conceptView.nodeConcept.concept.isDeprecated}"/>
-
-
 
         <!-- Fil d'ariane -->
         <b:row style=" margin-bottom: 10px;">
@@ -289,14 +279,13 @@
                     <b:iconAwesome rendered="#{path.isStartOfPath}" value="fas fa-home" size="xs" style="color: #f47b2a;"/>
                     <b:navCommandLink rendered="#{path.isStartOfPath}" style="color:#43B572; background: none; border: none; box-shadow: none; font-size: 12px"
                                       value=" #{path.title}" tooltip="#{path.idConcept}" tooltip-delay-show="1000"
-                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                path.idConcept, selectedTheso.currentLang)}"
-                                      update="formRightTab:viewTabConcept:conceptView"/> 
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, path.idConcept, selectedTheso.currentLang)}"
+                                      update="containerIndex:formRightTab"/> 
                     <b:navCommandLink rendered="#{!path.isStartOfPath}" style="color:#43B572; background: none; border: none; box-shadow: none; font-size: 12px"
                                       value="#{path.title}" tooltip="#{path.idConcept}" tooltip-delay-show="1000"
                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                 path.idConcept, selectedTheso.currentLang)}"
-                                      update="formRightTab:viewTabConcept:conceptView"/>                     
+                                      update="containerIndex:formRightTab"/>                     
                     <h:outputText value=" > " style="font-size: 12px; font-weight: bold"/>
                 </ui:repeat>
 
@@ -329,17 +318,18 @@
             </b:column>
         </b:row>
 
-
         <!-- ligne PrefLabel -->
         <b:row id="idPrefLabelRow">
             <b:column span="3" colXs="4">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.preferred_term')}" title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"/>
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.preferred_term')}" 
+                              title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"/>
             </b:column>
             <b:column span="1" >
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                             style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.rename_concept')}"  update="idRenameConcept renameForm" 
+                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.rename_concept')}"
+                                      update="idRenameConcept renameForm" 
                                       actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
                                       oncomplete="PF('renameConcept').show();"
                                       style="font-size: 12px;"/>
@@ -357,17 +347,17 @@
                                            conceptView.nodeConcept.concept.idThesaurus,
                                            conceptView.nodeConcept.term.lang)}"
                                  actionListener="#{selectedTheso.actionFromConceptToOn()}"
-                                 update="formLeftTab formSearch:languageSelect"
+                                 update="containerIndex:formLeftTab formSearch:languageSelect"
                                  style="color:#f47b2a; background: none; border: none; box-shadow: none" 
                                  styleClass="buttonIconOrange" tooltip="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}" tooltip-delay-show="1000" />
             </b:column>            
         </b:row>
 
-
         <!-- ligne concepts qui remplacent le concept déprécié -->
         <b:row id="idDeprecatedLabel" rendered="#{conceptView.nodeConcept.concept.isDeprecated}">
             <b:column span="3" colXs="4" style="background-color: #C63632; color: white">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace_with')}" title="#{langueBean.getMsg('rightbody.concept.tooltip_replace_with')}" />
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace_with')}" 
+                              title="#{langueBean.getMsg('rightbody.concept.tooltip_replace_with')}" />
             </b:column>
             <b:column span="1" >
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
@@ -395,13 +385,13 @@
                     <b:navCommandLink rendered="#{replace.value != ''}"
                                       value="#{replace.value}" tooltip="#{replace.id}" tooltip-delay-show="1000"
                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
-                                      update="formRightTab:viewTabConcept:conceptView indexTitle"
-                                      style="color: #C63632;"></b:navCommandLink>
+                                      update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
+                                      style="color: #C63632;"/>
                     <b:navCommandLink rendered="#{replace.value == ''}"
                                       value="(#{replace.id})"
                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
-                                      update="formLeftTab formRightTab indexTitle"
-                                      style="color: #C63632;"></b:navCommandLink>
+                                      update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
+                                      style="color: #C63632;"/>
 
                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                 </ui:repeat>
@@ -421,23 +411,19 @@
                     <b:navCommandLink rendered="#{replaces.value != ''}"
                                       value="#{replaces.value}" tooltip="#{replaces.id}" tooltip-delay-show="1000"
                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
-                                      update="formRightTab:viewTabConcept:conceptView indexTitle"
-                                      style="color: #f47b2a;"></b:navCommandLink>
+                                      update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
+                                      style="color: #f47b2a;" />
                     <b:navCommandLink rendered="#{replaces.value == ''}"
                                       value="(#{replaces.id})"
                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
-                                      update="formLeftTab formRightTab indexTitle"
-                                      style="color: #C63632;"></b:navCommandLink>
+                                      update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
+                                      style="color: #C63632;" />
 
                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                 </ui:repeat>
             </b:column>
             <p:spacer/>
         </b:row>
-
-
-
-
 
         <!-- ligne Collection -->
         <b:row id="idConceptGroupRow" >
@@ -482,13 +468,13 @@
                     <b:navCommandLink rendered="#{domaine.lexicalValue != ''}"
                                       value="#{domaine.lexicalValue}"
                                       action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
-                                      update="formLeftTab formRightTab indexTitle"
-                                      style="color: #43B572;"></b:navCommandLink>  
+                                      update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
+                                      style="color: #43B572;" />  
                     <b:navCommandLink rendered="#{domaine.lexicalValue == ''}"
                                       value="(#{domaine.conceptGroup.idgroup})"
                                       action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
-                                      update="formLeftTab formRightTab indexTitle"
-                                      style="color: #43B572;"></b:navCommandLink>                                        
+                                      update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
+                                      style="color: #43B572;"/>                                        
 
                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                 </ui:repeat>
@@ -497,19 +483,11 @@
 
         <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
 
-
-
-
-        <!--                               -->        
         <!--                               -->        
         <!-- Navigation entre les concepts -->
-        <!--                               -->
-        <!--                               -->
-        <!--                               -->        
-
-
+        <!--                               -->  
         <!-- ligne BT -->
-        <b:row >
+        <b:row id="idConceptBroader" >
             <b:column span="3" colXs="3">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.broader')}" title="#{langueBean.getMsg('rightbody.concept.broader')}" />
             </b:column>
@@ -541,30 +519,25 @@
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                 
             </b:column>
 
-            <h:panelGroup id="idConceptBroader">
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeBT.size() != 0}">
-                    <ui:repeat var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
-                        <b:navCommandLink rendered="#{value.title != ''}" 
-                                          value="#{value.title}" tooltip="#{value.idConcept}" tooltip-delay-show="1000"
-                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
-                                          style="color: #43B572;"
-                                          styleClass="textOpentheso"/>
-                        <b:navCommandLink rendered="#{value.title == ''}" 
-                                          value="(#{value.idConcept})" tooltip="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}" tooltip-delay-show="1000"
-                                          action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
-                                          style="color: #FF7979;"
-                                          styleClass="textOpentheso"/>   
-                        <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/> 
-                    </ui:repeat>
-                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
-                </b:column>    
-            </h:panelGroup>
-        </b:row>      
-
-
-
+            <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeBT.size() != 0}">
+                <ui:repeat var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
+                    <b:navCommandLink rendered="#{value.title != ''}" 
+                                      value="#{value.title}" tooltip="#{value.idConcept}" tooltip-delay-show="1000"
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
+                                      style="color: #43B572;"
+                                      styleClass="textOpentheso"/>
+                    <b:navCommandLink rendered="#{value.title == ''}" 
+                                      value="(#{value.idConcept})" tooltip="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}" tooltip-delay-show="1000"
+                                      action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
+                                      style="color: #FF7979;"
+                                      styleClass="textOpentheso"/>   
+                    <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/> 
+                </ui:repeat>
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
+            </b:column> 
+        </b:row>  
 
         <!-- ligne NT -->
         <b:row >
@@ -601,11 +574,11 @@
             </b:column>  
 
             <h:panelGroup id="idConceptNarrower" >            
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}">
+                <b:column rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}">
                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
                 </b:column>            
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeNT.size() != 0}">
+                <b:column rendered="#{conceptView.nodeConcept.nodeNT.size() != 0}">
                     <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() lt 21}" var="value"
                                varStatus="status1" 
                                value="#{conceptView.nodeConcept.nodeNT}">
@@ -613,14 +586,14 @@
                                           value="#{value.title}" tooltip="#{value.idConcept}" tooltip-delay-show="1000"
 
                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                    value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #43B572;"
                                           styleClass="textOpentheso"/>
                         <b:navCommandLink rendered="#{value.title == ''}"
                                           value="(#{value.idConcept})" tooltip="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}" tooltip-delay-show="1000"
 
                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                    value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #FF7979;"
                                           styleClass="textOpentheso"/> 
                         <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>    
@@ -633,14 +606,14 @@
                                           value="#{value.title}" tooltip="#{value.idConcept}" tooltip-delay-show="1000"
 
                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                    value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #43B572;"
                                           styleClass="textOpentheso"/>
                         <b:navCommandLink rendered="#{value.title == ''}"
                                           value="(#{value.idConcept})" tooltip="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}" tooltip-delay-show="1000"
 
                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    value.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                    value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #FF7979;"
                                           styleClass="textOpentheso"/>  
                         <h:outputText  value=" , " style="color: #FF7979"/>
@@ -649,16 +622,13 @@
                     <b:navCommandLink rendered="#{conceptView.nodeConcept.nodeNT.size() gt (conceptView.sizeToShowNT)}"
                                       icon-awesome="fas fa-angle-double-right"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.click_to_view_more')}" tooltip-delay-show="1000"
-                                      action="#{conceptView.incrementSizeToShowNT()}" update="formRightTab:viewTabConcept:conceptView:idConceptNarrower"
+                                      action="#{conceptView.incrementSizeToShowNT()}" update="containerIndex:formRightTab:viewTabConcept:conceptView:idConceptNarrower"
                                       style="color:  #FF7979"
                                       styleClass="textOpentheso"/>
                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
                 </b:column>
             </h:panelGroup>                
-        </b:row>  
-
-
-
+        </b:row>
 
         <!-- ligne RT -->
         <b:row >
@@ -688,23 +658,23 @@
             </b:column>            
 
             <h:panelGroup id="idConceptRelated" >
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeRT.size() == 0}">
+                <b:column rendered="#{conceptView.nodeConcept.nodeRT.size() == 0}">
                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
                 </b:column>            
 
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeRT.size() != 0}">
+                <b:column rendered="#{conceptView.nodeConcept.nodeRT.size() != 0}">
                     <ui:repeat var="rt" value="#{conceptView.nodeConcept.nodeRT}" varStatus="status">
                         <b:navCommandLink rendered="#{rt.title != ''}" 
                                           value="#{rt.title}" tooltip="#{rt.idConcept}" tooltip-delay-show="1000"
                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    rt.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                    rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #43B572;background: none; box-shadow: none; border: none;"
                                           styleClass="textOpentheso"/>
                         <b:navCommandLink rendered="#{rt.title == ''}"
                                           value="(#{rt.idConcept})" tooltip="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}" tooltip-delay-show="1000"
                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    rt.idConcept, conceptView.selectedLang)}" update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                    rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #FF7979; background: none; box-shadow: none; border: none;"
                                           styleClass="textOpentheso"/>   
                         <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
@@ -713,7 +683,6 @@
                 </b:column>  
             </h:panelGroup>                
         </b:row>
-
 
         <!-- ligne EM USE -->
         <b:row>
@@ -728,32 +697,31 @@
                                       actionListener="#{synonymBean.reset()}"
                                       oncomplete="PF('addSynonym').show();"
                                       update="idAddSynonym addSynonymForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;" />
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.modify_synonym')}" 
                                       actionListener="#{synonymBean.reset()}"
                                       action="#{synonymBean.prepareNodeEMForEdit()}"
                                       oncomplete="PF('renameSynonym').show();"
                                       update="idRenameSynonym renameSynonymForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;" />
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
                                       actionListener="#{synonymBean.reset()}"
                                       oncomplete="PF('deleteSynonym').show();"
                                       update="idDeleteSynonym deleteSynonymForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;"/>
                 </b:dropMenu>                  
             </b:column>
-
+            <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
+                <b:iconAwesome value="fa-arrows-h" size="m" style="color:#143a1e"/>                
+            </b:column> 
             <h:panelGroup id="idConceptSynonyms" >
-                <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
-                    <b:iconAwesome value="fa-arrows-h" size="m" style="color:#143a1e"/>                
-                </b:column> 
 
-                <b:column span="8" colXs="8" rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}">
+                <b:column rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}">
                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
                 </b:column>  
 
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
+                <b:column rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
                     <b:row>
                         <b:column span="12">
                             <ui:repeat var="em" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
@@ -774,13 +742,8 @@
                     </b:row>  
                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                     
                 </b:column>
-            </h:panelGroup>                
-        </b:row>         
-
-
-
-
-
+            </h:panelGroup>
+        </b:row>
 
         <!-- ligne Traductions -->
         <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
@@ -813,19 +776,18 @@
                 <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
                     <b:iconAwesome value="fa-language" size="m" style="color:#143a1e"/>                
                 </b:column> 
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}">
+                <b:column rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}">
                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
                 </b:column>
 
 
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}">
+                <b:column rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}">
                     <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
                         <b:navCommandLink value="#{trad.lexicalValue} (#{trad.lang})"
                                           tooltip="#{conceptView.nodeConcept.concept.idConcept}" tooltip-delay-show="1000"
                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                    conceptView.nodeConcept.concept.idConcept,
-                                                    trad.lang)}"
-                                          update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                    conceptView.nodeConcept.concept.idConcept, trad.lang)}"
+                                          update="containerIndex:formRightTab:viewTabConcept:conceptView indexTitle"
                                           style="color: #43B572;"
                                           styleClass="textOpentheso"/>  
                         <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
@@ -834,17 +796,13 @@
             </h:panelGroup>
         </b:row>            
 
+        <p:separator styleClass="separator" style="margin-top: 20px; margin-bottom: 20px;"/> 
 
-        <p:separator styleClass="separator" style="margin-top: 20px; margin-bottom: 20px;"/>           
         <!--                               -->        
         <!--              Fin              -->        
         <!-- Navigation entre les concepts -->
         <!--                               -->
         <!--                               -->
-        <!--                               -->  
-
-
-
 
         <!--                                  -->        
         <!-- Total des concepts de la branche --> 
@@ -870,13 +828,7 @@
         <p:separator styleClass="separator" style="margin-top: 5px; margin-bottom: 5px;"/>     
         <!--           Fin                    -->        
         <!-- Total des concepts de la branche --> 
-        <!--                                  -->          
-
-
-
-
-
-
+        <!--                                  -->   
 
 
 
@@ -894,7 +846,7 @@
                     styleClass="buttonIconOrange"/>                    
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px;"/> 
             </b:column>
-        </b:row >         
+        </b:row >
 
         <h:panelGroup id="idConceptNotes">
             <b:row rendered="#{conceptView.notes.size() != 0}">
@@ -1113,10 +1065,7 @@
                     <p:separator styleClass="separator" style="margin-top: 2px"/> 
                 </b:column>
             </b:row>              
-
         </h:panelGroup>
-
-
 
         <!-- ligne images -->        
         <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0)}">
@@ -1173,12 +1122,8 @@
             </h:panelGroup>
         </b:row>
 
-
-
-
-
         <!-- ligne GPS MAP-->
-        <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
+        <b:row id="idConceptGps" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
             <b:column span="3" colXs="3">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}" />
             </b:column>
@@ -1190,61 +1135,49 @@
                                       actionListener="#{gpsBean.reset()}"
                                       oncomplete="PF('setGps').show();"
                                       update="idSetGps setGpsForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;" />
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}" 
                                       actionListener="#{gpsBean.reset()}"
                                       oncomplete="PF('deleteGps').show();"
                                       update="idDeleteGps deleteGpsForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;" />
                 </b:dropMenu> 
             </b:column> 
 
-            <h:panelGroup id="idConceptGps">
+            <b:column rendered="#{conceptView.nodeConcept.nodeGps == null}">
+                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
+                <p:separator styleClass="separator" style="margin-top: 2px;"/> 
+            </b:column>            
 
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeGps == null}">
-                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
-                    <p:separator styleClass="separator" style="margin-top: 2px;"/> 
-                </b:column>            
-
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeGps != null}">
-                    <b:row>
-                        <b:column span="8">
-                            <b:row>
-                                <b:column>
-                                    <h:outputText value="Lat: " style="font-size: 12px;"/>
-                                    <h:outputText value="#{conceptView.nodeConcept.nodeGps.latitude}" style="font-size: 12px; color: #666666"/>
-                                </b:column>
-                            </b:row>
-                            <b:row>
-                                <b:column>
-                                    <h:outputText value="Long: " style="font-size: 12px;"/>
-                                    <h:outputText value="#{conceptView.nodeConcept.nodeGps.longitude}" style="font-size: 12px; color: #666666"/>
-                                </b:column>
-                            </b:row>
-                        </b:column>
-                    </b:row>
-                    <b:row>
-                        <b:column>
-                            <!--<p:accordionPanel styleClass="accordionMenu" activeIndex="-2">
-                                <p:tab title="Map" titleStyleClass="titleAccordion">
-                                    <leaf:mapAdvanced map="# {conceptView.mapModel}" />                    
-                                </p:tab>
-                            </p:accordionPanel>
-                            -->
-
-                            <leaf:mapAdvanced map="#{conceptView.mapModel}" />
-
-                        </b:column>
-                    </b:row>
-                    <b:row>
-                        <b:column>
-                            <p:separator styleClass="separator" style="margin-top: 2px;"/>
-                        </b:column>
-                    </b:row>
-                </b:column>
-            </h:panelGroup>
+            <b:column span="6" colXs="6" rendered="#{conceptView.nodeConcept.nodeGps != null}">
+                <b:row>
+                    <b:column>
+                        <b:row>
+                            <b:column>
+                                <h:outputText value="Lat: " style="font-size: 12px;"/>
+                                <h:outputText value="#{conceptView.nodeConcept.nodeGps.latitude}" style="font-size: 12px; color: #666666"/>
+                            </b:column>
+                        </b:row>
+                        <b:row>
+                            <b:column>
+                                <h:outputText value="Long: " style="font-size: 12px;"/>
+                                <h:outputText value="#{conceptView.nodeConcept.nodeGps.longitude}" style="font-size: 12px; color: #666666"/>
+                            </b:column>
+                        </b:row>
+                    </b:column>
+                </b:row>
+                <b:row>
+                    <b:column>
+                        <leaf:mapAdvanced map="#{conceptView.mapModel}" />
+                    </b:column>
+                </b:row>
+                <b:row>
+                    <b:column>
+                        <p:separator styleClass="separator" style="margin-top: 2px;"/>
+                    </b:column>
+                </b:row>
+            </b:column>
         </b:row>
-
 
         <!-- ligne Corpus liés -->        
         <b:row rendered="#{conceptView.nodeCorpuses != null and conceptView.haveCorpus}">
@@ -1269,18 +1202,15 @@
                                     target="_blank"
                                     icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
                         </b:column>                         
-                        
+
                     </b:row> 
                 </ui:repeat> 
                 <p:separator styleClass="separator" style="margin-top: 2px"/>                
             </b:column>
         </b:row>
 
-
-
-
         <!-- ligne Alignements -->
-        <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeAlignments.size() != 0)}">
+        <b:row id="idConceptAlignment" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeAlignments.size() != 0)}">
             <b:column span="3" colXs="3">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.alignment')}" />
             </b:column>
@@ -1321,34 +1251,29 @@
                                       style="font-size: 12px;"></b:navCommandLink>                                        
                 </b:dropMenu>                  
             </b:column>
-            <h:panelGroup id="idConceptAlignment" >
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeAlignments.size() == 0}">
-                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
-                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
-                </b:column>                 
-                <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeAlignments.size() != 0}">
-                    <ui:repeat var="align" value="#{conceptView.nodeConcept.nodeAlignments}" >
-                        <b:row>
-                            <b:column span="2">
-                                <h:outputText value="#{align.alignmentLabelType}:" />
-                            </b:column> 
-                            <b:column span="10">
-                                <b:link href="#{align.uri_target}"
-                                        value="#{align.uri_target}"
-                                        tooltip="#{align.thesaurus_target}" tooltip-delay-show="1000"
-                                        target="_blank"
-                                        icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-                                        <h:outputText value=" (#{align.thesaurus_target})"  style="font-size: 12px;"/>
-                            </b:column> 
-                        </b:row> 
-                    </ui:repeat>
-                    <p:separator styleClass="separator" style="margin-top: 2px"/>                
-                </b:column>
-            </h:panelGroup>                
+            <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeAlignments.size() == 0}">
+                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
+                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/>                
+            </b:column>                 
+            <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeAlignments.size() != 0}">
+                <ui:repeat var="align" value="#{conceptView.nodeConcept.nodeAlignments}" >
+                    <b:row>
+                        <b:column span="2">
+                            <h:outputText value="#{align.alignmentLabelType}:" />
+                        </b:column> 
+                        <b:column span="10">
+                            <b:link href="#{align.uri_target}"
+                                    value="#{align.uri_target}"
+                                    tooltip="#{align.thesaurus_target}" tooltip-delay-show="1000"
+                                    target="_blank"
+                                    icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                            <h:outputText value=" (#{align.thesaurus_target})"  style="font-size: 12px;"/>
+                        </b:column> 
+                    </b:row> 
+                </ui:repeat>
+                <p:separator styleClass="separator" style="margin-top: 2px"/>                
+            </b:column>              
         </b:row>
-
-
-
 
         <!-- ligne Identifiants pérennes -->
         <b:row >
@@ -1379,12 +1304,7 @@
             <b:column  span="8" colXs="8" id="idConceptNotationColumn" rendered="#{(conceptView.nodeConcept.concept.notation != null) and (conceptView.nodeConcept.concept.notation != '') }">
                 <h:outputText value="#{conceptView.nodeConcept.concept.notation}" style="font-size: 12px; color: #666666"/>
             </b:column>            
-        </b:row >
-
-
-
-
-
+        </b:row>
 
         <b:row >
             <b:column span="10" colXs="10">
@@ -1441,11 +1361,6 @@
                         </b:column>
                         <b:column span="6" colXs="6">
                             <h:outputText value="#{conceptView.nodeConcept.concept.idArk}" style="font-size: 12px; color: #43B572;"/>
-                            <!-- <b:link href="# {roleOnTheso.nodePreference.uriArk}# {conceptView.nodeConcept.concept.idArk}"
-                                    value="# {roleOnTheso.nodePreference.uriArk}# {conceptView.nodeConcept.concept.idArk}"
-                                    target="_blank"
-                                    icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-                            -->
                         </b:column>
                     </b:row >
                     <b:row rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
@@ -1454,11 +1369,6 @@
                         </b:column>
                         <b:column span="8" colXs="8">
                             <h:outputText value="#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;"/>
-                            <!--  <b:link href="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
-                                    value="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
-                                    target="_blank"
-                                    icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
-                            -->
                         </b:column>
                     </b:row >                  
                 </b:column>
@@ -1467,16 +1377,11 @@
                 </b:column>
             </b:row >
 
-
-
-
         </h:panelGroup>
 
         <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 5px; "/>
 
-        <!-- ligne téléchargement -->        
-        <ui:include src="download.xhtml" />
-
+        
 
         <p:spacer height="20" />
         <!-- ligne dates -->        
@@ -1507,57 +1412,57 @@
             </b:column>
         </b:row>
 
-
         <h:panelGroup  rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
             <!-- Dialogues -->        
-            <ui:include src="/dialog/concept/addNT.xhtml" /> 
-            <ui:include src="/dialog/facet/addFacet.xhtml" />
-            <ui:include src="/dialog/concept/renameConcept.xhtml" />
-            <ui:include src="/dialog/concept/replaceBy.xhtml" />
-            <ui:include src="/dialog/concept/deleteReplaceBy.xhtml" />
+            <ui:include src="../../dialog/concept/addNT.xhtml" /> 
+            <ui:include src="../../dialog/facet/addFacet.xhtml" />
+            <ui:include src="../../dialog/concept/renameConcept.xhtml" />
+            <ui:include src="../../dialog/concept/replaceBy.xhtml" />
+            <ui:include src="../../dialog/concept/deleteReplaceBy.xhtml" />
 
-            <ui:include src="/dialog/synonym/addSynonym.xhtml" />        
-            <ui:include src="/dialog/synonym/deleteSynonym.xhtml" /> 
-            <ui:include src="/dialog/synonym/renameSynonym.xhtml" /> 
+            <ui:include src="../../dialog/synonym/addSynonym.xhtml" />        
+            <ui:include src="../../dialog/synonym/deleteSynonym.xhtml" /> 
+            <ui:include src="../../dialog/synonym/renameSynonym.xhtml" /> 
 
-            <ui:include src="/dialog/image/addImage.xhtml" />        
-            <ui:include src="/dialog/image/deleteImage.xhtml" /> 
-            <ui:include src="/dialog/image/updateImage.xhtml" />         
+            <ui:include src="../../dialog/image/addImage.xhtml" />        
+            <ui:include src="../../dialog/image/deleteImage.xhtml" /> 
+            <ui:include src="../../dialog/image/updateImage.xhtml" />         
 
-            <ui:include src="/dialog/broader/addBroaderLink.xhtml" /> 
-            <ui:include src="/dialog/broader/deleteBroaderLink.xhtml" />         
+            <ui:include src="../../dialog/broader/addBroaderLink.xhtml" /> 
+            <ui:include src="../../dialog/broader/deleteBroaderLink.xhtml" />         
 
-            <ui:include src="/dialog/narrower/addNarrowerLink.xhtml" /> 
-            <ui:include src="/dialog/narrower/deleteNarrowerLink.xhtml" /> 
-            <ui:include src="/dialog/narrower/changeRelation.xhtml" />         
+            <ui:include src="../../dialog/narrower/addNarrowerLink.xhtml" /> 
+            <ui:include src="../../dialog/narrower/deleteNarrowerLink.xhtml" /> 
+            <ui:include src="../../dialog/narrower/changeRelation.xhtml" />         
 
-            <ui:include src="/dialog/related/addRelatedLink.xhtml" /> 
-            <ui:include src="/dialog/related/deleteRelatedLink.xhtml" />         
+            <ui:include src="../../dialog/related/addRelatedLink.xhtml" /> 
+            <ui:include src="../../dialog/related/deleteRelatedLink.xhtml" />         
 
-            <ui:include src="/dialog/concept/setNotation.xhtml" />
+            <ui:include src="../../dialog/concept/setNotation.xhtml" />
 
-            <ui:include src="/dialog/traduction/addTraduction.xhtml" />
-            <ui:include src="/dialog/traduction/deleteTraduction.xhtml" />
-            <ui:include src="/dialog/traduction/renameTraduction.xhtml" />
+            <ui:include src="../../dialog/traduction/addTraduction.xhtml" />
+            <ui:include src="../../dialog/traduction/deleteTraduction.xhtml" />
+            <ui:include src="../../dialog/traduction/renameTraduction.xhtml" />
 
-            <ui:include src="/dialog/group/removeConceptFromGroup.xhtml" />
-            <ui:include src="/dialog/group/addConceptToGroup.xhtml" />
-            <ui:include src="/dialog/group/removeConceptAndChildFromGroup.xhtml" />
-            <ui:include src="/dialog/group/addConceptAndChildToGroup.xhtml" />
+            <ui:include src="../../dialog/group/removeConceptFromGroup.xhtml" />
+            <ui:include src="../../dialog/group/addConceptToGroup.xhtml" />
+            <ui:include src="../../dialog/group/removeConceptAndChildFromGroup.xhtml" />
+            <ui:include src="../../dialog/group/addConceptAndChildToGroup.xhtml" />
 
-            <ui:include src="/dialog/note/addNote.xhtml" /> 
-            <ui:include src="/dialog/note/deleteNote.xhtml" /> 
-            <ui:include src="/dialog/note/editNote.xhtml" />  
+            <ui:include src="../../dialog/note/addNote.xhtml" /> 
+            <ui:include src="../../dialog/note/deleteNote.xhtml" /> 
+            <ui:include src="../../dialog/note/editNote.xhtml" />  
 
-            <ui:include src="/dialog/history/historicalView.xhtml" />
+            <ui:include src="../../dialog/history/historicalView.xhtml" />
 
-            <ui:include src="/dialog/alignment/addAlignment.xhtml" />
-            <ui:include src="/dialog/alignment/deleteAlignment.xhtml" />     
-            <ui:include src="/dialog/alignment/updateAlignment.xhtml" />         
-            <ui:include src="/dialog/alignment/addManualAlignment.xhtml" />  
+            <ui:include src="../../dialog/alignment/addAlignment.xhtml" />
+            <ui:include src="../../dialog/alignment/deleteAlignment.xhtml" />     
+            <ui:include src="../../dialog/alignment/updateAlignment.xhtml" />         
+            <ui:include src="../../dialog/alignment/addManualAlignment.xhtml" />  
 
-            <ui:include src="/dialog/gps/setGps.xhtml" />      
-            <ui:include src="/dialog/gps/deleteGps.xhtml" />
+            <ui:include src="../../dialog/gps/setGps.xhtml" />      
+            <ui:include src="../../dialog/gps/deleteGps.xhtml" />
         </h:panelGroup>
+
     </h:panelGroup>
 </ui:fragment>

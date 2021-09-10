@@ -1,0 +1,96 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <img src="resources/img/icon_opentheso.png" style="width:40px" />
+            <div class="sidebar-brand-text mx-3">Opentheso</div>
+        </a>
+
+        <hr class="sidebar-divider my-0"/>
+
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.xhtml">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Thésaurus</span></a>
+        </li>
+
+        <hr class="sidebar-divider"/>
+
+        <li class="nav-item">
+            <a class="nav-link" href="../candidat/indexCandidats.xhtml" >
+                <i class="fas fa-fw fa-cog"></i>
+                <span>Candidat</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+               aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-user"></i>
+                <span>Profil</span>
+            </a>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Menu:</h6>
+                    <a class="collapse-item" href="../profile/monCompte.xhtml">Mon compte</a>
+                    <a class="collapse-item" href="cards.html">Mes projets/utilisateurs</a>
+                    <hr class="sidebar-divider">
+                        <a class="collapse-item" href="cards.html">Tous les utilisateurs</a>
+                        <a class="collapse-item" href="cards.html">Tous les projets</a>
+                        <a class="collapse-item" href="cards.html">Tous les thésaurus</a>
+                    </hr>
+                </div>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+               aria-expanded="true" aria-controls="collapseUtilities">
+                <i class="fas fa-fw fa-briefcase"></i>
+                <span>Boite à outils</span>
+            </a>
+            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                 data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Menu:</h6>
+                    <a class="collapse-item" href="utilities-color.html">Edition</a>
+                    <a class="collapse-item" href="utilities-border.html">Atelier thésaurus</a>
+                    <a class="collapse-item" href="utilities-animation.html">Maintenance</a>
+                    <a class="collapse-item" href="utilities-other.html">Statistique</a>
+                </div>
+            </div>
+        </li>
+
+        <hr class="sidebar-divider"/>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
+               aria-expanded="true" aria-controls="collapseParams">
+                <i class="fas fa-fw fa-wrench"></i>
+                <span>Paramètres</span>
+            </a>
+            <div id="collapseParams" class="collapse" aria-labelledby="headingUtilities"
+                 data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Menu:</h6>
+                    <a class="collapse-item" href="utilities-color.html">Préférence</a>
+                    <a class="collapse-item" href="utilities-border.html">Identifiant</a>
+                    <a class="collapse-item" href="utilities-animation.html">Corpus</a>
+                    <a class="collapse-item" href="utilities-other.html">En cours</a>
+                </div>
+            </div>
+        </li>
+
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+    </ul>
+    <!-- End of Sidebar -->
+
+</ui:composition>

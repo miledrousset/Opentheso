@@ -171,9 +171,8 @@ public class NoteBean implements Serializable {
         reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("formRightTab:viewTabConcept:addNoteForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNotes");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addNoteForm");
         }
     }
 
@@ -224,9 +223,8 @@ public class NoteBean implements Serializable {
         //      reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("formRightTab:viewTabConcept:editNoteForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNotes");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:editNoteForm");
         }
     }
     
@@ -298,8 +296,8 @@ public class NoteBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("formRightTab:viewTabConcept:deleteNoteForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNotes");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteNoteForm");
         }
     }
     

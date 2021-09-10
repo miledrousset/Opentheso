@@ -175,7 +175,7 @@ public class SynonymBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             init();
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formRightTab:viewTabConcept:addSynonymForm");
+                pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addSynonymForm");
             }            
             return;
         }        
@@ -197,8 +197,8 @@ public class SynonymBean implements Serializable {
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptSynonyms");
-            pf.ajax().update("formRightTab:viewTabConcept:addSynonymForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptSynonyms");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addSynonymForm");
         }
     }
 
@@ -286,8 +286,8 @@ public class SynonymBean implements Serializable {
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptSynonyms");
-            pf.ajax().update("formRightTab:viewTabConcept:renameSynonymForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptSynonyms");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:renameSynonymForm");
         }
     }
     
@@ -378,8 +378,8 @@ public class SynonymBean implements Serializable {
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptSynonyms");
-            pf.ajax().update("formRightTab:viewTabConcept:renameSynonymForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptSynonyms");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:renameSynonymForm");
         }
     }    
     
@@ -421,13 +421,11 @@ public class SynonymBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
         reset();
 
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("formRightTab:viewTabConcept:idConceptSynonyms");
-            pf.ajax().update("formRightTab:viewTabConcept:deleteSynonymForm");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptSynonyms");
+            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteSynonymForm");
         }
     }
     

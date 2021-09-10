@@ -5,10 +5,6 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <!--    <b:modal id="idRenameConcept"  class="renameConcept" title="Renommer le concept" close-on-escape="false" backdrop="false"
-                 style="font-size: 12px;">
-    -->
-
     <p:dialog id="idListAlignmentCsv" header="Importer des alignements" widgetVar="listAlignmentCsv" 
               modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" >         
 
@@ -146,7 +142,7 @@
                                              class="btn btn-success"
                                              style="width: 100%; background-color: #FFC107; color: black; border: none;"
                                              action="#{importFileBean.init()}"
-                                             update="formRightTab:viewTabConcept:idListAlignmentCsv"
+                                             update="containerIndex:formRightTab:viewTabConcept:idListAlignmentCsv"
                                              oncomplete="PF('listAlignmentCsv').hide();">
                             </p:commandButton>
                         </b:column>
@@ -154,13 +150,11 @@
                             <p:commandButton  class="btn btn-success" widgetVar="buttonImportCsv"
                                              icon="fas fa-check-circle fas 2x"
                                              update="panelListAlignCsv"
-
                                              style="width: 100%; background-color: #5CB85C; border: none;"
                                              actionListener="#{importFileBean.addAlignmentList()}"
                                              ajax="true"
                                              value="Importer"
-                                             disabled="#{!importFileBean.loadDone}">
-                            </p:commandButton>                       
+                                             disabled="#{!importFileBean.loadDone}" />                
                         </b:column> 
                     </b:row>
 
