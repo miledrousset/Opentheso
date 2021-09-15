@@ -37,6 +37,32 @@ public class FacetHelper {
 ///////////////////// Nouvelles méthodes MR //////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////    
+    
+    public ArrayList<NodeIdValue> searchFacet(HikariDataSource ds, 
+            String name, String lang, String idThesaurus) {
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '"+ lang 
+                            + "' AND lexical_value like unaccent(lower('%" + name + "%'))" + " AND id_thesaurus = '" + idThesaurus + "' order by lexical_value");                
+                try (ResultSet resultSet = stmt.getResultSet()){
+                    while (resultSet.next()) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(resultSet.getString("id_facet"));
+                        nodeIdValue.setValue(resultSet.getString("lexical_value"));
+                        nodeIdValues.add(nodeIdValue);
+                    }
+                }
+            }
+
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while serching for facet : " + name, sqle);
+        }
+        return nodeIdValues;
+    }    
+    
     /**
      * permet de retourner la liste des id et valeur des facettes qui 
      * appartiennent à ce concept, ceci est pour les noeuds dans l'arbre

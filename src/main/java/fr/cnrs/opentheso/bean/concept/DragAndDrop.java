@@ -452,20 +452,22 @@ public class DragAndDrop implements Serializable {
                     selectedTheso.getCurrentLang());
             /// Vérifier si le dépalcement est valide (controle des relations interdites)
             ValidateActionHelper validateActionHelper = new ValidateActionHelper();
-            if(!validateActionHelper.isMoveConceptToConceptValid(
-                    connect.getPoolConnexion(),
-                    selectedTheso.getCurrentIdTheso(),
-                    nodeConceptDrag.getConcept().getIdConcept(),
-                    nodeConceptDrop.getConcept().getIdConcept())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
+            if(nodeConceptDrop != null) {
+                if(!validateActionHelper.isMoveConceptToConceptValid(
+                        connect.getPoolConnexion(),
+                        selectedTheso.getCurrentIdTheso(),
+                        nodeConceptDrag.getConcept().getIdConcept(),
+                        nodeConceptDrop.getConcept().getIdConcept())) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
 
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                isValidPaste = false;
-                reloadTree();
-                return;    
-            }              
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    isValidPaste = false;
+                    reloadTree();
+                    return;    
+                }
+            }
         }
        
         

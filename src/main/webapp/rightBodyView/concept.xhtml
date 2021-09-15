@@ -18,6 +18,7 @@
 
 
                     <b:navCommandLink  value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
+                                       icon-awesome="fas fa-cut"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_branch')}" tooltip-delay-show="1000"
                                        action="#{dragAndDrop.setDragNode(tree.selectedNode)}"
                                        actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
@@ -29,6 +30,7 @@
                     <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and
                                                    (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.as_specific')}" 
+                                       icon-awesome="fas fa-paste"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_under_concept')}" tooltip-delay-show="1000"
                                        actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
                                        action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
@@ -39,6 +41,7 @@
                     </b:navCommandLink>
                     <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}" 
+                                       icon-awesome="fas fa-paste"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_as_topterm')}" tooltip-delay-show="1000"
                                        actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
                                        action="#{dragAndDrop.paste(null)}"
@@ -48,6 +51,7 @@
                                        update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
                     </b:navCommandLink>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_concept')}" 
+                                      icon-awesome="fas fa-trash"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.toottip_delete_concept')}"
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idDeleteConcept deleteConceptForm"
@@ -57,6 +61,7 @@
                     </b:navCommandLink>   
                     <b:navCommandLink rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
                                       value="#{langueBean.getMsg('rightbody.concept.deprecate_concept')}"
+                                      icon-awesome="fas fa-times-circle"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_deprecate_concept')}"
                                       update="idDeprecateConcept deprecateConceptForm"
                                       action="#{editConcept.reset('')}"
@@ -65,12 +70,25 @@
                     </b:navCommandLink>
                     <b:navCommandLink rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
                                       value="#{langueBean.getMsg('rightbody.concept.approve_concept')}"
+                                      icon-awesome="fas fa-check-circle"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_approve_concept')}"
                                       update="idApproveConcept approveConceptForm"
                                       action="#{editConcept.reset('')}"
                                       oncomplete="PF('approveConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>
+                    <b:navLink/>                    
+                    <b:navCommandLink 
+                                      value="#{langueBean.getMsg('rightbody.concept.addConceptTofacet')}"
+                                      icon-awesome="fas fa-magnet"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.addConceptTofacet')}"
+                                      update="idAddConceptToFacet addConceptToFacetForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('addConceptToFacet').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>
+
+                    
 
 
                     <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
@@ -179,6 +197,7 @@
                     <b:navCommandLink disabled="false"
                                       rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
                                       value="#{langueBean.getMsg('rightbody.concept.copy_to_another_thesaurus')}"
+                                      icon-awesome="fas fa-copy"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_copy_to_another_thesaurus')}" tooltip-delay-show="1000"
                                       action="#{copyAndPasteBetweenTheso.onStartCopy()}"
                                       styleClass="buttonIconOrange"
@@ -187,6 +206,7 @@
                     </b:navCommandLink>
                     <b:navCommandLink rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
                                       value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.here')} !!" 
+                                      icon-awesome="fas fa-paste"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_paste_from_another_thesaurus')}" tooltip-delay-show="500"
                                       actionListener="#{copyAndPasteBetweenTheso.validatePaste()}" 
                                       styleClass="buttonIconOrange"
@@ -197,6 +217,7 @@
                     </b:navCommandLink> 
                     <b:navCommandLink  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
                                        value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}"
+                                       icon-awesome="fas fa-backspace"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_cancel_copy_other_thesaurus')}" tooltip-delay-show="1000"
                                        action="#{copyAndPasteBetweenTheso.reset()}"
                                        styleClass="buttonIconOrange"
@@ -212,6 +233,7 @@
 
                     <b:navLink/>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.import_tabulated_list')}"
+                                      icon-awesome="fas fa-download"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_import_tabulated_list')} #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idListImportCsv listImportCsvForm"
@@ -1512,6 +1534,8 @@
             <!-- Dialogues -->        
             <ui:include src="/dialog/concept/addNT.xhtml" /> 
             <ui:include src="/dialog/facet/addFacet.xhtml" />
+            <ui:include src="/dialog/facet/addConceptToFacet.xhtml" />
+            
             <ui:include src="/dialog/concept/renameConcept.xhtml" />
             <ui:include src="/dialog/concept/replaceBy.xhtml" />
             <ui:include src="/dialog/concept/deleteReplaceBy.xhtml" />
