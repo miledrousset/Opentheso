@@ -47,6 +47,7 @@ public class SelectedTheso implements Serializable {
 
     private String selectedIdTheso;
     private String currentIdTheso;
+    private String optionThesoSelected;
 
     private ArrayList<NodeLangTheso> nodeLangs;
 
@@ -128,6 +129,20 @@ public class SelectedTheso implements Serializable {
      */
     public void actionFromConceptToOn() {
         isActionFromConcept = true;
+    }
+    
+    public void setSelectedOptionTheso() {
+        switch(optionThesoSelected) {
+            case "Option1":
+                viewEditorHomeBean.reset();
+                break;
+            case "Option2":
+                viewEditorHomeBean.initText();
+                break;
+            case "Option3":
+                viewEditorHomeBean.initGoogleAnalytics();
+                break;
+        }
     }
 
     /**
@@ -446,6 +461,14 @@ public class SelectedTheso implements Serializable {
 
     public void setLocalUri(String localUri) {
         this.localUri = localUri;
+    }
+
+    public String getOptionThesoSelected() {
+        return optionThesoSelected;
+    }
+
+    public void setOptionThesoSelected(String optionThesoSelected) {
+        this.optionThesoSelected = optionThesoSelected;
     }
 
 }

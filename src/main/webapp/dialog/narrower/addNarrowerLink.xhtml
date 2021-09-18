@@ -41,21 +41,17 @@
                             </p:autoComplete>  
                         </b:column>                             
                     </b:row>
-                </b:column>
-
-                <b:column span="5" >
-                    <b:messages autoUpdate="true"/>
-                </b:column>                
+                </b:column>               
             </b:row>
 
             <b:row style="margin-bottom: 10px;" >
                 <b:column span="4" offset="8" >
                     <b:commandButton 
-                                     id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addNarrowerLinkForm" 
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
+                                     id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}" 
+                                     update="containerIndex:formRightTab"
+                                     style="width:100%; font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
                                      class="btn btn-primary"
+                                     oncomplete="PF('addNarrowerLink').hide();"
                                      action="#{narrowerBean.addNewNarrowerLink(currentUser.nodeUser.idUser)}"/>
                 </b:column>                    
             </b:row>            

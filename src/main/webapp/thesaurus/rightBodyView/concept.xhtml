@@ -319,6 +319,20 @@
         </b:row>
 
         <!-- ligne PrefLabel -->
+        <p:panel class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Earnings (Monthly)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </p:panel>
         <b:row id="idPrefLabelRow">
             <b:column span="3" colXs="4">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.preferred_term')}" 
@@ -554,19 +568,19 @@
                                       actionListener="#{narrowerBean.reset()}"
                                       oncomplete="PF('addNarrowerLink').show();"
                                       update="idAddNarrowerLink addNarrowerLinkForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;"/>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_narrower_relation')}" 
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_delete_narrower_relation')}"
                                       actionListener="#{narrowerBean.reset()}"
                                       oncomplete="PF('deleteNarrowerLink').show();"
                                       update="idDeleteNarrowerLink deleteNarrowerLinkForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;"/>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.changing_relationships')}" 
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_changing_relationships')}"
                                       actionListener="#{narrowerBean.initForChangeRelations()}"
                                       oncomplete="PF('changeRelation').show();"
                                       update="idChangeRelation changeRelationForm"
-                                      style="font-size: 12px;"></b:navCommandLink>                                      
+                                      style="font-size: 12px;"/>                                      
                 </b:dropMenu>                  
             </b:column>
             <b:column span="1" colXs="1" rendered="#{(currentUser.nodeUser == null)}">
@@ -1381,7 +1395,7 @@
 
         <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 5px; "/>
 
-        
+
 
         <p:spacer height="20" />
         <!-- ligne dates -->        

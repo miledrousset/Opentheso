@@ -19,25 +19,23 @@
             
             <b:row >
                 <b:column span="10" offset="1" >
-                    <b:inputText label="lat:" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.latitude')} ..." value="#{gpsBean.nodeGps.latitude}" style="font-size: 12px;"/>
+                    <b:inputText label="lat:" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.latitude')} ..." 
+                                 value="#{gpsBean.nodeGps.latitude}" style="font-size: 12px;"/>
                 </b:column> 
             </b:row>
             <b:row >
                 <b:column span="10" offset="1" >
-                    <b:inputText label="long:" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.longitude')} ..." value="#{gpsBean.nodeGps.longitude}" style="font-size: 12px;"/>
+                    <b:inputText label="long:" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.longitude')} ..." 
+                                 value="#{gpsBean.nodeGps.longitude}" style="font-size: 12px;"/>
                 </b:column> 
             </b:row>
             
             <b:row style="margin-bottom: 20px; margin-top: 15px">
                 <b:column span="8" offset="2" >
-                    <b:commandButton 
-                                     id="buttonSet" value="#{langueBean.getMsg('btnValidate')}"
-                                     class="btn btn-primary"
-                                     action="#{gpsBean.updateCoordinateGps()}"
-                                     update="containerIndex:formRightTab"
+                    <b:commandButton id="buttonSet" value="#{langueBean.getMsg('btnValidate')}" class="btn btn-primary"
+                                     action="#{gpsBean.updateCoordinateGps()}" update="containerIndex:formRightTab"
                                      oncomplete="PF('setGps').hide();"
-                                     style="width:100%; font-size: 12px;
-                                     color: white; background: #43B572;"/>
+                                     style="width:100%; font-size: 12px; color: white; background: #43B572;"/>
                 </b:column>
             </b:row>    
         </h:form>  

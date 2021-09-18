@@ -61,15 +61,12 @@ public class NoteBean implements Serializable {
         selectedTypeNote = null;
         noteValue = null;
         selectedNodeNote = null;
-    }     
-    
-    public NoteBean() {
     }
 
     public void reset() {
         noteTypes = new NoteHelper().getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
-        selectedLang = conceptBean.getSelectedLang();
+        selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
         selectedTypeNote = null;
     }
@@ -84,17 +81,7 @@ public class NoteBean implements Serializable {
         rawNote = rawNote.replaceAll("</p>", "\n");
         
         // enlève les code ascii non visibles
-        rawNote = rawNote.replace((char)27, ' ');
-
-        // pour trouver le code ascii
-    /*    char[] test = noteValue.toCharArray();
-        for (char c : test) {
-            System.out.println(c);
-            int ascii = c; 
-            System.out.println(ascii);
-        }*/
-        
-        return rawNote;
+        return rawNote.replace((char)27, ' ');
     }
     
     /**

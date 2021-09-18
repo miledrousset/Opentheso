@@ -1,77 +1,63 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddTopConcept" header="Ajouter un top concept" widgetVar="addTopConcept" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" > 
+
         <h:form id="addTopConceptForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-            <b:row>
-                <b:column span="6" style="margin-left: 5px;">
-                    <b:row>
 
-                        <b:column span="12">
-                            <b:inputText placeholder="new top concept..." value="#{newConcept.prefLabel}"/>
-                        </b:column>                        
-                        
-                        <b:column span="12" >
-                            <b:selectOneMenu label="Collection:" id="collection" value="#{newConcept.idGroup}" 
-                                             style="font-size: 12px; background: white; border-color: #43B572" tooltip="A quelle collection ajouter le concept"
-                                             tooltipDelayShow="500">
-                                <f:selectItem itemLabel="..." itemValue="" />
-                                <f:selectItems value="#{newConcept.nodeGroups}" var="nodeGroup"
-                                               itemLabel="#{nodeGroup.lexicalValue}" itemValue="#{nodeGroup.conceptGroup.idgroup}"/>
-                            </b:selectOneMenu>                                  
-                        </b:column>
-                        <b:column span="12" >
-                            <b:inputText label="Notation:" placeholder="notation..." id="notation" value="#{newConcept.notation}"
-                                         ajax="true" autocomplete="false"  style="font-size: 12px;">
-                            </b:inputText>
-                        </b:column>
+            <p:panelGrid columns="1">
+                <p:column>
+                    <p:inputText placeholder="new top concept..." value="#{newConcept.prefLabel}"/>
 
-                        <b:column span="12" >
-                            <b:inputText label="Id" placeholder="identifiant facultatif..." id="privateId" value="#{newConcept.idNewConcept}"
-                                         ajax="true" autocomplete="false"  style="font-size: 12px;">
-                            </b:inputText>
-                        </b:column>                             
-                    </b:row>
-                </b:column>
+                    <p:commandLink style="font-size: 17px; color: #FF7979"
+                                   action="#{newConcept.infosTopConcept}" update="addTopConceptForm">
+                        <i class="pi pi-info-circle"></i>
+                    </p:commandLink>    
+                </p:column>  
 
+                <p:selectOneMenu label="Collection:" id="collection" value="#{newConcept.idGroup}" 
+                                 style="font-size: 12px; background: white; border-color: #43B572">
+                    <f:selectItem itemLabel="..." itemValue="" />
+                    <f:selectItems value="#{newConcept.nodeGroups}" var="nodeGroup"
+                                   itemLabel="#{nodeGroup.lexicalValue}" itemValue="#{nodeGroup.conceptGroup.idgroup}"/>
+                </p:selectOneMenu>
 
-                <b:column span="5" style-class="message2">
-                    <b:row>
-                        <b:column span="2" offset="10">
-                            <b:commandLink icon-awesome="fas fa-exclamation-circle"
-                                           style="font-size: 17px; color: #FF7979"
-                                           action="#{newConcept.infosTopConcept}"
-                                           update="addTopConceptForm"/>
-                        </b:column>
-                    </b:row>
-                    <b:row>
-                        <b:column span="12">
-                            <b:messages autoUpdate="true"/>
-                        </b:column>
-                    </b:row>                        
-                </b:column>
-            </b:row>
+                <p:inputText label="Notation:" placeholder="notation..." id="notation" value="#{newConcept.notation}"
+                             autocomplete="false"  style="font-size: 12px;" />
 
-            <b:row style="margin-bottom: 10px;">
-                <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addTopConceptForm" 
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary"
-                                     action="#{newConcept.addTopConcept(
-                                               selectedTheso.currentLang,
-                                               'D',
-                                               selectedTheso.currentIdTheso,
-                                               currentUser.nodeUser.idUser)}"/>
-                </b:column>                    
-            </b:row>            
+                <p:inputText label="Id" placeholder="identifiant facultatif..." id="privateId" value="#{newConcept.idNewConcept}"
+                             autocomplete="false"  style="font-size: 12px;" />
+
+                <p:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addTopConceptForm" 
+                                 style="width:100%; font-size: 13px;  font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
+                                 class="btn btn-primary"
+                                 action="#{newConcept.addTopConcept(selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
+
+            </p:panelGrid>   
         </h:form>
-    </p:dialog>   
+    </p:dialog>  
+    
+    <div class="modal fade" id="logoutModalXXXX" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </ui:fragment>

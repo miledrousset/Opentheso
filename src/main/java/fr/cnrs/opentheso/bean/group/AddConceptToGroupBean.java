@@ -63,15 +63,14 @@ public class AddConceptToGroupBean implements Serializable {
      */
     public List<NodeAutoCompletion> getAutoCompletCollection(String value) {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
-        List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = new GroupHelper().getAutoCompletionGroup(
+            return new GroupHelper().getAutoCompletionGroup(
                     connect.getPoolConnexion(),
                     selectedTheso.getCurrentIdTheso(),
                     conceptView.getSelectedLang(),
                     value);
         }
-        return liste;
+        return new ArrayList<>();
     }
 
     /**

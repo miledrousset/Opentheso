@@ -3,18 +3,16 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:b="http://bootsfaces.net/ui"
       xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Opentheso</title>
 
-        <link rel="icon" href="images/icon_opentheso2.png" />
-
+        <link href="resources/images/icon_opentheso2.png" rel="icon" />
         <link href="resources/css/sb-admin-2.css" rel="stylesheet" />
         <link href="resources/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
-
+        
         <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
 
         <h:panelGroup id="indexTitle" >
@@ -43,17 +41,18 @@
 
         <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
 
-        <script>
+        <!--<script>
             $.blockUI.defaults.css.width = '20%';
             $.blockUI.defaults.css.left = '40%';
             $.blockUI.defaults.css.height = '5em';
             $.blockUI.defaults.css.borderRadius = '10px';
             $.blockUI.defaults.overlayCSS.opacity = 0.5;
             $.blockUI.defaults.message = '<div style="padding-top:1em"><b:spinner name="circle-o-notch" size="2x" /> Please wait ... </div>';
-        </script>
+        </script>-->
+        
     </h:head>
 
-    <h:body id="page-top">
+    <h:body id="page-top" style="font-size: 12px;">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -65,24 +64,26 @@
             <f:viewAction action="#{selectedTheso.preRenderView}"/>
         </f:metadata>
 
-        <b:growl id="messageIndex" globalOnly="true" showDetail="true" placementFrom="bottom"/>
-
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+        
         <div id="wrapper">
 
             <ui:include src="commun/menu.xhtml" />
 
-            <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content-wrapper">
+                
                 <h:form id="containerIndex">
                     <ui:include src="commun/header.xhtml" />
-                    <p:panel id="thesorusContent">
+                    <div id="thesorusContent">
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>
                         <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/details_thesaurus.xhtml" />
                         </h:panelGroup>
-                    </p:panel>
+                    </div>
                 </h:form>
+                
                 <ui:include src="commun/footer.xhtml" />
             </div>
         </div>

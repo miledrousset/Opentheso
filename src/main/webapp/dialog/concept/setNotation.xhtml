@@ -19,24 +19,22 @@
             
             <b:row >
                 <b:column span="10" offset="1" >
-                    <b:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.new_notation')} ..." value="#{notationBean.notation}" style="font-size: 12px;"/>
+                    <b:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.new_notation')} ..." 
+                                 value="#{notationBean.notation}" style="font-size: 12px;"/>
                 </b:column> 
-            </b:row>                        
+            </b:row>  
+            
             <b:row style="margin-bottom: 20px; margin-top: 15px">
                 <b:column span="8" offset="2" >
-                    <b:commandButton 
-                                     id="buttonSet" value="#{langueBean.getMsg('btnValidate')}" 
-
+                    <b:commandButton id="buttonSet" value="#{langueBean.getMsg('btnValidate')}" 
                                      class="btn btn-primary"
-                                     action="#{notationBean.updateNotation(
-                                               selectedTheso.currentIdTheso,
-                                               currentUser.nodeUser.idUser)}"
-                                     update="containerIndex:formRightTab:viewTabConcept:idConceptNotationRow"
+                                     action="#{notationBean.updateNotation(selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"
+                                     update="containerIndex:formRightTab"
                                      oncomplete="PF('setNotation').hide();"
                                      style="width:100%; font-size: 12px;
                                      color: white; background: #43B572;"/>
                 </b:column>
-            </b:row>    
+            </b:row>   
         </h:form>  
     </p:dialog> 
     <!--  </b:modal> -->    

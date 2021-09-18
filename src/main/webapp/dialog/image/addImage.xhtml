@@ -5,9 +5,12 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idAddImage" header="#{langueBean.getMsg('rightbody.conceptdialog.add_image')}" widgetVar="addImage" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >        
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >    
+        
         <h:form id="addImageForm"
-                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                rendered="#{(currentUser.nodeUser != null) 
+                            and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+            
             <b:row>
                 <b:column span="6" style="margin-left: 5px;">
                     <b:row>
@@ -40,12 +43,11 @@
 
             <b:row style="margin-bottom: 10px;" >
                 <b:column span="4" offset="8" >
-                    <b:commandButton 
-                                     id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addImageForm" 
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary"
+                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  
+                                     update="containerIndex:formRightTab" class="btn btn-primary"
+                                     oncomplete="PF('addImage').hide();"
+                                     style="width:100%; font-size: 13px; font-weight: normal;
+                                     color: white; background: #43B572; border: none; box-shadow: none;"                                    
                                      action="#{imageBean.addNewImage(currentUser.nodeUser.idUser)}"/>
                 </b:column>                    
             </b:row>            

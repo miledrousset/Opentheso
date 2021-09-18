@@ -1,0 +1,85 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:b="http://bootsfaces.net/ui">
+
+    <head>
+        <title>Se connecter</title>
+        <link href="resources/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+        <link href="resources/css/sb-admin-2.css" rel="stylesheet" />
+    </head>
+
+    <body class="bg-gradient-primary">
+
+        <b:growl id="messageIndex" globalOnly="true" showDetail="true" placementFrom="bottom"/>
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-10 col-lg-12 col-md-9">
+                    <div class="card o-hidden border-0 shadow-lg my-5">
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                                <div class="col-lg-6">
+                                    <div class="p-5">
+
+                                        <div class="text-center">
+                                            <h1 class="h4 text-gray-900 mb-4">Connexion</h1>
+                                        </div>
+
+                                        <h:form class="user">
+                                            <div class="form-group">
+                                                <p:inputText class="form-control form-control-user" value="#{currentUser.username}" />
+                                            </div>
+                                            <div class="form-group">
+                                                <p:inputText class="form-control form-control-user" type="password" value="#{currentUser.password}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="custom-control custom-checkbox small">
+                                                    <input type="checkbox" class="custom-control-input" id="customCheck" />
+                                                    <label class="custom-control-label" for="customCheck">Remember Me</label>
+                                                </div>
+                                            </div>
+                                            <p:commandButton value="#{langueBean.getMsg('menu.login')}" 
+                                                             class="btn btn-primary btn-user btn-block"
+                                                             action="#{currentUser.login()}" 
+                                                             style="width:100%; font-size: 13px; font-weight: normal;
+                                                             color: white; background: #43B572; border: none; box-shadow: none;"/>
+                                        </h:form>
+                                        
+                                        <hr/>
+                                        
+                                        <div class="text-center">
+                                            <a class="small" href="forgot-password.html">Forgot Password?</a>
+                                        </div>
+                                        
+                                        <div class="text-center">
+                                            <a class="small" href="register.html">Create an Account!</a>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Bootstrap core JavaScript-->
+        <script src="resources/vendor/jquery/jquery.min.js"></script>
+        <script src="resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Core plugin JavaScript-->
+        <script src="resources/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+        <!-- Custom scripts for all pages-->
+        <script src="resources/js/sb-admin-2.min.js"></script>
+
+    </body>
+
+</html>

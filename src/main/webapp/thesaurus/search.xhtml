@@ -1,98 +1,103 @@
-<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui" xmlns:f="http://java.sun.com/jsf/core"
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:f="http://java.sun.com/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
-    <h:form id="formSearch">
-        <b:row >
-            <b:column span="2" offset-lg="3" offset-md="3" offset-sm="0" colXs="4">
-                
-                <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}" 
-                                 style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
-                                 title="#{langueBean.getMsg('search.change_thesaurus_language')}">
-                                <p:ajax event="valueChange" update="formSearch containerIndex:formLeftTab containerIndex:formRightTab" 
-                                             listener="#{selectedTheso.changeLang()}" />
-                    <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                    <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all" />
-                </p:selectOneMenu>                
-            </b:column>
 
-            <b:column span="4" colXs="6">
-                <p:autoComplete id="nomTerme" value="#{searchBean.searchSelected}"
-                                var="values"
-                                completeMethod="#{searchBean.completTermFullText}"                                  
-                                minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
-                                scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 27px;box-shadow: none;border-color: #43B572"
-                                style="font-size: 12px; width: 100%">
-                    <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
-                        <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
-                                      style="font-style: italic;" />
-                        <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
-                    </p:column>
+    <h:form id="formSearch" style="margin-bottom: 10px; align-content: center">
 
-                    <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
-                        <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
-                    </p:column>
-                    <p:ajax event="itemSelect" listener="#{searchBean.onSelect()}" update="@parent containerIndex:formRightTab"/>
-                </p:autoComplete>           
 
-            </b:column>     
-            <b:column span="1" colXs="1">
-                <b:commandButton id="buttonSearch" action="#{searchBean.applySearch()}"
-                                 update="containerIndex:formRightTab messageIndex" iconAwesome="search" icon-size="l"
-                                 style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; font-size: 12px"/>
-            </b:column>
 
-        </b:row>
+        <div style="width: 100%; display: flex; text-align: center;">
+            <div style="width: 35%;" />
 
-        <b:row >
-            <b:column span="1" offset="5" offset-lg="5" offset-md="4" offset-xs="4" colXs="2"
-                      style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
-                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}"
-                                         tooltip="#{langueBean.getMsg('search.tooltip_startWith')}" 
-                                         
-                                         onclick="ajax:searchBean.activateIndexMatch()"
-                                         update="formSearch"
-                                         style="margin-top: 2px;">
-                    
-                </b:selectBooleanCheckbox>
-            </b:column>            
-            <b:column span="1" colXs="2"
-                      style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
-                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
-                                         tooltip="#{langueBean.getMsg('search.search_exact_word')}" 
-                                         onclick="ajax:searchBean.activateExactMatch()"
-                                         update="formSearch"
-                                         style="margin-top: 2px;">
-                    
-                </b:selectBooleanCheckbox>
-            </b:column>
-            <b:column span="1" colXs="2"
-                      style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
-                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
-                                         tooltip="#{langueBean.getMsg('search.search_only_note')}" 
-                                         onclick="ajax:searchBean.activateWithNote()"
-                                         update="formSearch"
-                                         style="margin-top: 2px;"/>
-            </b:column>
-            <b:column span="1" colXs="2"
-                      style="margin-top: -5px;margin-right: -20px; font-size: 12px; color: #43B572">
-                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
-                                         tooltip="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)"
-                                         onclick="ajax:searchBean.activateWithId()"
-                                         update="formSearch"
-                                         style="margin-top: 2px;"/>
-            </b:column>
-            <b:column rendered="#{(currentUser.nodeUser != null) and
-                                    (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                      span="1" colXs="1"  style="font-size: 12px; margin-top: 2px; margin-left: 30px;">
-                <p:menuButton value="++" style="font-size: 12px;" title="Recherche pré-programmée">
-                    <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts polyhiérarchiques"/>
-                    <p:menuitem value="Multi-groupes" action="#{searchBean.searchConceptWithMultiGroup()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont plusieurs groupes"/>
-                    <p:menuitem value="Sans-groupes" action="#{searchBean.searchConceptWithoutGroup()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui n'ont pas de groupes"/>
-                    <p:menuitem value="Doublons" action="#{searchBean.searchConceptDuplicated()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont un libellé en doublon"/>
-                    <p:menuitem value="Relations interdites" action="#{searchBean.searchConceptWithRTandBT()}" update="containerIndex:formRightTab" style="font-size: 12px;" title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
-                </p:menuButton>
-            </b:column>
-        </b:row>    
+            <div style="width: 30%; text-align: center; vertical-align:middle;">
+                <div style="display: flex;">
+                    <div style="text-align: right; margin-right: 10px">
+                        <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}" 
+                                         style="width: 200px; border-color: #43B572"
+                                         title="#{langueBean.getMsg('search.change_thesaurus_language')}">
+                            <p:ajax event="valueChange" update="containerIndex" 
+                                    listener="#{selectedTheso.changeLang()}" />
+                            <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                            <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all" />
+                        </p:selectOneMenu>    
+                    </div>
+                    <div class="ui-inputgroup">
+                        <p:autoComplete id="nomTerme" value="#{searchBean.searchSelected}"
+                                        var="values"
+                                        completeMethod="#{searchBean.completTermFullText}"                                  
+                                        minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
+                                        scrollHeight="600" inputStyle="font-size: 12px; width: 400px%; height: 27px;box-shadow: none;border-color: #43B572"
+                                        style="font-size: 12px; width: 100%">
+                            <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
+                                <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
+                                              style="font-style: italic;" />
+                                <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
+                            </p:column>
+
+                            <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
+                                <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
+                            </p:column>
+                            <p:ajax event="itemSelect" listener="#{searchBean.onSelect()}" update="@parent containerIndex:formRightTab"/>
+                        </p:autoComplete>
+
+                        <p:commandButton icon="pi pi-search" styleClass="ui-button-warning" action="#{searchBean.applySearch()}"
+                                         update="containerIndex:formRightTab messageIndex"
+                                         style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; border-color: #43B572"/>
+                    </div>
+                </div>
+            </div>
+
+            <div style="width: 35%;" />
+        </div>
+
+        <div style="width: 100%; display: flex; text-align: center;">
+            <div style="width: 35%;" />
+
+            <div style="width: 30%; text-align: center; vertical-align:middle;">
+                <p:panelGrid columns="5" styleClass="ui-noborder">
+                    <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" >
+                        <p:ajax update="formSearch" listener="#{searchBean.activateIndexMatch()}"/>
+                    </p:selectBooleanCheckbox>
+
+                    <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}" >
+                        <p:ajax update="formSearch" listener="#{searchBean.activateExactMatch()}"/>
+                    </p:selectBooleanCheckbox>
+
+                    <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}" >
+                        <p:ajax update="formSearch" listener="#{searchBean.activateWithNote()}"/>
+                    </p:selectBooleanCheckbox>
+
+                    <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}" >
+                        <p:ajax update="formSearch" listener="#{searchBean.activateWithId()}"/>
+                    </p:selectBooleanCheckbox>
+
+                    <p:menuButton value="++" style="font-size: 12px;" title="Recherche pré-programmée">
+                        <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" 
+                                    update="containerIndex:formRightTab" style="font-size: 12px;" 
+                                    title="Rechercher les concepts polyhiérarchiques"/>
+
+                        <p:menuitem value="Multi-groupes" action="#{searchBean.searchConceptWithMultiGroup()}" 
+                                    update="containerIndex:formRightTab" style="font-size: 12px;" 
+                                    title="Rechercher les concepts qui ont plusieurs groupes"/>
+
+                        <p:menuitem value="Sans-groupes" action="#{searchBean.searchConceptWithoutGroup()}" 
+                                    update="containerIndex:formRightTab" style="font-size: 12px;" 
+                                    title="Rechercher les concepts qui n'ont pas de groupes"/>
+
+                        <p:menuitem value="Doublons" action="#{searchBean.searchConceptDuplicated()}" 
+                                    update="containerIndex:formRightTab" style="font-size: 12px;" 
+                                    title="Rechercher les concepts qui ont un libellé en doublon"/>
+
+                        <p:menuitem value="Relations interdites" action="#{searchBean.searchConceptWithRTandBT()}" 
+                                    update="containerIndex:formRightTab" style="font-size: 12px;" 
+                                    title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
+                    </p:menuButton>
+                </p:panelGrid>
+            </div>
+
+            <div style="width: 35%;" />
+        </div>    
     </h:form>
 </ui:fragment>

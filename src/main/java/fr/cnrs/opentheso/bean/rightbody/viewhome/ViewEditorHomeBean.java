@@ -201,6 +201,10 @@ public class ViewEditorHomeBean implements Serializable {
     public void setIsInEditingGoogleAnalytics(boolean isInEditingGoogleAnalytics) {
         this.isInEditingGoogleAnalytics = isInEditingGoogleAnalytics;
     }
+    
+    public boolean isTextVisisble() {
+        return !isInEditingGoogleAnalytics && !isInEditingHomePage;
+    }
 
     public String getCodeGoogleAnalitics() {
         return codeGoogleAnalitics;

@@ -7,8 +7,10 @@
 
     <p:dialog id="idDragAndDrop" header="Drag and Drop control" widgetVar="dragAndDrop" 
               modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >        
+        
         <h:form id="dragAndDropForm"
-                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                            or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
 
             
             <p:spacer />
@@ -137,6 +139,7 @@
             </b:row>
             
         </h:form>
+        
         <style type="text/css">
             .from {
                 background-color: #C63632 !important;

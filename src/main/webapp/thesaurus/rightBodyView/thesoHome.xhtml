@@ -11,7 +11,7 @@
             <b:column span="2" offset="10">
                 <b:commandButton 
                     value="#{langueBean.getMsg('candidat.edit')}"
-                    update="formRightTab thesoHomePageForm"
+                    update="containerIndex:formRightTab thesoHomePageForm"
                     class="btn btn-primary"
                     action="#{viewEditorThesoHomeBean.initText()}"
                     style="width:100%; font-size: 12px;
@@ -56,7 +56,7 @@
                 <b:column span="3" offset="6">
                     <b:commandButton 
                         value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
-                        update="formRightTab thesoHomePageForm"
+                        update="containerIndex:formRightTab thesoHomePageForm"
                         class="btn btn-primary"
                         action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"
                         style="width:100%; font-size: 12px; background: #{viewEditorThesoHomeBean.colorOfHtmlButton}"/>
@@ -65,7 +65,7 @@
                     <b:commandButton 
                         value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
                         class="btn btn-primary"
-                        update="formRightTab thesoHomePageForm"
+                        update="containerIndex:formRightTab thesoHomePageForm"
                         action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"
                         style="width:100%; font-size: 12px; background: #{viewEditorThesoHomeBean.colorOfTextButton}"/>
                 </b:column>
@@ -85,7 +85,7 @@
             <b:row>
                 <b:column span="2" offset="8" >
                     <b:commandButton id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}"
-                                    update="formRightTab thesoHomePageForm"
+                                    update="containerIndex:formRightTab thesoHomePageForm"
                                      style="width: 100%; background: #8C8C8C; font-size: 12px;"
                                      class="btn btn-primary"
                                      action="#{viewEditorThesoHomeBean.reset()}"/>
@@ -94,7 +94,7 @@
                     <b:commandButton 
                         look="success"
                         value="#{langueBean.getMsg('candidat.save')}"
-                        update="formRightTab thesoHomePageForm"
+                        update="containerIndex:formRightTab thesoHomePageForm"
                         class="btn btn-primary"
                         style="width: 100%;font-size: 12px;"
                         action="#{viewEditorThesoHomeBean.updateThesoHomePage()}"
