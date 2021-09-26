@@ -13,6 +13,8 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import org.primefaces.PrimeFaces;
+
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -98,6 +100,9 @@ public class PreferenceBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Préférences enregistrées avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();
+
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+        PrimeFaces.current().ajax().update("preferenceForm");
     }
     
     private void setUriType(){
