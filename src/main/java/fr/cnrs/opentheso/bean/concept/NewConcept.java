@@ -129,12 +129,12 @@ public class NewConcept implements Serializable {
     }
 
     public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Info !", "Rediger une aide ici pour Add Concept !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public void infosTopConcept() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Top Concept!");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Info !", "Rediger une aide ici pour Add Top Concept!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
@@ -157,10 +157,8 @@ public class NewConcept implements Serializable {
         duplicate = false;
 
         if (prefLabel == null || prefLabel.isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "le label est obligatoire !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Le label est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            //     msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error", "Invalid credentials");
-            //        FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
@@ -254,7 +252,7 @@ public class NewConcept implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:messageIndex");
             pf.ajax().update("containerIndex:formRightTab:viewTabConcept:conceptView");
         }
 
@@ -264,7 +262,7 @@ public class NewConcept implements Serializable {
 
         tree.expandTreeToPath(idNewConcept, idTheso, idLang);
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formLeftTab:tabTree:tree");
+            pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
         }
         init();
     }

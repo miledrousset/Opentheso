@@ -1,38 +1,36 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idDeleteGps" header="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}" widgetVar="deleteGps" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 150px" >         
+              width="450" showEffect="fade" modal="true" resizable="false" >  
 
-        <h:form id="deleteGpsForm">   
-            <b:row >
-                <b:column span="11" offset="1" >
-                    <h:outputText id="currentPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="font-size: 13px; color: black;">
-                    </h:outputText >
-                    <p:spacer height="30"/>
-                </b:column>
-            </b:row>            
-            
-            <b:column span="5"  style="background: #FAFAFA">
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
                 <h:outputText value="lat: " style="font-size: 12px;"/>
-                <h:outputText value="#{gpsBean.nodeGps.latitude}" style="font-size: 12px; color: #43B572"/>                    
-            </b:column>
-            <b:column span="5"  style="background: #FAFAFA">
+                <h:outputText value="#{gpsBean.nodeGps.latitude}" style="font-size: 12px; color: #43B572"/>     
+            </div>
+            <div class="col-5">
                 <h:outputText value="long: " style="font-size: 12px;"/>
-                <h:outputText value="#{gpsBean.nodeGps.longitude}" style="font-size: 12px; color: #43B572"/>                    
-            </b:column>            
-            <b:column span="2" style="background: #FAFAFA">
-                <b:navCommandLink icon-awesome="fa-trash" style="color: #FF7979"
-                                  action="#{gpsBean.deleteCoordinateGps()}"
-                                     update="containerIndex:formRightTab:viewTabConcept:idConceptGps"
-                                     oncomplete="PF('deleteGps').hide();"/>
-            </b:column>
-            <p:spacer height="30" />   
-        </h:form>  
-    </p:dialog> 
-    <!--  </b:modal> -->    
+                <h:outputText value="#{gpsBean.nodeGps.longitude}" style="font-size: 12px; color: #43B572"/>   
+            </div>
+            <div class="col-2">
+                <p:commandLink style="color: #FF7979" action="#{gpsBean.deleteCoordinateGps()}"
+                               update="containerIndex:formRightTab"
+                               oncomplete="PF('deleteGps').hide();">
+                    <i class="pi pi-trash" />
+                </p:commandLink>
+            </div>
+        </div>
+    </p:dialog>     
 </ui:fragment>

@@ -1,62 +1,56 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idAddConceptAndChildToGroup" header="#{langueBean.getMsg('rightbody.conceptdialog.add_all_to_group')}" widgetVar="addConceptAndChildToGroup" 
-              modal="true" resizable="true" position="top" width="300" style="margin-top: 150px" >         
+    <p:dialog id="idAddConceptAndChildToGroup" header="#{langueBean.getMsg('rightbody.conceptdialog.add_all_to_group')}" 
+              widgetVar="addConceptAndChildToGroup" width="450" showEffect="fade" modal="true" resizable="false" >
 
-        <h:form id="addConceptAndChildToGroupForm">   
-            
-            <b:row >
-                <b:column span="11" offset="1" >
-                    <h:outputText id="currentPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="font-size: 13px; color: black;">
-                    </h:outputText >
-                    <p:spacer height="30"/>
-                </b:column>
-            </b:row>            
-            
-            <b:row >
-                <b:column span="11" offset="1" >
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.type_to_display_all')}"
-                                  style="font-size: 12px;">
-                    </h:outputText>
-                </b:column>
-            </b:row>                        
-            <b:row>
-                <b:column span="11" offset="1" >
-                    <p:autoComplete id="addConceptToCollection"
-                                    value="#{addConceptAndChildToGroupBean.selectedNodeAutoCompletionGroup}"
-                                    completeMethod="#{addConceptAndChildToGroupBean.getAutoCompletCollection}" var="group"
-                                    forceSelection="true" active="true" 
-                                    itemLabel="#{group.groupLexicalValue}" itemValue="#{group}" converter="termConverterGroup"
-                                    scrollHeight="400" 
-                                    inputStyle="font-size: 12px;min-width: 230px; height: 34px;box-shadow: none;border-color: #43B572"
-                                    style="width:100%; font-size: 12px;">
-                        <p:column> 
-                            <h:outputText value="#{group.idGroup}" style="font-size: 12px;"/>
-                        </p:column>
-                        <p:column>
-                            <h:outputText value="#{group.groupLexicalValue}" style="font-size: 12px;" />
-                        </p:column>
-                    </p:autoComplete>
-                </b:column>
-            </b:row>
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+            </div>
+        </div>
 
-            <b:row style="margin-bottom: 20px; margin-top: 30px">
-                <b:column span="8" offset="2" >
-                    <b:commandButton 
-                                     id="buttonRename" value="#{langueBean.getMsg('btnValidate')}" 
-                                     update="containerIndex:formRightTab"
-                                     class="btn btn-primary"
-                                     action="#{addConceptAndChildToGroupBean.addConceptAndChildToGroup()}"
-                                     oncomplete="PF('addConceptAndChildToGroup').hide();"
-                                     style="width:100%; font-size: 12px;
-                                     color: white; background: #43B572;"/>
-                </b:column>
-            </b:row>    
-        </h:form>
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.type_to_display_all')}"
+                              style="font-size: 12px;"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <p:autoComplete value="#{addConceptAndChildToGroupBean.selectedNodeAutoCompletionGroup}"
+                                completeMethod="#{addConceptAndChildToGroupBean.getAutoCompletCollection}" var="group"
+                                forceSelection="true" active="true" scrollHeight="400" 
+                                itemLabel="#{group.groupLexicalValue}" itemValue="#{group}" converter="termConverterGroup"                                   
+                                inputStyle="font-size: 12px;min-width: 230px; height: 34px;box-shadow: none;border-color: #43B572; color: #000"
+                                style="width:100%; font-size: 12px; color: #000">
+                    <p:column> 
+                        <h:outputText value="#{group.idGroup}" style="font-size: 12px;"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{group.groupLexicalValue}" style="font-size: 12px;" />
+                    </p:column>
+                </p:autoComplete>
+            </div>
+        </div>
+        
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                                 actionListener="PF('addConceptAndChildToGroup').hide();" update="idAddConceptToGroup"/>
+
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-success" oncomplete="PF('addConceptAndChildToGroup').hide();"
+                                 actionListener="#{addConceptAndChildToGroupBean.addConceptAndChildToGroup()}" style="color: white;"/>
+            </div>
+        </f:facet>
     </p:dialog> 
 </ui:fragment>

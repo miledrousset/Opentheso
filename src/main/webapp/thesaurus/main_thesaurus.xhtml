@@ -22,7 +22,7 @@
                         </div>
                         <div style="width: 50%; text-align: right;">
                             <p:column style="text-align: right">
-                                <p:selectOneMenu value="#{selectedTheso.optionThesoSelected}"
+                                <p:selectOneMenu value="#{selectedTheso.optionThesoSelected}" style="color: #000"
                                                  rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}">
                                     <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedOptionTheso()}" update="containerIndex" />
                                     <f:selectItem itemLabel="Page d'accueil" itemValue="Option1"/>

@@ -100,10 +100,7 @@ public class EditConcept implements Serializable {
      * @param idTheso
      * @param idUser
      */
-    public void updateLabel(
-            String idTheso,
-            String idLang,
-            int idUser) {
+    public void updateLabel( String idTheso, String idLang, int idUser) {
 
         duplicate = false;
 
@@ -286,7 +283,7 @@ public class EditConcept implements Serializable {
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:conceptView");
+            pf.ajax().update("containerIndex:formRightTab");
         }
         PrimeFaces.current().executeScript("PF('deleteConcept').hide();");
         reset("");

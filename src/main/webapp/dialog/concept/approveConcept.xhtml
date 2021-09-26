@@ -56,7 +56,7 @@
             
             <b:row style="margin-bottom: 20px;">
                 <b:column span="4" offset="4" >
-                    <b:commandButton value="Approuver" update="approveConceptForm containerIndex:formRightTab:viewTabConcept:conceptView messageIndex"
+                    <b:commandButton value="Approuver" update="approveConceptForm containerIndex:formRightTab messageIndex"
                         class="btn btn-primary"
                         action="#{editConcept.approveConcept(conceptView.nodeConcept.concept.idConcept,
                                 selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"

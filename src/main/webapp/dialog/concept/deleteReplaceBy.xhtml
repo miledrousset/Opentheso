@@ -1,57 +1,41 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
-
-    <!--    <b:modal id="idRenameConcept"  class="renameConcept" title="Renommer le concept" close-on-escape="false" backdrop="false"
-                 style="font-size: 12px;">
-    -->
 
     <p:dialog id="idDeleteReplaceBy" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_replaceby')}" widgetVar="deleteReplaceBy" 
               modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >         
 
         <h:form id="deleteReplaceByForm">   
-            <b:row >
-                <b:column span="11" offset="1" >
+            <div class="row" >
+                <div>
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.deprecated_concept')}: " style="font-size: 14px; color: black;"/>                    
                     <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 14px; color: #C63632;"/>
-                </b:column>
-            </b:row>        
-            
-            <p:spacer/> 
+                </div>      
 
-            <b:row >
-                <b:column span="11" offset="1" >
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.is_replaced_by')}:" style="font-size: 12px; color: black;"/>                    
-                </b:column>
-            </b:row> 
-            <b:row style="font-size: 12px;">
-                <ui:repeat var="replaceBy" value="#{editConcept.nodeReplaceBy}" >
-                    <b:column span="8" offset="1" style="background: #FAFAFA">
-                        <h:outputText value="#{replaceBy.value} (#{replaceBy.id})"
-                                      style="color: #43B572"/> 
-                    </b:column>
-                    <b:column span="2" style="background: #FAFAFA">
-                        <b:navCommandLink icon-awesome="fa-trash" style="color: #FF7979"
-                                          action="#{editConcept.deleteReplacedBy(
-                                               conceptView.nodeConcept.concept.idConcept,
-                                               selectedTheso.currentIdTheso,
-                                               replaceBy.id)}"
-                                         update="containerIndex:formRightTab:viewTabConcept:deleteReplaceByForm"/>
-                    </b:column>
+                <p:spacer/> 
 
-                    <p:spacer height="20" />
-                </ui:repeat>
-            </b:row>
-            
-            <p:spacer height="30" />  
+                <div>
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.is_replaced_by')}:" style="font-size: 12px; color: black;"/> 
+                </div>
 
-            <b:row >
-                <b:column span="11" offset="1" >
-                    <b:messages autoUpdate="true"/>
-                </b:column>
-            </b:row>              
+                <div>
+                    <ui:repeat var="replaceBy" value="#{editConcept.nodeReplaceBy}" >
+                        <div class="col-9" offset="1" style="background: #FAFAFA">
+                            <h:outputText value="#{replaceBy.value} (#{replaceBy.id})" style="color: #43B572"/> 
+                        </div>
+                        <div class="col-3" style="background: #FAFAFA">
+                            <p:commandLink style="color: #FF7979"
+                                           action="#{editConcept.deleteReplacedBy(conceptView.nodeConcept.concept.idConcept,
+                                                     selectedTheso.currentIdTheso, replaceBy.id)}"
+                                           update="containerIndex:formRightTab:viewTabConcept:deleteReplaceByForm">
+                                <i class="pi pi-trash" />
+                            </p:commandLink>
+                        </div>
+                        <p:spacer height="20" />
+                    </ui:repeat>
+                </div>
+            </div>     
         </h:form>
     </p:dialog> 
 </ui:fragment>

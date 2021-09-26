@@ -429,7 +429,6 @@ public class EditFacet implements Serializable {
     }
 
     public void addNewFacet() {
-
         FacetHelper facetHelper = new FacetHelper();
         if(!checkLabelFacet(facetHelper)){
             return;            
@@ -441,10 +440,12 @@ public class EditFacet implements Serializable {
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 newFacetName, selectedTheso.getCurrentLang(),
                 null);
+        
         if(idFacet == null) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la création de la Facette !");
             return;
         }
+        
         showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec sucée !");
 
         tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");

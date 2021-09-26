@@ -1,0 +1,256 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
+
+    <!-- Actions sur le concept -->
+    <p:panel id="idConceptViewActions" rendered="#{(currentUser.nodeUser != null)}" class="p-grid ui-fluid">
+        <div class="p-col-12 p-md-4" />
+        <div class="p-col-12 p-md-4" />
+
+        <div class="p-col-12 p-md-4">
+            <div class="ui-inputgroup">
+                <b:dropMenu rendered="#{(currentUser.nodeUser != null) and 
+                                        (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            icon-awesome="fa-plus-circle" icon-size="l"  value=""
+                            style="color: #f47b2a; background: none; border: none; box-shadow: none; font-size: 12px; "
+                            class="dropdown-submenu pull-left"
+                            tooltip="#{langueBean.getMsg('rightbody.concept.global_actions')}" tooltip-delay-show="1000">
+
+
+                    <b:navCommandLink  value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
+                                       tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_branch')}" tooltip-delay-show="1000"
+                                       action="#{dragAndDrop.setDragNode(tree.selectedNode)}"
+                                       actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
+                                       styleClass="buttonIconOrange"
+                                       ajax="true"
+                                       style="font-size: 12px;"
+                                       update="idConceptViewActions messageIndex">
+                    </b:navCommandLink>
+                    <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and
+                                                   (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
+                                       value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.as_specific')}" 
+                                       tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_under_concept')}" tooltip-delay-show="1000"
+                                       actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
+                                       action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
+                                       styleClass="buttonIconOrange"
+                                       ajax="true"
+                                       style="font-size: 12px;"
+                                       update="idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
+                    </b:navCommandLink>
+                    <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
+                                       value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}" 
+                                       tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_as_topterm')}" tooltip-delay-show="1000"
+                                       actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
+                                       action="#{dragAndDrop.paste(null)}"
+                                       styleClass="buttonIconOrange"
+                                       ajax="true"
+                                       style="font-size: 12px;"
+                                       update="idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
+                    </b:navCommandLink>
+                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_concept')}" 
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.toottip_delete_concept')}"
+                                      actionListener="#{editConcept.infosDelete()}"
+                                      update="idDeleteConcept deleteConceptForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('deleteConcept').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>   
+                    <b:navCommandLink rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
+                                      value="#{langueBean.getMsg('rightbody.concept.deprecate_concept')}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_deprecate_concept')}"
+                                      update="idDeprecateConcept deprecateConceptForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('deprecateConcept').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>
+                    <b:navCommandLink rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
+                                      value="#{langueBean.getMsg('rightbody.concept.approve_concept')}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_approve_concept')}"
+                                      update="idApproveConcept approveConceptForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('approveConcept').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>
+
+
+                    <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_ark')}"
+                                      tooltip-delay-show="500"
+                                      value="#{langueBean.getMsg('rightbody.concept.generate_ark')}" 
+                                      disabled="false"                                      
+                                      actionListener="#{editConcept.infosArk()}"
+                                      update="idGenerateArk generateArkForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('generateArk').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>
+                    <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_handle')}"
+                                      tooltip-delay-show="500"                                      
+                                      value="#{langueBean.getMsg('rightbody.concept.generate_handle')}" 
+                                      disabled="false"                                      
+                                      actionListener="#{editConcept.infosHandle()}"
+                                      update="idGenerateHandle generateHandleForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('generateHandle').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>
+                    <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_delete_handle')}"
+                                      tooltip-delay-show="500"                                      
+                                      value="#{langueBean.getMsg('rightbody.concept.delete_handle')}" 
+                                      disabled="false"                                      
+                                      actionListener="#{editConcept.infosDeleteHandle()}"
+                                      update="idDeleteHandle deleteHandleForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('deleteHandle').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>                    
+
+
+
+                    <!-- partie pour générer les identifiants ARK d'un thésaurus à déplacer par la suite vers la boite à outils -->
+                    <b:navLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"/>
+
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="#{langueBean.getMsg('rightbody.concept.generate_missing_ark')}" 
+                        tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_missing_ark')}"
+                        disabled="false"
+                        action="#{editConcept.generateArkForConceptWithoutArk()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
+                    </b:navCommandLink>
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="#{langueBean.getMsg('rightbody.concept.generate_ark_for_branch')}" 
+                        tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_ark_for_branch')}"
+                        disabled="false"
+                        action="#{editConcept.generateArkForThisBranch()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
+                    </b:navCommandLink>                     
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="#{langueBean.getMsg('rightbody.concept.generate_all_ark')}" 
+                        tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_all_ark')}"
+                        disabled="false"
+                        action="#{editConcept.generateAllArk()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
+                    </b:navCommandLink>   
+
+
+                    <!-- partie pour générer les identifiants Handle d'un thésaurus à déplacer par la suite vers la boite à outils -->
+                    <b:navLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"/>
+
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="#{langueBean.getMsg('rightbody.concept.generate_missing_handle')}" 
+                        tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_missing_handle')}"
+                        disabled="false"
+                        action="#{editConcept.generateHandleForConceptWithoutHandle()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
+                    </b:navCommandLink>
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="#{langueBean.getMsg('rightbody.concept.generate_handle_for_branch')}" 
+                        tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_handle_for_branch')}"
+                        disabled="false"
+                        action="#{editConcept.generateHandleForThisBranch()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
+                    </b:navCommandLink>                     
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="#{langueBean.getMsg('rightbody.concept.generate_all_handle')}" 
+                        tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_generate_all_handle')}"
+                        disabled="false"
+                        action="#{editConcept.generateAllHandle()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
+                    </b:navCommandLink>                       
+
+
+
+                    <!-- partie pour copier des concepts/branches d'un thésaurus à un autre -->
+                    <b:navLink/>
+                    <b:navCommandLink disabled="false"
+                                      rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
+                                      value="#{langueBean.getMsg('rightbody.concept.copy_to_another_thesaurus')}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_copy_to_another_thesaurus')}" tooltip-delay-show="1000"
+                                      action="#{copyAndPasteBetweenTheso.onStartCopy()}"
+                                      styleClass="buttonIconOrange"
+                                      style="font-size: 12px;"
+                                      update="idConceptViewActions messageIndex">
+                    </b:navCommandLink>
+                    <b:navCommandLink rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
+                                      value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.here')} !!" 
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_paste_from_another_thesaurus')}" tooltip-delay-show="500"
+                                      actionListener="#{copyAndPasteBetweenTheso.validatePaste()}" 
+                                      styleClass="buttonIconOrange"
+                                      style="font-size: 12px;"
+                                      action="#{copyAndPasteBetweenTheso.setIsDropToRoot(false)}"
+                                      update="idCopyAndPasteBetweenTheso copyAndPasteBetweenThesoForm"
+                                      oncomplete="PF('copyAndPasteBetweenTheso').show();" >
+                    </b:navCommandLink> 
+                    <b:navCommandLink  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
+                                       value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}"
+                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_cancel_copy_other_thesaurus')}" tooltip-delay-show="1000"
+                                       action="#{copyAndPasteBetweenTheso.reset()}"
+                                       styleClass="buttonIconOrange"
+                                       style="font-size: 12px;"
+                                       update="idConceptViewActions messageIndex">
+                    </b:navCommandLink>                      
+
+                    <b:navLink/>
+
+                    <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.import_tabulated_list')}"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_import_tabulated_list')} #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
+                                      actionListener="#{editConcept.infosDelete()}"
+                                      update="idListImportCsv listImportCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('listImportCsv').show();"
+                                      style="font-size: 12px; ">
+                    </b:navCommandLink>
+
+
+                    <!--Pour importer des alignements -->
+                    <b:navLink rendered="#{currentUser.nodeUser.isSuperAdmin}"/>
+                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}"
+                                      value="importer des alignements d'après un tableau CSV"
+                                      update="idListAlignmentCsv listAlignmentCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('listAlignmentCsv').show();"
+                                      style="font-size: 12px; ">
+                    </b:navCommandLink>
+                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}"
+                                      value="Supprimer des alignements d'après un tableau CSV"
+                                      update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('deleteListAlignmentCsv').show();"
+                                      style="font-size: 12px; color: #C63632">
+                    </b:navCommandLink>                        
+
+                </b:dropMenu>
+            </div>
+        </div>
+    </p:panel>
+
+    <ui:include src="../../dialog/concept/deleteConcept.xhtml" />
+    <ui:include src="../../dialog/concept/deprecateConcept.xhtml" />
+    <ui:include src="../../dialog/concept/approveConcept.xhtml" />
+    <ui:include src="../../dialog/import/listImportCsv.xhtml" />
+    <ui:include src="../../dialog/import/listAlignmentCsv.xhtml" />   
+    <ui:include src="../../dialog/import/deleteListAlignmentCsv.xhtml" />          
+    <ui:include src="../../dialog/concept/generateArk.xhtml" /> 
+    <ui:include src="../../dialog/concept/generateHandle.xhtml" />    
+    <ui:include src="../../dialog/concept/deleteHandle.xhtml" />           
+    <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" /> 
+
+
+</ui:fragment>

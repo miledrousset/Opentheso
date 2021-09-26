@@ -5,59 +5,65 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddTopConcept" header="Ajouter un top concept" widgetVar="addTopConcept" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" > 
+              width="450" showEffect="fade" modal="true" resizable="false" >
 
-        <h:form id="addTopConceptForm"
-                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Nom top concept :" style="font-weight: bold;"/>
+                <p:commandLink style="color: #FF7979" action="#{newConcept.infosTopConcept}" update="messageIndex">
+                    <i class="pi pi-info-circle"></i>
+                </p:commandLink> 
+            </div>
+            <div class="col-7">
+                <p:inputText placeholder="New top concept..." value="#{newConcept.prefLabel}" 
+                             style="width: 100%; background: white; border-color: #43B572"/>
+            </div>
+        </div>
 
-            <p:panelGrid columns="1">
-                <p:column>
-                    <p:inputText placeholder="new top concept..." value="#{newConcept.prefLabel}"/>
-
-                    <p:commandLink style="font-size: 17px; color: #FF7979"
-                                   action="#{newConcept.infosTopConcept}" update="addTopConceptForm">
-                        <i class="pi pi-info-circle"></i>
-                    </p:commandLink>    
-                </p:column>  
-
-                <p:selectOneMenu label="Collection:" id="collection" value="#{newConcept.idGroup}" 
-                                 style="font-size: 12px; background: white; border-color: #43B572">
+        <div class="row" style="margin-top: 10px">
+            <div class="col-5">
+                <h:outputText value="Collection :" style="font-weight: bold; margin-top: 3px"/>
+            </div>
+            <div class="col-7">
+                <p:selectOneMenu value="#{newConcept.idGroup}" 
+                                 style="width: 100%; background: white; border-color: #43B572">
                     <f:selectItem itemLabel="..." itemValue="" />
                     <f:selectItems value="#{newConcept.nodeGroups}" var="nodeGroup"
                                    itemLabel="#{nodeGroup.lexicalValue}" itemValue="#{nodeGroup.conceptGroup.idgroup}"/>
                 </p:selectOneMenu>
-
-                <p:inputText label="Notation:" placeholder="notation..." id="notation" value="#{newConcept.notation}"
-                             autocomplete="false"  style="font-size: 12px;" />
-
-                <p:inputText label="Id" placeholder="identifiant facultatif..." id="privateId" value="#{newConcept.idNewConcept}"
-                             autocomplete="false"  style="font-size: 12px;" />
-
-                <p:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addTopConceptForm" 
-                                 style="width:100%; font-size: 13px;  font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
-                                 class="btn btn-primary"
-                                 action="#{newConcept.addTopConcept(selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
-
-            </p:panelGrid>   
-        </h:form>
-    </p:dialog>  
-    
-    <div class="modal fade" id="logoutModalXXXX" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
-                </div>
             </div>
         </div>
-    </div>
+
+        <div class="row" style="margin-top: 10px">
+            <div class="col-5">
+                <h:outputText value="Notation :" style="font-weight: bold; margin-top: 3px"/>
+            </div>
+            <div class="col-7">
+                <p:inputText placeholder="Notation..." id="notation" value="#{newConcept.notation}"
+                             autocomplete="false" style="width: 100%; background: white; border-color: #43B572" />
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 10px">
+            <div class="col-5">
+                <h:outputText value="ID :" style="font-weight: bold; margin-top: 3px"/>
+            </div>
+            <div class="col-7">
+                <p:inputText placeholder="Identifiant facultatif..." value="#{newConcept.idNewConcept}"
+                             autocomplete="false" style="width: 100%; background: white; border-color: #43B572" />
+            </div>
+        </div>
+
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                                 actionListener="PF('addTopConcept').hide();" update="idAddTopConcept"/>
+                
+                <p:commandButton class="btn btn-success" value="#{langueBean.getMsg('btnValidate')}" 
+                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex" 
+                                 style="color: white;"
+                                 actionListener="#{newConcept.addTopConcept(selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
+            </div>
+        </f:facet>
+    </p:dialog>
 </ui:fragment>

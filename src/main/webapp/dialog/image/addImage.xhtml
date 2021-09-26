@@ -1,56 +1,44 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idAddImage" header="#{langueBean.getMsg('rightbody.conceptdialog.add_image')}" widgetVar="addImage" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >    
+              width="450" showEffect="fade" modal="true" resizable="false" >
+
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+            </div>
+        </div>
         
-        <h:form id="addImageForm"
-                rendered="#{(currentUser.nodeUser != null) 
-                            and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-            
-            <b:row>
-                <b:column span="6" style="margin-left: 5px;">
-                    <b:row>
-                        <b:column span="12" style=" margin-bottom: 10px; ">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "
-                                          style="font-size: 12px;"/>  
-                            <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                          style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
-                        </b:column>
+        <div class="row" style="margin-top: 5px">
+            <div class="col-5" >
+                <p:inputText id="idImage" label="#{langueBean.getMsg('rightbody.conceptdialog.uri_image')}"
+                             placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_uri')} ..."  
+                             value="#{imageBean.uri}" style="font-size: 12px;"/> 
+            </div>
+            <div class="col-7">
+                <p:inputText id="idCopyright" label="#{langueBean.getMsg('rightbody.conceptdialog.copyright')}" 
+                             placeholder="#{langueBean.getMsg('rightbody.conceptdialog.copyright')} ..."  
+                             value="#{imageBean.copyright}" style="font-size: 12px;"/>
+            </div>
+        </div>
+        
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                        <!-- Valeur -->
-                        <b:column span="12" >
-                            <b:inputText id="idImage" label="#{langueBean.getMsg('rightbody.conceptdialog.uri_image')}"
-                                         placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_uri')} ..."  
-                                         value="#{imageBean.uri}" style="font-size: 12px;"/>
-                        </b:column>
-                        <!-- Copyright -->
-                        <b:column span="12" >
-                            <b:inputText id="idCopyright" label="#{langueBean.getMsg('rightbody.conceptdialog.copyright')}" 
-                                         placeholder="#{langueBean.getMsg('rightbody.conceptdialog.copyright')} ..."  
-                                         value="#{imageBean.copyright}" style="font-size: 12px;"/>
-                        </b:column>  
-                    </b:row>
-                </b:column>
+                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                                 actionListener="PF('addImage').hide();" update="idAddImage"/>
 
-                <b:column span="5" >
-                    <b:messages autoUpdate="true"/>
-                </b:column>                
-            </b:row>
-
-            <b:row style="margin-bottom: 10px;" >
-                <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  
-                                     update="containerIndex:formRightTab" class="btn btn-primary"
-                                     oncomplete="PF('addImage').hide();"
-                                     style="width:100%; font-size: 13px; font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"                                    
-                                     action="#{imageBean.addNewImage(currentUser.nodeUser.idUser)}"/>
-                </b:column>                    
-            </b:row>            
-        </h:form>
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-success" oncomplete="PF('addImage').hide();"
+                                 actionListener="#{imageBean.addNewImage(currentUser.nodeUser.idUser)}" style="color: white;"/>
+            </div>
+        </f:facet>
     </p:dialog>   
 </ui:fragment>

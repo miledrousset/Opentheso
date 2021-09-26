@@ -5,19 +5,24 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="height: 82%">
 
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Thésaurus</h1>
+        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 40px; width: 100%;">
+            <div style="position: relative; height: 100%; width: 100%;" >
+                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1;">
+                    <ui:include src="search.xhtml"/> 
+                </div>
+                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;">
+                    <h1 class="h3 mb-0 text-gray-800">Thésaurus</h1>
+                </div>
+            </div>
         </div>
 
-        <ui:include src="search.xhtml"/> 
-
-        <div class="row" style="margin-top: 10px; height: 100%">
-            <div class="col-xl-4 col-lg-5">
-                <div class="card shadow mb-4">    
-                    <h:form id="formLeftTab">
-                        <p:tabView activeIndex="#{leftBodySetting.index}" style="color: #000" >
+        <div class="row" style="height: 100%;">
+            <div class="col-xl-3 col-lg-5" style="height: 100%;">
+                <div class="card shadow mb-4" style="height: 100%;">    
+                    <h:form id="formLeftTab" style="height: 100%;">
+                        <p:tabView activeIndex="#{leftBodySetting.index}" style="border-style: none" >
                             <p:tab>
                                 <f:facet name="title">
                                     <i class="pi pi-sitemap" />
@@ -41,6 +46,14 @@
                                 </f:facet>
                                 <ui:include src="leftBodyView/groups.xhtml"/>
                             </p:tab>
+
+                            <p:tab>
+                                <f:facet name="title">
+                                    <i class="pi pi-sitemap" />
+                                    <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
+                                </f:facet>
+                            </p:tab>
+                            <ui:include src="leftBodyView/conceptsTree.xhtml" />
                         </p:tabView>
 
                         <!--<ui:include src="../dialog/dragAndDrop/dragAndDrop.xhtml" />-->
@@ -48,45 +61,41 @@
                 </div>
             </div>
 
-            <div class="col-xl-8 col-lg-7">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">#{conceptView.nodeConcept.term.lexical_value}</h6>
-                    </div>
+            <div class="col-xl-9 col-lg-7" style="height: 100%">
+                <div class="card shadow mb-4" style="height: 100%; overflow-y: scroll;">
                     <div class="card-body">
-                        <h:form id="formRightTab">
-
-                            <p:tabView activeIndex="#{rightBodySetting.index}"  >
-                                <p:tab  id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
+                        <h:form id="formRightTab" style="height: 100%; border-style: none;  padding-right: 10px" >
+                            <p:tabView activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"  >
+                                <p:tab id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
                                     <f:facet name="anchor">
                                         <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                     </f:facet>
                                     <ui:include rendered="#{rightBodySetting.showConcept}"  src="rightBodyView/concept.xhtml"/>
                                 </p:tab>      
-                                <!--<p:tab  id="viewTabGroup" title="#{langueBean.getMsg('leftbody.collection')}" >
+
+                                <p:tab  id="viewTabGroup" title="#{langueBean.getMsg('leftbody.collection')}" >
                                     <f:facet name="anchor">
                                         <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                     </f:facet>
                                     <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
-                                </p:tab>                       
+                                </p:tab>              
 
                                 <p:tab id="viewTabSearch" title="#{langueBean.getMsg('rightbody.search_result')}" >
                                     <f:facet name="anchor">
                                         <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                     </f:facet>
                                     <ui:include  src="rightBodyView/resultSearch.xhtml"/>
-                                </p:tab>-->
+                                </p:tab>
                             </p:tabView>
-                            
-                            <!--<ui:include src="rightBodyView/facet.xhtml" rendered="#{indexSetting.isFacetSelected}" />
-                            
-                            <ui:include  src="rightBodyView/thesoHome.xhtml" rendered="#{indexSetting.isHomeSelected}" />-->
 
+                            <h:panelGroup rendered="#{indexSetting.isFacetSelected}">
+                                <ui:include src="rightBodyView/facet.xhtml" />
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{indexSetting.isHomeSelected}">
+                                <ui:include src="rightBodyView/thesoHome.xhtml" />
+                            </h:panelGroup>
                         </h:form>
-
-<!--<h:panelGroup rendered="#{conceptView.nodeConcept != null}" >
- <ui:include src="rightBodyView/download.xhtml" />
-</h:panelGroup>-->
                     </div>
                 </div>
             </div>

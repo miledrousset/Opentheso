@@ -11,21 +11,21 @@
         </div>
         <div style="width: 50%; text-align: right;">
             <p:link  href="#{request.contextPath}/graph/index.xhtml"
-                     target="_blank" id="link_graphe_disabled"
+                     target="_blank"
                      disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
                      style="color: #F47B2A; float: right; margin-top: 2px;">
                 <i class="pi pi-share-alt" style="font-size: 1rem" />
-            </p:link> 
+            </p:link>
 
-            <p:menuButton icon="pi pi-list" style="margin-right: 10px" >
-                
+            <p:menuButton style="margin-right: 10px; background-color: transparent" >
+
                 <p:menuitem icon="pi pi-lis" value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
                             actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
                             action="#{selectedTheso.reloadSelectedTheso()}"
                             process="@this"
                             disabled="#{!selectedTheso.sortByNotation}"
                             update="containerIndex:formLeftTab"/>
-                
+
                 <p:menuitem icon="pi pi-lis" value="#{langueBean.getMsg('leftbody.notation_sort')}"
                             actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
                             action="#{selectedTheso.reloadSelectedTheso()}"
@@ -33,8 +33,8 @@
                             process="@this"
                             update="containerIndex:formLeftTab" />
 
-                <p:menuitem  icon="pi pi-lis" value="Add top concept" action="#{newConcept.reset()}" oncomplete="PF('addTopConcept').show();" 
-                             update="idAddTopConcept addTopConceptForm"
+                <p:menuitem  icon="pi pi-lis" value="Add top concept" action="#{newConcept.reset()}" 
+                             oncomplete="PF('addTopConcept').show();" 
                              rendered="#{(currentUser.nodeUser != null) and 
                                          (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
@@ -51,13 +51,10 @@
                             update="idCopyAndPasteBetweenThesoToTop copyAndPasteBetweenThesoToTopForm"
                             oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />
             </p:menuButton> 
-
-            <ui:include src="../../dialog/concept/addTopConcept.xhtml" />
-            <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
         </div>
     </div>
 
-    <p:tree id="tree" value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
+    <p:tree value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
             style="width: auto; border: none; font-size: 12px;  min-height: 400px; max-height: 800px;" animate="true"
             styleClass="tree_custom" cache="#{roleOnTheso.nodePreference.tree_cache}"
             draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 

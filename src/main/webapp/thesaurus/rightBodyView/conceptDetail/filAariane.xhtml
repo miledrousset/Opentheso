@@ -1,0 +1,49 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
+
+    <div style="width: 100%; display: flex;">
+        <div style="width: 97%;">  
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <ui:repeat var="path" value="#{conceptView.pathLabel}" >
+                        <li class="breadcrumb-item">
+                            <a href="#">
+                                <p:commandLink rendered="#{path.isStartOfPath}" style="color:#43B572; 
+                                               background: none; border: none; box-shadow: none; font-size: 12px; margin-right:5px;"
+                                               update="containerIndex:formRightTab containerIndex:formLeftTab" 
+                                               actionListener="#{conceptView.getConcept(selectedTheso.selectedIdTheso, path.idConcept, selectedTheso.currentLang)}">
+                                    <h:outputText value="#{path.title}"/>
+                                </p:commandLink>
+                            </a>
+                        </li>
+                    </ui:repeat>
+                    <li class="breadcrumb-item">
+                        <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value != ''}" 
+                                      value=" #{conceptView.nodeConcept.term.lexical_value}   " 
+                                      style="font-size: 12px; color: #f47b2a"/>
+                        <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value == ''}" 
+                                      value=" (#{conceptView.nodeConcept.concept.idConcept})   " 
+                                      style="font-size: 12px; color: #f47b2a"/>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div style="width: 3%; height: 100%; margin-top: 10px; text-align: right;">
+            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                <p:menuitem rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            actionListener="#{newConcept.reset()}" oncomplete="PF('addNT').show();"
+                            value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
+
+                <p:menuitem rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            actionListener="#{editFacet.initNewFacet()}"
+                            oncomplete="PF('addFacet').show();" 
+                            value="#{langueBean.getMsg('rightbody.concept.new_facet')}"/>
+            </p:menuButton>
+        </div>
+    </div>
+
+</ui:fragment>

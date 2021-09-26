@@ -62,10 +62,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
             lang = connect.getWorkLanguage();
         } 
         HtmlPageHelper copyrightHelper = new HtmlPageHelper();
-        text = copyrightHelper.getThesoHomePage(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                lang);
+        text = copyrightHelper.getThesoHomePage(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), lang);
         isInEditing = true;
         isViewPlainText = false;
         

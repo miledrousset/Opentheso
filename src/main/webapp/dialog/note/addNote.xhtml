@@ -1,90 +1,77 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddNote" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNote" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 50px" >        
-        <h:form id="addNoteForm"
-                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-            <b:row>
-                <b:column span="6" style="margin-left: 5px;">
-                    <b:row>
-                        <b:column span="12" style=" margin-bottom: 10px; ">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "
-                                          style="font-size: 12px;"/>  
-                            <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                          style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
-                        </b:column>
-                        
-                        <!-- type note -->
-                        <b:column span="12" >
-                            <p:selectOneMenu id="typeNote" label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" value="#{noteBean.selectedTypeNote}" 
-                                             style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
-                                
-                                <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
-                                               itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
-                            </p:selectOneMenu>                                
-                        </b:column>
-                        
-                        <p:spacer/>
-                        
-                        <!-- Langue de la note -->
-                        <b:column span="12" >
-                            <p:selectOneMenu id="collection" label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{noteBean.selectedLang}" 
-                                             style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
-                                <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                            </p:selectOneMenu>                                  
-                        </b:column>
-                        
-                        <p:spacer/>
-                    </b:row>
-                </b:column>
+              width="450" showEffect="fade" modal="true" resizable="false" >  
 
-                <b:column span="5" style-class="message2">
-                    <b:row>
-                        <b:column span="2" offset="10">
-                            <b:commandLink icon-awesome="fas fa-exclamation-circle"
-                                           style="font-size: 17px; color: #FF7979"
-                                           action="#{noteBean.infos}"
-                                           update="addNoteForm"/>
-                        </b:column>
-                    </b:row>
-                    <b:row>
-                        <b:column span="12">
-                            <b:messages autoUpdate="true"/>
-                        </b:column>
-                    </b:row>                        
-                </b:column>
-            </b:row>
-            <p:spacer/>
-            <b:row>
-                <b:column span="12">
-                    <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" 
-                                  secure="false" height="200" style="font-size: 12px; color: black" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
-                        <f:facet name="toolbar" >
-                            <span class="ql-formats" >
-                                <button class="ql-link" title="#{langueBean.getMsg('rightbody.conceptdialog.add_link')}"></button>
-                                <button class="ql-unlink" title="#{langueBean.getMsg('rightbody.conceptdialog.delete_link')}"></button>
-                            </span>
-                        </f:facet>
-                    </p:textEditor>                    
-                    
-                </b:column>
-            </b:row>
-            <p:spacer/>
-            <b:row >
-                <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="addNoteForm" 
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary"
-                                     action="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
-                </b:column>                    
-            </b:row>            
-        </h:form>
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+                <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
+                    <i class="pi pi-exclamation-circle" />
+                </p:commandLink>
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+            </div>
+        </div>
+
+        <!-- type note -->
+        <div class="row" style="margin-top: 5px">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Type : " class="dialog-titre" /> 
+            </div>
+            <div class="col-7">
+                <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" value="#{noteBean.selectedTypeNote}" 
+                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+
+                    <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
+                                   itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
+                </p:selectOneMenu>  
+            </div>
+        </div>
+
+        <!-- Langue de la note -->
+        <div class="row" style="margin-top: 5px">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Langue : " class="dialog-titre" /> 
+            </div>
+            <div class="col-7">
+                <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{noteBean.selectedLang}" 
+                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                    <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                </p:selectOneMenu>    
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 5px">
+            <div class="col-12">
+                <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" 
+                              secure="false" height="200" style="font-size: 12px; color: black" 
+                              placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
+                    <f:facet name="toolbar" >
+                        <span class="ql-formats" >
+                            <button class="ql-link" title="#{langueBean.getMsg('rightbody.conceptdialog.add_link')}"></button>
+                            <button class="ql-unlink" title="#{langueBean.getMsg('rightbody.conceptdialog.delete_link')}"></button>
+                        </span>
+                    </f:facet>
+                </p:textEditor>    
+            </div>
+        </div>
+        
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                                 actionListener="PF('addNote').hide();" update="idAddNote"/>
+
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-success" oncomplete="PF('addNote').hide();"
+                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}" style="color: white;"/>
+            </div>
+        </f:facet>
     </p:dialog>   
 </ui:fragment>

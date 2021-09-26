@@ -12,7 +12,7 @@
         <link href="resources/css/sb-admin-2.css" rel="stylesheet" />
         <link href="resources/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
-        
+
         <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
 
         <h:panelGroup id="indexTitle" >
@@ -49,7 +49,7 @@
             $.blockUI.defaults.overlayCSS.opacity = 0.5;
             $.blockUI.defaults.message = '<div style="padding-top:1em"><b:spinner name="circle-o-notch" size="2x" /> Please wait ... </div>';
         </script>-->
-        
+
     </h:head>
 
     <h:body id="page-top" style="font-size: 12px;">
@@ -65,49 +65,101 @@
         </f:metadata>
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
-        
+
         <div id="wrapper">
 
             <ui:include src="commun/menu.xhtml" />
 
-            <div id="content-wrapper">
-                
-                <h:form id="containerIndex">
-                    <ui:include src="commun/header.xhtml" />
-                    <div id="thesorusContent">
+            <div id="content-wrapper" style="width: 100%">
+
+                <h:form id="containerIndex" style="height: 90%;">
+                    <div style="height: 10%">
+                        <ui:include src="commun/header.xhtml" />
+                    </div>
+                    <div id="thesorusContent" style="margin-top: -20px; max-height: 100%;">
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
+                        <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" style="height: 100%" >
                             <ui:include src="thesaurus/details_thesaurus.xhtml" />
                         </h:panelGroup>
                     </div>
                 </h:form>
-                
-                <ui:include src="commun/footer.xhtml" />
+
+                <div style="max-height: 5%; bottom: 0; margin-top: 15px">
+                    <ui:include src="commun/footer.xhtml" />
+                </div>
             </div>
         </div>
 
+        <!-- Scroll to Top Button-->
         <a class="scroll-to-top rounded" href="#page-top">
-            <i class="fas fa-angle-up"></i>
+            <i class="fas fa-angle-up" />
         </a>
 
         <!-- Bootstrap core JavaScript
         <script src="resources/vendor/jquery/jquery.min.js"></script>-->
         <script src="resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Core plugin JavaScript-->
         <script src="resources/vendor/jquery-easing/jquery.easing.min.js"></script>
+        <script src="resources/js/sb-admin-2.js"></script>
 
-        <!-- Custom scripts for all pages-->
-        <script src="resources/js/sb-admin-2.min.js"></script>
+        <h:form id="conceptForm" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"> 
+            <ui:include src="dialog/concept/addTopConcept.xhtml" />
+            <ui:include src="dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
 
-        <!-- Page level plugins -->
-        <script src="resources/vendor/chart.js/Chart.min.js"></script>
+            <ui:include src="dialog/facet/addFacet.xhtml" />
+            <ui:include src="dialog/concept/addNT.xhtml" /> 
 
-        <!-- Page level custom scripts -->
-        <script src="resources/js/demo/chart-area-demo.js"></script>
-        <script src="resources/js/demo/chart-pie-demo.js"></script>
+            <ui:include src="dialog/concept/renameConcept.xhtml" />
+
+            <ui:include src="dialog/group/addConceptToGroup.xhtml" />
+            <ui:include src="dialog/group/removeConceptFromGroup.xhtml" />
+            <ui:include src="dialog/group/removeConceptAndChildFromGroup.xhtml" />
+            <ui:include src="dialog/group/addConceptAndChildToGroup.xhtml" />
+
+            <ui:include src="dialog/broader/addBroaderLink.xhtml" />
+            <ui:include src="dialog/broader/deleteBroaderLink.xhtml" />
+
+            <ui:include src="dialog/narrower/addNarrowerLink.xhtml" />
+            <ui:include src="dialog/narrower/deleteNarrowerLink.xhtml" />
+            <ui:include src="dialog/narrower/changeRelation.xhtml" />
+
+            <ui:include src="dialog/related/addRelatedLink.xhtml" /> 
+            <ui:include src="dialog/related/deleteRelatedLink.xhtml" /> 
+
+            <ui:include src="dialog/synonym/addSynonym.xhtml" />        
+            <ui:include src="dialog/synonym/deleteSynonym.xhtml" /> 
+            <ui:include src="dialog/synonym/renameSynonym.xhtml" />
+
+            <ui:include src="dialog/traduction/addTraduction.xhtml" />
+            <ui:include src="dialog/traduction/deleteTraduction.xhtml" />
+            <ui:include src="dialog/traduction/renameTraduction.xhtml" />               
+
+            <ui:include src="dialog/concept/setNotation.xhtml" />
+
+            <ui:include src="dialog/note/addNote.xhtml" /> 
+            <ui:include src="dialog/note/deleteNote.xhtml" /> 
+            <ui:include src="dialog/note/editNote.xhtml" />
+
+            <ui:include src="dialog/image/addImage.xhtml" />        
+            <ui:include src="dialog/image/deleteImage.xhtml" /> 
+            <ui:include src="dialog/image/updateImage.xhtml" />
+
+            <ui:include src="dialog/gps/setGps.xhtml" />      
+            <ui:include src="dialog/gps/deleteGps.xhtml" />
+
+            <ui:include src="dialog/history/historicalView.xhtml" />
+
+            <ui:include src="dialog/alignment/addAlignment.xhtml" />
+            <ui:include src="dialog/alignment/deleteAlignment.xhtml" />     
+            <ui:include src="dialog/alignment/updateAlignment.xhtml" />         
+            <ui:include src="dialog/alignment/addManualAlignment.xhtml" /> 
+
+            <ui:include src="dialog/group/modifyGroup.xhtml" />
+            <ui:include src="dialog/group/addTraductionGroup.xhtml" />
+            <ui:include src="dialog/group/deleteTraductionGroup.xhtml" />
+            <ui:include src="dialog/group/renameTraductionGroup.xhtml" />
+        </h:form>
 
     </h:body>
 

@@ -1,68 +1,57 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddManualAlignment" header="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}" widgetVar="addManualAlignment" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 150px; max-height: 500px; " >         
+              width="450" showEffect="fade" modal="true" resizable="false">         
 
-        <h:form id="addManualAlignmentForm">   
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <p:inputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                             label="#{langueBean.getMsg('rightbody.conceptdialog.local_concept')}"
+                             disabled="true" style="color: #43B572; font-size: 12px;"/>
+            </div>
+        </div>
 
-            <b:row >
-                <b:column span="12" style="background: #FAFAFA">
-                    <b:inputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                 label="#{langueBean.getMsg('rightbody.conceptdialog.local_concept')}"
-                                 disabled="true"
-                        style="color: #43B572; font-size: 12px;"/>                    
-                </b:column>
-            </b:row>
-            <b:row >
-                <b:column span="12" style="background: #FAFAFA">
-                    <b:selectOneMenu id="relationType"  value="#{alignmentManualBean.manualAlignmentType}"  
-                                     label="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')}"
-                                     style="font-size: 12px; background: white; border-color: #43B572">
-                        <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
-                                       itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
-                    </b:selectOneMenu>  
-                </b:column>
-            </b:row>
-            <b:row >
-                <b:column span="12" style="background: #FAFAFA">
-                    <b:inputText value="#{alignmentManualBean.manualAlignmentUri}"
-                                 label="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')}" required="true"
-                        style="color: #43B572; font-size: 12px;"/>                    
-                </b:column>
-            </b:row>
-            <b:row >            
-                <b:column span="12" style="background: #FAFAFA">
-                    <b:inputText value="#{alignmentManualBean.manualAlignmentSource}"
-                                 label="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}" required="true"
-                        style="color: #43B572; font-size: 12px;"/>                    
-                </b:column>
-            </b:row>     
-            
-            
-            <b:row style="margin-bottom: 10px;">
-                <b:column span="4" offset="8" >
-                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}" 
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary"
-                                     update="addManualAlignmentForm"
-                                     action="#{alignmentManualBean.addManualAlignement()}"/>
-                </b:column>                    
-                <p:spacer height="20" />
-            </b:row>
+        <div class="row" style="margin-top: 5px">
+            <div class="col-12" style="margin-top: 3px">
+                <p:selectOneMenu id="relationType" value="#{alignmentManualBean.manualAlignmentType}"  
+                                 label="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')}"
+                                 style="font-size: 12px; background: white; border-color: #43B572">
+                    <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
+                                   itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
+                </p:selectOneMenu>
+            </div>
+        </div>
 
-            <b:row>
-                <b:column span="12">
-                    <b:messages autoUpdate="true"/>
-                </b:column>
-            </b:row>  
+        <div class="row" style="margin-top: 5px">
+            <div class="col-12" style="margin-top: 3px">
+                <p:inputText value="#{alignmentManualBean.manualAlignmentUri}"
+                             label="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')}" required="true"
+                             style="color: #43B572; font-size: 12px;"/>  
+            </div>
+        </div>
 
-        </h:form>
+        <div class="row" style="margin-top: 5px">
+            <div class="col-12" style="margin-top: 3px">
+                <p:inputText value="#{alignmentManualBean.manualAlignmentSource}"
+                             label="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}" required="true"
+                             style="color: #43B572; font-size: 12px;"/>   
+            </div>
+        </div>
+
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                                 actionListener="PF('addManualAlignment').hide();" update="idAddManualAlignment"/>
+
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-success" oncomplete="PF('addManualAlignment').hide();"
+                                 actionListener="#{alignmentManualBean.addManualAlignement()}" style="color: white;"/>
+            </div>
+        </f:facet>
     </p:dialog> 
 </ui:fragment>
