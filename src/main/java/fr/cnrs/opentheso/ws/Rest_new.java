@@ -32,6 +32,11 @@ import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * REST Web Service
@@ -41,7 +46,7 @@ import javax.json.JsonObjectBuilder;
 //general path = /api
 @Path("/")
 public class Rest_new {
-
+    private final Log log = LogFactory.getLog(Rest_new.class);
     /**
      * Creates a new instance of resources La connexion est faite à chaque
      * question
@@ -1254,7 +1259,8 @@ public class Rest_new {
      * curl -L --header "Accept: application/rdf+xml"
      * http://localhost:8083/opentheso/api/search?q=notation:nota1&theso=1
      *
-     * @param uri RDF+XML
+     * @param uri
+     * @param headers
      * @return
      * 
      * /// options 
@@ -1263,8 +1269,8 @@ public class Rest_new {
      */
     @Path("/search")
     @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response searchRdf(@Context UriInfo uri) {
+    @Produces("application/rdf+xml,application/ld+json,application/json,text/turtle;charset=UTF-8")
+    public Response searchRdf(@Context UriInfo uri, @Context HttpHeaders headers) {
         String value = null;
         String idLang = "";
         String idTheso = null;
@@ -1273,10 +1279,35 @@ public class Rest_new {
 
         String filter = null;
         boolean showLabels = false;
-        String idArk = null;
+        String idArk;
         
         String datas;
-
+        
+        MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
+        for (Map.Entry<String, List<String>> entry : requestHeaders.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase("accept")) {
+                for (String header : entry.getValue()) {
+                    switch (header.toLowerCase()) {
+                        case "application/rdf+xml":
+                            format= "rdf";
+                            break;
+                        case "application/ld+json":
+                            format= "jsonld";
+                            break;    
+                        case "application/json":
+                            format= "json";
+                            break;                              
+                        case "text/turtle":
+                            format= "turtle";
+                            break;
+                        default:
+                            format= "rdf";
+                            break;                          
+                    }                    
+                }
+            }            
+        }        
+        
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
             for (String valeur : e.getValue()) {
                 if (e.getKey().equalsIgnoreCase("lang")) {
@@ -1310,363 +1341,92 @@ public class Rest_new {
             }
         }
 
-
         // vérification du filtre pour savoir si la recherche concerne des champs spécifiques 
         if (value.contains("notation:")) {
             /// rercherche par notation
             filter = "notation:";
         }
         if (value.contains("prefLabel:")) {
-            /// rercherche par notation
+            /// rercherche par prefLabel
         }
+
+        if (format == null) {
+            format = "rdf";
+        }
+
         /// rercherche par idArk
         if (value.contains("ark:/")) {
             try {
                 idArk = value.substring(value.indexOf("ark:/")+5);
             } catch (Exception e) {
-                return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
             }
-            format = "ark";
-        }        
-
-        if (format == null) {
-            format = "rdf";
-        }
+            datas = getDatasFromArk(idTheso, idLang, idArk, showLabels);
+            if (datas == null) {
+                return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            }
+            return Response                
+                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();   
+        }    
+        
+        
+        /// autre recherche
         switch (format) {
             case "rdf": {
                 format = "application/rdf+xml";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
-            }
-            case "jsonld":
-                format = "application/ld+json";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
-            case "turtle":
-                format = "text/turtle";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
-            case "json":
-                format = "application/json";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
-            case "ark":
-//                format = "application/json";
-                datas = getDatasFromArk(idTheso, idLang, idArk, showLabels);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();                
-        }
-        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-    }
-
-    /**
-     * Permet de rechercher une valeur en filtrant par theso et par langue avec
-     * négociation de contenu //exp curl -L --header "Accept: application/json"
-     * "http://193.48.140.131:8083/opentheso/api/search?q=or&lang=fr&theso=TH_1"
-     *
-     * @param uri JSON
-     * @return
-     */
-    @Path("/search")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response searchJson(@Context UriInfo uri) {
-        String value = null;
-        String idLang = "";
-        String idTheso = null;
-        String group = "";
-        String format = null;
-        String filter = null;
-
-        String datas;
-
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("q")) {
-                    value = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-            }
-        }
-
-        if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (value == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
-        // vérification du filtre pour savoir si la recherche concerne des champs spécifiques 
-        if (value.contains("notation:")) {
-            /// rercherche par notation
-            filter = "notation:";
-        }
-        if (value.contains("prefLabel:")) {
-            /// rercherche par notation
-        }
-
-        if (format == null) {
-            format = "json";
-        }
-        switch (format) {
-            case "rdf": {
-                format = "application/rdf+xml";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
-            }
-            case "jsonld":
-                format = "application/ld+json";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
-            case "turtle":
-                format = "text/turtle";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
-            case "json":
-                format = "application/json";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-    }
-
-    /**
-     * Permet de rechercher une valeur en filtrant par theso et par langue avec
-     * négociation de contenu //exp curl -L --header "Accept:
-     * application/ld+json"
-     * "http://193.48.140.131:8083/opentheso/api/search?q=or&lang=fr&theso=TH_1"
-     *
-     * @param uri JSON+Ld
-     * @return
-     */
-    @Path("/search")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response searchJsonLd(@Context UriInfo uri) {
-        String value = null;
-        String idLang = "";
-        String idTheso = null;
-        String group = "";
-        String format = null;
-        String filter = null;
-        String datas;
-
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("q")) {
-                    value = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-            }
-        }
-        if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (value == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        // vérification du filtre pour savoir si la recherche concerne des champs spécifiques 
-        if (value.contains("notation:")) {
-            /// rercherche par notation
-            filter = "notation:";
-        }
-        if (value.contains("prefLabel:")) {
-            /// rercherche par notation
-        }
-
-        if (format == null) {
-            format = "jsonld";
-        }
-        switch (format) {
-            case "rdf": {
-                format = "application/rdf+xml";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
-            }
-            case "jsonld":
-                format = "application/ld+json";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
-            case "turtle":
-                format = "text/turtle";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
-            case "json":
-                format = "application/json";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-    }
-
-    /**
-     * Permet de rechercher une valeur en filtrant par theso et par langue avec
-     * négociation de contenu //exp curl -L --header "Accept: text/turtle"
-     * "http://193.48.140.131:8083/opentheso/api/search?q=or&lang=fr&theso=TH_1"
-     *
-     * @param uri JSON+Ld
-     * @return
-     */
-    @Path("/search")
-    @GET
-    @Produces("text/turtle;charset=UTF-8")
-    public Response searchTurtle(@Context UriInfo uri) {
-        String value = null;
-        String idLang = "";
-        String idTheso = null;
-        String group = "";
-        String format = null;
-        String filter = null;
-        String datas;
-
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("q")) {
-                    value = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-            }
-        }
-
-        if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (value == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
-        // vérification du filtre pour savoir si la recherche concerne des champs spécifiques 
-        if (value.contains("notation:")) {
-            /// rercherche par notation
-            filter = "notation:";
-        }
-        if (value.contains("prefLabel:")) {
-            /// rercherche par notation
-        }
-
-        if (format == null) {
-            format = "turtle";
-        }
-        switch (format) {
-            case "rdf": {
-                format = "application/rdf+xml";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-                }
-                return Response
-                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
+                return Response                
+                    .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();                 
             //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
             }
             case "jsonld":
                 format = "application/ld+json";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response
-                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
             //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                    .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();                   
             case "turtle":
                 format = "text/turtle";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
                 }
-                return Response
-                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                   
-            //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+               // return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response                
+                    .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();                 
             case "json":
                 format = "application/json";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response
-                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                   
             //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response                
+                    .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();                  
         }
-        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+    //    return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        return Response
+            .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+            .header("Access-Control-Allow-Origin", "*")
+            .build();        
     }
+    
 
     ///////////////////////////////////////////////////////////////////////////////////////
     //////////////Fonction qui permet de produire /////////////////////////////////////////  
@@ -1815,7 +1575,7 @@ public class Rest_new {
      * http://193.48.140.131:8083/opentheso/api/autocomplete/or?theso=TH_1&lang=fr&group=6
      *
      * @param value
-     * @param uri JSON+Ld
+     * @param uri JSON
      * @return
      */
     @Path("/autocomplete/{value}")
@@ -1882,7 +1642,7 @@ public class Rest_new {
      */
     @Path("/autocomplete")
     @GET
-    @Produces("application/ld+json;charset=UTF-8")
+    @Produces("application/json;charset=UTF-8")
     public Response searchAutocomplete2(@Context UriInfo uri) {
         String idLang = "";
         String value = null;
@@ -1910,10 +1670,18 @@ public class Rest_new {
             }
         }
         if (value == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+          //  return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+             .status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+             .header("Access-Control-Allow-Origin", "*")
+             .build();        
         }
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        //    return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+             .status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+             .header("Access-Control-Allow-Origin", "*")
+             .build();               
         }
 
         String datas;
@@ -1924,7 +1692,11 @@ public class Rest_new {
         }
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        //    return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+             .status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+             .header("Access-Control-Allow-Origin", "*")
+             .build();            
         }
        // return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
         return Response
@@ -2543,7 +2315,69 @@ public class Rest_new {
     
     
     
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ///////////// Fonctions spécifiques pour Ontome  //////////////////////////////////////  
+    ////////récupération des Toptermes qui sont liés à une classe CIDOC-CRM////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Pour retourner les concepts de la branche qui est liée à une classe CIDOC-CRM pour Ontome
+     * le lien se fait par l'alignement en ExactMatch
+     * Si la classe est renseignée, on retourne uniquement le concept en question
+     * http://localhost:8082/opentheso2/api/ontome/linkedConcept?theso=th1&class=56
+     * http://localhost:8082/opentheso2/api/ontome/linkedConcept?theso=th1
+     * @param uri
+     * @return
+     */
+    @Path("ontome/linkedConcept/")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response getAllLinkedConceptsWithOntome(@Context UriInfo uri) {
+        String idTheso = null;
+        String cidocClass = null;      
+        
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("theso")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("class")) {
+                    cidocClass = valeur;
+                }                  
+            }
+        }
+
+        if (idTheso == null || idTheso.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+        }
+
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            }   RestRDFHelper restRDFHelper = new RestRDFHelper();
+            if(cidocClass == null || cidocClass.isEmpty()) {
+                datas = restRDFHelper.getAllLinkedConceptsWithOntome__(ds, idTheso);
+            } else {
+                datas = restRDFHelper.getLinkedConceptWithOntome__(ds, idTheso, cidocClass);
+            }
+        }
+
+        if (datas == null) {
+            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response
+         .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+         .header("Access-Control-Allow-Origin", "*")
+         .build();
+    }
+   
+   
+
     
+    /////////////////////////////////////////////////////////////////////////////////////// 
+    ///////////////////////////////////////////////////////////////////////////////////////    
+    /////////////////////////////////////////////////////////////////////////////////////// 
+    ///////////////////////////////////////////////////////////////////////////////////////    
     
     
     

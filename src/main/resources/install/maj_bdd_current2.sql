@@ -278,6 +278,66 @@ end
 $$language plpgsql;
 
 
+-- Modification de la table Corpus pour gérer l'option URI uniquement et le tri
+--
+create or replace function update_table_corpus_link() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='corpus_link' AND column_name='only_uri_link') THEN
+        execute 'ALTER TABLE corpus_link ADD COLUMN only_uri_link boolean DEFAULT false;
+                 ALTER TABLE corpus_link ADD COLUMN sort integer;';
+    END IF;
+end
+$$language plpgsql;
+
+-- Modification de la table preferences pour enlever la limite de taille des langues
+--
+ALTER TABLE preferences ALTER COLUMN source_lang Type character varying;
+ALTER TABLE languages_iso639 ALTER COLUMN iso639_1 Type character varying;
+ALTER TABLE concept_group_label ALTER COLUMN lang Type character varying;
+
+-- Modification de la table des langues iso630, ajout des nouvelles langues
+--
+create or replace function update_table_languages() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Hans') THEN
+        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Hans'', ''zh-Hans'', ''chinese (simplified)'', ''chinois (simplifié)'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Hant') THEN
+        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Hant'', ''zh-Hant'', ''chinese (traditional)'', ''chinois (traditionnel)'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Latn-pinyin') THEN
+        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Latn-pinyin'', ''zh-Latn-pinyin'', ''chinese (pinyin)'', ''chinois (pinyin)'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'bo-x-ewts') THEN
+        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''bo-x-ewts'', ''bo-x-ewts'', ''tibetan (ewts)'', ''tibétain (ewts)'');';
+    END IF;
+end
+$$language plpgsql;
+
+
+-- mise à jour des types de notes --
+delete from public.note_type;
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('note', false, true, 'Note', 'Note');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('historyNote', true, true, 'Note historique', 'History note');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('scopeNote', false, true, 'Note d''aplication', 'Scope note');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('example', true, false, 'Exemple', 'Example');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('editorialNote', true, false, 'Note éditoriale', 'Editorial note');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('definition', true, false, 'Définition', 'Definition');
+INSERT INTO public.note_type (code, isterm, isconcept, label_fr, label_en) VALUES ('changeNote', true, false, 'Note de changement', 'Change note');
+
+
+-- Modification de la table Concept, ajout des colonnes creator et contributor
+--
+create or replace function update_table_concept_role() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept' AND column_name='creator') THEN
+        execute 'ALTER TABLE concept ADD COLUMN creator integer DEFAULT -1;
+                 ALTER TABLE concept ADD COLUMN contributor integer DEFAULT -1;';
+    END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -295,6 +355,9 @@ SELECT update_table_concept_group_doi();
 SELECT update_table_languages();
 SELECT update_table_alignement_source();
 SELECT update_table_note_constraint();
+SELECT update_table_corpus_link();
+SELECT update_table_languages();
+SELECT update_table_concept_role();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -313,11 +376,13 @@ SELECT delete_fonction('update_table_concept_group_doi','');
 SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_alignement_source','');
 SELECT delete_fonction('update_table_note_constraint','');
+SELECT delete_fonction('update_table_corpus_link','');
+SELECT delete_fonction('update_table_languages','');
+SELECT delete_fonction('update_table_concept_role','');
+
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');
 select delete_fonction1('delete_fonction','TEXT','TEXT');
 SELECT delete_fonction1 ('delete_fonction1','TEXT','TEXT');
-
-
 

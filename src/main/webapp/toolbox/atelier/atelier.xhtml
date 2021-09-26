@@ -10,7 +10,7 @@
         <p:tab id="actions" title="Choix de l'action" titleStyleClass="tabCostum">
             
             <p:panel styleClass="redColoredPanel" >
-                <p:outputLabel value="Veuillez choisir l'action que vous voullez faire : "/>
+                <p:outputLabel value="Veuillez choisir l'action que vous voulez faire : "/>
                 <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
                     <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
                     <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
@@ -117,7 +117,7 @@
             </p:panel>
 
         </p:tab>
-
+      
         <p:tab id="thesaurus" title="Les thesaurus" titleStyleClass="tabCostum">
             <p:panel header="Liste des thesaurus">
                 <h:outputText value="Veuillez selectionez un thesaurus : " />
@@ -176,7 +176,7 @@
 
             <p:panel header="Récapitulatif" rendered="#{atelierThesBean.isRubriqueSelected('opt1')}">
 
-                <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemle des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
+                <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemble des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
 
                 <br/>
 
@@ -202,7 +202,7 @@
                         <p:column headerText="AltLabel">
                             <h:outputText value="#{resultat.altLabelConcept}" />
                         </p:column>
-                        <p:column headerText="Term Generique">
+                        <p:column headerText="Terme Génerique">
                             <h:outputText value="#{resultat.termGenerique}" />
                         </p:column>
                         <p:column headerText="Définition">

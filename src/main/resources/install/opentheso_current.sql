@@ -1760,19 +1760,6 @@ INSERT INTO public.concept_group_type (code, label, skoslabel) VALUES ('T', 'The
 
 
 --
--- TOC entry 3892 (class 0 OID 16580)
--- Dependencies: 211
--- Data for Name: concept_replacedby; Type: TABLE DATA; Schema: public; Owner: -
---
-
-INSERT INTO public.concept_replacedby (id_concept1, id_concept2, id_thesaurus, modified, id_user) VALUES ('64282', '64270', 'th105', '2021-01-20 10:08:18.223509+01', 5);
-INSERT INTO public.concept_replacedby (id_concept1, id_concept2, id_thesaurus, modified, id_user) VALUES ('25', '19', 'th1', '2021-01-21 15:19:24.969325+01', 1);
-INSERT INTO public.concept_replacedby (id_concept1, id_concept2, id_thesaurus, modified, id_user) VALUES ('27', '19', 'th1', '2021-01-21 15:19:24.973384+01', 1);
-INSERT INTO public.concept_replacedby (id_concept1, id_concept2, id_thesaurus, modified, id_user) VALUES ('25', '19', 'th15', '2021-02-02 09:34:40.61152+01', 1);
-INSERT INTO public.concept_replacedby (id_concept1, id_concept2, id_thesaurus, modified, id_user) VALUES ('27', '19', 'th15', '2021-02-02 09:34:40.615404+01', 1);
-
-
---
 -- TOC entry 3905 (class 0 OID 16658)
 -- Dependencies: 224
 -- Data for Name: concept_term_candidat; Type: TABLE DATA; Schema: public; Owner: -
@@ -1793,12 +1780,6 @@ INSERT INTO public.concept_replacedby (id_concept1, id_concept2, id_thesaurus, m
 -- Dependencies: 278
 -- Data for Name: corpus_link; Type: TABLE DATA; Schema: public; Owner: -
 --
-
-INSERT INTO public.corpus_link (id_theso, corpus_name, uri_count, uri_link, active) VALUES ('th9', 'Frantiq', 'https://pro.frantiq.fr/es/koha_frantiq_biblios/_count?q=koha-auth-number:##id##', 'https://catalogue.frantiq.fr/cgi-bin/koha/opac-search.pl?q=an:##id##', true);
-INSERT INTO public.corpus_link (id_theso, corpus_name, uri_count, uri_link, active) VALUES ('th9', 'Frantiq2', 'https://pro.frantiq.fr/es/koha_frantiq_biblios/_count?q=koha-auth-number:##id##', 'https://catalogue.frantiq.fr/cgi-bin/koha/opac-search.pl?q=an:##id##', false);
-INSERT INTO public.corpus_link (id_theso, corpus_name, uri_count, uri_link, active) VALUES ('th5', 'dd', 'https://www.archeogrid.fr/concept/##id##/total ', 'https://www.archeogrid.fr/concept/##value##', false);
-INSERT INTO public.corpus_link (id_theso, corpus_name, uri_count, uri_link, active) VALUES ('th1', 'Frantiq', 'https://pro.frantiq.fr/es/koha_frantiq_biblios/_count?q=koha-auth-number:##id##', 'https://catalogue.frantiq.fr/cgi-bin/koha/opac-search.pl?q=an:##id##', true);
-
 
 --
 -- TOC entry 3907 (class 0 OID 16670)

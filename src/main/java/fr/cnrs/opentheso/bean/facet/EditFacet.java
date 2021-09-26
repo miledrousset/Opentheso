@@ -28,7 +28,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
 import org.primefaces.PrimeFaces;
-import org.primefaces.model.TreeNode;
 
 
 @Named(value = "editFacet")
@@ -52,6 +51,7 @@ public class EditFacet implements Serializable {
     private NodeConcept concepParent;
     private NodeFacet facetSelected;
     private NodeIdValue conceptSelected;
+    private NodeIdValue facetSelectedAutocomplete;
 
     @PreDestroy
     public void destroy(){
@@ -86,6 +86,7 @@ public class EditFacet implements Serializable {
         termeParentAssocie = null;
         facetSelected = null;
         conceptSelected = null;
+        facetSelectedAutocomplete = null;
     }       
 
     public void reset() {
@@ -111,6 +112,7 @@ public class EditFacet implements Serializable {
         termeParentAssocie = null;
         facetSelected = null;
         conceptSelected = null;
+        facetSelectedAutocomplete = null;
     }
 
     public void initEditFacet(String facetId, String idTheso, String idLang) {
@@ -172,9 +174,10 @@ public class EditFacet implements Serializable {
         FacetHelper facetHelper = new FacetHelper();
         ConceptHelper termHelper = new ConceptHelper();
         
-        List<String> concepts = facetHelper.getAllMembersOfFacet(
+        List<String> concepts = facetHelper.getAllMembersOfFacetSorted(
                 connect.getPoolConnexion(), 
                 facetSelected.getIdFacet(), 
+                selectedTheso.getCurrentLang(),
                 selectedTheso.getCurrentIdTheso());    
         
         conceptList = new ArrayList<>();
@@ -334,8 +337,58 @@ public class EditFacet implements Serializable {
             pf.ajax().update("formLeftTab:tabTree:tree");
         }
 
-        showMessage(FacesMessage.SEVERITY_INFO, "Facet mise à jour avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette mise à jour avec succès !");
     }
+    
+    /**
+     * permet d'ajouter un concept à la facette en passant par l'autocomplétion
+     */
+    public void addConceptToFacet() {
+        FacetHelper facetHelper = new FacetHelper();
+        ConceptHelper conceptHelper = new ConceptHelper();
+
+        FacesMessage msg;
+        
+        if(facetSelectedAutocomplete == null || facetSelectedAutocomplete.getId() == null || facetSelectedAutocomplete.getId().isEmpty()){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " pas de facette sélectionnée !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }        
+        
+        if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+                facetSelectedAutocomplete.getId(), selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " L'ajout a échoué !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        /*
+        String label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+        TreeNodeData data = new TreeNodeData(conceptSelected.getId(), label, "", false,
+                false, true, false, "term");
+        data.setIdFacetParent(facetSelected.getIdFacet());
+        if(conceptHelper.haveChildren(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), conceptSelected.getId())) {
+            tree.getDataService().addNodeWithChild("concept", data, tree.getSelectedNode());
+        } else {
+            tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+        }
+
+        initDataAfterAction();
+
+        tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+        tree.expandTreeToPath2(facetSelected.getIdConceptParent(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getSelectedLang(),
+                facetSelected.getIdFacet());
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formLeftTab:tabTree:tree");
+        }
+        */
+        showMessage(FacesMessage.SEVERITY_INFO, "Concept ajouté à la facette avec succès !");
+    }    
     
     /**
      * permet de supprimer un membre de la facette
@@ -387,7 +440,7 @@ public class EditFacet implements Serializable {
             pf.ajax().update("formLeftTab:tabTree:tree");
         }
 
-        showMessage(FacesMessage.SEVERITY_INFO, "Facet mise à jour avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette mise à jour avec succès !");
     }    
     
     
@@ -524,6 +577,17 @@ public class EditFacet implements Serializable {
         }
         return liste;
     }
+    
+    public ArrayList<NodeIdValue> searchFacet(String value) {
+        ArrayList<NodeIdValue> liste = new ArrayList<>();
+        FacetHelper facetHelper = new FacetHelper();
+
+        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
+            liste = facetHelper.searchFacet(connect.getPoolConnexion(), value,
+                    selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+        }
+        return liste;
+    }    
 
     private void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
@@ -617,6 +681,14 @@ public class EditFacet implements Serializable {
 
     public void setConceptSelected(NodeIdValue conceptSelected) {
         this.conceptSelected = conceptSelected;
+    }
+
+    public NodeIdValue getFacetSelectedAutocomplete() {
+        return facetSelectedAutocomplete;
+    }
+
+    public void setFacetSelectedAutocomplete(NodeIdValue facetSelectedAutocomplete) {
+        this.facetSelectedAutocomplete = facetSelectedAutocomplete;
     }
     
     

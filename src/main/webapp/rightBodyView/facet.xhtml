@@ -40,7 +40,7 @@
                         <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                     icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right"
                                     style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                            <b:navCommandLink value="Modifer le concept Parent"  update="idAddConceptParentToFacet"
+                            <b:navCommandLink value="Modifier le concept parent"  update="idAddConceptParentToFacet"
                                               oncomplete="PF('addConceptParentToFacet').show();" style="font-size: 12px;"/>
                         </b:dropMenu>
                     </b:column>   
@@ -58,7 +58,7 @@
 
                 <b:row>
                     <b:column span="3" colXs="4">
-                        <h:outputText value="Membres" title="Les concepts membres" />
+                        <h:outputText value="Membre" title="Les concepts membres" />
                     </b:column>
                     <b:column span="1">
                         <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"

@@ -53,6 +53,9 @@ public class ViewExportBean implements Serializable {
     private boolean isAllGroupsSelected; 
     private boolean isAllLangsSelected;
     private String selectedGroup;
+    private List<String> selectedIdGroups;    
+    private boolean toogleFilterByGroup;
+    
     private String selectedIdLangTheso;
     
     // pour le format PDF
@@ -93,6 +96,11 @@ public class ViewExportBean implements Serializable {
             selectedGroups.clear();
             selectedGroups = null;
         }
+        if(selectedIdGroups != null){
+            selectedIdGroups.clear();
+            selectedIdGroups = null;
+        }
+        
         exportFormat = null;
         types = null;
     }    
@@ -125,6 +133,18 @@ public class ViewExportBean implements Serializable {
 
         groupList = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
 
+        toogleFilterByGroup = false;
+        if(selectedIdGroups == null){
+            selectedIdGroups = new ArrayList<>();
+        } else
+            selectedIdGroups.clear();
+        
+        if(groupList != null) {
+            for (NodeGroup nodeGroup : groupList) {
+                selectedIdGroups.add(nodeGroup.getConceptGroup().getIdgroup());
+            }
+        }
+        
         if(selectedLanguages == null)
             selectedLanguages = new ArrayList<>();
         else
@@ -133,20 +153,8 @@ public class ViewExportBean implements Serializable {
             selectedLanguages.add(nodeLang);
         }
 
-        
-        
         selectedGroups = null;
         selectedGroups = new ArrayList<>();
-/*        if(selectedGroups == null)
-            selectedGroups = new ArrayList<>();
-        else 
-            selectedGroups.clear();
-        
-        if(groupList != null) {
-            for (NodeGroup nodeGroup : groupList) {
-                selectedGroups.add(nodeGroup);
-            }
-        }*/
 
         exportUriArk = false;
         exportUriHandle = false;
@@ -185,8 +193,8 @@ public class ViewExportBean implements Serializable {
             return languageBean.getMsg("edit.exportcsv");
         }
     }
-
     
+   
     public boolean isPdfExport() {
         return "PDF".equals(formatFile);
     }
@@ -202,6 +210,10 @@ public class ViewExportBean implements Serializable {
     public boolean isCsvIdExport() {
         return "CSV_id".equals(formatFile);
     }
+    
+    public boolean isDeprecatedExport() {
+        return "deprecated".equals(formatFile);
+    }    
     
     public String getFormat() {
         return formatFile;
@@ -366,5 +378,23 @@ public class ViewExportBean implements Serializable {
     public void setSelectedIdLangTheso(String selectedIdLangTheso) {
         this.selectedIdLangTheso = selectedIdLangTheso;
     }
+
+    public List<String> getSelectedIdGroups() {
+        return selectedIdGroups;
+    }
+
+    public void setSelectedIdGroups(List<String> selectedIdGroups) {
+        this.selectedIdGroups = selectedIdGroups;
+    }
+
+    public boolean isToogleFilterByGroup() {
+        return toogleFilterByGroup;
+    }
+
+    public void setToogleFilterByGroup(boolean toogleFilterByGroup) {
+        this.toogleFilterByGroup = toogleFilterByGroup;
+    }
+    
+  
 
 }

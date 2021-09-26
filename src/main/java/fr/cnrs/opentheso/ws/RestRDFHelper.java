@@ -6,6 +6,7 @@
 package fr.cnrs.opentheso.ws;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
@@ -42,6 +44,57 @@ import org.eclipse.rdf4j.rio.Rio;
  */
 public class RestRDFHelper {
     
+    public String getAllLinkedConceptsWithOntome__(HikariDataSource ds, String idTheso) {
+        NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if(nodePreference == null) return null;
+
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+        ArrayList<NodeIdValue> listLinkedConceptsWithOntome = alignmentHelper.getAllLinkedConceptsWithOntome(ds, idTheso);
+
+        String datasJson;
+
+        JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
+
+        for (NodeIdValue nodeIdValue : listLinkedConceptsWithOntome) {
+            JsonObjectBuilder jobLang = Json.createObjectBuilder();
+            jobLang.add("uri", getUri(ds, nodePreference, nodeIdValue.getId(), idTheso));
+            jobLang.add("class", nodeIdValue.getValue());             
+            jsonArrayBuilderLang.add(jobLang.build());
+        }
+        datasJson = jsonArrayBuilderLang.build().toString();
+
+        if (datasJson != null) {
+            return datasJson;
+        } else {
+            return null;
+        }
+    }    
+   
+    public String getLinkedConceptWithOntome__(HikariDataSource ds, String idTheso, String cidocClass) {
+        NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if(nodePreference == null) return null;
+        
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+        ArrayList<NodeIdValue> listLinkedConceptsWithOntome = alignmentHelper.getLinkedConceptsWithOntome(ds, idTheso, cidocClass);
+
+        String datasJson;
+
+        JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
+
+        for (NodeIdValue nodeIdValue : listLinkedConceptsWithOntome) {
+            JsonObjectBuilder jobLang = Json.createObjectBuilder();
+            jobLang.add("uri", getUri(ds, nodePreference, nodeIdValue.getId(), idTheso));
+            jobLang.add("class", nodeIdValue.getValue());             
+            jsonArrayBuilderLang.add(jobLang.build());
+        }
+        datasJson = jsonArrayBuilderLang.build().toString();
+
+        if (datasJson != null) {
+            return datasJson;
+        } else {
+            return null;
+        }
+    }    
     
     public String getInfosOfConcept(HikariDataSource ds,
             String idTheso,
@@ -1248,4 +1301,56 @@ public class RestRDFHelper {
                 + "&idt=" + idTheso;
         return uri;
     }
+    
+
+    /**
+     * Cette fonction permet de retourner l'URI du concept suivant le type d'identifiant précisé dans les préférences 
+     * @param nodePreference
+     * @param idConcept
+     * @return 
+     */
+    private String getUri(HikariDataSource ds, NodePreference nodePreference, String idConcept, String idTheso) {
+        String uri;
+
+        // Choix de l'URI pour l'export : 
+        // Si Handle est actif, on le prend en premier 
+        // sinon,  on vérifie si Ark est actif, 
+        // en dernier, on prend l'URL basique d'Opentheso
+        // 1 seule URI est possible pour l'export par concept
+        // URI de type Ark
+        ConceptHelper conceptHelper = new ConceptHelper();
+        String identifier;
+        if(nodePreference.isOriginalUriIsArk()) {
+            identifier = conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso);
+            if (identifier != null && !identifier.isEmpty()) {
+                uri = nodePreference.getUriArk()+ identifier;
+                return uri;
+            }
+        }
+        
+        if(nodePreference.isOriginalUriIsHandle()) {
+            // URI de type Handle
+            identifier = conceptHelper.getIdHandleOfConcept(ds, idConcept, idTheso);
+            if (identifier != null && !identifier.isEmpty()) {
+                uri = "https://hdl.handle.net/" + identifier;
+                return uri;
+            }
+        }
+/*        if(nodePreference.isOriginalUriIsDoi()) {
+            // URI de type Doi
+            if (nodeConceptExport.getConcept().getIdDoi() != null) {
+                if (!nodeConceptExport.getConcept().getIdDoi().trim().isEmpty()) {
+                    uri = "https://doi.org/" + nodeConceptExport.getConcept().getIdDoi();
+                    return uri;
+                }
+            }
+        } */
+        // si on ne trouve pas ni Handle, ni Ark
+        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
+            uri = nodePreference.getOriginalUri()+ "/?idc=" + idConcept
+                        + "&idt=" + idTheso;
+            return uri;
+        }
+        return idConcept;
+    }    
 }

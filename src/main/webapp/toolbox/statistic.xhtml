@@ -5,7 +5,8 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:panel id="statisticForm" style="margin-top: -20px; margin-left: -20px; 
+    
+    <p:panel rendered="#{selectedTheso.currentIdTheso != null}" id="statisticForm" style="margin-top: -20px; margin-left: -20px; 
              border: none; padding: 20px;">
         <b:row>
             <b:column span="4" style="margin-top: 5px">
@@ -210,29 +211,35 @@
                     <h:form id="statistic">
 
                         <b:row style="font-size: 12px;  color: #666666">
-                            <b:column span="4">
+                            <b:column span="5">
                                 <h:outputText style="font-weight: bold; margin-left: 10px" value="#{langueBean.getMsg('statistique.collection')}"/>
                             </b:column>
-                            <b:column span="2">
+                            <b:column span="1">
                                 <b:navCommandLink oncomplete="PF('conceptChart').show();" style="color: #f47b2a;" update="toolBoxForm">
                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
                                 </b:navCommandLink>
                             </b:column>
-                            <b:column span="2">
+                            <b:column span="1">
                                 <b:navCommandLink oncomplete="PF('synonymChart').show();" style="color: #f47b2a;" update="toolBoxForm">
                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.synonyms')}"/>
                                 </b:navCommandLink>
                             </b:column> 
-                            <b:column span="2">
+                            <b:column span="1">
                                 <b:navCommandLink oncomplete="PF('termChart').show();" style="color: #f47b2a;" update="toolBoxForm">
                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.untranslated_terms')}"/>
                                 </b:navCommandLink>
                             </b:column> 
-                            <b:column span="2">
+                            <b:column span="1">
                                 <b:navCommandLink oncomplete="PF('noteChart').show();" style="color: #f47b2a;" update="toolBoxForm">
                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.notes')}"/>
                                 </b:navCommandLink>
-                            </b:column>                        
+                            </b:column>      
+                            <b:column span="1">
+                                <h:outputText style="font-weight: bold;" value="Align Wikidata"/>
+                            </b:column>
+                            <b:column span="1">
+                                <h:outputText style="font-weight: bold;" value="Total alignement"/>
+                            </b:column>                             
                         </b:row>
 
                         <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
@@ -242,21 +249,27 @@
                             <ui:repeat id="data_stat" var="stat" value="#{statistiqueBean.genericStatistiques}">
                                 <b:row style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(statistiqueBean.genericStatistiques.indexOf(stat))}; 
                                        padding-top: 5px">
-                                    <b:column span="4" >
+                                    <b:column span="5" >
                                         <h:outputText style="margin-left: 10px" value="#{stat.collection} (#{stat.idCollection})"/>
                                     </b:column>
-                                    <b:column span="2" >
+                                    <b:column span="1" >
                                         <h:outputText value="#{stat.conceptsNbr}"/>
                                     </b:column>  
-                                    <b:column span="2" >
+                                    <b:column span="1" >
                                         <h:outputText value="#{stat.synonymesNbr}"/>
                                     </b:column>
-                                    <b:column span="2" >
+                                    <b:column span="1" >
                                         <h:outputText value="#{stat.termesNonTraduitsNbr}"/>
                                     </b:column>  
-                                    <b:column span="2" >
+                                    <b:column span="1" >
                                         <h:outputText value="#{stat.notesNbr}"/>
                                     </b:column>
+                                    <b:column span="1" >
+                                        <h:outputText value="#{stat.wikidataAlignNbr}"/>
+                                    </b:column>
+                                    <b:column span="1" >
+                                        <h:outputText value="#{stat.totalAlignment}"/>
+                                    </b:column>                                     
                                 </b:row>   
                             </ui:repeat>
                         </p:scrollPanel>

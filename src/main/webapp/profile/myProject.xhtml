@@ -51,7 +51,7 @@
                             <!-- Vue liste d'utilisateurs par groupe -->
                             <p:tab title="#{langueBean.getMsg('profile.list_of_users')}" titleStyle="font-size: 12px;">
                                 <b:row>
-                                    <b:column span="1" offset="11">
+                                    <b:column span="2" offset="10">
                                         <b:dropMenu rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesoOfProject != null)}"
                                                     icon-awesome="fa-user-plus" icon-size="l"  value=""
                                                     style="color: #f47b2a; background: none; border: none; box-shadow: none; "
@@ -90,7 +90,7 @@
 
                                             <p:column width="20" >
                                                 <b:navCommandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
-                                                                  iconAwesome="fa-user-edit" icon-size="lg" style="color: #f47b2a; "
+                                                                  iconAwesome="fa-edit" icon-size="lg" style="color: #f47b2a; "
                                                                   tooltip="#{langueBean.getMsg('profile.modify_user')}" tooltip-delay-show="1000"
                                                                   actionListener="#{modifyUSerBean.selectUser(listUser.idUser)}"
                                                                   update="profileForm:idModifyUser profileForm:modifyUserForm" oncomplete="PF('modifyUser').show();"/>
@@ -98,14 +98,14 @@
 
                                             <p:column width="20" >
                                                 <b:navCommandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
-                                                                  iconAwesome="fa-user-cog" icon-size="lg" style="color: #f47b2a; "
+                                                                  iconAwesome="fa-cog" icon-size="lg" style="color: #f47b2a; "
                                                                   tooltip="#{langueBean.getMsg('profile.modify_roles')}" tooltip-delay-show="1000"
                                                                   actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
                                                                   update="profileForm:idModifyRole profileForm:modifyRoleForm" oncomplete="PF('modifyRole').show();"/>
                                             </p:column>
                                             <p:column width="20" >
                                                 <b:navCommandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
-                                                                  iconAwesome="fa-user-slash" icon-size="lg" style="color: #C63632;"
+                                                                  iconAwesome="fa-remove" icon-size="lg" style="color: #C63632;"
                                                                   tooltip="#{langueBean.getMsg('profile.remove_user_from_group')}" tooltip-delay-show="1000"
                                                                   actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
                                                                   update="profileForm:idConfirmRemoveUserFromProject profileForm:confirmRemoveUserFromProjectForm"

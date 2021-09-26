@@ -51,7 +51,7 @@
                                      id="buttonRename" value="#{langueBean.getMsg('btnValidate')}" 
                                      update="formRightTab:viewTabConcept:idConceptGroupRow:idConceptGroupColumn"
                                      class="btn btn-primary"
-                                     action="#{addConceptToGroupBean.addConceptToGroup()}"
+                                     action="#{addConceptToGroupBean.addConceptToGroup(currentUser.nodeUser.idUser)}"
                                      oncomplete="PF('addConceptToGroup').hide();"
                                      style="width:100%; font-size: 12px;
                                      color: white; background: #43B572;"/>

@@ -13,6 +13,8 @@ public class NodeCorpus {
     private String corpusName;
     private String uriCount;
     private String uriLink;
+    private boolean isOnlyUriLink;
+    
     private boolean active;
     
     
@@ -60,6 +62,14 @@ public class NodeCorpus {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isIsOnlyUriLink() {
+        return isOnlyUriLink;
+    }
+
+    public void setIsOnlyUriLink(boolean isOnlyUriLink) {
+        this.isOnlyUriLink = isOnlyUriLink;
     }
 
    

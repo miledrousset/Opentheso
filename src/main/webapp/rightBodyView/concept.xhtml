@@ -18,6 +18,7 @@
 
 
                     <b:navCommandLink  value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
+                                       icon-awesome="fas fa-cut"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_branch')}" tooltip-delay-show="1000"
                                        action="#{dragAndDrop.setDragNode(tree.selectedNode)}"
                                        actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
@@ -29,6 +30,7 @@
                     <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and
                                                    (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.as_specific')}" 
+                                       icon-awesome="fas fa-paste"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_under_concept')}" tooltip-delay-show="1000"
                                        actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
                                        action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
@@ -39,6 +41,7 @@
                     </b:navCommandLink>
                     <b:navCommandLink  rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
                                        value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}" 
+                                       icon-awesome="fas fa-paste"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.move_concept_as_topterm')}" tooltip-delay-show="1000"
                                        actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
                                        action="#{dragAndDrop.paste(null)}"
@@ -48,6 +51,7 @@
                                        update="formRightTab:viewTabConcept:conceptView:idConceptViewActions messageIndex idDragAndDrop dragAndDropForm">
                     </b:navCommandLink>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_concept')}" 
+                                      icon-awesome="fas fa-trash"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.toottip_delete_concept')}"
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idDeleteConcept deleteConceptForm"
@@ -57,6 +61,7 @@
                     </b:navCommandLink>   
                     <b:navCommandLink rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
                                       value="#{langueBean.getMsg('rightbody.concept.deprecate_concept')}"
+                                      icon-awesome="fas fa-times-circle"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_deprecate_concept')}"
                                       update="idDeprecateConcept deprecateConceptForm"
                                       action="#{editConcept.reset('')}"
@@ -65,12 +70,25 @@
                     </b:navCommandLink>
                     <b:navCommandLink rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
                                       value="#{langueBean.getMsg('rightbody.concept.approve_concept')}"
+                                      icon-awesome="fas fa-check-circle"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_approve_concept')}"
                                       update="idApproveConcept approveConceptForm"
                                       action="#{editConcept.reset('')}"
                                       oncomplete="PF('approveConcept').show();"
                                       style="font-size: 12px;">
                     </b:navCommandLink>
+                    <b:navLink/>                    
+                    <b:navCommandLink 
+                                      value="#{langueBean.getMsg('rightbody.concept.addConceptTofacet')}"
+                                      icon-awesome="fas fa-magnet"
+                                      tooltip="#{langueBean.getMsg('rightbody.concept.addConceptTofacet')}"
+                                      update="idAddConceptToFacet addConceptToFacetForm"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('addConceptToFacet').show();"
+                                      style="font-size: 12px;">
+                    </b:navCommandLink>
+
+                    
 
 
                     <b:navCommandLink rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
@@ -179,6 +197,7 @@
                     <b:navCommandLink disabled="false"
                                       rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
                                       value="#{langueBean.getMsg('rightbody.concept.copy_to_another_thesaurus')}"
+                                      icon-awesome="fas fa-copy"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_copy_to_another_thesaurus')}" tooltip-delay-show="1000"
                                       action="#{copyAndPasteBetweenTheso.onStartCopy()}"
                                       styleClass="buttonIconOrange"
@@ -187,6 +206,7 @@
                     </b:navCommandLink>
                     <b:navCommandLink rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
                                       value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.here')} !!" 
+                                      icon-awesome="fas fa-paste"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_paste_from_another_thesaurus')}" tooltip-delay-show="500"
                                       actionListener="#{copyAndPasteBetweenTheso.validatePaste()}" 
                                       styleClass="buttonIconOrange"
@@ -197,6 +217,7 @@
                     </b:navCommandLink> 
                     <b:navCommandLink  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
                                        value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}"
+                                       icon-awesome="fas fa-backspace"
                                        tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_cancel_copy_other_thesaurus')}" tooltip-delay-show="1000"
                                        action="#{copyAndPasteBetweenTheso.reset()}"
                                        styleClass="buttonIconOrange"
@@ -212,13 +233,33 @@
 
                     <b:navLink/>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.import_tabulated_list')}"
+                                      icon-awesome="fas fa-download"
                                       tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_import_tabulated_list')} #{conceptView.nodeConcept.term.lexical_value}" tooltip-delay-show="500"
                                       actionListener="#{editConcept.infosDelete()}"
                                       update="idListImportCsv listImportCsvForm"
                                       action="#{importFileBean.init()}"
                                       oncomplete="PF('listImportCsv').show();"
                                       style="font-size: 12px; ">
-                    </b:navCommandLink>                     
+                    </b:navCommandLink>
+
+
+                    <!--Pour importer des alignements -->
+                    <b:navLink rendered="#{currentUser.nodeUser.isSuperAdmin}"/>
+                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}"
+                                      value="importer des alignements d'après un tableau CSV"
+                                      update="idListAlignmentCsv listAlignmentCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('listAlignmentCsv').show();"
+                                      style="font-size: 12px; ">
+                    </b:navCommandLink>
+                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin}"
+                                      value="Supprimer des alignements d'après un tableau CSV"
+                                      update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('deleteListAlignmentCsv').show();"
+                                      style="font-size: 12px; color: #C63632">
+                    </b:navCommandLink>                        
+
                 </b:dropMenu>        
             </b:column>
 
@@ -228,6 +269,8 @@
         <ui:include src="/dialog/concept/deprecateConcept.xhtml" />
         <ui:include src="/dialog/concept/approveConcept.xhtml" />
         <ui:include src="/dialog/import/listImportCsv.xhtml" />
+        <ui:include src="/dialog/import/listAlignmentCsv.xhtml" />   
+        <ui:include src="/dialog/import/deleteListAlignmentCsv.xhtml" />          
         <ui:include src="/dialog/concept/generateArk.xhtml" /> 
         <ui:include src="/dialog/concept/generateHandle.xhtml" />    
         <ui:include src="/dialog/concept/deleteHandle.xhtml" />           
@@ -729,7 +772,7 @@
 
                 <b:column span="8" colXs="8" rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}">
                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
-                     <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
+                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 3px"/> 
                 </b:column>  
 
                 <b:column span="8" colXs="8" rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
@@ -759,8 +802,8 @@
 
 
 
-        
-        
+
+
         <!-- ligne Traductions -->
         <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
             <b:column span="3" colXs="3">
@@ -812,8 +855,8 @@
                 </b:column>
             </h:panelGroup>
         </b:row>            
-        
-        
+
+
         <p:separator styleClass="separator" style="margin-top: 20px; margin-bottom: 20px;"/>           
         <!--                               -->        
         <!--              Fin              -->        
@@ -1106,8 +1149,8 @@
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.image')} " />
                 <h:outputText value="( #{conceptView.nodeConcept.nodeimages.size()} )" style="color: #43B572; margin-left: 10px;"/>
             </b:column>            
-            
-            
+
+
             <b:column span="1">
                 <b:dropMenu rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             icon-awesome="fas fa-cog" icon-size="s"  value="" iconAlign="right" tooltip="#{langueBean.getMsg('rightbody.concept.tooltip_image')}" tooltip-delay-show="1000"
@@ -1156,7 +1199,7 @@
 
 
 
-        <!-- ligne GPS -->
+        <!-- ligne GPS MAP-->
         <b:row rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
             <b:column span="3" colXs="3">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}" />
@@ -1210,10 +1253,9 @@
                                 </p:tab>
                             </p:accordionPanel>
                             -->
-                            <p:panel header="Map" toggleable="true" closable="false" toggleSpeed="500" 
-                                     style="margin-top: 10px; margin-bottom: 10px">
-                                <leaf:mapAdvanced map="#{conceptView.mapModel}" />
-                            </p:panel>
+
+                            <leaf:mapAdvanced map="#{conceptView.mapModel}" />
+
                         </b:column>
                     </b:row>
                     <b:row>
@@ -1236,13 +1278,20 @@
             </b:column>            
             <b:column span="8" colXs="8">
                 <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
-                    <b:row rendered="#{corpus.count != 0 and corpus.count!= -1}">
-                        <b:column >
+                    <b:row rendered="#{(corpus.count != 0 and corpus.count!= -1) or (corpus.isOnlyUriLink)}">
+                        <b:column rendered="#{!corpus.isOnlyUriLink}">
                             <b:link href="#{corpus.uriLink}"
                                     value="#{corpus.corpusName} (#{corpus.count} #{langueBean.getMsg('rightbody.concept.notices')})" icon="link" 
                                     target="_blank"
-                                    icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>                            
+                                    icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
                         </b:column> 
+                        <b:column rendered="#{corpus.isOnlyUriLink}">
+                            <b:link href="#{corpus.uriLink}"
+                                    value="#{corpus.corpusName}" icon="link" 
+                                    target="_blank"
+                                    icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                        </b:column>                         
+                        
                     </b:row> 
                 </ui:repeat> 
                 <p:separator styleClass="separator" style="margin-top: 2px"/>                
@@ -1310,7 +1359,8 @@
                                         value="#{align.uri_target}"
                                         tooltip="#{align.thesaurus_target}" tooltip-delay-show="1000"
                                         target="_blank"
-                                        icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>                            
+                                        icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                                        <h:outputText value=" (#{align.thesaurus_target})"  style="font-size: 12px;"/>
                             </b:column> 
                         </b:row> 
                     </ui:repeat>
@@ -1359,84 +1409,88 @@
 
 
         <b:row >
-            <b:column span="4" colXs="4">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}" style="margin-left: 5px;"/>
-            </b:column>
-            <b:column span="8" colXs="8">
-                <b:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
-                        value="#{conceptView.nodeConcept.concept.idConcept}" icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+            <b:column span="10" colXs="10">
+                <b:row>
+                    <b:column span="4" colXs="4">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}" style="margin-left: 5px;"/>
+                    </b:column>
+                    <b:column span="8" colXs="8">
+                        <b:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
+                                value="#{conceptView.nodeConcept.concept.idConcept}" icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                    </b:column>                        
+                </b:row>
             </b:column>
         </b:row >
 
         <!--Panel de séparation des identifiants pérennes permet de les masquer-->
-        <!--<<h:panelGroup rendered="# {conceptView.nodeConcept.concept.idConcept == 'ddd'}"> -->
+        <!--<h:panelGroup rendered="# {conceptView.nodeConcept.concept.idConcept == 'ddd'}"> -->
         <h:panelGroup>
-            <b:row contentDisabled="true">
-                <b:column span="4" colXs="4">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}" style="margin-left: 5px;"/>
-                </b:column>
+            <b:row >
+                <b:column span="10" colXs="10">
+                    <b:row >    
+                        <b:column span="4" colXs="4">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}" style="margin-left: 5px;"/>
+                        </b:column>
 
-                <!-- Cas d'uri de type Ark -->
-                <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
-                    <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
-                            value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" icon="link"
-                            target="_blank"
-                            icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-                </b:column>
+                        <!-- Cas d'uri de type Ark -->
+                        <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
+                            <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
+                                    value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" icon="link"
+                                    target="_blank"
+                                    icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                        </b:column>
 
-                <!-- Cas d'uri de type Handle -->
-                <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
-                    <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
-                            value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}" icon="link"
-                            target="_blank"
-                            icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-                </b:column>
+                        <!-- Cas d'uri de type Handle -->
+                        <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
+                            <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
+                                    value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}" icon="link"
+                                    target="_blank"
+                                    icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                        </b:column>
 
-                <!-- Cas d'uri de type Doi -->
-                <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsDoi}">
-                    <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}"
-                            value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}" icon="link"
-                            target="_blank"
-                            icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-                </b:column>                
+                        <!-- Cas d'uri de type Doi -->
+                        <b:column span="8" colXs="8" rendered="#{roleOnTheso.nodePreference.originalUriIsDoi}">
+                            <b:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}"
+                                    value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}" icon="link"
+                                    target="_blank"
+                                    icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                        </b:column>                
+                    </b:row >
 
-                <!-- Cas d'uri interne 
-                <b:column span="8" colXs="8" rendered="# {!roleOnTheso.nodePreference.originalUriIsHandle and !roleOnTheso.nodePreference.originalUriIsArk}">
-                    <b:link href="# {request.contextPath}/?idc=# {conceptView.nodeConcept.concept.idConcept}&amp;idt=# {conceptView.nodeConcept.concept.idThesaurus}"
-                            value="# {request.contextPath}/?idc=# {conceptView.nodeConcept.concept.idConcept}&amp;idt=# {conceptView.nodeConcept.concept.idThesaurus}"
-                            icon="link"
-                            target="_blank"
-                            icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                    <b:row rendered="#{conceptView.nodeConcept.concept.idArk != ''}">
+                        <b:column span="4" colXs="4">
+                            <h:outputText value="IdArk" style="margin-left: 5px;"/>
+                        </b:column>
+                        <b:column span="6" colXs="6">
+                            <h:outputText value="#{conceptView.nodeConcept.concept.idArk}" style="font-size: 12px; color: #43B572;"/>
+                            <!-- <b:link href="# {roleOnTheso.nodePreference.uriArk}# {conceptView.nodeConcept.concept.idArk}"
+                                    value="# {roleOnTheso.nodePreference.uriArk}# {conceptView.nodeConcept.concept.idArk}"
+                                    target="_blank"
+                                    icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
+                            -->
+                        </b:column>
+                    </b:row >
+                    <b:row rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
+                        <b:column span="4" colXs="4">
+                            <h:outputText value="IdHandle" style="margin-left: 5px;"/>
+                        </b:column>
+                        <b:column span="8" colXs="8">
+                            <h:outputText value="#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;"/>
+                            <!--  <b:link href="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
+                                    value="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
+                                    target="_blank"
+                                    icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
+                            -->
+                        </b:column>
+                    </b:row >                  
                 </b:column>
-                -->
+                <b:column span="2" colXs="2" rendered="#{conceptView.nodeConcept.concept.idArk != ''}">
+                    <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" type="qr" height="75px;"/>                       
+                </b:column>
             </b:row >
 
-            <b:row rendered="#{conceptView.nodeConcept.concept.idArk != ''}">
-                <b:column span="4" colXs="4">
-                    <h:outputText value="IdArk" style="margin-left: 5px;"/>
-                </b:column>
-                <b:column span="8" colXs="8">
-                    <h:outputText value="#{conceptView.nodeConcept.concept.idArk}" style="font-size: 12px; color: #43B572;"/>
-                    <!-- <b:link href="# {roleOnTheso.nodePreference.uriArk}# {conceptView.nodeConcept.concept.idArk}"
-                            value="# {roleOnTheso.nodePreference.uriArk}# {conceptView.nodeConcept.concept.idArk}"
-                            target="_blank"
-                            icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>
-                    -->
-                </b:column>
-            </b:row >
-            <b:row rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
-                <b:column span="4" colXs="4">
-                    <h:outputText value="IdHandle" style="margin-left: 5px;"/>
-                </b:column>
-                <b:column span="8" colXs="8">
-                    <h:outputText value="#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;"/>
-                    <!--  <b:link href="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
-                            value="https://hdl.handle.net/# {conceptView.nodeConcept.concept.idHandle}"
-                            target="_blank"
-                            icon="link" icon-size="sm" style="font-size: 12px;color: #43B572;"></b:link>
-                    -->
-                </b:column>
-            </b:row >
+
+
 
         </h:panelGroup>
 
@@ -1446,14 +1500,24 @@
         <ui:include src="download.xhtml" />
 
 
-        <p:spacer height="20" />
+
         <!-- ligne dates -->        
         <b:row>    
             <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: " />
-                <h:outputText value="#{conceptView.nodeConcept.concept.created}" style="color: #43B572"/>
+                <h:outputText value="#{conceptView.nodeConcept.concept.created} " style="color: #43B572"/>
+                <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
+                <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value="#{conceptView.creator}" style="color: #43B572"/>                
+            </b:column>
+        </b:row>
+        <b:row id="infosOnUpdate" rendered="#{(currentUser.nodeUser != null)}">
+            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
                 <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')}: "/>
-                <h:outputText value="#{conceptView.nodeConcept.concept.modified}" style="color: #43B572"/>
+                <h:outputText value="#{conceptView.nodeConcept.concept.modified} " style="color: #43B572"/>                
+
+                <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
+                <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value="#{conceptView.contributor}" style="color: #43B572"/>
+                
                 <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                  icon="fa fa-history"
                                  actionListener="#{historyBean.reset()}"                    
@@ -1461,17 +1525,7 @@
                                  oncomplete="PF('historicalView').show();"
                                  title="#{langueBean.getMsg('rightbody.concept.view_change_history')}"
                                  style=" font-size: 14px"
-                                 styleClass="buttonIconOrange"/>
-            </b:column>
-        </b:row>
-        <b:row rendered="#{(currentUser.nodeUser != null)}">
-            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.createdBy')} : " style="color: #666666"/>
-                <h:outputText value="#{conceptView.creator}" style="color: #43B572"/>
-            </b:column>
-            <b:column span="8" colXs="12" style="font-size: 12px; color: grey; font-style: italic ">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.last_modificationBy')} : " style="color: #666666"/>
-                <h:outputText value="#{conceptView.contributor}" style="color: #43B572"/>
+                                 styleClass="buttonIconOrange"/>                
             </b:column>
         </b:row>
 
@@ -1480,6 +1534,8 @@
             <!-- Dialogues -->        
             <ui:include src="/dialog/concept/addNT.xhtml" /> 
             <ui:include src="/dialog/facet/addFacet.xhtml" />
+            <ui:include src="/dialog/facet/addConceptToFacet.xhtml" />
+            
             <ui:include src="/dialog/concept/renameConcept.xhtml" />
             <ui:include src="/dialog/concept/replaceBy.xhtml" />
             <ui:include src="/dialog/concept/deleteReplaceBy.xhtml" />

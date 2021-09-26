@@ -33,6 +33,15 @@
                 </b:column>
             </b:row>
 
+            <b:row rendered="#{selectedTheso.currentIdTheso == 'tetetete'}">
+                <b:column>
+                    <h:panelGrid  columns="2" style="margin-bottom:10px" cellpadding="5">
+                        <h:outputText value="LDAP: " />
+                        <p:toggleSwitch value="#{currentUser.ldapEnable}" style="color: #f47b2a; margin-left: 15px" />
+                    </h:panelGrid>
+                </b:column>
+            </b:row>
+
             <b:row style="margin-bottom: 20px;">
                 <b:column span="5" offset="1" >
                     <p:commandButton id="buttonLogin" value="#{langueBean.getMsg('menu.login')}" update="loginForm"
@@ -40,7 +49,7 @@
                                      action="#{currentUser.login()}" 
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none; "/>
+                                     color: white; background: #43B572; border: none; box-shadow: none;"/>
                 </b:column>
                 <b:column span="5">
                     <p:commandButton disabled="false" value="#{langueBean.getMsg('menu.forgotten_pass')}"
@@ -49,7 +58,7 @@
                                      update="idForgetPass forgetPassForm"
                                      style="width:100%; font-size: 13px; 
                                      font-weight: normal;
-                                     color: white; background: #C63632; border: none; box-shadow: none; "/>
+                                     color: white; background: #C63632; border: none; box-shadow: none;"/>
                 </b:column>
             </b:row>    
         </h:form>

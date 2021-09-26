@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.candidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
@@ -118,6 +119,10 @@ public class CandidatDao {
                 }
             }
         }
+        UserHelper userHelper = new UserHelper();
+        candidatDtos.forEach(candidatDto -> {
+            candidatDto.setUser(userHelper.getNameUser(hikariDataSource, candidatDto.getUserId()));
+        });        
     }
     
     /**

@@ -195,7 +195,7 @@ public class EditConcept implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idTheso,
-                conceptView.getNodeConcept().getConcept().getIdConcept());
+                conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptView.getConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idLang);
 
@@ -332,7 +332,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                idConcept);       
+                idConcept, idUser);       
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept a bien été déprécié");
         FacesContext.getCurrentInstance().addMessage(null, msg);     
@@ -357,7 +357,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                idConcept);          
+                idConcept, idUser);          
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept a bien été approuvé");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
@@ -381,7 +381,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                idConceptDeprecated);          
+                idConceptDeprecated, idUser);          
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
@@ -392,7 +392,7 @@ public class EditConcept implements Serializable {
         }           
     }
 
-    public void deleteReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy){
+    public void deleteReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy, int idUser){
         FacesMessage msg;        
         if(idConceptReplaceBy == null || idConceptReplaceBy.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de concept sélectionné !");
@@ -410,7 +410,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                idConceptDeprecated);         
+                idConceptDeprecated, idUser);         
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation supprimée avec succès");

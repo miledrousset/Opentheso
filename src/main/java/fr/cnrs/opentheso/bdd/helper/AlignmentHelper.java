@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentType;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeSelectedAlignment;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.core.alignment.AlignementPreferences;
@@ -32,6 +33,91 @@ public class AlignmentHelper {
      * /**************************************************************
      * /*************************************************************
      */
+    
+    
+    /**
+     * cette fonction permet de récupérer le concept aligné avec Ontome
+     *
+     * @param ds
+     * @param idTheso
+     * @param cidocClass
+     * @return
+     */
+    public ArrayList<NodeIdValue> getLinkedConceptsWithOntome(
+            HikariDataSource ds, String idTheso, String cidocClass) {
+
+        ArrayList<NodeIdValue> listAlignementsOntome = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()){
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select alignement.internal_id_concept, alignement.uri_target" +
+                        " from alignement" +
+                        " where" +
+                        " internal_id_thesaurus = '" + idTheso + "'" +
+                        " and " +
+                        " uri_target ilike '%ontome.net/class/" + cidocClass + "'" +
+                        " and" +
+                        " alignement_id_type = 1");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(resultSet.getString("internal_id_concept"));
+                        nodeIdValue.setValue(resultSet.getString("uri_target"));
+
+                        listAlignementsOntome.add(nodeIdValue);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting alignements selected of thesaurus " + idTheso, sqle);
+        }
+        return listAlignementsOntome;
+    }        
+        
+        
+    /**
+     * cette fonction permet de récupérer les alignements avec Ontome
+     *
+     * @param ds
+     * @param idTheso
+     * @return
+     */
+    public ArrayList<NodeIdValue> getAllLinkedConceptsWithOntome(
+            HikariDataSource ds, String idTheso) {
+
+        ArrayList<NodeIdValue> listAlignementsOntome = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()){
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select alignement.internal_id_concept, alignement.uri_target" +
+                        " from alignement" +
+                        " where" +
+                        " internal_id_thesaurus = '" + idTheso + "'" +
+                        " and " +
+                        " uri_target ilike '%ontome.net/class%'" +
+                        " and" +
+                        " alignement_id_type = 1");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(resultSet.getString("internal_id_concept"));
+                        nodeIdValue.setValue(resultSet.getString("uri_target"));
+
+                        listAlignementsOntome.add(nodeIdValue);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting alignements selected of thesaurus " + idTheso, sqle);
+        }
+        return listAlignementsOntome;
+    }    
+        
+        
     /**
      * cette fonction permet de récupérer les informations de la table des
      * sources d'alignement
@@ -170,7 +256,7 @@ public class AlignmentHelper {
                 String query = "SELECT internal_id_concept from alignement"
                         + " where internal_id_concept = '" + id_Concept + "'"
                         + " and internal_id_thesaurus = '" + id_Theso + "'"
-                        + " and id_alignement_source = '" + id_alignement_source + "'"
+//                        + " and id_alignement_source = '" + id_alignement_source + "'"
                         + " and alignement_id_type = '" + alignement_id_type + "'"
                         + " and uri_target = '" + urlTarget + "'";
                 try ( ResultSet rs = stmt.executeQuery(query)) {
@@ -186,7 +272,7 @@ public class AlignmentHelper {
     }
 
     /**
-     * Permet de savoir si on besoin faire une update ou un insert dans la BDD
+     * Permet de savoir si on a besoin de faire un update ou un insert dans la BDD
      *
      * @param ds
      * @param author
@@ -196,8 +282,7 @@ public class AlignmentHelper {
      * @param idTypeAlignment
      * @param idConcept
      * @param idThesaurus
-     * @param id_alignement_source parametre que on prende de la BDD, si c'est 0
-     * c'est alignement manuel
+     * @param id_alignement_source
      * @return
      */
     public boolean addNewAlignment(HikariDataSource ds,
@@ -209,13 +294,13 @@ public class AlignmentHelper {
         if (!isExistsAlignement(ds, id_alignement_source, idThesaurus,
                 idConcept, idTypeAlignment,
                 uriTarget)) {
-            message = "<br>";//"Cet alignement n'exite pas, création en cours <br>";
+            message = "";//"Cet alignement n'exite pas, création en cours <br>";
             status = addNewAlignement2(ds, author, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
                     idConcept, idThesaurus, id_alignement_source);
             if (!status) {
                 return false;
             }
-            message += "<br> New alignment created ... ok";
+            message += " New alignment created ... ok";
         } else {
             // message = "Cette alignement exits, updating en cours";
             status = updateAlignment(ds, idTypeAlignment, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
@@ -223,7 +308,7 @@ public class AlignmentHelper {
             if (!status) {
                 return false;
             }
-            message += "<br> Alignment updated ... Ok";
+            message += " Alignment updated ... Ok";
         }
 
         return status;
@@ -304,7 +389,7 @@ public class AlignmentHelper {
      */
     /**
      * Cette fonction permet d'ajouter un nouvel alignement sur un thésaurus
-     * distant pour ce concept
+     * distant pour ce concept, utilisée uniquement pour les imports 
      *
      * @param ds
      * @param nodeAlignment
@@ -333,9 +418,11 @@ public class AlignmentHelper {
                 return true;
             }
         } catch (SQLException sqle) {
-            log.error("Error while adding external alignement with target : " + nodeAlignment.getUri_target(), sqle);
-            return false;
+            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
+                log.error("Error while adding external alignement with target : " + nodeAlignment.getUri_target(), sqle);
+            }
         }
+        return false;
     }
 
     /**
@@ -377,6 +464,33 @@ public class AlignmentHelper {
         }
         return status;
     }
+    
+    
+    /**
+     * Cette focntion permet de supprimer un alignement par URI
+     *
+     * @param ds
+     * @param uri
+     * @param idConcept
+     * @param idThesaurus
+     * @return
+     */
+    public boolean deleteAlignmentByUri(HikariDataSource ds,
+            String uri, String idConcept, String idThesaurus) {
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {            
+                stmt.executeUpdate("delete from alignement "
+                            + " where uri_target = '" + uri + "'"
+                            + " and internal_id_thesaurus = '" + idThesaurus + "'"
+                            + " and internal_id_concept = '" + idConcept + "'");
+                return true;
+            } 
+        } catch (SQLException sqle) {
+            log.error("Error while deleting alignment from thesaurus with URI : " + uri, sqle);
+        }
+        return false;
+    }    
 
     /**
      * Supprime toute les Alignement source pour un thésaurus

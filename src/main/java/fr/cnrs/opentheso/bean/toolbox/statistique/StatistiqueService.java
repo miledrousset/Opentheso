@@ -22,7 +22,8 @@ public class StatistiqueService {
 
         List<GenericStatistiqueData> result = new ArrayList<>();
         GroupHelper groupHelper = new GroupHelper();
-
+        StatisticHelper statisticHelper = new StatisticHelper();
+        
         ArrayList<NodeGroup> listGroup = groupHelper.getListConceptGroup(connect.getPoolConnexion(), idTheso, idLang);
 
         listGroup.stream().forEach(group -> {
@@ -33,7 +34,7 @@ public class StatistiqueService {
             data.setNotesNbr(new NoteHelper().getNbrNoteByGroup(connect.getPoolConnexion(),
                     group.getConceptGroup().getIdgroup(), idTheso, idLang));
 
-            data.setSynonymesNbr(new StatisticHelper().getNbSynonymesByGroup(connect.getPoolConnexion(), idTheso,
+            data.setSynonymesNbr(statisticHelper.getNbSynonymesByGroup(connect.getPoolConnexion(), idTheso,
                     group.getConceptGroup().getIdgroup(), idLang));
 
             data.setConceptsNbr(new ConceptHelper().getCountOfConceptsOfGroup(connect.getPoolConnexion(), idTheso,
@@ -41,9 +42,15 @@ public class StatistiqueService {
 
             data.setTermesNonTraduitsNbr(
                     data.getConceptsNbr() - 
-                    new StatisticHelper().getNbTradOfGroup(
+                    statisticHelper.getNbTradOfGroup(
                     connect.getPoolConnexion(), idTheso, group.getConceptGroup().getIdgroup(), idLang));//getNbrTermNonTraduit(connect.getPoolConnexion(), group, idTheso, idLang));
 
+            data.setWikidataAlignNbr(statisticHelper.getNbAlignWikidata(
+                    connect.getPoolConnexion(), idTheso, group.getConceptGroup().getIdgroup()));  
+            
+            data.setTotalAlignment(statisticHelper.getNbAlign(
+                    connect.getPoolConnexion(), idTheso, group.getConceptGroup().getIdgroup()));              
+            
             result.add(data);
         });
 

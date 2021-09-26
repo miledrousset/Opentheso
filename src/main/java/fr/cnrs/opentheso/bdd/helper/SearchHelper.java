@@ -416,17 +416,17 @@ public class SearchHelper {
             return listIds;
         }
         value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+    //    value = stringPlus.unaccentLowerString(value);
 
-        String preparedValuePT = " and f_unaccent(lower(term.lexical_value)) like '%" + value + "%'";
-        String preparedValueNPT = " and f_unaccent(lower(non_preferred_term.lexical_value)) like '%" + value + "%'";
+        String preparedValuePT = " and unaccent(lower(term.lexical_value)) like unaccent(lower('%" + value + "%'))";
+        String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%" + value + "%'))";
 
         String query;
         String lang;
         String langSynonyme;
 
         // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
-        if (idLang.isEmpty()) {
+        if (idLang == null || idLang.isEmpty()) {
             lang = "";
             langSynonyme = "";
         } else {
@@ -664,7 +664,7 @@ public class SearchHelper {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+    //    value = stringPlus.unaccentLowerString(value);
         String lang;
         if (idLang == null) {
             lang = "";
@@ -686,27 +686,31 @@ public class SearchHelper {
                         + lang
                         + " and concept.status != 'CA'"
                         + " and ("
-                        + "	f_unaccent(lower(lexical_value)) like '" + value + "'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('" + value + "'))"
                         + "	or"
-                        + "	f_unaccent(lower(lexical_value)) like '" + value + " %'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('" + value + " %'))"
                         + "	or"
-                        + "	f_unaccent(lower(lexical_value)) like '% " + value + "'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('% " + value + "'))"
                         + "	or"
                         // pour les tirets pour trouver victor exp: saint-victor
-                        + "	f_unaccent(lower(lexical_value)) like '" + value + "-%'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('" + value + "-%'))"
                         + "	or"
-                        + "	f_unaccent(lower(lexical_value)) like '%-" + value + "-%'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%-" + value + "-%'))"
                         + "	or"
-                        + "	f_unaccent(lower(lexical_value)) like '%-" + value + "'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%-" + value + "'))"
                         + "	or"
                         // pour les sous_tirets pour trouver victor exp: saint_victor
-                        + "	f_unaccent(lower(lexical_value)) like '" + value + "\\_%'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('" + value + "\\_%'))"
                         + "	or"
-                        + "	f_unaccent(lower(lexical_value)) like '%\\_" + value + "\\_%'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "\\_%'))"
                         + "	or"
-                        + "	f_unaccent(lower(lexical_value)) like '%\\_" + value + "'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "'))"
                         + "	or"
-                        + "	f_unaccent(lower(lexical_value)) like '%''" + value + "'"
+                        + "	unaccent(lower(lexical_value)) like unaccent(lower('%''" + value + "'))"
+                        // pour les parenthèses pour trouver monstre exp: (monstre)                                
+                        + "     or"
+                        + "     unaccent(lower(lexical_value)) like unaccent(lower('%(" + value + ")%'))"
+                                
                         + "	)"
                         + " order by lexical_value");
 
@@ -748,17 +752,26 @@ public class SearchHelper {
                         + lang
                         + " and concept.status != 'CA'"
                         + " and ("
-                        + "	f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value + "'"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "'))"
                         + "	or"
-                        + "	f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value + " %'"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + " %'))"
                         + "	or"
-                        + "	f_unaccent(lower(non_preferred_term.lexical_value)) like '% " + value + "'"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('% " + value + "'))"
                         + "	or"
-                        + "	f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value + "-%'"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "-%'))"
                         + "	or"
-                        + "	f_unaccent(lower(non_preferred_term.lexical_value)) like '%-" + value + "'"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%-" + value + "'))"
                         + "	or"
-                        + "	f_unaccent(lower(non_preferred_term.lexical_value)) like '%''" + value + "'"
+                        // pour les sous_tirets pour trouver victor exp: saint_victor
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "\\_%'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "\\_%'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "'))"
+                        + "	or"                                
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%''" + value + "'))"
+                        + "     or"
+                        + "     unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%(" + value + ")%'))"                                
                         + "	)"
                         + "order by non_preferred_term.lexical_value");
 
@@ -784,6 +797,141 @@ public class SearchHelper {
         return nodeSearchMinis;
     }
 
+    /**
+     * Permet de chercher les terms qui commencent par un mot 
+     *
+     * @param ds
+     * @param value
+     * @param idLang
+     * @param idTheso
+     * @return
+     */
+    public ArrayList<NodeSearchMini> searchStartWith(HikariDataSource ds,
+            String value, String idLang, String idTheso) {
+        StringPlus stringPlus = new StringPlus();
+
+        ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
+        value = stringPlus.convertString(value);
+    //    value = stringPlus.unaccentLowerString(value);
+        String lang;
+        if (idLang == null) {
+            lang = "";
+        } else {
+            lang = " and term.lang = '" + idLang + "'";
+        }
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term from term, preferred_term, concept where"
+                        + " concept.id_concept = preferred_term.id_concept"
+                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and"
+                        + " preferred_term.id_term = term.id_term"
+                        + " and"
+                        + " preferred_term.id_thesaurus = term.id_thesaurus"
+                        + " and"
+                        + " term.id_thesaurus = '" + idTheso + "'"
+                        + lang
+                        + " and concept.status != 'CA'"
+                        + " and ("
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('" + value +"%'))"
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('% " + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('% "+ value + "-%'))"	
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('%-" + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('%(" + value + "%')) "
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "%'))"	
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('%''" + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('%ʿ" + value + "%'))"
+                                
+                        + "	)"
+                        + " order by lexical_value limit 50");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
+                        nodeSearchMini.setIsAltLabel(false);
+
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
+                            nodeSearchMinis.add(0, nodeSearchMini);
+                        } else {
+                            nodeSearchMinis.add(nodeSearchMini);
+                        }
+                    }
+                }
+            }
+
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select preferred_term.id_concept, term.id_term,"
+                        + " non_preferred_term.lexical_value as npt, term.lexical_value as pt"
+                        + " from non_preferred_term, term, preferred_term, concept where"
+                        + " concept.id_concept = preferred_term.id_concept"
+                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and"
+                        + " preferred_term.id_term = term.id_term"
+                        + " and"
+                        + " preferred_term.id_thesaurus = term.id_thesaurus"
+                        + " and"
+                        + " preferred_term.id_term = non_preferred_term.id_term"
+                        + " and"
+                        + " term.lang = non_preferred_term.lang"
+                        + " and"
+                        + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
+                        + " and"
+                        + " term.id_thesaurus = '" + idTheso + "'"
+                        + lang
+                        + " and concept.status != 'CA'"
+                        + " and ("
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value +"%'))"
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('% " + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('% "+ value + "-%'))"	
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%-" + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%(" + value + "%')) "
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "%'))"	
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%''" + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%ʿ" + value + "%'))"
+                        + "	)"
+                        + "order by non_preferred_term.lexical_value limit 50");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
+                        nodeSearchMini.setAltLabel(resultSet.getString("npt"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
+                        nodeSearchMini.setIsAltLabel(true);
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("npt"))) {
+                            nodeSearchMinis.add(0, nodeSearchMini);
+                        } else {
+                            nodeSearchMinis.add(nodeSearchMini);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while search excat of value  : " + value, sqle);
+        }
+        return nodeSearchMinis;
+    }    
+    
+    
     /**
      * Permet de chercher les concepts qui ont une poly-hiérérachie
      *
@@ -1212,7 +1360,7 @@ public class SearchHelper {
         String lang;
 
         // préparation de la requête en fonction du choix (toutes les langues ou langue donnée) 
-        if (idLang.isEmpty()) {
+        if (idLang == null || idLang.isEmpty()) {
             lang = "";
         } else {
             lang = " and note.lang ='" + idLang + "'";
@@ -1306,6 +1454,12 @@ public class SearchHelper {
         for (String value1 : values) {
             multiValues += " and (f_unaccent(lower(note.lexicalvalue)) like '%" + value1 + "%')";
         }
+        String lang;
+        if (idLang == null || idLang.isEmpty()) {
+            lang = "";
+        } else {
+            lang = " and note.lang ='" + idLang + "'";
+        }        
 
         String query;
 
@@ -1327,7 +1481,7 @@ public class SearchHelper {
                             + //" and" +
                             //" f_unaccent(lower(note.lexicalvalue)) like '%" + value + "%'" +
                             " and note.id_thesaurus = '" + idThesaurus + "'"
-                            + " and note.lang = '" + idLang + "'"
+                            + lang
                             + " and concept.status != 'CA' limit 50";
 
                     resultSet = stmt.executeQuery(query);
@@ -1348,7 +1502,7 @@ public class SearchHelper {
                             //" f_unaccent(lower(note.lexicalvalue)) % '" + value + "'" +
                             multiValues
                             + " and note.id_thesaurus = '" + idThesaurus + "'"
-                            + " and note.lang = '" + idLang + "'"
+                            + lang
                             + " and concept.status != 'CA' limit 50";
 
                     resultSet = stmt.executeQuery(query);
@@ -1441,10 +1595,10 @@ public class SearchHelper {
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
         value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        //value = stringPlus.unaccentLowerString(value);
 
-        String preparedValuePT = " and f_unaccent(lower(term.lexical_value)) % '" + value + "'";
-        String preparedValueNPT = " and f_unaccent(lower(non_preferred_term.lexical_value)) % '" + value + "'";
+        String preparedValuePT = " and unaccent(lower(term.lexical_value)) % (unaccent(lower('" + value + "')))";
+        String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) % (unaccent(lower('" + value + "')))";
 
         String lang;
         String langSynonyme;

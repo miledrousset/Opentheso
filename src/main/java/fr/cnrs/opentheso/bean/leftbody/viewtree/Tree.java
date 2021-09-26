@@ -195,8 +195,9 @@ public class Tree implements Serializable {
     }    
 
     private void addMembersOfFacet(TreeNode parent) {
-        List<String> list = new FacetHelper().getAllMembersOfFacet(connect.getPoolConnexion(),
+        List<String> list = new FacetHelper().getAllMembersOfFacetSorted(connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
+                selectedTheso.getCurrentLang(),
                 idTheso);
 
         TermHelper termHelper = new TermHelper();

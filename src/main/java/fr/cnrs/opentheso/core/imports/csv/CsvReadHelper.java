@@ -5,6 +5,9 @@
  */
 package fr.cnrs.opentheso.core.imports.csv;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -31,12 +34,179 @@ public class CsvReadHelper {
     private ArrayList<String> langs;
 
     private final ArrayList<ConceptObject> conceptObjects;
-
+    
+    private ArrayList <NodeAlignmentImport> nodeAlignmentImports;
+    
     public CsvReadHelper(char delimiter) {
         this.delimiter = delimiter;
         conceptObjects = new ArrayList<>();
     }
+    
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     * @param in
+     * @return 
+     */
+    public boolean readFileAlignmentToDelete(Reader in){
+        try {
+            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            String value;
+            for (CSVRecord record : records) {
+                ConceptObject conceptObject = new ConceptObject();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if(value == null) continue;
+                    conceptObject.setLocalId(value);
+                } catch (Exception e) {continue; }                
+                // on récupère les uris à supprimer
+                try {
+                    value = record.get("Uri");
+                    if(value == null) continue;
+                    NodeIdValue nodeIdValue = new NodeIdValue();
+                    nodeIdValue.setId("");
+                    nodeIdValue.setValue(value.trim());
+                    conceptObject.alignments.add(nodeIdValue);
+                } catch (Exception e) {continue;}                  
 
+                conceptObjects.add(conceptObject);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    
+   
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     * @param in
+     * @return 
+     */
+    public boolean readFileAlignment(Reader in){
+        try {
+            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            String value;
+            nodeAlignmentImports = new ArrayList<>();
+            for (CSVRecord record : records) {
+                NodeAlignmentImport nodeAlignmentImport = new NodeAlignmentImport();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if(value == null) continue;
+                    nodeAlignmentImport.setLocalId(value);
+                } catch (Exception e) {continue; }                
+                
+                // on récupère les alignements 
+                
+                nodeAlignmentImport = getNewAlignment(nodeAlignmentImport, record);
+                if(nodeAlignmentImport != null)
+                    nodeAlignmentImports.add(nodeAlignmentImport);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }      
+    private NodeAlignmentImport getNewAlignment(
+            NodeAlignmentImport nodeAlignmentImport,
+            CSVRecord record) {
+        String uri1;
+        String[] valueType;
+        /// types alignements 1=exactMatch ; 2=closeMatch ; 3=broadMatch ; 4=relatedMatch ; 5=narrowMatch
+        try {
+            uri1 = record.get("Wikidata");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Wikidata", uri1);
+        } catch (Exception e) {}        
+        
+        try {
+            uri1 = record.get("AAT");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "AAT", uri1);
+        } catch (Exception e) {}
+        
+        try {
+            uri1 = record.get("BNF");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "BNF", uri1);       
+        } catch (Exception e) {}
+        
+        try {
+            uri1 = record.get("IdRef");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "IdRef", uri1);         
+        } catch (Exception e) {}
+        
+        try {
+            uri1 = record.get("Pleiades");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Pleiades", uri1);            
+        } catch (Exception e) {}       
+        
+        try {
+            uri1 = record.get("PeriodO");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "PeriodO", uri1);            
+        } catch (Exception e) {}       
+        try {
+            uri1 = record.get("Geonames");
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Geonames", uri1);            
+        } catch (Exception e) {}          
+        
+        return nodeAlignmentImport;
+    }
+    private NodeAlignmentImport getAlignmentSource(NodeAlignmentImport nodeAlignmentImport, String source, String uri){
+        String[] valueType;
+        /// types alignements 1=exactMatch ; 2=closeMatch ; 3=broadMatch ; 4=relatedMatch ; 5=narrowMatch
+        try {
+            if(source != null && !source.isEmpty()) {
+                NodeAlignmentSmall nodeAlignmentSmall = new NodeAlignmentSmall();
+                nodeAlignmentSmall.setSource(source);
+                
+                //on récupère le type d'alignement (url##1)
+                if(uri.contains("##")) {
+                    valueType = uri.split("##");
+                    if(valueType.length == 2){
+                        nodeAlignmentSmall.setUri_target(valueType[0]);
+                        try {
+                            nodeAlignmentSmall.setAlignement_id_type(Integer.parseInt(valueType[1]));
+                        } catch (Exception e) {
+                            nodeAlignmentSmall.setAlignement_id_type(1);
+                        }
+                    } else {
+                        nodeAlignmentSmall.setUri_target(uri);
+                        nodeAlignmentSmall.setAlignement_id_type(1);
+                    }
+                } else {
+                    nodeAlignmentSmall.setUri_target(uri);
+                    nodeAlignmentSmall.setAlignement_id_type(1);
+                }
+                nodeAlignmentImport.getNodeAlignmentSmalls().add(nodeAlignmentSmall);
+                return nodeAlignmentImport;
+            }
+        } catch (Exception e) {}
+        return null;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+////////////////////////////////////////////////////////////////////////////////    
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+    
     public boolean setLangs(Reader in){
         langs = new ArrayList<>();
         try {
@@ -680,11 +850,20 @@ public class CsvReadHelper {
         return langs;
     }
 
+    public ArrayList<NodeAlignmentImport> getNodeAlignmentImports() {
+        return nodeAlignmentImports;
+    }
+
+    public void setNodeAlignmentImports(ArrayList<NodeAlignmentImport> nodeAlignmentImports) {
+        this.nodeAlignmentImports = nodeAlignmentImports;
+    }
+
     
     
     public class ConceptObject {
         private String idConcept;
-        
+        private String uri;
+        private String localId; // peut être Ark, Handle ou identifiant local
         private String idTerm;
         // rdf:type pour distinguer les concepts des collections, groupes ...
         private String type;
@@ -731,7 +910,8 @@ public class CsvReadHelper {
         private String created;
         private String modified;        
         
-        
+        /// pour récupérer une liste d'alignements (à ajouter ou à supprimer)
+        private ArrayList<NodeIdValue> alignments; 
 
         public ConceptObject() {
             prefLabels = new ArrayList<>();
@@ -756,7 +936,8 @@ public class CsvReadHelper {
             narrowMatchs = new ArrayList<>();
             relatedMatchs = new ArrayList<>();
             
-            members = new ArrayList<>();            
+            members = new ArrayList<>();      
+            alignments = new ArrayList<>();
         }
         public void clear(){
             if(prefLabels != null) prefLabels.clear();
@@ -778,6 +959,7 @@ public class CsvReadHelper {
             if(narrowMatchs != null) narrowMatchs.clear();  
             if(relatedMatchs != null) relatedMatchs.clear();  
             if(members != null) members.clear();  
+            if(alignments != null) alignments.clear();
         }        
 
         public String getIdConcept() {
@@ -788,6 +970,22 @@ public class CsvReadHelper {
             this.idConcept = idConcept;
         }
 
+        public String getUri() {
+            return uri;
+        }
+
+        public void setUri(String uri) {
+            this.uri = uri;
+        }
+
+        public String getLocalId() {
+            return localId;
+        }
+
+        public void setLocalId(String localId) {
+            this.localId = localId;
+        }
+
         public String getIdTerm() {
             return idTerm;
         }
@@ -795,8 +993,6 @@ public class CsvReadHelper {
         public void setIdTerm(String idTerm) {
             this.idTerm = idTerm;
         }
-
-
 
         public String getType() {
             return type;
@@ -997,6 +1193,15 @@ public class CsvReadHelper {
         public void setModified(String modified) {
             this.modified = modified;
         }
+
+        public ArrayList<NodeIdValue> getAlignments() {
+            return alignments;
+        }
+
+        public void setAlignments(ArrayList<NodeIdValue> alignments) {
+            this.alignments = alignments;
+        }
+
 
 
     }

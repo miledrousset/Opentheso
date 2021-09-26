@@ -13,11 +13,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.Term;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTab2Levels;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
@@ -2070,6 +2068,59 @@ public class TermHelper {
             return false;
         }
     }
+    
+    /**
+     * Cette fonction permet de retourner l'ID du createur 
+     * @param ds
+     * @param idThesaurus
+     * @param idTerm
+     * @param idLang
+     * @return 
+     */
+    public int getCreator(HikariDataSource ds, String idThesaurus, String idTerm, String idLang) {
+        int idCreator = -1;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select creator from term where id_thesaurus = '" + idThesaurus + "' and id_term = '" + idTerm + "' and lang = '" + idLang  + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        if( (resultSet.getInt("creator") != -1) && (resultSet.getInt("creator") != 0) ) 
+                            idCreator = resultSet.getInt("creator");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting creator of : " + idTerm, sqle);
+        }
+        return idCreator;
+    }
+    
+    /**
+     * Cette fonction permet de retourner l'ID du contributeur 
+     * @param ds
+     * @param idThesaurus
+     * @param idTerm
+     * @param idLang
+     * @return 
+     */
+    public int getContributor(HikariDataSource ds, String idThesaurus, String idTerm, String idLang) {
+        int idContributor = -1;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select contributor from term where id_thesaurus = '" + idThesaurus + "' and id_term = '" + idTerm + "' and lang = '" + idLang  + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        if( (resultSet.getInt("contributor") != -1) && (resultSet.getInt("contributor") != 0) ) 
+                            idContributor = resultSet.getInt("contributor");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting contributor of : " + idTerm, sqle);
+        }
+        return idContributor;
+    }    
+    
 
     /**
      * Cette fonction permet de savoir si le terme existe ou non

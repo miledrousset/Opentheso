@@ -86,6 +86,9 @@
                         <b:navCommandLink value="#{listCandidats.nomPref}" ajax="true" update="candidatForm" style="font-size: 13px; color: #43B572;"
                                           actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
                     </p:column> 
+                    <p:column width="30" headerText="#{langueBean.getMsg('rightbody.concept.createdBy')}">
+                        <h:outputText value="#{listCandidats.user}" />
+                    </p:column>                      
                     
                     <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
                         <h:outputText value="#{listCandidats.creationDate}" />

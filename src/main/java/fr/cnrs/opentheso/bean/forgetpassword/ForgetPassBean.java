@@ -73,7 +73,7 @@ public class ForgetPassBean implements Serializable {
         if (userHelper.isUserMailExist(connect.getPoolConnexion(), mail)) {
             ToolsHelper toolsHelper = new ToolsHelper();
             String password = toolsHelper.getNewId(10);
-            password = MD5Password.getEncodedPassword(password);
+            String passwordMD5 = MD5Password.getEncodedPassword(password);
             String pseudo = userHelper.getNameUser(connect.getPoolConnexion(), mail);
             int idUser = userHelper.getIdUserFromMail(connect.getPoolConnexion(), mail);
             if (idUser == -1) {
@@ -84,7 +84,7 @@ public class ForgetPassBean implements Serializable {
                 printMessage("Erreur d'envoie de mail, veuillez contacter l'administrateur");
                 return;
             }
-            if (!userHelper.updatePwd(connect.getPoolConnexion(), idUser, password)) {
+            if (!userHelper.updatePwd(connect.getPoolConnexion(), idUser, passwordMD5)) {
                 printMessage("Erreur base de données");
             }
         } else {

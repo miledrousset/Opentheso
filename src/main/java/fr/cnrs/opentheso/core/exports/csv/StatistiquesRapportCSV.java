@@ -27,7 +27,7 @@ public class StatistiquesRapportCSV {
             writer = new BufferedWriter(new OutputStreamWriter(output));
 
             // write header record
-            writer.write("Collection;Concepts;Sysnonymes;Termes non traduits;Notes;");
+            writer.write("Collection;Concepts;Sysnonymes;Termes non traduits;Notes;Align Wikidata;Total align");
             writer.newLine();
 
             // write all concepts
@@ -38,7 +38,9 @@ public class StatistiquesRapportCSV {
                             .append(collection.getConceptsNbr()).append(seperate)
                             .append(collection.getSynonymesNbr()).append(seperate)
                             .append(collection.getTermesNonTraduitsNbr()).append(seperate)
-                            .append(collection.getNotesNbr()).append(seperate);
+                            .append(collection.getNotesNbr()).append(seperate)
+                            .append(collection.getWikidataAlignNbr()).append(seperate)
+                            .append(collection.getTotalAlignment());
                     writer.write(ligne.toString());
                     writer.newLine();
                 } catch (IOException ex) {

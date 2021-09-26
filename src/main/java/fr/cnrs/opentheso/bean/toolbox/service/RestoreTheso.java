@@ -5,10 +5,13 @@
  */
 package fr.cnrs.opentheso.bean.toolbox.service;
 
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
+import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
@@ -90,6 +93,38 @@ public class RestoreTheso implements Serializable {
         if(!new ToolsHelper().removeLoopRelations(connect.getPoolConnexion(), "NT", idTheso))
             return false;
         return new ToolsHelper().removeLoopRelations(connect.getPoolConnexion(), "RT", idTheso);
+    }    
+    
+    public void switchRolesFromTermToConcept(String idTheso) {
+        String lang = connect.getWorkLanguage();
+       
+        ConceptHelper conceptHelper = new ConceptHelper();
+        TermHelper termHelper = new TermHelper();
+        
+        String idTerm;
+        int idCreator;
+        int idContributor;        
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        
+        for (String idConcept : allConcepts) {
+            if(!conceptHelper.isHaveCreator(connect.getPoolConnexion(), idTheso, idConcept)) {
+                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
+                if(idTerm != null) {
+                    idCreator = termHelper.getCreator(connect.getPoolConnexion(), idTheso, idTerm, lang);
+                    if(idCreator != -1)
+                        conceptHelper.setCreator(connect.getPoolConnexion(), idTheso, idConcept, idCreator);
+                }
+            }
+            if(!conceptHelper.isHaveContributor(connect.getPoolConnexion(), idTheso, idConcept)) {
+                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
+                if(idTerm != null) {
+                    idContributor = termHelper.getContributor(connect.getPoolConnexion(), idTheso, idTerm, lang);
+                    if(idContributor != -1)
+                        conceptHelper.setContributor(connect.getPoolConnexion(), idTheso, idConcept, idContributor);
+                }
+            }
+        }
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction réussie !!!"));
     }    
     
 }

@@ -248,7 +248,7 @@ public class EditThesoBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-
+        roleOnThesoBean.showListTheso();
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Traduction modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init(nodeIdValueOfTheso);

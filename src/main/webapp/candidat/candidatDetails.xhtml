@@ -8,8 +8,10 @@
     <h:panelGroup id="panelCandidate">
         <b:row>
             <b:column span="12">
-                <h:outputText style="font-weight: bold; background-color: #FAFAFA; margin-top: 10px;" 
-                              value="#{langueBean.getMsg('candidat.file')}"/>
+                <h:outputText style="font-weight: bold; margin-top: 10px;" 
+                              value="#{langueBean.getMsg('candidat.file')}: "/>
+                <h:outputText style="font-size: 12px; color: #f47b2a;" 
+                              value="(#{candidatBean.candidatSelected.user})"/>                
             </b:column>
         </b:row>
 
@@ -27,11 +29,11 @@
             <b:column span="1" offset="1" rendered="#{!candidatBean.isNewCandidatActivate()}">
                 <b:navCommandLink rendered="#{candidatBean.candidatSelected.voted}" 
                                   icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
-                                  style="color: #f47b2a" action="#{candidatBean.addVote()}"
+                                  style="color: #f47b2a"  update="candidatForm:tabViewCandidat:vote" action="#{candidatBean.addVote()}"
                                   tooltip="Vous avez voté pour ce candidat" tooltip-delay-show="500"/>
                 <b:navCommandLink rendered="#{!candidatBean.candidatSelected.voted}" 
                                   icon-awesome="fas fa-thumbs-up fas-lg" icon-size="lg"
-                                  style="color: #666666" action="#{candidatBean.addVote()}"
+                                  style="color: #666666"  update="candidatForm:tabViewCandidat:vote" action="#{candidatBean.addVote()}"
                                   tooltip="Cliquez pour voter pour ce candidat" tooltip-delay-show="500"/>
             </b:column>                
         </b:row>

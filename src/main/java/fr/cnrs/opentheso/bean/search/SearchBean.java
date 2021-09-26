@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PreDestroy;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 /**
@@ -47,6 +49,7 @@ public class SearchBean implements Serializable {
     
     // filter search
     private boolean exactMatch;
+    private boolean indexMatch;    
     private boolean withNote;
     private boolean withId;
 
@@ -70,17 +73,26 @@ public class SearchBean implements Serializable {
     }     
     
     
+    public void activateIndexMatch(){
+        exactMatch = false;
+        withId = false;
+        withNote = false;
+    }    
+    
     public void activateExactMatch(){
         withId = false;
         withNote = false;
+        indexMatch = false;        
     }
     public void activateWithNote(){
         withId = false;
         exactMatch = false;
+        indexMatch = false;        
     }
     public void activateWithId(){
         withNote = false;
         exactMatch = false;
+        indexMatch = false;        
     }     
     
     public void reset(){
@@ -125,13 +137,17 @@ public class SearchBean implements Serializable {
                             idLang,
                             selectedTheso.getCurrentIdTheso());
             }
-            else {
-                if(!withId && !withNote) {
-                    listResultAutoComplete = searchHelper.searchFullTextElastic(connect.getPoolConnexion(),
-                                value,
-                                idLang,
-                                selectedTheso.getCurrentIdTheso());
-                }
+            if(indexMatch) {
+                listResultAutoComplete = searchHelper.searchStartWith(connect.getPoolConnexion(),
+                            value,
+                            idLang,
+                            selectedTheso.getCurrentIdTheso());
+            }
+            if(!withId && !withNote && !indexMatch && !exactMatch) {
+                listResultAutoComplete = searchHelper.searchFullTextElastic(connect.getPoolConnexion(),
+                            value,
+                            idLang,
+                            selectedTheso.getCurrentIdTheso());
             }
         }
         searchValue = value;
@@ -177,6 +193,13 @@ public class SearchBean implements Serializable {
             searchHelper = new SearchHelper();
         ArrayList<String> nodeSearchsId;
         
+        String idLang;
+        if(selectedTheso.getSelectedLang().equalsIgnoreCase("all"))
+            idLang = null;
+        else {
+            idLang = selectedTheso.getSelectedLang();
+        }  
+        
         if(withId) {
             nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(),
                     searchValue, selectedTheso.getCurrentIdTheso());
@@ -195,7 +218,7 @@ public class SearchBean implements Serializable {
 
         if(withNote) {
             nodeSearchsId = searchHelper.searchIdConceptFromNotes(connect.getPoolConnexion(),
-                    searchValue, selectedTheso.getCurrentLang(),
+                    searchValue, idLang,
                     selectedTheso.getCurrentIdTheso()
                     );
             
@@ -214,7 +237,7 @@ public class SearchBean implements Serializable {
         
         if(exactMatch) {
             ArrayList<NodeSearchMini> nodeSearchMini = searchHelper.searchExactMatch(connect.getPoolConnexion(),
-                    searchValue, selectedTheso.getCurrentLang(),
+                    searchValue, idLang,
                     selectedTheso.getCurrentIdTheso()
                     );
             for (NodeSearchMini nodeSearchMini1 : nodeSearchMini) {
@@ -233,7 +256,7 @@ public class SearchBean implements Serializable {
         if(!withId && !withNote && !exactMatch) {
             ArrayList<String> nodeSearchMinis = searchHelper.searchFullTextId(
                     connect.getPoolConnexion(),
-                    searchValue, selectedTheso.getCurrentLang(),
+                    searchValue, idLang,
                     selectedTheso.getCurrentIdTheso()
                     );            
             for (String nodeSearchMini : nodeSearchMinis) {
@@ -260,6 +283,10 @@ public class SearchBean implements Serializable {
                 setViewsSerach();
                 isSelectedItem = false;
             }
+        } else {
+            FacesMessage msg;
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
     }
     
@@ -548,6 +575,14 @@ public class SearchBean implements Serializable {
 
     public void setWithId(boolean withId) {
         this.withId = withId;
+    }
+
+    public boolean isIndexMatch() {
+        return indexMatch;
+    }
+
+    public void setIndexMatch(boolean indexMatch) {
+        this.indexMatch = indexMatch;
     }
 
     

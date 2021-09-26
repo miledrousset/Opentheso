@@ -1,22 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
-import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-import fr.cnrs.opentheso.bean.concept.CopyAndPasteBetweenTheso;
-import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
-import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
-import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
-import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
-import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
@@ -29,8 +17,9 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
-import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import javax.annotation.PreDestroy;
+
+import fr.cnrs.opentheso.utils.LDAPUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -45,18 +34,11 @@ public class CurrentUser implements Serializable {
     @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private IndexSetting indexSetting;
-    @Inject private Tree tree;
-    @Inject private TreeGroups treeGroups;
-    @Inject private TreeConcepts treeConcepts;
-    @Inject private ListIndex listIndex;
-    @Inject private EditFacet editFacet;
-    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
-    @Inject private CandidatBean candidatBean;
 
     private NodeUser nodeUser;
     private String username;
     private String password;
+    private boolean ldapEnable;
     
     private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
 
@@ -99,25 +81,6 @@ public class CurrentUser implements Serializable {
         roleOnThesoBean.showListTheso();
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
-
-        
-//// désactivé par Miled, il ne faut pas nettoyer l'arbre après la déconnexion, on passe seulment en mode consultation 
-        
-//        // On set à null les variables utilisés dans la session on cours.
-//        tree.reset();
-//        listIndex.reset();
-//        treeGroups.reset();
-//        treeConcepts.reset();
-//        viewEditorThesoHomeBean.reset();
-//        copyAndPasteBetweenTheso.reset();
-//
-//        editFacet.reset();
-//        candidatBean.clear();
-//
-//        // On appelle Garbage Collector pour libérer la mémoire occupé par les variables qui ont une valeur "null"
-//        System.gc();
-
-        
         indexSetting.setIsThesoActive(true);
         PrimeFaces pf = PrimeFaces.current();
 
@@ -131,7 +94,6 @@ public class CurrentUser implements Serializable {
             pf.ajax().update("loginForm");
             pf.ajax().update("formSearch:languageSelect");
             pf.ajax().update("formSearch");
-
         }
         initHtmlPages();
     }
@@ -149,33 +111,35 @@ public class CurrentUser implements Serializable {
      */
     public void login() throws IOException {
         UserHelper userHelper = new UserHelper();
-        FacesMessage facesMessage;
-        
-        
+
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
-            // utilisateur ou mot de passe n'existent pas
-            facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", "champ vide non autorisé");
-            FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-            return;
-        }        
-        
-        int idUser = userHelper.getIdUser(connect.getPoolConnexion(),
-                username, MD5Password.getEncodedPassword(password));
-        if (idUser == -1) {
-            // utilisateur ou mot de passe n'existent pas
-            facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", "User or password wrong, please try again");
-            FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-            return;
+            showErrorMessage("champ vide non autorisé");
+            return;            
         }
 
-        // on récupère le compte de l'utilisatreur 
+        int idUser = -1;
+        if (ldapEnable) {
+            if (!new LDAPUtils().authentificationLdapCheck(username, password)) {
+                showErrorMessage("User or password wrong, please try again");
+                return;
+            }
+        } else {
+            idUser = userHelper.getIdUser(connect.getPoolConnexion(),
+                    username, MD5Password.getEncodedPassword(password));
+        }
+
+        if (idUser == -1) {
+            showErrorMessage("User or password wrong, please try again");
+            return;            
+        }
+
+        // on récupère le compte de l'utilisatreur
         nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
         if (nodeUser == null) {
-            facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error!", "incohérence base de données");
-            FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-            return;
+            showErrorMessage("Incohérence base de données");
+            return;            
         }
-        facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         
         PrimeFaces.current().executeScript("PF('login').hide();");
@@ -188,12 +152,16 @@ public class CurrentUser implements Serializable {
             pf.ajax().update("formMenu");;
             
         }
-        System.gc ();
-        System.runFinalization ();
-        
-        /*   if (nodeUser.isPasstomodify()) {
-            return "changePass.xhtml?faces-redirect=true";// nouvelle pass web pour changer le motpasstemp
-        }*/
+//        System.gc ();
+//        System.runFinalization ();
+
+    }
+
+    private void showErrorMessage(String msg) {
+        // utilisateur ou mot de passe n'existent pas
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", msg);
+        FacesContext.getCurrentInstance().addMessage(null, facesMessage);
+        return;
     }
     
     private void initHtmlPages(){
@@ -211,16 +179,6 @@ public class CurrentUser implements Serializable {
         }
         roleOnThesoBean.showListTheso();
         initAllAuthorizedProjectAsAdmin();
-//        addAuthorizedThesoToHM();
-/*        listeUser = null;
-        listeGroupsOfUser = null;
-        nodeUserRoleOnThisGroup = null;
-        listeThesoOfGroup = null;
-        FacesContext context = FacesContext.getCurrentInstance();
-        String version_Opentheso = context.getExternalContext().getInitParameter("version");
-        versionOfOpentheso = new BaseDeDoneesHelper().getVersionOfOpentheso(connect.getPoolConnexion());
-        new BaseDeDoneesHelper().updateVersionOpentheso(connect.getPoolConnexion(), version_Opentheso);*/
-
     }
 
     /**
@@ -232,8 +190,6 @@ public class CurrentUser implements Serializable {
         }
         if (connect.getPoolConnexion() != null) {
             nodeUser = new UserHelper().getUser(connect.getPoolConnexion(), nodeUser.getIdUser());
-            //       getGroupsOfUser();
-            //       initVue();
         }
     }
     
@@ -255,6 +211,13 @@ public class CurrentUser implements Serializable {
         }
     }
 
+    public void forgotPassword() {
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Default user name: BootsFaces");
+        FacesContext.getCurrentInstance().addMessage("loginForm:username", msg);
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Default password: rocks!");
+        FacesContext.getCurrentInstance().addMessage("loginForm:password", msg);
+    }
+
     public NodeUser getNodeUser() {
         return nodeUser;
     }
@@ -270,6 +233,11 @@ public class CurrentUser implements Serializable {
     public void setAllAuthorizedProjectAsAdmin(ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin) {
         this.allAuthorizedProjectAsAdmin = allAuthorizedProjectAsAdmin;
     }
+    public boolean isLdapEnable() {
+        return ldapEnable;
+    }
 
-
+    public void setLdapEnable(boolean ldapEnable) {
+        this.ldapEnable = ldapEnable;
+    }
 }

@@ -37,6 +37,32 @@ public class FacetHelper {
 ///////////////////// Nouvelles méthodes MR //////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////    
+    
+    public ArrayList<NodeIdValue> searchFacet(HikariDataSource ds, 
+            String name, String lang, String idThesaurus) {
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '"+ lang 
+                            + "' AND lexical_value like unaccent(lower('%" + name + "%'))" + " AND id_thesaurus = '" + idThesaurus + "' order by lexical_value");                
+                try (ResultSet resultSet = stmt.getResultSet()){
+                    while (resultSet.next()) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(resultSet.getString("id_facet"));
+                        nodeIdValue.setValue(resultSet.getString("lexical_value"));
+                        nodeIdValues.add(nodeIdValue);
+                    }
+                }
+            }
+
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while serching for facet : " + name, sqle);
+        }
+        return nodeIdValues;
+    }    
+    
     /**
      * permet de retourner la liste des id et valeur des facettes qui 
      * appartiennent à ce concept, ceci est pour les noeuds dans l'arbre
@@ -916,6 +942,60 @@ public class FacetHelper {
     */
   
     
+    /**
+     * permet de retourner la liste des concepts membres de la facette triés
+     * @param ds
+     * @param idFacet
+     * @param idLang
+     * @param idTheso
+     * @return 
+     * #MR
+     */
+    public List<String> getAllMembersOfFacetSorted(HikariDataSource ds,
+            String idFacet, String idLang, String idTheso){
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        List<String> members = new ArrayList<>();
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    stmt.executeQuery("SELECT concept_facet.id_concept FROM concept_facet, preferred_term, term " +
+                            " WHERE " +
+                            " concept_facet.id_concept = preferred_term.id_concept" +
+                            " and" +
+                            " concept_facet.id_thesaurus = preferred_term.id_thesaurus" +
+                            " and" +
+                            " term.id_term = preferred_term.id_term" +
+                            " and" +
+                            " term.id_thesaurus = preferred_term.id_thesaurus" +
+                            " and" +
+                            " concept_facet.id_thesaurus = '" + idTheso + "'" +
+                            " and" +
+                            " concept_facet.id_facet = '" + idFacet + "'" +
+                            " and" +
+                            " term.lang = '" + idLang + "'" +
+                            " order by term.lexical_value");
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        members.add(resultSet.getString("id_concept"));
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting concepts members of Facet : " + idFacet, sqle);
+        }
+        return members;        
+    }    
     
     
     /**

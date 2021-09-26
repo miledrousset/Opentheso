@@ -34,7 +34,6 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
@@ -225,7 +224,7 @@ public class ImportRdf4jHelper {
             if(selectedIdentifier.equalsIgnoreCase("doi")){
                 nodePreference.setOriginalUriIsDoi(true);
             }             
-            preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);            
+//            preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);            
         } else {
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
@@ -239,8 +238,8 @@ public class ImportRdf4jHelper {
             if(selectedIdentifier.equalsIgnoreCase("doi")){
                 nodePreference.setOriginalUriIsDoi(true);
             }               
-            preferencesHelper.addPreference(ds, nodePreference, idTheso); 
         }
+        preferencesHelper.addPreference(ds, nodePreference, idTheso);         
     }
     
     private void setOriginalUri(String idTheso, String uri){
@@ -457,6 +456,20 @@ public class ImportRdf4jHelper {
         addDocumentation(acs);
         addDate(acs);
         addReplaces(acs);
+        
+        // ajout des roles
+ //       String creator = "";
+ //       String contributor = "";
+        for (SKOSCreator c : conceptResource.getCreatorList()) {
+            if (c.getProperty() == SKOSProperty.creator) {
+        //        creator = c.getCreator();
+                acs.concept.setCreatorName(c.getCreator());
+            }
+            if (c.getProperty() == SKOSProperty.contributor) {
+        //        contributor = c.getCreator();
+                acs.concept.setContributorName(c.getCreator());
+            }
+        }
 
         if (isCandidatImport) {
             addMessages(acs);

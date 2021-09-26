@@ -103,11 +103,26 @@
                                                       action="#{viewEditionBean.setIsViewExportCSV(true)}"
                                                       update="toolBoxForm"
                                                       style="font-size: 12px;"/>
+
                                     <b:navCommandLink value="Identifiants en CSV" ajax="false" tooltip="Exporter les labels, identifiants, definitions au format CSV" tooltip-delay-show="1000"
                                                       actionListener="#{viewExportBean.init(listTheso, 'CSV_id')}"
                                                       action="#{viewEditionBean.setIsViewExportCSV(true)}"
                                                       update="toolBoxForm"
+                                                      style="font-size: 12px;"/>
+                                    
+                                    <b:navCommandLink value="Concepts dépréciés en CSV" ajax="false" tooltip="Exporter les Concepts dépréciés avec le label et le concept de remplacement" tooltip-delay-show="1000"
+                                                      actionListener="#{viewExportBean.init(listTheso, 'deprecated')}"
+                                                      action="#{viewEditionBean.setIsViewExportCSV(true)}"
+                                                      update="toolBoxForm"
                                                       style="font-size: 12px;"/>                                    
+
+                                    <b:navCommandLink value="Virtuoso (SKOS)" ajax="false"
+                                                      tooltip="Exporter le thésaurus dans vertuoso au format RDF"
+                                                      tooltip-delay-show="1000"
+                                                      actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
+                                                      action="#{viewEditionBean.setIsViewExportVirtuoso(true)}"
+                                                      update="toolBoxForm"
+                                                      style="font-size: 12px;"/>
                                 </b:dropMenu> 
                             </b:column>
 
