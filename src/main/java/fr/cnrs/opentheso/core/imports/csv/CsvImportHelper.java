@@ -391,6 +391,7 @@ public class CsvImportHelper {
         // ajout du concept
         if (!conceptHelper.insertConceptInTable(ds, concept, idUser)) {
             message = message + "\n" + "erreur dans l'intégration du concept " + conceptObject.getIdConcept();
+            return false;
         }
 
         Term term = new Term();

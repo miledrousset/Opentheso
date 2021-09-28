@@ -346,6 +346,7 @@ public class ImportFileBean implements Serializable {
                         }
                     }
                 }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide()");
             } catch (Exception e) {
                 haveError = true;
                 error.append(System.getProperty("line.separator"));
@@ -353,6 +354,7 @@ public class ImportFileBean implements Serializable {
             } finally {
                 showError();
             }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");            
         }
     }
 
@@ -718,6 +720,7 @@ public class ImportFileBean implements Serializable {
                 loadJson(event, isCandidatImport);
                 break;
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').hide()");
     }
 
     private void loadSkos(FileUploadEvent event, Boolean isCandidatImport) {

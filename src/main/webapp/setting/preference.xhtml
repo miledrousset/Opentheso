@@ -145,12 +145,20 @@
 
             <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                 <b:column span="2" offset="6"> 
-                    <b:commandButton iconAwesome="fas fa-save"  class="btn btn-success"
+                   <b:commandButton iconAwesome="fas fa-save"  class="btn btn-success"
                                      value="Enregistrer" style="width: 100%; font-size: 12px;"
                                      tooltip="Enregistrer les modifications"  tooltip-delay-show="1000"
                                      action="#{preferenceBean.savePreference()}"
-                                     update="preferenceForm messageIndex">
+                                     update="settingForm preferenceForm messageIndex"
+                                     oncomplete="PF('waitDialog').hide();">
                     </b:commandButton>
+                   <!-- <p:commandButton icon="fa fa-save"  class="btn btn-success"
+                                     value="Enregistrer" style="width: 100%; font-size: 12px;"
+                                     title="Enregistrer les modifications"  
+                                     action preferenceBean.savePreference()}"
+                                     update="preferenceForm messageIndex"
+                                     oncomplete="PF('waitDialog').hide();">
+                    </p:commandButton>     -->              
                 </b:column>
 
 

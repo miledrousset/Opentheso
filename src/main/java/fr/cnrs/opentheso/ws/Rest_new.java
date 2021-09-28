@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
-import javax.ws.rs.Consumes;
+//import javax.ws.rs.Consumes;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.logging.Log;
