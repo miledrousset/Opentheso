@@ -818,17 +818,17 @@
                                       action = "#{traductionBean.setLangWithNoTraduction()}"
                                       oncomplete="PF('addTraduction').show();"
                                       update="idAddTraduction addTraductionForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;"/>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" 
                                       actionListener="#{traductionBean.reset()}"
                                       oncomplete="PF('renameTraduction').show();"
                                       update="idRenameTraduction renameTraductionForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;"/>
                     <b:navCommandLink value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
                                       actionListener="#{traductionBean.reset()}"
                                       oncomplete="PF('deleteTraduction').show();"
                                       update="idDeleteTraduction deleteTraductionForm"
-                                      style="font-size: 12px;"></b:navCommandLink>
+                                      style="font-size: 12px;"/>
                 </b:dropMenu> 
             </b:column>
             <h:panelGroup id="idConceptTraductions">

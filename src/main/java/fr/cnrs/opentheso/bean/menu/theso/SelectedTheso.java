@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
