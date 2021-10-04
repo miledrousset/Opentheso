@@ -59,6 +59,8 @@ public class ImageBean implements Serializable {
         nodeImages = conceptBean.getNodeConcept().getNodeimages();
         uri = null;
         copyright = null;
+        
+        prepareImageForEdit();
     }
    
     public void prepareImageForEdit(){
@@ -109,14 +111,15 @@ public class ImageBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
+                conceptBean.getNodeConcept().getConcept().getIdConcept());
+        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptImages");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addImageForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }        
     }
     
@@ -162,9 +165,8 @@ public class ImageBean implements Serializable {
         reset();
 
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptImages");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:updateImageForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }        
     }       
     
@@ -193,8 +195,7 @@ public class ImageBean implements Serializable {
             return;
         }
         
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
 
@@ -207,9 +208,8 @@ public class ImageBean implements Serializable {
         reset();
 
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptImages");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteImageForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }        
     }    
 

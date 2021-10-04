@@ -5,7 +5,7 @@
 
     <p:dialog id="idRemoveConceptFromGroup" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_concept_from_group')}" 
               widgetVar="removeConceptFromGroup" 
-              width="450" showEffect="fade" modal="true" resizable="false" >        
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -16,23 +16,31 @@
             </div>
         </div>
 
-        <ui:repeat var="domaines" value="#{conceptView.nodeConcept.nodeConceptGroup}" id="groupes" >   
-            <div class="row">
-                <div class="col-1">
-                    <p:commandLink action="#{removeFromGroupBean.removeConceptFromGroup(
-                                             domaines.conceptGroup.idgroup, currentUser.nodeUser.idUser)}"
-                                   style="color: #FF7979" update="containerIndex">
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
-                </div>
-                <div class="col-11" style="margin-top: 3px">
-                    <h:outputText rendered="#{domaines.lexicalValue != ''}"
-                                  value="#{domaines.lexicalValue}" title="#{domaines.conceptGroup.idgroup}"
-                                  style="color: #43B572"/>                    
-                    <h:outputText rendered="#{domaines.lexicalValue == ''}" value="(#{domaines.conceptGroup.idgroup})" 
-                                  style="color: #FF7979"/>
-                </div>
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <h:outputText value="Liste des collections : " class="dialog-titre" /> 
             </div>
-        </ui:repeat>
+        </div>
+
+        <p:panel id="listeConceptGroupe">
+            <ui:repeat var="domaines" value="#{conceptView.nodeConcept.nodeConceptGroup}" id="groupes" >   
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-1">
+                        <p:commandLink action="#{removeFromGroupBean.removeConceptFromGroup(
+                                                 domaines.conceptGroup.idgroup, currentUser.nodeUser.idUser)}"
+                                       style="color: #FF7979" update="containerIndex:formRightTab conceptForm:listeConceptGroupe">
+                            <i class="pi pi-trash" />
+                        </p:commandLink>
+                    </div>
+                    <div class="col-11" style="margin-top: 3px">
+                        <h:outputText rendered="#{domaines.lexicalValue != ''}"
+                                      value="#{domaines.lexicalValue}" title="#{domaines.conceptGroup.idgroup}"
+                                      style="color: #43B572"/>                    
+                        <h:outputText rendered="#{domaines.lexicalValue == ''}" value="(#{domaines.conceptGroup.idgroup})" 
+                                      style="color: #FF7979"/>
+                    </div>
+                </div>
+            </ui:repeat>
+        </p:panel>
     </p:dialog>   
 </ui:fragment>

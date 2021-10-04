@@ -4,7 +4,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:form id="formSearch" style="margin-bottom: 10px; align-content: center; background-color: #f5f6f9">
+    <h:form id="formSearch" style="background-color: #f5f6f9; margin-top: 10px">
 
         <div class="row" style="width: 100%">
             <div class="col-12">
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="row" style="width: 100%; margin-top: 4px; background-color: #f5f6f9">
+        <div class="row" style="width: 100%; margin-top: 10px; margin-bottom: 10px; background-color: #f5f6f9">
             <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center" >
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
                                              style="color: #000; background-color: transparent;">
@@ -63,7 +63,7 @@
                         <p:ajax update="formSearch" listener="#{searchBean.activateWithId()}"/>
                     </p:selectBooleanCheckbox>
 
-                    <p:menuButton style="font-size: 12px;" title="Recherche pré-programmée">
+                    <p:menuButton style="font-size: 12px;" title="Recherche pré-programmée" icon="pi pi-align-justify">
                         <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" 
                                     update="containerIndex:formRightTab" style="font-size: 12px;" 
                                     title="Rechercher les concepts polyhiérarchiques"/>

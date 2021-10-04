@@ -1,64 +1,57 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idDeleteConcept" header="#{langueBean.getMsg('rightbody.concept.delete_concept')}" widgetVar="deleteConcept" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >         
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >       
 
-        <h:form id="deleteConceptForm">           
-            <b:row >
-                <b:column span="6" >
-                    <b:row>
-                        <b:column span="12"  >
-                            <h:outputText id="currentPrefLabelToDelete" value="#{conceptView.nodeConcept.term.lexical_value}"
-                                          style="font-size: 13px; margin-left: 10px; color: black;">
-                            </h:outputText >
-                        </b:column>
-                    </b:row>               
-                </b:column>
-
-                <b:column span="6" >
-                    <b:messages for="currentPrefLabelToDelete" id="messageDeleteConcept" autoUpdate="true"/> 
-                    <b:column span="6" >
-                        <b:commandButton rendered="#{editConcept.forDelete}" id="buttonConfirmDeleteConcept" 
+        <h:form id="deleteConceptForm">
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="Concept : #{conceptView.nodeConcept.term.lexical_value}"
+                                  style="font-size: 13px; margin-left: 10px; color: black;" />
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <p:messages for="currentPrefLabelToDelete" id="messageDeleteConcept"/> 
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <p:commandButton rendered="#{editConcept.forDelete}" id="buttonConfirmDeleteConcept" 
                                          value="#{langueBean.getMsg('rightbody.conceptdialog.confirm')}" update="deleteConceptForm"
                                          class="btn btn-primary" 
                                          action="#{editConcept.deleteConcept(
                                                    selectedTheso.currentIdTheso,
                                                    currentUser.nodeUser.idUser)}" 
-                                         style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
-                    </b:column>
-                    <b:column span="6" >
-                        <b:commandButton rendered="#{editConcept.forDelete}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" update="deleteConceptForm"
+                                         style="width:100%; font-size: 12px;color: white; background: #43B572;"/> 
+                </div>
+                <div class="col-6">
+                    <p:commandButton rendered="#{editConcept.forDelete}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" update="deleteConceptForm"
                                          class="btn btn-primary"
                                          action="#{editConcept.cancelDelete()}" 
-                                         icon-awesome="fas fa-undo" 
+                                         icon="pi pi-undo" 
                                          style="color: white; background: #FF7979; width:100%; font-size: 12px;"/>
-                    </b:column>                    
-                </b:column>
-            </b:row> 
-            
-            <b:row >
-                <b:column span="6" >
-                    <b:row>
-                        <b:column span="12"  >
-                            <p:separator/>
-                        </b:column>
-                    </b:row>               
-                </b:column>
-            </b:row>             
-            
-            <b:row style="margin-bottom: 20px;">
-                <b:column span="4" offset="1" >
-                    <b:commandButton rendered="#{!editConcept.forDelete}" id="buttonDeleteConcept" value="#{langueBean.getMsg('candidat.remove')}" update="deleteConceptForm" 
-                                     class="btn btn-primary"
-                                     action="#{editConcept.infosDelete()}" 
-                                     style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
-                </b:column>
-            </b:row>
+                </div>
+            </div>
+
+            <f:facet name="footer">
+                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                    <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                                     actionListener="PF('deleteConcept').hide();" update="idAddImage"/>
+
+                    <p:commandButton rendered="#{!editConcept.forDelete}" value="#{langueBean.getMsg('candidat.remove')}" 
+                                     update="deleteConceptForm"
+                                     class="btn btn-success" oncomplete="PF('deleteConcept').hide();"
+                                     actionListener="#{editConcept.infosDelete()}" style="color: white;"/>
+                </div>
+            </f:facet>
         </h:form>
-    </p:dialog> 
-    <!--  </b:modal> -->    
+    </p:dialog>   
 </ui:fragment>

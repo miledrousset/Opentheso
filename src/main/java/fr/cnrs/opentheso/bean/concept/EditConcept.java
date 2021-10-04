@@ -179,8 +179,7 @@ public class EditConcept implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            // attention, cet update est très important, il faut le faire par composant, sinon, les autres dialogues ne marchent plus
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idPrefLabelRow");
+            pf.ajax().update("containerIndex");
         }
 
         if (tree.getSelectedNode() != null) {

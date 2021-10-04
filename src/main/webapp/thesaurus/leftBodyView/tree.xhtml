@@ -10,14 +10,13 @@
                           style="color: red; font-style: italic; background-color: yellow"/>
         </div>
         <div style="width: 50%; text-align: right;">
-            <p:link  href="#{request.contextPath}/graph/index.xhtml"
-                     target="_blank"
-                     disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
-                     style="color: #F47B2A; float: right; margin-top: 2px;">
+            <p:link href="#{request.contextPath}/graph/index.xhtml"
+                    target="_blank" disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
+                    style="color: #F47B2A; float: right; margin-top: 2px;">
                 <i class="pi pi-share-alt" style="font-size: 1rem" />
             </p:link>
 
-            <p:menuButton style="margin-right: 10px; background-color: transparent" >
+            <p:menuButton style="margin-right: 10px; background-color: transparent" icon="pi pi-align-justify" >
 
                 <p:menuitem icon="pi pi-lis" value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
                             actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
@@ -30,18 +29,17 @@
                             actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
                             action="#{selectedTheso.reloadSelectedTheso()}"
                             disabled="#{selectedTheso.sortByNotation}"
-                            process="@this"
-                            update="containerIndex:formLeftTab" />
+                            process="@this" update="containerIndex:formLeftTab" />
 
-                <p:menuitem  icon="pi pi-lis" value="Add top concept" action="#{newConcept.reset()}" 
-                             oncomplete="PF('addTopConcept').show();" 
-                             rendered="#{(currentUser.nodeUser != null) and 
-                                         (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
+                <p:menuitem icon="pi pi-lis" value="Add top concept" action="#{newConcept.reset()}" 
+                            oncomplete="PF('addTopConcept').show();" 
+                            rendered="#{(currentUser.nodeUser != null) and 
+                                (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
-                <p:menuitem  rendered="#{copyAndPasteBetweenTheso.isCopyOn and (currentUser.nodeUser != null) 
+                <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and (currentUser.nodeUser != null) 
                                          and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
-                             value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
-                             update="idGlobalActionsTree messageIndex" />                
+                            value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
+                            update="idGlobalActionsTree messageIndex" />                
 
                 <p:menuitem disabled="false" styleClass="buttonIconOrange"
                             rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
@@ -55,11 +53,12 @@
     </div>
 
     <p:tree value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
-            style="width: auto; border: none; font-size: 12px;  min-height: 400px; max-height: 800px;" animate="true"
+            style="width: auto; border: none; font-size: 12px;" animate="true"
             styleClass="tree_custom" cache="#{roleOnTheso.nodePreference.tree_cache}"
             draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
             widgetVar="treeWidget">
-        <p:ajax event="expand"  listener="#{tree.onNodeExpand}"/>
+        
+        <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
         <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
         <p:ajax event="select" listener="#{tree.onNodeSelect}" update="containerIndex"/>
         <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
@@ -67,18 +66,22 @@
         <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="fa fa-folder" >
             <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
-        </p:treeNode>                
+        </p:treeNode>
+        
         <p:treeNode type="concept" expandedIcon="pi pi-folder-open fa_custom_open" collapsedIcon="fa fa-folder fa_custom_collapse" >
             <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
         </p:treeNode>
+        
         <p:treeNode type="file" icon="pi pi-file-o pi-file">
             <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}"  style="font-size: 12px"/>
-        </p:treeNode>   
-        <p:treeNode type="facet" icon="fa file-excel fa_custom_magnet">
+        </p:treeNode>
+        
+        <p:treeNode type="facet" icon="fa fa-magnet">
             <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
         </p:treeNode>
+        
     </p:tree>
 
 </ui:fragment>

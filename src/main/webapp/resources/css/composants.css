@@ -83,4 +83,17 @@ button-standard:focus{
     font-size: 12px; 
     color: black; 
     font-weight: bold;
-}    
+}
+
+.ui-button-icon-left .ui-icon ui-c .pi pi-align-justify {
+    background-color: #F47B2A;
+}
+
+.input-dialog {
+    width: 100%; 
+    font-size: 12px; 
+    background: white; 
+    border-color: #43B572; 
+    color: #000;
+    border-color: #43B572;
+}

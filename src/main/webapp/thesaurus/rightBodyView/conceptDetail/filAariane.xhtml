@@ -31,19 +31,65 @@
                 </ol>
             </nav>
         </div>
-        
-        <div style="width: 3%; height: 100%; margin-top: 10px; text-align: right;">
-            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                <p:menuitem rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+
+        <div style="width: 3%; height: 100%; margin-top: 10px; text-align: right;" class="ui-inputgroup">
+            <p:menuButton icon="pi pi-align-justify" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                          or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                <p:menuitem rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             actionListener="#{newConcept.reset()}" oncomplete="PF('addNT').show();"
                             value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
 
-                <p:menuitem rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                <p:menuitem rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                             actionListener="#{editFacet.initNewFacet()}"
                             oncomplete="PF('addFacet').show();" 
                             value="#{langueBean.getMsg('rightbody.concept.new_facet')}"/>
+
+                <p:menuitem  value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
+                             action="#{dragAndDrop.setDragNode(tree.selectedNode)}"
+                             actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
+                             styleClass="buttonIconOrange"
+                             ajax="true"
+                             style="font-size: 12px;"
+                             update="containerIndex messageIndex" />
+                
+                <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and
+                                                   (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
+                                       value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.as_specific')}"
+                                       actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
+                                       action="#{dragAndDrop.paste(conceptView.nodeConcept)}"
+                                       styleClass="buttonIconOrange"
+                                       ajax="true"
+                                       style="font-size: 12px;"
+                                       update="containerIndex messageIndex" />
+                
+                <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
+                                       value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}"
+                                       actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
+                                       action="#{dragAndDrop.paste(null)}"
+                                       styleClass="buttonIconOrange"
+                                       ajax="true"
+                                       style="font-size: 12px;"
+                                       update="containerIndex messageIndex" />
+                
+                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_concept')}"
+                                      actionListener="#{editConcept.infosDelete()}"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('deleteConcept').show();"
+                                      style="font-size: 12px;" />
+                
+                <p:menuitem rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
+                                      value="#{langueBean.getMsg('rightbody.concept.deprecate_concept')}"
+                                      action="#{editConcept.reset('')}"
+                                      oncomplete="PF('deprecateConcept').show();"
+                                      style="font-size: 12px;" />
             </p:menuButton>
         </div>
     </div>
+    
+    
+    <ui:include src="../../../dialog/concept/deleteConcept.xhtml" />
+    <ui:include src="../../../dialog/concept/deprecateConcept.xhtml" />
 
 </ui:fragment>

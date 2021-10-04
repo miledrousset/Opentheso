@@ -8,12 +8,10 @@
             <div class="container">
 
                 <div class="row">
-                    <div class="col-3">
-                        <i class="pi pi-angle-double-right" />
-
-                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.export_concept')} : " 
+                    <div class="col-3" style="text-align: right;">
+                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.export_concept')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"
-                                      style="font-size: 14px; font-weight: bold;"/>
+                                      style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
                     </div>
 
                     <div class="col-9">
@@ -57,7 +55,6 @@
     </div>
 
     <script type="text/javascript">
-        //<![CDATA[
         function start() {
             PF('statusDialog').show();
         }
@@ -65,10 +62,6 @@
         function stop() {
             PF('statusDialog').hide();
         }
-        //]]>
     </script>
-
-    <p:dialog modal="true" widgetVar="statusDialog"  draggable="false" closable="false" resizable="false">
-        <p:graphicImage value="../../resources/img/wait.gif" name="../../resources/img/wait.gif" style="width: 150px;"/>
-    </p:dialog>
+    
 </ui:fragment>

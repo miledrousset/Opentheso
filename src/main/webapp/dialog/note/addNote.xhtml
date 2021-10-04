@@ -5,10 +5,10 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddNote" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNote" 
-              width="450" showEffect="fade" modal="true" resizable="false" >  
+              position="top" width="450" showEffect="fade" modal="true" resizable="false" style="margin-top: 30px" >  
 
         <div class="row">
-            <div class="col-5" style="margin-top: 3px">
+            <div class="col-5">
                 <h:outputText value="Nom du concept : " class="dialog-titre" /> 
                 <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
                     <i class="pi pi-exclamation-circle" />
@@ -20,13 +20,13 @@
         </div>
 
         <!-- type note -->
-        <div class="row" style="margin-top: 5px">
-            <div class="col-5" style="margin-top: 3px">
+        <div class="row" style="margin-top: 10px">
+            <div class="col-5">
                 <h:outputText value="Type : " class="dialog-titre" /> 
             </div>
             <div class="col-7">
                 <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" value="#{noteBean.selectedTypeNote}" 
-                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
 
                     <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
                                    itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
@@ -35,22 +35,22 @@
         </div>
 
         <!-- Langue de la note -->
-        <div class="row" style="margin-top: 5px">
-            <div class="col-5" style="margin-top: 3px">
+        <div class="row" style="margin-top: 10px">
+            <div class="col-5">
                 <h:outputText value="Langue : " class="dialog-titre" /> 
             </div>
             <div class="col-7">
                 <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{noteBean.selectedLang}" 
-                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
                     <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                 </p:selectOneMenu>    
             </div>
         </div>
 
-        <div class="row" style="margin-top: 5px">
+        <div class="row" style="margin-top: 10px">
             <div class="col-12">
                 <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" 
-                              secure="false" height="200" style="font-size: 12px; color: black" 
+                              secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
                               placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
                     <f:facet name="toolbar" >
                         <span class="ql-formats" >
@@ -61,7 +61,7 @@
                 </p:textEditor>    
             </div>
         </div>
-        
+
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 

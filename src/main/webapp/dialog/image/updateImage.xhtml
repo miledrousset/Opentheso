@@ -4,10 +4,10 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idUpdateImage" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_image')}" widgetVar="updateImage" 
-              width="450" showEffect="fade" modal="true" resizable="false" >       
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >      
 
         <div class="row">
-            <div class="col-5" style="margin-top: 3px">
+            <div class="col-5">
                 <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
             </div>
             <div class="col-7">
@@ -15,21 +15,29 @@
             </div>
         </div>        
 
-        <ui:repeat var="imageToEdit" value="#{imageBean.nodeImagesForEdit}" >
-            <div class="row">
-                <div class="col-8" style="margin-top: 3px">
-                    <p:inputText value="#{imageToEdit.uri}" style="color: #43B572; font-size: 12px;"/>  
-                </div>
-                <div class="col-3">
-                    <p:inputText value="#{imageToEdit.copyRight}" style="color: #43B572; font-size: 12px;"/>
-                </div>
-                <div class="col-1">
-                    <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab:viewTabConcept:updateImageForm"
-                                  action="#{imageBean.updateImage( imageToEdit, currentUser.nodeUser.idUser)}" >
-                        <i class="pi pi-check-circle" />
-                    </p:commandLink>
-                </div>
+        <div class="row" style="margin-top: 10px">
+            <div class="col-12">
+                <h:outputText value="Liste des images : " class="dialog-titre"/>  
             </div>
-        </ui:repeat>
+        </div>
+
+        <p:panel id="imagesToUpdate">
+            <ui:repeat var="imageToEdit" value="#{imageBean.nodeImagesForEdit}" >
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-8">
+                        <p:inputText value="#{imageToEdit.uri}" style="width: 100%; color: #000"/>  
+                    </div>
+                    <div class="col-3">
+                        <p:inputText value="#{imageToEdit.copyRight}" style="width: 100%; color: #000"/>
+                    </div>
+                    <div class="col-1">
+                        <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex"
+                                       action="#{imageBean.updateImage( imageToEdit, currentUser.nodeUser.idUser)}" >
+                            <i class="pi pi-check-circle" />
+                        </p:commandLink>
+                    </div>
+                </div>
+            </ui:repeat>
+        </p:panel>       
     </p:dialog> 
 </ui:fragment>

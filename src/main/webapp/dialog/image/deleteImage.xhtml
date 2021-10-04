@@ -15,19 +15,27 @@
             </div>
         </div>          
 
-        <ui:repeat var="images" value="#{imageBean.nodeImages}" >
-            <div class="row">
-                <div class="col-1" style="margin-top: 3px">
-                    <p:commandLink style="color: #FF7979" action="#{imageBean.deleteImage( images, currentUser.nodeUser.idUser)}"
-                                   update="containerIndex:formRightTab">
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
-                </div>
-                <div class="col-11">
-                    <h:outputText value="#{images.uri} (#{images.copyRight})" style="color: #43B572"/> 
-                </div>
+        <div class="row" style="margin-top: 10px">
+            <div class="col-12" style="margin-top: 3px">
+                <h:outputText value="Liste des images : " class="dialog-titre"/>  
             </div>
-        </ui:repeat>
+        </div>
+        
+        <p:panel id="imagesToDelete">
+            <ui:repeat var="images" value="#{imageBean.nodeImages}" >
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-1" style="margin-top: 3px">
+                        <p:commandLink style="color: #FF7979" action="#{imageBean.deleteImage( images, currentUser.nodeUser.idUser)}"
+                                       update="containerIndex:formRightTab messageIndex">
+                            <i class="pi pi-trash" />
+                        </p:commandLink>
+                    </div>
+                    <div class="col-11">
+                        <h:outputText value="#{images.uri} (#{images.copyRight})" style="color: #43B572"/> 
+                    </div>
+                </div>
+            </ui:repeat>
+        </p:panel>
     </p:dialog>
 
 </ui:fragment>

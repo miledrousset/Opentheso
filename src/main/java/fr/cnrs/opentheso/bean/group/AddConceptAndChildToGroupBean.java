@@ -125,7 +125,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptGroupRow");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }
     

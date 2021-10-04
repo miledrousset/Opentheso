@@ -6,129 +6,144 @@
 
     <h:panelGroup id="facetView" styleClass="textOpentheso">    
 
-        <div class="row">
-            <div class="col-3">
-                <h:outputText value="Label" title="le libellé de la facette" />
-            </div>
-            <div class="col-1">
-                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                              icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                    <p:menuitem value="Renommer la facette" oncomplete="PF('renameFacet').show();" style="font-size: 12px;"/>
-                </p:menuButton>
-            </div>
-            <div class="col-8">
-                <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
-                              title="#{editFacet.facetSelected.idFacet}" style="font-weight: bold" />
-            </div>
-        </div>
+        <div class="card mb-4 py-3 border-left-success">
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-2">
+                            <h:outputText value="Label : " title="Le libellé de la facette"
+                                          style="font-size: 14px; font-weight: bold;"/>
+                        </div>
 
-        <div class="row">
-            <div class="col-3">
-                <h:outputText value="Concept parent" title="Concept parent" />
-            </div>
-            <div class="col-1">
-                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                              icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                    <p:menuitem value="Modifer le concept Parent" oncomplete="PF('addConceptParentToFacet').show();" style="font-size: 12px;"/>
-                </p:menuButton>
-            </div>
-            <div class="col-8">
-                <h:outputText rendered="#{editFacet.concepParent.term.lexical_value == ''}"
-                              value="(#{editFacet.concepParent.concept.idConcept})"
-                              title="#{editFacet.concepParent.concept.idConcept}" />
+                        <div class="col-1">
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                          icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                <p:menuitem value="Renommer la facette" oncomplete="PF('renameFacet').show();" style="font-size: 12px;"/>
+                            </p:menuButton>
+                        </div>
 
-                <h:outputText rendered="#{editFacet.concepParent.term.lexical_value != ''}"
-                              value="#{editFacet.concepParent.term.lexical_value}"
-                              title="#{editFacet.concepParent.concept.idConcept}" />  
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-3">
-                <h:outputText value="Membres" title="Les concepts membres" />
-            </div>
-            <div class="col-1">
-                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                              icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                    <p:menuitem value="Nouveau concept"
-                                actionListener="#{newConcept.resetForFacet(editFacet.facetSelected)}"                    
-                                oncomplete="PF('addNT').show();"
-                                style="font-size: 12px;"/>
-
-                    <p:menuitem value="Ajouter des concepts existants"
-                                oncomplete="PF('addMembers').show();"
-                                style="font-size: 12px;"/>
-
-                    <p:menuitem value="Supprimer des membres de la facette"
-                                oncomplete="PF('removeMembers').show();"
-                                style="font-size: 12px;"/>   
-                </p:menuButton>
-            </div>
-
-            <h:panelGroup rendered="#{editFacet.conceptList.size() == 0}">
-                <div class="col-8">
-                    <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
-                </div>
-            </h:panelGroup>
-
-            <h:panelGroup rendered="#{editFacet.conceptList.size() != 0}">
-                <ui:repeat var="concept" value="#{editFacet.conceptList}" varStatus="status">
-                    <p:commandLink rendered="#{concept.value == ''}"
-                                   value="(#{concept.id})"
-                                   style="color: #43B572;" styleClass="textOpentheso"
-                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                             concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
-
-                    <p:commandLink rendered="#{concept.value != ''}"
-                                   value="#{concept.value}"
-                                   style="color: #43B572;" styleClass="textOpentheso"
-                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                             concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
-                    <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
-                </ui:repeat>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
-            </h:panelGroup>
-        </div>
-
-
-        <!-- ligne Traductions -->
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
-            <div class="row">
-                <div class="col-3">
-                    <h:outputText value="Traduction"  />
-                </div>
-                <div class="col-1">
-                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                        <p:menuitem value="Ajouter une traduction" oncomplete="PF('idAddFacetTraduction').show();"
-                                    action = "#{editFacet.setLangListForTraduction()}"
-                                    style="font-size: 12px;"/>
-                        <p:menuitem value="Modifier une traduction" oncomplete="PF('renameFacetTraduction').show();"
-                                    style="font-size: 12px;"/>
-                        <p:menuitem value="Supprimer une traduction" oncomplete="PF('deleteFacetTraduction').show();"
-                                    style="font-size: 12px;"/>
-                    </p:menuButton> 
-                </div>
-
-                <h:panelGroup rendered="#{editFacet.facetTraductions.size() == 0}">
-                    <div class="col-8">
-                        <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                        <div class="col-9">
+                            <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
+                                          title="#{editFacet.facetSelected.idFacet}" 
+                                          style="font-size: 14px; font-weight: bold" />
+                        </div>
                     </div>
-                </h:panelGroup>
 
-                <h:panelGroup rendered="#{editFacet.facetTraductions.size() != 0}">
-                    <ui:repeat var="trad" value="#{editFacet.facetTraductions}" >
-                        <div class="row">
-                            <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})"
-                                           style="color: #43B572;" styleClass="textOpentheso"
-                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}" 
-                                           update="containerIndex:formRightTab indexTitle"/>
-                        </div> 
-                    </ui:repeat>
-                    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
-                </h:panelGroup>
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-2">
+                            <h:outputText value="Concept parent : " title="Concept parent"
+                                          style="font-size: 14px; font-weight: bold;"/>
+                        </div>
+                        <div class="col-1">
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                          icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                <p:menuitem value="Modifer le concept Parent" oncomplete="PF('addConceptParentToFacet').show();" style="font-size: 12px;"/>
+                            </p:menuButton>
+                        </div>
+                        <div class="col-9">
+                            <h:outputText rendered="#{editFacet.concepParent.term.lexical_value == ''}"
+                                          value="(#{editFacet.concepParent.concept.idConcept})"
+                                          title="#{editFacet.concepParent.concept.idConcept}" />
+
+                            <h:outputText rendered="#{editFacet.concepParent.term.lexical_value != ''}"
+                                          value="#{editFacet.concepParent.term.lexical_value}"
+                                          title="#{editFacet.concepParent.concept.idConcept}" />  
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-2">
+                            <h:outputText value="Membres : " title="Les concepts membres"
+                                          style="font-size: 14px; font-weight: bold;"/>
+                        </div>
+                        <div class="col-1">
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                          icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                <p:menuitem value="Nouveau concept"
+                                            actionListener="#{newConcept.resetForFacet(editFacet.facetSelected)}"                    
+                                            oncomplete="PF('addNTFacette').show();"
+                                            style="font-size: 12px;"/>
+
+                                <p:menuitem value="Ajouter des concepts existants"
+                                            oncomplete="PF('addMembersFacette').show();"
+                                            style="font-size: 12px;"/>
+
+                                <p:menuitem value="Supprimer des membres de la facette"
+                                            oncomplete="PF('removeMembers').show();"
+                                            style="font-size: 12px;"/>   
+                            </p:menuButton>
+                        </div>
+
+                        <h:panelGroup rendered="#{editFacet.conceptList.size() == 0}">
+                            <div class="col-9">
+                                <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{editFacet.conceptList.size() != 0}">
+                            <div class="col-9">
+                                <ui:repeat var="concept" value="#{editFacet.conceptList}" varStatus="status">
+                                    <p:commandLink rendered="#{concept.value == ''}"
+                                                   value="(#{concept.id})"
+                                                   style="color: #43B572;" styleClass="textOpentheso"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                             concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
+
+                                    <p:commandLink rendered="#{concept.value != ''}"
+                                                   value="#{concept.value}"
+                                                   style="color: #43B572;" styleClass="textOpentheso"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                             concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
+                                    <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
+                                </ui:repeat>
+                                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+
+                    <!-- ligne Traductions -->
+                    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-2">
+                                <h:outputText value="Traduction : " style="font-size: 14px; font-weight: bold;" />
+                            </div>
+                            <div class="col-1">
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                              icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="Ajouter une traduction" oncomplete="PF('idAddFacetTraduction').show();"
+                                                action = "#{editFacet.setLangListForTraduction()}"
+                                                style="font-size: 12px;"/>
+                                    <p:menuitem value="Modifier une traduction" oncomplete="PF('renameFacetTraduction').show();"
+                                                style="font-size: 12px;"/>
+                                    <p:menuitem value="Supprimer une traduction" oncomplete="PF('deleteFacetTraduction').show();"
+                                                style="font-size: 12px;"/>
+                                </p:menuButton> 
+                            </div>
+
+                            <h:panelGroup rendered="#{editFacet.facetTraductions.size() == 0}">
+                                <div class="col-9">
+                                    <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                                </div>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{editFacet.facetTraductions.size() != 0}">
+                                <div class="col-9">
+                                    <ui:repeat var="trad" value="#{editFacet.facetTraductions}" >
+                                        <div class="row">
+                                            <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})"
+                                                           style="color: #43B572;" styleClass="textOpentheso"
+                                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}" 
+                                                           update="containerIndex:formRightTab indexTitle"/>
+                                        </div> 
+                                    </ui:repeat>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </h:panelGroup>
+                </div>
             </div>
-        </h:panelGroup> 
+        </div>
 
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and 
                                   (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
@@ -140,7 +155,8 @@
                 <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
                 <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
             </p:confirmDialog>  
-        </h:panelGroup>        
+        </h:panelGroup>
+
     </h:panelGroup>
 
 
@@ -278,10 +294,5 @@
             </div>
         </ui:repeat>
     </p:dialog>
-
-    <ui:include src="../../dialog/concept/addNT.xhtml" /> 
-    <ui:include src="../../dialog/facet/addMembers.xhtml" /> 
-    <ui:include src="../../dialog/facet/renameFacet.xhtml" />    
-    <ui:include src="../../dialog/facet/removeMembers.xhtml" />  
 
 </ui:fragment>

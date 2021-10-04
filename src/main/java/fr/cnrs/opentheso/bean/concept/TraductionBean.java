@@ -75,6 +75,7 @@ public class TraductionBean implements Serializable {
         
         selectedLang = null;
         traductionValue = "";
+        setLangWithNoTraduction();
     }
 
     public void setLangWithNoTraduction() {

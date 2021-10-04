@@ -10,60 +10,60 @@
 
                 <!-- Total des concepts de la branche -->
                 <div class="row">
-                    <div class="col-2" style="margin-top: 3px">
-                        <i class="pi pi-angle-double-right" />
-
-                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.branch_count')} : " 
+                    <div class="col-3" style="text-align: right;">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.branch_count')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
-                                      style="font-size: 14px; font-weight: bold;"/>
-                    </div>
-                    <div class="col-1">
+                                      style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+
                         <p:commandLink actionListener="#{conceptView.countTheTotalOfBranch()}"
-                                       update="containerIndex:formRightTab" style="color: #F7A269; font-size: 12px;" >
-                            <i class="pi pi-trash" />
+                                       update="containerIndex:formRightTab" 
+                                       style="color: #F7A269; font-size: 12px; margin-left: 6px; margin-right: 6px" >
+                            <i class="pi pi-link" />
                         </p:commandLink>
                     </div>
                     <div class="col-9">
                         <h:outputText rendered="#{conceptView.countOfBranch != 0}"
-                                      value="#{conceptView.countOfBranch} concept (s)" title="#{langueBean.getMsg('rightbody.concept.clic_branch_count')}"
+                                      value="#{conceptView.countOfBranch} concept (s)" 
+                                      title="#{langueBean.getMsg('rightbody.concept.clic_branch_count')}"
                                       style="font-size: 12px; color: #666666" />
                     </div>
-                </div>                 
-                <!-- Total des concepts de la branche --> 
+                </div>
 
                 <!-- ligne Notes -->
-                <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                          or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                    <div class="row">
-                        <div class="col-2" style="margin-top: 3px">
-                            <i class="pi pi-angle-double-right" />
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right;">
+                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notes')}" 
+                                      title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                                      style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
-                            <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notes')} : " 
-                                          title="#{langueBean.getMsg('rightbody.concept.notes')}"
-                                          style="font-size: 14px; font-weight: bold;"/>
-                        </div>
-                        <div class="col-1">
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                          icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_note')}"
-                                            actionListener="#{noteBean.reset()}"
-                                            oncomplete="PF('addNote').show();"/>
-                            </p:menuButton>
-                        </div>
-                        <div class="col-9">
-
-                        </div>
+                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                      icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_note')}"
+                                        actionListener="#{noteBean.reset()}" update=":conceptForm:idAddNote"
+                                        oncomplete="PF('addNote').show();"/>
+                        </p:menuButton>
                     </div>
+                    <div class="col-9" />
+                </div>
+
+                <p:panel rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)
+                                     and (conceptView.notes.size() != 0 or conceptView.changeNotes.size() != 0
+                                     or conceptView.definitions.size() != 0 or conceptView.editorialNotes.size() != 0
+                                     or conceptView.examples.size() != 0 or conceptView.historyNotes.size() != 0 
+                                     or conceptView.scopeNotes.size() != 0)}"
+                         style="margin-top: 10px">
 
                     <h:panelGroup id="idConceptNotes">
                         <h:panelGroup rendered="#{conceptView.notes.size() != 0}">
                             <div class="row">
-                                <div class="col-2" style="margin-top: 3px">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" title="#{langueBean.getMsg('rightbody.concept.note')}"/>
-                                </div>
-                                <div class="col-1">
+                                <div class="col-3" style="text-align: right;">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.note')}"
+                                                  style="font-size: 14px; margin-right: 10px"/>
+
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px; margin-right: 10px">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('note')}"
@@ -78,7 +78,7 @@
                                 </div>
                                 <div class="col-9">
                                     <ui:repeat var="note" value="#{conceptView.notes}" >
-                                        <h:outputText value="#{note.lexicalvalue}"  style="font-size: 12px;color: #666666" escape="false"/>
+                                        <h:outputText value="#{note.lexicalvalue}" style="font-size: 12px; color: #666666; margin-left: -20px" escape="false"/>
                                         <br/>
                                     </ui:repeat>
                                 </div>
@@ -86,14 +86,16 @@
                         </h:panelGroup> 
 
                         <h:panelGroup rendered="#{conceptView.changeNotes.size() != 0}">
-                            <div class="row">
-                                <div class="col-2" style="margin-top: 3px">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" title="#{langueBean.getMsg('rightbody.concept.change_note')}"/>
-                                </div>
-                                <div class="col-1">
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="pi pi-cog" 
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <div class="row" style="margin-top: 10px">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.change_note')}"
+                                                  style="font-size: 14px; margin-right: 10px"/>
+
+                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                              or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; 
+                                                  box-shadow: none; font-size: 12px; margin-right: 10px">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('changeNote')}"
@@ -108,7 +110,8 @@
                                 </div>
                                 <div class="col-9">
                                     <ui:repeat var="changeNote" value="#{conceptView.changeNotes}" >
-                                        <h:outputText value="#{changeNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/>
+                                        <h:outputText value="#{changeNote.lexicalvalue}" escape="false"
+                                                      style="font-size: 12px; color: #666666; margin-left: -20px"/>
                                         <br/>
                                     </ui:repeat>
                                 </div>
@@ -116,29 +119,35 @@
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{conceptView.definitions.size() != 0}">
-                            <div class="row">
-                                <div class="col-2" style="margin-top: 3px">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" title="#{langueBean.getMsg('rightbody.concept.definition')}"/>
-                                </div>
-                                <div class="col-1">
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="pi pi-cog"
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <div class="row" style="margin-top: 10px">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.definition')}"
+                                                  style="font-size: 14px; margin-right: 10px"/>
+
+                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                              or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; 
+                                                  font-size: 12px; margin-right: 10px">
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('definition')}"
                                                     oncomplete="PF('deleteNote').show();"
                                                     style="font-size: 12px;"/>
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
                                                     oncomplete="PF('editNote').show();"
                                                     style="font-size: 12px;"/>
-                                    </p:menuButton> 
+
+                                    </p:menuButton>
                                 </div>
                                 <div class="col-9">
                                     <ui:repeat var="def" value="#{conceptView.definitions}" >
-                                        <h:outputText value="#{def.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/>
+                                        <h:outputText value="#{def.lexicalvalue}" escape="false"
+                                                      style="font-size: 12px; color: #666666; margin-left: -20px"/>
                                         <br/>
                                     </ui:repeat>
                                 </div>
@@ -146,19 +155,23 @@
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{conceptView.editorialNotes.size() != 0}">
-                            <div class="row">
-                                <div class="col-2">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"/>
-                                </div>
-                                <div class="col-1">
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="pi pi-cog" 
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <div class="row" style="margin-top: 10px">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
+                                                  style="font-size: 14px; margin-right: 10px"/>
+
+                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                              or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; 
+                                                  box-shadow: none; font-size: 12px; margin-right: 10px">
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
                                                     oncomplete="PF('deleteNote').show();"
                                                     style="font-size: 12px;" />
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
@@ -168,28 +181,32 @@
                                 </div>
                                 <div class="col-9">
                                     <ui:repeat var="editorialNote" value="#{conceptView.editorialNotes}" >
-                                        <h:outputText value="#{editorialNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/>
+                                        <h:outputText value="#{editorialNote.lexicalvalue}" escape="false"
+                                                      style="font-size: 12px; color: #666666; margin-left: -20px"/>
                                         <br/>
                                     </ui:repeat>
-                                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
                                 </div>
                             </div>
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{conceptView.examples.size() != 0}">
-                            <div class="row">
-                                <div class="col-2">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" title="#{langueBean.getMsg('rightbody.concept.example')}" />
-                                </div>
-                                <div class="col-1">
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="pi pi-cog" 
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <div class="row" style="margin-top: 10px">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.example')}" 
+                                                  style="font-size: 14px; margin-right: 10px"/>
+
+                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                              or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; 
+                                                  box-shadow: none; font-size: 12px; margin-right: 10px">
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('example')}"
                                                     oncomplete="PF('deleteNote').show();"
                                                     style="font-size: 12px;" />
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('example')}"                                          
@@ -199,7 +216,8 @@
                                 </div>
                                 <div class="col-9">
                                     <ui:repeat var="example" value="#{conceptView.examples}" >
-                                        <h:outputText value="#{example.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/>
+                                        <h:outputText value="#{example.lexicalvalue}" escape="false"
+                                                      style="font-size: 12px; color: #666666; margin-left: -20px"/>
                                         <br/>
                                     </ui:repeat>
                                 </div>
@@ -207,66 +225,78 @@
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{conceptView.historyNotes.size() != 0}">
-                            <div class="row">
-                                <div class="col-2">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" title="#{langueBean.getMsg('rightbody.concept.history_note')}"/>
-                                </div>
-                                <div class="col-1">
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="pi pi-cog" 
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <div class="row" style="margin-top: 10px">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.history_note')}"
+                                                  style="font-size: 14px; margin-right: 10px"/>
+
+                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                              or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; 
+                                                  box-shadow: none; font-size: 12px; margin-right: 10px">
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('historyNote')}"
                                                     oncomplete="PF('deleteNote').show();"
                                                     style="font-size: 12px;" />
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
                                                     oncomplete="PF('editNote').show();"
                                                     style="font-size: 12px;" />
+
                                     </p:menuButton> 
                                 </div>
                                 <div class="col-9">
                                     <ui:repeat var="historyNote" value="#{conceptView.historyNotes}" >
-                                        <h:outputText value="#{historyNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/>
+                                        <h:outputText value="#{historyNote.lexicalvalue}" escape="false"
+                                                      style="font-size: 12px; color: #666666; margin-left: -20px"/>
                                         <br/>
                                     </ui:repeat>
-                                    <p:separator styleClass="separator" style="margin-top: 2px"/> 
                                 </div>
                             </div>
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{conceptView.scopeNotes.size() != 0}">
-                            <div class="row">
-                                <div class="col-2">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" title="#{langueBean.getMsg('rightbody.concept.scope_note')}"/>
-                                </div>
-                                <div class="col-1">
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                            <div class="row" style="margin-top: 10px">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
+                                                  style="font-size: 14px; margin-right: 10px"/>
+
+                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                              or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; 
+                                                  box-shadow: none; font-size: 12px; margin-right: 10px">
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('scopeNote')}"
                                                     oncomplete="PF('deleteNote').show();"
                                                     style="font-size: 12px;" />
+
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          
                                                     oncomplete="PF('editNote').show();"
                                                     style="font-size: 12px;" />
+
                                     </p:menuButton> 
                                 </div>
                                 <div class="col-9">
                                     <ui:repeat var="scopeNote" value="#{conceptView.scopeNotes}" >
-                                        <h:outputText value="#{scopeNote.lexicalvalue}"  style="font-size: 12px; color: #666666" escape="false"/>
+                                        <h:outputText value="#{scopeNote.lexicalvalue}" escape="false"
+                                                      style="font-size: 12px; color: #666666; margin-left: -20px"/>
                                         <br/>
                                     </ui:repeat>
                                 </div>
                             </div>            
                         </h:panelGroup>
                     </h:panelGroup>
-                </h:panelGroup>
+                </p:panel>
             </div>
         </div>
     </div>

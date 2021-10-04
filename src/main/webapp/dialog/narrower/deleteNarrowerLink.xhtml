@@ -15,21 +15,24 @@
                 </div>
             </div>            
 
-            <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >
-                <div class="row">
-                    <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #FF7979"
-                                       action="#{narrowerBean.deleteNarrowerLink( narrower,
-                                                 currentUser.nodeUser.idUser)}"
-                                       update="containerIndex:formRightTab conceptForm:deleteNarrowerLinkForm">
-                            <i class="pi pi-trash" />
-                        </p:commandLink>
+            <p:panel id="listeConceptsGeneriqueToDelete">
+                <h:outputText value="Liste des concepts spécifique : " class="dialog-titre" /> 
+                <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >
+                    <div class="row">
+                        <div class="col-1" style="margin-top: 3px">
+                            <p:commandLink style="color: #FF7979"
+                                           action="#{narrowerBean.deleteNarrowerLink( narrower,
+                                                     currentUser.nodeUser.idUser)}"
+                                           update="containerIndex:formRightTab conceptForm:deleteNarrowerLinkForm">
+                                <i class="pi pi-trash" />
+                            </p:commandLink>
+                        </div>
+                        <div class="col-11" style="margin-top: 3px">
+                            <h:outputText value="#{narrower.title} (#{narrower.idConcept})" style="color: #43B572"/> 
+                        </div>
                     </div>
-                    <div class="col-11" style="margin-top: 3px">
-                        <h:outputText value="#{narrower.title} (#{narrower.idConcept})" style="color: #43B572"/> 
-                    </div>
-                </div>
-            </ui:repeat>
+                </ui:repeat>
+            </p:panel>
         </h:form>
     </p:dialog>  
 </ui:fragment>

@@ -5,9 +5,10 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <div class="container-fluid" style="height: 82%">
+    <div class="container-fluid" style="height: 100%;">
 
-        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 40px; width: 100%;">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4" 
+             style="height: 50px; width: 100%; margin-top: 40px;">
             <div style="position: relative; height: 100%; width: 100%;" >
                 <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1;">
                     <ui:include src="search.xhtml"/> 
@@ -18,11 +19,11 @@
             </div>
         </div>
 
-        <div class="row" style="height: 100%;">
-            <div class="col-xl-3 col-lg-5" style="height: 100%;">
-                <div class="card shadow mb-4" style="height: 100%;">    
-                    <h:form id="formLeftTab" style="height: 100%;">
-                        <p:tabView activeIndex="#{leftBodySetting.index}" style="border-style: none" >
+        <div class="row" style=" height: 100%">
+            <div class="col-xl-3 col-lg-5" style=" height: 100%">
+                <div class="card shadow mb-4" style=" height: 100%">    
+                    <h:form id="formLeftTab" style=" height: 100%">
+                        <p:tabView activeIndex="#{leftBodySetting.index}" style="border-style: none; height: 100%" >
                             <p:tab>
                                 <f:facet name="title">
                                     <i class="pi pi-sitemap" />
@@ -62,41 +63,40 @@
             </div>
 
             <div class="col-xl-9 col-lg-7" style="height: 100%">
-                <div class="card shadow mb-4" style="height: 100%; overflow-y: scroll;">
-                    <div class="card-body">
-                        <h:form id="formRightTab" style="height: 100%; border-style: none;  padding-right: 10px" >
-                            <p:tabView activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"  >
-                                <p:tab id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
-                                    <f:facet name="anchor">
-                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
-                                    </f:facet>
-                                    <ui:include rendered="#{rightBodySetting.showConcept}"  src="rightBodyView/concept.xhtml"/>
-                                </p:tab>      
+                <div class="card shadow mb-4" style="height: 100%;">                               
+                    <p:panel id="formRightTab" style="height: 100%; border-style: none;  padding-right: 10px" >
+                        <p:tabView activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
+                                   style="border-style: none; height: 100%">
+                            <p:tab id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
+                                <f:facet name="anchor">
+                                    <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                </f:facet>
+                                <ui:include rendered="#{rightBodySetting.showConcept}" src="rightBodyView/concept.xhtml"/>
+                            </p:tab>      
 
-                                <p:tab  id="viewTabGroup" title="#{langueBean.getMsg('leftbody.collection')}" >
-                                    <f:facet name="anchor">
-                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
-                                    </f:facet>
-                                    <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
-                                </p:tab>              
+                            <p:tab  id="viewTabGroup" title="#{langueBean.getMsg('leftbody.collection')}" >
+                                <f:facet name="anchor">
+                                    <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                </f:facet>
+                                <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
+                            </p:tab>              
 
-                                <p:tab id="viewTabSearch" title="#{langueBean.getMsg('rightbody.search_result')}" >
-                                    <f:facet name="anchor">
-                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
-                                    </f:facet>
-                                    <ui:include  src="rightBodyView/resultSearch.xhtml"/>
-                                </p:tab>
-                            </p:tabView>
+                            <p:tab id="viewTabSearch" title="#{langueBean.getMsg('rightbody.search_result')}" >
+                                <f:facet name="anchor">
+                                    <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                </f:facet>
+                                <ui:include  src="rightBodyView/resultSearch.xhtml"/>
+                            </p:tab>
+                        </p:tabView>
 
-                            <h:panelGroup rendered="#{indexSetting.isFacetSelected}">
-                                <ui:include src="rightBodyView/facet.xhtml" />
-                            </h:panelGroup>
+                        <h:panelGroup rendered="#{indexSetting.isFacetSelected}">
+                            <ui:include src="rightBodyView/facet.xhtml" />
+                        </h:panelGroup>
 
-                            <h:panelGroup rendered="#{indexSetting.isHomeSelected}">
-                                <ui:include src="rightBodyView/thesoHome.xhtml" />
-                            </h:panelGroup>
-                        </h:form>
-                    </div>
+                        <h:panelGroup rendered="#{indexSetting.isHomeSelected}" >
+                            <ui:include src="rightBodyView/thesoHome.xhtml" />
+                        </h:panelGroup>
+                    </p:panel>
                 </div>
             </div>
         </div>

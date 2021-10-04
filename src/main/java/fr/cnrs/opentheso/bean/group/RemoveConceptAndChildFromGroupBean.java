@@ -103,7 +103,8 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         init();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptGroupRow");            
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("conceptForm:listeConceptGroupeToDelete");      
         }
     }
     

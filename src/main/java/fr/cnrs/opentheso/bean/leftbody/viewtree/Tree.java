@@ -427,9 +427,8 @@ public class Tree implements Serializable {
             rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
-            //    String idFacet = ((TreeNodeData) parent.getData()).getNodeId();
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
-            PrimeFaces.current().ajax().update("formRightTab");
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         }
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
     }

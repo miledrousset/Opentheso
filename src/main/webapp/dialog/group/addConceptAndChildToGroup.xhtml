@@ -5,7 +5,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idAddConceptAndChildToGroup" header="#{langueBean.getMsg('rightbody.conceptdialog.add_all_to_group')}" 
-              widgetVar="addConceptAndChildToGroup" width="450" showEffect="fade" modal="true" resizable="false" >
+              widgetVar="addConceptAndChildToGroup" width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -29,7 +29,7 @@
                                 completeMethod="#{addConceptAndChildToGroupBean.getAutoCompletCollection}" var="group"
                                 forceSelection="true" active="true" scrollHeight="400" 
                                 itemLabel="#{group.groupLexicalValue}" itemValue="#{group}" converter="termConverterGroup"                                   
-                                inputStyle="font-size: 12px;min-width: 230px; height: 34px;box-shadow: none;border-color: #43B572; color: #000"
+                                inputStyle="font-size: 12px;min-width: 230px; height: 34px; box-shadow: none;border-color: #43B572; color: #000; width:100%"
                                 style="width:100%; font-size: 12px; color: #000">
                     <p:column> 
                         <h:outputText value="#{group.idGroup}" style="font-size: 12px;"/>

@@ -66,29 +66,26 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <div id="wrapper">
+        <div id="wrapper" style="height: 100%">
 
             <ui:include src="commun/menu.xhtml" />
 
             <div id="content-wrapper" style="width: 100%">
 
-                <h:form id="containerIndex" style="height: 90%;">
-                    <div style="height: 10%">
+                <h:form id="containerIndex">
+                    <div>
                         <ui:include src="commun/header.xhtml" />
                     </div>
-                    <div id="thesorusContent" style="margin-top: -20px; max-height: 100%;">
+
+                    <div id="thesorusContent" style="margin-top: -20px;">
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" style="height: 100%" >
+                        <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/details_thesaurus.xhtml" />
                         </h:panelGroup>
                     </div>
                 </h:form>
-
-                <div style="max-height: 5%; bottom: 0; margin-top: 15px">
-                    <ui:include src="commun/footer.xhtml" />
-                </div>
             </div>
         </div>
 
@@ -103,15 +100,20 @@
         <script src="resources/vendor/jquery-easing/jquery.easing.min.js"></script>
         <script src="resources/js/sb-admin-2.js"></script>
 
+        <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false">
+            <p:graphicImage value="resources/img/wait_old.gif" width="150px" />
+        </p:dialog>  
+
         <h:form id="conceptForm" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"> 
+            
             <ui:include src="dialog/concept/addTopConcept.xhtml" />
-            <ui:include src="dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
+            <ui:include src="dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />          
 
             <ui:include src="dialog/facet/addFacet.xhtml" />
             <ui:include src="dialog/concept/addNT.xhtml" /> 
 
             <ui:include src="dialog/concept/renameConcept.xhtml" />
-
+            
             <ui:include src="dialog/group/addConceptToGroup.xhtml" />
             <ui:include src="dialog/group/removeConceptFromGroup.xhtml" />
             <ui:include src="dialog/group/removeConceptAndChildFromGroup.xhtml" />
@@ -141,13 +143,6 @@
             <ui:include src="dialog/note/deleteNote.xhtml" /> 
             <ui:include src="dialog/note/editNote.xhtml" />
 
-            <ui:include src="dialog/image/addImage.xhtml" />        
-            <ui:include src="dialog/image/deleteImage.xhtml" /> 
-            <ui:include src="dialog/image/updateImage.xhtml" />
-
-            <ui:include src="dialog/gps/setGps.xhtml" />      
-            <ui:include src="dialog/gps/deleteGps.xhtml" />
-
             <ui:include src="dialog/history/historicalView.xhtml" />
 
             <ui:include src="dialog/alignment/addAlignment.xhtml" />
@@ -159,6 +154,11 @@
             <ui:include src="dialog/group/addTraductionGroup.xhtml" />
             <ui:include src="dialog/group/deleteTraductionGroup.xhtml" />
             <ui:include src="dialog/group/renameTraductionGroup.xhtml" />
+
+            <ui:include src="dialog/facet/addNT.xhtml" />
+            <ui:include src="dialog/facet/addMembers.xhtml" />
+            <ui:include src="dialog/facet/renameFacet.xhtml" />
+            <ui:include src="dialog/facet/removeMembers.xhtml" /> 
         </h:form>
 
     </h:body>

@@ -7,48 +7,46 @@
     <div class="card mb-4 py-3 border-left-success">
         <div class="card-body">
             <div class="container">
-
                 <!-- ligne images --> 
                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0)}">
                     <div class="row">
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
-                            <div class="col-2" style="margin-top: 3px">
-                                <i class="pi pi-angle-double-right" />
-
+                            <div class="col-3" style="text-align: right;">
                                 <h:outputText value=" #{langueBean.getMsg('rightbody.concept.image')} : " 
                                               title="#{langueBean.getMsg('rightbody.concept.image')}"
-                                              style="font-size: 14px; font-weight: bold;"/>
+                                              style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
                             </div>
                         </h:panelGroup>
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
-                            <div class="col-2" style="margin-top: 3px">
-                                <i class="pi pi-angle-double-right" />
-
-                                <h:outputText value=" #{langueBean.getMsg('rightbody.concept.image')} : " 
+                            <div class="col-3" style="text-align: right;">
+                                <h:outputText value=" #{langueBean.getMsg('rightbody.concept.image')}" 
                                               title="#{langueBean.getMsg('rightbody.concept.image')}"
-                                              style="font-size: 14px; font-weight: bold;"/>
-                                <h:outputText value="( #{conceptView.nodeConcept.nodeimages.size()} )" style="color: #43B572; margin-left: 10px;"/>
+                                              style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+
+                                <h:outputText value="( #{conceptView.nodeConcept.nodeimages.size()} )" 
+                                              style="color: #43B572; margin-right: 10px"/>
+
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                              icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_image')}" 
+                                                actionListener="#{imageBean.reset()}"
+                                                oncomplete="PF('addImage').show();"
+                                                style="font-size: 12px;" />
+
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_image')}" 
+                                                actionListener="#{imageBean.reset()}"                  
+                                                oncomplete="PF('updateImage').show();"
+                                                update="idUpdateImage"
+                                                style="font-size: 12px;" />
+
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_image')}" 
+                                                actionListener="#{imageBean.reset()}"
+                                                oncomplete="PF('deleteImage').show();"
+                                                update="idDeleteImage"
+                                                style="font-size: 12px;" />
+                                </p:menuButton> 
                             </div>
                         </h:panelGroup>
-
-                        <div class="col-1" style="margin-top: 3px">
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                          icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_image')}" 
-                                            actionListener="#{imageBean.reset()}"
-                                            oncomplete="PF('addImage').show();"
-                                            style="font-size: 12px;" />
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_image')}" 
-                                            actionListener="#{imageBean.reset()}"
-                                            action="#{imageBean.prepareImageForEdit()}"                                      
-                                            oncomplete="PF('updateImage').show();"
-                                            style="font-size: 12px;" />
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_image')}" 
-                                            actionListener="#{imageBean.reset()}"
-                                            oncomplete="PF('deleteImage').show();"
-                                            style="font-size: 12px;" />
-                            </p:menuButton> 
-                        </div>
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
                             <div class="col-9" style="margin-top: 3px">
@@ -56,16 +54,13 @@
                                                style="font-size: 12px; color: grey; font-style: italic " />
                             </div>
                         </h:panelGroup>
+
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
                             <div class="col-9" style="margin-top: 3px">
-                                <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="images" panelWidth="450" panelHeight="110" 
-                                            autoPlay="false" showCaption="false">
-                                    <p:graphicImage value="#{images.uri}"
-                                                    title="#{images.copyRight}"
-                                                    url="#{images.uri}"
-                                                    alt="#{images.uri}"
-                                                    height="100"
-                                                    style="cursor: pointer;"/>
+                                <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="images" 
+                                            panelWidth="450" panelHeight="110" autoPlay="false" showCaption="false">
+                                    <p:graphicImage value="#{images.uri}" title="#{images.copyRight}" url="#{images.uri}"
+                                                    alt="#{images.uri}" height="100" style="cursor: pointer;"/>
                                 </p:galleria>
                             </div>
                         </h:panelGroup>
@@ -74,28 +69,26 @@
 
                 <!-- ligne GPS MAP-->
                 <h:panelGroup id="idConceptGps" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
-                    <div class="row">
-                        <div class="col-2" style="margin-top: 3px">
-                            <i class="pi pi-angle-double-right" />
-
-                            <h:outputText value=" #{langueBean.getMsg('rightbody.concept.gps_coordinates')} : " 
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}"
-                                          style="font-size: 14px; font-weight: bold;"/>
-                        </div>
+                                          style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
-                        <div class="col-1" style="margin-top: 3px">
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="pi pi-cog"
                                           style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_gps_coordinates')}" 
                                             actionListener="#{gpsBean.reset()}"
                                             oncomplete="PF('setGps').show();"
                                             style="font-size: 12px;" />
+
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}" 
                                             actionListener="#{gpsBean.reset()}"
                                             oncomplete="PF('deleteGps').show();"
                                             style="font-size: 12px;" />
-                            </p:menuButton> 
+                            </p:menuButton>
                         </div> 
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps == null}">
@@ -108,21 +101,21 @@
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps != null}">
                             <div class="col-9">
                                 <div class="row">
-                                    <div class="col-12" style="margin-top: 3px">
-                                        <h:outputText value="Latitude : " style="font-size: 12px;"/>
+                                    <div class="col-12">
+                                        <h:outputText value="Latitude : " style="font-size: 12px; font-weight: bold; margin-right: 10px"/>
                                         <h:outputText value="#{conceptView.nodeConcept.nodeGps.latitude}" style="font-size: 12px; color: #666666"/>
                                     </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-12" style="margin-top: 3px">
-                                        <h:outputText value="Longitude : " style="font-size: 12px;"/>
+                                    <div class="col-12" style="margin-top: 8px">
+                                        <h:outputText value="Longitude : " style="font-size: 12px; font-weight: bold; margin-right: 10px"/>
                                         <h:outputText value="#{conceptView.nodeConcept.nodeGps.longitude}" style="font-size: 12px; color: #666666"/>
                                     </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-12" style="margin-top: 3px">
+                                    <div class="col-12" style="margin-top: 10px; border-color: #43B572">
                                         <leaf:mapAdvanced map="#{conceptView.mapModel}" />
                                     </div>
                                 </div>
@@ -133,5 +126,12 @@
             </div>
         </div>
     </div>
+
+    <ui:include src="../../../dialog/image/addImage.xhtml" />
+    <ui:include src="../../../dialog/image/updateImage.xhtml" />
+    <ui:include src="../../../dialog/image/deleteImage.xhtml" /> 
+
+    <ui:include src="../../../dialog/gps/setGps.xhtml" />      
+    <ui:include src="../../../dialog/gps/deleteGps.xhtml" />
 
 </ui:fragment>

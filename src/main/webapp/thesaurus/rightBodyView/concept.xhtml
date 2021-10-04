@@ -6,8 +6,6 @@
 
     <h:panelGroup id="conceptView" rendered="#{conceptView.nodeConcept != null}" styleClass="textOpentheso">
 
-        <!--<ui:include src="conceptActions.xhtml" />-->
-
         <!-- Partie pour distinguer les concepts dépréciés -->
         <p:spacer rendered="#{conceptView.nodeConcept.concept.isDeprecated}"/>
 
@@ -24,7 +22,6 @@
                     <h:outputText rendered="#{!status.last}" value=" , " style="color: white"/>
                 </div>
             </div>
-
         </p:panel>
 
         <p:spacer rendered="#{conceptView.nodeConcept.concept.isDeprecated}"/>
@@ -41,13 +38,80 @@
         <!-- Notes -->
         <ui:include src="conceptDetail/conceptDetailBloc3.xhtml" />
 
-        <!-- Images et GPS -->
-        <ui:include src="conceptDetail/conceptDetailBloc4.xhtml" />
+        <!-- Images et GPS
+        <ui:include src="conceptDetail/conceptDetailBloc4.xhtml" /> -->
 
         <!-- Corpus / Alignement / Notation -->
         <ui:include src="conceptDetail/conceptDetailBloc5.xhtml" />
 
         <ui:include src="download.xhtml" />
+
+        <div class="card mb-4 py-3 border-left-success">
+            <div class="card-body">
+                <div class="container">
+
+                    <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
+                        <div class="row">
+                            <div class="col-4">
+                                <h:outputText value="IdHandle : " style="font-size: 14px;"/>
+                            </div>
+                            <div class="col-8">
+                                <h:outputText value="#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;"/>
+                            </div>
+                        </div>  
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idArk != ''}"
+                                  style="width: 100%; text-align: right;">
+                        <div class="row">
+                            <div class="col-10" />
+
+                            <div class="col-2" style="width: 50%; text-align: right;">
+                                <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" type="qr" height="75px;"/>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- ligne dates -->        
+                    <div class="row">  
+                        <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: "
+                                          style="font-size: 14px;"/>
+
+                            <h:outputText value="#{conceptView.nodeConcept.concept.created}" style="color: #43B572"/>
+
+                            <h:outputText value=",  #{langueBean.getMsg('rightbody.concept.last_modification')}: "
+                                          style="font-size: 14px;"/>
+
+                            <h:outputText value="#{conceptView.nodeConcept.concept.modified}  " style="color: #43B572"/>
+
+                            <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                             icon="fa fa-history"
+                                             actionListener="#{historyBean.reset()}"
+                                             oncomplete="PF('historicalView').show();"
+                                             title="#{langueBean.getMsg('rightbody.concept.view_change_history')}"
+                                             style=" font-size: 14px;"
+                                             styleClass="buttonIconOrange"/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.createdBy')} : " 
+                                          style="font-size: 14px; color: #666666"/>
+                            <h:outputText value="#{conceptView.creator}" style="color: #43B572"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.last_modificationBy')} : " 
+                                          style="font-size: 14px; color: #666666"/>
+                            <h:outputText value="#{conceptView.contributor}" style="color: #43B572"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </h:panelGroup>
 

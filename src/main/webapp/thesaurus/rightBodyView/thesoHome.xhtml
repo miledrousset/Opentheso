@@ -2,104 +2,105 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
+    <div style="margin: 20px">
+        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso 
+                                  or roleOnTheso.isSuperAdmin) and !(viewEditorThesoHomeBean.isInEditing)}">
 
-    <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso 
-                              or roleOnTheso.isSuperAdmin) and !(viewEditorThesoHomeBean.isInEditing)}">
-        
-        <div class="row">
-            <div class="col-10" />
-            <div class="col-2">
-                <p:commandButton 
-                    value="#{langueBean.getMsg('candidat.edit')}" update="containerIndex:formRightTab"
-                    class="btn btn-primary" ajax="true" actionListener="#{viewEditorThesoHomeBean.initText()}"
-                    style="width:100%; font-size: 14px; color: white; background: #43B572;"/>
-            </div>
-        </div>    
-    </h:panelGroup>
-
-    <!-- vue pulic non connectée -->
-    <h:panelGroup rendered="#{!(viewEditorThesoHomeBean.isInEditing)}" style="border: none; margin-top: 20px">      
-        <div class="row">
-            <div class="col-6" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('thesohome.totalConcepts')} " style="font-size: 14px;"/>
-                <h:outputText value="#{selectedTheso.thesoName} : " style="font-size: 14px; font-weight: bold"/>
-                <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" style="font-size: 14px; color:  #FF7979;"/>
-            </div>
-            <div class="col-6" style="text-align: right">
-                <h:outputText value="#{langueBean.getMsg('thesohome.lastModification')} : " style="font-size: 14px;"/>
-                <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 14px; color: #FF7979;"/>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12">
-                <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')} : " style="font-size: 14px;"/>
-                
-                <ui:repeat var="value" varStatus="status1" value="#{viewEditorThesoHomeBean.lastModifiedConcepts}">
-                    <h:outputText value="#{value.value}" title="#{value.id}" style="font-size: 14px; color: #43B572;"/>
-                    <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>
-                </ui:repeat>
-            </div>                
-        </div>
-
-        <div class="row">
-            <div class="col-12">
-                <h:outputText escape="false" style="font-size: 14px;" value="#{viewEditorThesoHomeBean.getThesoHomePage()}" />
-            </div>                
-        </div>
-    </h:panelGroup>
-
-    <!-- vue connectée pour édition -->
-    <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing)}" >
-
-        <div class="row">
-            <div class="col-3">
-                <p:commandButton 
-                    value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
-                    update="containerIndex"
-                    class="btn btn-primary"
-                    action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"
-                    style="width:100%; font-size: 12px; background: #{viewEditorThesoHomeBean.colorOfHtmlButton}"/>
-            </div>
-
-            <div class="col-3">
-                <p:commandButton 
-                    value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
-                    class="btn btn-primary"
-                    update="containerIndex"
-                    action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"
-                    style="width:100%; font-size: 12px; background: #{viewEditorThesoHomeBean.colorOfTextButton}"/>
-            </div>
-        </div>
-
-        <h:panelGroup rendered="#{!viewEditorThesoHomeBean.isViewPlainText}">
             <div class="row">
-                <div class="col-12">
-                    <p:textEditor widgetVar="editor1" value="#{viewEditorThesoHomeBean.text}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
+                <div class="col-10" />
+                <div class="col-2">
+                    <p:commandButton 
+                        value="#{langueBean.getMsg('candidat.edit')}" update="containerIndex:formRightTab"
+                        class="btn btn-primary" ajax="true" actionListener="#{viewEditorThesoHomeBean.initText()}"
+                        style="width:100%; font-size: 14px; color: white; background: #43B572;"/>
+                </div>
+            </div>    
+        </h:panelGroup>
+
+        <!-- vue pulic non connectée -->
+        <h:panelGroup rendered="#{!(viewEditorThesoHomeBean.isInEditing)}" style="border: none; margin-top: 20px">      
+            <div class="row">
+                <div class="col-6" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('thesohome.totalConcepts')} " style="font-size: 14px;"/>
+                    <h:outputText value="#{selectedTheso.thesoName} : " style="font-size: 14px; font-weight: bold"/>
+                    <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" style="font-size: 14px; color:  #FF7979;"/>
+                </div>
+                <div class="col-6" style="text-align: right">
+                    <h:outputText value="#{langueBean.getMsg('thesohome.lastModification')} : " style="font-size: 14px;"/>
+                    <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 14px; color: #FF7979;"/>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-12">
-                    <p:inputTextarea value="#{viewEditorThesoHomeBean.text}" style="margin-bottom:5px; margin-right: 5px"/>
-                </div>
+                    <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')} : " style="font-size: 14px;"/>
+
+                    <ui:repeat var="value" varStatus="status1" value="#{viewEditorThesoHomeBean.lastModifiedConcepts}">
+                        <h:outputText value="#{value.value}" title="#{value.id}" style="font-size: 14px; color: #43B572;"/>
+                        <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>
+                    </ui:repeat>
+                </div>                
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText escape="false" style="font-size: 14px;" value="#{viewEditorThesoHomeBean.getThesoHomePage()}" />
+                </div>                
             </div>
         </h:panelGroup>
 
-        <div class="row">
-            <div class="col-2">
-                <p:commandButton id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}"
-                                 update="containerIndex"
-                                 style="width: 100%; background: #8C8C8C; font-size: 12px;"
-                                 class="btn btn-primary"
-                                 action="#{viewEditorThesoHomeBean.reset()}"/>
+        <!-- vue connectée pour édition -->
+        <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing)}" >
+
+            <div class="row">
+                <div class="col-3">
+                    <p:commandButton 
+                        value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
+                        update="containerIndex"
+                        class="btn btn-primary"
+                        action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"
+                        style="width:100%; font-size: 12px; background: #{viewEditorThesoHomeBean.colorOfHtmlButton}"/>
+                </div>
+
+                <div class="col-3">
+                    <p:commandButton 
+                        value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
+                        class="btn btn-primary"
+                        update="containerIndex"
+                        action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"
+                        style="width:100%; font-size: 12px; background: #{viewEditorThesoHomeBean.colorOfTextButton}"/>
+                </div>
             </div>
-            <div class="col-2">
-                <p:commandButton value="#{langueBean.getMsg('candidat.save')}"
-                    update="containerIndex"
-                    class="btn btn-primary"
-                    style="width: 100%;font-size: 12px;"
-                    action="#{viewEditorThesoHomeBean.updateThesoHomePage()}" />
+
+            <h:panelGroup rendered="#{!viewEditorThesoHomeBean.isViewPlainText}">
+                <div class="row">
+                    <div class="col-12">
+                        <p:textEditor widgetVar="editor1" value="#{viewEditorThesoHomeBean.text}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <p:inputTextarea value="#{viewEditorThesoHomeBean.text}" style="margin-bottom:5px; margin-right: 5px"/>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <div class="row">
+                <div class="col-2">
+                    <p:commandButton id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}"
+                                     update="containerIndex"
+                                     style="width: 100%; background: #8C8C8C; font-size: 12px;"
+                                     class="btn btn-primary"
+                                     action="#{viewEditorThesoHomeBean.reset()}"/>
+                </div>
+                <div class="col-2">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.save')}"
+                                     update="containerIndex"
+                                     class="btn btn-primary"
+                                     style="width: 100%;font-size: 12px;"
+                                     action="#{viewEditorThesoHomeBean.updateThesoHomePage()}" />
+                </div>
             </div>
-        </div>
-    </h:panelGroup>       
+        </h:panelGroup>
+    </div>       
 </ui:fragment>

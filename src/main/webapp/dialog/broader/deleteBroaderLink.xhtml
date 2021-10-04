@@ -15,18 +15,22 @@
             </div>
         </div>             
 
-        <ui:repeat var="broader" value="#{broaderBean.nodeBTs}" >
-            <div class="row">
-                <div class="col-1" style="margin-top: 3px">
-                    <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab"
-                                   action="#{broaderBean.deleteBroaderLink(broader, currentUser.nodeUser.idUser)}">
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
+        <p:panel id="listeConceptsGeneriqueToDelete">
+            <h:outputText value="Liste des concepts générique : " class="dialog-titre" /> 
+            <ui:repeat var="broader" value="#{broaderBean.nodeBTs}" >
+                <div class="row">
+                    <div class="col-1" style="margin-top: 3px">
+                        <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab conceptForm:listeConceptsGeneriqueToDelete"
+                                       action="#{broaderBean.deleteBroaderLink(broader, currentUser.nodeUser.idUser)}">
+                            <i class="pi pi-trash" />
+                        </p:commandLink>
+                    </div>
+                    <div class="col-11" style="margin-top: 3px">
+                        <h:outputText value="#{broader.title} (#{broader.idConcept})" style="color: #43B572"/> 
+                    </div>
                 </div>
-                <div class="col-11" style="margin-top: 3px">
-                    <h:outputText value="#{broader.title} (#{broader.idConcept})" style="color: #43B572"/> 
-                </div>
-            </div>
-        </ui:repeat>
+            </ui:repeat>
+        </p:panel>
+
     </p:dialog>  
 </ui:fragment>

@@ -10,13 +10,13 @@
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
                 <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
 
                 <p:commandLink action="#{noteBean.infos}" update="messageIndex" style="font-size: 17px; color: #FF7979">
                     <i class="pi pi-exclamation-circle" />
                 </p:commandLink>
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/>
             </div>
         </div>
 
@@ -26,8 +26,8 @@
             </div>
             <div class="col-7">
                 <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionBean.selectedLang}"
-                                 style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
-                    <f:selectItems  value="#{traductionBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                    <f:selectItems value="#{traductionBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                 </p:selectOneMenu>     
             </div>
         </div>
@@ -39,7 +39,7 @@
             <div class="col-7">
                 <p:inputText label="#{langueBean.getMsg('candidat.traduction')}" 
                              placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."     
-                             value="#{traductionBean.traductionValue}" style="font-size: 12px;"/>   
+                             value="#{traductionBean.traductionValue}" styleClass="input-dialog"/>   
             </div>
         </div>
         

@@ -4,7 +4,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idDeleteGps" header="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}" widgetVar="deleteGps" 
-              width="450" showEffect="fade" modal="true" resizable="false" >  
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -18,11 +18,11 @@
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
                 <h:outputText value="lat: " style="font-size: 12px;"/>
-                <h:outputText value="#{gpsBean.nodeGps.latitude}" style="font-size: 12px; color: #43B572"/>     
+                <h:outputText value="#{gpsBean.nodeGps.latitude}" style="font-size: 12px; color: #000"/>     
             </div>
             <div class="col-5">
                 <h:outputText value="long: " style="font-size: 12px;"/>
-                <h:outputText value="#{gpsBean.nodeGps.longitude}" style="font-size: 12px; color: #43B572"/>   
+                <h:outputText value="#{gpsBean.nodeGps.longitude}" style="font-size: 12px; color: #000"/>   
             </div>
             <div class="col-2">
                 <p:commandLink style="color: #FF7979" action="#{gpsBean.deleteCoordinateGps()}"

@@ -6,85 +6,94 @@
 
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" >
 
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-            <img src="resources/img/icon_opentheso.png" style="width:40px" />
-            <div class="sidebar-brand-text mx-3">Opentheso</div>
-        </a>
-
-        <hr class="sidebar-divider my-0"/>
-
-        <li class="nav-item active">
-            <a class="nav-link" href="../index.xhtml">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span style="font-size: 12px;">Thésaurus</span></a>
-        </li>
-
-        <hr class="sidebar-divider"/>
-
-        <li class="nav-item">
-            <a class="nav-link" href="../candidat/indexCandidats.xhtml" >
-                <i class="fas fa-fw fa-cog"></i>
-                <span style="font-size: 12px;">Candidat</span>
+        <h:panelGroup id="menuBar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <img src="resources/img/icon_opentheso.png" style="width:40px" />
+                <div class="sidebar-brand-text mx-3">Opentheso</div>
             </a>
-        </li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-               aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-user"></i>
-                <span style="font-size: 12px;">Profil</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                    <a class="collapse-item" href="../profile/monCompte.xhtml" style="font-size: 12px;">Mon compte</a>
-                    <a class="collapse-item" href="cards.html" style="font-size: 12px;">Mes projets/utilisateurs</a>
-                    <hr class="sidebar-divider">
-                        <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les utilisateurs</a>
-                        <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les projets</a>
-                        <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les thésaurus</a>
-                    </hr>
-                </div>
-            </div>
-        </li>
+            <hr class="sidebar-divider my-0"/>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-               aria-expanded="true" aria-controls="collapseUtilities">
-                <i class="fas fa-fw fa-briefcase"></i>
-                <span style="font-size: 12px;">Boite à outils</span>
-            </a>
-            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                 data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                    <a class="collapse-item" href="utilities-color.html" style="font-size: 12px;">Edition</a>
-                    <a class="collapse-item" href="utilities-border.html" style="font-size: 12px;">Atelier thésaurus</a>
-                    <a class="collapse-item" href="utilities-animation.html" style="font-size: 12px;">Maintenance</a>
-                    <a class="collapse-item" href="utilities-other.html" style="font-size: 12px;">Statistique</a>
-                </div>
-            </div>
-        </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="../index.xhtml">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span style="font-size: 12px;">Thésaurus</span></a>
+            </li>
 
-        <hr class="sidebar-divider"/>
+            <h:panelGroup rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" > 
+                <li class="nav-item">
+                    <a class="nav-link" href="../candidat/indexCandidats.xhtml" >
+                        <i class="fas fa-fw fa-cog"></i>
+                        <span style="font-size: 12px;">Candidat</span>
+                    </a>
+                </li>
+            </h:panelGroup>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
-               aria-expanded="true" aria-controls="collapseParams">
-                <i class="fas fa-fw fa-wrench"></i>
-                <span style="font-size: 12px;">Paramètres</span>
-            </a>
-            <div id="collapseParams" class="collapse" aria-labelledby="headingUtilities"
-                 data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                    <a class="collapse-item" href="utilities-color.html" style="font-size: 12px;">Préférence</a>
-                    <a class="collapse-item" href="utilities-border.html" style="font-size: 12px;">Identifiant</a>
-                    <a class="collapse-item" href="utilities-animation.html" style="font-size: 12px;">Corpus</a>
-                    <a class="collapse-item" href="utilities-other.html" style="font-size: 12px;">En cours</a>
-                </div>
-            </div>
-        </li>
+            <h:panelGroup rendered="#{currentUser.nodeUser != null}" > 
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                       aria-expanded="true" aria-controls="collapseTwo">
+                        <i class="fas fa-fw fa-user"></i>
+                        <span style="font-size: 12px;">Profil</span>
+                    </a>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
+                            <a class="collapse-item" href="../profile/monCompte.xhtml" style="font-size: 12px;">Mon compte</a>
+                            <a class="collapse-item" href="cards.html" style="font-size: 12px;">Mes projets/utilisateurs</a>
+                            <hr class="sidebar-divider">
+                                <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les utilisateurs</a>
+                                <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les projets</a>
+                                <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les thésaurus</a>
+                            </hr>
+                        </div>
+                    </div>
+                </li>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and 
+                                      (currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin)}" >        
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                       aria-expanded="true" aria-controls="collapseUtilities">
+                        <i class="fas fa-fw fa-briefcase"></i>
+                        <span style="font-size: 12px;">Boite à outils</span>
+                    </a>
+                    <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                         data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
+                            <a class="collapse-item" href="utilities-color.html" style="font-size: 12px;">Edition</a>
+                            <a class="collapse-item" href="utilities-border.html" style="font-size: 12px;">Atelier thésaurus</a>
+                            <a class="collapse-item" href="utilities-animation.html" style="font-size: 12px;">Maintenance</a>
+                            <a class="collapse-item" href="utilities-other.html" style="font-size: 12px;">Statistique</a>
+                        </div>
+                    </div>
+                </li>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso != null)
+                                      and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >        
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
+                       aria-expanded="true" aria-controls="collapseParams">
+                        <i class="fas fa-fw fa-wrench"></i>
+                        <span style="font-size: 12px;">Paramètres</span>
+                    </a>
+                    <div id="collapseParams" class="collapse" aria-labelledby="headingUtilities"
+                         data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
+                            <a class="collapse-item" href="utilities-color.html" style="font-size: 12px;">Préférence</a>
+                            <a class="collapse-item" href="utilities-border.html" style="font-size: 12px;">Identifiant</a>
+                            <a class="collapse-item" href="utilities-animation.html" style="font-size: 12px;">Corpus</a>
+                            <a class="collapse-item" href="utilities-other.html" style="font-size: 12px;">En cours</a>
+                        </div>
+                    </div>
+                </li>
+                <hr class="sidebar-divider"/>
+            </h:panelGroup>
+        </h:panelGroup>
 
         <div class="text-center d-none d-md-inline">
             <button class="rounded-circle border-0" id="sidebarToggle" />

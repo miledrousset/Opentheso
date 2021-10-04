@@ -5,7 +5,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idAddConceptToGroup" header="#{langueBean.getMsg('rightbody.conceptdialog.add_concept_to_group')}" 
-              widgetVar="addConceptToGroup" width="450" showEffect="fade" modal="true" resizable="false" >
+              widgetVar="addConceptToGroup" width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -47,7 +47,7 @@
                 <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
                                  actionListener="PF('addConceptToGroup').hide();" update="idAddConceptToGroup"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
                                  class="btn btn-success" oncomplete="PF('addConceptToGroup').hide();"
                                  actionListener="#{addConceptToGroupBean.addConceptToGroup()}" style="color: white;"/>
             </div>
