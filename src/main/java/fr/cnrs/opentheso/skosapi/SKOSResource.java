@@ -15,7 +15,9 @@ import fr.cnrs.opentheso.bdd.tools.StringPlus;
 public class SKOSResource {
 
     private String uri;
+    private String localUri;
     private String identifier;
+    private String arkId;
     private SKOSdc sdc;
     private int property;
     
@@ -71,6 +73,7 @@ public class SKOSResource {
     public SKOSResource(String uri, int property) {
 
         skosStatus = null;
+        localUri = "";
         labelsList = new ArrayList<>();
         relationsList = new ArrayList<>();
         documentationsList = new ArrayList<>();
@@ -118,9 +121,25 @@ public class SKOSResource {
             sKOSReplaces.clear();        
         thesaurus = null;  
     }
+
+    public String getArkId() {
+        return arkId;
+    }
+
+    public void setArkId(String arkId) {
+        this.arkId = arkId;
+    }
     
     public int getProperty() {
         return property;
+    }
+
+    public String getLocalUri() {
+        return localUri;
+    }
+
+    public void setLocalUri(String localUri) {
+        this.localUri = localUri;
     }
 
     /**
@@ -268,9 +287,9 @@ public class SKOSResource {
      * @param uri un String URI
      * @param prop un int SKOSProperty
      */
-    public void addRelation(String uri, int prop) {
+    public void addRelation(String localIdentifier, String uri, int prop) {
         try {
-            SKOSRelation relation = new SKOSRelation(uri, prop);
+            SKOSRelation relation = new SKOSRelation(localIdentifier, uri, prop);
             relationsList.add(relation);
         } catch (Exception e) {
             e.getMessage();
@@ -439,6 +458,9 @@ public class SKOSResource {
                     xmlRessource += "        "+sdc.toString();
                 }
             }
+        }
+        if(arkId != null && !arkId.isEmpty()) {
+            xmlRessource += "        " + "<arkId>" + arkId + "<arkId>\n";
         }
        
 

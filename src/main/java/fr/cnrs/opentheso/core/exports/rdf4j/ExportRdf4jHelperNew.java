@@ -130,7 +130,7 @@ public class ExportRdf4jHelperNew {
                 idTheso);
 
         nodeTTs.forEach((nodeTT) -> {
-            conceptScheme.addRelation(getUriFromNodeUri(nodeTT, idTheso), SKOSProperty.hasTopConcept);
+            conceptScheme.addRelation(nodeTT.getIdConcept(), getUriFromNodeUri(nodeTT, idTheso), SKOSProperty.hasTopConcept);
         });
         skosXmlDocument.setConceptScheme(conceptScheme);
     }
@@ -141,7 +141,7 @@ public class ExportRdf4jHelperNew {
         for (String idGroup : selectedGroups) {
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
             SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
-            sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+            sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
             addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
@@ -153,7 +153,7 @@ public class ExportRdf4jHelperNew {
         
         for (NodeFacet facet : facets) {
             SKOSResource sKOSResource =  new SKOSResource(getPath() + "/" + facet.getIdFacet(), SKOSProperty.FACET);//new SKOSResource("http://www.w3.org/2004/02/skos/core#Facet?idFacet="+facet.getIdFacet(), SKOSProperty.FACET);
-            sKOSResource.addRelation(getUriFromNodeUri(facet.getNodeUri(), idTheso), SKOSProperty.superOrdinate);
+            sKOSResource.addRelation(facet.getIdFacet(), getUriFromNodeUri(facet.getNodeUri(), idTheso), SKOSProperty.superOrdinate);
             sKOSResource.addLabel(facet.getLexicalValue(), facet.getLang(), SKOSProperty.prefLabel);
             sKOSResource.addDate(facet.getCreated(), SKOSProperty.created);
             sKOSResource.addDate(facet.getModified(), SKOSProperty.modified);
@@ -170,7 +170,7 @@ public class ExportRdf4jHelperNew {
         List<String> members = facetHelper.getAllMembersOfFacet(ds, nodeFacet.getIdFacet(), idTheso);
         for (String idConcept : members) {
             nodeUri = conceptHelper.getNodeUriOfConcept(ds, idConcept, idTheso);
-            sKOSResource.addRelation(getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
         }
     }
 
@@ -181,7 +181,7 @@ public class ExportRdf4jHelperNew {
         for (String idGroup : rootGroupList) {
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
             SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
-            sKOSResource.addRelation(getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+            sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
             addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
@@ -228,17 +228,17 @@ public class ExportRdf4jHelperNew {
         ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
-            sKOSResource.addRelation(getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
         }
 
         for (String id : childURI) {
-            sKOSResource.addRelation(getUriFromId(id), SKOSProperty.subGroup);
+            sKOSResource.addRelation(id, getUriFromId(id), SKOSProperty.subGroup);
             superGroupHashMap.put(id, idOfGroupChild);
         }
 
         String idSuperGroup = superGroupHashMap.get(idOfGroupChild);
         if (idSuperGroup != null) {
-            sKOSResource.addRelation(getUriFromId(idSuperGroup), SKOSProperty.superGroup);
+            sKOSResource.addRelation(idSuperGroup, getUriFromId(idSuperGroup), SKOSProperty.superGroup);
             superGroupHashMap.remove(idOfGroupChild);
         }
 
@@ -271,11 +271,13 @@ public class ExportRdf4jHelperNew {
         }
 
         if(nodeConcept.getNodeListOfBT().isEmpty() ){
-            sKOSResource.addRelation(getUriFromId(idTheso), SKOSProperty.topConceptOf);
+            sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.topConceptOf);
         }
 
         //    concept.setUri(getUriFromId(idConcept));
         sKOSResource.setUri(getUri(nodeConcept));
+        sKOSResource.setLocalUri(getLocalUri(nodeConcept));
+        
         sKOSResource.setProperty(SKOSProperty.Concept);
 
         // ajout des concepts de remplacements ReplacedBy et Replaces
@@ -322,16 +324,22 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addNotation(nodeConcept.getConcept().getNotation());
         }
 
-        sKOSResource.addRelation(getUriFromId(idTheso), SKOSProperty.inScheme);
+        sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.inScheme);
+        
         for (NodeUri nodeUri : nodeConcept.getNodeListIdsOfConceptGroup()) {
-            sKOSResource.addRelation(getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.memberOf);
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.memberOf);
         }
+        
         sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
-
+        if(nodeConcept.getConcept().getIdArk() != null && !nodeConcept.getConcept().getIdArk().isEmpty() ){
+           sKOSResource.setArkId(nodeConcept.getConcept().getIdArk());
+        }
+        
+        
         if(nodeConcept.getListFacetsOfConcept() != null) {
             for (String idFacette : nodeConcept.getListFacetsOfConcept()) {
                 int prop = SKOSProperty.subordinateArray;
-                sKOSResource.addRelation(getPath() + "/" + idFacette, prop);
+                sKOSResource.addRelation(idFacette, getPath() + "/" + idFacette, prop);
             }
         }
 
@@ -359,6 +367,14 @@ public class ExportRdf4jHelperNew {
         if (nodeConcept.getConcept().getContributorName()!= null && !nodeConcept.getConcept().getContributorName().isEmpty()) {
             sKOSResource.addCreator(nodeConcept.getConcept().getContributorName(), SKOSProperty.contributor);
         }    
+        
+        // dates
+        if (nodeConcept.getConcept().getCreated() != null) {
+            sKOSResource.addDate(nodeConcept.getConcept().getCreated().toString(), SKOSProperty.created);
+        }
+        if (nodeConcept.getConcept().getModified() != null) {
+            sKOSResource.addDate(nodeConcept.getConcept().getModified().toString(), SKOSProperty.modified);
+        }        
         
         skosXmlDocument.addconcept(sKOSResource);
     }
@@ -504,7 +520,7 @@ public class ExportRdf4jHelperNew {
                 default:
                     prop = SKOSProperty.related;
             }
-            resource.addRelation(getUriFromNodeUri(rt.getUri(), idTheso), prop);
+            resource.addRelation(rt.getUri().getIdConcept(), getUriFromNodeUri(rt.getUri(), idTheso), prop);
         }
         for (NodeHieraRelation nt : ntList) {
             int prop;
@@ -521,7 +537,7 @@ public class ExportRdf4jHelperNew {
                 default:
                     prop = SKOSProperty.narrower;
             }
-            resource.addRelation(getUriFromNodeUri(nt.getUri(), idTheso), prop);
+            resource.addRelation(nt.getUri().getIdConcept(), getUriFromNodeUri(nt.getUri(), idTheso), prop);
         }
         for (NodeHieraRelation bt : btList) {
 
@@ -539,7 +555,7 @@ public class ExportRdf4jHelperNew {
                 default:
                     prop = SKOSProperty.broader;
             }
-            resource.addRelation(getUriFromNodeUri(bt.getUri(), idTheso), prop);
+            resource.addRelation(bt.getUri().getIdConcept(), getUriFromNodeUri(bt.getUri(), idTheso), prop);
         }
     }    
     
@@ -641,6 +657,21 @@ public class ExportRdf4jHelperNew {
                         + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         }
 
+        return uri;
+    }
+    
+    private String getLocalUri(NodeConceptExport nodeConceptExport){
+        String uri = "";
+        if (nodeConceptExport == null) {
+            //      System.out.println("nodeConcept = Null");
+            return uri;
+        }
+        if (nodeConceptExport.getConcept() == null) {
+            //    System.out.println("nodeConcept.getConcept = Null");
+            return uri;
+        }
+        uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept()
+                    + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();   
         return uri;
     }
 

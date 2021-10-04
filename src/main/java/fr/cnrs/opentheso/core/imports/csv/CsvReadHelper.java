@@ -236,17 +236,31 @@ public class CsvReadHelper {
         try {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
-            
+            String uri1 = null; 
             for (CSVRecord record : records) {
                 ConceptObject conceptObject = new ConceptObject();
                 
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 // puis on génère un nouvel identifiant
+                
                 try {
-                    String uri1 = record.get("URI");
-                    conceptObject.setIdConcept(getId(uri1));
-                } catch (Exception e) { }
+                    uri1 = record.get("URI");
+                    conceptObject.setUri(uri1);
+                } catch (Exception e) { }                
 
+                if(record.isMapped("identifier")) {
+                    try {
+                        uri1 = record.get("identifier");
+                    } catch (Exception e) { }                    
+                } else {
+                    try {
+                        uri1 = record.get("URI");
+                        conceptObject.setIdConcept(getId(uri1));
+                    } catch (Exception e) { }                    
+                }
+                
+                // on récupère l'id Ark s'il existe
+                conceptObject = getArkId(conceptObject, record);                
                 
                 // on récupère les labels
                 conceptObject = getLabels(conceptObject, record);
@@ -276,6 +290,7 @@ public class CsvReadHelper {
                 conceptObject = getDates(conceptObject, record);
                 
                 conceptObjects.add(conceptObject);
+                uri1 = null;
             }
             return true;
         } catch (IOException ex) {
@@ -295,7 +310,7 @@ public class CsvReadHelper {
         try {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withTrim().parse(in);
-            String uri1;
+            String uri1 = null;
   //          boolean first = true;
             
             for (CSVRecord record : records) {
@@ -315,10 +330,23 @@ public class CsvReadHelper {
                 // puis on génère un nouvel identifiant
                 try {
                     uri1 = record.get("URI");
-                    conceptObject.setIdConcept(getId(uri1));
-                } catch (Exception e) {
-                    message = message + " Erreur à la ligne :" + record.toString(); //System.err.println("");
-                }
+                    conceptObject.setUri(uri1);
+                } catch (Exception e) { }                
+
+                try {
+                    uri1 = record.get("identifier");
+                } catch (Exception e) { }
+                
+                try {
+                    if(uri1 == null || uri1.isEmpty()) {
+                        uri1 = record.get("URI");
+                        uri1 = getId(uri1);
+                    }
+                    conceptObject.setIdConcept(uri1);
+                } catch (Exception e) { }
+
+                // on récupère l'id Ark s'il existe
+                conceptObject = getArkId(conceptObject, record);   
 
                 
                 // on récupère les labels
@@ -349,6 +377,7 @@ public class CsvReadHelper {
                 conceptObject = getDates(conceptObject, record);
                 
                 conceptObjects.add(conceptObject);
+                uri1 = null;
             }
             return true;
         } catch (IOException ex) {
@@ -487,6 +516,25 @@ public class CsvReadHelper {
      * @param record
      * @return 
      */
+    private ConceptObject getArkId(ConceptObject conceptObject, CSVRecord record) {
+        String arkId;
+        try {
+            arkId = record.get("arkId");
+            if(arkId != null) {
+                conceptObject.setArkId(arkId.trim());
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }   
+        return conceptObject;
+    }      
+    
+    /**
+     * permet de charger tous les alignements d'un concept
+     * @param conceptObject
+     * @param record
+     * @return 
+     */
     private ConceptObject getGeoLocalisation(
             ConceptObject conceptObject,
             CSVRecord record) {
@@ -594,45 +642,95 @@ public class CsvReadHelper {
     private ConceptObject getRelations(
             ConceptObject conceptObject,
             CSVRecord record) {
-        String value;
+        String value = null;
         String values[];
         
-        // skos:narrower
-        try {
-            value = record.get("skos:narrower");
-            values = value.split("##");
-            for (String value1 : values) {
-                if(!value1.isEmpty()) {
-                    conceptObject.narrowers.add(getId(value1.trim()));
-                }
+        // skos:narrowerId (on vérifie si ce champs est renseigné, on le prend avant skos:narrower pour éviter de découper les identifiants
+        // et surtout en cas de fichier avec des uris Ark pour retrouver les bons id internes
+
+        // narrowerId 
+        if(record.isMapped("narrowerid")) {
+            try {
+                value = record.get("narrowerid");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if(!value1.isEmpty()) {
+                        conceptObject.narrowers.add(value1.trim());
+                    }
+                }            
+            } catch (Exception e) {
+                //System.err.println("");
             }            
-        } catch (Exception e) {
-            //System.err.println("");
-        }
-        // skos:broader
-        try {
-            value = record.get("skos:broader");
-            values = value.split("##");
-            for (String value1 : values) {
-                if(!value1.isEmpty()) {
-                    conceptObject.broaders.add(getId(value1.trim()));
+        } else {
+            // skos:narrower
+            try {
+                value = record.get("skos:narrower");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if(!value1.isEmpty()) {
+                        conceptObject.narrowers.add(getId(value1.trim()));
+                    }
                 }
+            } catch (Exception e) {
+                //System.err.println("");
             }            
-        } catch (Exception e) {
-            //System.err.println("");
         }
-        // skos:related
-        try {
-            value = record.get("skos:related");
-            values = value.split("##");
-            for (String value1 : values) {
-                if(!value1.isEmpty()) {
-                    conceptObject.relateds.add(getId(value1.trim()));
+
+        // broaderId        
+        if(record.isMapped("broaderid")) {
+            try {
+                value = record.get("broaderid");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if(!value1.isEmpty()) {
+                        conceptObject.broaders.add(value1.trim());
+                    }
+                }            
+            } catch (Exception e) {
+                //System.err.println("");
+            }             
+        } else {
+            // skos:broader
+            try {
+                value = record.get("skos:broader");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if(!value1.isEmpty()) {
+                        conceptObject.broaders.add(getId(value1.trim()));
+                    }
                 }
-            }
-        } catch (Exception e) {
-            //System.err.println("");
-        }        
+            } catch (Exception e) {
+                //System.err.println("");
+            }            
+        }
+        
+        if(record.isMapped("relatedid")) {
+            // relatedId        
+            try {
+                value = record.get("relatedid");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if(!value1.isEmpty()) {
+                        conceptObject.relateds.add(value1.trim());
+                    }
+                }            
+            } catch (Exception e) {
+                //System.err.println("");
+            }             
+        } else {
+            // skos:related
+            try {
+                value = record.get("skos:related");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if(!value1.isEmpty()) {
+                        conceptObject.relateds.add(getId(value1.trim()));
+                    }
+                }
+            } catch (Exception e) {
+                //System.err.println("");
+            }              
+        }
         return conceptObject;
     }
     
@@ -863,7 +961,8 @@ public class CsvReadHelper {
     public class ConceptObject {
         private String idConcept;
         private String uri;
-        private String localId; // peut être Ark, Handle ou identifiant local
+        private String localId; //identifiant local
+        private String arkId;
         private String idTerm;
         // rdf:type pour distinguer les concepts des collections, groupes ...
         private String type;
@@ -970,6 +1069,14 @@ public class CsvReadHelper {
             this.idConcept = idConcept;
         }
 
+        public String getArkId() {
+            return arkId;
+        }
+
+        public void setArkId(String arkId) {
+            this.arkId = arkId;
+        }
+        
         public String getUri() {
             return uri;
         }

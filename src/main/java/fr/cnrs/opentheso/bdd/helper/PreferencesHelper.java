@@ -259,7 +259,7 @@ public class PreferencesHelper {
                         + ", user_ark='" + np.getUserArk() + "'"
                         //+ ", pass_ark='" + MD5Password.getEncodedPassword(np.getPassArk()) + "'"
                         + ", pass_ark='" + np.getPassArk() + "'"
-                        + ", generate_handle='" + np.isGenerateHandle() + "'"
+                        + ", generate_handle='false'" //+ np.isGenerateHandle() + "'"
                         // Handle
                         + ", use_handle = '" + np.isUseHandle() + "'"
                         + ", user_handle = '" + np.getUserHandle() + "'"

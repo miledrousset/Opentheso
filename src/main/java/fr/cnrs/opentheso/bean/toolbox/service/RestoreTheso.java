@@ -36,6 +36,10 @@ public class RestoreTheso implements Serializable {
     public void clear(){
     }
 
+    private boolean overwrite = false;
+    private String naan;
+    private String prefix;
+    
     /**
      * Creates a new instance of RestoreTheso
      */
@@ -126,5 +130,64 @@ public class RestoreTheso implements Serializable {
         }
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction réussie !!!"));
     }    
+    
+    /**
+     * permet de générer les id Ark d'après l'id du concept,
+     * si overwrite est activé, on écrase tout et on recommence avec des nouveaus Id Ark
+     * @param idTheso
+     */
+    public void generateArkFromConceptId(String idTheso) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        int count = 0; 
+        if(naan == null || naan.isEmpty()) {
+            return;
+        }
+        
+        if(prefix == null || prefix.isEmpty())
+            prefix = "";
+        else 
+            prefix = prefix.trim();
+        
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        
+        for (String conceptId : allConcepts) {
+            if(!overwrite) {
+                if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), idTheso, conceptId)) {
+                    conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso, naan + "/" + prefix + conceptId);
+                    count++;
+                }
+            } else {
+                conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso, naan + "/" + prefix + conceptId);
+                count++;
+            }
+        }        
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concepts changés: " + count));
+    }      
+
+    public boolean isOverwrite() {
+        return overwrite;
+    }
+
+    public void setOverwrite(boolean overwrite) {
+        this.overwrite = overwrite;
+    }
+
+    public String getNaan() {
+        return naan;
+    }
+
+    public void setNaan(String naan) {
+        this.naan = naan;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+    
+    
     
 }

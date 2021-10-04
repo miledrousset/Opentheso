@@ -63,20 +63,24 @@ public class FusionService implements Serializable {
         for (SKOSResource conceptSource : sourceSkos.getConceptList()) {
             if (!StringUtils.isEmpty(conceptSource.getIdentifier())) {
 
+                /// prépration d'un objet au format Concept  
                 importRdf4jHelper.setRdf4jThesaurus(sourceSkos);
                 AddConceptsStruct acs = new AddConceptsStruct();
                 importRdf4jHelper.initAddConceptsStruct(acs, conceptSource, thesoSelected.getId(), false);
-                importRdf4jHelper.addRelation(acs, thesoSelected.getId());
-
+                importRdf4jHelper.addRelation(acs, thesoSelected.getId());  
+                 
+                // récupération du concept Local
                 NodeConcept conceptFound = conceptHelper.getConcept(connect.getPoolConnexion(),
                         conceptSource.getIdentifier(),
                         thesoSelected.getId(),
                         selectedTheso.getCurrentLang());
 
+                
                 if (conceptFound == null && !conceptSource.getLabelsList().isEmpty()) {
                     importRdf4jHelper.addConceptToBdd(acs, thesoSelected.getId(), false);
                     conceptsAjoutes.add(acs.concept.getIdConcept() + " - " + conceptSource.getLabelsList().get(0).getLabel());
                 } else {
+                    if(conceptFound == null) return;
                     boolean isUpdated = false;
                     //alignment
                     if (!CollectionUtils.isEmpty(acs.nodeAlignments)) {
@@ -116,10 +120,10 @@ public class FusionService implements Serializable {
                         }
                     }
 
-                    // Traduction
+                    // Traduction OK validée #MR
                     if (!CollectionUtils.isEmpty(acs.nodeTermTraductionList)) {
                         for (NodeTermTraduction nodeTermTraduction : acs.nodeTermTraductionList) {
-                            if (!isTraductionExist(nodeTermTraduction, conceptFound)) {
+                            if (!isTraductionExist(nodeTermTraduction, conceptFound.getNodeTermTraductions())) {
                                 try {
                                     Term term = new Term();
                                     term.setId_term(acs.nodeTerm.getIdTerm());
@@ -174,13 +178,20 @@ public class FusionService implements Serializable {
 
     }
 
-    private boolean isTraductionExist(NodeTermTraduction nodeTermTraduction, NodeConcept concept) {
-        if (CollectionUtils.isEmpty(concept.getNodeTermTraductions()))
+    /**
+     * pour comparer la traduction locale à la traduction importée
+     * @param nodeTermTraductionImport
+     * @param nodeTermTraductionLocal
+     * @return 
+     * #MR
+     */
+    private boolean isTraductionExist(NodeTermTraduction nodeTermTraductionImport, ArrayList<NodeTermTraduction> nodeTermTraductionLocal) {
+        if (nodeTermTraductionLocal == null || nodeTermTraductionLocal.isEmpty())
             return false;
 
-        for(NodeTermTraduction node : concept.getNodeTermTraductions()){
-            if (nodeTermTraduction.getLexicalValue() == node.getLexicalValue()
-                    && (nodeTermTraduction.getLang() != null && node.getLang().equals(node.getLang()))) {
+        for(NodeTermTraduction existingTranslation  : nodeTermTraductionLocal){
+            if (nodeTermTraductionImport.getLexicalValue().equalsIgnoreCase(existingTranslation.getLexicalValue())
+                && (nodeTermTraductionImport.getLang().equalsIgnoreCase(existingTranslation.getLang()))) {
                 return true;
             }
         }

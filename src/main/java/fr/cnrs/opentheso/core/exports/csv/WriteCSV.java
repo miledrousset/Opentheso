@@ -53,6 +53,11 @@ public class WriteCSV {
             header.append("URI").append(seperate)
                     .append("rdf:type").append(seperate);
 
+            header.append("localURI").append(seperate); 
+            
+            header.append("identifier").append(seperate)
+                    .append("arkId").append(seperate);            
+
             List<String> langs = selectedLanguages.stream().map(lang -> lang.getCode()).collect(Collectors.toList());
 
             //skos:prefLabel
@@ -92,9 +97,16 @@ public class WriteCSV {
 
 
             header.append("skos:notation").append(seperate)
+                    
                     .append("skos:narrower").append(seperate)
+                    .append("narrowerId").append(seperate)
+                    
                     .append("skos:broader").append(seperate)
+                    .append("broaderId").append(seperate)
+                    
                     .append("skos:related").append(seperate)
+                    .append("relatedId").append(seperate)
+                    
                     .append("skos:exactMatch").append(seperate)
                     .append("skos:closeMatch").append(seperate)
                     .append("geo:lat").append(seperate)
@@ -135,9 +147,21 @@ public class WriteCSV {
     private void writeResource(SKOSResource skosResource, String type, List<String> langs) throws IOException {
         StringBuilder stringBuffer = new StringBuilder();
         
-        //URI rdf:type        
+        //URI + rdf:type        
         stringBuffer.append(skosResource.getUri()).append(seperate) //URI
                 .append(type).append(seperate) ;//rdf:type
+        
+        //localURI
+        stringBuffer.append(skosResource.getLocalUri()).append(seperate);
+        
+        // identifier and arkId
+        if(skosResource.getSdc() != null && skosResource.getSdc().getIdentifier() != null)
+            stringBuffer.append(skosResource.getSdc().getIdentifier());
+        stringBuffer.append(seperate);
+        if(skosResource.getArkId() != null && !skosResource.getArkId().isEmpty())                    
+            stringBuffer.append(skosResource.getArkId());        
+        stringBuffer.append(seperate);
+        
         
         //skos:prefLabel
         for (String lang : langs) {
@@ -199,9 +223,16 @@ public class WriteCSV {
         //        dct:modified
         stringBuffer
                 .append(getNotation(skosResource.getNotationList())).append(seperate) //notation
+                
                 .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.narrower)).append(seperate) //narrower
+                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.narrower)).append(seperate) //narrowerId
+                
                 .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.broader)).append(seperate) //broader
-                .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.related)).append(seperate) //related
+                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.broader)).append(seperate) //broaderId      
+                
+                .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.related)).append(seperate) //related      
+                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.related)).append(seperate) //relatedId                
+                
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.exactMatch)).append(seperate) //exactMatch
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch)).append(seperate) //closeMatch
                 .append(getLatValue(skosResource.getGPSCoordinates())).append(seperate)//geo:lat
@@ -237,13 +268,19 @@ public class WriteCSV {
                 .collect(Collectors.joining(delim_multi_datas));
     }
 
-    private String getRelationGivenValue(List<SKOSRelation> relations, int propertie) {
-        
+    private String getRelationGivenValue(List<SKOSRelation> relations, int propertie) {        
         return relations.stream()
                 .filter(relation -> relation.getProperty() == propertie)
                 .map(relation -> relation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
     }
+    
+    private String getRelationGivenValueId(List<SKOSRelation> relations, int propertie) {        
+        return relations.stream()
+                .filter(relation -> relation.getProperty() == propertie)
+                .map(relation -> relation.getLocalIdentifier())
+                .collect(Collectors.joining(delim_multi_datas));
+    }    
 
     private String getAlligementValue(List<SKOSMatch> matchs, int propertie) {
         return matchs.stream()

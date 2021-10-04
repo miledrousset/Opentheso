@@ -99,7 +99,7 @@ public class SuperAdminBean implements Serializable {
             idLang = selectedTheso.getCurrentLang();
         
         if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
-            nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);    
+            nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);
         } 
     }      
     

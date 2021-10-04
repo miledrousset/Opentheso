@@ -294,6 +294,8 @@ $$language plpgsql;
 ALTER TABLE preferences ALTER COLUMN source_lang Type character varying;
 ALTER TABLE languages_iso639 ALTER COLUMN iso639_1 Type character varying;
 ALTER TABLE concept_group_label ALTER COLUMN lang Type character varying;
+ALTER TABLE preferences ALTER COLUMN generate_handle SET DEFAULT false;
+
 
 -- Modification de la table des langues iso630, ajout des nouvelles langues
 --

@@ -20,6 +20,9 @@
                             <p:dataTable id="tabUserRoleProject" rendered="#{superAdminBean.nodeUserGroupUsers != null}"
                                          value="#{superAdminBean.nodeUserGroupUsers}" var="listUserRole" scrollable="true" resizableColumns="true" scrollHeight="600"
                                          style="font-size: 12px;">
+                                <p:column width="20" headerText="Id">
+                                    <h:outputText value="#{listUserRole.idUser}" />
+                                </p:column>                                
                                 <p:column width="50" headerText="#{langueBean.getMsg('profile.pseudo')}">
                                     <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" value="#{listUserRole.userName}" />
                                 </p:column>

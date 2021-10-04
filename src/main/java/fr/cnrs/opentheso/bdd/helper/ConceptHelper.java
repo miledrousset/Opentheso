@@ -1663,6 +1663,14 @@ public class ConceptHelper {
      *
      * à utiliser avec précaution pour maintenance
      */
+    /**
+     * 
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @param idArk
+     * @return 
+     */
     public boolean updateArkId(HikariDataSource ds, String idTheso, String idConcept, String idArk) {
 
         ArkHelper arkHelper = new ArkHelper(nodePreference);
@@ -1792,6 +1800,32 @@ public class ConceptHelper {
         }
         return idConcept;
     }
+    
+    /**
+     * 
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @return 
+     */
+    public boolean isHaveIdArk(HikariDataSource ds, String idTheso, String idConcept) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_ark from concept where id_concept = '" + idConcept + "'" +
+                        " and id_thesaurus = '" + idTheso + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        String idArk = resultSet.getString("id_ark");
+                        if(idArk == null || idArk.isEmpty()) return false;
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if id exist : " + idConcept, sqle);
+        }
+        return false;
+    }    
 
     /**
      * Cette fonction permet de savoir si l'ID du concept existe ou non
@@ -4709,7 +4743,12 @@ public class ConceptHelper {
     }
 
     /**
-     * Cette fonction permet d'ajouter un Ark Id au concept ou remplacer l'Id existant
+     * Cette fonction permet de mettre à jour l'Id Ark dans la table concept ou remplacer l'Id existant
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @param idArk
+     * @return 
      */
     public boolean updateArkIdOfConcept(HikariDataSource ds, String idConcept, String idTheso, String idArk) {
         boolean status = false;
