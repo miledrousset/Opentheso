@@ -196,9 +196,9 @@ public class SynonymBean implements Serializable {
         init();
 
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptSynonyms");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addSynonymForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("containerIndex:formLeftTab");
         }
     }
 
@@ -285,9 +285,8 @@ public class SynonymBean implements Serializable {
 
 
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptSynonyms");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:renameSynonymForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");;
         }
     }
     
@@ -337,6 +336,12 @@ public class SynonymBean implements Serializable {
         }
         reset();
         prepareNodeEMForEdit();
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");;
+        }
     }      
     
     /**
@@ -424,8 +429,9 @@ public class SynonymBean implements Serializable {
         reset();
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptSynonyms");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteSynonymForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("conceptForm:listSynonimesToDelete");
         }
     }
     

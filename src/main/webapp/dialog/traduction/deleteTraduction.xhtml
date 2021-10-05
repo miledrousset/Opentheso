@@ -3,8 +3,8 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idDeleteTraduction" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_translation')}" 
-              widgetVar="deleteTraduction" width="450" showEffect="fade" modal="true" resizable="false" >   
+    <p:dialog id="idDeleteTraduction" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_translation')}" widgetVar="deleteTraduction" 
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -13,21 +13,25 @@
             <div class="col-7">
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
             </div>
-        </div>      
+        </div>
 
-        <ui:repeat var="traductions" value="#{traductionBean.nodeTermTraductions}" >
-            <div class="row" style="margin-top: 5px">
-                <div class="col-1" style="margin-top: 3px">
-                    <p:commandLink style="color: #FF7979" action="#{traductionBean.deleteTraduction(traductions, currentUser.nodeUser.idUser)}"
-                                   update="containerIndex:formRightTab:viewTabConcept:deleteTraductionForm">
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
+        <p:panel id="listTraductions">
+            <h:outputText value="Liste des traduction spécifique : " class="dialog-titre" /> 
+            <ui:repeat var="traductions" value="#{traductionBean.nodeTermTraductions}" >
+                <div class="row" style="margin-top: 5px">
+                    <div class="col-1" style="margin-top: 3px">
+                        <p:commandLink style="color: #FF7979" action="#{traductionBean.deleteTraduction(traductions, currentUser.nodeUser.idUser)}"
+                                       update="containerIndex:formRightTab conceptForm:listTraductions messageIndex">
+                            <i class="pi pi-trash" />
+                        </p:commandLink>
+                    </div>
+                    <div class="col-11">
+                        <h:outputText value="#{traductions.lexicalValue} (#{traductions.lang})"
+                                      style="color: #43B572"/> 
+                    </div>
                 </div>
-                <div class="col-11">
-                    <h:outputText value="#{traductions.lexicalValue} (#{traductions.lang})"
-                                  style="color: #43B572"/> 
-                </div>
-            </div>
-        </ui:repeat>
+            </ui:repeat>
+        </p:panel>
+
     </p:dialog> 
 </ui:fragment>

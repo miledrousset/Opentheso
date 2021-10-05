@@ -146,14 +146,14 @@ public class TraductionBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
+        
         reset();
         setLangWithNoTraduction();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addTraductionForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }
     
@@ -196,9 +196,8 @@ public class TraductionBean implements Serializable {
         reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:renameTraductionForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }    
     
@@ -245,8 +244,8 @@ public class TraductionBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:renameTraductionForm");
+            pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }        
     
@@ -293,9 +292,9 @@ public class TraductionBean implements Serializable {
         reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteTraductionForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("conceptForm:listTraductions");
         }
     }    
 

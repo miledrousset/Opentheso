@@ -15,18 +15,21 @@
             </div>
         </div>           
 
-        <ui:repeat var="related" value="#{relatedBean.nodeRTs}" >
-            <div class="row" style="margin-top: 5px">
-                <div class="col-1" style="margin-top: 3px">
-                    <h:outputText value="#{related.title} (#{related.idConcept})" style="color: #43B572"/> 
+        <p:panel id="listConceptSpecAssocies">
+            <h:outputText value="Liste des concepts spécifique associés : " class="dialog-titre" /> 
+            <ui:repeat var="related" value="#{relatedBean.nodeRTs}" >
+                <div class="row" style="margin-top: 5px" >
+                    <div class="col-1">
+                        <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab containerIndex:formLeftTab conceptForm:listConceptSpecAssocies messageIndex"
+                                       action="#{relatedBean.deleteRelatedLink( related, currentUser.nodeUser.idUser)}">
+                            <i class="pi pi-trash" />
+                        </p:commandLink>
+                    </div>
+                    <div class="col-11">
+                        <h:outputText value="#{related.title} (#{related.idConcept})" style="color: #43B572"/> 
+                    </div>
                 </div>
-                <div class="col-11" style="margin-top: 3px">
-                    <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab idDeleteRelatedLink"
-                                      action="#{relatedBean.deleteRelatedLink( related, currentUser.nodeUser.idUser)}">
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
-                </div>
-            </div>
-        </ui:repeat>
+            </ui:repeat>
+        </p:panel>
     </p:dialog> 
 </ui:fragment>

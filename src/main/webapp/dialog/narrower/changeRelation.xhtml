@@ -5,53 +5,48 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idChangeRelation" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_specific_relationships')}" widgetVar="changeRelation" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >        
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Terme : " class="dialog-titre" /> 
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+            </div>
+        </div> 
 
-        <h:form id="changeRelationForm">
+        <div class="row" style="margin-top: 5 px">
+            <div class="col-6">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.has_relationship')}" 
+                              style="font-size: 12px; font-weight: bold; color: #F49F66;"/> 
+            </div>
+            <div class="col-6">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.with_concept')}" 
+                              style="font-size: 12px; font-weight: bold; color: #F49F66;"/> 
+            </div>
+        </div> 
 
-            <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Terme : " class="dialog-titre" /> 
+        <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >
+            <div class="row" style="margin-top: 5px">
+                <div class="col-6">
+                    <p:selectOneMenu id="relationTypeNT" value="#{narrower.role}" 
+                                     style="font-size: 12px; background: white; border-color: #43B572; width: 100%; color: #000">
+                        <f:selectItems value="#{narrowerBean.typesRelationsNT}" var="typesNT"
+                                       itemLabel="#{typesNT.description_fr} (#{typesNT.relationType})" itemValue="#{typesNT.relationType}"/>
+                    </p:selectOneMenu>   
                 </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-                </div>
-            </div> 
 
-            <div class="row" style="margin-top: 5 px">
                 <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.has_relationship')}" 
-                                  style="font-size: 12px; font-weight: bold; color: #F49F66;"/> 
+                    <p:inputText disabled="true" value="#{narrower.title}" style="color: #43B572; font-size: 12px; width: 100%; color: #000"/>  
                 </div>
-                <div class="col-7">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.with_concept')}" 
-                                  style="font-size: 12px; font-weight: bold; color: #F49F66;"/> 
-                </div>
-            </div> 
 
-            <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >
-                <div class="row" style="margin-top: 5 px">
-                    <div class="col-5">
-                        <p:selectOneMenu id="relationTypeNT"  value="#{narrower.role}" 
-                                         style="font-size: 12px; background: white; border-color: #43B572">
-                            <f:selectItems value="#{narrowerBean.typesRelationsNT}" var="typesNT"
-                                           itemLabel="#{typesNT.description_fr} (#{typesNT.relationType})" itemValue="#{typesNT.relationType}"/>
-                        </p:selectOneMenu>   
-                    </div>
-                    
-                    <div class="col-6">
-                        <p:inputText disabled="true" value="#{narrower.title}" style="color: #43B572; font-size: 12px;"/>  
-                    </div>
-                    
-                    <div class="col-1">
-                        <p:commandLink style="color: #F7A269;" action="#{narrowerBean.updateRelation(narrower, currentUser.nodeUser.idUser)}"
-                                       update="containerIndex:formRightTab conceptForm:changeRelationForm messageIndex">
-                            <i class="pi pi-check-circle" />
-                        </p:commandLink>
-                    </div>
+                <div class="col-1" style="vertical-align: central">
+                    <p:commandLink style="color: #F7A269;" actionListener="#{narrowerBean.updateRelation(narrower, currentUser.nodeUser.idUser)}"
+                                   update="containerIndex:formRightTab conceptForm:idChangeRelation messageIndex">
+                        <i class="pi pi-check-circle" />
+                    </p:commandLink>
                 </div>
-                <p:spacer height="20" />
-            </ui:repeat>
-        </h:form>
+            </div>
+        </ui:repeat>
     </p:dialog>
 </ui:fragment>

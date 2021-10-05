@@ -5,7 +5,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddSynonym" header="#{langueBean.getMsg('rightbody.conceptdialog.add_synonym')}" widgetVar="addSynonym" 
-              width="450" showEffect="fade" modal="true" resizable="false" >   
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -22,7 +22,7 @@
             </div>
             <div class="col-7">
                 <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{synonymBean.selectedLang}" 
-                                 style="font-size: 12px; background: white; border-color: #43B572">
+                                 style="font-size: 12px; background: white; border-color: #43B572; color: #000; width: 100%">
                     <f:selectItems  value="#{synonymBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                 </p:selectOneMenu> 
             </div>
@@ -44,7 +44,7 @@
             <div class="col-7">
                 <p:inputText label="#{langueBean.getMsg('rightbody.concept.synonym')}"
                              placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."  
-                             value="#{synonymBean.value}" style="font-size: 12px;">
+                             value="#{synonymBean.value}" style="background: white; border-color: #43B572; color: #000; width: 100%">
                     <p:focus rendered="true" />
                 </p:inputText>
             </div>

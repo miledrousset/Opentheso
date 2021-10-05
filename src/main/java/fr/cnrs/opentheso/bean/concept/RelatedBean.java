@@ -198,8 +198,8 @@ public class RelatedBean implements Serializable {
         reset();
         
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptRelated");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addRelatedLinkForm");
+            pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex:formRightTab");
         }        
     }
     
@@ -243,8 +243,10 @@ public class RelatedBean implements Serializable {
         reset();
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptRelated");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteRelatedLinkForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("conceptForm:listConceptSpecAssocies");
         }  
     }
 

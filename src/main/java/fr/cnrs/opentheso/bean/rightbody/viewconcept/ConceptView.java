@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
+
 import com.jsf2leaf.model.Polyline;
 import com.jsf2leaf.model.LatLong;
 import com.jsf2leaf.model.Layer;
@@ -68,94 +69,101 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class ConceptView implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private IndexSetting indexSetting;
-    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject private ViewEditorHomeBean viewEditorHomeBean;
-    @Inject private Tree tree;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private SelectedTheso selectedTheso;
+    @Inject
+    private Connect connect;
+    @Inject
+    private IndexSetting indexSetting;
+    @Inject
+    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject
+    private ViewEditorHomeBean viewEditorHomeBean;
+    @Inject
+    private Tree tree;
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
     private String selectedLang;
-    private ArrayList <NodeCorpus> nodeCorpuses;
+    private ArrayList<NodeCorpus> nodeCorpuses;
     private ArrayList<NodePath> pathLabel;
-    
+
     /// pagination
     private int sizeToShowNT;
-    
+
     // total de la branche
     private int countOfBranch;
-    
+
     // pour savoir si le concept a des relations vers des corpus
     private boolean haveCorpus;
-    
+
     /// Notes concept
     private ArrayList<NodeNote> notes;
-    private ArrayList<NodeNote> scopeNotes;  
-    
+    private ArrayList<NodeNote> scopeNotes;
+
     //// Notes term    
     private ArrayList<NodeNote> changeNotes;
-    private ArrayList<NodeNote> definitions;    
-    private ArrayList<NodeNote> editorialNotes; 
+    private ArrayList<NodeNote> definitions;
+    private ArrayList<NodeNote> editorialNotes;
     private ArrayList<NodeNote> examples;
     private ArrayList<NodeNote> historyNotes;
 
     @PostConstruct
-    public void postInit(){
-    }    
+    public void postInit() {
+    }
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }    
-    
+    }
+
     public void clear() {
-        if(nodeCorpuses != null){
+        if (nodeCorpuses != null) {
             nodeCorpuses.clear();
             nodeCorpuses = null;
-        }   
-        if(pathLabel != null){
+        }
+        if (pathLabel != null) {
             pathLabel.clear();
             pathLabel = null;
-        }  
-        if(notes != null){
+        }
+        if (notes != null) {
             notes.clear();
             notes = null;
         }
-        if(scopeNotes != null){
+        if (scopeNotes != null) {
             scopeNotes.clear();
             scopeNotes = null;
         }
-        if(changeNotes != null){
+        if (changeNotes != null) {
             changeNotes.clear();
             changeNotes = null;
         }
-        if(definitions != null){
+        if (definitions != null) {
             definitions.clear();
             definitions = null;
         }
-        if(editorialNotes != null){
+        if (editorialNotes != null) {
             editorialNotes.clear();
             editorialNotes = null;
         }
-        if(examples != null){
+        if (examples != null) {
             examples.clear();
             examples = null;
         }
-        if(historyNotes != null){
+        if (historyNotes != null) {
             historyNotes.clear();
             historyNotes = null;
         }
-        if(nodeConcept != null) {
+        if (nodeConcept != null) {
             nodeConcept.clear();
             nodeConcept = null;
         }
-        selectedLang = null;                
+        selectedLang = null;
         mapModel = null;
-    }    
-    
+    }
+
     /**
      * Creates a new instance of ConceptBean
      */
@@ -167,38 +175,46 @@ public class ConceptView implements Serializable {
             isUriRequest = false;
             return;
         }*/
-        if(nodeConcept != null){
+        if (nodeConcept != null) {
             nodeConcept.clear();
         }
         selectedLang = null;
-        if(notes == null)
+        if (notes == null) {
             notes = new ArrayList<>();
-        if(scopeNotes == null)
-            scopeNotes = new ArrayList<>();        
-        if(changeNotes == null)
-            changeNotes = new ArrayList<>();        
-        if(definitions == null)
+        }
+        if (scopeNotes == null) {
+            scopeNotes = new ArrayList<>();
+        }
+        if (changeNotes == null) {
+            changeNotes = new ArrayList<>();
+        }
+        if (definitions == null) {
             definitions = new ArrayList<>();
-        if(editorialNotes == null)
-            editorialNotes = new ArrayList<>();        
-        if(examples == null)
-            examples = new ArrayList<>();        
-        if(historyNotes == null)
-            historyNotes = new ArrayList<>();        
-      
+        }
+        if (editorialNotes == null) {
+            editorialNotes = new ArrayList<>();
+        }
+        if (examples == null) {
+            examples = new ArrayList<>();
+        }
+        if (historyNotes == null) {
+            historyNotes = new ArrayList<>();
+        }
+
         sizeToShowNT = 0;
         nodeCorpuses = null;
         countOfBranch = 0;
         haveCorpus = false;
-        
-        if(mapModel == null) 
+
+        if (mapModel == null) {
             mapModel = new Map();
+        }
     }
-    
-    
+
     /**
-     * récuparation des informations pour le concept sélectionné
-     * c'est pour la navigation entre les concepts dans la vue de droite avec deployement de l'arbre
+     * récuparation des informations pour le concept sélectionné c'est pour la
+     * navigation entre les concepts dans la vue de droite avec deployement de
+     * l'arbre
      *
      * @param idTheso
      * @param idConcept
@@ -207,7 +223,9 @@ public class ConceptView implements Serializable {
     public void getConcept(String idTheso, String idConcept, String idLang) {
         ConceptHelper conceptHelper = new ConceptHelper();
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
-        if(nodeConcept == null) return;
+        if (nodeConcept == null) {
+            return;
+        }
 
         if (nodeConcept.getNodeGps() != null) {
             initMap();
@@ -223,21 +241,22 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
-        
+
         haveCorpus = false;
         nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
-        if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
+        if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
 
+        PrimeFaces pf = PrimeFaces.current();
+
         // deployement de l'arbre si l'option est true
-        if(roleOnThesoBean.getNodePreference() != null) {
-            if(roleOnThesoBean.getNodePreference().isAuto_expand_tree()){
+        if (roleOnThesoBean.getNodePreference() != null) {
+            if (roleOnThesoBean.getNodePreference().isAuto_expand_tree()) {
                 tree.expandTreeToPath(
-                    idConcept,
-                    idTheso,
-                    idLang);
-                PrimeFaces pf = PrimeFaces.current();
+                        idConcept,
+                        idTheso,
+                        idLang);
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("formLeftTab:tabTree:tree");
                     pf.ajax().update("formSearch:languageSelect");
@@ -245,12 +264,20 @@ public class ConceptView implements Serializable {
                 selectedTheso.actionFromConceptToOn();
             }
         }
+
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("indexTitle");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex:formRightTab");
+        }
+
         countOfBranch = 0;
     }
 
     /**
-     * récuparation des informations pour le concept sélectionné
-     * après une sélection dans l'arbre
+     * récuparation des informations pour le concept sélectionné après une
+     * sélection dans l'arbre
      *
      * @param idTheso
      * @param idConcept
@@ -259,16 +286,16 @@ public class ConceptView implements Serializable {
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
         ConceptHelper conceptHelper = new ConceptHelper();
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
-        if(nodeConcept != null) {
+        if (nodeConcept != null) {
             pathOfConcept(idTheso, idConcept, idLang);
             setNotes();
             setSizeToShowNT();
         }
         // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
-        haveCorpus = false;        
+        haveCorpus = false;
         nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
-        if(nodeCorpuses!= null && !nodeCorpuses.isEmpty()) {
+        if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
         if (nodeConcept.getNodeGps() != null) {
@@ -281,7 +308,7 @@ public class ConceptView implements Serializable {
         viewEditorThesoHomeBean.reset();
         countOfBranch = 0;
     }
-    
+
     public void countTheTotalOfBranch() {
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> listIdsOfBranch = conceptHelper.getIdsOfBranch(
@@ -291,11 +318,9 @@ public class ConceptView implements Serializable {
         this.countOfBranch = listIdsOfBranch.size();
     }
 
-
-
-    private void initMap()  {
-        LatLong place = new LatLong(nodeConcept.getNodeGps().getLatitude()+"",
-                nodeConcept.getNodeGps().getLongitude()+"");
+    private void initMap() {
+        LatLong place = new LatLong(nodeConcept.getNodeGps().getLatitude() + "",
+                nodeConcept.getNodeGps().getLongitude() + "");
 
         String titre = nodeConcept.getTerm() != null ? nodeConcept.getTerm().getLexical_value() : "";
         titre = titre.replaceAll("'", "_");
@@ -312,9 +337,8 @@ public class ConceptView implements Serializable {
         mapModel.setDraggingEnabled(true);
         mapModel.setZoomEnabled(true);
 
-        
-    /* code pour superposer un polygone sur la carte */
-        /*        Layer placesLayer = (new Layer()).setLabel("Places");
+        /* code pour superposer un polygone sur la carte */
+ /*        Layer placesLayer = (new Layer()).setLabel("Places");
 		placesLayer.addMarker(new Marker(new LatLong("42.120000","-72.540000"),"<b>Krusty Burger</b><br>Phone: 555-5555"));
 		placesLayer.addMarker(new Marker(new LatLong("42.114556","-72.526309"),"<b>Elementary School</b><br>Skinner&#39;s Phone: 555-5555"));
 		placesLayer.addMarker(new Marker(new LatLong("42.120286","-72.547488"),"<b>Hospital</b><br>Dr. Hibbert lol"));
@@ -323,42 +347,41 @@ public class ConceptView implements Serializable {
 		polycircleLayer.addPolyline((new Polyline()).addPoint(new LatLong("42.114556","-72.526309")).addPoint(new LatLong("42.120000","-72.540000")));
                 mapModel.setWidth("350px").setHeight("250px").setCenter(new LatLong("42.111707","-72.541008")).setZoom(13);
                 mapModel.addLayer(placesLayer).addLayer(polycircleLayer);
-          */      
-                
+         */
         mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
     }
 
-    private void setCorpus(){
-        if(nodeConcept != null) {
+    private void setCorpus() {
+        if (nodeConcept != null) {
             for (NodeCorpus nodeCorpuse : nodeCorpuses) {
                 // cas où on compose uniquement une URL de lien vers les notices
-                if(nodeCorpuse.isIsOnlyUriLink()) {
-                    if(nodeCorpuse.getUriLink().contains("##id##")){
+                if (nodeCorpuse.isIsOnlyUriLink()) {
+                    if (nodeCorpuse.getUriLink().contains("##id##")) {
                         nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
                         haveCorpus = true;
                     }
-                    if(nodeCorpuse.getUriLink().contains("##value##")){
+                    if (nodeCorpuse.getUriLink().contains("##value##")) {
                         nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
                         haveCorpus = true;
-                    }                     
+                    }
                 } else {
                     // recherche par Id
-                    if(nodeCorpuse.getUriCount().contains("##id##")){
-                        if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                    if (nodeCorpuse.getUriCount().contains("##id##")) {
+                        if (nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
                             nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
                         }
                     }
-                    if(nodeCorpuse.getUriLink().contains("##id##")){
+                    if (nodeCorpuse.getUriLink().contains("##id##")) {
                         nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
                     }
 
                     // recherche par value
-                    if(nodeCorpuse.getUriCount().contains("##value##")){
-                        if(nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                    if (nodeCorpuse.getUriCount().contains("##value##")) {
+                        if (nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
                             nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
                         }
-                    }                
-                    if(nodeCorpuse.getUriLink().contains("##value##")){
+                    }
+                    if (nodeCorpuse.getUriLink().contains("##value##")) {
                         nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
                     }
                     setCorpusCount(nodeCorpuse);
@@ -367,13 +390,15 @@ public class ConceptView implements Serializable {
         }
     }
 
-    private void setCorpusCount(NodeCorpus nodeCorpus){
-        if(nodeConcept != null) {
-            if(nodeCorpus == null) return;
-            if(nodeCorpus.getUriCount().contains("https://")) {
+    private void setCorpusCount(NodeCorpus nodeCorpus) {
+        if (nodeConcept != null) {
+            if (nodeCorpus == null) {
+                return;
+            }
+            if (nodeCorpus.getUriCount().contains("https://")) {
                 nodeCorpus.setCount(getCountOfResourcesFromHttps(nodeCorpus.getUriCount()));
             }
-            if(nodeCorpus.getUriCount().contains("http://")) {
+            if (nodeCorpus.getUriCount().contains("http://")) {
                 nodeCorpus.setCount(getCountOfResourcesFromHttp(nodeCorpus.getUriCount()));
             }
         }
@@ -386,8 +411,10 @@ public class ConceptView implements Serializable {
             public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
+
             public void checkClientTrusted(X509Certificate[] certs, String authType) {
             }
+
             public void checkServerTrusted(X509Certificate[] certs, String authType) {
             }
         }
@@ -413,9 +440,7 @@ public class ConceptView implements Serializable {
         // Install the all-trusting host verifier
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
-
         // récupération du total des notices
-
         try {
             URL url = new URL(uri);
 
@@ -426,7 +451,9 @@ public class ConceptView implements Serializable {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             int status = conn.getResponseCode();
-            if(status != 200) return -1;
+            if (status != 200) {
+                return -1;
+            }
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -447,13 +474,12 @@ public class ConceptView implements Serializable {
         }
         return -1;
     }
-    
+
     private int getCountOfResourcesFromHttp(String uri) {
         String output;
         String json = "";
 
         // récupération du total des notices
-
         try {
             URL url = new URL(uri);
 
@@ -464,7 +490,9 @@ public class ConceptView implements Serializable {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             int status = conn.getResponseCode();
-            if(status != 200) return -1;
+            if (status != 200) {
+                return -1;
+            }
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -485,36 +513,43 @@ public class ConceptView implements Serializable {
         }
         return -1;
     }
-    
+
     private int getCountFromJson(String jsonText) {
-        if(jsonText == null) return -1;
+        if (jsonText == null) {
+            return -1;
+        }
         JsonObject jsonObject;
         try {
             JsonReader reader = Json.createReader(new StringReader(jsonText));
             jsonObject = reader.readObject();
-   //         System.err.println(jsonText + " #### " + nodeConcept.getConcept().getIdConcept());
+            //         System.err.println(jsonText + " #### " + nodeConcept.getConcept().getIdConcept());
             int count = jsonObject.getInt("count");
-            if(count > 0) haveCorpus = true;
-            return count;            
+            if (count > 0) {
+                haveCorpus = true;
+            }
+            return count;
         } catch (Exception e) {
             System.err.println(e + " " + jsonText + " " + nodeConcept.getConcept().getIdConcept());
-           // Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, e + " " + jsonText);            
+            // Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, e + " " + jsonText);            
             return -1;
         }
     }
 
     public String getMetaData() {
-        if(nodeConcept == null || nodeConcept.getConcept() == null || nodeConcept.getConcept().getIdConcept() .isEmpty()) 
+        if (nodeConcept == null || nodeConcept.getConcept() == null || nodeConcept.getConcept().getIdConcept().isEmpty()) {
             return "";
+        }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(connect.getPoolConnexion(),
                 nodeConcept.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 "application/ld+json");
-        if(datas == null) return "";
+        if (datas == null) {
+            return "";
+        }
         return datas;
-    }   
-    
+    }
+
     public int getCountOfBranch() {
         return countOfBranch;
     }
@@ -523,43 +558,20 @@ public class ConceptView implements Serializable {
         this.countOfBranch = countOfBranch;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private void setSizeToShowNT() {
         // Max 20
-        if(nodeConcept.getNodeNT().size() > 20)
+        if (nodeConcept.getNodeNT().size() > 20) {
             sizeToShowNT = 20;
-        else
+        } else {
             sizeToShowNT = nodeConcept.getNodeNT().size();
+        }
     }
 
-    public void incrementSizeToShowNT(){
+    public void incrementSizeToShowNT() {
         sizeToShowNT = sizeToShowNT + 20;
-        if(sizeToShowNT > nodeConcept.getNodeNT().size())
+        if (sizeToShowNT > nodeConcept.getNodeNT().size()) {
             sizeToShowNT = nodeConcept.getNodeNT().size();
+        }
     }
 
     public int getSizeToShowNT() {
@@ -569,16 +581,16 @@ public class ConceptView implements Serializable {
     public void setSizeToShowNT(int sizeToShowNT) {
         this.sizeToShowNT = sizeToShowNT;
     }
-    
-    
+
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
         ArrayList<Path> paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
-        if(paths == null) {
+        if (paths == null) {
             System.out.println("Erreur de path pour le concept :" + idConcept);
-            if(pathLabel!= null)
+            if (pathLabel != null) {
                 pathLabel.clear();
+            }
             return;
         }
         //pathOfConcept = getPathFromArray(paths);
@@ -586,68 +598,65 @@ public class ConceptView implements Serializable {
     }
 
     public String getCreator() {
-        if(nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) return "";
+        if (nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
+            return "";
+        }
         UserHelper userHelper = new UserHelper();
         return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getCreator());
     }
-    
-    public String getContributor(){
-        if(nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) return "";        
-        UserHelper userHelper = new UserHelper();
-        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getContributor());        
-    }
-            
 
-    
-    
-    
+    public String getContributor() {
+        if (nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
+            return "";
+        }
+        UserHelper userHelper = new UserHelper();
+        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getContributor());
+    }
+
 /////////////////////////////////
 /////////////////////////////////
 // fonctions pour les notes /////    
 /////////////////////////////////
 /////////////////////////////////
-
-    private void setNotes(){
+    private void setNotes() {
         notes.clear();
-        scopeNotes.clear();  
+        scopeNotes.clear();
         changeNotes.clear();
         definitions.clear();
         editorialNotes.clear();
         examples.clear();
         historyNotes.clear();
-        
+
         for (NodeNote nodeNote : nodeConcept.getNodeNotesConcept()) {
             switch (nodeNote.getNotetypecode()) {
-                case "note" :
+                case "note":
                     notes.add(nodeNote);
                     break;
-                case "scopeNote" :
+                case "scopeNote":
                     scopeNotes.add(nodeNote);
                     break;
             }
         }
         for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
             switch (nodeNote.getNotetypecode()) {
-                case "changeNote" :
+                case "changeNote":
                     changeNotes.add(nodeNote);
                     break;
-                case "definition" :
+                case "definition":
                     definitions.add(nodeNote);
                     break;
-                case "editorialNote" :
+                case "editorialNote":
                     editorialNotes.add(nodeNote);
                     break;
-                case "example" :
+                case "example":
                     examples.add(nodeNote);
-                    break; 
-                case "historyNote" :
+                    break;
+                case "historyNote":
                     historyNotes.add(nodeNote);
                     break;
             }
-        }        
+        }
     }
-    
-    
 
     public NodeConcept getNodeConcept() {
         return nodeConcept;
@@ -664,7 +673,7 @@ public class ConceptView implements Serializable {
     public void setPathLabel(ArrayList<NodePath> pathLabel) {
         this.pathLabel = pathLabel;
     }
-    
+
     public void actionAfaire(String id) {
         String i = id;
         FacesContext.getCurrentInstance().getExternalContext().getInitParameterMap().get("version");
@@ -678,10 +687,7 @@ public class ConceptView implements Serializable {
         this.selectedLang = selectedLang;
     }
 
-    
-    
 /////// notes    
-    
     public ArrayList<NodeNote> getNotes() {
         return notes;
     }
@@ -757,6 +763,5 @@ public class ConceptView implements Serializable {
     public void setHaveCorpus(boolean haveCorpus) {
         this.haveCorpus = haveCorpus;
     }
-    
-    
+
 }

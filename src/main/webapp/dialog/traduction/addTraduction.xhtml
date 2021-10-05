@@ -5,7 +5,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddTraduction" header="#{langueBean.getMsg('rightbody.conceptdialog.add_translation')}" widgetVar="addTraduction" 
-              width="450" showEffect="fade" modal="true" resizable="false" >   
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -26,7 +26,7 @@
             </div>
             <div class="col-7">
                 <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionBean.selectedLang}"
-                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
                     <f:selectItems value="#{traductionBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                 </p:selectOneMenu>     
             </div>
@@ -37,7 +37,7 @@
                 <h:outputText value="Traduction : " class="dialog-titre" /> 
             </div>
             <div class="col-7">
-                <p:inputText label="#{langueBean.getMsg('candidat.traduction')}" 
+                <p:inputText label="#{langueBean.getMsg('candidat.traduction')}" style="color: #000; border-color: #43B572;"
                              placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."     
                              value="#{traductionBean.traductionValue}" styleClass="input-dialog"/>   
             </div>
@@ -49,7 +49,7 @@
                 <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
                                  actionListener="PF('addTraduction').hide();" update="idAddTraduction"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab containerIndex:formLeftTab messageIndex"
                                  class="btn btn-success" oncomplete="PF('addTraduction').hide();"
                                  actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>

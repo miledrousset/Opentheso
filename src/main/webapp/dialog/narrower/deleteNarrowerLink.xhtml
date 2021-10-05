@@ -5,35 +5,32 @@
 
     <p:dialog id="idDeleteNarrowerLink" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_specific_relationship')}" widgetVar="deleteNarrowerLink" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        
-        <h:form id="deleteNarrowerLinkForm">
-            <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Terme : " class="dialog-titre" /> 
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-                </div>
-            </div>            
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Terme : " class="dialog-titre" /> 
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+            </div>
+        </div>            
 
-            <p:panel id="listeConceptsGeneriqueToDelete">
-                <h:outputText value="Liste des concepts spécifique : " class="dialog-titre" /> 
-                <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >
-                    <div class="row">
-                        <div class="col-1" style="margin-top: 3px">
-                            <p:commandLink style="color: #FF7979"
-                                           action="#{narrowerBean.deleteNarrowerLink( narrower,
-                                                     currentUser.nodeUser.idUser)}"
-                                           update="containerIndex:formRightTab conceptForm:deleteNarrowerLinkForm messageIndex">
-                                <i class="pi pi-trash" />
-                            </p:commandLink>
-                        </div>
-                        <div class="col-11" style="margin-top: 3px">
-                            <h:outputText value="#{narrower.title} (#{narrower.idConcept})" style="color: #43B572"/> 
-                        </div>
+        <p:panel id="listNarrowerLink">
+            <h:outputText value="Liste des concepts spécifique : " class="dialog-titre" /> 
+            <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >
+                <div class="row">
+                    <div class="col-1" style="margin-top: 3px">
+                        <p:commandLink style="color: #FF7979"
+                                       action="#{narrowerBean.deleteNarrowerLink( narrower,
+                                                 currentUser.nodeUser.idUser)}"
+                                       update="containerIndex:formRightTab conceptForm:listNarrowerLink messageIndex">
+                            <i class="pi pi-trash" />
+                        </p:commandLink>
                     </div>
-                </ui:repeat>
-            </p:panel>
-        </h:form>
+                    <div class="col-11" style="margin-top: 3px">
+                        <h:outputText value="#{narrower.title} (#{narrower.idConcept})" style="color: #43B572"/> 
+                    </div>
+                </div>
+            </ui:repeat>
+        </p:panel>
     </p:dialog>  
 </ui:fragment>

@@ -264,7 +264,7 @@ public class BroaderBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("conceptForm:listeConceptsGeneriqueToDelete");
+            pf.ajax().update("conceptForm:idDeleteNarrowerLink");
         }
 
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),

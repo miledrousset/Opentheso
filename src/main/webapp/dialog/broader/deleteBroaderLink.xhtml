@@ -20,7 +20,7 @@
             <ui:repeat var="broader" value="#{broaderBean.nodeBTs}" >
                 <div class="row">
                     <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab conceptForm:listeConceptsGeneriqueToDelete"
+                        <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab conceptForm:idDeleteBroaderLink messageIndex"
                                        action="#{broaderBean.deleteBroaderLink(broader, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-trash" />
                         </p:commandLink>

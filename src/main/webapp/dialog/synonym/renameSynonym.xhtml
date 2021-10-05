@@ -5,7 +5,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idRenameSynonym" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_synonym')}" widgetVar="renameSynonym" 
-              width="450" showEffect="fade" modal="true" resizable="false" >   
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="row" style="margin-top: 5px; max-height: 300px;overflow-y:scroll">
+        <div class="row" style="margin-top: 5px; overflow-y:scroll">
             <div class="col-5" >
                 <h:outputText value="#{langueBean.getMsg('indexview.synonym')}" style="color: black;font-size: 13px;"/>                    
             </div>
@@ -38,7 +38,7 @@
             <div class="row" style="margin-top: 5px;">
                 <div class="col-5" style="background: #FAFAFA">
                     <p:inputText  value="#{synonymToEdit.lexical_value}"
-                                  style="font-size: 12px; height: 25px;"/> 
+                                  style="font-size: 12px; height: 25px; color: #000"/> 
                 </div>
                 
                 <div class="col-2" style="background: #FAFAFA">
@@ -51,8 +51,10 @@
                 </div>                             
 
                 <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab"
-                                      action="#{synonymBean.updateSynonym(synonymToEdit,currentUser.nodeUser.idUser)}"/>
+                    <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex"
+                                      action="#{synonymBean.updateSynonym(synonymToEdit,currentUser.nodeUser.idUser)}">
+                        <i class="pi pi-check-circle" />
+                    </p:commandLink>
                 </div>
             </div>                            
         </ui:repeat>
@@ -79,10 +81,10 @@
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
-                                 actionListener="PF('idRenameSynonym').hide();" update="idRenameSynonym"/>
+                                 actionListener="PF('renameSynonym').hide();" update="idRenameSynonym"/>
 
                 <p:commandButton  value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-success" oncomplete="PF('idRenameSynonym').hide();" rendered="#{!synonymBean.duplicate}"
+                                 class="btn btn-success" oncomplete="PF('renameSynonym').hide();" rendered="#{!synonymBean.duplicate}"
                                  actionListener="#{synonymBean.updateAllSynonyms(currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
         </f:facet>

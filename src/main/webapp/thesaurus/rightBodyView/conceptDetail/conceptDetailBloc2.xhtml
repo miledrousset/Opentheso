@@ -44,12 +44,12 @@
                             <ui:repeat var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
                                 <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
+                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"
                                                style="color: #43B572;" styleClass="textOpentheso"/>
 
                                 <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
+                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"
                                                style="color: #FF7979;" styleClass="textOpentheso"/>  
 
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/> 
@@ -260,6 +260,7 @@
                                                   or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_synonym')}" 
                                         actionListener="#{synonymBean.reset()}"
+                                        update="conceptForm:idAddSynonym"
                                         oncomplete="PF('addSynonym').show();"
                                         style="font-size: 12px;" />
 
@@ -267,11 +268,13 @@
                                         actionListener="#{synonymBean.reset()}"
                                         action="#{synonymBean.prepareNodeEMForEdit()}"
                                         oncomplete="PF('renameSynonym').show();"
+                                        update="conceptForm:idRenameSynonym"
                                         style="font-size: 12px;" />
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
                                         actionListener="#{synonymBean.reset()}"
                                         oncomplete="PF('deleteSynonym').show();"
+                                        update="conceptForm:idDeleteSynonym"
                                         style="font-size: 12px;"/>
                         </p:menuButton>  
                     </div>
@@ -322,7 +325,7 @@
                         <p:commandLink actionListener="#{conceptView.countTheTotalOfBranch()}"
                                        update="containerIndex:formRightTab" 
                                        style="color: #F7A269; font-size: 12px; margin-left: 6px; margin-right: 6px" >
-                            <i class="pi pi-link" />
+                            <i class="fa fa-calculator" />
                         </p:commandLink>
                     </div>
                     <div class="col-9">

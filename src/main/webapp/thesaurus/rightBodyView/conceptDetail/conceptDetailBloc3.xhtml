@@ -31,7 +31,7 @@
                                  or conceptView.definitions.size() != 0 or conceptView.editorialNotes.size() != 0
                                  or conceptView.examples.size() != 0 or conceptView.historyNotes.size() != 0 
                                  or conceptView.scopeNotes.size() != 0)}"
-                     style="margin-top: 10px">
+                     style="margin-left: 10px; margin-right: 10px; padding-top: -10px">
 
                 <h:panelGroup rendered="#{conceptView.notes.size() != 0}">
                     <div class="list-group-item list-group-item-action" >
@@ -102,7 +102,7 @@
 
                 <h:panelGroup rendered="#{conceptView.definitions.size() != 0}">
                     <div class="list-group-item list-group-item-action" >
-                        <div class="row" style="margin-top: 10px">
+                        <div class="row" style="margin-top: 2px">
                             <div class="col-3" style="text-align: right">
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
                                               title="#{langueBean.getMsg('rightbody.concept.definition')}"

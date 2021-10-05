@@ -256,7 +256,7 @@ public class NarrowerBean implements Serializable {
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("conceptForm:deleteNarrowerLinkForm");
+            pf.ajax().update("conceptForm:listNarrowerLink");
         }  
         
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
