@@ -14,7 +14,7 @@
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                      icon="pi pi-cog" style="background: none; border: none; box-shadow: none;">
+                                      icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.rename_concept')}"
                                         actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
@@ -25,7 +25,7 @@
 
                     <div class="col-9">
                         <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
-                                      title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px;" />
+                                      title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px; color: #000;" />
                         <p:commandButton icon="pi pi-arrow-up"
                                          action="#{tree.expandTreeToPath(conceptView.nodeConcept.concept.idConcept,
                                                    conceptView.nodeConcept.concept.idThesaurus, conceptView.nodeConcept.term.lang)}"
@@ -36,7 +36,7 @@
                     </div>
                 </div>
             </div>
-            <div class="list-group-item list-group-item-action" style=" margin-bottom: -5px">
+            <div class="list-group-item list-group-item-action" style="margin-bottom: -5px">
                 <div class="row" style="padding-top: 3px">
                     <div class="col-3" style="text-align: right">
                         <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}" 
@@ -98,7 +98,6 @@
                             </ui:repeat>
                         </div> 
                     </h:panelGroup>
-
                 </div>
             </div>
         </div>        

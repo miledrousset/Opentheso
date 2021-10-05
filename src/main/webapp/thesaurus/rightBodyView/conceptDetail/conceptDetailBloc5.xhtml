@@ -4,55 +4,14 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
-    <div class="card mb-4 py-3 border-left-success">
-        <div class="card-body">
-            <div class="container">
-
-                <!-- ligne Corpus liés -->  
-                <div class="row">
-                    <div class="col-3" style="text-align: right;">
-                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.linked_corpus')}" 
-                                      title="#{langueBean.getMsg('rightbody.concept.linked_corpus')}"
-                                      style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
-
-                        <p:commandButton rendered="#{user.nodeUser != null}" icon="fas fa-cog fa-xs" 
-                                         style="color: #F7A269; font-size: 12px; margin-left: 6px; margin-right: 6px" />
-                    </div>
-
-                    <h:panelGroup rendered="#{conceptView.nodeCorpuses.size() == 0}">
-                        <div class="col-9">
-                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
-                        </div>
-                    </h:panelGroup>
-
-                    <div class= "col-9">
-                        <h:panelGroup rendered="#{conceptView.nodeCorpuses.size() != 0}">
-                            <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
-                                <div class="row">
-                                    <div class="col-6">
-                                        <p:link href="#{corpus.uriLink}"
-                                                value="#{corpus.corpusName} (#{corpus.count} #{langueBean.getMsg('rightbody.concept.notices')})"
-                                                target="_blank" style="font-size: 12px; color: #43B572;">
-                                            <i class="pi pi-link" />
-                                        </p:link>
-                                    </div>
-                                    <div class="col-6">
-                                        <p:link href="#{corpus.uriLink}" value="#{corpus.corpusName}" target="_blank"
-                                                style="font-size: 12px; color: #43B572;">
-                                            <i class="pi pi-link" />
-                                        </p:link>
-                                    </div>
-                                </div>
-                            </ui:repeat>
-                        </h:panelGroup> 
-                    </div>
-                </div>
-
-                <!-- ligne Alignements -->
-                <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeAlignments.size() != 0)}">
-                    <div class="row" style="margin-top: 10px">
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+            <!-- ligne Alignements -->
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeAlignments.size() != 0)}">
+                <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+                    <div class="row" style="padding-top: 3px;">
                         <div class="col-3" style="text-align: right;">
-                            
+
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.alignment')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.alignment')}"
                                           style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
@@ -116,17 +75,18 @@
                             </div>
                         </h:panelGroup>
                     </div>
-                </h:panelGroup>
+                </div>
+            </h:panelGroup>
 
-
-                <!-- Notation -->
-                <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.concept.notation != '')}">
-                    <div class="row" style="margin-top: 10px">
+            <!-- Notation -->
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.concept.notation != '')}">
+                <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+                    <div class="row" style="padding-top: 3px;">
                         <div class="col-3" style="text-align: right;">
                             <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notation')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.notation')}"
                                           style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
-                            
+
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_notation')}" 
@@ -148,9 +108,53 @@
                             </div>
                         </h:panelGroup>
                     </div>
-                </h:panelGroup>
+                </div>
+            </h:panelGroup>
 
-                <div class="row" style="margin-top: 10px">
+            <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+                <!-- ligne Corpus liés -->  
+                <div class="row" style="padding-top: 3px;">
+                    <div class="col-3" style="text-align: right;">
+                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.linked_corpus')}" 
+                                      title="#{langueBean.getMsg('rightbody.concept.linked_corpus')}"
+                                      style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+
+                        <p:commandButton rendered="#{user.nodeUser != null}" icon="fas fa-cog fa-xs" 
+                                         style="color: #F7A269; font-size: 12px; margin-left: 6px; margin-right: 6px" />
+                    </div>
+
+                    <h:panelGroup rendered="#{conceptView.nodeCorpuses.size() == 0}">
+                        <div class="col-9">
+                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
+                        </div>
+                    </h:panelGroup>
+
+                    <div class= "col-9">
+                        <h:panelGroup rendered="#{conceptView.nodeCorpuses.size() != 0}">
+                            <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p:link href="#{corpus.uriLink}"
+                                                value="#{corpus.corpusName} (#{corpus.count} #{langueBean.getMsg('rightbody.concept.notices')})"
+                                                target="_blank" style="font-size: 12px; color: #43B572;">
+                                            <i class="pi pi-link" />
+                                        </p:link>
+                                    </div>
+                                    <div class="col-6">
+                                        <p:link href="#{corpus.uriLink}" value="#{corpus.corpusName}" target="_blank"
+                                                style="font-size: 12px; color: #43B572;">
+                                            <i class="pi pi-link" />
+                                        </p:link>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup> 
+                    </div>
+                </div>               
+            </div>
+
+            <div class="list-group-item list-group-item-action" style=" margin-bottom: -5px">
+                <div class="row" style="padding-top: 3px">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
@@ -162,8 +166,10 @@
                         </p:link>
                     </div>
                 </div>
+            </div>
 
-                <div class="row" style="margin-top: 10px">
+            <div class="list-group-item list-group-item-action" style=" margin-bottom: -5px">
+                <div class="row" style="padding-top: 3px">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
@@ -212,5 +218,4 @@
             </div>
         </div>
     </div>
-
 </ui:fragment>

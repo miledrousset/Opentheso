@@ -5,7 +5,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idChangeRelation" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_specific_relationships')}" widgetVar="changeRelation" 
-              width="450" showEffect="fade" modal="true" resizable="false" >         
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >        
 
         <h:form id="changeRelationForm">
 
@@ -38,12 +38,14 @@
                                            itemLabel="#{typesNT.description_fr} (#{typesNT.relationType})" itemValue="#{typesNT.relationType}"/>
                         </p:selectOneMenu>   
                     </div>
+                    
                     <div class="col-6">
                         <p:inputText disabled="true" value="#{narrower.title}" style="color: #43B572; font-size: 12px;"/>  
                     </div>
+                    
                     <div class="col-1">
                         <p:commandLink style="color: #F7A269;" action="#{narrowerBean.updateRelation(narrower, currentUser.nodeUser.idUser)}"
-                                       update="containerIndex">
+                                       update="containerIndex:formRightTab conceptForm:changeRelationForm messageIndex">
                             <i class="pi pi-check-circle" />
                         </p:commandLink>
                     </div>

@@ -3,11 +3,10 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <div class="card mb-4 py-3 border-left-success">
-        <div class="card-body">
-            <div class="container">
-
-                <div class="row">
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+            <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
+                <div class="row" style="padding-top: 2px;">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.export_concept')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"
@@ -49,7 +48,6 @@
 
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -63,5 +61,5 @@
             PF('statusDialog').hide();
         }
     </script>
-    
+
 </ui:fragment>
