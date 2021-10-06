@@ -52,14 +52,33 @@ public class FusionService implements Serializable {
 
         fusionDone = false;
         fusionBtnEnable = true;
-        conceptsModifies = new ArrayList<>();
-        conceptsAjoutes = new ArrayList<>();
-        conceptsExists = new ArrayList<>();
-
+        if(conceptsModifies == null)
+            conceptsModifies = new ArrayList<>();
+        else
+            conceptsModifies.clear();
+        if(conceptsAjoutes == null)
+            conceptsAjoutes = new ArrayList<>();
+        else
+            conceptsAjoutes.clear();        
+        if(conceptsExists == null)
+            conceptsExists = new ArrayList<>();
+        else
+            conceptsExists.clear(); 
+        
+        ArrayList<NodeNote> nodeNotesLocal;
+        ArrayList<NodeEM> nodeEMsLocal;
+        
         ConceptHelper conceptHelper = new ConceptHelper();
         ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
         importRdf4jHelper.setDs(connect.getPoolConnexion());
-
+        TermHelper termHelper = new TermHelper();
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+        NoteHelper noteHelper = new NoteHelper();
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        String workLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), thesoSelected.getId());
+        
+        
+        
         for (SKOSResource conceptSource : sourceSkos.getConceptList()) {
             if (!StringUtils.isEmpty(conceptSource.getIdentifier())) {
 
@@ -73,7 +92,7 @@ public class FusionService implements Serializable {
                 NodeConcept conceptFound = conceptHelper.getConcept(connect.getPoolConnexion(),
                         conceptSource.getIdentifier(),
                         thesoSelected.getId(),
-                        selectedTheso.getCurrentLang());
+                        workLang);
 
                 
                 if (conceptFound == null && !conceptSource.getLabelsList().isEmpty()) {
@@ -82,11 +101,13 @@ public class FusionService implements Serializable {
                 } else {
                     if(conceptFound == null) return;
                     boolean isUpdated = false;
+                    
+                    // Traduction OK validée #MR
                     //alignment
                     if (!CollectionUtils.isEmpty(acs.nodeAlignments)) {
                         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
-                            if (!isAlignementExist(nodeAlignment, conceptFound)) {
-                                new AlignmentHelper().addNewAlignment(connect.getPoolConnexion(),
+                            if (!isAlignementExist(nodeAlignment, conceptFound.getNodeAlignments())) {
+                                alignmentHelper.addNewAlignment(connect.getPoolConnexion(),
                                         nodeAlignment.getId_author(),
                                         nodeAlignment.getConcept_target(),
                                         nodeAlignment.getThesaurus_target(),
@@ -99,11 +120,13 @@ public class FusionService implements Serializable {
                             }
                         }
                     }
-
+                    
+                    // Traduction OK validée #MR
                     // Synonymes : NonPreferredTerms
                     if (!CollectionUtils.isEmpty(acs.nodeEMList)) {
+                        nodeEMsLocal = termHelper.getAllNonPreferredTerms(connect.getPoolConnexion(), conceptSource.getIdentifier(), conceptFound.getConcept().getIdThesaurus());
                         for (NodeEM nodeEM : acs.nodeEMList) {
-                            if (!isSynonymeExist(nodeEM, conceptFound)) {
+                            if (!isSynonymeExist(nodeEM, nodeEMsLocal)) {
                                 Term term = new Term();
                                 term.setId_term(acs.nodeTerm.getIdTerm());
                                 term.setId_concept(conceptSource.getIdentifier());
@@ -113,7 +136,7 @@ public class FusionService implements Serializable {
                                 term.setSource(nodeEM.getSource());
                                 term.setStatus(nodeEM.getStatus());
                                 term.setHidden(nodeEM.isHiden());
-                                new TermHelper().addNonPreferredTerm(connect.getPoolConnexion(), term,
+                                termHelper.addNonPreferredTerm(connect.getPoolConnexion(), term,
                                         currentUser.getNodeUser().getIdUser());
                                 isUpdated = true;
                             }
@@ -123,39 +146,50 @@ public class FusionService implements Serializable {
                     // Traduction OK validée #MR
                     if (!CollectionUtils.isEmpty(acs.nodeTermTraductionList)) {
                         for (NodeTermTraduction nodeTermTraduction : acs.nodeTermTraductionList) {
-                            if (!isTraductionExist(nodeTermTraduction, conceptFound.getNodeTermTraductions())) {
-                                try {
-                                    Term term = new Term();
-                                    term.setId_term(acs.nodeTerm.getIdTerm());
-                                    term.setId_concept(conceptSource.getIdentifier());
-                                    term.setLexical_value(nodeTermTraduction.getLexicalValue());
-                                    term.setLang(nodeTermTraduction.getLang());
-                                    term.setId_thesaurus(conceptFound.getConcept().getIdThesaurus());
-                                    new TermHelper().addTermTraduction(connect.getPoolConnexion().getConnection(), term,
-                                            currentUser.getNodeUser().getIdUser());
-                                    isUpdated = true;
-                                } catch (Exception ex) {
-
+                            if (!isTraductionExist(nodeTermTraduction, conceptFound)) {
+                                Term term = new Term();
+                                term.setId_term(acs.nodeTerm.getIdTerm());
+                                term.setId_concept(conceptSource.getIdentifier());
+                                term.setLexical_value(nodeTermTraduction.getLexicalValue());
+                                term.setLang(nodeTermTraduction.getLang());
+                                term.setId_thesaurus(conceptFound.getConcept().getIdThesaurus());
+                                if(isExistLang(nodeTermTraduction.getLang(), conceptFound.getNodeTermTraductions()) ){
+                                    termHelper.updateTermTraduction(connect.getPoolConnexion(),
+                                            term,
+                                            currentUser.getNodeUser().getIdUser());  
+                                } else {
+                                    termHelper.addTraduction(connect.getPoolConnexion(),
+                                            nodeTermTraduction.getLexicalValue(),
+                                            acs.nodeTerm.getIdTerm(),
+                                            nodeTermTraduction.getLang(),
+                                            "fusion",
+                                            "",
+                                            conceptFound.getConcept().getIdThesaurus(),
+                                            currentUser.getNodeUser().getIdUser());                                        
                                 }
+                                isUpdated = true;
                             }
                         }
                     }
 
+                    // OK validé par #MR
                     //Definition
                     if (!CollectionUtils.isEmpty(acs.nodeNotes)) {
-                        NoteHelper noteHelper = new NoteHelper();
+                        nodeNotesLocal = noteHelper.getListNotesTermAllLang(connect.getPoolConnexion(), acs.nodeTerm.getIdTerm(), conceptFound.getConcept().getIdThesaurus());
                         for (NodeNote nodeNote : acs.nodeNotes) {
-                            ArrayList<String> definitions = noteHelper.getDefinition(connect.getPoolConnexion(), nodeNote.getId_concept(),
-                                    conceptFound.getConcept().getIdThesaurus(), nodeNote.getLang());
-                            if (!definitions.contains(nodeNote.getLexicalvalue())) {
-                                noteHelper.addTermNote(connect.getPoolConnexion(),
-                                        acs.nodeTerm.getIdTerm(),
-                                        nodeNote.getLang(),
-                                        conceptFound.getConcept().getIdThesaurus(),
-                                        nodeNote.getLexicalvalue(),
-                                        nodeNote.getNotetypecode(),
-                                        nodeNote.getIdUser());
-                                isUpdated = true;
+                            /// détecter le type de note avant 
+                            if(nodeNote.getNotetypecode().equalsIgnoreCase("definition")) {
+                                if(!isDefinitionExist(nodeNote, nodeNotesLocal)) {
+                                    noteHelper.addTermNote(connect.getPoolConnexion(),
+                                            acs.nodeTerm.getIdTerm(),
+                                            nodeNote.getLang(),
+                                            conceptFound.getConcept().getIdThesaurus(),
+                                            nodeNote.getLexicalvalue(),
+                                            nodeNote.getNotetypecode(),
+                                            nodeNote.getIdUser());
+                                    isUpdated = true;                                    
+                                }
+                         
                             }
                         }
                     }
@@ -178,6 +212,7 @@ public class FusionService implements Serializable {
 
     }
 
+    
     /**
      * pour comparer la traduction locale à la traduction importée
      * @param nodeTermTraductionImport
@@ -185,11 +220,20 @@ public class FusionService implements Serializable {
      * @return 
      * #MR
      */
-    private boolean isTraductionExist(NodeTermTraduction nodeTermTraductionImport, ArrayList<NodeTermTraduction> nodeTermTraductionLocal) {
-        if (nodeTermTraductionLocal == null || nodeTermTraductionLocal.isEmpty())
+    private boolean isTraductionExist(NodeTermTraduction nodeTermTraductionImport, NodeConcept nodeConceptLocal) {
+        if (nodeConceptLocal == null)
             return false;
-
-        for(NodeTermTraduction existingTranslation  : nodeTermTraductionLocal){
+        
+        // comparaison avec le prefLabel 
+        if(nodeConceptLocal.getTerm() != null) {
+            if (nodeTermTraductionImport.getLexicalValue().equalsIgnoreCase(nodeConceptLocal.getTerm().getLexical_value())
+                && (nodeTermTraductionImport.getLang().equalsIgnoreCase(nodeConceptLocal.getTerm().getLang()))) {
+                return true;
+            }
+        }
+        
+        // comparaison aux traductions
+        for(NodeTermTraduction existingTranslation  : nodeConceptLocal.getNodeTermTraductions()){
             if (nodeTermTraductionImport.getLexicalValue().equalsIgnoreCase(existingTranslation.getLexicalValue())
                 && (nodeTermTraductionImport.getLang().equalsIgnoreCase(existingTranslation.getLang()))) {
                 return true;
@@ -197,17 +241,56 @@ public class FusionService implements Serializable {
         }
         return false;
     }
-
-    private boolean isAlignementExist(NodeAlignment nodeAlignement, NodeConcept concept) {
-        if (CollectionUtils.isEmpty(concept.getNodeEM()))
+    /**
+     * pour comparer savoir si la langue existe ou non pour appliquer un ipdate ou instert
+     * @param langToFind
+     * @param nodeTermTraductionLocal
+     * @return 
+     * #MR
+     */    
+    private boolean isExistLang(String langToFind, ArrayList<NodeTermTraduction> nodeTermTraductionLocal) {
+        if (nodeTermTraductionLocal == null || nodeTermTraductionLocal.isEmpty())
             return false;
-
-        for(NodeAlignment node : concept.getNodeAlignments()){
-            if (nodeAlignement.getAlignement_id_type() == node.getAlignement_id_type()
-                    && (nodeAlignement.getName() != null && nodeAlignement.getName().equals(node.getName()))) {
+        
+        for(NodeTermTraduction existingTranslation  : nodeTermTraductionLocal){
+            if (langToFind.equalsIgnoreCase(existingTranslation.getLang())) {
                 return true;
             }
         }
+        return false;
+    }    
+    
+    private boolean isDefinitionExist(NodeNote nodeNoteImport, ArrayList<NodeNote> nodeNoteTermLocal) {
+        if (nodeNoteTermLocal == null || nodeNoteTermLocal.isEmpty())
+            return false;
+        
+        for(NodeNote nodeNoteTermLocal1  : nodeNoteTermLocal){
+            if(nodeNoteTermLocal1.getNotetypecode().equalsIgnoreCase("definition")) {
+                if (nodeNoteImport.getLexicalvalue().equalsIgnoreCase(nodeNoteTermLocal1.getLexicalvalue())
+                    && (nodeNoteImport.getLang().equalsIgnoreCase(nodeNoteTermLocal1.getLang())) ) {
+                    return true;    
+                }
+            }
+        }
+        return false;
+    }    
+
+    /**
+     * permet de vérifier si l'alignement existe ou non  
+     * @param nodeAlignementImport
+     * @param nodeAlignmentsLocal
+     * @return 
+     */
+    private boolean isAlignementExist(NodeAlignment nodeAlignementImport, ArrayList<NodeAlignment> nodeAlignmentsLocal) {
+        if (nodeAlignmentsLocal == null || nodeAlignmentsLocal.isEmpty())
+            return false;        
+
+        for(NodeAlignment nodeAlignmentsLocal1  : nodeAlignmentsLocal){
+            if (nodeAlignementImport.getAlignement_id_type() == nodeAlignmentsLocal1.getAlignement_id_type()
+                && (nodeAlignementImport.getUri_target().equalsIgnoreCase(nodeAlignmentsLocal1.getUri_target())) ) {
+                return true;
+            }
+        }         
         return false;
     }
 
@@ -224,15 +307,22 @@ public class FusionService implements Serializable {
         return false;
     }
 
-    private boolean isSynonymeExist(NodeEM nodeEM, NodeConcept concept) {
-        if (CollectionUtils.isEmpty(concept.getNodeEM()))
+    private boolean isSynonymeExist(NodeEM nodeEMimport, ArrayList<NodeEM> nodeEMLocal) {
+        if (nodeEMLocal == null || nodeEMLocal.isEmpty())
             return false;
 
+        for(NodeEM existingNodeEM  : nodeEMLocal){
+            if (nodeEMimport.getLexical_value().equalsIgnoreCase(existingNodeEM.getLexical_value())
+                && (nodeEMimport.getLang().equalsIgnoreCase(existingNodeEM.getLang()))) {
+                return true;
+            }
+        }        
+        /*
         for(NodeEM node : concept.getNodeEM()){
             if (node.getLang().equals(nodeEM.getLang()) && node.getLexical_value().equals(nodeEM.getLexical_value())) {
                 return true;
             }
-        }
+        }*/
         return false;
     }
 

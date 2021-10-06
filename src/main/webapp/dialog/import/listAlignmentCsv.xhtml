@@ -18,7 +18,7 @@
                     <b:column span="12" >
                         <fieldset>
                             <p:scrollPanel mode="native" style="max-width: 550px; height: 100%; border-width: 0">
-                                <p:panelGrid >
+                                <p:panelGrid style="font-size: 12px;">
                                     <f:facet name="header">
                                         <p:row>
                                             <p:column colspan="1">localId</p:column>
@@ -47,7 +47,7 @@
                                 <p:spacer/>
                             </p:scrollPanel>                                  
                             <br/>
-                            <p:outputPanel deferred="true">
+                            <p:outputPanel deferred="true" style="font-size: 12px;">
                                 <p>
                                     Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
                                     Si l'identifiant n'existe pas dans le thésaurus, l'alignement sera rejeté.<br/>
@@ -72,7 +72,7 @@
                     <b:column span="3">
                         <p:selectOneMenu value="#{importFileBean.selectedIdentifier}" 
                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 100%; background: none;  box-shadow: none;" title="Choix de l'identifiant pour détecter le concept">
+                                         style="width: 100%; background: none;  box-shadow: none; font-size: 12px;" title="Choix de l'identifiant pour détecter le concept">
                             <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
                             <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
                             <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
@@ -88,7 +88,7 @@
                     <b:column span="3">
                         <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" 
                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 100%; background: none;  box-shadow: none; ">
+                                         style="width: 100%; background: none;  box-shadow: none; font-size: 12px;">
                             <f:selectItem itemLabel="," itemValue="0" />
                             <f:selectItem itemLabel=";" itemValue="1" />
                             <f:selectItem itemLabel="\t" itemValue="2" />
@@ -141,21 +141,21 @@
                     <p:spacer/>    
                     <b:row >
                         <b:column span="4" offset="1"> 
-                            <p:commandButton icon="fas fa-undo"  
+                            <p:commandButton icon="fa fa-undo"  
                                              value="#{langueBean.getMsg('btnBack')}"
                                              class="btn btn-success"
-                                             style="width: 100%; background-color: #FFC107; color: black; border: none;"
+                                             style="width: 100%; background-color: #FFC107; color: black; border: none; font-size: 12px;"
                                              action="#{importFileBean.init()}"
-                                             update="formRightTab:viewTabConcept:idListAlignmentCsv"
+                                             update="toolBoxForm:idListAlignmentCsv"
                                              oncomplete="PF('listAlignmentCsv').hide();">
                             </p:commandButton>
                         </b:column>
                         <b:column span="4" offset="2" > 
                             <p:commandButton  class="btn btn-success" widgetVar="buttonImportCsv"
-                                             icon="fas fa-check-circle fas 2x"
+                                             icon="fa fa-check"
                                              update="panelListAlignCsv"
 
-                                             style="width: 100%; background-color: #5CB85C; border: none;"
+                                             style="width: 100%; background-color: #5CB85C; border: none; font-size: 12px;"
                                              actionListener="#{importFileBean.addAlignmentList()}"
                                              ajax="true"
                                              value="Importer"

@@ -236,7 +236,7 @@ public class CsvReadHelper {
         try {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
-            String uri1 = null; 
+            String uri1; 
             for (CSVRecord record : records) {
                 ConceptObject conceptObject = new ConceptObject();
                 
@@ -251,6 +251,7 @@ public class CsvReadHelper {
                 if(record.isMapped("identifier")) {
                     try {
                         uri1 = record.get("identifier");
+                        conceptObject.setIdConcept(uri1);
                     } catch (Exception e) { }                    
                 } else {
                     try {

@@ -5,232 +5,242 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:wizard widgetVar="wiz" nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}" >
-        
-        <p:tab id="actions" title="Choix de l'action" titleStyleClass="tabCostum">
-            
-            <p:panel styleClass="redColoredPanel" >
-                <p:outputLabel value="Veuillez choisir l'action que vous voulez faire : "/>
-                <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
-                    <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
-                    <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
-                    <f:selectItem itemLabel="Fusionner deux thésaurus" itemValue="opt3"/>
-                </p:selectOneRadio>
-            </p:panel>
-        </p:tab>
+    <h:outputText value="D'autres actions structurées avec choix d'un thésaurus en particulier"  /> <br/>
+    <p:panel>
+        <p:wizard widgetVar="wiz" nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}" >
 
-        <p:tab id="entre" title="Entrées" titleStyleClass="tabCostum">
+            <p:tab id="actions" title="Choix de l'action" titleStyleClass="tabCostum">
 
-            <p:panel id="fusion" header="Importation du thésorus source" styleClass="redColoredPanel" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}">
-                <b:row style="margin-left: 30px; margin-right: 30px; ">
-                    <b:column span="12" >
-                        <p:fileUpload listener="#{fusionService.importTheso}"
-                                      label="parcourir"
-                                      mode="advanced" auto="true"
-                                      allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
-                                      update="fusion"
-                                      style="font-size: 12px;" />
-                    </b:column>
-                </b:row>
+                <p:panel styleClass="redColoredPanel" >
+                    <p:outputLabel value="Veuillez choisir l'action que vous voulez faire : "/>
+                    <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
+                        <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
+                        <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
+                        <f:selectItem itemLabel="Fusionner deux thésaurus" itemValue="opt3" />
+                    </p:selectOneRadio>
+                    <h:outputText  value="!!! Pour la fusion de deux thésaurus, les informations prises en compte sont : prefLabel, altLabel, definiton, alignement" style="font-size: 11px; color: brown" >
 
-                <b:row id="uri" rendered="#{fusionService.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                    <b:column span="5">
-                        <h:outputText value="URI: " />
-                        <h:outputText value="#{fusionService.uri}" style="color: #C63632"/>
-                    </b:column>
-                </b:row>
-                <b:row id="nbr_concepts" rendered="#{fusionService.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                    <b:column span="5">
-                        <h:outputText value="Total des concepts: " />
-                        <h:outputText value="#{fusionService.total}" style="color: #C63632"/>
-                    </b:column>
-                </b:row>
-            </p:panel>
+                    </h:outputText>
+                </p:panel>
+            </p:tab>
 
-            <p:panel header="Les données de comparaison" styleClass="redColoredPanel" rendered="#{atelierThesBean.isRubriqueSelected('opt1')}">
-                <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
-                    <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px" />
-                    <p:selectOneMenu value="#{atelierThesBean.choiceDelimiter}" style="font-size: 12px; background: white; border-color: #43B572">
-                        <f:selectItem itemLabel="," itemValue="0" />
-                        <f:selectItem itemLabel=";" itemValue="1" />
-                        <f:selectItem itemLabel="\t" itemValue="2" />
-                        <p:ajax event="change" listener="#{atelierThesBean.actionChoice()}" />
-                    </p:selectOneMenu>
-                </h:panelGrid>
+            <p:tab id="entre" title="Entrées" titleStyleClass="tabCostum">
 
-                <p:fileUpload listener="#{atelierThesBean.loadFileCsv}" label="parcourir" mode="advanced" auto="true"
-                              update="toolBoxForm" allowTypes="/(\.|\/)(csv|txt)$/" style="font-size: 12px;" />
+                <p:panel id="fusion" header="Importation du thésorus source" styleClass="redColoredPanel" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}">
+                    <b:row style="margin-left: 30px; margin-right: 30px; ">
+                        <b:column span="12" >
+                            <p:fileUpload listener="#{fusionService.importTheso}"
+                                          label="parcourir"
+                                          mode="advanced" auto="true"
+                                          allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
+                                          update="fusion"
+                                          style="font-size: 12px;" />
+                        </b:column>
+                    </b:row>
 
-                <p:panel header="Données chargées" style="margin-top: 20px">
+                    <b:row id="uri" rendered="#{fusionService.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                        <b:column span="5">
+                            <h:outputText value="URI: " />
+                            <h:outputText value="#{fusionService.uri}" style="color: #C63632"/>
+                        </b:column>
+                    </b:row>
+                    <b:row id="nbr_concepts" rendered="#{fusionService.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                        <b:column span="5">
+                            <h:outputText value="Total des concepts: " />
+                            <h:outputText value="#{fusionService.total}" style="color: #C63632"/>
+                        </b:column>
+                    </b:row>
+                </p:panel>
 
-                    <h:outputText value="Nombre des données récupérées : #{atelierThesBean.values.size()}" />
-
-                    <h:form style="margin-top: 15px">
-
-                        <p:scrollPanel mode="native" style="width: 100%; max-height: 200px; border-width: 0">
-
-                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-
-                            <b:row rendered="#{atelierThesBean.values.size() == 0}">
-                                <b:column span="12">
-                                    <h:outputText  value="Aucune donnée pour le moment ..." style="font-size: 12px; color: grey; font-style: italic" />
-                                </b:column>
-                            </b:row>
-
-                            <b:row>
-                                <ui:repeat var="title" value="#{atelierThesBean.titles}">
-                                    <b:column span="#{atelierThesBean.spanTable}">
-                                        <h:outputText value="#{title}"/>
-                                    </b:column>
-                                </ui:repeat>
-                            </b:row>
-
-                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"
-                                         rendered="#{atelierThesBean.values.size() > 0}"/>
-
-                            <ui:repeat var="ligne" value="#{atelierThesBean.values}">
-                                <b:row>
-                                    <ui:repeat var="value" value="#{ligne}">
-                                        <b:column span="#{atelierThesBean.spanTable}">
-                                            <h:outputText value="#{value}"/>
-                                        </b:column>
-                                    </ui:repeat>
-                                </b:row>
-                            </ui:repeat>
-
-                            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
-
-                        </p:scrollPanel>
-
-                    </h:form>
-
-                    <h:panelGrid columns="2" style="margin-top: 15px" cellpadding="5" rendered="#{atelierThesBean.titles.size() > 0}">
-                        <p:outputLabel for="@next" value="Colone à comparer :" style="margin-right: 10px" />
-                        <p:selectOneMenu value="#{atelierThesBean.selectedColumn}" style="font-size: 12px; background: white; border-color: #43B572">
-                            <f:selectItems value="#{atelierThesBean.titles}" var="titre"
-                                           itemLabel="#{titre}" itemValue="#{titre}"/>
+                <p:panel header="Les données de comparaison" styleClass="redColoredPanel" rendered="#{atelierThesBean.isRubriqueSelected('opt1')}">
+                    <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                        <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px" />
+                        <p:selectOneMenu value="#{atelierThesBean.choiceDelimiter}" style="font-size: 12px; background: white; border-color: #43B572">
+                            <f:selectItem itemLabel="," itemValue="0" />
+                            <f:selectItem itemLabel=";" itemValue="1" />
+                            <f:selectItem itemLabel="\t" itemValue="2" />
+                            <p:ajax event="change" listener="#{atelierThesBean.actionChoice()}" />
                         </p:selectOneMenu>
                     </h:panelGrid>
 
+                    <p:fileUpload listener="#{atelierThesBean.loadFileCsv}" label="parcourir" mode="advanced" auto="true"
+                                  update="toolBoxForm" allowTypes="/(\.|\/)(csv|txt)$/" style="font-size: 12px;" />
+
+                    <p:panel header="Données chargées" style="margin-top: 20px">
+
+                        <h:outputText value="Nombre des données récupérées : #{atelierThesBean.values.size()}" />
+
+                        <h:form style="margin-top: 15px">
+
+                            <p:scrollPanel mode="native" style="width: 100%; max-height: 200px; border-width: 0">
+
+                                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+
+                                <b:row rendered="#{atelierThesBean.values.size() == 0}">
+                                    <b:column span="12">
+                                        <h:outputText  value="Aucune donnée pour le moment ..." style="font-size: 12px; color: grey; font-style: italic" />
+                                    </b:column>
+                                </b:row>
+
+                                <b:row>
+                                    <ui:repeat var="title" value="#{atelierThesBean.titles}">
+                                        <b:column span="#{atelierThesBean.spanTable}">
+                                            <h:outputText value="#{title}"/>
+                                        </b:column>
+                                    </ui:repeat>
+                                </b:row>
+
+                                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"
+                                             rendered="#{atelierThesBean.values.size() > 0}"/>
+
+                                <ui:repeat var="ligne" value="#{atelierThesBean.values}">
+                                    <b:row>
+                                        <ui:repeat var="value" value="#{ligne}">
+                                            <b:column span="#{atelierThesBean.spanTable}">
+                                                <h:outputText value="#{value}"/>
+                                            </b:column>
+                                        </ui:repeat>
+                                    </b:row>
+                                </ui:repeat>
+
+                                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+
+                            </p:scrollPanel>
+
+                        </h:form>
+
+                        <h:panelGrid columns="2" style="margin-top: 15px" cellpadding="5" rendered="#{atelierThesBean.titles.size() > 0}">
+                            <p:outputLabel for="@next" value="Colone à comparer :" style="margin-right: 10px" />
+                            <p:selectOneMenu value="#{atelierThesBean.selectedColumn}" style="font-size: 12px; background: white; border-color: #43B572">
+                                <f:selectItems value="#{atelierThesBean.titles}" var="titre"
+                                               itemLabel="#{titre}" itemValue="#{titre}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+
+                    </p:panel>
+
                 </p:panel>
 
-            </p:panel>
+            </p:tab>
 
-        </p:tab>
-      
-        <p:tab id="thesaurus" title="Les thesaurus" titleStyleClass="tabCostum">
-            <p:panel header="Liste des thesaurus">
-                <h:outputText value="Veuillez selectionez un thesaurus : " />
-                <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" selectionMode="single"
-                             scrollable="true" scrollHeight="250" rowKey="#{thes.id}"
-                             selection="#{atelierThesBean.thesoSelected}" style="margin-top: 10px">
-                    <p:column selectionMode="single" style="width: 35px; text-align: center" />
-                    <p:column headerText="Id">
-                        <h:outputText value="#{thes.id}" />
-                    </p:column>
-                    <p:column headerText="Valeur">
-                        <h:outputText value="#{thes.value}" />
-                    </p:column>
-                    <p:column headerText="Statut">
-                        <h:outputText value="#{thes.status}" />
-                    </p:column>
-                </p:dataTable>
-            </p:panel>
-        </p:tab>
-
-        <p:tab id="resultat" title="Résultat" titleStyleClass="tabCostum">
-
-            <p:panel header="Récapitulatif" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}">
-                <h:outputText value="Vous êtes sur le point de fusioner un thésaurus importé avec le thésaurus '
-                        #{atelierThesBean.thesoSelected.value}' ! " />
-                <br/>
-
-                <p:commandButton id="fusionBtn" value="Lancer la fusion" icon="fa-search"
-                                 actionListener="#{atelierThesBean.fusionner()}"
-                                 disabled="#{fusionService.fusionBtnEnable}"
-                                 update="toolBoxForm" onclick="PF('bui').show()"
-                                 style="margin-top: 10px"/>
-
-                <br/>
-                <br/>
-
-                <p:panel id="statistiques" rendered="#{fusionService.fusionDone}">
-                    <b:row>
-                        <b:column span="6">
-                            <h5>Conceptes ajoutés : #{fusionService.conceptsAjoutes.size()}</h5>
-                            <p:orderList value="#{fusionService.conceptsAjoutes}" var="concepte1" controlsLocation="none"
-                                         itemLabel="#{concepte1}" itemValue="#{concepte1}" />
-                        </b:column>
-                        <b:column span="6">
-                            <h5>Conceptes modifiés : #{fusionService.conceptsModifies.size()}</h5>
-                            <p:orderList value="#{fusionService.conceptsModifies}" var="concepte2" controlsLocation="none"
-                                         itemLabel="#{concepte2}" itemValue="#{concepte2}" />
-                        </b:column>
-                    </b:row>
-                    <b:row>
-                        Le nombre de concepts déjà existent : #{fusionService.conceptsExists.size()}
-                    </b:row>
-                    <br/>
-                </p:panel>
-            </p:panel>
-
-            <p:panel header="Récapitulatif" rendered="#{atelierThesBean.isRubriqueSelected('opt1')}">
-
-                <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemble des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
-
-                <br/>
-
-                <p:commandButton value="Lancer la comparaison" icon="fa-search"
-                                 actionListener="#{atelierThesBean.comparer()}"
-                                 update="toolBoxForm" onclick="PF('bui').show()" style="margin-top: 10px"/>
-
-                <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px; border-width: 0">
-                    <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
-                                 var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
-                        <p:column headerText="Id Origine" style="background-color: #ebedf0;">
-                            <h:outputText value="#{resultat.idOrigine}" />
+            <p:tab id="thesaurus" title="Les thesaurus" titleStyleClass="tabCostum">
+                <p:panel header="Liste des thesaurus">
+                    <h:outputText value="Veuillez selectionez un thesaurus : " />
+                    <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" selectionMode="single"
+                                 scrollable="true" scrollHeight="250" rowKey="#{thes.id}"
+                                 selection="#{atelierThesBean.thesoSelected}" style="margin-top: 10px">
+                        <p:column selectionMode="single" style="width: 35px; text-align: center" />
+                        <p:column headerText="Id">
+                            <h:outputText value="#{thes.id}" />
                         </p:column>
-                        <p:column headerText="PrefLabel Origine" style="background-color: #ebedf0;">
-                            <h:outputText value="#{resultat.prefLabelOrigine}" />
+                        <p:column headerText="Valeur">
+                            <h:outputText value="#{thes.value}" />
                         </p:column>
-                        <p:column headerText="Id #{atelierThesBean.thesoSelected.value}">
-                            <h:outputText value="#{resultat.idConcept}" />
-                        </p:column>
-                        <p:column headerText="PrefLabel #{atelierThesBean.thesoSelected.value}">
-                            <h:outputText value="#{resultat.prefLabelConcept}" />
-                        </p:column>
-                        <p:column headerText="AltLabel">
-                            <h:outputText value="#{resultat.altLabelConcept}" />
-                        </p:column>
-                        <p:column headerText="Terme Génerique">
-                            <h:outputText value="#{resultat.termGenerique}" />
-                        </p:column>
-                        <p:column headerText="Définition">
-                            <h:outputText value="#{resultat.definition}" />
-                        </p:column>
-                        <p:column headerText="URI Ark">
-                            <h:outputText value="#{resultat.uriArk}" />
+                        <p:column headerText="Statut">
+                            <h:outputText value="#{thes.status}" />
                         </p:column>
                     </p:dataTable>
-                </p:scrollPanel>
+                </p:panel>
+            </p:tab>
 
-                <b:row style="margin-top: 15px; margin-right: 0px" rendered="#{atelierThesBean.result.size() > 0}">
-                    <p:commandButton value="Export Résultat" icon="ui-icon-valider" ajax="false"
-                                     style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
-                                     onclick="PF('pbAjax').start();" update="toolBoxForm" >
-                        <p:fileDownload value="#{atelierThesBean.exportResultat()}" />
-                    </p:commandButton>
-                </b:row>
-            </p:panel>
+            <p:tab id="resultat" title="Résultat" titleStyleClass="tabCostum">
 
-        </p:tab>
+                <p:panel header="Récapitulatif" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}">
+                    <h:outputText value="Vous êtes sur le point de fusioner un thésaurus importé avec le thésaurus '
+                                  #{atelierThesBean.thesoSelected.value}' ! " />
+                    <br/>
 
-    </p:wizard>
+                    <p:commandButton id="fusionBtn" value="Lancer la fusion" icon="fa-search"
+                                     actionListener="#{atelierThesBean.fusionner()}"
+                                     disabled="#{fusionService.fusionBtnEnable}"
+                                     update="toolBoxForm" onclick="PF('bui').show()"
+                                     style="margin-top: 10px"/>
 
-    <p:commandButton id="cancelBtn" icon="fa fa-undo" class="btn btn-success"
-                     style="font-size: 13px; color: white; background: #FFC107; border: #FFC107; margin-top: 10px"
-                     actionListener="#{atelierThesBean.init()}"
-                     onclick="PF('wiz').loadStep(PF('wiz').cfg.steps[0], false);" update="toolBoxForm"/>
+                    <br/>
+                    <br/>
+
+                    <p:panel id="statistiques" rendered="#{fusionService.fusionDone}">
+                        <b:row>
+                            <b:column span="6">
+                                <h5>Conceptes ajoutés : #{fusionService.conceptsAjoutes.size()}</h5>
+                                <p:orderList value="#{fusionService.conceptsAjoutes}" var="concepte1" controlsLocation="none"
+                                             itemLabel="#{concepte1}" itemValue="#{concepte1}" />
+                            </b:column>
+                            <b:column span="6">
+                                <h5>Conceptes modifiés : #{fusionService.conceptsModifies.size()}</h5>
+                                <p:orderList value="#{fusionService.conceptsModifies}" var="concepte2" controlsLocation="none"
+                                             itemLabel="#{concepte2}" itemValue="#{concepte2}" />
+                            </b:column>
+                        </b:row>
+                        <b:row>
+                            Le nombre de concepts déjà existent : #{fusionService.conceptsExists.size()}
+                        </b:row>
+                        <br/>
+                    </p:panel>
+                </p:panel>
+
+                <p:panel header="Récapitulatif" rendered="#{atelierThesBean.isRubriqueSelected('opt1')}">
+
+                    <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemble des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
+
+                    <br/>
+
+                    <p:commandButton value="Lancer la comparaison" icon="fa-search"
+                                     actionListener="#{atelierThesBean.comparer()}"
+                                     update="toolBoxForm" onclick="PF('bui').show()" style="margin-top: 10px"/>
+
+                    <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px; border-width: 0">
+                        <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
+                                     var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
+                            <p:column headerText="Id Origine" style="background-color: #ebedf0;">
+                                <h:outputText value="#{resultat.idOrigine}" />
+                            </p:column>
+                            <p:column headerText="PrefLabel Origine" style="background-color: #ebedf0;">
+                                <h:outputText value="#{resultat.prefLabelOrigine}" />
+                            </p:column>
+                            <p:column headerText="Id #{atelierThesBean.thesoSelected.value}">
+                                <h:outputText value="#{resultat.idConcept}" />
+                            </p:column>
+                            <p:column headerText="PrefLabel #{atelierThesBean.thesoSelected.value}">
+                                <h:outputText value="#{resultat.prefLabelConcept}" />
+                            </p:column>
+                            <p:column headerText="AltLabel">
+                                <h:outputText value="#{resultat.altLabelConcept}" />
+                            </p:column>
+                            <p:column headerText="Terme Génerique">
+                                <h:outputText value="#{resultat.termGenerique}" />
+                            </p:column>
+                            <p:column headerText="Définition">
+                                <h:outputText value="#{resultat.definition}" />
+                            </p:column>
+                            <p:column headerText="URI Ark">
+                                <h:outputText value="#{resultat.uriArk}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:scrollPanel>
+
+                    <b:row style="margin-top: 15px; margin-right: 0px" rendered="#{atelierThesBean.result.size() > 0}">
+                        <p:commandButton value="Export Résultat" icon="ui-icon-valider" ajax="false"
+                                         style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
+                                         onclick="PF('pbAjax').start();" update="toolBoxForm" >
+                            <p:fileDownload value="#{atelierThesBean.exportResultat()}" />
+                        </p:commandButton>
+                    </b:row>
+                </p:panel>
+
+            </p:tab>
+
+        </p:wizard>
+
+        <b:row>
+            <b:column span="2" offset="5">
+                <p:commandButton id="cancelBtn" icon="fa fa-undo" class="btn btn-success"
+                                 style="width: 100%; height: 28px; font-size: 12px; color: white; background: #FFC107; border: #FFC107; margin-top: 10px"
+                                 actionListener="#{atelierThesBean.init()}"
+                                 onclick="PF('wiz').loadStep(PF('wiz').cfg.steps[0], false);" update="toolBoxForm"/>                            
+            </b:column>
+        </b:row>
+    </p:panel>  
 
     <p:blockUI block="toolBoxForm" widgetVar="bui">
         Chargement ...<br />
