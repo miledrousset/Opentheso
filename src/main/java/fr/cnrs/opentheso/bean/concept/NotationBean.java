@@ -99,6 +99,7 @@ public class NotationBean implements Serializable {
         
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }
         reset();
     }

@@ -11,15 +11,13 @@ package fr.cnrs.opentheso.bdd.helper.nodes;
  */
 public class NodeGps {
 
-    private Double latitude;
-    private Double longitude;
-
-    public NodeGps() {
-        latitude = 0.0;
-        longitude = 0.0;
-    }
+    private Double latitude = 0.0;
+    private Double longitude = 0.0;
 
     public Double getLatitude() {
+        if (latitude == null) {
+            latitude = 0.0;
+        }
         return latitude;
     }
 
@@ -28,6 +26,9 @@ public class NodeGps {
     }
 
     public Double getLongitude() {
+        if (longitude == null) {
+            longitude = 0.0;
+        }
         return longitude;
     }
 

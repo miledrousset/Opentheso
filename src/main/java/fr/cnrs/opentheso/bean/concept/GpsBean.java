@@ -96,6 +96,8 @@ public class GpsBean implements Serializable {
         
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex:formRightTab");
         }
         reset();
     }
@@ -136,6 +138,8 @@ public class GpsBean implements Serializable {
         
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex:formRightTab");
         }
         reset();
     }
@@ -143,6 +147,9 @@ public class GpsBean implements Serializable {
     
     
     public NodeGps getNodeGps() {
+        if(nodeGps == null) {
+            nodeGps = new NodeGps();
+        }
         return nodeGps;
     }
 

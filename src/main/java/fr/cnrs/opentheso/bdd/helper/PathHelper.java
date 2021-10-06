@@ -133,13 +133,9 @@ public class PathHelper {
 
         for (String idBT : idBTs) {
             path.add(idBT);
-            try {
-                getInvertPathOfConcept(ds, idBT, idThesaurus, firstPath, path, allPaths);
-            } catch (Exception ex ) {
-                
-            }
+            getInvertPathOfConcept(ds, idBT, idThesaurus, firstPath, path, allPaths);
         }
-
+        
         return allPaths;
 
     }

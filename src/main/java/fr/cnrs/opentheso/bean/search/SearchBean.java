@@ -23,6 +23,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -175,6 +176,13 @@ public class SearchBean implements Serializable {
             onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
         }
         isSelectedItem = true;
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("containerIndex:formLeftTab");
+        }
     }
     
     
