@@ -9,7 +9,9 @@ import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
+import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.sql.Connection;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ActionEvent;
@@ -553,71 +556,126 @@ public class ImportFileBean implements Serializable {
         progressStep = 0;
         progress = 0;
         total = 0;
-        String idConcept = null;
-        ConceptHelper conceptHelper = new ConceptHelper();
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-        NodeAlignment nodeAlignment = new NodeAlignment();
-
+        NoteHelper noteHelper = new NoteHelper();
+        TermHelper termHelper = new TermHelper();
+                
+        String idTerm;
         try {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
-                //définitions
-                
-                switch (conceptObject.getType().trim().toLowerCase()) {
-                    case "skos:concept":
-                        // ajout de concept
-                        csvImportHelper.addConcept(connect.getPoolConnexion(), idNewTheso, conceptObject);
-                        break;
-                    case "skos:collection":
-                        // ajout de groupe
-                        csvImportHelper.addGroup(connect.getPoolConnexion(), idNewTheso, conceptObject);
-                        break;
-                    default:
-                        break;
-                }
-
-                progressStep++;
-                progress = progressStep / total * 100;
-            }
-        /*
-        try {
-            for (NodeAlignmentImport nodeAlignmentImport : nodeAlignmentImports) {
-                if(nodeAlignmentImport == null) continue;
-                if (nodeAlignmentImport.getLocalId()== null || nodeAlignmentImport.getLocalId().isEmpty()) {
+                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(),
+                        conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());   
+                if(idTerm == null){
                     continue;
                 }
-                if("ark".equalsIgnoreCase(selectedIdentifier)){
-                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
+                if(clearNoteBefore) {
+                    try (Connection conn = connect.getPoolConnexion().getConnection()) {
+                        conn.setAutoCommit(false);
+                        if(!noteHelper.deleteNotesOfConcept(conn, conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+                            conn.rollback();
+                        } else
+                            conn.commit();
+                    } catch (Exception e) {
+                        error.append("erreur de suppression: ");
+                        error.append(conceptObject.getIdConcept());
+                    }
+                    try (Connection conn = connect.getPoolConnexion().getConnection()) {
+                        conn.setAutoCommit(false);
+                        if(!noteHelper.deleteNotesOfTerm(conn, idTerm, selectedTheso.getCurrentIdTheso())) {
+                            conn.rollback();
+                        } else
+                            conn.commit();
+                    } catch (Exception e) {
+                        error.append("erreur de suppression: ");
+                        error.append(idTerm);
+                    } 
                 }
-                if("handle".equalsIgnoreCase(selectedIdentifier)){
-                    idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
-                } 
-                if("identifier".equalsIgnoreCase(selectedIdentifier)){
-                    idConcept = nodeAlignmentImport.getLocalId();
-                }                
                 
-                if (idConcept == null || idConcept.isEmpty()) {
-                    continue;
-                }
-                for (NodeAlignmentSmall nodeAlignmentSmall : nodeAlignmentImport.getNodeAlignmentSmalls()) {
-                    if(nodeAlignmentSmall == null) continue;
-                    nodeAlignment.setId_author(currentUser.getNodeUser().getIdUser());
-                    nodeAlignment.setConcept_target("");
-                    nodeAlignment.setThesaurus_target(nodeAlignmentSmall.getSource());
-                    nodeAlignment.setInternal_id_concept(idConcept);
-                    nodeAlignment.setInternal_id_thesaurus(selectedTheso.getCurrentIdTheso());
-                    nodeAlignment.setAlignement_id_type(nodeAlignmentSmall.getAlignement_id_type());
-                    nodeAlignment.setUri_target(nodeAlignmentSmall.getUri_target());
-                    if (alignmentHelper.addNewAlignment(connect.getPoolConnexion(), nodeAlignment)) {
+                //definition
+                for (CsvReadHelper.Label definition : conceptObject.getDefinitions()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), definition.getLang(),
+                            definition.getLabel(), "definition")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, definition.getLang(),
+                                selectedTheso.getCurrentIdTheso(), definition.getLabel(), "definition", -1);
                         total++;
                     }
                 }
-            } */
+                // historyNote
+                for (CsvReadHelper.Label historyNote : conceptObject.getHistoryNotes()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), historyNote.getLang(),
+                            historyNote.getLabel(), "historyNote")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, historyNote.getLang(),
+                                selectedTheso.getCurrentIdTheso(), historyNote.getLabel(), "historyNote", -1);
+                        total++;
+                    }
+                }                
+                // changeNote
+                for (CsvReadHelper.Label changeNote : conceptObject.getChangeNotes()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), changeNote.getLang(),
+                            changeNote.getLabel(), "changeNote")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, changeNote.getLang(),
+                                selectedTheso.getCurrentIdTheso(), changeNote.getLabel(), "changeNote", -1);
+                        total++;
+                    }
+                }                
+                // editorialNote
+                for (CsvReadHelper.Label editorialNote : conceptObject.getEditorialNotes()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), editorialNote.getLang(),
+                            editorialNote.getLabel(), "editorialNote")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, editorialNote.getLang(),
+                                selectedTheso.getCurrentIdTheso(), editorialNote.getLabel(), "editorialNote", -1);
+                        total++;
+                    }
+                }                  
+                // example
+                for (CsvReadHelper.Label example : conceptObject.getExamples()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), example.getLang(),
+                            example.getLabel(), "example")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, example.getLang(),
+                                selectedTheso.getCurrentIdTheso(), example.getLabel(), "example", -1);
+                        total++;
+                    }
+                }                 
+                
+                //pour Concept
+                // note
+                for (CsvReadHelper.Label note : conceptObject.getNote()) {
+                    if(!noteHelper.isNoteExistOfConcept(connect.getPoolConnexion(),
+                            conceptObject.getIdConcept(),
+                            selectedTheso.getCurrentIdTheso(), note.getLang(),
+                            note.getLabel(), "note")) {
+                        noteHelper.addConceptNote(connect.getPoolConnexion(), 
+                                conceptObject.getIdConcept(), note.getLang(),
+                                selectedTheso.getCurrentIdTheso(), note.getLabel(), "note", -1);
+                        total++;
+                    }
+                }                 
+                // scopeNote
+                for (CsvReadHelper.Label scopeNote : conceptObject.getScopeNotes()) {
+                    if(!noteHelper.isNoteExistOfConcept(connect.getPoolConnexion(),
+                            conceptObject.getIdConcept(),
+                            selectedTheso.getCurrentIdTheso(), scopeNote.getLang(),
+                            scopeNote.getLabel(), "scopeNote")) {
+                        noteHelper.addConceptNote(connect.getPoolConnexion(), 
+                                conceptObject.getIdConcept(), scopeNote.getLang(),
+                                selectedTheso.getCurrentIdTheso(), scopeNote.getLabel(), "scopeNote", -1);
+                        total++;
+                    }
+                }                 
+             
+                progressStep++;
+                progress = progressStep / total * 100;
+            }
             loadDone = false;
             importDone = true;
             BDDinsertEnable = false;
             importInProgress = false;
             uri = null;
-            info = "import réussie, alignements importés = " + (int)total;            
+            info = "import réussie, notes importées = " + (int)total;            
             total = 0; 
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
