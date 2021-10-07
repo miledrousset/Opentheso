@@ -24,6 +24,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -92,6 +93,7 @@ public class ImportFileBean implements Serializable {
     private ArrayList<String> langs;
     private ArrayList<NodeAlignmentImport> nodeAlignmentImports; 
     
+    private ArrayList<NodeNote> nodeNotes;     
 
     private String formatDate = "yyyy-MM-dd";
     private String uri;
@@ -114,6 +116,8 @@ public class ImportFileBean implements Serializable {
     private String selectedLang;
 
     private boolean haveError;
+    
+    private boolean clearNoteBefore;
 
     @PreDestroy
     public void destroy() {
@@ -150,12 +154,18 @@ public class ImportFileBean implements Serializable {
             nodeAlignmentImports.clear();
         }
         nodeAlignmentImports = null;        
+        if (nodeNotes != null) {
+            nodeNotes.clear();
+        }        
+        nodeNotes = null;
+
     }
 
     public void init() {
         choiceDelimiter = 0;
         delimiterCsv = ',';
         haveError = false;
+        clearNoteBefore = false;
         progress = 0;
         progressStep = 0;
         info = "";
@@ -181,6 +191,10 @@ public class ImportFileBean implements Serializable {
         if (langs != null) {
             langs.clear();
         }
+        
+        if(nodeNotes != null) {
+            nodeNotes.clear();
+        }        
 
         // récupération des toutes les langues pour le choix de le langue source
         LanguageHelper languageHelper = new LanguageHelper();
@@ -211,6 +225,58 @@ public class ImportFileBean implements Serializable {
             delimiterCsv = '\t';
         }
     }
+    
+    
+    /**
+     * permet de charger un fichier de notes en Csv
+     *
+     * @param event
+     */
+    public void loadFileNoteCsv(FileUploadEvent event) {
+        initError();
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+
+                if (!csvReadHelper.setLangs(reader1)) {
+                    error.append(csvReadHelper.getMessage());
+                } else {
+                    try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
+                        if (!csvReadHelper.readFileNote(reader2)) {
+                            error.append(csvReadHelper.getMessage());
+                        }
+
+                        warning = csvReadHelper.getMessage();
+                        conceptObjects = csvReadHelper.getConceptObjects();
+                        if (conceptObjects != null) {
+                            if (conceptObjects.isEmpty()) {
+                                haveError = true;
+                                error.append(System.getProperty("line.separator"));
+                                error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
+                                warning = "";
+                            } else {
+                                total = conceptObjects.size();
+                                uri = "";//csvReadHelper.getUri();
+                                loadDone = true;
+                                BDDinsertEnable = true;
+                                info = "File correctly loaded";
+                            }
+                        }
+                    }                    
+                }
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");            
+        }
+    }    
     
     /**
      * permet de charger un fichier en Csv
@@ -314,12 +380,13 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            // première lecrture pour charger les langues
             try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.setLangs(reader1)) {
                     error.append(csvReadHelper.getMessage());
                 }
-
+                //deuxième lecture pour les données
                 try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
 
                     if (!csvReadHelper.readFile(reader2)) {
@@ -462,9 +529,105 @@ public class ImportFileBean implements Serializable {
     }
 
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////Ajout des alignements de Wikidata////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+///////////////// Fonctions pour importer des données en CSV //////////////////
+///////////////// L'ajout des données se fait en fusion  //////////////////////
 ///////////////////////////////////////////////////////////////////////////////    
+    
+    /**
+     * permet d'ajouter une liste de notes en CSV au thésaurus
+     *
+     */
+    public void addNoteList() {
+        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
+            warning = "pas de thésaurus sélectionné";
+            return;
+        }
+        if (conceptObjects == null || conceptObjects.isEmpty()) {
+            return;
+        }
+        if (importInProgress) {
+            return;
+        }
+        initError();
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+        String idConcept = null;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+        NodeAlignment nodeAlignment = new NodeAlignment();
+
+        try {
+            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                //définitions
+                
+                switch (conceptObject.getType().trim().toLowerCase()) {
+                    case "skos:concept":
+                        // ajout de concept
+                        csvImportHelper.addConcept(connect.getPoolConnexion(), idNewTheso, conceptObject);
+                        break;
+                    case "skos:collection":
+                        // ajout de groupe
+                        csvImportHelper.addGroup(connect.getPoolConnexion(), idNewTheso, conceptObject);
+                        break;
+                    default:
+                        break;
+                }
+
+                progressStep++;
+                progress = progressStep / total * 100;
+            }
+        /*
+        try {
+            for (NodeAlignmentImport nodeAlignmentImport : nodeAlignmentImports) {
+                if(nodeAlignmentImport == null) continue;
+                if (nodeAlignmentImport.getLocalId()== null || nodeAlignmentImport.getLocalId().isEmpty()) {
+                    continue;
+                }
+                if("ark".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
+                }
+                if("handle".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
+                } 
+                if("identifier".equalsIgnoreCase(selectedIdentifier)){
+                    idConcept = nodeAlignmentImport.getLocalId();
+                }                
+                
+                if (idConcept == null || idConcept.isEmpty()) {
+                    continue;
+                }
+                for (NodeAlignmentSmall nodeAlignmentSmall : nodeAlignmentImport.getNodeAlignmentSmalls()) {
+                    if(nodeAlignmentSmall == null) continue;
+                    nodeAlignment.setId_author(currentUser.getNodeUser().getIdUser());
+                    nodeAlignment.setConcept_target("");
+                    nodeAlignment.setThesaurus_target(nodeAlignmentSmall.getSource());
+                    nodeAlignment.setInternal_id_concept(idConcept);
+                    nodeAlignment.setInternal_id_thesaurus(selectedTheso.getCurrentIdTheso());
+                    nodeAlignment.setAlignement_id_type(nodeAlignmentSmall.getAlignement_id_type());
+                    nodeAlignment.setUri_target(nodeAlignmentSmall.getUri_target());
+                    if (alignmentHelper.addNewAlignment(connect.getPoolConnexion(), nodeAlignment)) {
+                        total++;
+                    }
+                }
+            } */
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            info = "import réussie, alignements importés = " + (int)total;            
+            total = 0; 
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+    }    
+    
+    
     /**
      * permet d'ajouter une liste d'alignements en CSV au thésaurus
      *
@@ -1249,6 +1412,14 @@ public class ImportFileBean implements Serializable {
 
     public void setHaveError(boolean haveError) {
         this.haveError = haveError;
+    }
+
+    public boolean isClearNoteBefore() {
+        return clearNoteBefore;
+    }
+
+    public void setClearNoteBefore(boolean clearNoteBefore) {
+        this.clearNoteBefore = clearNoteBefore;
     }
 
 }

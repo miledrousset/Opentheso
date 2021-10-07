@@ -5,10 +5,6 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <!--    <b:modal id="idRenameConcept"  class="renameConcept" title="Renommer le concept" close-on-escape="false" backdrop="false"
-                 style="font-size: 12px;">
-    -->
-
     <p:dialog id="idListNoteCsv" header="Importer des notes" widgetVar="listNoteCsv" 
               modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" >         
 
@@ -18,7 +14,7 @@
                     <b:column span="12" >
                         <fieldset>
                             <p:scrollPanel mode="native" style="max-width: 550px; height: 100%; border-width: 0">
-                                <p:panelGrid style="font-size: 12px;">
+                                <p:panelGrid style="font-size: 12px; margin-left: 30px">
                                     <f:facet name="header">
                                         <p:row>
                                             <p:column colspan="1">localId</p:column>
@@ -35,11 +31,11 @@
                                 <p:spacer/>
                             </p:scrollPanel>                                  
                             <br/>
-                            <p:outputPanel deferred="true" style="font-size: 12px;">
+                            <p:outputPanel deferred="true" style="font-size: 12px; margin-left: 30px">
                                 <p>
                                     Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
-                                    Si l'identifiant n'existe pas dans le thésaurus, l'alignement sera rejeté.<br/>
-                                    Si le concept a déjà la même valeur, la note ne sera pas changée (sauf pour le cas où il faut tout vider avant) <br/>
+                                    Si l'identifiant n'existe pas dans le thésaurus, la note sera rejetée.<br/>
+                                    Si la note existe, pas de changement (sauf si l'option <b>tout vider avant</b> est active) <br/>
                                     Deux options sont possibles :
                                     1- garder les valeurs existantes : permet d'ajouter les notes inexistantes <br/>
                                     2- supprimer les notes avant : permet de vider toutes les notes de d'identifiant renseigné dans le tableau <br/>
@@ -85,15 +81,22 @@
                         </p:selectOneMenu>
                     </b:column>
                 </b:row>
-                <p:spacer/>            
-
+                <b:row >
+                    <b:column span="3" offset="5">
+                        <h:outputText value="Vider les notes avant? " style="font-size: 12px;" />
+                    </b:column>                    
+                    <b:column span="3" style="margin-left: -15px;">
+                        <p:toggleSwitch value="#{importFileBean.clearNoteBefore}" style="color: #f47b2a; margin-left: 15px;font-size: 12px;" />                        
+                    </b:column>                
+                </b:row>
+                <p:spacer/>   
 
 
                 <h:panelGroup id="panelListNoteCsv">
                     <!-- Choix du fichier -->   
                     <b:row style="margin-left: 30px; margin-right: 30px; ">
                         <b:column span="12" > 
-                            <p:fileUpload listener="#{importFileBean.loadFileAlignmentCsv}" 
+                            <p:fileUpload listener="#{importFileBean.loadFileNoteCsv}" 
                                           label="parcourir" 
                                           mode="advanced" auto="true"
                                           allowTypes="/(\.|\/)(csv|txt)$/"
@@ -145,7 +148,7 @@
                                              update="panelListNoteCsv"
 
                                              style="width: 100%; background-color: #5CB85C; border: none; font-size: 12px;"
-                                             actionListener="#{importFileBean.addAlignmentList()}"
+                                             actionListener="#{importFileBean.addNoteList()}"
                                              ajax="true"
                                              value="Importer"
                                              disabled="#{!importFileBean.loadDone}">

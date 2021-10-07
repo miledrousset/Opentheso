@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.core.imports.csv;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -33,9 +34,10 @@ public class CsvReadHelper {
     
     private ArrayList<String> langs;
 
-    private final ArrayList<ConceptObject> conceptObjects;
+    private ArrayList<ConceptObject> conceptObjects;
     
     private ArrayList <NodeAlignmentImport> nodeAlignmentImports;
+    private ArrayList<NodeNote> nodeNotes;
     
     public CsvReadHelper(char delimiter) {
         this.delimiter = delimiter;
@@ -91,7 +93,10 @@ public class CsvReadHelper {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
             String value;
-            nodeAlignmentImports = new ArrayList<>();
+            if(nodeAlignmentImports != null)
+                nodeAlignmentImports = new ArrayList<>();
+            else
+                nodeAlignmentImports.clear();
             for (CSVRecord record : records) {
                 NodeAlignmentImport nodeAlignmentImport = new NodeAlignmentImport();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
@@ -117,7 +122,7 @@ public class CsvReadHelper {
             NodeAlignmentImport nodeAlignmentImport,
             CSVRecord record) {
         String uri1;
-        String[] valueType;
+
         /// types alignements 1=exactMatch ; 2=closeMatch ; 3=broadMatch ; 4=relatedMatch ; 5=narrowMatch
         try {
             uri1 = record.get("Wikidata");
@@ -188,10 +193,40 @@ public class CsvReadHelper {
         return null;
     }
     
-    
-    
-    
-    
+    /**
+     * permet de lire un fichier CSV complet pour importer les notes
+     * avec option de vider les notes avant
+     * @param in
+     * @return 
+     */
+    public boolean readFileNote(Reader in){
+        try {
+            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            
+            String idConcept;
+            for (CSVRecord record : records) {
+                ConceptObject conceptObject = new ConceptObject();                
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    idConcept = record.get("localId");
+                    if(idConcept == null || idConcept.isEmpty()) continue;
+                    conceptObject.setIdConcept(idConcept);
+                } catch (Exception e) {continue; }                
+                
+                // on récupère les notes 
+                conceptObject = getNotes(conceptObject, record);
+                
+                if(conceptObject != null) {
+                    conceptObjects.add(conceptObject);
+                }
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }        
     
     
     
@@ -955,6 +990,14 @@ public class CsvReadHelper {
 
     public void setNodeAlignmentImports(ArrayList<NodeAlignmentImport> nodeAlignmentImports) {
         this.nodeAlignmentImports = nodeAlignmentImports;
+    }
+
+    public ArrayList<NodeNote> getNodeNotes() {
+        return nodeNotes;
+    }
+
+    public void setNodeNotes(ArrayList<NodeNote> nodeNotes) {
+        this.nodeNotes = nodeNotes;
     }
 
     
