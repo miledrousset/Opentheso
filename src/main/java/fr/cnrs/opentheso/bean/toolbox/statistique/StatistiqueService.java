@@ -61,6 +61,10 @@ public class StatistiqueService {
         data.setNotesNbr(new NoteHelper().getNbrNoteSansGroup(connect.getPoolConnexion(), idTheso, idLang));
         data.setSynonymesNbr(new StatisticHelper().getNbDesSynonimeSansGroup(connect.getPoolConnexion(), idTheso, idLang));
         data.setTermesNonTraduitsNbr(data.getConceptsNbr() - new StatisticHelper().getNbTradWithoutGroup(connect.getPoolConnexion(), idTheso, idLang));
+        
+        data.setWikidataAlignNbr(statisticHelper.getNbAlignWikidata(connect.getPoolConnexion(), idTheso, null));  
+        data.setTotalAlignment(statisticHelper.getNbAlign(connect.getPoolConnexion(), idTheso, null));          
+        
         result.add(data);
 
         return result;

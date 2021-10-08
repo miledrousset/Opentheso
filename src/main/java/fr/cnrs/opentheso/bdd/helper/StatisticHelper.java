@@ -33,17 +33,26 @@ public class StatisticHelper {
         int count = 0;
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
-                    " where" +
-                    " concept_group_concept.idconcept = alignement.internal_id_concept" +
-                    " and" +
-                    " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
-                    " and" +
-                    " concept_group_concept.idgroup = '" + idGroup + "'" +
-                    " and" +
-                    " concept_group_concept.idthesaurus = '" + idThesaurus + "'" +
-                    " and" +
-                    " uri_target like '%www.wikidata.org%'");                
+                if(idGroup == null || idGroup.isEmpty()){
+                    stmt.executeQuery("select count(alignement.internal_id_concept) from alignement " +
+                        " where" +
+                        " alignement.internal_id_thesaurus = '" + idThesaurus + "'" +
+                        " and uri_target like '%wikidata.org%'" +
+                        " and" +
+                        " internal_id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "')");
+                } else{
+                    stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
+                        " where" +
+                        " concept_group_concept.idconcept = alignement.internal_id_concept" +
+                        " and" +
+                        " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
+                        " and" +
+                        " concept_group_concept.idgroup = '" + idGroup + "'" +
+                        " and" +
+                        " concept_group_concept.idthesaurus = '" + idThesaurus + "'" +
+                        " and" +
+                        " uri_target like '%wikidata.org%'");                    
+                }
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
@@ -61,15 +70,24 @@ public class StatisticHelper {
         int count = 0;
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
-                    " where" +
-                    " concept_group_concept.idconcept = alignement.internal_id_concept" +
-                    " and" +
-                    " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
-                    " and" +
-                    " concept_group_concept.idgroup = '" + idGroup + "'" +
-                    " and" +
-                    " concept_group_concept.idthesaurus = '" + idThesaurus + "'");                
+                if(idGroup == null || idGroup.isEmpty()) {
+                    stmt.executeQuery("select count(alignement.internal_id_concept)" +
+                        " from alignement " +
+                        " where" +
+                        " alignement.internal_id_thesaurus = '" + idThesaurus + "'" +
+                        " and" +
+                        " internal_id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "')"); 
+                } else {
+                    stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
+                        " where" +
+                        " concept_group_concept.idconcept = alignement.internal_id_concept" +
+                        " and" +
+                        " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
+                        " and" +
+                        " concept_group_concept.idgroup = '" + idGroup + "'" +
+                        " and" +
+                        " concept_group_concept.idthesaurus = '" + idThesaurus + "'");
+                }
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
