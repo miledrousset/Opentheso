@@ -12,9 +12,9 @@
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.broader')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.broader')}"
-                                      style="font-size: 14px; font-weight: bold; margin-right: 2px"/>
+                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="pi pi-arrow-up" style="color: #f47b2a; margin-right: 5px"
+                        <i class="pi pi-arrow-up" style="color: #f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
@@ -35,7 +35,7 @@
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeBT.size() == 0}">   
                         <div class="col-9">
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
-                                           style="font-size: 12px; color: grey; font-style: italic " /> 
+                                           style="font-size: 14px; color: grey; font-style: italic " /> 
                         </div>
                     </h:panelGroup>  
 
@@ -45,12 +45,12 @@
                                 <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"
-                                               style="color: #43B572;" styleClass="textOpentheso"/>
+                                               style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
 
                                 <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"
-                                               style="color: #FF7979;" styleClass="textOpentheso"/>  
+                                               style="color: #FF7979; font-size: 14px;" styleClass="textOpentheso"/>  
 
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/> 
                             </ui:repeat>
@@ -65,9 +65,9 @@
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.narrower')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.narrower')}" 
-                                      style="font-size: 14px; font-weight: bold;"/>
+                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="pi pi-arrow-down" style="color:#f47b2a; margin-right: 5px"
+                        <i class="pi pi-arrow-down" style="color:#f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>  
 
@@ -145,9 +145,9 @@
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.related')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.related')}" 
-                                      style="font-size: 14px; font-weight: bold;"/>
+                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="pi pi-sort-alt" style="color:#f47b2a; margin-right: 5px"
+                        <i class="pi pi-sort-alt" style="color:#f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
@@ -155,11 +155,14 @@
                                       icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_related_relation')}" 
-                                        actionListener="#{relatedBean.reset()}" oncomplete="PF('addRelatedLink').show();"
+                                        actionListener="#{relatedBean.reset()}" 
+                                        oncomplete="PF('addRelatedLink').show();"
+                                        update="conceptForm:idAddRelatedLink"
                                         style="font-size: 12px;" />
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_related_relation')}"
-                                        actionListener="#{relatedBean.reset()}" oncomplete="PF('deleteRelatedLink').show();"
+                                        oncomplete="PF('deleteRelatedLink').show();"
+                                        update="conceptForm:listConceptSpecAssocies"
                                         style="font-size: 12px;" />
                         </p:menuButton> 
                     </div>       
@@ -197,9 +200,9 @@
                         <div class="col-3" style="text-align: right;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.traduction')}" 
-                                          style="font-size: 14px; font-weight: bold;"/>
+                                          style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                            <i class="pi pi-pencil" style="color:#f47b2a; margin-right: 5px" rendered="#{(currentUser.nodeUser != null)}" />
+                            <i class="pi pi-pencil" style="color:#f47b2a; margin-right: 10px" rendered="#{(currentUser.nodeUser != null)}" />
 
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                       or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
@@ -212,10 +215,12 @@
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" 
                                             actionListener="#{traductionBean.reset()}"
                                             oncomplete="PF('renameTraduction').show();"
+                                            update="conceptForm:idRenameTraduction"
                                             style="font-size: 12px;" />
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
                                             actionListener="#{traductionBean.reset()}"
                                             oncomplete="PF('deleteTraduction').show();"
+                                            update="conceptForm:idDeleteTraduction"
                                             style="font-size: 12px;" />
                             </p:menuButton>
                         </div>
@@ -249,9 +254,9 @@
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.synonym')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.synonym')}" 
-                                      style="font-size: 14px; font-weight: bold;"/>
+                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="pi pi-sort" style="color:#f47b2a; transform: rotate(90deg); margin-right: 5px"
+                        <i class="pi pi-sort" style="color:#f47b2a; transform: rotate(90deg); margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/> 
 
@@ -295,20 +300,18 @@
                                     </ui:repeat>
                                 </div>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) 
-                                                      and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                                <h:outputText  value="#{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
-                                               title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}" style="font-size: 12px; color: #FF7979; font-style: italic " />
-                                <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <i class="pi pi-angle-double-right" style="color: #f47b2a;" />
-                                            <h:outputText rendered="#{em2.hiden}" value=" #{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
-                                            <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=" , " style="color: #FF7979"/>
-                                        </div>
+
+                            <h:outputText  value="#{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
+                                           title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}" style="font-size: 12px; color: #FF7979; font-style: italic " />
+                            <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <i rendered="#{em2.hiden}" class="pi pi-angle-double-right" style="color: #f47b2a;" />
+                                        <h:outputText rendered="#{em2.hiden}" value=" #{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
+                                        <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=" , " style="color: #FF7979"/>
                                     </div>
-                                </ui:repeat>
-                            </h:panelGroup>  
+                                </div>
+                            </ui:repeat> 
                         </div>
                     </h:panelGroup>
                 </div>

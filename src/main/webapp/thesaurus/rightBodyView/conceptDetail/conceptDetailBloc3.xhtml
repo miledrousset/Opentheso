@@ -46,12 +46,14 @@
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                 actionListener="#{noteBean.reset()}"
                                                 action = "#{noteBean.setSelectedTypeNote('note')}"
+                                                update="conceptForm:idDeleteNote"
                                                 oncomplete="PF('deleteNote').show();"
                                                 style="font-size: 12px;"/>
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                 actionListener="#{noteBean.reset()}"
                                                 action = "#{noteBean.setSelectedTypeNote('note')}"                                          
                                                 oncomplete="PF('editNote').show();"
+                                                update="conceptForm:idEditNote"
                                                 style="font-size: 12px;" />
                                 </p:menuButton>
                             </div>

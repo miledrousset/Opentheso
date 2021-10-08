@@ -17,7 +17,7 @@
 
         <p:panel id="listConceptSpecAssocies">
             <h:outputText value="Liste des concepts spécifique associés : " class="dialog-titre" /> 
-            <ui:repeat var="related" value="#{relatedBean.nodeRTs}" >
+            <ui:repeat var="related" value="#{conceptView.nodeConcept.nodeRT}" >
                 <div class="row" style="margin-top: 5px" >
                     <div class="col-1">
                         <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab containerIndex:formLeftTab conceptForm:listConceptSpecAssocies messageIndex"

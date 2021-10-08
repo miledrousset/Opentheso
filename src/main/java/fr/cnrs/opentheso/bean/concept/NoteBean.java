@@ -153,13 +153,15 @@ public class NoteBean implements Serializable {
                 conceptBean.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note ajoutée avec succès");
+        
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
+        PrimeFaces.current().executeScript("PF('addNote').hide();");
+        
         reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addNoteForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }
 
@@ -206,12 +208,13 @@ public class NoteBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
+        PrimeFaces.current().executeScript("PF('addNote').hide();");
         //      reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:editNoteForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("conceptForm:idEditNote");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }
     
@@ -278,13 +281,14 @@ public class NoteBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
+        PrimeFaces.current().executeScript("PF('addNote').hide();");
+        
         //      reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNotes");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteNoteForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("conceptForm:idDeleteNote");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }
     

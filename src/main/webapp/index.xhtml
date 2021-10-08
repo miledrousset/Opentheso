@@ -9,9 +9,14 @@
         <title>Opentheso</title>
 
         <link href="resources/images/icon_opentheso2.png" rel="icon" />
-        <link href="resources/css/sb-admin-2.css" rel="stylesheet" />
-        <link href="resources/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+
+        <link rel="stylesheet" type="text/css" href="resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="resources/css/composants_opentheso.css" />
+
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
+
 
         <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
 
@@ -26,20 +31,7 @@
             <meta name="description" content="#{langueBean.getMsg('index.Opentheso_info')}"/>
         </h:panelGroup>
 
-        <link rel="icon" href="resources/img/icon_opentheso2.png" />
-        <link rel="stylesheet" type="text/css" href="resources/css/index.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="resources/css/menu.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="resources/css/search.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="resources/css/tree.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="resources/css/rightBody.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="resources/css/leftBody.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="resources/css/dialog.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="resources/css/autocomplete.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="resources/css/composants.css" media="screen" />
-
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
-
-        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
 
         <!--<script>
             $.blockUI.defaults.css.width = '20%';
@@ -51,7 +43,7 @@
         </script>-->
 
     </h:head>
-    
+
 
     <h:body id="page-top" style="font-size: 12px;">
 
@@ -92,13 +84,13 @@
 
         <!-- Scroll to Top Button-->
         <a class="scroll-to-top rounded" href="#page-top">
-            <i class="fas fa-angle-up" />
+            <i class="pi pi-angle-up" />
         </a>
 
         <!-- Bootstrap core JavaScript
         <script src="resources/vendor/jquery/jquery.min.js"></script>-->
-        <script src="resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="resources/vendor/jquery-easing/jquery.easing.min.js"></script>
+        <script src="resources/js/bootstrap.bundle.min.js"></script>
+        <script src="resources/js/jquery.easing.min.js"></script>
         <script src="resources/js/sb-admin-2.js"></script>
 
         <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false">
@@ -106,7 +98,7 @@
         </p:dialog>  
 
         <h:form id="conceptForm" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"> 
-            
+
             <ui:include src="dialog/concept/addTopConcept.xhtml" />
             <ui:include src="dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />          
 
@@ -114,7 +106,7 @@
             <ui:include src="dialog/concept/addNT.xhtml" /> 
 
             <ui:include src="dialog/concept/renameConcept.xhtml" />
-            
+
             <ui:include src="dialog/group/addConceptToGroup.xhtml" />
             <ui:include src="dialog/group/removeConceptFromGroup.xhtml" />
             <ui:include src="dialog/group/removeConceptAndChildFromGroup.xhtml" />

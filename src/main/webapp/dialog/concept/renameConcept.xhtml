@@ -55,9 +55,8 @@
                                  actionListener="PF('renameConcept').hide();" update="idRenameConcept"/>
 
                 <p:commandButton rendered="#{!editConcept.duplicate}"
-                                 class="btn btn-success" value="#{langueBean.getMsg('btnValidate')}"
-                                 update="containerIndex messageIndex" 
-                                 style="color: white;" oncomplete="PF('renameConcept').hide();"
+                                 class="btn btn-primary" value="#{langueBean.getMsg('btnValidate')}"
+                                 update="containerIndex messageIndex" oncomplete="PF('renameConcept').hide();"
                                  actionListener="#{editConcept.updateLabel(selectedTheso.currentIdTheso, 
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
             </div>

@@ -598,7 +598,7 @@ public class ConceptView implements Serializable {
     }
 
     public String getCreator() {
-        if (nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
+        if (nodeConcept == null || nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
             return "";
         }
         UserHelper userHelper = new UserHelper();
@@ -606,7 +606,7 @@ public class ConceptView implements Serializable {
     }
 
     public String getContributor() {
-        if (nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
+        if (nodeConcept == null || nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
             return "";
         }
         UserHelper userHelper = new UserHelper();

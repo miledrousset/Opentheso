@@ -4,43 +4,45 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGroup id="facetView" styleClass="textOpentheso">    
+    <h:panelGroup id="facetView" styleClass="textOpentheso"> 
 
-        <div class="card mb-4 py-3 border-left-success">
-            <div class="card-body">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-2">
-                            <h:outputText value="Label : " title="Le libellé de la facette"
-                                          style="font-size: 14px; font-weight: bold;"/>
-                        </div>
 
-                        <div class="col-1">
+        <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central">
+            <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+                <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+
+                    <div class="row" style="padding-top: 3px;">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="Label" title="Le libellé de la facette"
+                                          style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                          icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" icon="pi pi-cog"
+                                          style="background: none; border: none; color: #000; box-shadow: none;">
                                 <p:menuitem value="Renommer la facette" oncomplete="PF('renameFacet').show();" style="font-size: 12px;"/>
                             </p:menuButton>
                         </div>
 
                         <div class="col-9">
                             <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
-                                          title="#{editFacet.facetSelected.idFacet}" 
-                                          style="font-size: 14px; font-weight: bold" />
+                                          title="#{editFacet.facetSelected.idFacet}" style="font-size: 14px;" />
                         </div>
-                    </div>
+                    </div>                  
+                </div>
 
-                    <div class="row" style="margin-top: 10px">
-                        <div class="col-2">
-                            <h:outputText value="Concept parent : " title="Concept parent"
-                                          style="font-size: 14px; font-weight: bold;"/>
-                        </div>
-                        <div class="col-1">
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                          icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                <div class="list-group-item list-group-item-action">
+                    <div class="row" style="padding-top: 10px;">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="Concept parent" title="Concept parent"
+                                          style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                          icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
                                 <p:menuitem value="Modifer le concept Parent" oncomplete="PF('addConceptParentToFacet').show();" style="font-size: 12px;"/>
                             </p:menuButton>
                         </div>
+
                         <div class="col-9">
                             <h:outputText rendered="#{editFacet.concepParent.term.lexical_value == ''}"
                                           value="(#{editFacet.concepParent.concept.idConcept})"
@@ -51,13 +53,14 @@
                                           title="#{editFacet.concepParent.concept.idConcept}" />  
                         </div>
                     </div>
+                </div>
 
-                    <div class="row" style="margin-top: 10px">
-                        <div class="col-2">
-                            <h:outputText value="Membres : " title="Les concepts membres"
-                                          style="font-size: 14px; font-weight: bold;"/>
-                        </div>
-                        <div class="col-1">
+                <div class="list-group-item list-group-item-action">
+                    <div class="row" style="padding-top: 10px;">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="Membres" title="Les concepts membres"
+                                          style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                 <p:menuitem value="Nouveau concept"
@@ -101,14 +104,16 @@
                             </div>
                         </h:panelGroup>
                     </div>
+                </div>
 
-                    <!-- ligne Traductions -->
-                    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
-                        <div class="row" style="margin-top: 10px">
-                            <div class="col-2">
-                                <h:outputText value="Traduction : " style="font-size: 14px; font-weight: bold;" />
-                            </div>
-                            <div class="col-1">
+                <!-- ligne Traductions -->
+                <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row" style="padding-top: 10px;">
+                            <div class="col-3" style="text-align: right;">
+                                <h:outputText value="Traduction"
+                                              style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+                                
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="Ajouter une traduction" oncomplete="PF('idAddFacetTraduction').show();"
@@ -140,11 +145,11 @@
                                 </div>
                             </h:panelGroup>
                         </div>
-                    </h:panelGroup>
-                </div>
+                    </div>
+                </h:panelGroup>
             </div>
         </div>
-
+        
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and 
                                   (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
             <p:commandButton value="Supprimer la facette" action="#{editFacet.supprimerFacette}">
@@ -156,7 +161,6 @@
                 <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
             </p:confirmDialog>  
         </h:panelGroup>
-
     </h:panelGroup>
 
 

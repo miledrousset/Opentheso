@@ -44,12 +44,19 @@ import org.primefaces.PrimeFaces;
 @Named(value = "newConcept")
 @SessionScoped
 public class NewConcept implements Serializable {
-    @Inject private Connect connect;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private Tree tree;
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+    @Inject
+    private LanguageBean languageBean;
+    @Inject
+    private ConceptView conceptBean;
+    @Inject
+    private SelectedTheso selectedTheso;
+    @Inject
+    private Tree tree;
 
     private String prefLabel;
     private String notation;
@@ -62,29 +69,30 @@ public class NewConcept implements Serializable {
     private boolean isCreated;
     private boolean duplicate;
     private List<NodeSearchMini> nodeSearchMinis;
-   
+
     /// partie pour les concepts à créer sous une Facette 
     private String idBTfacet;
     private String idFacet;
     private boolean isConceptUnderFacet;
-    
+
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
-        if(typesRelationsNT != null){
+    }
+
+    public void clear() {
+        if (typesRelationsNT != null) {
             typesRelationsNT.clear();
             typesRelationsNT = null;
         }
-        if(nodeGroups != null){
+        if (nodeGroups != null) {
             nodeGroups.clear();
             nodeGroups = null;
         }
-        if(nodeSearchMinis != null){
+        if (nodeSearchMinis != null) {
             nodeSearchMinis.clear();
             nodeSearchMinis = null;
-        }        
+        }
         prefLabel = null;
         notation = null;
         idNewConcept = null;
@@ -92,9 +100,9 @@ public class NewConcept implements Serializable {
         relationType = null;
         idGroup = null;
         idBTfacet = null;
-        idFacet = null;        
-    }      
-    
+        idFacet = null;
+    }
+
     public NewConcept() {
     }
 
@@ -105,7 +113,7 @@ public class NewConcept implements Serializable {
         idNewConcept = null;
         notation = null;
         isConceptUnderFacet = false;
-        if(conceptBean.getNodeConcept() != null) {
+        if (conceptBean.getNodeConcept() != null) {
             for (NodeGroup nodeGroup : conceptBean.getNodeConcept().getNodeConceptGroup()) {
                 idGroup = nodeGroup.getConceptGroup().getIdgroup();
             }
@@ -117,8 +125,8 @@ public class NewConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang());
     }
-    
-    public void resetForFacet(NodeFacet nodeFacet){
+
+    public void resetForFacet(NodeFacet nodeFacet) {
         reset();
         isConceptUnderFacet = true;
         // le concept BT
@@ -172,9 +180,8 @@ public class NewConcept implements Serializable {
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
         TermHelper termHelper = new TermHelper();
-        
+
         // vérification si le term à ajouter existe déjà 
-        
         // verification dans les prefLabels
         if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
                 prefLabel.trim(),
@@ -194,7 +201,7 @@ public class NewConcept implements Serializable {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un synonyme existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
-        } 
+        }
 
         if ((idNewConcept != null) && (!idNewConcept.isEmpty())) {
             if (conceptHelper.isIdExiste(connect.getPoolConnexion(), idNewConcept, idTheso)) {
@@ -249,20 +256,19 @@ public class NewConcept implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le top concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:conceptView");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }
 
-        PrimeFaces.current().executeScript("PF('addTopConcept').hide();");        
+        PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
 
         tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
 
         tree.expandTreeToPath(idNewConcept, idTheso, idLang);
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+            pf.ajax().update("containerIndex:formLeftTab");
         }
         init();
     }
@@ -296,9 +302,8 @@ public class NewConcept implements Serializable {
         }
 
         TermHelper termHelper = new TermHelper();
-      
+
         // vérification si le term à ajouter existe déjà 
-        
         // verification dans les prefLabels
         if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
                 prefLabel.trim(),
@@ -318,14 +323,14 @@ public class NewConcept implements Serializable {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un synonyme existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
-        }        
+        }
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
     }
-    
+
     /**
-     * permet d'ajouter un nouveau concept en doublon après validation de l'utilisateur 
-     * pour créer un doublon
+     * permet d'ajouter un nouveau concept en doublon après validation de
+     * l'utilisateur pour créer un doublon
      *
      * @param idConceptParent
      * @param idLang
@@ -342,7 +347,7 @@ public class NewConcept implements Serializable {
         isCreated = false;
         duplicate = false;
         FacesMessage msg;
-        
+
         ConceptHelper conceptHelper = new ConceptHelper();
         if (roleOnThesoBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
@@ -385,12 +390,12 @@ public class NewConcept implements Serializable {
 
         terme.setStatus(status);
         concept.setTopConcept(false);
-        
+
         // Si le concept est sous une Facette, le BT est celui du parent de la facette 
-        if(isConceptUnderFacet) {
+        if (isConceptUnderFacet) {
             idConceptParent = idBTfacet;
         }
-        
+
         idNewConcept = conceptHelper.addConcept(
                 connect.getPoolConnexion(),
                 idConceptParent, relationType,
@@ -403,9 +408,9 @@ public class NewConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        if(isConceptUnderFacet) {
+        if (isConceptUnderFacet) {
             FacetHelper facetHelper = new FacetHelper();
-            if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(), idFacet, idTheso, idNewConcept)){
+            if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(), idFacet, idTheso, idNewConcept)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le concept n'a pas été ajouté à la facette");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
@@ -414,7 +419,7 @@ public class NewConcept implements Serializable {
                     false, true, false, "term");
             data.setIdFacetParent(idFacet);
             tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
-            
+
             tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
             tree.expandTreeToPath2(idBTfacet,
                     selectedTheso.getCurrentIdTheso(),
@@ -423,14 +428,15 @@ public class NewConcept implements Serializable {
 
             PrimeFaces pf = PrimeFaces.current();
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formLeftTab:tabTree:tree");
+                pf.ajax().update("messageIndex");
+                pf.ajax().update("containerIndex:formLeftTab");
             }
             FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concept ajouté avec succès !");
             FacesContext.getCurrentInstance().addMessage(null, msg2);
             init();
             return;
-        }        
-        
+        }
+
         PrimeFaces pf = PrimeFaces.current();
         if (tree.getSelectedNode() == null) {
             return;
@@ -441,16 +447,15 @@ public class NewConcept implements Serializable {
         }
 
         // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-        
         /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
         // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
-        if(tree.getSelectedNode().getChildCount() == 0) {
+        if (tree.getSelectedNode().getChildCount() == 0) {
             tree.getSelectedNode().setType("concept");
         }
         if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
             tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formLeftTab:tabTree:tree");
+                pf.ajax().update("containerIndex:formLeftTab");
                 pf.executeScript("srollToSelected()");
             }
             tree.getSelectedNode().setExpanded(true);
@@ -459,47 +464,33 @@ public class NewConcept implements Serializable {
         isCreated = true;
 
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptNarrower");     
-        }        
-        
+            pf.ajax().update("containerIndex:formRightTab");
+        }
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        if(!conceptHelper.getMessage().isEmpty()) {
+        if (!conceptHelper.getMessage().isEmpty()) {
             FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_WARN, "", conceptHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg2);                 
-        }        
-        init();
-    }    
+            FacesContext.getCurrentInstance().addMessage(null, msg2);
+        }
 
-    private void init(){
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+        }
+
+        init();
+    }
+
+    private void init() {
         duplicate = false;
         idNewConcept = null;
         prefLabel = "";
     }
-    
+
     public void cancel() {
         duplicate = false;
     }
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     // à activer s'il faut faire un controle en temps réel de l'existance d'un terme avant la création
     public List<NodeSearchMini> completExactTerm(String value) {
 

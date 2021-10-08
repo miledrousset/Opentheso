@@ -452,8 +452,9 @@ public class EditFacet implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
-            pf.ajax().update("containerIndex:formRightTab:facetView");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex:formRightTab");
         }
         PrimeFaces.current().executeScript("PF('addFacet').hide();");
         newFacetName = "";
