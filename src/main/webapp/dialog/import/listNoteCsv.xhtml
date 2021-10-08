@@ -24,7 +24,7 @@
                                     </f:facet>
                                     <p:row>
                                         <p:column>26678/crtcg26jeN4R9</p:column>
-                                        <p:column>test de définition</p:column>
+                                        <p:column>test de définition##autre définition</p:column>
                                         <p:column>testing of definition</p:column>
                                     </p:row>
                                 </p:panelGrid>    
@@ -34,7 +34,7 @@
                             <p:outputPanel deferred="true" style="font-size: 12px; margin-left: 30px">
                                 <p>
                                     Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
-                                    Si l'identifiant n'existe pas dans le thésaurus, la note sera rejetée.<br/>
+                                    Si l'identifiant n'existe pas dans le thésaurus, la note sera rejetée. Le ## sert à combiner plusieurs valeurs<br/>
                                     Si la note existe, pas de changement (sauf si l'option <b>tout vider avant</b> est active) <br/>
                                     Deux options sont possibles :
                                     1- garder les valeurs existantes : permet d'ajouter les notes inexistantes <br/>
@@ -44,7 +44,6 @@
                                 </p>
                             </p:outputPanel>
                             <p:spacer/>
-                          
                         </fieldset>
                     </b:column>  
                 </b:row> 
