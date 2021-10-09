@@ -10,109 +10,35 @@
 
 */
 
+/*** MenuButton ***/
 .ui-menubutton .ui-widget {
-    background-color: #42a068;
-    border: #000;
+    background: transparent !important; 
+    border: transparent !important;
+    color: #f47b2a !important;
+    box-shadow: none !important;
 }
 
-.ui-button .ui-widget .ui-state-default .ui-corner-all .ui-button-icon-only {
-    background-color: #42a068;
-    border: #000;
+.ui-menu.ui-menu-dynamic {
+    width: auto;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
-.ui-menubutton .ui-widget {
-    background-color: #42a068;
-    border: #000;
+.ui-stat-hover .ui-menuitem-link .ui-corner-all .ui-menuitem-active {
+    background-color: #f47b2a;
+    color: #f47b2a;
 }
 
-
-
-
-
-
+/* Tab */
 .ui-tabs .ui-tabs-nav.ui-widget-header li.ui-state-active a, .ui-tabs {
     color: #f47b2a;
 }
 
-.ui-dialog-title {
-    color: #43B572;
-}
-
-.dialog-titre {
-    font-size: 12px; 
-    color: black; 
-    font-weight: bold;
-}
-
-.ui-button-icon-left .ui-icon ui-c .pi pi-align-justify {
-    background-color: #F47B2A;
-}
-
-.input-dialog {
-    width: 100%; 
-    font-size: 12px; 
-    background: white; 
-    border-color: #43B572; 
-    color: #000;
-    border-color: #43B572;
-}
-
-.separator{
-    background-color: #FAEDE5;
-    border-color:#FAEDE5;
-}
-
-@font-face {
-    font-family: myCustomFont;
-    src: url(fonts/FreeSans.ttf);
-}
-
-.fa_custom_open {
-    color: #f47b2a !important;
-    font-size: 12px !important;
-}
-.fa_custom_collapse {
-    color: #f47b2a !important;
-    font-size: 12px !important;
-}
-.fa_custom_file{
-    color: #164A78 !important;
-    font-size: 12px !important;
-}
-.fa_custom_magnet {
-    color: #C63632 !important;
-    font-size: 12px !important;
-}
-
-/*Tree Groups */
-.far_custom_open {
-    color: #143a1e  !important;
-    font-size: 12px !important;    
-}
-.far_custom_collapse {
-    color:  #143a1e !important;
-    font-size: 12px !important;    
-}
-.far_custom_file{
-    color: #164A78 !important;
-    font-size: 12px !important;    
-}
-
-.tree_custom {
-    background: none !important;
-    color: black !important;
-    font-size: 12px !important;
-    margin: 0 !important;
-    padding: 0px !important;
-    white-space: nowrap !important;
-    overflow: auto !important;
-    font-size: 12px !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-    background: none !important;  
+.ui-tabs .ui-tabs-nav.ui-widget-header li a {
+    color: #226b40;
 }
 
 /*** Dialog ***/
-
 .ui-dialog-wrapper {
     position: fixed;
     top: 0;
@@ -125,469 +51,28 @@
     pointer-events: none;
 }
 
-.ui-dialog {
-    position: fixed;
-    padding: 0;
-    pointer-events: auto;
-/*    display: flex;*/
-    flex-direction: column;
-    max-height: 90%;
+.ui-dialog-title {
+    color: #43B572;
 }
 
-.ui-dynamicdialog {
-    top: 50%;
-    left: 50%;
+.input-dialog {
+    width: 100%; 
+    font-size: 12px; 
+    background: white; 
+    border-color: #43B572; 
+    color: #000;
+    border-color: #43B572;
 }
 
-.ui-dialog .ui-dialog-titlebar {
-	padding: .5em .75em;
-    position: relative;
-    border: 0px;
-
-
-    background: #FAFAFA;
-    flex-shrink: 0;
-}
-
-.ui-dialog .ui-dialog-content {
-    position: relative;
-    border: 0;
-    padding: .5em .75em;
-    background: none;
-    color: #8C8C8C;
-    font-size: 12px;
-    zoom: 1;
-}
-
-.ui-dialog-maximized {
-    -webkit-transition: none;
-    transition: none;
-    transform: none;
-    width: 100vw !important;
-    max-height: 100%;
-    height: 100%;
-    left: 0px !important;
-    top: 0px !important;
-}
-
-.ui-dialog-maximized .ui-dialog-content {
-    flex-grow: 1;
-}
-
-.ui-dialog-resizable .ui-dialog-content {
-    overflow: auto;
-}
-
-.ui-dialog-breakpoint {
-    left: 0px;
-    width: 100%;
-}
-
-.ui-dialog .ui-resizable-se {
-    width: 14px;
-    height: 14px;
-    right: 3px;
-    bottom: 3px;
-    position: absolute;
-    font-size: .1px;
-    display: block;
-    cursor: se-resize;
-}
-.ui-draggable .ui-dialog-titlebar {
-    cursor: move;
-}
-
-.ui-dialog .ui-dialog-titlebar-icons {
-    float: right;
-}
-.ui-dialog .ui-dialog-titlebar-icons:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-.ui-dialog .ui-dialog-titlebar-icon {
-    text-decoration: none;
-    padding: .125em;
-    cursor: pointer;
-    display: inline-block;
-    vertical-align: middle;
-    border: 1px solid transparent;
-}
-
-.ui-dialog .ui-dialog-titlebar-icon span {
-    display: block;
-    margin: 0;
-}
-
-.ui-dialog-footer {
-    padding: 1em;
-    border-width: 1px 0 0 0;
-    text-align: right;
-    flex-shrink: 0;
-}
-
-.ui-dialog-mask {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-}
-
-.ui-dialog-wrapper.ui-dialog-mask {
-    pointer-events: auto;
-}
-
-/* Position */
-.ui-dialog-top .ui-dialog,
-.ui-dialog-bottom .ui-dialog,
-.ui-dialog-left .ui-dialog,
-.ui-dialog-right .ui-dialog,
-.ui-dialog-topleft .ui-dialog,
-.ui-dialog-topright .ui-dialog,
-.ui-dialog-bottomleft .ui-dialog,
-.ui-dialog-bottomright .ui-dialog {
-    margin: .75em;
-    position: relative;
-}
-
-.ui-dialog-left {
-    justify-content: flex-start;
-}
-.ui-dialog-right {
-    justify-content: flex-end;
-}
-.ui-dialog-top {
-    align-items: flex-start;
-}
-.ui-dialog-topleft {
-    justify-content: flex-start;
-    align-items: flex-start;
-}
-.ui-dialog-topright {
-    justify-content: flex-end;
-    align-items: flex-start;
-}
-.ui-dialog-bottom {
-    align-items: flex-end;
-}
-.ui-dialog-bottomleft {
-    justify-content: flex-start;
-    align-items: flex-end;
-}
-.ui-dialog-bottomright {
-    justify-content: flex-end;
-    align-items: flex-end;
-}
-
-/* ConfirmDialog */
-.ui-confirmdialog {
-    width: 30em;
-}
-
-.ui-confirmdialog.ui-dialog .ui-dialog-content {
-    padding: 1em 2em;
-}
-.ui-confirmdialog .ui-dialog-content .ui-confirmdialog-icon {
-    font-size: 1.5em;
-    margin-right: .5em;
-    position: relative;
-    top: .2em;
-}
-
-.ui-dialog-footer .ui-button {
-    margin-right: .25em;
-}
-
-/* Fluid */
-.ui-fluid .ui-dialog-footer .ui-button {
-    width: auto;
-}
-
-/* RTL */
-.ui-rtl .ui-dialog .ui-dialog-titlebar-close  {
-    float: left;
-}
-
-.ui-rtl .ui-dialog .ui-dialog-buttonpane button {
-    text-align: right;
-}
-
-@media screen and (max-width: 40em) {
-    .ui-confirmdialog {
-        width: 90%;
-    }
-}
-
-.ui-autocomplete {
-    width: auto;
-    zoom: 1;
-    cursor: pointer;
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    position: relative;
-    display: inline-block;
-}
-
-/**/
-.ui-autocomplete .ui-autocomplete-row {
-    background: white;
-    color: red;
-}
-
-.ui-autocomplete .ui-autocomplete-item {
-    background: white;
-    color: red;
-}
-.ui-autocomplete .ui-widget-content {
-    background: white;
-    color: red;
-}
-.ui-autocomplete .ui-autocomplete-list-item {
-    background: white;
-    color: red;
-}
-.ui-autocomplete .k-list {
-  background-color: red !important;
-}
-.ui-autocomplete .k-state-hover {
-   background-color: green !important;
-}
-/*ui-autocomplete-item ui-autocomplete-row ui-widget-content ui-corner-all ui-state-highlight*/
-.panelAutoComplete .ui-autocomplete-items .ui-state-highlight ui-autocomplete-row {
-    background: #FAEDE5;
-    color: black;
-    font-size: 12px;
-    box-shadow: none;
-}
-
-
-
-
-
-
-
-
-.ui-autocomplete .ui-autocomplete-dropdown {
-    height: 100%;
-    width: 2em;
-    margin-right: 0;
-    vertical-align: top;
-}
-
-.ui-autocomplete .ui-autocomplete-input {
-    padding-right: 1.5em;
-}
-
-.ui-autocomplete-loader {
-    position: absolute;
-    right: .25em;
-    top: 50%;
-    margin-top: -.5em;  
-}
-
-.ui-autocomplete-query {
-    font-weight: normal;
-}
-
-.ui-autocomplete .ui-autocomplete-panel {
-    min-width: 100%;
-}
-
-.ui-autocomplete-panel {
-    position: absolute;
-    overflow: auto; 
-}
-
-.ui-autocomplete-panel .ui-autocomplete-list {
-    padding: 0.4em;
-    border: 0 none; 
-}
-
-.ui-autocomplete-panel .ui-autocomplete-list-item {
-    border: 0 none;
-    cursor: pointer;
-    font-weight: normal;
-    margin: 1px 0;
-    padding: 0.186em 0.313em;
-    text-align: left;  
-
-}
-
-.ui-autocomplete .ui-button-icon-only,
-.ui-autocomplete .ui-button-icon-only:enabled:hover,
-.ui-autocomplete .ui-button-icon-only:enabled:focus,
-.ui-autocomplete .ui-button-icon-only:enabled:active {
-    border-left: 0 none; 
-}
-
-/* Multiple Selection */
-.ui-autocomplete-multiple-container {
-    display: inline-block;
-    vertical-align: middle;  
-}
-
-.ui-autocomplete-multiple-container.ui-inputtext {
-    clear: left;
-    cursor: text;
-    list-style-type: none;
-    margin: 0;
-    overflow: hidden;
-    padding: 0 1.5em 0 .25em;  
-}
-
-.ui-autocomplete-token {
-    cursor: default;
-    display: inline-block;
-    vertical-align: middle;
-    overflow: hidden;
-    padding: .125em .5em;
-    white-space: nowrap;
-    position: relative;
-    margin-right: .125em;
-    border: 0 none;
-    font-size: .9em;
-    
-}
-
-.ui-autocomplete-token-label {
-    display: block;
-    margin-right: 2em; 
-}
-
-.ui-autocomplete-token-icon {
-    margin-top: -.5em;
-    position: absolute;
-    right: 0.2em;
-    top: 50%;
-    cursor: pointer;  
-}
-
-.ui-autocomplete-input-token {
-    display: inline-block;
-    vertical-align: middle;
-    list-style-type: none;
-    margin: 0 0 0 .125em;
-    padding: .25em .25em .25em 0;   
-}
-
-.ui-autocomplete-input-token input {
-    border: 0 none;
-    width: 10em;
-    outline: medium none;
-    background-color: transparent;
-    margin: 0;
-    padding: 0;
-    box-shadow: none;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-    border-radius: 0; 
-}
-
-.ui-autocomplete-dd .ui-autocomplete-loader {
-    right: 2.25em;  
-}
-
-.ui-autocomplete-dd input.ui-corner-all ,
-.ui-autocomplete-dd .ui-autocomplete-multiple-container.ui-corner-all {
-     -moz-border-radius-topright: 0px; 
-     -webkit-border-top-right-radius: 0px;
-     border-top-right-radius: 0px;
-     -moz-border-radius-bottomright: 0px;
-     -webkit-border-bottom-right-radius: 0px;
-     border-bottom-right-radius: 0px;   
- }
- 
-.ui-autocomplete-dd .ui-autocomplete-dropdown.ui-corner-all {
-     -moz-border-radius-topleft: 0px; 
-     -webkit-border-top-left-radius: 0px;
-     border-top-left-radius: 0px;
-     -moz-border-radius-bottomleft: 0px;
-     -webkit-border-bottom-left-radius: 0px;
-     border-bottom-left-radius: 0px;
-}
-
-/** AutoComplete **/
-.ui-fluid p-autocomplete,
-.ui-fluid .ui-autocomplete,
-.ui-fluid .ui-autocomplete-input {
-    width: 100%;
-}
-
-.ui-fluid .ui-autocomplete.ui-autocomplete-dd .ui-autocomplete-input,
-.ui-fluid .ui-autocomplete.ui-autocomplete-dd .ui-autocomplete-multiple-container {
-    width: calc(100% - 2em);
-}
-
-.ui-fluid .ui-autocomplete .ui-autocomplete-dropdown.ui-button {
-    width: 2em;
+.dialog-titre {
+    font-size: 12px; 
+    color: black; 
+    font-weight: bold;
 }
 
 .dropdown-menu-private{
     color: #42a068 !important;
     font-size: 12px;
-}
-
-
-/* radio button */
-.ui-radiobutton-icon {
-    background: none !important;
-    color: #42a068  !important;
-}
-selected_one_radio_custom {
-    font-size: 12px !important;
-    font-weight: normal !important;
-    color: #42a068 !important;
-}
-
-
-.fas_custom_flag{
-    color: #f47b2a;
-}
-
-.fas_color_orange{
-    color: #f47b2a;
-}
-
-/* toggleSwitch */
-.ui-toggleswitch-slider {
-    -webkit-transition: background-color 0.3s, box-shadow 0.2s;
-    transition: background-color 0.3s, box-shadow 0.2s;
-    background: #cccccc;
-}
-
-.ui-toggleswitch-slider:before {
-    background-color: #ffffff;
-}
-
-.ui-toggleswitch-focus .ui-toggleswitch-slider {
-    -moz-box-shadow: 0px 0px 5px #c0c0c0;
-    -webkit-box-shadow: 0px 0px 5px #c0c0c0;
-    box-shadow: 0px 0px 5px #c0c0c0;
-}
-
-.ui-toggleswitch:not(.ui-state-disabled):hover .ui-toggleswitch-slider {
-    background-color: #b7b7b7;
-}
-
-.ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
-    background-color: #43B572;
-}
-
-.ui-toggleswitch.ui-toggleswitch-checked:not(.ui-state-disabled):hover .ui-toggleswitch-slider {
-    background-color: #43B572;
-}
-
-/* selectOneMenu */
-.selectOneMenu_custom.ui-selectonemenu .ui-selectonemenu-label {
-    font-size: 12px;
-}
-.selectOneMenu_panelStyle_custom .ui-selectonemenu-list { 
-    font-size: 12px !important;
-}
-.selectOneMenu_custom.ui-selectonemenu .ui-selectonemenu-trigger {
-      height: 25px !important; 
-      font-size: 12px !important;
 }
 
 .buttonIconOrange {
@@ -605,104 +90,7 @@ selected_one_radio_custom {
     box-shadow: none !important;
 }
 
-
-/* pour le dropMenu*/
-
-.downwards .dropdown-submenu>.dropdown-menu {
-left: auto;
-right: 100%;
-margin-left: 0;
-margin-right: -1px;
-      }
-
-/* This will target all children, but what about children of .dropdown-submenu.pull-right? */
-.pull-right .dropdown-submenu > .dropdown-menu,
-.dropdown-submenu.pull-left > .dropdown-menu {
-left: auto;
-right: 100%;
-margin-left: 0;
-margin-right: -1px;
-}
-
-/* Will need a pull-right override - should this be a normal selector to target all future .dropdown-menu? */
-.dropdown-submenu.pull-right > .dropdown-menu {
-  left: 100%;
-  right: auto;
-  margin-left: -1px;
-  margin-right: 0;
-}
-
-.ui-widget-header {
-    color: white;
-    background: #43B572;
-    background-color: #43B572;
-}
-
 .ui-state-highlight, .ui-widget-content .ui-state-highlight {
     background: #f47b2a;
     border-color: #f47b2a;
-}
-
-.ui-datatable .ui-state-highlight {
-    background: #f47b2a;
-    border-color: #f47b2a;
-}
-
-.button-standard {
-    background: #43B572 !important;
-    border: #43B572;
-}
-
-button-standard:active{
-    background: #F47B2A;
-}
-
-button-standard:focus{
-    background: #F47B2A;
-}
-
-.tabCostum {    
-    background: #ecf8f1;
-    border: #43B572;
-    font-family: openthesoFont;
-    font-size: small;
-}
-
-.tabCostum.ui-state-highlight {    
-    background: #F47B2A;
-    border: #F47B2A;
-    font-family: openthesoFont;
-}
-
-.ui-widget-header {
-    background: #43B572;
-    border: #43B572;
-    color: white;
-} 
-
-
-.ui-tabs .ui-tabs-nav.ui-widget-header li a {
-    color: #43B572;
-}
-
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-    color: #000;
-    background-color: #FFF;
-    border-color: #FFF;
-}
-
-.ui-menubutton .ui-widget {
-    background-color: #FFF;
-    border-color: #FFF;
-}
-
-.ui-button .ui-widget .ui-state-default .ui-corner-all .ui-button-icon-only {
-    background-color: #FFF;
-    border-color: #FFF;
-    color: #FFF;
-}
-
-.ui-button-text .ui-c {
-    background-color: #FFF;
-    border-color: #FFF;
 }

@@ -19,10 +19,9 @@
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="pi pi-cog"
                                           style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                <p:menuitem value="Modifier" 
-                                            action="#{modifyGroupBean.init()}"
+                                <p:menuitem value="Modifier" action="#{modifyGroupBean.init()}"
                                             oncomplete="PF('modifyGroup').show();"
-                                            style="font-size: 12px;"/>
+                                            update="idModifyGroup"/>
                             </p:menuButton>
                         </div>
 
@@ -99,19 +98,22 @@
 
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    
                                     <p:menuitem value="Ajouter une traduction" 
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 action = "#{traductionGroupBean.setLangWithNoTraduction()}"
                                                 oncomplete="PF('addTraductionGroup').show();"
-                                                style="font-size: 12px;" />
-                                    <p:menuitem value="modifier une traduction" 
+                                                update="idAddTraductionGroup"  />
+                                    
+                                    <p:menuitem value="Modifier une traduction" 
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 oncomplete="PF('renameTraductionGroup').show();"
-                                                style="font-size: 12px;" />
-                                    <p:menuitem value="supprimer une traduction" 
+                                                update="idRenameTraductionGroup" />
+                                    
+                                    <p:menuitem value="Supprimer une traduction" 
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 oncomplete="PF('deleteTraductionGroup').show();"
-                                                style="font-size: 12px;" />
+                                                update="idDeleteTraductionGroup" />
                                 </p:menuButton> 
                             </div>
 
@@ -206,9 +208,9 @@
 
                 <h:panelGroup rendered="#{groupView.nodeGroup.conceptGroup.idHandle != ''}">
                     <div class="row">
-                            <div class="col-3" style="text-align: right;">
+                        <div class="col-3" style="text-align: right;">
                             <h:outputText value="IdHandle" style="font-size: 14px; font-weight: bold; 
-                                              margin-right: 10px; margin-right: 40px"/>
+                                          margin-right: 10px; margin-right: 40px"/>
                         </div>
                         <div class="col-9">
                             <p:link href="https://hdl.handle.net/#{groupView.nodeGroup.conceptGroup.idHandle}"
@@ -234,4 +236,10 @@
             </div>
         </div>        
     </h:panelGroup>
+
+    <ui:include src="../../dialog/group/modifyGroup.xhtml" />
+    <ui:include src="../../dialog/group/addTraductionGroup.xhtml" />
+    <ui:include src="../../dialog/group/deleteTraductionGroup.xhtml" />
+    <ui:include src="../../dialog/group/renameTraductionGroup.xhtml" />
+
 </ui:fragment>

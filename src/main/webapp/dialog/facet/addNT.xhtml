@@ -5,7 +5,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddNTFacette" header="#{langueBean.getMsg('rightbody.conceptdialog.add_specific_concept')}" 
-              widgetVar="addNTFacette" width="450" showEffect="fade" modal="true" resizable="false" >
+              widgetVar="addNTFacette" width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -101,7 +101,7 @@
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
-                                 actionListener="PF('addNTFacette').hide();" update="idAddNT"/>
+                                 actionListener="PF('addNTFacette').hide();" update="idAddNTFacette"/>
 
                 <p:commandButton class="btn btn-success" value="#{langueBean.getMsg('btnAdd')}"
                                  update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex" 

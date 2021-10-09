@@ -161,8 +161,8 @@ public class EditFacet implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab");
-            pf.ajax().update("formLeftTab:tabTree:tree");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
         }
     }
     
@@ -196,6 +196,12 @@ public class EditFacet implements Serializable {
         initDataAfterAction();
         showMessage(FacesMessage.SEVERITY_INFO, "Traduction suprimée avec sucée !");
         
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+        }
+        
     }
     
     public void updateTraduction(NodeFacet nodeFacet) {
@@ -212,13 +218,15 @@ public class EditFacet implements Serializable {
                 nodeFacet.getLexicalValue());
 
         initEditFacet(facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:facetView");
-        }
         
         initDataAfterAction();
         showMessage(FacesMessage.SEVERITY_INFO, "Traduction modifiée avec sucée !");
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+        }
         
     } 
     
@@ -236,10 +244,17 @@ public class EditFacet implements Serializable {
                 selectedLang);
         
         initDataAfterAction();
+        
         PrimeFaces.current().executeScript("PF('addFacetTraduction').hide();");
         showMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec sucée !");
 
         traductionValue = "";
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+        }
     }
 
     private void initDataAfterAction() {
@@ -421,8 +436,8 @@ public class EditFacet implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:facetView");
-            pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
         }
         PrimeFaces.current().executeScript("PF('addConceptParentToFacet').hide();");
         
@@ -496,8 +511,8 @@ public class EditFacet implements Serializable {
         newFacetName = "";
 
         PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("containerIndex:formRightTab:facetView");
-        pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+        pf.ajax().update("messageIndex");
+        pf.ajax().update("containerIndex");
 
     }
 

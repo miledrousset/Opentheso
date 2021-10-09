@@ -31,34 +31,40 @@ import org.primefaces.PrimeFaces;
 @javax.enterprise.context.SessionScoped
 
 public class ModifyGroupBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private TreeGroups treeGroups;   
-    @Inject private GroupView groupView;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;
-    
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private TreeGroups treeGroups;
+    @Inject
+    private GroupView groupView;
+    @Inject
+    private SelectedTheso selectedTheso;
+    @Inject
+    private CurrentUser currentUser;
+
     private String selectedGroupType;
     private String idGroup;
-    private String titleGroup;    
-    private String notation;    
-    private List<SelectItem> listGroupType;    
+    private String titleGroup;
+    private String notation;
+    private List<SelectItem> listGroupType;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
+    }
+
+    public void clear() {
         selectedGroupType = null;
-        titleGroup = null;      
-        titleGroup = null;    
-        notation = null;         
-        if(listGroupType!= null){
+        titleGroup = null;
+        titleGroup = null;
+        notation = null;
+        if (listGroupType != null) {
             listGroupType.clear();
             listGroupType = null;
-        }    
+        }
     }
-    
+
     public ModifyGroupBean() {
     }
 
@@ -67,18 +73,18 @@ public class ModifyGroupBean implements Serializable {
         titleGroup = groupView.getNodeGroup().getLexicalValue();
         notation = groupView.getNodeGroup().getConceptGroup().getNotation();
         selectedGroupType = groupView.getNodeGroup().getConceptGroup().getIdtypecode();
-        
+
         listGroupType = new GroupHelper().getAllGroupType(connect.getPoolConnexion());
         if (!listGroupType.isEmpty()) {
             selectedGroupType = listGroupType.get(0).getLabel();
-        }        
+        }
     }
-    
+
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Group !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-    }    
-    
+    }
+
     /**
      * Modification du label du gourpe
      *
@@ -86,12 +92,17 @@ public class ModifyGroupBean implements Serializable {
     public void renameGroup() {
         FacesMessage msg;
 
+        PrimeFaces pf = PrimeFaces.current();
+
         if (titleGroup.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, " ", " Le label ne doit pas être vide !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
-       
+
         GroupHelper groupHelper = new GroupHelper();
         if (groupHelper.isDomainExist(connect.getPoolConnexion(),
                 titleGroup,
@@ -99,107 +110,125 @@ public class ModifyGroupBean implements Serializable {
                 selectedTheso.getCurrentLang())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, " ", " un group existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
-        }        
-        
-        if(!groupHelper.renameGroup(
+        }
+
+        if (!groupHelper.renameGroup(
                 connect.getPoolConnexion(),
                 titleGroup,
                 selectedTheso.getCurrentLang(),
                 idGroup,
                 selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser())){
+                currentUser.getNodeUser().getIdUser())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;            
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
         }
 
-        groupView.getGroup(selectedTheso.getCurrentIdTheso(),idGroup, groupView.getNodeGroup().getIdLang());
-        
+        groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " Label modifié avec succès !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupLable");
-        }        
-        
+
         if (treeGroups.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-            
+
             // sinon, on modifie le label
             if (((TreeNodeData) treeGroups.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
                     groupView.getNodeGroup().getConceptGroup().getIdgroup())) {
                 ((TreeNodeData) treeGroups.getSelectedNode().getData()).setName(titleGroup);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("formLeftTab:tabGroups:treeGroups");
-                }
             }
         }
+
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("containerIndex:formLeftTab:treeGroups");
+        }
     }
-    
-    public void updateNotation(){
+
+    public void updateNotation() {
+
+        PrimeFaces pf = PrimeFaces.current();
         FacesMessage msg;
 
         if (notation == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Notation ne doit pas être null !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
-       
+
         GroupHelper groupHelper = new GroupHelper();
-        
+
         if (groupHelper.isNotationExist(
                 connect.getPoolConnexion(),
                 notation,
                 selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
-        }           
-        
+        }
+
         if (!groupHelper.setNotationOfGroup(connect.getPoolConnexion(),
                 notation,
                 idGroup,
                 selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur pendant la modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }        
 
-        groupView.getGroup(selectedTheso.getCurrentIdTheso(),idGroup, groupView.getNodeGroup().getIdLang());
-        
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
+        }
+
+        groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " Notation modifiée avec succès !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupNotation");
-        }
-        
+
         if (treeGroups.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-            
+
             // sinon, on modifie le label
             if (((TreeNodeData) treeGroups.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
                     groupView.getNodeGroup().getConceptGroup().getIdgroup())) {
                 ((TreeNodeData) treeGroups.getSelectedNode().getData()).setNotation(notation);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("containerIndex:formLeftTab:tabGroups:treeGroups");
-                }
             }
-        }        
-    }
-    
-    public void updateGroupType(){
-        FacesMessage msg;
+        }
 
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("containerIndex:formLeftTab:treeGroups");
+        }
+    }
+
+    public void updateGroupType() {
+        FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
+        
         if (selectedGroupType == null || selectedGroupType.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Le Type de groupe ne doit pas être vide !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
-       
+
         GroupHelper groupHelper = new GroupHelper();
         if (!groupHelper.updateTypeGroup(
                 connect.getPoolConnexion(),
@@ -208,20 +237,23 @@ public class ModifyGroupBean implements Serializable {
                 idGroup)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur pendant la modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
-        }        
+        }
 
-        groupView.getGroup(selectedTheso.getCurrentIdTheso(),idGroup, groupView.getNodeGroup().getIdLang());
-        
+        groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
+
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " Notation modifiée avec succès !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabGroup:idGroupType");
-        }         
-    }
 
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("containerIndex:formLeftTab:treeGroups");
+        }
+    }
 
     public String getSelectedGroupType() {
         return selectedGroupType;
@@ -254,6 +286,5 @@ public class ModifyGroupBean implements Serializable {
     public void setListGroupType(List<SelectItem> listGroupType) {
         this.listGroupType = listGroupType;
     }
-
 
 }

@@ -50,8 +50,6 @@ public class NewConcept implements Serializable {
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
-    private LanguageBean languageBean;
-    @Inject
     private ConceptView conceptBean;
     @Inject
     private SelectedTheso selectedTheso;

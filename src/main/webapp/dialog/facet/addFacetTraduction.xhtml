@@ -1,0 +1,48 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idAddFacetTraduction" header="Ajouter une traduction" widgetVar="addFacetTraduction"
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " style="font-size: 12px;"/>
+                <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
+                <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
+                    <i class="pi pi-exclamation-circle" />
+                </p:commandLink>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <p:selectOneMenu label="Langue" value="#{editFacet.selectedLang}"
+                                 style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                    <f:selectItems  value="#{editFacet.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                </p:selectOneMenu>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <p:inputText label="traduction" placeholder="tapez votre traduction ..."
+                             value="#{editFacet.traductionValue}" style="width: 100%"/>
+            </div>
+        </div>
+
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                                 actionListener="PF('addFacetTraduction').hide();" update="idAddFacetTraduction"/>
+
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-success" oncomplete="PF('addFacetTraduction').hide();"
+                                 actionListener="#{editFacet.addNewTraduction()}" style="color: white;"/>
+            </div>
+        </f:facet>
+    </p:dialog>
+</ui:fragment>

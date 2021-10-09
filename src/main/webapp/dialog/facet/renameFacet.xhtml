@@ -5,20 +5,20 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idRenameFacet" header="Renommer la facette" widgetVar="renameFacet" 
-              width="450" showEffect="fade" modal="true" resizable="false" >
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         
         <div class="row">
             <div class="col-4">
-                <h:outputText value="Nom de la facette " style="font-size: 14px; font-weight: bold;" /> 
+                <h:outputText value="Nom de la facette " style="font-weight: bold" /> 
             </div>
             <div class="col-8">            
-                <h:outputText value="#{editFacet.newFacetName}" style="font-size: 14px;" />
+                <h:outputText value="#{editFacet.newFacetName}" />
             </div>
         </div>
         
         <div class="row" style="margin-top: 10px;">
             <div class="col-4">
-                <h:outputText value="Nouveau nom " style="font-size: 14px; font-weight: bold;" /> 
+                <h:outputText value="Nouveau nom " style="font-weight: bold;" /> 
             </div>
             <div class="col-8">
                 <p:inputText value="#{editFacet.newFacetName}" style="font-size: 12px; width: 100%; color: #000" />
@@ -30,7 +30,7 @@
                 <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
                                  actionListener="PF('renameFacet').hide();" update="idRenameFacet"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
                                  class="btn btn-success" oncomplete="PF('renameFacet').hide();"
                                  actionListener="#{editFacet.updateLabelFacet()}" style="color: white;"/>
             </div>

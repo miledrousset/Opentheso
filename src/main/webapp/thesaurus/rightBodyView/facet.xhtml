@@ -9,8 +9,8 @@
 
         <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+                
                 <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
-
                     <div class="row" style="padding-top: 3px;">
                         <div class="col-3" style="text-align: right;">
                             <h:outputText value="Label" title="Le libellé de la facette"
@@ -19,7 +19,8 @@
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                       or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" icon="pi pi-cog"
                                           style="background: none; border: none; color: #000; box-shadow: none;">
-                                <p:menuitem value="Renommer la facette" oncomplete="PF('renameFacet').show();" style="font-size: 12px;"/>
+                                <p:menuitem value="Renommer la facette" oncomplete="PF('renameFacet').show();" 
+                                            style="font-size: 12px;" update="containerIndex:idRenameFacet"/>
                             </p:menuButton>
                         </div>
 
@@ -39,7 +40,8 @@
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                       or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
-                                <p:menuitem value="Modifer le concept Parent" oncomplete="PF('addConceptParentToFacet').show();" style="font-size: 12px;"/>
+                                <p:menuitem value="Modifer le concept Parent" oncomplete="PF('addConceptParentToFacet').show();" 
+                                            style="font-size: 12px;" update="containerIndex:modifierFacet"/>
                             </p:menuButton>
                         </div>
 
@@ -66,15 +68,15 @@
                                 <p:menuitem value="Nouveau concept"
                                             actionListener="#{newConcept.resetForFacet(editFacet.facetSelected)}"                    
                                             oncomplete="PF('addNTFacette').show();"
-                                            style="font-size: 12px;"/>
+                                            update="containerIndex:idAddNTFacette"/>
 
                                 <p:menuitem value="Ajouter des concepts existants"
                                             oncomplete="PF('addMembersFacette').show();"
-                                            style="font-size: 12px;"/>
+                                            update="containerIndex:idAddMembersFacette"/>
 
                                 <p:menuitem value="Supprimer des membres de la facette"
-                                            oncomplete="PF('removeMembers').show();"
-                                            style="font-size: 12px;"/>   
+                                            oncomplete="PF('removeMembersFacette').show();"
+                                            update="containerIndex:idRemoveMembersFacette"/>  
                             </p:menuButton>
                         </div>
 
@@ -100,7 +102,6 @@
                                                              concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
                                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                                 </ui:repeat>
-                                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 20px;"/>
                             </div>
                         </h:panelGroup>
                     </div>
@@ -113,16 +114,19 @@
                             <div class="col-3" style="text-align: right;">
                                 <h:outputText value="Traduction"
                                               style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
-                                
+
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    
                                     <p:menuitem value="Ajouter une traduction" oncomplete="PF('idAddFacetTraduction').show();"
                                                 action = "#{editFacet.setLangListForTraduction()}"
-                                                style="font-size: 12px;"/>
+                                                update="containerIndex:idAddFacetTraduction"/>
+                                    
                                     <p:menuitem value="Modifier une traduction" oncomplete="PF('renameFacetTraduction').show();"
-                                                style="font-size: 12px;"/>
+                                                update="containerIndex:idRenameFacetTraduction"/>
+                                    
                                     <p:menuitem value="Supprimer une traduction" oncomplete="PF('deleteFacetTraduction').show();"
-                                                style="font-size: 12px;"/>
+                                                update="containerIndex:idDeleteFacetTraduction"/>
                                 </p:menuButton> 
                             </div>
 
@@ -149,10 +153,11 @@
                 </h:panelGroup>
             </div>
         </div>
-        
+
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and 
                                   (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-            <p:commandButton value="Supprimer la facette" action="#{editFacet.supprimerFacette}">
+            <p:commandButton value="Supprimer la facette" action="#{editFacet.supprimerFacette}"
+                             update="containerIndex messageIndex">
                 <p:confirm header="Confirmation" message="Vous êtes sûr ?" icon="pi pi-exclamation-triangle" />
             </p:commandButton>
 
@@ -163,140 +168,14 @@
         </h:panelGroup>
     </h:panelGroup>
 
-
-    <p:dialog id="modifierConcept" header="Modifier le concept parent"  widgetVar="addConceptParentToFacet"
-              width="450" showEffect="fade" modal="true" resizable="false">
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="Concept parent actuel : #{editFacet.concepParent.term.lexical_value}" style="font-size: 13px; color: black;" /> 
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="tapez % pour tout afficher" style="font-size: 12px;" />
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <p:autoComplete value="#{editFacet.termeParentAssocie}" multiple="false" var="item"
-                                forceSelection="true" completeMethod="#{editFacet.searchConcept}"                                  
-                                minQueryLength="1" itemLabel="#{item.value}" itemValue="#{item}" converter="searchConverterIdValue"
-                                scrollHeight="300" style="width: 150px; height: 35px;">
-
-                    <p:column  style="font-size: 12px;">
-                        <h:outputText title="#{item.id}" value="#{item.value}" />
-                    </p:column>
-
-                </p:autoComplete> 
-            </div>
-        </div>
-
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
-                                 actionListener="PF('addConceptParentToFacet').hide();" update="modifierConcept"/>
-
-                <p:commandButton value="Enregistrer" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-success" oncomplete="PF('addConceptParentToFacet').hide();"
-                                 actionListener="#{editFacet.modifierConceptParent()}" style="color: white;"/>
-            </div>
-        </f:facet>
-    </p:dialog>
-
-
-
-    <p:dialog id="idAddFacetTraduction" header="Ajouter une traduction" widgetVar="addFacetTraduction"
-              width="450" showEffect="fade" modal="true" resizable="false" > 
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " style="font-size: 12px;"/>
-                <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
-                <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}">
-                    <i class="pi pi-exclamation-circle" />
-                </p:commandLink>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <p:selectOneMenu label="Langue" value="#{editFacet.selectedLang}"
-                                 style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
-                    <f:selectItems  value="#{editFacet.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                </p:selectOneMenu>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <p:inputText label="traduction" placeholder="tapez votre traduction ..."
-                             value="#{editFacet.traductionValue}" style="font-size: 12px;"/>
-            </div>
-        </div>
-
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
-                                 actionListener="PF('addFacetTraduction').hide();" update="idAddFacetTraduction"/>
-
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-success" oncomplete="PF('addFacetTraduction').hide();"
-                                 actionListener="#{editFacet.addNewTraduction()}" style="color: white;"/>
-            </div>
-        </f:facet>
-    </p:dialog>
-
-
-    <p:dialog id="idRenameFacetTraduction" header="Modifier les traductions" widgetVar="renameFacetTraduction"
-              width="450" showEffect="fade" modal="true" resizable="false" > 
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
-                              style="font-size: 13px; color: #43B572; margin-left: 5px;" />
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <p:panel style="max-height: 300px;overflow-y:scroll ">
-                    <ui:repeat var="traductionToEdit" value="#{editFacet.facetTraductions}" >
-                        <div class="col-12" style="margin-top: 3px">
-                            <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
-                                          style="font-size: 13px; color: #43B572; margin-left: 5px;" />
-                        </div>
-                    </ui:repeat>
-                </p:panel>
-            </div>
-        </div>
-    </p:dialog>
-
-    <p:dialog id="idDeleteFacetTraduction" header="Supprimer une traduction" widgetVar="deleteFacetTraduction"
-              width="450" showEffect="fade" modal="true" resizable="false" >
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: black;"/>
-            </div>
-        </div>
-
-        <ui:repeat var="traductions" value="#{editFacet.facetTraductions}" >
-            <div class="row">
-                <div class="col-10" offset="1" style="background: #FAFAFA">
-                    <h:outputText value="#{traductions.lexicalValue} (#{traductions.lang})" style="color: #43B572"/>
-                </div>
-                <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink style="color: #FF7979" action="#{editFacet.deleteTraduction(traductions)}">
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
-                </div>
-            </div>
-        </ui:repeat>
-    </p:dialog>
+    <ui:include src="../../dialog/facet/renameFacet.xhtml" />
+    <ui:include src="../../dialog/facet/addConceptParentToFacet.xhtml" />
+    <ui:include src="../../dialog/facet/addNT.xhtml" />
+    <ui:include src="../../dialog/facet/addMembers.xhtml" />
+    <ui:include src="../../dialog/facet/removeMembers.xhtml" />
+    <ui:include src="../../dialog/facet/deleteFacetTraduction.xhtml" />
+    <ui:include src="../../dialog/facet/renameFacetTraduction.xhtml" />
+    <ui:include src="../../dialog/facet/addFacetTraduction.xhtml" />
+    
 
 </ui:fragment>

@@ -39,14 +39,13 @@
             </div>
             <div class="list-group-item list-group-item-action" style="margin-bottom: -5px">
                 <div class="row" style="padding-top: 3px">
-                    <div class="col-3" style="text-align: right">
+                    <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}" 
                                       title="#{langueBean.getMsg('leftbody.collection')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                      icon="pi pi-cog" style="background: none; border: none; box-shadow: none;">
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" icon="pi pi-cog">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_to_group')}" 
                                         action="#{addConceptToGroupBean.init()}"

@@ -5,7 +5,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddTraductionGroup" header="Ajouter une traduction groupe" widgetVar="addTraductionGroup" 
-              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-6" style="margin-top: 3px">
@@ -13,7 +13,7 @@
             </div>
             <div class="col-6" style="margin-top: 3px">
                 <h:outputText value="#{groupView.nodeGroup.lexicalValue}"
-                              style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
+                              style="width: 100%; color: #f47b2a; margin-left: 10px;"/>
 
                 <p:commandLink style="font-size: 17px; color: #FF7979" action="#{traductionGroupBean.infos}" update="messageIndex">
                     <i class="pi pi-exclamation-circle" style="color: #F7A269;" />
@@ -29,7 +29,7 @@
                 </div>
                 <div class="col-6" style="margin-top: 3px">
                     <p:selectOneMenu label="Langue" value="#{traductionGroupBean.selectedLang}" 
-                                     style="font-size: 12px; background: white; border-color: #43B572">
+                                     style="width: 100%; background: white; border-color: #43B572">
                         <f:selectItems  value="#{traductionGroupBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                     </p:selectOneMenu> 
                 </div>
@@ -43,7 +43,7 @@
                 </div>
                 <div class="col-6" style="margin-top: 3px">
                     <p:inputText id="idTraductionValue" label="traduction" placeholder="tapez votre traduction ..."  
-                                 value="#{traductionGroupBean.traductionValue}" style="font-size: 12px;"/>
+                                 value="#{traductionGroupBean.traductionValue}" style="width: 100%"/>
                 </div>
             </div>
         </h:panelGroup>

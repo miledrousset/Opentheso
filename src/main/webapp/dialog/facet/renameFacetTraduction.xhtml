@@ -1,0 +1,30 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idRenameFacetTraduction" header="Modifier les traductions" widgetVar="renameFacetTraduction"
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
+                              style="font-size: 13px; color: #43B572; margin-left: 5px;" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12" style="margin-top: 3px">
+                <p:panel style="max-height: 300px;overflow-y:scroll ">
+                    <ui:repeat var="traductionToEdit" value="#{editFacet.facetTraductions}" >
+                        <div class="col-12" style="margin-top: 3px">
+                            <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
+                                          style="font-size: 13px; color: #43B572; margin-left: 5px;" />
+                        </div>
+                    </ui:repeat>
+                </p:panel>
+            </div>
+        </div>
+    </p:dialog>
+</ui:fragment>

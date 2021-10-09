@@ -237,7 +237,7 @@
                                     <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                              conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                                   update="containerIndex:formRightTab indexTitle"
+                                                   update="containerIndex indexTitle"
                                                    style="color: #43B572;"
                                                    styleClass="textOpentheso"/>  
                                     <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
@@ -327,7 +327,7 @@
 
                         <p:commandLink actionListener="#{conceptView.countTheTotalOfBranch()}"
                                        update="containerIndex:formRightTab" 
-                                       style="color: #F7A269; font-size: 12px; margin-left: 6px; margin-right: 6px" >
+                                       style="color: #F7A269; font-size: 12px; margin-left: 6px; margin-right: 10px" >
                             <i class="fa fa-calculator" />
                         </p:commandLink>
                     </div>
