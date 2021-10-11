@@ -18,7 +18,7 @@
             </div>
             <div class="col-7">
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                              style="width: 100%; border-color: #43B572"/>
+                              style="margin-left: 10px; color: black; margin-left: 5px" /> 
             </div>
         </div>
 
@@ -102,10 +102,10 @@
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('addNT').hide();" update="idAddNT"/>
 
-                <p:commandButton class="btn btn-success" value="#{langueBean.getMsg('btnAdd')}"
+                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
                                  update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex" 
                                  style="color: white;" oncomplete="PF('addNT').hide();"
                                  actionListener="#{newConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,

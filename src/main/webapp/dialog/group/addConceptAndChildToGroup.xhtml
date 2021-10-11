@@ -44,11 +44,11 @@
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('addConceptAndChildToGroup').hide();" update="idAddConceptToGroup"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-success" oncomplete="PF('addConceptAndChildToGroup').hide();"
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('addConceptAndChildToGroup').hide();"
                                  actionListener="#{addConceptAndChildToGroupBean.addConceptAndChildToGroup()}" style="color: white;"/>
             </div>
         </f:facet>

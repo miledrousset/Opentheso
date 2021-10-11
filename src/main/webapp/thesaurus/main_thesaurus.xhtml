@@ -34,9 +34,7 @@
                     </div>
 
                     <div class="card-body">
-                        <h:form id="homePageForm" class="user">
-
-                            <!-- vue Page d'accueil -->
+                        <!-- vue Page d'accueil -->
                             <h:panelGrid>
                                 <h:outputText rendered="#{viewEditorHomeBean.isTextVisisble()}" value="#{viewEditorHomeBean.getHomePage(connect.workLanguage)}" escape="false"/>              
                             </h:panelGrid>
@@ -47,16 +45,13 @@
                                 <p:inputTextarea value="#{viewEditorHomeBean.codeGoogleAnalitics}" style="width: 100%; min-height: 300px;"/>
 
                                 <div style="width: 100%; display: flex;">
-                                    <div style="width: 50%;">
-                                        <p:commandButton value="#{langueBean.getMsg('btnCancel')}" update="containerIndex"
-                                                         style="width: 200px; background: #8C8C8C;" class="btn" 
-                                                         actionListener="#{viewEditorHomeBean.reset()}"/>
-                                    </div>
+                                    <div style="width: 50%;" />
                                     <div style="width: 50%; text-align: right;">
-                                        <p:commandButton value="Enregistrer" update="containerIndex" 
-                                                         class="btn" 
-                                                         style="width: 200px;"
-                                                         actionListener="#{viewEditorHomeBean.updateGoogleAnalytics()}" />
+                                       <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" update="containerIndex"
+                                                         style="width: 200px; margin-right: 20px" actionListener="#{viewEditorHomeBean.reset()}"/>
+                                       
+                                        <p:commandButton title="Enregistrer" update="containerIndex" class="btn btn-primary"
+                                                         style="width: 200px;" actionListener="#{viewEditorHomeBean.updateGoogleAnalytics()}" />
                                     </div>
                                 </div>
 
@@ -67,12 +62,12 @@
                                 
                                 <div style="width: 100%; display: flex; margin-bottom: 10px">
                                     <div style="width: 50%;">
-                                        <p:commandButton value="Vue HTML interprété" update="homePageEdition" class="btn"
+                                        <p:commandButton value="Vue HTML interprété" update="containerIndex" class="btn"
                                                      action="#{viewEditorHomeBean.setViewPlainTextTo(false)}"
                                                      style="width:200px; font-size: 12px; background: #{viewEditorHomeBean.colorOfHtmlButton}"/>
                                     </div>
                                     <div style="width: 50%; text-align: right;">
-                                        <p:commandButton value="Vue HTML brut"  class="btn" update="homePageEdition"
+                                        <p:commandButton value="Vue HTML brut"  class="btn" update="containerIndex"
                                                      action="#{viewEditorHomeBean.setViewPlainTextTo(true)}"
                                                      style="width:200px; font-size: 12px; background: #{viewEditorHomeBean.colorOfTextButton}"/>
                                     </div>
@@ -89,18 +84,16 @@
                                 
                                 <div style="width: 100%; display: flex;">
                                     <div style="width: 50%;">
-                                        <p:commandButton value="#{langueBean.getMsg('btnCancel')}" class="btn"
-                                                         update="containerIndex:homePageForm" style="width: 200px; background: #8C8C8C" 
+                                        <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary"
+                                                         update="containerIndex" style="width: 200px; background: #8C8C8C" 
                                                          actionListener="#{viewEditorHomeBean.reset()}"/>    
                                     </div>
                                     <div style="width: 50%; text-align: right;">
-                                        <p:commandButton value="Enregistrer" update="containerIndex:homePageForm" class="btn"
-                                                     style="width: 200px;" 
-                                                     actionListener="#{viewEditorHomeBean.updateHomePage()}" />
+                                        <p:commandButton title="Enregistrer" update="containerIndex" class="btn btn-primary"
+                                                     style="width: 200px;" actionListener="#{viewEditorHomeBean.updateHomePage()}" />
                                     </div>
                                 </div>
                             </h:panelGroup>
-                        </h:form>
                     </div>
                 </div>
             </div>

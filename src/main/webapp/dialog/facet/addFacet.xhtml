@@ -13,7 +13,8 @@
                               style="font-weight: bold"/>  
             </div>
             <div class="col-7">   
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"/>          
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                              style="margin-left: 10px; color: black; margin-left: 5px"/>          
             </div>
         </div>
 
@@ -30,10 +31,10 @@
 
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('addFacet').hide();" update="idAddFacet"/>
                 
-                <p:commandButton class="btn btn-success" value="#{langueBean.getMsg('btnValidate')}" 
+                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}" 
                                  update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex" 
                                  style="color: white;"
                                  actionListener="#{editFacet.addNewFacet()}"/>

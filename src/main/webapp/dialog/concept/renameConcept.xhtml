@@ -8,20 +8,20 @@
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
-            <div class="col-5" style="margin-top: 3px">
+            <div class="col-5">
                 <h:outputText value="Nom actuel : " 
-                              style="font-size: 13px; margin-left: 10px; color: black;" /> 
+                              style="margin-left: 10px; color: black;" /> 
             </div>
-            <div class="col-7">
+            <div class="col-7" >
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" 
-                              style="font-size: 13px; margin-left: 10px; color: black;" /> 
+                              style="margin-left: 10px; color: black; margin-left: 5px" /> 
             </div>
         </div>
 
-        <div class="row" style="margin-top: 3px">
-            <div class="col-5" style="margin-top: 3px">
+        <div class="row" style="margin-top: 6px">
+            <div class="col-5">
                 <h:outputText value="Nouveau nom : " 
-                              style="font-size: 13px; margin-left: 10px; color: black;" /> 
+                              style="margin-left: 10px; color: black;" /> 
             </div>
             <div class="col-7">
                 <p:inputText id="newPrefLabel" value="#{editConcept.prefLabel}" 
@@ -29,33 +29,33 @@
             </div>
         </div>
 
-        <div class="row" style="margin-top: 3px">
-            <div class="col-6" style="margin-top: 3px">
-                <p:commandButton rendered="#{editConcept.duplicate}"
-                                 value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" 
-                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex"
-                                 class="btn btn-primary"
-                                 action="#{editConcept.updateForced(selectedTheso.currentIdTheso, selectedTheso.currentLang,
-                                           currentUser.nodeUser.idUser)}" 
-                                 style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
+        <h:panelGroup rendered="#{editConcept.duplicate}">
+            <div class="row" style="margin-top: 6px">
+                <div class="col-6">
+                    <p:commandButton value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" 
+                                     update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex"
+                                     class="btn btn-primary"
+                                     action="#{editConcept.updateForced(selectedTheso.currentIdTheso, selectedTheso.currentLang,
+                                               currentUser.nodeUser.idUser)}" 
+                                     style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
+                </div>
+                <div class="col-6">
+                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" 
+                                     update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex"
+                                     class="btn btn-primary" action="#{editConcept.cancel()}" icon="pi pi-undo" 
+                                     style="color: white; background: #FF7979; width:100%; font-size: 12px; color: #000"/>
+                </div>
             </div>
-            <div class="col-6">
-                <p:commandButton rendered="#{editConcept.duplicate}" 
-                                 value="#{langueBean.getMsg('btnCancel')}" 
-                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex"
-                                 class="btn btn-primary" action="#{editConcept.cancel()}" icon="pi pi-undo" 
-                                 style="color: white; background: #FF7979; width:100%; font-size: 12px; color: #000"/>
-            </div>
-        </div>
+        </h:panelGroup>
 
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('renameConcept').hide();" update="idRenameConcept"/>
 
                 <p:commandButton rendered="#{!editConcept.duplicate}"
-                                 class="btn btn-primary" value="#{langueBean.getMsg('btnValidate')}"
+                                 class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}"
                                  update="containerIndex messageIndex" oncomplete="PF('renameConcept').hide();"
                                  actionListener="#{editConcept.updateLabel(selectedTheso.currentIdTheso, 
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>

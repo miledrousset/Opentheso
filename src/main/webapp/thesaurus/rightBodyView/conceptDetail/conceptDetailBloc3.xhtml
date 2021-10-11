@@ -15,7 +15,7 @@
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                      icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                      icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_note')}"
                                         actionListener="#{noteBean.reset()}" update=":conceptForm:idAddNote"
                                         oncomplete="PF('addNote').show();"/>

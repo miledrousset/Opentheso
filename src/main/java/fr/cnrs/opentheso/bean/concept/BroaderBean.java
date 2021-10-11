@@ -42,11 +42,17 @@ import org.primefaces.PrimeFaces;
 @javax.enterprise.context.SessionScoped
 
 public class BroaderBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private Tree tree;
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private LanguageBean languageBean;
+    @Inject
+    private ConceptView conceptBean;
+    @Inject
+    private SelectedTheso selectedTheso;
+    @Inject
+    private Tree tree;
 
     private NodeSearchMini searchSelected;
     private ArrayList<NodeBT> nodeBTs;
@@ -59,18 +65,17 @@ public class BroaderBean implements Serializable {
     }
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
+    }
+
+    public void clear() {
         searchSelected = null;
-        if(nodeBTs!= null){
+        if (nodeBTs != null) {
             nodeBTs.clear();
             nodeBTs = null;
-        }         
-    }    
-
-
+        }
+    }
 
     public void reset() {
         nodeBTs = conceptBean.getNodeConcept().getNodeBT();
@@ -78,11 +83,11 @@ public class BroaderBean implements Serializable {
 //        if (toto == null) {
 //            toto = new ArrayList<>();
 //        }
-    /*    for (int i = 0; i < 50000000; i++) {
+        /*    for (int i = 0; i < 50000000; i++) {
             toto.add(conceptBean.getNodeConcept());
         }*/
     }
-    
+
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Related !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -122,6 +127,9 @@ public class BroaderBean implements Serializable {
         if (searchSelected == null || searchSelected.getIdConcept() == null || searchSelected.getIdConcept().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -134,6 +142,9 @@ public class BroaderBean implements Serializable {
                 searchSelected.getIdConcept())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -149,6 +160,9 @@ public class BroaderBean implements Serializable {
                 conn.close();
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
                 return;
             } else {
                 conn.commit();
@@ -158,6 +172,9 @@ public class BroaderBean implements Serializable {
             Logger.getLogger(SynonymBean.class.getName()).log(Level.SEVERE, null, ex);
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur SQL !", ex.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -173,6 +190,9 @@ public class BroaderBean implements Serializable {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en enlevant le concept du TopConcept, veuillez utiliser les outils de coorection de cohérence !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
                 return;
             }
         }
@@ -188,17 +208,14 @@ public class BroaderBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
-
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getSelectedLang());
+
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex:formRightTab");
         }
 
         PrimeFaces.current().executeScript("srollToSelected();");

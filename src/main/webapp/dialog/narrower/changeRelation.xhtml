@@ -6,11 +6,10 @@
 
     <p:dialog id="idChangeRelation" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_specific_relationships')}" widgetVar="changeRelation" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        
         <div class="row">
-            <div class="col-5" style="margin-top: 3px">
+            <div class="col-12" style="margin-top: 3px">
                 <h:outputText value="Terme : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
             </div>
         </div> 
@@ -37,7 +36,8 @@
                 </div>
 
                 <div class="col-5">
-                    <p:inputText disabled="true" value="#{narrower.title}" style="color: #43B572; font-size: 12px; width: 100%; color: #000"/>  
+                    <p:inputText disabled="true" value="#{narrower.title}" 
+                                 style="color: #43B572; font-size: 12px; width: 100%; color: #000; border-color: #43B572"/>  
                 </div>
 
                 <div class="col-1" style="vertical-align: central">

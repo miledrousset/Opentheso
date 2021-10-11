@@ -12,7 +12,8 @@
                 <h:outputText value="Nom du concept : " class="dialog-titre" /> 
             </div>
             <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                              style="margin-left: 10px; color: black; margin-left: 5px"/> 
             </div>
         </div>
 
@@ -44,11 +45,11 @@
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('addBroaderLink').hide();" update="idAddBroaderLink"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-success" oncomplete="PF('addBroaderLink').hide();"
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('addBroaderLink').hide();"
                                  actionListener="#{broaderBean.addNewBroaderLink(currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
         </f:facet>

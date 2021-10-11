@@ -30,10 +30,15 @@ import org.primefaces.PrimeFaces;
 @Named(value = "traductionBean")
 @SessionScoped
 public class TraductionBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private LanguageBean languageBean;
+    @Inject
+    private ConceptView conceptBean;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private String selectedLang;
     private ArrayList<NodeLangTheso> nodeLangs;
@@ -42,37 +47,39 @@ public class TraductionBean implements Serializable {
     private String traductionValue;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
-        if(nodeLangs != null){
+    }
+
+    public void clear() {
+        if (nodeLangs != null) {
             nodeLangs.clear();
             nodeLangs = null;
         }
-        if(nodeLangsFiltered != null){
+        if (nodeLangsFiltered != null) {
             nodeLangsFiltered.clear();
             nodeLangsFiltered = null;
         }
-        if(nodeTermTraductions != null){
+        if (nodeTermTraductions != null) {
             nodeTermTraductions.clear();
             nodeTermTraductions = null;
-        }        
+        }
         selectedLang = null;
         traductionValue = null;
-    }      
-    
+    }
+
     public TraductionBean() {
     }
 
     public void reset() {
         nodeLangs = selectedTheso.getNodeLangs();
-        if(nodeLangsFiltered == null)
+        if (nodeLangsFiltered == null) {
             nodeLangsFiltered = new ArrayList<>();
-        else
+        } else {
             nodeLangsFiltered.clear();
+        }
         nodeTermTraductions = conceptBean.getNodeConcept().getNodeTermTraductions();
-        
+
         selectedLang = null;
         traductionValue = "";
         setLangWithNoTraduction();
@@ -82,7 +89,7 @@ public class TraductionBean implements Serializable {
         nodeLangs.forEach((nodeLang) -> {
             nodeLangsFiltered.add(nodeLang);
         });
-       
+
         // les langues à ignorer
         ArrayList<String> langsToRemove = new ArrayList<>();
         langsToRemove.add(conceptBean.getSelectedLang());
@@ -90,26 +97,28 @@ public class TraductionBean implements Serializable {
             langsToRemove.add(nodeTermTraduction.getLang());
         }
         for (NodeLangTheso nodeLang : nodeLangs) {
-            if(langsToRemove.contains(nodeLang.getCode())) {
+            if (langsToRemove.contains(nodeLang.getCode())) {
                 nodeLangsFiltered.remove(nodeLang);
             }
         }
-        if(nodeLangsFiltered.isEmpty()) 
+        if (nodeLangsFiltered.isEmpty()) {
             infoNoTraductionToAdd();
+        }
     }
-    
+
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-    
+
     public void infoNoTraductionToAdd() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " Le concept est traduit déjà dans toutes les langues du thésaurus !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-    }    
+    }
 
     /**
      * permet d'ajouter une nouvelle traduction au concept
+     *
      * @param idUser
      */
     public void addNewTraduction(int idUser) {
@@ -125,15 +134,15 @@ public class TraductionBean implements Serializable {
             return;
         }
         TermHelper termHelper = new TermHelper();
-        if(!termHelper.addTraduction(connect.getPoolConnexion(),
+        if (!termHelper.addTraduction(connect.getPoolConnexion(),
                 traductionValue,
                 conceptBean.getNodeConcept().getTerm().getId_term(),
-                selectedLang, "", "", selectedTheso.getCurrentIdTheso(), idUser)){
+                selectedLang, "", "", selectedTheso.getCurrentIdTheso(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur d'ajout de traduction !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -141,12 +150,12 @@ public class TraductionBean implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        
+
         reset();
         setLangWithNoTraduction();
         PrimeFaces pf = PrimeFaces.current();
@@ -156,30 +165,39 @@ public class TraductionBean implements Serializable {
             pf.ajax().update("containerIndex:formRightTab");
         }
     }
-    
+
     /**
      * permet de modifier une traduction au concept
+     *
      * @param nodeTermTraduction
      * @param idUser
      */
     public void updateTraduction(NodeTermTraduction nodeTermTraduction, int idUser) {
         FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
+
         if (nodeTermTraduction == null || nodeTermTraduction.getLexicalValue().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " veuillez saisir une valeur !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
         TermHelper termHelper = new TermHelper();
-        if(!termHelper.updateTraduction(connect.getPoolConnexion(),
+        if (!termHelper.updateTraduction(connect.getPoolConnexion(),
                 nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getId_term(),
                 nodeTermTraduction.getLang(),
                 selectedTheso.getCurrentIdTheso(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
-        
+
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -187,46 +205,53 @@ public class TraductionBean implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         //    PrimeFaces.current().executeScript("PF('addNote').hide();");
         reset();
-        PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
         }
-    }    
-    
+    }
+
     /**
-     * permet de modifier toutes les traductions du concept
-     * multiple corrections
+     * permet de modifier toutes les traductions du concept multiple corrections
+     *
      * @param idUser
      */
     public void updateAllTraduction(int idUser) {
         FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
+
         if (nodeTermTraductions == null || nodeTermTraductions.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " veuillez saisir une valeur !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
         TermHelper termHelper = new TermHelper();
-        
+
         for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
-            if(!termHelper.updateTraduction(connect.getPoolConnexion(),
+            if (!termHelper.updateTraduction(connect.getPoolConnexion(),
                     nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getId_term(),
                     nodeTermTraduction.getLang(),
                     selectedTheso.getCurrentIdTheso(), idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
                 return;
-            }            
+            }
         }
-        
+
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -234,25 +259,24 @@ public class TraductionBean implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
+        PrimeFaces.current().executeScript("PF('renameTraduction').hide();");
         reset();
-        PrimeFaces pf = PrimeFaces.current();
+
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formLeftTab");
             pf.ajax().update("containerIndex:formRightTab");
         }
-    }        
-    
-            
-    
+    }
+
     /**
      * permet de supprimer une traduction au concept
+     *
      * @param nodeTermTraduction
      * @param idUser
      */
@@ -265,7 +289,7 @@ public class TraductionBean implements Serializable {
         }
 
         TermHelper termHelper = new TermHelper();
-        if(!termHelper.deleteTraductionOfTerm(connect.getPoolConnexion(),
+        if (!termHelper.deleteTraductionOfTerm(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getTerm().getId_term(),
                 nodeTermTraduction.getLexicalValue(),
                 nodeTermTraduction.getLang(),
@@ -275,7 +299,7 @@ public class TraductionBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -283,7 +307,7 @@ public class TraductionBean implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction supprimée avec succès");
@@ -296,10 +320,8 @@ public class TraductionBean implements Serializable {
             pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("conceptForm:listTraductions");
         }
-    }    
+    }
 
-    
-    
     public String getSelectedLang() {
         return selectedLang;
     }
@@ -331,6 +353,5 @@ public class TraductionBean implements Serializable {
     public void setNodeTermTraductions(ArrayList<NodeTermTraduction> nodeTermTraductions) {
         this.nodeTermTraductions = nodeTermTraductions;
     }
-
 
 }

@@ -15,7 +15,8 @@
                 </p:commandLink>
             </div>
             <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                              style="margin-left: 10px; color: black; margin-left: 5px" /> 
             </div>
         </div>
 
@@ -65,12 +66,12 @@
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('addNote').hide();" update="idAddNote"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-success" oncomplete="PF('addNote').hide();"
-                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}" style="color: white;"/>
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('addNote').hide();"
+                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
             </div>
         </f:facet>
     </p:dialog>   

@@ -10,12 +10,6 @@
 
 */
 
-button {
-    background-color: transparent !important;
-}
-.ui-button .ui-widget .ui-state-default .ui-state-focus .ui-corner-all .ui-button-icon-only .btn .btn-success .btn-circle .btn-lg {
-    background-color: #43B572;
-}
 
 /*** MenuButton ***/
 .ui-menubutton .ui-widget {

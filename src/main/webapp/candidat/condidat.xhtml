@@ -22,7 +22,7 @@
 
 
     <h:body id="page-top" style="font-size: 12px;">
-        
+
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
@@ -46,9 +46,10 @@
                         <ui:include src="../commun/header.xhtml" />
                     </div>
 
-                    <div id="thesorusContent" style="margin-top: -20px;">
-                        TEST
-                    </div>
+                    <p:commandButton class="btn btn-primary btn-icon-split" title="test" /> 
+
+                    <p:commandButton class="btn btn-primary" title="test" />
+
                 </h:form>
             </div>
         </div>

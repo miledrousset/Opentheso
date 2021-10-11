@@ -9,7 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-//import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -18,6 +18,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -26,52 +27,62 @@ import javax.inject.Inject;
 @Named(value = "viewEditorHomeBean")
 @SessionScoped
 public class ViewEditorHomeBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;    
-    
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private LanguageBean languageBean;
+
     @PostConstruct
-    public void postInit(){
-    }    
+    public void postInit() {
+    }
+
     public ViewEditorHomeBean() {
     }
-    
+
     private boolean isViewPlainText = false;
     private String text;
-    
+
     private boolean isInEditing;
     private String colorOfHtmlButton;
-    private String colorOfTextButton;    
+    private String colorOfTextButton;
 
-    private boolean isInEditingHomePage;       
-    
+    private boolean isInEditingHomePage;
+
     private String codeGoogleAnalitics;
-    private boolean isInEditingGoogleAnalytics;    
-    
+    private boolean isInEditingGoogleAnalytics;
+
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
+    }
+
+    public void clear() {
         text = null;
         colorOfHtmlButton = null;
-        colorOfTextButton = null;      
-        codeGoogleAnalitics = null;         
-    }      
-    
-    public void reset(){
+        colorOfTextButton = null;
+        codeGoogleAnalitics = null;
+    }
+
+    public void reset() {
         isInEditing = false;
         isViewPlainText = false;
         text = null;
         codeGoogleAnalitics = null;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = false;
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("containerIndex");
+        }
     }
-    
+
     public void initText() {
         String lang = languageBean.getIdLangue().toLowerCase();
-        if(lang == null || lang.isEmpty()) {
+        if (lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
-        } 
+        }
         HtmlPageHelper copyrightHelper = new HtmlPageHelper();
         text = copyrightHelper.getHomePage(
                 connect.getPoolConnexion(), lang);
@@ -79,11 +90,11 @@ public class ViewEditorHomeBean implements Serializable {
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = true;
-        
+
         colorOfHtmlButton = "#F49F66;";
-        colorOfTextButton = "#8C8C8C;";          
+        colorOfTextButton = "#8C8C8C;";
     }
-    
+
     public void initGoogleAnalytics() {
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         codeGoogleAnalitics = preferencesHelper.getCodeGoogleAnalytics(
@@ -91,67 +102,90 @@ public class ViewEditorHomeBean implements Serializable {
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = true;
-        isInEditingHomePage = false;        
+        isInEditingHomePage = false;
     }
-    
+
     public void updateGoogleAnalytics() {
         PreferencesHelper preferencesHelper = new PreferencesHelper();
-        
+
         preferencesHelper.setCodeGoogleAnalytics(
-                connect.getPoolConnexion(),codeGoogleAnalitics);
+                connect.getPoolConnexion(), codeGoogleAnalitics);
         isInEditing = false;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
-        isInEditingHomePage = false;        
-    }    
-    
+        isInEditingHomePage = false;
 
-    public String getHomePage(String idLang){
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
+    }
+
+    public String getHomePage(String idLang) {
         HtmlPageHelper copyrightHelper = new HtmlPageHelper();
         String lang = languageBean.getIdLangue().toLowerCase();
-        if(lang == null || lang.isEmpty()) {
+        if (lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
-        }        
+        }
         String homePage = copyrightHelper.getHomePage(
                 connect.getPoolConnexion(), lang);
         return homePage;
     }
+
     /**
-     * permet d'ajouter un copyright, s'il n'existe pas, on le créé,sinon, on applique une mise à jour 
+     * permet d'ajouter un copyright, s'il n'existe pas, on le créé,sinon, on
+     * applique une mise à jour
      */
     public void updateHomePage() {
         FacesMessage msg;
         String lang = languageBean.getIdLangue().toLowerCase();
-        if(lang == null || lang.isEmpty()) {
+        if (lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         }
         HtmlPageHelper htmlPageHelper = new HtmlPageHelper();
         if (!htmlPageHelper.setHomePage(
                 connect.getPoolConnexion(),
                 text,
-                lang)){
+                lang)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;               
+
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
         }
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "texte ajouté avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         isInEditing = false;
         isViewPlainText = false;
-        isInEditingHomePage = false; 
-        isInEditingGoogleAnalytics = false;        
+        isInEditingHomePage = false;
+        isInEditingGoogleAnalytics = false;
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }
-    
-   
-    public void setViewPlainTextTo(boolean status){
-        if(status) {
+
+    public void setViewPlainTextTo(boolean status) {
+        if (status) {
             colorOfHtmlButton = "#8C8C8C;";
             colorOfTextButton = "#F49F66;";
         } else {
             colorOfHtmlButton = "#F49F66;";
-            colorOfTextButton = "#8C8C8C;";            
-        } 
+            colorOfTextButton = "#8C8C8C;";
+        }
         isViewPlainText = status;
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }
 
     public boolean isIsViewPlainText() {
@@ -201,7 +235,7 @@ public class ViewEditorHomeBean implements Serializable {
     public void setIsInEditingGoogleAnalytics(boolean isInEditingGoogleAnalytics) {
         this.isInEditingGoogleAnalytics = isInEditingGoogleAnalytics;
     }
-    
+
     public boolean isTextVisisble() {
         return !isInEditingGoogleAnalytics && !isInEditingHomePage;
     }
@@ -222,6 +256,4 @@ public class ViewEditorHomeBean implements Serializable {
         this.isInEditingHomePage = isInEditingHomePage;
     }
 
-
-    
 }
