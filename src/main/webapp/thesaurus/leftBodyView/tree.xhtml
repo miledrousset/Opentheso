@@ -34,7 +34,7 @@
 
                     <p:menuitem icon="pi pi-lis" value="Add top concept" action="#{newConcept.reset()}" 
                                 oncomplete="PF('addTopConcept').show();"
-                                update="conceptForm:idAddTopConcept"
+                                update="idAddTopConcept"
                                 rendered="#{(currentUser.nodeUser != null) and 
                                             (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
@@ -86,4 +86,7 @@
 
         </p:tree>
     </div>
+    
+    <ui:include src="../../dialog/concept/addTopConcept.xhtml" />
+    
 </ui:fragment>

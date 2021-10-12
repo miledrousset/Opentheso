@@ -162,9 +162,14 @@ public class NewConcept implements Serializable {
         isCreated = false;
         duplicate = false;
 
+        PrimeFaces pf = PrimeFaces.current();
+
         if (prefLabel == null || prefLabel.isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Le label est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -173,6 +178,9 @@ public class NewConcept implements Serializable {
             // erreur de préférences de thésaurusa
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
@@ -188,6 +196,9 @@ public class NewConcept implements Serializable {
             duplicate = true;
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un TopTerme existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
         // verification dans les altLabels
@@ -198,6 +209,9 @@ public class NewConcept implements Serializable {
             duplicate = true;
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un synonyme existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -205,6 +219,9 @@ public class NewConcept implements Serializable {
             if (conceptHelper.isIdExiste(connect.getPoolConnexion(), idNewConcept, idTheso)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Identifiant déjà attribué, veuillez choisir un autre ou laisser vide !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
                 return;
             }
         } else {
@@ -245,6 +262,9 @@ public class NewConcept implements Serializable {
         if (idNewConcept == null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", conceptHelper.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -254,21 +274,18 @@ public class NewConcept implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le top concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
-
         PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
 
         tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
-
         tree.expandTreeToPath(idNewConcept, idTheso, idLang);
+
+        init();
+
         if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("containerIndex:formLeftTab");
         }
-        init();
     }
 
     /**
@@ -290,12 +307,14 @@ public class NewConcept implements Serializable {
             int idUser) {
         isCreated = false;
         duplicate = false;
+        PrimeFaces pf = PrimeFaces.current();
 
         if (prefLabel == null || prefLabel.isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "le label est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            //     msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error", "Invalid credentials");
-            //        FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 

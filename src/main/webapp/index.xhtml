@@ -98,7 +98,6 @@
 
         <h:form id="conceptForm" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"> 
 
-            <ui:include src="dialog/concept/addTopConcept.xhtml" />
             <ui:include src="dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />          
 
             <ui:include src="dialog/facet/addFacet.xhtml" />
