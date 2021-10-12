@@ -74,7 +74,7 @@
                                 <ui:repeat   var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status">
                                     <p:commandLink rendered="#{replace.value != ''}" value="#{replace.value}"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
-                                                   update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                   update="containerIndex:formRightTab indexTitle"
                                                    style="color: #C63632;" />
 
                                     <p:commandLink rendered="#{replace.value == ''}" value="(#{replace.id})"
@@ -103,7 +103,7 @@
                             <ui:repeat   var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status">
                                 <p:commandLink rendered="#{replaces.value != ''}" value="#{replaces.value}"
                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
-                                                  update="formRightTab:viewTabConcept:conceptView indexTitle"
+                                                  update="containerIndex:formRightTab indexTitle"
                                                   style="color: #f47b2a;" />
                                 <p:commandLink rendered="#{replaces.value == ''}" value="(#{replaces.id})"
                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
