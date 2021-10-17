@@ -5,7 +5,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idListImportCsv" header="Importer une liste tabulée" widgetVar="listImportCsv" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="auto" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:panelGroup id="listImportCsvForm">   
             <p:panel style="height: 450px; margin-top: -20px; margin-left: -20px">
@@ -119,22 +119,21 @@
 
                     <div class="row">
                         <div class="col-4"> 
-                            <p:commandButton id="cancelCsv" icon="fas fa-undo"  
-                                             value="#{langueBean.getMsg('btnBack')}"
-                                             class="btn btn-success"
+                            <p:commandButton id="cancelCsv"
+                                             title="#{langueBean.getMsg('btnBack')}"
+                                             class="btn btn-secondary"
                                              style="width: 100%; background-color: #FFC107; color: black; border: none;"
                                              action="#{importFileBean.init()}"
                                              update="idListImportCsv"
                                              oncomplete="PF('listImportCsv').hide();" />
                         </div>
                         <div class="col-4" > 
-                            <p:commandButton id="buttonImportCsv" class="btn btn-success" widgetVar="buttonImportCsv"
-                                             icon="fas fa-check-circle fas 2x"
+                            <p:commandButton id="buttonImportCsv" class="btn btn-primary" widgetVar="buttonImportCsv"
                                              update="panelListCsv"
                                              style="width: 100%; background-color: #5CB85C; border: none;"
                                              actionListener="#{importFileBean.addListCsvToConcept(conceptView.nodeConcept)}"
                                              ajax="true"
-                                             value="Importer"
+                                             title="Importer"
                                              disabled="#{!importFileBean.loadDone}" />
                         </div> 
                     </div>

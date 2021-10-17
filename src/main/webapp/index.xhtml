@@ -8,7 +8,7 @@
     <h:head>
         <title>Opentheso</title>
 
-        <link href="resources/images/icon_opentheso2.png" rel="icon" />
+        <link href="resources/img/icon_opentheso2.png" rel="icon" />
 
         <link rel="stylesheet" type="text/css" href="resources/css/all.css" />
         <link rel="stylesheet" type="text/css" href="resources/css/theme_general.css" />
@@ -86,7 +86,6 @@
         <a class="scroll-to-top rounded" href="#page-top">
             <i class="pi pi-angle-up" />
         </a>
-
         
         <script src="resources/js/bootstrap.bundle.min.js"></script>
         <script src="resources/js/jquery.easing.min.js"></script>
@@ -94,15 +93,6 @@
 
         <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false">
             <p:graphicImage value="resources/img/wait_old.gif" width="150px" />
-        </p:dialog>  
-
-        <h:form id="conceptForm" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"> 
-
-            <ui:include src="dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
-
-            <ui:include src="dialog/concept/setNotation.xhtml" />
-
-            <ui:include src="dialog/history/historicalView.xhtml" />        
-        </h:form>
+        </p:dialog>
     </h:body>
 </html>

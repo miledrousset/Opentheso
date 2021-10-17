@@ -57,23 +57,12 @@
                                 oncomplete="PF('deleteConcept').show();"
                                 style="font-size: 12px;" />
 
-                    <!--<p:menuitem rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
-                                value="#{langueBean.getMsg('rightbody.concept.deprecate_concept')}"
-                                action="#{editConcept.reset('')}"
-                                oncomplete="PF('deprecateConcept').show();"
-                                style="font-size: 12px;" />-->
-
                     <p:menuitem rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
                                 value="#{langueBean.getMsg('rightbody.concept.approve_concept')}"
                                 update="idApproveConcept"
                                 action="#{editConcept.reset('')}"
                                 oncomplete="PF('approveConcept').show();"
                                 style="font-size: 12px;" />
-                    
-                    <p:menuitem  value="Ajouter un concept à une facette"
-                             update="idAddConceptToFacet"
-                             actionListener="#{editConcept.reset('')}"
-                             oncomplete="PF('addConceptToFacet').show();" />
 
                     <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                                 value="#{langueBean.getMsg('rightbody.concept.generate_ark')}" 
@@ -174,7 +163,6 @@
                                 oncomplete="PF('listImportCsv').show();"
                                 style="font-size: 12px; " />
 
-
                 </p:menuButton>
             </h:panelGroup>
         </div>
@@ -208,6 +196,5 @@
     <ui:include src="../../../dialog/concept/generateHandle.xhtml" />
     <ui:include src="../../../dialog/concept/deleteHandle.xhtml" />
     <ui:include src="../../../dialog/import/listImportCsv.xhtml" />
-    <ui:include src="../../../dialog/facet/addConceptToFacet.xhtml" />
 
 </ui:fragment>

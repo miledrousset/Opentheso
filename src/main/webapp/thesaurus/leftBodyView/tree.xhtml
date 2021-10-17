@@ -48,7 +48,7 @@
                                 value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
                                 actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
                                 action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
-                                update="idCopyAndPasteBetweenThesoToTop copyAndPasteBetweenThesoToTopForm"
+                                update="idCopyAndPasteBetweenThesoToTop"
                                 oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />
                 </p:menuButton> 
             </div>
@@ -88,5 +88,6 @@
     </div>
     
     <ui:include src="../../dialog/concept/addTopConcept.xhtml" />
+    <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
     
 </ui:fragment>
