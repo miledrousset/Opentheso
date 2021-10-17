@@ -23,7 +23,7 @@
                         <p:commandLink style="color: #FF7979"
                                        action="#{removeConceptAndChildFromGroupBean.removeConceptAndChildFromGroup(
                                                  domaines.conceptGroup.idgroup, currentUser.nodeUser.idUser)}"
-                                       update="containerIndex:formRightTab conceptForm:listeConceptGroupeToDelete">
+                                       update="@this">
                             <i class="pi pi-trash" />
                         </p:commandLink>
                     </div>

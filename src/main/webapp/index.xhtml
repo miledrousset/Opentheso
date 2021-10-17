@@ -98,48 +98,11 @@
 
         <h:form id="conceptForm" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"> 
 
-            <ui:include src="dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />          
-
-            <ui:include src="dialog/facet/addFacet.xhtml" />
-            <ui:include src="dialog/concept/addNT.xhtml" /> 
-
-            <ui:include src="dialog/concept/renameConcept.xhtml" />
-
-            <ui:include src="dialog/group/addConceptToGroup.xhtml" />
-            <ui:include src="dialog/group/removeConceptFromGroup.xhtml" />
-            <ui:include src="dialog/group/removeConceptAndChildFromGroup.xhtml" />
-            <ui:include src="dialog/group/addConceptAndChildToGroup.xhtml" />
-
-            <ui:include src="dialog/broader/addBroaderLink.xhtml" />
-            <ui:include src="dialog/broader/deleteBroaderLink.xhtml" />
-
-            <ui:include src="dialog/narrower/addNarrowerLink.xhtml" />
-            <ui:include src="dialog/narrower/deleteNarrowerLink.xhtml" />
-            <ui:include src="dialog/narrower/changeRelation.xhtml" />
-
-            <ui:include src="dialog/related/addRelatedLink.xhtml" /> 
-            <ui:include src="dialog/related/deleteRelatedLink.xhtml" /> 
-
-            <ui:include src="dialog/synonym/addSynonym.xhtml" />        
-            <ui:include src="dialog/synonym/deleteSynonym.xhtml" /> 
-            <ui:include src="dialog/synonym/renameSynonym.xhtml" />
-
-            <ui:include src="dialog/traduction/addTraduction.xhtml" />
-            <ui:include src="dialog/traduction/deleteTraduction.xhtml" />
-            <ui:include src="dialog/traduction/renameTraduction.xhtml" />               
+            <ui:include src="dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
 
             <ui:include src="dialog/concept/setNotation.xhtml" />
 
-            <ui:include src="dialog/note/addNote.xhtml" /> 
-            <ui:include src="dialog/note/deleteNote.xhtml" /> 
-            <ui:include src="dialog/note/editNote.xhtml" />
-
-            <ui:include src="dialog/history/historicalView.xhtml" />
-
-            <ui:include src="dialog/alignment/addAlignment.xhtml" />
-            <ui:include src="dialog/alignment/deleteAlignment.xhtml" />     
-            <ui:include src="dialog/alignment/updateAlignment.xhtml" />         
-            <ui:include src="dialog/alignment/addManualAlignment.xhtml" />          
+            <ui:include src="dialog/history/historicalView.xhtml" />        
         </h:form>
     </h:body>
 </html>

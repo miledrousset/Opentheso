@@ -18,7 +18,7 @@
         <ui:repeat var="noteToEdit" value="#{noteBean.nodeToEdit()}" >
             <div class="row">
                 <div class="col-1" style="margin-top: 3px">
-                    <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab conceptForm:idEditNote"
+                    <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab"
                                       action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}">
                         <i class="pi pi-check-circle" />
                     </p:commandLink>

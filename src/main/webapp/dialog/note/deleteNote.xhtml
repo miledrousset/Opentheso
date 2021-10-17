@@ -18,7 +18,7 @@
         <ui:repeat var="noteToDelete" value="#{noteBean.nodeToDelete()}" >
             <div class="row">
                 <div class="col-1" style="margin-top: 3px">
-                    <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab conceptForm:idDeleteNote messageIndex"
+                    <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab messageIndex"
                                       action="#{noteBean.deleteNote(noteToDelete, currentUser.nodeUser.idUser)}" >
                         <i class="pi pi-trash" />
                     </p:commandLink>

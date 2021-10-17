@@ -236,6 +236,9 @@ public class BroaderBean implements Serializable {
         if (nodeBT == null || nodeBT.getIdConcept() == null || nodeBT.getIdConcept().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -247,6 +250,9 @@ public class BroaderBean implements Serializable {
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -262,6 +268,9 @@ public class BroaderBean implements Serializable {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en passant le concept et TopConcept, veuillez utiliser les outils de coorection de cohérence !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
                 return;
             }
         }
@@ -278,17 +287,12 @@ public class BroaderBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("conceptForm:idDeleteNarrowerLink");
-        }
-
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getSelectedLang());
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("formLeftTab:tabTree:tree");
         }
 

@@ -32,10 +32,15 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 
 public class NoteBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private LanguageBean languageBean;
+    @Inject
+    private ConceptView conceptBean;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
@@ -45,15 +50,16 @@ public class NoteBean implements Serializable {
     private NodeNote selectedNodeNote;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
-        if(noteTypes != null){
+    }
+
+    public void clear() {
+        if (noteTypes != null) {
             noteTypes.clear();
             noteTypes = null;
         }
-        if(nodeLangs != null){
+        if (nodeLangs != null) {
             nodeLangs.clear();
             nodeLangs = null;
         }
@@ -76,14 +82,14 @@ public class NoteBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    private String clearValue(String rawNote){
+    private String clearValue(String rawNote) {
         rawNote = rawNote.replaceAll("<p>", "");
         rawNote = rawNote.replaceAll("</p>", "\n");
-        
+
         // enlève les code ascii non visibles
-        return rawNote.replace((char)27, ' ');
+        return rawNote.replace((char) 27, ' ');
     }
-    
+
     /**
      * permet d'ajouter un nouveau concept si le groupe = null, on ajoute un
      * concept sans groupe si l'id du concept est fourni, il faut controler s'il
@@ -93,9 +99,13 @@ public class NoteBean implements Serializable {
      */
     public void addNewNote(int idUser) {
         FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
         if (noteValue == null || noteValue.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne doit pas être vide !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
         noteValue = clearValue(noteValue);
@@ -153,22 +163,20 @@ public class NoteBean implements Serializable {
                 conceptBean.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note ajoutée avec succès");
-        
+
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().executeScript("PF('addNote').hide();");
-        
+
         reset();
-        PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
         }
     }
 
-    
-    public void updateNote(NodeNote nodeNote, int idUser){
+    public void updateNote(NodeNote nodeNote, int idUser) {
         NoteHelper noteHelper = new NoteHelper();
-        FacesMessage msg;        
+        FacesMessage msg;
         if (selectedTypeNote.equalsIgnoreCase("note") || selectedTypeNote.equalsIgnoreCase("scopeNote") || selectedTypeNote.equalsIgnoreCase("historyNote")) {
             if (!noteHelper.updateConceptNote(connect.getPoolConnexion(),
                     nodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
@@ -186,7 +194,7 @@ public class NoteBean implements Serializable {
             if (!noteHelper.updateTermNote(connect.getPoolConnexion(),
                     nodeNote.getId_note(),
                     nodeNote.getId_term(),
-                    nodeNote.getLang(),                    
+                    nodeNote.getLang(),
                     selectedTheso.getCurrentIdTheso(),
                     nodeNote.getLexicalvalue(),
                     nodeNote.getNotetypecode(),
@@ -199,8 +207,8 @@ public class NoteBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
-        
+                conceptBean.getNodeConcept().getConcept().getIdConcept());
+
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -217,7 +225,7 @@ public class NoteBean implements Serializable {
             pf.ajax().update("containerIndex:formRightTab");
         }
     }
-    
+
     public ArrayList<NodeNote> nodeToEdit() {
         if (selectedTypeNote == null) {
             return null;
@@ -240,10 +248,8 @@ public class NoteBean implements Serializable {
             default:
                 return null;
         }
-    }    
-    
-    
-    
+    }
+
     public void deleteNote(NodeNote nodeNote, int idUser) {
         NoteHelper noteHelper = new NoteHelper();
         FacesMessage msg;
@@ -264,7 +270,7 @@ public class NoteBean implements Serializable {
             if (!noteHelper.deleteThisNoteOfTerm(connect.getPoolConnexion(),
                     nodeNote.getId_note(),
                     nodeNote.getId_term(),
-                    nodeNote.getLang(),                    
+                    nodeNote.getLang(),
                     selectedTheso.getCurrentIdTheso(),
                     nodeNote.getNotetypecode(),
                     nodeNote.getLexicalvalue(), idUser)) {
@@ -282,7 +288,7 @@ public class NoteBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().executeScript("PF('addNote').hide();");
-        
+
         //      reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -291,7 +297,7 @@ public class NoteBean implements Serializable {
             pf.ajax().update("containerIndex:formRightTab");
         }
     }
-    
+
     public ArrayList<NodeNote> nodeToDelete() {
         if (selectedTypeNote == null) {
             return null;

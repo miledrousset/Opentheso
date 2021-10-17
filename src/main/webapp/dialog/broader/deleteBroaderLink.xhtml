@@ -5,32 +5,32 @@
 
     <p:dialog id="idDeleteBroaderLink" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_generic_relationship')}" widgetVar="deleteBroaderLink" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Nom du concept : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-            </div>
-        </div>             
-
-        <p:panel id="listeConceptsGeneriqueToDelete">
-            <h:outputText value="Liste des concepts générique : " class="dialog-titre" /> 
-            <ui:repeat var="broader" value="#{broaderBean.nodeBTs}" >
-                <div class="row">
-                    <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab conceptForm:idDeleteBroaderLink messageIndex"
-                                       action="#{broaderBean.deleteBroaderLink(broader, currentUser.nodeUser.idUser)}">
-                            <i class="pi pi-trash" />
-                        </p:commandLink>
-                    </div>
-                    <div class="col-11" style="margin-top: 3px">
-                        <h:outputText value="#{broader.title} (#{broader.idConcept})" style="color: #43B572"/> 
-                    </div>
+        <h:form id="formX">
+            <div class="row">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Nom du concept : " class="dialog-titre" /> 
                 </div>
-            </ui:repeat>
-        </p:panel>
+                <div class="col-7">
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+                </div>
+            </div>             
 
+            <p:panel id="listeConceptsGeneriqueToDelete">
+                <h:outputText value="Liste des concepts générique : " class="dialog-titre" /> 
+                <ui:repeat var="broader" value="#{broaderBean.nodeBTs}" >
+                    <div class="row">
+                        <div class="col-1" style="margin-top: 3px">
+                            <p:commandLink style="color: #FF7979" update="messageIndex"
+                                           action="#{broaderBean.deleteBroaderLink(broader, currentUser.nodeUser.idUser)}">
+                                <i class="pi pi-trash" />
+                            </p:commandLink>
+                        </div>
+                        <div class="col-11" style="margin-top: 3px">
+                            <h:outputText value="#{broader.title} (#{broader.idConcept})" style="color: #43B572"/> 
+                        </div>
+                    </div>
+                </ui:repeat>
+            </p:panel>
+        </h:form>
     </p:dialog>  
 </ui:fragment>

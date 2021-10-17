@@ -19,6 +19,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -67,6 +68,11 @@ public class ListIndex implements Serializable {
                 searchValue, 
                 idLang, idTheso,
                 permuted, withAltLabel);
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formList");
+        }
     }
 
     public void onRowSelect(SelectEvent event) {

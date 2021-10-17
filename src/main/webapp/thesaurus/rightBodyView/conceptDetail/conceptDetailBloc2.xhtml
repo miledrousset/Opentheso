@@ -22,12 +22,12 @@
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_generic_relation')}"
                                         actionListener="#{broaderBean.reset()}"
-                                        update="conceptForm:idAddBroaderLink"
+                                        update="idAddBroaderLink"
                                         oncomplete="PF('addBroaderLink').show();"/>
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_generic_relation')}" 
                                         actionListener="#{broaderBean.reset()}"
-                                        update="conceptForm:idDeleteBroaderLink"
+                                        update="idDeleteBroaderLink"
                                         oncomplete="PF('deleteBroaderLink').show();"/>
                         </p:menuButton>
                     </div>
@@ -40,7 +40,7 @@
                     </h:panelGroup>  
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeBT.size() != 0}">   
-                        <div class="col-9">
+                        <div class="col-9" id="conceptGeneriqueList">
                             <ui:repeat var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
                                 <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
@@ -76,17 +76,17 @@
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_narrower_relation')}"
                                         actionListener="#{narrowerBean.reset()}"
-                                        update="conceptForm:idAddNarrowerLink"
+                                        update="idAddNarrowerLink"
                                         oncomplete="PF('addNarrowerLink').show();" />
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.changing_relationships')}"
                                         actionListener="#{narrowerBean.initForChangeRelations()}"
-                                        update="conceptForm:idChangeRelation"
+                                        update="idChangeRelation"
                                         oncomplete="PF('changeRelation').show();"/>  
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_narrower_relation')}"
                                         actionListener="#{narrowerBean.reset()}"
-                                        update="conceptForm:idDeleteNarrowerLink"
+                                        update="idDeleteNarrowerLink"
                                         oncomplete="PF('deleteNarrowerLink').show();"/>                                    
                         </p:menuButton> 
                     </div>
@@ -157,12 +157,12 @@
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_related_relation')}" 
                                         actionListener="#{relatedBean.reset()}" 
                                         oncomplete="PF('addRelatedLink').show();"
-                                        update="conceptForm:idAddRelatedLink"
+                                        update="idAddRelatedLink"
                                         style="font-size: 12px;" />
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_related_relation')}"
                                         oncomplete="PF('deleteRelatedLink').show();"
-                                        update="conceptForm:listConceptSpecAssocies"
+                                        update="listConceptSpecAssocies"
                                         style="font-size: 12px;" />
                         </p:menuButton> 
                     </div>       
@@ -210,17 +210,19 @@
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" 
                                             actionListener="#{traductionBean.reset()}"
                                             oncomplete="PF('addTraduction').show();"
-                                            update="conceptForm:idAddTraduction"
+                                            update="idAddTraduction"
                                             style="font-size: 12px;" />
+
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" 
                                             actionListener="#{traductionBean.reset()}"
                                             oncomplete="PF('renameTraduction').show();"
-                                            update="conceptForm:idRenameTraduction"
+                                            update="idRenameTraduction"
                                             style="font-size: 12px;" />
+
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
                                             actionListener="#{traductionBean.reset()}"
                                             oncomplete="PF('deleteTraduction').show();"
-                                            update="conceptForm:idDeleteTraduction"
+                                            update="idDeleteTraduction"
                                             style="font-size: 12px;" />
                             </p:menuButton>
                         </div>
@@ -265,7 +267,7 @@
                                                   or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_synonym')}" 
                                         actionListener="#{synonymBean.reset()}"
-                                        update="conceptForm:idAddSynonym"
+                                        update="idAddSynonym"
                                         oncomplete="PF('addSynonym').show();"
                                         style="font-size: 12px;" />
 
@@ -273,13 +275,13 @@
                                         actionListener="#{synonymBean.reset()}"
                                         action="#{synonymBean.prepareNodeEMForEdit()}"
                                         oncomplete="PF('renameSynonym').show();"
-                                        update="conceptForm:idRenameSynonym"
+                                        update="idRenameSynonym"
                                         style="font-size: 12px;" />
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
                                         actionListener="#{synonymBean.reset()}"
                                         oncomplete="PF('deleteSynonym').show();"
-                                        update="conceptForm:idDeleteSynonym"
+                                        update="idDeleteSynonym"
                                         style="font-size: 12px;"/>
                         </p:menuButton>  
                     </div>
@@ -341,4 +343,23 @@
             </div>
         </div>
     </div>
+
+    <ui:include src="../../../dialog/broader/addBroaderLink.xhtml" />
+    <ui:include src="../../../dialog/broader/deleteBroaderLink.xhtml" />
+
+    <ui:include src="../../../dialog/narrower/addNarrowerLink.xhtml" />
+    <ui:include src="../../../dialog/narrower/deleteNarrowerLink.xhtml" />
+    <ui:include src="../../../dialog/narrower/changeRelation.xhtml" />
+
+    <ui:include src="../../../dialog/related/addRelatedLink.xhtml" />
+    <ui:include src="../../../dialog/related/deleteRelatedLink.xhtml" />
+
+    <ui:include src="../../../dialog/traduction/addTraduction.xhtml" />
+    <ui:include src="../../../dialog/traduction/deleteTraduction.xhtml" />
+    <ui:include src="../../../dialog/traduction/renameTraduction.xhtml" />
+
+    <ui:include src="../../../dialog/synonym/addSynonym.xhtml" />        
+    <ui:include src="../../../dialog/synonym/deleteSynonym.xhtml" /> 
+    <ui:include src="../../../dialog/synonym/renameSynonym.xhtml" />
+
 </ui:fragment>

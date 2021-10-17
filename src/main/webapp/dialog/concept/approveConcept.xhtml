@@ -1,69 +1,63 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idApproveConcept" header="Approuver le concept" widgetVar="approveConcept" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >         
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="approveConceptForm">           
-            <b:row >
-                <b:column span="12" >
-                    <h:outputText id="currentPrefLabelToDelete" value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="font-size: 14px; margin-left: 20px; color: #C63632;">
-                    </h:outputText >
-                </b:column>
-            </b:row> 
-           
-            <p:spacer/>
-            
-            <!-- Liste des concepts qui remplacent ce concept --> 
-            <h:panelGroup id="TabRelationWithReplacedBy" rendered="#{conceptView.nodeConcept.replacedBy.size() > 0}">
-                <b:row style="margin-left: 10px; "> 
-                    <b:column span="11">
-                        <h:outputText value="Ce concept est remplacé par: " style="font-size: 12px;" />
-                    </b:column>
-                </b:row>            
-                <b:row> 
-                    <b:column span="12">
-                        <b:panel>
-                            <p:dataTable id="isRaplacedBy" 
-                                         value="#{conceptView.nodeConcept.replacedBy}" var="replacedBy"  scrollable="true" resizableColumns="true" scrollHeight="450"
-                                 style="font-size: 12px;">
-                                <p:column width="30%" headerText="idConcept">
-                                    <h:outputText value="#{replacedBy.id}" style="font-size: 12px;" />
-                                </p:column>
-                                <p:column width="70%" headerText="label" >
-                                    <h:outputText value="#{replacedBy.value}" style="font-size: 12px;" />
-                                </p:column>                              
-                            </p:dataTable>  
-                            
-                            <!-- Création d'un relation associative avec les concepts qui remplacent ce concept --> 
-                            <b:row style="margin-top: 10px; "> 
-                                <b:column span="12">
-                                    <p:selectBooleanCheckbox value="#{editConcept.isReplacedByRTrelation}" 
-                                            itemLabel="Garder en relation associative (RT) ?"
-                                            title="Ajouter une relation associative (RT) avec les concepts qui le remplace?"/>
-                                </b:column>                    
-                            </b:row>                              
-                        </b:panel>
-                    </b:column>
-                </b:row>
-            </h:panelGroup>
-            
-            <p:separator/>
-            
-            <b:row style="margin-bottom: 20px;">
-                <b:column span="4" offset="4" >
-                    <b:commandButton value="Approuver" update="approveConceptForm containerIndex:formRightTab messageIndex"
-                        class="btn btn-primary"
-                        action="#{editConcept.approveConcept(conceptView.nodeConcept.concept.idConcept,
-                                selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"
-                        style="width:100%; font-size: 12px;color: white; background: #43B572;"
-                        oncomplete="PF('approveConcept').hide();"/>
-                </b:column>
-            </b:row>
-        </h:form>
+        <div class="row">
+            <div class="col-12" >
+                <h:outputText id="currentPrefLabelToDelete" value="#{conceptView.nodeConcept.term.lexical_value}"
+                              style="font-size: 14px; margin-left: 20px; color: #C63632;" />
+            </div>
+        </div>
+
+        <!-- Liste des concepts qui remplacent ce concept --> 
+        <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() > 0}">
+            <div class="row" style="margin-left: 10px; "> 
+                <div class="col-11">
+                    <h:outputText value="Ce concept est remplacé par: " style="font-size: 12px;" />
+                </div>
+            </div>            
+            <div class="row" > 
+                <div class="col-12">
+                    <p:panel>
+                        <p:dataTable value="#{conceptView.nodeConcept.replacedBy}" var="replacedBy"  scrollable="true" resizableColumns="true" scrollHeight="450"
+                                     style="font-size: 12px;">
+                            <p:column width="30%" headerText="idConcept">
+                                <h:outputText value="#{replacedBy.id}" style="font-size: 12px;" />
+                            </p:column>
+                            <p:column width="70%" headerText="label" >
+                                <h:outputText value="#{replacedBy.value}" style="font-size: 12px;" />
+                            </p:column>                              
+                        </p:dataTable>  
+
+                        <!-- Création d'un relation associative avec les concepts qui remplacent ce concept --> 
+                        <div class="row" style="margin-top: 10px; "> 
+                            <div class="col-12">
+                                <p:selectBooleanCheckbox value="#{editConcept.isReplacedByRTrelation}" 
+                                                         itemLabel="Garder en relation associative (RT) ?"
+                                                         title="Ajouter une relation associative (RT) avec les concepts qui le remplace?"/>
+                            </div>                    
+                        </div>                              
+                    </p:panel>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('approveConcept').hide();" update="idApproveConcept"/>
+                
+                <p:commandButton class="btn btn-primary" title="Approuver" 
+                                 update="containerIndex messageIndex" 
+                                 style="color: white;" oncomplete="PF('approveConcept').hide();"
+                                 actionListener="#{editConcept.approveConcept(conceptView.nodeConcept.concept.idConcept,
+                                           selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
+            </div>
+        </f:facet>
     </p:dialog>
 </ui:fragment>

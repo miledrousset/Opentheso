@@ -3,11 +3,11 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:form id="formList" class="user">
+    <h:panelGroup id="formList" class="user">
         <div class="form-group">
             <p:inputText id="inputList" placeholder="#{langueBean.getMsg('indexview.type_character')}" value="#{listIndex.searchValue}"
                          class="form-control form-control-user" style="font-size: 15px; border-color: #43B572">
-                <p:ajax listener="#{listIndex.onChange()}" update="formList" />
+                <p:ajax event="keyup" listener="#{listIndex.onChange()}" update="formList" />
             </p:inputText>
         </div>
 
@@ -31,5 +31,5 @@
                 <h:outputText value="#{list.value}" title="#{list.id}" style="font-size: 12px;"/>
             </p:column>
         </p:dataTable> 
-    </h:form>
+    </h:panelGroup>
 </ui:fragment>

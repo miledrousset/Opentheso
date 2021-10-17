@@ -20,7 +20,7 @@
             <ui:repeat var="related" value="#{conceptView.nodeConcept.nodeRT}" >
                 <div class="row" style="margin-top: 5px" >
                     <div class="col-1">
-                        <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab containerIndex:formLeftTab conceptForm:listConceptSpecAssocies messageIndex"
+                        <p:commandLink style="color: #FF7979" update="containerIndex messageIndex"
                                        action="#{relatedBean.deleteRelatedLink( related, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-trash" />
                         </p:commandLink>
