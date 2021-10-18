@@ -113,7 +113,7 @@ public class EditConcept implements Serializable {
         duplicate = false;
 
         if (prefLabel == null || prefLabel.isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "le label est obligatoire !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Le label est obligatoire !");
             FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
             return;
         }
