@@ -296,6 +296,12 @@ public class SearchBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }
     
     /**
