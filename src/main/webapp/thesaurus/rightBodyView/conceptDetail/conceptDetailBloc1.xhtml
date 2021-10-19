@@ -28,6 +28,7 @@
                         <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
                                       title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px; color: #000;" />
                         <p:commandButton icon="pi pi-arrow-up"
+                                         title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
                                          action="#{tree.expandTreeToPath(conceptView.nodeConcept.concept.idConcept,
                                                    conceptView.nodeConcept.concept.idThesaurus, conceptView.nodeConcept.term.lang)}"
                                          actionListener="#{selectedTheso.actionFromConceptToOn()}"
@@ -73,13 +74,14 @@
                             <div class="col-9">
                                 <ui:repeat   var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status">
                                     <p:commandLink rendered="#{replace.value != ''}" value="#{replace.value}"
+                                                   title="#{replace.id}"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
                                                    update="containerIndex:formRightTab indexTitle"
                                                    style="color: #C63632;" />
 
                                     <p:commandLink rendered="#{replace.value == ''}" value="(#{replace.id})"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
-                                                   update="formLeftTab formRightTab indexTitle"
+                                                   update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
                                                    style="color: #C63632;" />
 
                                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
@@ -102,12 +104,13 @@
                         <div class="col-9" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
                             <ui:repeat   var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status">
                                 <p:commandLink rendered="#{replaces.value != ''}" value="#{replaces.value}"
+                                               title="#{replaces.id}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
                                                update="containerIndex:formRightTab indexTitle"
                                                style="color: #f47b2a;" />
                                 <p:commandLink rendered="#{replaces.value == ''}" value="(#{replaces.id})"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
-                                               update="formLeftTab formRightTab indexTitle"
+                                               update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
                                                style="color: #C63632;" />
 
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
@@ -117,6 +120,7 @@
                 </div>
             </h:panelGroup>
 
+            <!-- ligne pour les collections / groupes  -->            
             <div class="list-group-item list-group-item-action" style="margin-bottom: -5px">
                 <div class="row" style="padding-top: 3px">
                     <div class="col-3" style="text-align: right;">
@@ -166,6 +170,7 @@
                             <ui:repeat var="domaine" value="#{conceptView.nodeConcept.nodeConceptGroup}" varStatus="status">
                                 <p:commandLink rendered="#{domaine.lexicalValue != ''}"
                                                value="#{domaine.lexicalValue}"
+                                               title="#{domaine.conceptGroup.idgroup}"
                                                action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
                                                update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
                                                style="color: #43B572;" />  
