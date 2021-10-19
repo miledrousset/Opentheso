@@ -29,46 +29,57 @@ import org.primefaces.event.SelectEvent;
 @Named(value = "listIndex")
 @SessionScoped
 public class ListIndex implements Serializable {
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private ConceptView conceptBean;
-    
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private SelectedTheso selectedTheso;
+    @Inject
+    private RightBodySetting rightBodySetting;
+    @Inject
+    private ConceptView conceptBean;
+
     private String searchValue;
     private NodeIdValue selectedNode;
     private List<NodeIdValue> nodeIdValues;
-    
+
     private boolean withAltLabel;
     private boolean permuted;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         reset();
-    } 
-    
-    public void reset(){
+    }
+
+    public void reset() {
         searchValue = null;
         selectedNode = null;
-        if(nodeIdValues!= null){
+        if (nodeIdValues != null) {
             nodeIdValues.clear();
             nodeIdValues = null;
-        }         
+        }
     }
-    
-    public void onChange(){
+
+    public void onChange() {
         String idTheso = selectedTheso.getCurrentIdTheso();
         String idLang = selectedTheso.getCurrentLang();
-        if(idTheso == null || idTheso.isEmpty()) return;
-        if(idLang == null || idLang.isEmpty()) return;
-        if(searchValue == null || searchValue.isEmpty()) return;
-        
+        if (idTheso == null || idTheso.isEmpty()) {
+            return;
+        }
+        if (idLang == null || idLang.isEmpty()) {
+            return;
+        }
+        if (searchValue == null || searchValue.isEmpty()) {
+            return;
+        }
+
         SearchHelper searchHelper = new SearchHelper();
         nodeIdValues = searchHelper.searchTermForIndex(
                 connect.getPoolConnexion(),
-                searchValue, 
+                searchValue,
                 idLang, idTheso,
                 permuted, withAltLabel);
-        
+
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("formList");
@@ -76,19 +87,17 @@ public class ListIndex implements Serializable {
     }
 
     public void onRowSelect(SelectEvent event) {
-        FacesMessage msg = new FacesMessage("Car Selected", ((NodeIdValue)event.getObject()).getValue());
+        FacesMessage msg = new FacesMessage(((NodeIdValue) event.getObject()).getValue());
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        
-            rightBodySetting.setShowConceptToOn();
-            conceptBean.getConcept(
-                    selectedTheso.getCurrentIdTheso(),
-                    ((NodeIdValue)event.getObject()).getId(),
-                    selectedTheso.getCurrentLang());
 
-        rightBodySetting.setIndex("0");         
-        
-    }  
-    
+        rightBodySetting.setShowConceptToOn();
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
+                ((NodeIdValue) event.getObject()).getId(), selectedTheso.getCurrentLang());
+
+        rightBodySetting.setIndex("0");
+
+    }
+
     public String getSearchValue() {
         return searchValue;
     }
@@ -128,6 +137,5 @@ public class ListIndex implements Serializable {
     public void setPermuted(boolean permuted) {
         this.permuted = permuted;
     }
-
 
 }

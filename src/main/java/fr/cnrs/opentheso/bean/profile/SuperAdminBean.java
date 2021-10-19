@@ -14,11 +14,14 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import javax.annotation.PreDestroy;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 /**
@@ -65,6 +68,24 @@ public class SuperAdminBean implements Serializable {
     }    
     
     public SuperAdminBean() {
+    }
+    
+    public void redirectToUsersPage() throws IOException {
+        init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/profile/usersV1.xhtml");
+    }
+
+    public void redirectToProjetsPage() throws IOException {
+        init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/profile/projectsV1.xhtml");
+    }
+
+    public void redirectToThesorusPage() throws IOException {
+        init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/profile/thesaurusV1.xhtml");
     }
 
     public void init() {

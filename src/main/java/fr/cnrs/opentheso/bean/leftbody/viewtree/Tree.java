@@ -408,6 +408,7 @@ public class Tree implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {
         leftBodySetting.setIndex("0");
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
+        treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
 
         if (!"facet".equals(parent.getType())) {
             indexSetting.setIsFacetSelected(false);
@@ -425,20 +426,13 @@ public class Tree implements Serializable {
             }
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
-
             rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
-            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         }
-        treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab");
-        }
-        pf.executeScript("srollToSelected();");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+        PrimeFaces.current().executeScript("srollToSelected();");
     }
 
     public String getIdConceptSelected() {
