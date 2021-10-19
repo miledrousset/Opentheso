@@ -39,7 +39,9 @@
         <ui:include src="conceptDetail/conceptDetailBloc3.xhtml" />
 
         <!-- Images et GPS -->
-        <ui:include src="conceptDetail/conceptDetailBloc4.xhtml" />
+        <h:panelGroup rendered="#{currentUser.nodeUser != null}" >
+            <ui:include src="conceptDetail/conceptDetailBloc4.xhtml" />
+        </h:panelGroup>
 
         <!-- Corpus / Alignement / Notation -->
         <ui:include src="conceptDetail/conceptDetailBloc5.xhtml" />

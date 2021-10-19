@@ -32,7 +32,7 @@
                 </p:autoComplete>
 
                 <p:commandButton icon="pi pi-search" styleClass="ui-button-warning" action="#{searchBean.applySearch()}"
-                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex"
+                                 update="containerIndex messageIndex"
                                  style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; border-color: #43B572"/>   
             </div>
         </div>
@@ -43,22 +43,22 @@
             <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center" >
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
                                          style="color: #000; background-color: transparent;">
-                    <p:ajax update="formSearch" listener="#{searchBean.activateIndexMatch()}"/>
+                    <p:ajax listener="#{searchBean.activateIndexMatch()}"/>
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
                                          style="color: #000; background-color: transparent;">
-                    <p:ajax update="formSearch" listener="#{searchBean.activateExactMatch()}"/>
+                    <p:ajax listener="#{searchBean.activateExactMatch()}"/>
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
                                          style="color: #000; background-color: transparent;">
-                    <p:ajax update="formSearch" listener="#{searchBean.activateWithNote()}"/>
+                    <p:ajax listener="#{searchBean.activateWithNote()}"/>
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
                                          style="color: #000; background-color: transparent;">
-                    <p:ajax update="formSearch" listener="#{searchBean.activateWithId()}"/>
+                    <p:ajax listener="#{searchBean.activateWithId()}"/>
                 </p:selectBooleanCheckbox>
 
                 <p:menuButton style="font-size: 12px;" title="Recherche pré-programmée" icon="pi pi-align-justify">
