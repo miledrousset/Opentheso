@@ -2,7 +2,8 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" >
 
@@ -39,12 +40,12 @@
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                            <a class="collapse-item" href="../profile/monCompte.xhtml" style="font-size: 12px;">Mon compte</a>
+                            <p:commandLink class="collapse-item" actionListener="#{myAccountBean.redirectToMyProfilePage()}" style="font-size: 12px;">Mon compte</p:commandLink>
                             <a class="collapse-item" href="cards.html" style="font-size: 12px;">Mes projets/utilisateurs</a>
                             <hr class="sidebar-divider">
-                                <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les utilisateurs</a>
-                                <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les projets</a>
-                                <a class="collapse-item" href="cards.html" style="font-size: 12px;">Tous les thésaurus</a>
+                                <p:commandLink class="collapse-item" actionListener="#{superAdminBean.redirectToUsersPage()}" style="font-size: 12px;">Tous les utilisateurs</p:commandLink>
+                                <p:commandLink class="collapse-item" actionListener="#{superAdminBean.redirectToProjetsPage()}" style="font-size: 12px;">Tous les projets</p:commandLink>
+                                <p:commandLink class="collapse-item" actionListener="#{superAdminBean.redirectToThesorusPage()}" style="font-size: 12px;">Tous les thésaurus</p:commandLink>
                             </hr>
                         </div>
                     </div>

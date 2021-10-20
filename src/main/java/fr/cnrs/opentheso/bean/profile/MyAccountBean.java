@@ -12,12 +12,14 @@ import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
@@ -29,31 +31,41 @@ import javax.inject.Inject;
 @SessionScoped
 public class MyAccountBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private CurrentUser currentUser;
+    @Inject
+    private Connect connect;
+    @Inject
+    private LanguageBean languageBean;
+    @Inject
+    private CurrentUser currentUser;
 
-    private NodeUser nodeUser; 
+    private NodeUser nodeUser;
     private String passWord1;
     private String passWord2;
     // liste des (rôle -> projet) qui existent déjà pour l'utilisateur     
-    ArrayList<NodeUserRoleGroup> allMyRoleProject;    
-    
+    ArrayList<NodeUserRoleGroup> allMyRoleProject;
+
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
-        if(allMyRoleProject!= null){
+    }
+
+    public void clear() {
+        if (allMyRoleProject != null) {
             allMyRoleProject.clear();
             allMyRoleProject = null;
         }
         nodeUser = null;
         passWord1 = null;
-        passWord2 = null;      
-    }     
-    
+        passWord2 = null;
+    }
+
     public MyAccountBean() {
+    }
+
+    public void redirectToMyProfilePage() throws IOException {
+        reset();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/profile/myAccountV1.xhtml");
     }
 
     public void reset() {
@@ -62,109 +74,108 @@ public class MyAccountBean implements Serializable {
         passWord2 = null;
         initAllMyRoleProject();
     }
-    
-    private void initAllMyRoleProject(){
+
+    private void initAllMyRoleProject() {
         UserHelper userHelper = new UserHelper();
         allMyRoleProject = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
-    }    
+    }
 
-    public void updatePseudo(){
+    public void updatePseudo() {
         FacesMessage msg;
-        
-        if(nodeUser.getName() == null || nodeUser.getName().isEmpty()) {
+
+        if (nodeUser.getName() == null || nodeUser.getName().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le pseudo est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;              
-        }        
-        
+            return;
+        }
+
         UserHelper userHelper = new UserHelper();
-        if(!userHelper.updatePseudo(
+        if (!userHelper.updatePseudo(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
-                nodeUser.getName())){
+                nodeUser.getName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de pseudo !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
+            return;
         }
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Pseudo changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
     }
-    
-    public void updateAlertEmail(){
+
+    public void updateAlertEmail() {
         FacesMessage msg;
-        
-         
+
         UserHelper userHelper = new UserHelper();
-        if(!userHelper.setAlertMailForUser(
+        if (!userHelper.setAlertMailForUser(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
-                nodeUser.isIsAlertMail())){
+                nodeUser.isIsAlertMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant le changement d'alertes !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
+            return;
         }
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Alerte changée avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
-    }    
-    
-    public void updateEmail(){
+    }
+
+    public void updateEmail() {
         FacesMessage msg;
-        
-        if(nodeUser.getMail()== null || nodeUser.getMail().isEmpty()) {
+
+        if (nodeUser.getMail() == null || nodeUser.getMail().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un Email est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;              
-        }           
+            return;
+        }
         UserHelper userHelper = new UserHelper();
-        if(!userHelper.updateMail(
+        if (!userHelper.updateMail(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
-                nodeUser.getMail())){
+                nodeUser.getMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement d'Email !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
+            return;
         }
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Email changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
-    }    
-    
-    public void updatePassword(){
+    }
+
+    public void updatePassword() {
         FacesMessage msg;
         UserHelper userHelper = new UserHelper();
-        if(passWord1 == null || passWord1.isEmpty()) {
+        if (passWord1 == null || passWord1.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;              
+            return;
         }
-        if(passWord2 == null || passWord2.isEmpty()) {
+        if (passWord2 == null || passWord2.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;              
-        }   
-        if(!passWord1.equals(passWord2)) {
+            return;
+        }
+        if (!passWord1.equals(passWord2)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Mot de passe non identique !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;              
+            return;
         }
 
-        if(!userHelper.updatePwd(
+        if (!userHelper.updatePwd(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
-                MD5Password.getEncodedPassword(passWord2))){
+                MD5Password.getEncodedPassword(passWord2))) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de passe !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
+            return;
         }
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Mot de passe changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        reset();        
+        reset();
     }
 
     public NodeUser getNodeUser() {
@@ -199,7 +210,4 @@ public class MyAccountBean implements Serializable {
         this.allMyRoleProject = allMyRoleProject;
     }
 
-
-    
-    
 }

@@ -32,9 +32,8 @@
                                 disabled="#{selectedTheso.sortByNotation}"
                                 process="@this" update="containerIndex:formLeftTab" />
 
-                    <p:menuitem icon="pi pi-lis" value="Add top concept" action="#{newConcept.reset()}" 
-                                oncomplete="PF('addTopConcept').show();"
-                                update="idAddTopConcept"
+                    <p:menuitem icon="pi pi-lis" value="Add top concept" onclick="#{newConcept.reset()}"
+                                oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
                                 rendered="#{(currentUser.nodeUser != null) and 
                                             (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
@@ -62,7 +61,7 @@
 
             <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
             <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-            <p:ajax event="select" listener="#{tree.onNodeSelect}" update="containerIndex"/>
+            <p:ajax event="select" listener="#{tree.onNodeSelect}" />
             <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
 
             <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
@@ -87,7 +86,6 @@
         </p:tree>
     </div>
     
-    <ui:include src="../../dialog/concept/addTopConcept.xhtml" />
     <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
     
 </ui:fragment>

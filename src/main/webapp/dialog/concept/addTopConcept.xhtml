@@ -60,8 +60,7 @@
                                  actionListener="PF('addTopConcept').hide();" update="idAddTopConcept"/>
                 
                 <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}" 
-                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex" 
-                                 style="color: white;"
+                                 update="containerIndex messageIndex"
                                  actionListener="#{newConcept.addTopConcept(selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
             </div>
         </f:facet>

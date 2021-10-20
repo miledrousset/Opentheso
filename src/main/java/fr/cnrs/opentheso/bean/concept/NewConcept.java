@@ -118,10 +118,8 @@ public class NewConcept implements Serializable {
         }
         RelationsHelper relationsHelper = new RelationsHelper();
         typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
-        GroupHelper groupHelper = new GroupHelper();
-        nodeGroups = groupHelper.getListConceptGroup(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang());
+        nodeGroups = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 
     public void resetForFacet(NodeFacet nodeFacet) {
@@ -283,8 +281,7 @@ public class NewConcept implements Serializable {
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("containerIndex:formLeftTab");
+            pf.ajax().update("containerIndex");
         }
     }
 

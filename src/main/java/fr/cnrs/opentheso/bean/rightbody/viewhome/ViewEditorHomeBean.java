@@ -74,7 +74,7 @@ public class ViewEditorHomeBean implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }
 
