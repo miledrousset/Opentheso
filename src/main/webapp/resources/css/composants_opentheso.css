@@ -95,3 +95,13 @@
     background: #f47b2a;
     border-color: #f47b2a;
 }
+
+/*** Panel Header ***/
+.ui-panel-titlebar {
+    background: #f47b2a !important;
+}
+
+.ui-panel-title {
+    color: #FFF !important;
+}
+

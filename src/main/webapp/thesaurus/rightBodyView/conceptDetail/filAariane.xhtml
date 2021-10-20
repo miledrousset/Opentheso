@@ -14,8 +14,7 @@
                     <p:menuitem rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                             or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                 actionListener="#{newConcept.reset()}" oncomplete="PF('addNT').show();"
-                                update="idAddNT" 
-                                value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
+                                update="idAddNT" value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
 
                     <p:menuitem rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                             or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"

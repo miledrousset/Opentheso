@@ -2,7 +2,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
 
-    <footer class="sticky-footer bg-white">
+    <footer class="sticky-footer bg-white" style="bottom: 0; left: 0;">
         <div class="container my-auto">
             <div class="copyright text-center my-auto">
                 <span>Copyright © Opentheso 2021</span>
@@ -18,5 +18,9 @@
     <script src="../resources/js/bootstrap.bundle.min.js"></script>
     <script src="../resources/js/jquery.easing.min.js"></script>
     <script src="../resources/js/sb-admin-2.js"></script>
+
+    <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false">
+        <p:graphicImage value="../resources/img/wait_old.gif" width="150px" />
+    </p:dialog> 
 
 </ui:composition>

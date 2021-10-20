@@ -69,24 +69,6 @@ public class SuperAdminBean implements Serializable {
     
     public SuperAdminBean() {
     }
-    
-    public void redirectToUsersPage() throws IOException {
-        init();
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/profile/usersV1.xhtml");
-    }
-
-    public void redirectToProjetsPage() throws IOException {
-        init();
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/profile/projectsV1.xhtml");
-    }
-
-    public void redirectToThesorusPage() throws IOException {
-        init();
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/profile/thesaurusV1.xhtml");
-    }
 
     public void init() {
         allUsers = null;
