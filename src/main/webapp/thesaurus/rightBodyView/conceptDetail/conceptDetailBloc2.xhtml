@@ -212,9 +212,9 @@
         </div> 
     </div>     
 
-    <!-- ligne Traductions -->        
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}" >
+    <!-- ligne Traductions -->  
+    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}" >
+        <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">        
             <div class="list-group-item list-group-item-action" >
                 <div class="row" style="margin-top: -10px; margin-bottom: -10px">
                     <div class="col-3" style="text-align: right;">
@@ -267,10 +267,9 @@
                         </div>
                     </h:panelGroup>
                 </div>
-            </div>
-        </h:panelGroup>                
-
-    </div>            
+            </div>               
+        </div>   
+    </h:panelGroup> 
 
 
 

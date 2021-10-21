@@ -17,16 +17,16 @@
 
         <ui:repeat var="noteToEdit" value="#{noteBean.nodeToEdit()}" >
             <div class="row">
+                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                    <p:inputTextarea rendered="#{noteToEdit.lexicalvalue != ''}" value="#{noteToEdit.lexicalvalue}"  
+                                     style="width: 100%; font-size: 12px; color: black" />
+                </div>
                 <div class="col-1" style="margin-top: 3px">
                     <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab"
                                       action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}">
                         <i class="pi pi-check-circle" />
                     </p:commandLink>
-                </div>
-                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                    <p:inputTextarea rendered="#{noteToEdit.lexicalvalue != ''}" value="#{noteToEdit.lexicalvalue}"  
-                                     style="width: 100%; font-size: 12px; color: black" />
-                </div>
+                </div>                
             </div>
         </ui:repeat>
     </p:dialog> 

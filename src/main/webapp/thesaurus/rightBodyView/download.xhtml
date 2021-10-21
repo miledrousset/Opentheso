@@ -14,12 +14,12 @@
                     </div>
 
                     <div class="col-9">
+                        <i class="pi pi-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>                        
                         <p:commandButton  value="Skos" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none" 
                                           onclick="PrimeFaces.monitorDownload(start, stop);">
                             <p:fileDownload  value="#{exportFileBean.conceptToFile(
                                                       conceptView.nodeConcept.concept.idConcept,
                                                       conceptView.nodeConcept.concept.idThesaurus,'skos')}" />
-                            <i class="pi pi-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>
                         </p:commandButton>
 
                         <p:commandButton  value="Json" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none" 
@@ -27,7 +27,6 @@
                             <p:fileDownload  value="#{exportFileBean.conceptToFile(
                                                       conceptView.nodeConcept.concept.idConcept,
                                                       conceptView.nodeConcept.concept.idThesaurus,'json')}" />
-                            <i class="pi pi-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>
                         </p:commandButton>
 
                         <p:commandButton value="JsonLd" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none" 
@@ -35,15 +34,13 @@
                             <p:fileDownload  value="#{exportFileBean.conceptToFile(
                                                       conceptView.nodeConcept.concept.idConcept,
                                                       conceptView.nodeConcept.concept.idThesaurus,'jsonld')}" />
-                            <i class="pi pi-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>
                         </p:commandButton>
 
-                        <p:commandButton  value="Turtle" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none; margin-left: 10px;" 
+                        <p:commandButton  value="Turtle" style="font-size: 12px; color: #43B572; background: none; border: none; box-shadow: none;" 
                                           onclick="PrimeFaces.monitorDownload(start, stop);">
                             <p:fileDownload  value="#{exportFileBean.conceptToFile(
                                                       conceptView.nodeConcept.concept.idConcept,
                                                       conceptView.nodeConcept.concept.idThesaurus,'turtle')}" />
-                            <i class="pi pi-download" size="sm" style="color: #f47b2a; font-size: 12px;"/>
                         </p:commandButton>
 
                     </div>

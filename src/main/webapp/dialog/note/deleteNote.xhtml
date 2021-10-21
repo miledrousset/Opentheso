@@ -17,16 +17,17 @@
 
         <ui:repeat var="noteToDelete" value="#{noteBean.nodeToDelete()}" >
             <div class="row">
+                <div class="col-11" style="margin-top: 3px">
+                    <p:inputTextarea rendered="#{noteToDelete.lexicalvalue != ''}"
+                                     readonly="true"
+                                     value="#{noteToDelete.lexicalvalue}"  
+                                     style="width: 100%; font-size: 12px; color: black" />
+                </div>
                 <div class="col-1" style="margin-top: 3px">
                     <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab messageIndex"
                                       action="#{noteBean.deleteNote(noteToDelete, currentUser.nodeUser.idUser)}" >
                         <i class="pi pi-trash" />
                     </p:commandLink>
-                </div>
-                <div class="col-11" style="margin-top: 3px">
-                    <p:inputTextarea rendered="#{noteToDelete.lexicalvalue != ''}"
-                                     value="#{noteToDelete.lexicalvalue}"  
-                                     style="width: 100%; font-size: 12px; color: black" />
                 </div>
             </div>
         </ui:repeat>
