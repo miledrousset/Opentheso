@@ -5,10 +5,10 @@
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
     <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
-        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+        <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
             <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
                 <!-- ligne BT -->
-                <div class="row" style="padding-top: 2px;">
+                <div class="row" style="padding: 2px;">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.broader')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.broader')}"
@@ -63,20 +63,19 @@
                 </div>
             </div>
 
-            <div class="list-group-item list-group-item-action" >
-                <!-- ligne NT -->
-                <div class="row" style="margin-top: 3px">
+            <div class="list-group-item list-group-item-action">
+                <!-- ligne BT -->
+                <div class="row" style="padding: 2px;">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.narrower')}" 
-                                      title="#{langueBean.getMsg('rightbody.concept.narrower')}" 
+                                      title="#{langueBean.getMsg('rightbody.concept.narrower')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="fa fa-level-down-alt" style="color:#f47b2a; margin-right: 10px"
+                        <i class="fas fa-level-down-alt" style="color: #f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                       or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>  
+                                       or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
-                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_narrower_relation')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_add_narrower_relation')}"
@@ -94,8 +93,8 @@
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_delete_narrower_relation')}"
                                         actionListener="#{narrowerBean.reset()}"
                                         update="idDeleteNarrowerLink"
-                                        oncomplete="PF('deleteNarrowerLink').show();"/>                                    
-                        </p:menuButton> 
+                                        oncomplete="PF('deleteNarrowerLink').show();"/>
+                        </p:menuButton>
                     </div>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}" >            
@@ -147,25 +146,24 @@
                                 <i class="pi pi-angle-double-right" style="color:#f47b2a;" />
                             </p:commandLink>
                         </div>
-                    </h:panelGroup>                
+                    </h:panelGroup>
                 </div>
             </div>
 
-            <div class="list-group-item list-group-item-action" style="margin-bottom: -5px" >
+            <div class="list-group-item list-group-item-action">
                 <!-- ligne RT -->
-                <div class="row" style="margin-top: 3px">
+                <div class="row" style="padding: 2px;">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.related')}" 
-                                      title="#{langueBean.getMsg('rightbody.concept.related')}" 
+                                      title="#{langueBean.getMsg('rightbody.concept.related')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="fas fa-arrows-alt-h" style="color:#f47b2a; margin-right: 10px"
+                        <i class="fas fa-arrows-alt-h" style="color: #f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_related_relation')}" 
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_add_related_relation')}"
                                         actionListener="#{relatedBean.reset()}" 
@@ -178,8 +176,8 @@
                                         oncomplete="PF('deleteRelatedLink').show();"
                                         update="listConceptSpecAssocies"
                                         style="font-size: 12px;" />
-                        </p:menuButton> 
-                    </div>       
+                        </p:menuButton>
+                    </div>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeRT.size() == 0}" >            
                         <div class="col-9">
@@ -205,45 +203,35 @@
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                             </ui:repeat>             
                         </div>   
-                    </h:panelGroup>                
+                    </h:panelGroup>
                 </div>
             </div>
-
         </div> 
     </div>
 
     <!-- ligne Traductions -->  
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central; ">
-        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
+        <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
             <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
-                <div class="row" style="padding-top: 3px;">
+                <div class="row" style="padding: 2px;">
                     <div class="col-3" style="text-align: right;">
-                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" 
-                                      title="#{langueBean.getMsg('rightbody.concept.traduction')}" 
-                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
+                                      style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
-                        <i class="fas fa-language fa-lg" style="margin-right: 10px; color: #f47b2a" rendered="#{(currentUser.nodeUser != null)}" />
+                        <i class="fa fa-language" style="color: #f47b2a; margin-right: 10px" rendered="#{(currentUser.nodeUser != null)}" />
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                   or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                      icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" 
-                                        actionListener="#{traductionBean.reset()}"
-                                        oncomplete="PF('addTraduction').show();"
-                                        update="idAddTraduction"
-                                        style="font-size: 12px;" />
+                                      icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;">
 
-                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" 
-                                        actionListener="#{traductionBean.reset()}"
-                                        oncomplete="PF('renameTraduction').show();"
-                                        update="idRenameTraduction"
-                                        style="font-size: 12px;" />
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" actionListener="#{traductionBean.reset()}"
+                                        oncomplete="PF('addTraduction').show();" update="idAddTraduction"/>
 
-                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
-                                        actionListener="#{traductionBean.reset()}"
-                                        oncomplete="PF('deleteTraduction').show();"
-                                        update="idDeleteTraduction"
-                                        style="font-size: 12px;" />
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" actionListener="#{traductionBean.reset()}"
+                                        oncomplete="PF('renameTraduction').show();" update="idRenameTraduction" />
+
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" actionListener="#{traductionBean.reset()}"
+                                        oncomplete="PF('deleteTraduction').show();" update="idDeleteTraduction" />
                         </p:menuButton>
                     </div>
 

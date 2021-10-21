@@ -5,9 +5,9 @@
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central">
-        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
-            <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
-                <div class="row" style="padding-top: 3px;">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -5px">
+            <div class="list-group-item list-group-item-action">
+                <div class="row" style="padding: 2px">
                     <div class="col-3" style="text-align: right;">
 
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.preferred_term')}" 
@@ -26,7 +26,7 @@
 
                     <div class="col-9">
                         <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
-                                      title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px; color: #000;" />
+                                      title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px;" />
                         <p:commandButton icon="pi pi-sitemap"
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
                                          action="#{tree.expandTreeToPath(conceptView.nodeConcept.concept.idConcept,
@@ -42,7 +42,7 @@
             <!-- ligne concepts qui remplacent le concept déprécié -->
             <h:panelGroup rendered="#{conceptView.nodeConcept.concept.isDeprecated}">
                 <div class="list-group-item list-group-item-action">
-                    <div class="row" style="padding-top: 5px">
+                    <div class="row" style="padding: 2px">
                         <div class="col-3" style="color: white; text-align: right;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace_with')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_replace_with')}" 
@@ -65,8 +65,7 @@
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() == 0}">
                             <div class="col-9">
-                                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
-                                               style="font-size: 12px; color: grey; font-style: italic " />
+                                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                             </div>
                         </h:panelGroup>
 
@@ -95,7 +94,7 @@
             <!-- ligne qui rappelle les concepts déprécés qui sont remplacés par ce concept -->
             <h:panelGroup rendered="#{conceptView.nodeConcept.replaces.size() > 0}">
                 <div class="list-group-item list-group-item-action">
-                    <div class="row" style="padding-top: 5px;">
+                    <div class="row" style="padding: 2px">
                         <div class="col-3" style="color: white; text-align: right;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_replace')}"
@@ -121,8 +120,8 @@
             </h:panelGroup>
 
             <!-- ligne pour les collections / groupes  -->            
-            <div class="list-group-item list-group-item-action" style="margin-bottom: -5px">
-                <div class="row" style="padding-top: 3px">
+            <div class="list-group-item list-group-item-action">
+                <div class="row" style="padding: 2px">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}" 
                                       title="#{langueBean.getMsg('leftbody.collection')}"
@@ -160,8 +159,7 @@
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}" >                          
                         <div class="col-9">
-                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
-                                           style="font-size: 12px; color: grey; font-style: italic " />
+                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                         </div>
                     </h:panelGroup>
 
@@ -190,7 +188,7 @@
             <!--Ligne synonymes -->
             <div class="list-group-item list-group-item-action">
                 <!-- ligne EM USE -->
-                <div class="row" style="padding-top: 10px">
+                <div class="row" style="padding: 2px">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.synonym')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.synonym')}" 
@@ -226,7 +224,7 @@
 
                     <h:panelGroup rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" >            
                         <div class="col-9">
-                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
+                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />              
                         </div> 
                     </h:panelGroup>
 
@@ -260,7 +258,7 @@
             <!-- Total des concepts -->
             <div class="list-group-item list-group-item-action" style=" margin-bottom: -5px">
                 <!-- Total des concepts de la branche -->
-                <div class="row" style="padding-top: 3px">
+                <div class="row" style="padding: 2px">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.branch_count')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
@@ -274,10 +272,9 @@
                         </p:commandLink>
                     </div>
                     <div class="col-9">
-                        <h:outputText rendered="#{conceptView.countOfBranch != 0}"
-                                      value="#{conceptView.countOfBranch} concept (s)" 
+                        <h:outputText rendered="#{conceptView.countOfBranch != 0}" value="#{conceptView.countOfBranch} concept (s)" 
                                       title="#{langueBean.getMsg('rightbody.concept.clic_branch_count')}"
-                                      style="font-size: 12px; color: #666666" />
+                                      style="font-size: 14px;" />
                     </div>
                 </div>
             </div>            
