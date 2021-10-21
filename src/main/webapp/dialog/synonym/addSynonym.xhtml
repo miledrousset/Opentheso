@@ -5,7 +5,8 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddSynonym" header="#{langueBean.getMsg('rightbody.conceptdialog.add_synonym')}" widgetVar="addSynonym" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px"
+              appendTo="@(body)" dynamic="true">
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -67,7 +68,7 @@
                                  style="color: white; background: #FF7979; width:100%; font-size: 12px;"/>
             </div>
         </div>
-        
+
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 

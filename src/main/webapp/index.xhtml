@@ -17,6 +17,7 @@
 
         <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
 
+
         <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
 
         <h:panelGroup id="indexTitle" >
@@ -64,9 +65,10 @@
 
             <div id="content-wrapper" style="width: 100%">
 
-                <ui:include src="thesaurus/header_thesaurus.xhtml" />
-
                 <h:form id="containerIndex">
+                    
+                    <ui:include src="thesaurus/header_thesaurus.xhtml" />
+
                     <div id="thesorusContent" style="margin-top: -20px;">
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
