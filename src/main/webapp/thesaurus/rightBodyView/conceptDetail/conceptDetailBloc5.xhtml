@@ -77,12 +77,11 @@
                             </h:panelGroup>
                         </div>
                     </div>
-                    <p:spacer height="10px;"/>
                 </h:panelGroup>
 
                 <!-- ligne Corpus liés --> 
                 <h:panelGroup rendered="#{conceptView.nodeCorpuses != null and conceptView.haveCorpus}">
-                    <div class="list-group-item list-group-item-action" >
+                    <div class="list-group-item list-group-item-action" style=" margin-bottom: -5px">
                         <div class="row" style="margin-top: 3px">
                             <div class="col-3" style="text-align: right;">
                                 <h:outputText value=" #{langueBean.getMsg('rightbody.concept.linked_corpus')}" 
@@ -133,14 +132,12 @@
                 </h:panelGroup>
             </div>
         </div>
-    </h:panelGroup>          
+    </h:panelGroup>
 
-    <!-- Id, notation and Uri -->
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
-        <!-- Notation -->
-        <div class="list-group-item list-group-item-action" style="margin-top: -15px">
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.concept.notation != '')}">                
-                <div class="row" >
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central; margin-bottom: -5px">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+            <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+                <div class="row" style="padding-top: 3px;">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notation')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.notation')}"
@@ -167,93 +164,97 @@
                         </div>
                     </h:panelGroup>
                 </div>
-            </h:panelGroup>  
+            </div>
 
-
-
-            <div class="row" style="margin-top: 3px">
-                <div class="col-3" style="text-align: right;">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}"
-                                  style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
-                </div>
-                <div class="col-9">
-                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>
-                    <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
-                            value="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 12px; color: #43B572;">
-                    </p:link>
+            <div class="list-group-item list-group-item-action">
+                <div class="row" style="padding-top: 3px;">
+                    <div class="col-3" style="text-align: right;">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}"
+                                      style="font-size: 14px; font-weight: bold; margin-right: 37px"/>
+                    </div>
+                    <div class="col-9">
+                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>
+                        <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
+                                value="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 12px; color: #43B572;">
+                        </p:link>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="list-group-item list-group-item-action" >
-            <div class="row" style="margin-top: 3px">
-                <div class="col-9">
-                    <div class="row" >
-                        <div class="col-3" style="text-align: right;">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')} :"
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+            <div class="row" style="padding-top: 3px;">
+                <div class="col-9" style="text-align: right;">
+                    <div class="list-group-item list-group-item-action" style=" margin-bottom: -5px">
+                        <div class="row" style="padding-top: 3px;">
+                            <div class="col-4" style="text-align: right;">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}"
+                                              style="font-size: 14px; font-weight: bold; margin-right: 37px"/>
+                            </div>
+                            <div class="col-8">
+                                <!-- Cas d'uri de type Ark -->
+                                <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
+                                    <div class="col-9">
+                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>
+                                        <p:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
+                                                value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" style="font-size: 12px; color: #43B572;">
+                                        </p:link>
+                                    </div>
+                                </h:panelGroup>
+                                <!-- Cas d'uri de type Handle -->
+                                <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
+                                    <div class="col-9">
+                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>                                
+                                        <p:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
+                                                value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;">
+                                        </p:link>
+                                    </div>
+                                </h:panelGroup> 
+                                <!-- Cas d'uri de type Doi -->
+                                <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsDoi}">
+                                    <div class="col-9">
+                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>                                
+                                        <p:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}"
+                                                value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}" 
+                                                style="font-size: 12px; color: #43B572;">
+                                            <i class="pi pi-link" />
+                                        </p:link>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
                         </div>
-                        <!-- Cas d'uri de type Ark -->
-                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
-                            <div class="col-9">
-                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>
-                                <p:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
-                                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" style="font-size: 12px; color: #43B572;">
-                                </p:link>
-                            </div>
-                        </h:panelGroup>
-                        <!-- Cas d'uri de type Handle -->
-                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsHandle}">
-                            <div class="col-9">
-                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>                                
-                                <p:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}"
-                                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;">
-                                </p:link>
-                            </div>
-                        </h:panelGroup> 
-                        <!-- Cas d'uri de type Doi -->
-                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsDoi}">
-                            <div class="col-9">
-                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>                                
-                                <p:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}"
-                                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idDoi}" 
-                                        style="font-size: 12px; color: #43B572;">
-                                    <i class="pi pi-link" />
-                                </p:link>
-                            </div>
-                        </h:panelGroup> 
                     </div>
 
-                    <!-- Affichage de l'identifiant Ark -->
-                    <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idArk != ''}">                    
-                        <div class="row" >
-                            <div class="col-3" style="text-align: right;">
-                                <h:outputText value="IdArk : "
-                                              style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+                    <div class="list-group-item list-group-item-action">
+                        <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
+                            <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+                                <div class="row" style="padding-top: 3px;">
+                                    <div class="col-4" style="text-align: right;">
+                                        <h:outputText value="IdHandle" style="font-size: 14px; font-weight: bold; margin-right: 37px"/>
+                                    </div>
+                                    <div class="col-8">
+                                        <h:outputText value="#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>  
+                    </div>
+
+                    <div class="list-group-item list-group-item-action">
+                        <!-- Affichage de l'identifiant Ark -->
+                        <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idArk != ''}">                    
+                            <div class="row" >
+                                <div class="col-4" style="text-align: right;">
+                                    <h:outputText value="IdArk" style="font-size: 14px; font-weight: bold; margin-right: 37px"/>
+                                </div>                        
+                                <div class="col-8">
+                                    <h:outputText value="#{conceptView.nodeConcept.concept.idArk}" style="font-size: 12px; color: #43B572;"/>
+                                </div>
                             </div>                        
-                            <div class="col-9">
-                                <h:outputText value="#{conceptView.nodeConcept.concept.idArk}" 
-                                              style="font-size: 12px; color: #43B572;"/>
-                            </div>
-                        </div>                        
-                    </h:panelGroup>  
-                    <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idHandle != ''}">
-                        <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
-                            <div class="row" style="padding-top: 3px;">
-                                <div class="col-3" style="text-align: right;">
-                                    <h:outputText value="IdHandle : " style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
-                                </div>
-                                <div class="col-9">
-                                    <h:outputText value="#{conceptView.nodeConcept.concept.idHandle}" style="font-size: 12px; color: #43B572;"/>
-                                </div>
-                            </div>
-                        </div>
-                    </h:panelGroup>                        
+                        </h:panelGroup>  
+                    </div>
                 </div>
-                <div class="col-2" >
+                <div class="col-3">
                     <!-- QrCode-->
-                    <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idArk != ''}"
-                                  style="width: 100%; text-align: right;">
+                    <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idArk != ''}" style="width: 100%; text-align: right;">
                         <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
                             <div class="row" style="padding-top: 3px;">
                                 <div class="col-10" />
@@ -264,12 +265,12 @@
                                 </div>
                             </div>
                         </div>
-                    </h:panelGroup>                      
-                </div>                
+                    </h:panelGroup> 
+                </div>
             </div>
+
         </div>
     </div>
-
 
     <ui:include src="../../../dialog/alignment/addAlignment.xhtml" />   
     <ui:include src="../../../dialog/alignment/addManualAlignment.xhtml" />

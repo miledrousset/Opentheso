@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
             <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
                 <!-- ligne BT -->
@@ -14,7 +14,7 @@
                                       title="#{langueBean.getMsg('rightbody.concept.broader')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="pi pi-arrow-up" style="color: #f47b2a; margin-right: 10px"
+                        <i class="fas fa-level-up-alt" style="color: #f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
@@ -71,7 +71,7 @@
                                       title="#{langueBean.getMsg('rightbody.concept.narrower')}" 
                                       style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="pi pi-arrow-down" style="color:#f47b2a; margin-right: 10px"
+                        <i class="fas fa-level-down-alt" style="color:#f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>  
 
@@ -151,7 +151,7 @@
                 </div>
             </div>
 
-            <div class="list-group-item list-group-item-action" >
+            <div class="list-group-item list-group-item-action" style="margin-bottom: -5px" >
                 <!-- ligne RT -->
                 <div class="row" style="margin-top: 3px">
                     <div class="col-3" style="text-align: right;">
@@ -159,7 +159,7 @@
                                       title="#{langueBean.getMsg('rightbody.concept.related')}" 
                                       style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="pi pi-sort-alt" style="color:#f47b2a; margin-right: 10px"
+                        <i class="fas fa-arrows-alt-h" style="color:#f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
@@ -210,19 +210,20 @@
             </div>
 
         </div> 
-    </div>     
+    </div>
 
     <!-- ligne Traductions -->  
-    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}" >
-        <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">        
-            <div class="list-group-item list-group-item-action" >
-                <div class="row" style="margin-top: -10px; margin-bottom: -10px">
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central; ">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+            <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
+                <div class="row" style="padding-top: 3px;">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.traduction')}" 
                                       style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
                         <i class="fa fa-language" style="font-size: 14px; margin-right: 10px" rendered="#{(currentUser.nodeUser != null)}" />
+
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                   or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
@@ -267,9 +268,9 @@
                         </div>
                     </h:panelGroup>
                 </div>
-            </div>               
-        </div>   
-    </h:panelGroup> 
+            </div>
+        </div>
+    </div>
 
     <ui:include src="../../../dialog/broader/addBroaderLink.xhtml" />
     <ui:include src="../../../dialog/broader/deleteBroaderLink.xhtml" />
