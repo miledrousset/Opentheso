@@ -44,9 +44,8 @@
 
     </h:head>
 
-
     <h:body id="page-top" style="font-size: 12px;">
-
+        
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
@@ -60,7 +59,6 @@
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <div id="wrapper" style="height: 100%">
-
             <ui:include src="thesaurus/menu_thesaurus.xhtml" />
 
             <div id="content-wrapper" style="width: 100%">
@@ -90,8 +88,10 @@
         <script src="resources/js/jquery.easing.min.js"></script>
         <script src="resources/js/sb-admin-2.js"></script>
 
-        <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false">
-            <p:graphicImage value="resources/img/wait_old.gif" width="150px" />
-        </p:dialog>
+        <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
+        <p:dialog widgetVar="waitDialog" modal="false" draggable="false"  closable="false" resizable="false" showHeader="false" position="top"
+                  style="margin-top: 250px; border: none">
+            <i class="fas fa-spinner fa-spin fa-2x" style="color: #F7A269"></i>
+        </p:dialog>        
     </h:body>
 </html>

@@ -71,7 +71,7 @@
                                       title="#{langueBean.getMsg('rightbody.concept.narrower')}" 
                                       style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="fas fa-level-down-alt" style="color:#f47b2a; margin-right: 10px"
+                        <i class="fa fa-level-down-alt" style="color:#f47b2a; margin-right: 10px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>  
 
@@ -222,7 +222,7 @@
                                       title="#{langueBean.getMsg('rightbody.concept.traduction')}" 
                                       style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="fa fa-language" style="font-size: 14px; margin-right: 10px" rendered="#{(currentUser.nodeUser != null)}" />
+                        <i class="fas fa-language fa-lg" style="margin-right: 10px; color: #f47b2a" rendered="#{(currentUser.nodeUser != null)}" />
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                   or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
