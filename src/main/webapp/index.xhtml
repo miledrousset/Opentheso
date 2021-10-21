@@ -17,7 +17,6 @@
 
         <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
 
-
         <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
 
         <h:panelGroup id="indexTitle" >
@@ -46,7 +45,7 @@
 
 
     <h:body id="page-top" style="font-size: 12px;">
-        
+
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
@@ -61,15 +60,13 @@
 
         <div id="wrapper" style="height: 100%">
 
-            <ui:include src="commun/menu.xhtml" />
+            <ui:include src="thesaurus/menu_thesaurus.xhtml" />
 
             <div id="content-wrapper" style="width: 100%">
 
-                <h:form id="containerIndex">
-                    <div>
-                        <ui:include src="commun/header.xhtml" />
-                    </div>
+                <ui:include src="thesaurus/header_thesaurus.xhtml" />
 
+                <h:form id="containerIndex">
                     <div id="thesorusContent" style="margin-top: -20px;">
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
@@ -86,7 +83,7 @@
         <a class="scroll-to-top rounded" href="#page-top">
             <i class="pi pi-angle-up" />
         </a>
-        
+
         <script src="resources/js/bootstrap.bundle.min.js"></script>
         <script src="resources/js/jquery.easing.min.js"></script>
         <script src="resources/js/sb-admin-2.js"></script>

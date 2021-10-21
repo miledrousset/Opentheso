@@ -9,10 +9,9 @@
             <div class="row">
                 <div class="col-10" />
                 <div class="col-2">
-                    <p:commandButton 
-                        value="#{langueBean.getMsg('candidat.edit')}" update="containerIndex:formRightTab"
+                    <p:commandButton title="#{langueBean.getMsg('candidat.edit')}" update="containerIndex:formRightTab"
                         class="btn btn-primary" ajax="true" actionListener="#{viewEditorThesoHomeBean.initText()}"
-                        style="width:100%; font-size: 14px; color: white; background: #43B572;"/>
+                        style="width:100%; font-size: 14px;"/>
                 </div>
             </div>    
         </h:panelGroup>
@@ -53,51 +52,40 @@
         <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing)}" >
 
             <div class="row">
-                <div class="col-3">
-                    <p:commandButton 
-                        value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
-                        update="containerIndex"
-                        class="btn btn-primary"
+                <div class="col-12">
+                    <p:commandButton title="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
+                        update="containerIndex" class="btn btn-primary"
                         action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"
-                        style="width:100%; font-size: 12px; background: #{viewEditorThesoHomeBean.colorOfHtmlButton}"/>
-                </div>
-
-                <div class="col-3">
-                    <p:commandButton 
-                        value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
-                        class="btn btn-primary"
-                        update="containerIndex"
+                        style="width: 150px; background: #{viewEditorThesoHomeBean.colorOfHtmlButton}"/>
+                    
+                    <p:commandButton title="#{langueBean.getMsg('thesohome.rawHTMLView')}"
+                        class="btn btn-primary" update="containerIndex"
                         action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"
-                        style="width:100%; font-size: 12px; background: #{viewEditorThesoHomeBean.colorOfTextButton}"/>
+                        style="width: 150px; margin-left: 20px; background: #{viewEditorThesoHomeBean.colorOfTextButton}"/>
                 </div>
             </div>
 
             <h:panelGroup rendered="#{!viewEditorThesoHomeBean.isViewPlainText}">
-                <div class="row">
+                <div class="row" style="margin-top: 10px">
                     <div class="col-12">
                         <p:textEditor widgetVar="editor1" value="#{viewEditorThesoHomeBean.text}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <p:inputTextarea value="#{viewEditorThesoHomeBean.text}" style="margin-bottom:5px; margin-right: 5px"/>
+                        <p:inputTextarea value="#{viewEditorThesoHomeBean.text}" style="width: 100%; margin-bottom:5px; margin-right: 5px"/>
                     </div>
                 </div>
             </h:panelGroup>
 
             <div class="row">
-                <div class="col-2">
-                    <p:commandButton id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}"
-                                     update="containerIndex"
-                                     style="width: 100%; background: #8C8C8C; font-size: 12px;"
-                                     class="btn btn-primary"
-                                     action="#{viewEditorThesoHomeBean.reset()}"/>
-                </div>
-                <div class="col-2">
-                    <p:commandButton value="#{langueBean.getMsg('candidat.save')}"
-                                     update="containerIndex"
-                                     class="btn btn-primary"
-                                     style="width: 100%;font-size: 12px;"
+                <div class="col-12" style="text-align: right">
+                    <p:commandButton id="buttonCancel" title="#{langueBean.getMsg('btnCancel')}" update="containerIndex"
+                                     style="width: 150px; margin-right: 20px" class="btn btn-secondary" 
+                                     actionListener="#{viewEditorThesoHomeBean.reset()}"/>
+                    
+                    <p:commandButton title="#{langueBean.getMsg('candidat.save')}" update="containerIndex"
+                                     class="btn btn-primary" style="width: 150px"
                                      action="#{viewEditorThesoHomeBean.updateThesoHomePage()}" />
                 </div>
             </div>
