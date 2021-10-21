@@ -19,20 +19,19 @@
 
                 <p:menuButton style="margin-right: 10px; background-color: transparent" icon="pi pi-align-justify" >
 
-                    <p:menuitem icon="pi pi-lis" value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
+                    <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
                                 actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
                                 action="#{selectedTheso.reloadSelectedTheso()}"
-                                process="@this"
-                                disabled="#{!selectedTheso.sortByNotation}"
-                                update="containerIndex:formLeftTab"/>
+                                process="@this" disabled="#{!selectedTheso.sortByNotation}"
+                                update="containerIndex:formLeftTab" />
 
-                    <p:menuitem icon="pi pi-lis" value="#{langueBean.getMsg('leftbody.notation_sort')}"
+                    <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
                                 actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
                                 action="#{selectedTheso.reloadSelectedTheso()}"
                                 disabled="#{selectedTheso.sortByNotation}"
                                 process="@this" update="containerIndex:formLeftTab" />
 
-                    <p:menuitem icon="pi pi-lis" value="Add top concept" onclick="#{newConcept.reset()}"
+                    <p:menuitem value="Add top concept" onclick="#{newConcept.reset()}"
                                 oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
                                 rendered="#{(currentUser.nodeUser != null) and 
                                             (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>

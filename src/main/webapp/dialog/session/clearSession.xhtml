@@ -22,7 +22,7 @@
                 <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('menu.delete_session')}" 
                                  update="containerIndex messageIndex" 
                                  oncomplete="PF('clearSession)'.hide();"
-                                 actionListener="#{currentUser.disconnect()}"/>
+                                 actionListener="#{sessionControl.isTimeout()}"/>
             </div>
         </f:facet>
     </p:dialog>

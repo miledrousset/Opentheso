@@ -106,8 +106,7 @@
                                  actionListener="PF('addNT').hide();" update="idAddNT"/>
 
                 <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
-                                 update="containerIndex messageIndex" 
-                                 style="color: white;"
+                                 update="containerIndex messageIndex"
                                  actionListener="#{newConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
                                                                    selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
             </div>
