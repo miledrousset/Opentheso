@@ -7,51 +7,24 @@
     <p:dialog id="idDeleteConcept" header="#{langueBean.getMsg('rightbody.concept.delete_concept')}" widgetVar="deleteConcept" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >       
 
-        <h:form id="deleteConceptForm">
-            <div class="row">
-                <div class="col-12">
-                    <h:outputText value="Concept : #{conceptView.nodeConcept.term.lexical_value}"
-                                  style="font-size: 13px; margin-left: 10px; color: black;" />
-                </div>
+        <div class="row">
+            <div class="col-12">
+                <h:outputText value="Concept : #{conceptView.nodeConcept.term.lexical_value}"
+                              style="font-size: 13px; margin-left: 10px; color: black;" />
             </div>
-            
-            <div class="row">
-                <div class="col-12">
-                    <p:messages for="currentPrefLabelToDelete" id="messageDeleteConcept"/> 
-                </div>
+        </div>
+
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton title="Fermer" class="btn btn-secondary" actionListener="PF('deleteConcept').hide();" 
+                                 update="idDeleteConcept" style="margin-right: 10px"/>
+
+                <p:commandButton title="#{langueBean.getMsg('candidat.remove')}" 
+                                 update="containerIndex messageIndex containerIndex:formRightTab" class="btn btn-primary" 
+                                 oncomplete="PF('deleteConcept').hide();"
+                                 actionListener="#{editConcept.deleteConcept(selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
             </div>
-            
-            <div class="row">
-                <div class="col-12">
-                    <p:commandButton rendered="#{editConcept.forDelete}" id="buttonConfirmDeleteConcept" 
-                                         value="#{langueBean.getMsg('rightbody.conceptdialog.confirm')}" update="deleteConceptForm"
-                                         class="btn btn-primary" 
-                                         action="#{editConcept.deleteConcept(
-                                                   selectedTheso.currentIdTheso,
-                                                   currentUser.nodeUser.idUser)}" 
-                                         style="width:100%; font-size: 12px;color: white; background: #43B572;"/> 
-                </div>
-                <div class="col-6">
-                    <p:commandButton rendered="#{editConcept.forDelete}" id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" update="deleteConceptForm"
-                                         class="btn btn-primary"
-                                         action="#{editConcept.cancelDelete()}" 
-                                         icon="pi pi-undo" 
-                                         style="color: white; background: #FF7979; width:100%; font-size: 12px;"/>
-                </div>
-            </div>
-
-            <f:facet name="footer">
-                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                    <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
-                                     actionListener="PF('deleteConcept').hide();" update="idAddImage"/>
-
-                    <p:commandButton rendered="#{!editConcept.forDelete}" value="#{langueBean.getMsg('candidat.remove')}" 
-                                     update="deleteConceptForm"
-                                     class="btn btn-success" oncomplete="PF('deleteConcept').hide();"
-                                     actionListener="#{editConcept.infosDelete()}" style="color: white;"/>
-                </div>
-            </f:facet>
-        </h:form>
+        </f:facet>
     </p:dialog>   
 </ui:fragment>

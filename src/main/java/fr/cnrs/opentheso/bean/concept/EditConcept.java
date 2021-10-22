@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -51,6 +52,9 @@ public class EditConcept implements Serializable {
     private SelectedTheso selectedTheso;
     @Inject
     private Tree tree;
+    
+    @Inject
+    private IndexSetting indexSetting;
 
     private String prefLabel;
     private String notation;
@@ -306,6 +310,8 @@ public class EditConcept implements Serializable {
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été supprimé");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+        
+        indexSetting.setIsHomeSelected(true);
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
