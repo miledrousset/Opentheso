@@ -24,10 +24,12 @@
                         </p:menuButton>
                     </div>
 
-                    <div class="col-9">
+                    <div class="col-1">
                         <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
                                       title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px; color: #000;" />
-                        <p:commandButton icon="pi pi-sitemap"
+                    </div>                        
+                    <div class="col-1" >
+                        <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
                                          action="#{tree.expandTreeToPath(conceptView.nodeConcept.concept.idConcept,
                                                    conceptView.nodeConcept.concept.idThesaurus, conceptView.nodeConcept.term.lang)}"
