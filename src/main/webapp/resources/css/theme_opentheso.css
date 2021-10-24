@@ -1822,8 +1822,7 @@ pre code {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #6e707e;
-    background-color: #fff;
+    background-color: transparent;
     background-clip: padding-box;
     border: 1px solid #d1d3e2;
     border-radius: 0.35rem;

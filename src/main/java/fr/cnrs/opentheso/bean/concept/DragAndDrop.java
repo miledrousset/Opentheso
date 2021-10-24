@@ -188,10 +188,9 @@ public class DragAndDrop implements Serializable {
         if (nodeConcept == null) {
             return;
         }
-        FacesMessage msg;
         nodeConceptDrag = nodeConcept;
         isCopyOn = true;
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
                 + nodeConceptDrag.getTerm().getLexical_value() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }    

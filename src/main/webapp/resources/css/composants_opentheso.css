@@ -105,3 +105,47 @@
     color: #FFF !important;
 }
 
+
+
+
+
+.ui-selectonemenu .ui-selectonemenu-label {
+    width: 100%;
+    border: none;
+    display: block;
+    cursor: pointer;
+    text-align: left;
+    overflow: hidden;
+    margin-bottom: 0px;
+    white-space: nowrap;
+    font-weight: normal;    
+}
+
+.ui-selectonemenu .ui-selectonemenu-label.ui-inputfield.ui-corner-all {
+    text-overflow: ellipsis;
+}
+
+.ui-inputfield {
+    margin: 0;
+    padding: 5px;
+    background: #ffffff;
+    font-weight: normal;
+    outline: medium none;
+    box-shadow: inset 0 0 0 #8f8f8f!important;
+    -webkit-box-shadow: inset 0 0 0 #8f8f8f!important;
+}
+
+.ui-selectonemenu .ui-selectonemenu-label {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.ui-selectonemenu.form-control {
+    border-color: transparent !important;
+    border: transparent !important;
+    height: 43px;
+}
+
+.ui-selectonemenu-item.ui-selectonemenu-list-item.ui-state-highlight {
+    background: #f47b2a;
+}
