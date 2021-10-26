@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTypeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
@@ -112,6 +113,16 @@ public class AddConcept implements Serializable {
         }
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
+    }
+
+    public void resetForFacet(NodeFacet nodeFacet) {
+        reset();
+        isConceptUnderFacet = true;
+        // le concept BT
+        idBTfacet = nodeFacet.getIdConceptParent();
+        // id de la facette
+        idFacet = nodeFacet.getIdFacet();
+
     }
     
     /**
