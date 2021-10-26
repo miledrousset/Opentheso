@@ -50,11 +50,11 @@
 
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                <p:commandButton title="Fermer" class="btn" style="background-color: transparent; color: #000"
                                  actionListener="PF('addTraductionGroup').hide();" update="idAddTraductionGroup"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-success" oncomplete="PF('addTraductionGroup').hide();"
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('addTraductionGroup').hide();"
                                  actionListener="#{traductionGroupBean.addNewTraduction(currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
         </f:facet>

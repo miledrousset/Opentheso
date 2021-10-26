@@ -62,5 +62,11 @@ public class MenuBean implements Serializable {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/identifierV1.xhtml");
     }
+
+    // LOGIN Page
+    public void redirectToLoginPage() throws IOException {
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/login.xhtml");
+    }
     
 }
