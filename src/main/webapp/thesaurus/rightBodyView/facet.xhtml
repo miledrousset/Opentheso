@@ -10,7 +10,7 @@
         <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                 
-                <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+                <div class="list-group-item list-group-item-action" style="">
                     <div class="row" style="padding-top: 3px;">
                         <div class="col-3" style="text-align: right;">
                             <h:outputText value="Label" title="Le libellé de la facette"
@@ -33,7 +33,7 @@
 
                 <div class="list-group-item list-group-item-action">
                     <div class="row" style="padding-top: 10px;">
-                        <div class="col-3" style="text-align: right;">
+                        <div class="col-3" style="text-align: right; margin-top: -5px">
                             <h:outputText value="Concept parent" title="Concept parent"
                                           style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
@@ -59,7 +59,7 @@
 
                 <div class="list-group-item list-group-item-action">
                     <div class="row" style="padding-top: 10px;">
-                        <div class="col-3" style="text-align: right;">
+                        <div class="col-3" style="text-align: right; margin-top: -5px">
                             <h:outputText value="Membres" title="Les concepts membres"
                                           style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
@@ -111,7 +111,7 @@
                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
                     <div class="list-group-item list-group-item-action">
                         <div class="row" style="padding-top: 10px;">
-                            <div class="col-3" style="text-align: right;">
+                            <div class="col-3" style="text-align: right; margin-top: -5px">
                                 <h:outputText value="Traduction"
                                               style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 

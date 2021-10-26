@@ -40,9 +40,8 @@
                                  actionListener="PF('addMembersFacette').hide();" update="idAddMembersFacette"/>
 
                 <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
-                                 update="containerIndex messageIndex" 
-                                 style="color: white;" oncomplete="PF('addMembersFacette').hide();"
-                                 actionListener="#{addConcept.addExistingConceptToFacet(editFacet.conceptSelected.id, editFacet.conceptSelected.value)}"/>
+                                 update="containerIndex messageIndex" oncomplete="PF('addMembersFacette').hide();"
+                                 actionListener="#{editFacet.addMemberToFacet()}"/>
             </div>
         </f:facet>
     </p:dialog>
