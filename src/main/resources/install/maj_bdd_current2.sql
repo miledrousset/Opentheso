@@ -340,6 +340,21 @@ end
 $$language plpgsql;
 
 
+-- Préférences : ajout des paramètres pour la génération de l'identifiant ARK en local
+--
+create or replace function update_table_preferences_ark_local() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='use_ark_local') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN use_ark_local boolean DEFAULT false;
+                 ALTER TABLE preferences ADD COLUMN naan_ark_local character varying DEFAULT ''''::character varying;
+                 ALTER TABLE preferences ADD COLUMN prefix_ark_local character varying DEFAULT ''''::character varying;
+                 ALTER TABLE preferences ADD COLUMN sizeid_ark_local integer DEFAULT 10;
+                 ';
+    END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -360,6 +375,7 @@ SELECT update_table_note_constraint();
 SELECT update_table_corpus_link();
 SELECT update_table_languages();
 SELECT update_table_concept_role();
+SELECT update_table_preferences_ark_local();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -381,7 +397,7 @@ SELECT delete_fonction('update_table_note_constraint','');
 SELECT delete_fonction('update_table_corpus_link','');
 SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_concept_role','');
-
+SELECT delete_fonction('update_table_preferences_ark_local','');
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');

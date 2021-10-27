@@ -240,7 +240,87 @@
                 </b:column>
             </b:row>            
 
+            
+            <!--<h:panelGroup rendered="# {currentUser.nodeUser.name = 'ezeze'}"> -->
+            <h:panelGroup>
+            <!-- Génération de Ark en local sans serveur -->
+            <b:row >
+                <b:column span="8" offset="1">
+                    <b:panel contentStyle="font-size: 12px" collapsed="true">  
+                        <f:facet name="heading">
+                            <h:outputText value="Ark en local sans serveur" 
+                                          title="Permet de générer des identifiants Ark en local sans passer par un serveur" style="font-size: 12px; color: #666666" />
+                            <b:badge rendered="#{preferenceBean.nodePreference.useArkLocal}" 
+                                     style="margin-left:10px; background-color:#5cb85c;" value="On"  />
+                            <b:badge rendered="#{!preferenceBean.nodePreference.useArkLocal}"
+                                     style="margin-left:10px; background-color:#666666; font-size: 12px; width: 40px;" value="Off"  />                
+                        </f:facet>                
 
+                        <!-- Activer / désactiver Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="6">
+                                <h:outputText value="Désactiver/Activer le serveur Ark local" />
+                            </b:column>
+                            <b:column span="1" offset="3">
+                                <p:toggleSwitch value="#{preferenceBean.nodePreference.useArkLocal}" style="font-size: 12px;" />                    
+                            </b:column>
+                        </b:row>              
+                        <p:spacer/>    
+
+                       
+                        <!-- Naan Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="6">
+                                <h:outputText value="votre Naan" />
+                            </b:column>
+                            <b:column span="5">
+                                <b:inputText value="#{preferenceBean.nodePreference.naanArkLocal}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>  
+
+                        <!-- Prefixe Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="6">
+                                <h:outputText value="Préfixe Ark" />
+                            </b:column>
+                            <b:column span="5">
+                                <b:inputText value="#{preferenceBean.nodePreference.prefixArkLocal}" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>   
+                        
+                        <!-- size of Id Ark -->
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="6">
+                                <h:outputText value="Taille de l'identifiant Ark" title="10 caractères par défaut" />
+                            </b:column>
+                            <b:column span="5">
+                                <b:inputText value="#{preferenceBean.nodePreference.sizeIdArkLocal}"  tooltip="10 caractères par défaut" style="height: 25px;font-size: 12px;"/>
+                            </b:column>                
+                        </b:row>                         
+                        <p:spacer/>
+
+                        <b:row style="margin-left: 30px; font-size: 12px;">
+                            <b:column span="3" offset="8"> 
+                                <b:commandButton iconAwesome="fas fa-save"  class="btn btn-success"
+                                                 value="Enregistrer" style="width: 100%; font-size: 12px;"
+                                                 tooltip="Enregistrer les modifications"  tooltip-delay-show="1000"
+                                                 action="#{preferenceBean.savePreference()}"
+                                                 update="settingForm identifierForm messageIndex">
+                                </b:commandButton>
+                            </b:column>
+                        </b:row>
+
+                        <b:row>
+                            <b:column span="8" offset="2" style="font-size: 12px;"> 
+                                <b:messages autoUpdate="true" />
+                            </b:column> 
+                        </b:row>  
+                    </b:panel>                     
+                </b:column>
+            </b:row>
+            
+            </h:panelGroup>
+            
 
         </b:panel>
     </h:form>        

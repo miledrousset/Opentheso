@@ -127,6 +127,12 @@ public class PreferencesHelper {
                         np.setOriginalUriIsArk(resultSet.getBoolean("original_uri_is_ark"));
                         np.setOriginalUriIsHandle(resultSet.getBoolean("original_uri_is_handle"));
                         //np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
+                        
+                        // Ark local
+                        np.setUseArkLocal(resultSet.getBoolean("use_ark_local"));
+                        np.setNaanArkLocal(resultSet.getString("naan_ark_local"));
+                        np.setPrefixArkLocal(resultSet.getString("prefix_ark_local")); 
+                        np.setSizeIdArkLocal(resultSet.getInt("sizeid_ark_local"));
                     }
                 }
             }
@@ -287,6 +293,12 @@ public class PreferencesHelper {
                         + ", original_uri_is_ark=" + np.isOriginalUriIsArk()
                         + ", original_uri_is_handle=" + np.isOriginalUriIsHandle()
                         + ", original_uri_is_doi=" + np.isOriginalUriIsDoi()
+                        
+                        + ", use_ark_local=" + np.isUseArkLocal()
+                        + ", naan_ark_local='" + np.getNaanArkLocal() + "'"
+                        + ", prefix_ark_local='" + np.getPrefixArkLocal() + "'"   
+                        + ", sizeid_ark_local=" + np.getSizeIdArkLocal() 
+                        
                         + " WHERE"
                         + " id_thesaurus = '" + idThesaurus + "'";
                 stmt.executeUpdate(query);
@@ -323,7 +335,9 @@ public class PreferencesHelper {
                         + " use_handle,"
                         + " user_handle, pass_handle, path_key_handle, path_cert_handle,"
                         + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
-                        + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation)"
+                        + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
+                        + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local)"
+                        
                         + " values('" + idThesaurus + "'"
                         + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
                         + ",'" + np.getIdentifierType() + "'"
@@ -368,6 +382,12 @@ public class PreferencesHelper {
                         + "," + np.isOriginalUriIsDoi()
                         + ",'" + np.isTree_cache() + "'"
                         + ",'" + np.isSort_by_notation() + "'"
+                                
+                        + ",'" + np.isUseArkLocal()+ "'"
+                        + ",'" + np.getNaanArkLocal()+ "'"       
+                        + ",'" + np.getPrefixArkLocal()+ "'"   
+                        + "," + np.getSizeIdArkLocal()
+                                
                         + ")";
                 stmt.executeUpdate(query);
                 status = true;

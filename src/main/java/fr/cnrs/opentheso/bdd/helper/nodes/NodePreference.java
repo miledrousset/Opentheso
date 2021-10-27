@@ -55,6 +55,13 @@ public class NodePreference {
     private boolean originalUriIsHandle;
     private boolean originalUriIsDoi;    
 
+    /// pour la génération des identifants Ark en local
+    private boolean useArkLocal;
+    private String naanArkLocal;
+    private String prefixArkLocal;
+    private int sizeIdArkLocal;
+
+            
     public String getSourceLang() {
         return sourceLang;
     }
@@ -373,6 +380,38 @@ public class NodePreference {
 
     public void setOriginalUriIsDoi(boolean originalUriIsDoi) {
         this.originalUriIsDoi = originalUriIsDoi;
+    }
+
+    public boolean isUseArkLocal() {
+        return useArkLocal;
+    }
+
+    public void setUseArkLocal(boolean useArkLocal) {
+        this.useArkLocal = useArkLocal;
+    }
+
+    public String getNaanArkLocal() {
+        return naanArkLocal;
+    }
+
+    public void setNaanArkLocal(String naanArkLocal) {
+        this.naanArkLocal = naanArkLocal;
+    }
+
+    public String getPrefixArkLocal() {
+        return prefixArkLocal;
+    }
+
+    public void setPrefixArkLocal(String prefixArkLocal) {
+        this.prefixArkLocal = prefixArkLocal;
+    }
+
+    public int getSizeIdArkLocal() {
+        return sizeIdArkLocal;
+    }
+
+    public void setSizeIdArkLocal(int sizeIdArkLocal) {
+        this.sizeIdArkLocal = sizeIdArkLocal;
     }
 
 

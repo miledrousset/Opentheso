@@ -466,6 +466,10 @@ public class ImportFileBean implements Serializable {
         String idNewTheso = csvImportHelper.createTheso(connect.getPoolConnexion(), thesaurusName, selectedLang,
                 idProject, currentUser.getNodeUser());
 
+        if(idNewTheso == null || idNewTheso.isEmpty()) return;
+        
+        csvImportHelper.addLangsToThesaurus(connect.getPoolConnexion(), langs, idNewTheso);
+        
         // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours, ou on initialise des nouvelles.
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         NodePreference nodePreference = roleOnThesoBean.getNodePreference();

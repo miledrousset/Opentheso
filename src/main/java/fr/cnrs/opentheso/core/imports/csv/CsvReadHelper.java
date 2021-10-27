@@ -93,7 +93,7 @@ public class CsvReadHelper {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
             String value;
-            if(nodeAlignmentImports != null)
+            if(nodeAlignmentImports == null)
                 nodeAlignmentImports = new ArrayList<>();
             else
                 nodeAlignmentImports.clear();
@@ -271,7 +271,8 @@ public class CsvReadHelper {
         try {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
                     withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
-            String uri1; 
+            String uri1 = null; 
+            String uri_forId;             
             for (CSVRecord record : records) {
                 ConceptObject conceptObject = new ConceptObject();
                 
@@ -285,13 +286,16 @@ public class CsvReadHelper {
 
                 if(record.isMapped("identifier")) {
                     try {
-                        uri1 = record.get("identifier");
-                        conceptObject.setIdConcept(uri1);
+                        uri_forId = record.get("identifier");
+                        if(uri_forId == null || uri_forId.isEmpty())
+                            conceptObject.setIdConcept(getId(uri1));
+                        else
+                            conceptObject.setIdConcept(uri_forId);
                     } catch (Exception e) { }                    
                 } else {
                     try {
-                        uri1 = record.get("URI");
-                        conceptObject.setIdConcept(getId(uri1));
+                        uri_forId = record.get("URI");
+                        conceptObject.setIdConcept(getId(uri_forId));
                     } catch (Exception e) { }                    
                 }
                 

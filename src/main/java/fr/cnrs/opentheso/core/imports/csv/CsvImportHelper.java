@@ -130,6 +130,31 @@ public class CsvImportHelper {
         }
         return null;
     }
+    
+    public void addLangsToThesaurus(HikariDataSource ds, ArrayList<String> langs, String idTheso) {
+
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        for (String idLang : langs) {
+            if (!thesaurusHelper.isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
+                Thesaurus thesaurus1 = new Thesaurus();
+                thesaurus1.setId_thesaurus(idTheso);
+                thesaurus1.setContributor("");
+                thesaurus1.setCoverage("");
+                thesaurus1.setCreator("");
+                thesaurus1.setDescription("");
+                thesaurus1.setFormat("");
+                thesaurus1.setLanguage(idLang);
+                thesaurus1.setPublisher("");
+                thesaurus1.setRelation("");
+                thesaurus1.setRights("");
+                thesaurus1.setSource("");
+                thesaurus1.setSubject("");
+                thesaurus1.setTitle("theso_" + idTheso + "_" + idLang);
+                thesaurus1.setType("");
+                thesaurusHelper.addThesaurusTraduction(ds, thesaurus1);
+            }            
+        }
+    }    
 
     public void addSingleConcept(HikariDataSource ds, String idTheso, String idConceptPere, String idGroup, int idUser,
             CsvReadHelper.ConceptObject conceptObject) {

@@ -2412,10 +2412,7 @@ public class ConceptHelper {
     public boolean addLinkHierarchicalRelation(Connection conn, HierarchicalRelationship hierarchicalRelationship, int idUser) {
 
         try ( Statement stmt = conn.createStatement()) {
-            new RelationsHelper().addRelationHistorique(conn,
-                    hierarchicalRelationship.getIdConcept1(), hierarchicalRelationship.getIdThesaurus(),
-                    hierarchicalRelationship.getIdConcept2(), hierarchicalRelationship.getRole(),
-                    idUser, "ADD");
+
             stmt.executeUpdate("Insert into hierarchical_relationship"
                     + "(id_concept1, id_thesaurus, role, id_concept2)"
                     + " values ("
@@ -2423,6 +2420,10 @@ public class ConceptHelper {
                     + ",'" + hierarchicalRelationship.getIdThesaurus() + "'"
                     + ",'" + hierarchicalRelationship.getRole() + "'"
                     + ",'" + hierarchicalRelationship.getIdConcept2() + "')");
+            new RelationsHelper().addRelationHistorique(conn,
+                    hierarchicalRelationship.getIdConcept1(), hierarchicalRelationship.getIdThesaurus(),
+                    hierarchicalRelationship.getIdConcept2(), hierarchicalRelationship.getRole(),
+                    idUser, "ADD");            
         } catch (SQLException sqle) {
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
                 System.out.println(sqle.toString());
