@@ -26,7 +26,7 @@
                         </b:column>
                     </b:row>
                     <p:spacer/>
-                    <b:row>
+                    <b:row rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}">
                         <b:column span="11" offset="1">
                             <b:navCommandLink value="Maintenance" style="color: #{toolBoxBean.serviceColor}"
                                               tooltip="Permet de corriger les incohérences dans le thésaurus" tooltip-delay-show="500"

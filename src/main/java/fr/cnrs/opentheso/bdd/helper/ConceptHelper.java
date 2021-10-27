@@ -1656,6 +1656,33 @@ public class ConceptHelper {
         }
         return true;
     }
+    
+    /**
+     * Cette fonction permet de générer les idArk en local
+     * @param ds
+     * @param idTheso
+     * @param idConcepts
+     * @return 
+     */
+    public boolean generateArkIdLocal(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts) {
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseArkLocal()) {
+            return false;
+        }
+        
+        ToolsHelper toolsHelper = new ToolsHelper();
+        String idArk;
+        for (String idConcept : idConcepts) {
+            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());
+            idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
+            if (!updateArkIdOfConcept(ds, idConcept, idTheso, idArk)) {
+                return false;
+            }
+        }
+        return true;
+    }    
 
     /**
      * Permet de : - Vérifier si l'identifiant Ark existe sur le serveur Arkéo -
@@ -1960,7 +1987,7 @@ public class ConceptHelper {
                         conn.rollback();
                         conn.close();
                         message = message + "La création Handle a échouée";
-                        Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Handle a échouée");
+                        Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Handle a échoué");
                     }
                 }
             }
@@ -1975,8 +2002,17 @@ public class ConceptHelper {
                     if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts)) {
                         //    conn.rollback();
                         //    conn.close();
-                        message = message + "La création Ark a échouée";
-                        Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Ark a échouée");
+                        message = message + "La création Ark a échoué";
+                        Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Ark a échoué");
+                    }
+                }
+                if (nodePreference.isUseArkLocal()) {
+                    idConcepts.add(idConcept);
+                    if (!generateArkIdLocal(ds, concept.getIdThesaurus(), idConcepts)) {
+                        //    conn.rollback();
+                        //    conn.close();
+                        message = message + "La création du Ark local a échoué";
+                        Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création du Ark local a échoué");
                     }
                 }
             }

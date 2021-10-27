@@ -5,101 +5,152 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:panelGroup rendered="#{selectedTheso.currentIdTheso != null}" >
-        <b:row>
-            <b:column span="10" offset="1">
-                <h:outputText value="Thesaurus séléctionné : #{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
-            </b:column>
-        </b:row>
+    <h:panelGroup rendered="#{selectedTheso.currentIdTheso != null}" style="font-size: 12px;">
 
-        <p:spacer/>
-
-        <b:row>
-            <b:column span="10" offset="1">
-                <div class="p-my-3">
-                    <p:commandButton value="Correction 1 - restructuration" icon="pi pi-check" iconPos="right"
-                                     action="#{restoreTheso.reorganizing(selectedTheso.currentIdTheso)}"/>
-                </div>           
-            </b:column>
-        </b:row>        
-        <b:row>
-            <b:column span="10" offset="1">
-                <p:outputPanel deferred="true">
-                    <h4>Permet de corriger les incohérences dans le thésaurus en cours :</h4>
-                    <p>1- détecter les concepts TT erronés : si le concept n'a pas de BT, alors, il est forcement TopTerm.<br/>
-                        2- compléter le thésaurus par les relations qui manquent NT ou BT.<br/>
-                        3- supprimer les relations en boucle (100 -> BT -> 100) ou  (100 -> NT -> 100) ou (100 -> RT -> 100).
-                    </p>
-                    <p style="color:red;">!!! Ne pas oublier de recharger le thésaurus à la fin du traitement !!!</p>                   
-                </p:outputPanel>                
-            </b:column>
-        </b:row>  
-        <p:spacer/>
-
-        <b:row>
-            <b:column span="10" offset="1">
-                <div class="p-my-3">
-                    <p:commandButton value="Correction 2 - créateur/contributeur" icon="pi pi-check" iconPos="right"
-                                     action="#{restoreTheso.switchRolesFromTermToConcept(selectedTheso.currentIdTheso)}"/>
-                </div>           
-            </b:column>
-        </b:row>        
-        <b:row>
-            <b:column span="10" offset="1">
-                <p:outputPanel deferred="true">
-                    <h4>Permet de corriger les contributreurs et les créateurs des concepts</h4>
-                    <p>Transfert des informations du niveau du terme vers le concept général.<br/>
-                    </p>
-                </p:outputPanel>                
-            </b:column>
-        </b:row>  
-        <p:spacer/>
-
-        <p:panel >
+        <p:scrollPanel mode="native" style="min-height: 680px; max-height: 680px; border: #FAFAFA; background-color: #FFFFFF;">        
             <b:row>
-                <b:column span="10" offset="2" >
-                    <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>   
-                    <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>
-                    <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>                    
+                <b:column span="10" offset="1">
+                    <h:outputText value="Thesaurus séléctionné : #{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
                 </b:column>
             </b:row>
-            <b:row >
-                <b:column span="3" offset="1" >
-                    <h:outputText value ="*Naan: "/>
-                    <p:inputText  value="#{restoreTheso.naan}"  style="height: 28px;"/>
-                </b:column>   
-                <b:column span="3" >
-                    <h:outputText value ="Prefixe: "/>
-                    <p:inputText  value="#{restoreTheso.prefix}" style="height: 28px;"/>
-                </b:column>                 
-                <b:column span="5" >
-                    <h:outputText value ="Ecraser les Ark Existants? "/>
-                    <p:toggleSwitch value="#{restoreTheso.overwrite}" style="height: 28px;"/>
-                </b:column>  
 
-            </b:row> 
+            <p:spacer/>
+
             <b:row>
                 <b:column span="10" offset="1">
-                    <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
-                                     action="#{restoreTheso.generateArkFromConceptId(selectedTheso.currentIdTheso)}"/>        
+                    <div class="p-my-3">
+                        <p:commandButton value="Correction 1 - restructuration" icon="pi pi-check" iconPos="right"
+                                         style="font-size: 12px; "
+                                         action="#{restoreTheso.reorganizing(selectedTheso.currentIdTheso)}"/>
+                    </div>           
                 </b:column>
-            </b:row>             
+            </b:row>        
+            <b:row>
+                <b:column span="10" offset="1">
+                    <p:outputPanel deferred="true">
+                        <h5>Permet de corriger les incohérences dans le thésaurus en cours :</h5>
+                        <p>1- détecter les concepts TT erronés : si le concept n'a pas de BT, alors, il est forcement TopTerm.<br/>
+                            2- compléter le thésaurus par les relations qui manquent NT ou BT.<br/>
+                            3- supprimer les relations en boucle (100 -> BT -> 100) ou  (100 -> NT -> 100) ou (100 -> RT -> 100).
+                        </p>
+                        <p style="color:red;">!!! Ne pas oublier de recharger le thésaurus à la fin du traitement !!!</p>                   
+                    </p:outputPanel>                
+                </b:column>
+            </b:row>  
+            <p:spacer/>
 
             <b:row>
                 <b:column span="10" offset="1">
-                    <p:outputPanel deferred="true" >
-                        <h4>Permet de générer les identifiants Ark en se basant sur l'identifiant du concept</h4>
-                        <p>les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
-                            exemple: Idconcept=300, prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndp300<br/>
+                    <div class="p-my-3">
+                        <p:commandButton value="Correction 2 - créateur/contributeur" icon="pi pi-check" iconPos="right"
+                                         style="font-size: 12px; "
+                                         action="#{restoreTheso.switchRolesFromTermToConcept(selectedTheso.currentIdTheso)}"/>
+                    </div>           
+                </b:column>
+            </b:row>        
+            <b:row>
+                <b:column span="10" offset="1">
+                    <p:outputPanel deferred="true">
+                        <h5>Permet de corriger les contributreurs et les créateurs des concepts</h5>
+                        <p>Transfert des informations du niveau du terme vers le concept général.<br/>
                         </p>
                     </p:outputPanel>                
                 </b:column>
             </b:row>  
-        </p:panel>            
-        <p:spacer/>        
+            <p:spacer/>
 
+            <!-- partie pour générer les identifiants Ark en local (identifiant basé sur l'Id interne)-->            
+            <p:panel >
+                <b:row>
+                    <b:column span="9" offset="2" >
+                        <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>   
+                        <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>
+                        <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>                    
+                    </b:column>
+                </b:row>
+                <b:row >
+                    <b:column span="3" offset="1" >
+                        <h:outputText value ="*Naan: "/>
+                        <p:inputText  value="#{restoreTheso.naan}"  style="height: 22px;"/>
+                    </b:column>   
+                    <b:column span="3" >
+                        <h:outputText value ="Prefixe: "/>
+                        <p:inputText  value="#{restoreTheso.prefix}" style="height: 22px;"/>
+                    </b:column>                 
+                    <b:column span="5" >
+                        <h:outputText value ="!!!! Ecraser les Ark Existants? " style=" color: red; font-weight: bold"/>
+                        <p:toggleSwitch value="#{restoreTheso.overwrite}" style="height: 22px; font-size: 12px;"/>
+                    </b:column>  
+                </b:row> 
+                <p:spacer/>
+                <b:row>
+                    <b:column span="10" offset="1">
+                        <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
+                                         style="font-size: 12px; "
+                                         action="#{restoreTheso.generateArkFromConceptId(selectedTheso.currentIdTheso)}"/>        
+                    </b:column>
+                </b:row>             
 
+                <b:row>
+                    <b:column span="10" offset="1">
+                        <p:outputPanel deferred="true" >
+                            <h5>Permet de générer les identifiants Ark en se basant sur l'identifiant du concept</h5>
+                            <p> Pas de connexion à un serveur, les Identifiants Ark sont en local. <br/>
+                                les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
+                                exemple: Idconcept=300, prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndp300<br/>
+                            </p>
+                        </p:outputPanel>                
+                    </b:column>
+                </b:row>  
+            </p:panel>            
+            <p:spacer/>
+            
+            <!-- partie pour générer les identifiants Ark en local (identifiant Opaque)-->
+            <p:panel >
+                <b:row>
+                    <b:column span="9" offset="2" >
+                        <h:outputText value ="!!! Pour ajuster les paramètres, aller dans /Paramètres/identifiant !!!" style="color: red; background-color: #FAEDE5"/>   
+                    </b:column>
+                </b:row>
+                <p:spacer/> 
+                <b:row >
+                    <b:column span="5" offset="1">
+                        <h:outputText value ="Naan: #{roleOnTheso.nodePreference.naanArkLocal}   /   " style="height: 28px; font-size: 12px;"/>
+                        <h:outputText value ="Prefixe: #{roleOnTheso.nodePreference.prefixArkLocal}   /   " style="height: 28px; font-size: 12px;"/>
+                        <h:outputText value ="taille Id: #{roleOnTheso.nodePreference.sizeIdArkLocal}" style="height: 28px; font-size: 12px;"/>                        
+                    </b:column>   
+                
+                    <b:column span="4" >
+                        <h:outputText value ="!!!! Ecraser les Ark Existants? " style="color: red;  font-size: 12px; font-weight: bold"/>
+                        <p:toggleSwitch value="#{restoreTheso.overwrite}" style="height: 22px; font-size: 12px;" />
+                    </b:column>  
+
+                </b:row> 
+                <b:row>
+                    <b:column span="10" offset="1">
+                        <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
+                                         style="font-size: 12px; "
+                                         action="#{restoreTheso.generateArkLacal(selectedTheso.currentIdTheso, roleOnTheso.nodePreference)}"/>        
+                    </b:column>
+                </b:row>             
+
+                <b:row>
+                    <b:column span="10" offset="1">
+                        <p:outputPanel deferred="true" >
+                            <h5>Permet de générer les identifiants Ark en local en utilisant les paramètres prédéfinis</h5>
+                            <p> Pas de connexion à un serveur, les Identifiants Ark sont en local. <br/>
+                                les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
+                                exemple: Id=sxpzwkhfbm5gm9uje3qyrdj3uw96ccynx3se , prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndpsxpzwkhfbm5gm9uje3qyrdj3uw96ccynx3se <br/>
+                            </p>
+                        </p:outputPanel>                
+                    </b:column>
+                </b:row>  
+            </p:panel>            
+            <p:spacer/>             
+
+        </p:scrollPanel>
     </h:panelGroup>
+
     <h:panelGroup rendered="#{selectedTheso.currentIdTheso == null}" >
         <b:row style="margin-top: 50px;">
             <b:column span="10" offset="1">
@@ -113,7 +164,7 @@
     </h:panelGroup>        
 
     <b:row>
-        <b:column span="11" offset="1" >
+        <b:column span="10" offset="1" >
             <b:messages autoUpdate="true"/>
         </b:column>             
     </b:row>

@@ -9,6 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -161,6 +162,45 @@ public class RestoreTheso implements Serializable {
                 count++;
             }
         }        
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concepts changés: " + count));
+    }   
+    
+    /**
+     * permet de générer les id Ark en local en se basant au paramètre prédéfini dans Identifiant 
+     * si overwrite est activé, on écrase tout et on recommence avec des nouveaus Id Ark
+     * @param idTheso
+     * @param nodePreference
+     */
+    public void generateArkLacal(String idTheso, NodePreference nodePreference) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        int count = 0; 
+        
+        if(nodePreference == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de paramètres !! "));            
+            return;
+        }
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        
+        ToolsHelper toolsHelper = new ToolsHelper();
+        String idArk;
+        
+        for (String conceptId : allConcepts) {
+            if(!overwrite) {
+                if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), idTheso, conceptId)) {
+                    idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());              
+                    conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
+                            nodePreference.getNaanArkLocal() + "/" +
+                            nodePreference.getPrefixArkLocal() + idArk);
+                    count++;
+                }
+            } else {
+                idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());              
+                conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
+                        nodePreference.getNaanArkLocal() + "/" +
+                        nodePreference.getPrefixArkLocal() + idArk);
+                count++;
+            }
+        }
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concepts changés: " + count));
     }      
 

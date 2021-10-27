@@ -116,17 +116,14 @@
                                                itemLabel="#{titre}" itemValue="#{titre}"/>
                             </p:selectOneMenu>
                         </h:panelGrid>
-
                     </p:panel>
-
                 </p:panel>
-
             </p:tab>
 
             <p:tab id="thesaurus" title="Les thesaurus" titleStyleClass="tabCostum">
                 <p:panel header="Liste des thesaurus">
                     <h:outputText value="Veuillez selectionez un thesaurus : " />
-                    <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" selectionMode="single"
+                    <p:dataTable var="thes" value="#{roleOnTheso.nodeListThesoAsAdmin}" selectionMode="single"
                                  scrollable="true" scrollHeight="250" rowKey="#{thes.id}"
                                  selection="#{atelierThesBean.thesoSelected}" style="margin-top: 10px">
                         <p:column selectionMode="single" style="width: 35px; text-align: center" />
