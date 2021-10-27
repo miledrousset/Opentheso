@@ -94,11 +94,11 @@
             <!-- ligne qui rappelle les concepts déprécés qui sont remplacés par ce concept -->
             <h:panelGroup rendered="#{conceptView.nodeConcept.replaces.size() > 0}">
                 <div class="list-group-item list-group-item-action">
-                    <div class="row" style="padding: 2px">
+                    <div class="row" style="padding: 2px;">
                         <div class="col-3" style="color: white; text-align: right;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_replace')}"
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px; background-color: #f47b2a;"/>
+                                          style="font-size: 14px; margin-right: 10px; background-color: #f47b2a;"/>
                         </div>
                         <div class="col-9" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
                             <ui:repeat   var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status">
