@@ -9,7 +9,7 @@
 
         <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
-                
+
                 <div class="list-group-item list-group-item-action" style="">
                     <div class="row" style="padding-top: 3px;">
                         <div class="col-3" style="text-align: right;">
@@ -32,8 +32,8 @@
                 </div>
 
                 <div class="list-group-item list-group-item-action">
-                    <div class="row" style="padding-top: 10px;">
-                        <div class="col-3" style="text-align: right; margin-top: -5px">
+                    <div class="row" style="padding-top: 10px; margin-top: -5px">
+                        <div class="col-3" style="text-align: right">
                             <h:outputText value="Concept parent" title="Concept parent"
                                           style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
@@ -58,8 +58,8 @@
                 </div>
 
                 <div class="list-group-item list-group-item-action">
-                    <div class="row" style="padding-top: 10px;">
-                        <div class="col-3" style="text-align: right; margin-top: -5px">
+                    <div class="row" style="padding-top: 10px; margin-top: -5px">
+                        <div class="col-3" style="text-align: right">
                             <h:outputText value="Membres" title="Les concepts membres"
                                           style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
@@ -82,7 +82,7 @@
 
                         <h:panelGroup rendered="#{editFacet.conceptList.size() == 0}">
                             <div class="col-9">
-                                <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                                <h:outputText  value="....." title="pas de valeur" style="color: grey; font-style: italic " />
                             </div>
                         </h:panelGroup>
 
@@ -110,21 +110,20 @@
                 <!-- ligne Traductions -->
                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
                     <div class="list-group-item list-group-item-action">
-                        <div class="row" style="padding-top: 10px;">
-                            <div class="col-3" style="text-align: right; margin-top: -5px">
-                                <h:outputText value="Traduction"
-                                              style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+                        <div class="row" style="padding-top: 10px; margin-top: -5px">
+                            <div class="col-3" style="text-align: right;">
+                                <h:outputText value="Traduction" style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    
-                                    <p:menuitem value="Ajouter une traduction" oncomplete="PF('idAddFacetTraduction').show();"
+
+                                    <p:menuitem value="Ajouter une traduction" oncomplete="PF('addFacetTraduction').show();"
                                                 action = "#{editFacet.setLangListForTraduction()}"
                                                 update="containerIndex:idAddFacetTraduction"/>
-                                    
+
                                     <p:menuitem value="Modifier une traduction" oncomplete="PF('renameFacetTraduction').show();"
                                                 update="containerIndex:idRenameFacetTraduction"/>
-                                    
+
                                     <p:menuitem value="Supprimer une traduction" oncomplete="PF('deleteFacetTraduction').show();"
                                                 update="containerIndex:idDeleteFacetTraduction"/>
                                 </p:menuButton> 
@@ -132,18 +131,20 @@
 
                             <h:panelGroup rendered="#{editFacet.facetTraductions.size() == 0}">
                                 <div class="col-9">
-                                    <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                                    <h:outputText  value="....." title="pas de valeur" style="color: grey; font-style: italic " />
                                 </div>
                             </h:panelGroup>
 
                             <h:panelGroup rendered="#{editFacet.facetTraductions.size() != 0}">
-                                <div class="col-9">
+                                <div class="col-9" >
                                     <ui:repeat var="trad" value="#{editFacet.facetTraductions}" >
                                         <div class="row">
-                                            <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})"
-                                                           style="color: #43B572;" styleClass="textOpentheso"
-                                                           action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}" 
-                                                           update="containerIndex:formRightTab indexTitle"/>
+                                            <div class="col-12">
+                                                <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})"
+                                                               style="color: #43B572;" styleClass="textOpentheso"
+                                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}" 
+                                                               update="containerIndex:formRightTab indexTitle"/>
+                                            </div>
                                         </div> 
                                     </ui:repeat>
                                 </div>
@@ -169,16 +170,15 @@
     </h:panelGroup>
 
     <ui:include src="../../dialog/facet/renameFacet.xhtml" />
-    
+
     <ui:include src="../../dialog/facet/addConceptParentToFacet.xhtml" />
-    
+
     <ui:include src="../../dialog/facet/addNT.xhtml" />
     <ui:include src="../../dialog/facet/addMembers.xhtml" />
     <ui:include src="../../dialog/facet/removeMembers.xhtml" />
-    
+
     <ui:include src="../../dialog/facet/addFacetTraduction.xhtml" />
     <ui:include src="../../dialog/facet/renameFacetTraduction.xhtml" />
     <ui:include src="../../dialog/facet/deleteFacetTraduction.xhtml" />
-    
 
 </ui:fragment>
