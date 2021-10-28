@@ -313,7 +313,7 @@
         <mail.version>1.4.7</mail.version>
         <jsf.version>2.2.20</jsf.version>
         <d3js.version>6.2.0</d3js.version>
-        <jena.version>3.3.0</jena.version>
+        <jena.version>4.2.0</jena.version>
         <icu4j.version>3.4.4</icu4j.version>
         <rdf4j.version>3.6.2</rdf4j.version>
         <jdom2.version>2.0.6</jdom2.version>
