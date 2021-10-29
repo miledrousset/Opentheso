@@ -258,6 +258,12 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
     padding: 0.25rem 0.75rem;
 }
 
+.ui-menuitem-link .ui-corner-all .ui-state-hover {
+    border-color: #f47b2a;
+    background: #f47b2a;
+    color: #ffffff;
+}
+
 
 
 body .ui-button.ui-button-icon-only .ui-button-text {
@@ -311,14 +317,5 @@ ui-chkbox-box ui-widget ui-corner-all ui-state-default ui-state-active ui-state-
 body .ui-chkbox .ui-chkbox-box {
     width: 1rem;
     height: 1rem;
-}
-
-/** Link **/
-body .ui-commandlink, body .ui-link {                                          
-    color: #f47b2a;
-}
-
-.ui-link:hover {
-    color: #f47b2a;
 }
 
