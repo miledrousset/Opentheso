@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <h:panelGroup id="formSearch" style="background-color: #f5f6f9; margin-top: 10px">
+    <h:form id="formSearch" style="background-color: #f5f6f9; margin-top: 10px">
         <div class="row" style="width: 100%; margin-top: 10px; margin-bottom: 10px; background-color: #f5f6f9">
             <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center" >
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
@@ -84,5 +84,5 @@
                 </p:menuButton>
             </div>
         </div>   
-    </h:panelGroup>
+    </h:form>
 </ui:fragment>
