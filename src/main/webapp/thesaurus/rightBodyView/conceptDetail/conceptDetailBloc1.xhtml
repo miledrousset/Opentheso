@@ -6,8 +6,8 @@
 
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -5px">
-            <div class="list-group-item list-group-item-action">
-                <div class="row" style="padding: 2px">
+            <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
+                <div class="row" style="height: 30px; vertical-align: central">
                     <div class="col-3" style="text-align: right;">
 
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.preferred_term')}" 
@@ -15,30 +15,29 @@
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                      icon="fas fa-cog" style="background: none; border: none; color: #000; box-shadow: none;">
+                                      icon="fas fa-cog" style="margin-top: -4px">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.rename_concept')}"
                                         actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
-                                        oncomplete="PF('renameConcept').show();"
-                                        update="idRenameConcept"/>
+                                        oncomplete="PF('renameConcept').show();" update="idRenameConcept"/>
                         </p:menuButton>
                     </div>
 
-                    <div class="col-8">
+                    <div class="col-9">
                         <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
-                                      title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px; color: #000;" />
+                                      title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px;" />
+
                         <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
                                          action="#{tree.expandTreeToPath(conceptView.nodeConcept.concept.idConcept,
                                                    conceptView.nodeConcept.concept.idThesaurus, conceptView.nodeConcept.term.lang)}"
-                                         actionListener="#{selectedTheso.actionFromConceptToOn()}"
-                                         update="containerIndex"
+                                         actionListener="#{selectedTheso.actionFromConceptToOn()}" update="containerIndex"
                                          style="color:#f47b2a; background: none; border: none; box-shadow: none; margin-left: 20px;" 
                                          styleClass="buttonIconOrange" />
                     </div>
                 </div>
             </div>
-            
+
             <!-- ligne concepts qui remplacent le concept déprécié -->
             <h:panelGroup rendered="#{conceptView.nodeConcept.concept.isDeprecated}">
                 <div class="list-group-item list-group-item-action">
@@ -119,17 +118,17 @@
                 </div>
             </h:panelGroup>
 
-            <!-- ligne pour les collections / groupes  -->            
-            <div class="list-group-item list-group-item-action">
-                <div class="row" style="padding: 2px">
+            <!-- ligne pour les collections / groupes  -->
+            <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
+                <div class="row" style="height: 30px; vertical-align: central">
                     <div class="col-3" style="text-align: right;">
+
                         <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}" 
                                       title="#{langueBean.getMsg('leftbody.collection')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
-                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                      icon="fas fa-cog" style="background: none; border: none; color: #000; box-shadow: none;">
+                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                      icon="fas fa-cog" style="margin-top: -4px">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_to_group')}" 
                                         action="#{addConceptToGroupBean.init()}"
@@ -153,7 +152,7 @@
                                         action="#{removeConceptAndChildFromGroupBean.init()}"
                                         oncomplete="PF('removeConceptAndChildFromGroup').show();"
                                         update="idRemoveConceptAndChildFromGroup"
-                                        style="font-size: 12px;" />                    
+                                        style="font-size: 12px;" />
                         </p:menuButton>
                     </div>
 
@@ -184,23 +183,23 @@
                     </h:panelGroup>
                 </div>
             </div>
-            
-            <!--Ligne synonymes -->
-            <div class="list-group-item list-group-item-action">
-                <!-- ligne EM USE -->
-                <div class="row" style="padding: 2px">
-                    <div class="col-3" style="text-align: right;">
-                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.synonym')}" 
-                                      title="#{langueBean.getMsg('rightbody.concept.synonym')}" 
-                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                        <i class="fas fa-equals" style="color:#f47b2a; margin-right: 10px;"
+            <!--Ligne synonymes -->
+            <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
+                <div class="row" style="height: 30px; vertical-align: central">
+                    <div class="col-3" style="text-align: right;">
+
+                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.synonym')}" 
+                                      title="#{langueBean.getMsg('rightbody.concept.synonym')}"
+                                      style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+
+                        <i class="fas fa-equals" style="color:#f47b2a; margin-right: 10px; margin-top: -4px"
                            rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                        or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/> 
 
-                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
-                                      rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                      icon="fas fa-cog" style="margin-top: -4px">
+
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_synonym')}" 
                                         actionListener="#{synonymBean.reset()}"
                                         update="idAddSynonym"
@@ -219,7 +218,7 @@
                                         oncomplete="PF('deleteSynonym').show();"
                                         update="idDeleteSynonym"
                                         style="font-size: 12px;"/>
-                        </p:menuButton>  
+                        </p:menuButton>
                     </div>
 
                     <h:panelGroup rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" >            
@@ -253,31 +252,31 @@
                         </div>
                     </h:panelGroup>
                 </div>
-            </div>                 
-            
+            </div>
+
             <!-- Total des concepts -->
-            <div class="list-group-item list-group-item-action" style=" margin-bottom: -5px">
-                <!-- Total des concepts de la branche -->
-                <div class="row" style="padding: 2px">
+            
+            <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -5px; margin-bottom: -5px">
+                <div class="row" style="height: 30px; vertical-align: central">
                     <div class="col-3" style="text-align: right;">
-                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.branch_count')}" 
+
+                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.branch_count')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
 
                         <p:commandLink actionListener="#{conceptView.countTheTotalOfBranch()}"
                                        title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
                                        update="containerIndex:formRightTab" 
-                                       style="color: #F7A269; font-size: 12px; margin-left: 6px; margin-right: 10px" >
-                            <i class="fas fa-calculator fa-1x" />
+                                       style="color: #F7A269; font-size: 12px; margin-left: 15px; margin-right: 13px" >
+                            <i class="fas fa-calculator" />
                         </p:commandLink>
                     </div>
-                    <div class="col-9">
-                        <h:outputText rendered="#{conceptView.countOfBranch != 0}" value="#{conceptView.countOfBranch} concept (s)" 
-                                      title="#{langueBean.getMsg('rightbody.concept.clic_branch_count')}"
-                                      style="font-size: 14px;" />
-                    </div>
+
+                    <h:outputText rendered="#{conceptView.countOfBranch != 0}" value="#{conceptView.countOfBranch} concept (s)" 
+                                  title="#{langueBean.getMsg('rightbody.concept.clic_branch_count')}"
+                                  style="font-size: 14px;" />
                 </div>
-            </div>            
+            </div>
         </div>        
     </div>
 

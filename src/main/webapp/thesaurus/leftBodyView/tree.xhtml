@@ -53,8 +53,7 @@
         </div>
 
         <p:tree value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
-                style="width: auto; border: none; font-size: 12px;" animate="true"
-                styleClass="tree_custom" cache="#{roleOnTheso.nodePreference.tree_cache}"
+                style="border: none; padding: 0px;" animate="true" cache="#{roleOnTheso.nodePreference.tree_cache}" 
                 draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
                 widgetVar="treeWidget">
 
