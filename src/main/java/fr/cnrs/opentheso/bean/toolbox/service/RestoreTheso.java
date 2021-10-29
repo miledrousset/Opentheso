@@ -41,6 +41,8 @@ public class RestoreTheso implements Serializable {
     private String naan;
     private String prefix;
     
+    private boolean overwriteLocalArk = false;    
+    
     /**
      * Creates a new instance of RestoreTheso
      */
@@ -141,6 +143,7 @@ public class RestoreTheso implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         int count = 0; 
         if(naan == null || naan.isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de Naan !! "));            
             return;
         }
         
@@ -179,13 +182,18 @@ public class RestoreTheso implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de paramètres !! "));            
             return;
         }
+        if(nodePreference.getNaanArkLocal() == null || nodePreference.getNaanArkLocal().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de Naan !! "));            
+            return;
+        }
+        
         ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         
         ToolsHelper toolsHelper = new ToolsHelper();
         String idArk;
         
         for (String conceptId : allConcepts) {
-            if(!overwrite) {
+            if(!overwriteLocalArk) {
                 if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), idTheso, conceptId)) {
                     idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());              
                     conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
@@ -226,6 +234,14 @@ public class RestoreTheso implements Serializable {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public boolean isOverwriteLocalArk() {
+        return overwriteLocalArk;
+    }
+
+    public void setOverwriteLocalArk(boolean overwriteLocalArk) {
+        this.overwriteLocalArk = overwriteLocalArk;
     }
     
     

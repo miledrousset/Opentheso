@@ -115,14 +115,19 @@
                 <p:spacer/> 
                 <b:row >
                     <b:column span="5" offset="1">
-                        <h:outputText value ="Naan: #{roleOnTheso.nodePreference.naanArkLocal}   /   " style="height: 28px; font-size: 12px;"/>
-                        <h:outputText value ="Prefixe: #{roleOnTheso.nodePreference.prefixArkLocal}   /   " style="height: 28px; font-size: 12px;"/>
-                        <h:outputText value ="taille Id: #{roleOnTheso.nodePreference.sizeIdArkLocal}" style="height: 28px; font-size: 12px;"/>                        
+                        <h:outputText value ="Naan: " style="font-size: 12px;"/>
+                        <h:outputText value ="#{roleOnTheso.nodePreference.naanArkLocal} " style="font-size: 12px;font-weight: bold; color: #f47b2a"/>
+                        
+                        <h:outputText value =" / Prefixe: " style="height: 28px; font-size: 12px;"/>
+                        <h:outputText value =" #{roleOnTheso.nodePreference.prefixArkLocal} " style="font-size: 12px;font-weight: bold; color: #f47b2a"/>
+                        
+                        <h:outputText value =" / taille Id: " style="height: 28px; font-size: 12px;"/>
+                        <h:outputText value =" #{roleOnTheso.nodePreference.sizeIdArkLocal}" style="font-size: 12px;font-weight: bold; color: #f47b2a"/>                         
                     </b:column>   
                 
                     <b:column span="4" >
                         <h:outputText value ="!!!! Ecraser les Ark Existants? " style="color: red;  font-size: 12px; font-weight: bold"/>
-                        <p:toggleSwitch value="#{restoreTheso.overwrite}" style="height: 22px; font-size: 12px;" />
+                        <p:toggleSwitch value="#{restoreTheso.overwriteLocalArk}" style="height: 22px; font-size: 12px;" />
                     </b:column>  
 
                 </b:row> 
