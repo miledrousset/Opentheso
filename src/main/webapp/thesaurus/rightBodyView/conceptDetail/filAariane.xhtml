@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
-    <div style="width: 100%; display: flex; background-color: #ecf8f1">
+    <div style="width: 100%; display: flex; background-color: #ecf8f1; padding-top: 3px; padding-bottom: 3px">
 
         <div style="height: 100%; vertical-align: central;">
             <h:panelGroup id="idConceptViewActions" >
@@ -165,7 +165,7 @@
                 </p:menuButton>
             </h:panelGroup>
         </div>
-        <div style="height: 100%; vertical-align: central; margin-top: 5px;">
+        <div style="height: 100%; vertical-align: central;">
             <ui:repeat var="path" value="#{conceptView.pathLabel}" >
                 <h:panelGroup rendered="#{path.isStartOfPath}">
                     <i class="fas fa-home" size="xs" style="color: #f47b2a;"/>

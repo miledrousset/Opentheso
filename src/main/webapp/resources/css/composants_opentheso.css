@@ -30,15 +30,6 @@
     color: #f47b2a;
 }
 
-/* Tab */
-.ui-tabs .ui-tabs-nav.ui-widget-header li.ui-state-active a, .ui-tabs {
-    color: #f47b2a;
-}
-
-.ui-tabs .ui-tabs-nav.ui-widget-header li a {
-    color: #226b40;
-}
-
 /*** Dialog ***/
 .ui-dialog-wrapper {
     position: fixed;
@@ -171,6 +162,17 @@ body .ui-selectonemenu-panel .ui-selectonemenu-items {
     margin-top: -1px;
 }
 
+body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 12px;
+}
+
+ui-menuitem-link ui-corner-all ui-state-hover {
+    background: #f47b2a;
+}
 
 
 
@@ -202,7 +204,7 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
 }
 
 
-
+/** Tree **/
 .ui-tree {
     padding: 0px;
     border-collapse: collapse;
@@ -222,6 +224,29 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     border-collapse: collapse;
 }
 
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler {
+    margin: 0px;
+}
+
+/**
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-s {
+    font-family: initial !important;
+    font-size: initial !important;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e {
+    font-family: initial !important;
+    font-size: initial !important;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-s:before {
+    content: "";
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
+    content: "";
+}**/
+
 
 
 
@@ -234,6 +259,66 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 }
 
 
-body .ui-dialog .ui-dialog-footer {
-    margin-top: 0 1.5Arem 1.5rem 1.5rem;
+
+body .ui-button.ui-button-icon-only .ui-button-text {
+    padding: 0px;
 }
+
+.ui-button-icon-only .ui-button-text {
+    padding: 0px;
+}
+
+
+/** Checkbox**/
+body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    border-color: #f47b2a;
+    background: #f47b2a;
+    color: #ffffff;
+}
+
+body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    border-color: #f47b2a;
+    background: #f47b2a;
+    color: #ffffff;
+}
+
+ui-chkbox-box ui-widget ui-corner-all ui-state-default ui-state-active ui-state-hover {
+    border-color: #f47b2a;
+    background: #f47b2a;
+    color: #ffffff;
+}
+
+body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    border-color: #f47b2a;
+    background: #f47b2a;
+    color: #ffffff;
+}
+
+body .ui-chkbox .ui-chkbox-box .ui-chkbox-icon.ui-icon-check {
+    font-family: initial !important;
+    font-size: initial !important;
+}
+
+body .ui-chkbox .ui-chkbox-box .ui-chkbox-icon.ui-icon-check:before {
+    content: "";
+}
+
+ui-chkbox-box ui-widget ui-corner-all ui-state-default ui-state-active ui-state-hover {
+    border-color: #f47b2a;
+    background: #f47b2a;
+}
+
+body .ui-chkbox .ui-chkbox-box {
+    width: 1rem;
+    height: 1rem;
+}
+
+/** Link **/
+body .ui-commandlink, body .ui-link {                                          
+    color: #f47b2a;
+}
+
+.ui-link:hover {
+    color: #f47b2a;
+}
+
