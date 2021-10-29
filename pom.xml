@@ -193,7 +193,6 @@
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>all-themes</artifactId>
             <version>${all.themes.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -326,7 +325,7 @@
         <hikariCP.version>3.4.1</hikariCP.version>
         <treelayout.version>1.0.3</treelayout.version>
         <bootsfaces.version>1.4.2</bootsfaces.version>
-        <all.themes.version>1.0.8</all.themes.version>
+        <all.themes.version>1.0.10</all.themes.version>
         <javax.json.version>1.1.4</javax.json.version>
         <postgresql.version>42.2.9</postgresql.version>
         <font-awesome.version>5.15.1</font-awesome.version>

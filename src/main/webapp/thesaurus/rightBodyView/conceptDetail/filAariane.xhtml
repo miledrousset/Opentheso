@@ -6,7 +6,7 @@
 
     <div style="width: 100%; display: flex; background-color: #ecf8f1">
 
-        <div style="height: 100%; vertical-align: central; margin: 5px; margin-bottom: 7px">
+        <div style="height: 100%; vertical-align: central;">
             <h:panelGroup id="idConceptViewActions" >
                 <p:menuButton icon="pi pi-align-justify" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
@@ -165,7 +165,7 @@
                 </p:menuButton>
             </h:panelGroup>
         </div>
-        <div style="margin-top: 7px">
+        <div style="height: 100%; vertical-align: central; margin-top: 5px;">
             <ui:repeat var="path" value="#{conceptView.pathLabel}" >
                 <h:panelGroup rendered="#{path.isStartOfPath}">
                     <i class="fas fa-home" size="xs" style="color: #f47b2a;"/>

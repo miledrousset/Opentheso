@@ -15,33 +15,13 @@
     
     <context-param>
         <param-name>primefaces.THEME</param-name>
-        <param-value>bootstrap</param-value>
+        <param-value>saga</param-value>
     </context-param>  
 
-<!--
-    <context-param>
-        <param-name>primefaces.THEME</param-name>
-        <param-value>saga</param-value>
-    </context-param>      
-        -->
     <context-param>
          <param-name>primefaces.FONT_AWESOME</param-name>
          <param-value>true</param-value>
     </context-param>
-
-
-
-    <!-- thème de Primefaces saga (devient le thème par defaut à partir de la 10 -->
-    <!-- <context-param>
-        <param-name>primefaces.THEME</param-name>
-        <param-value>saga</param-value>
-    </context-param>  -->
-
-    <!-- pour éviter une erreur de type javax.faces.application.ViewExpiredException: viewId:/index.xhtml -->
-    <!-- <context-param>
-       <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
-       <param-value>true</param-value>
-    </context-param>     -->
     
     <login-config>
         <auth-method>FORM</auth-method>
@@ -60,18 +40,7 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
- <!--
-    <filter>
-        <filter-name>SessionFilter</filter-name>
-        <filter-class>fr.cnrs.opentheso.bean.session.SessionFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>SessionFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
- -->
    
-    
     <!-- pour le webservices-->
     <servlet>
         <servlet-name>Jersey REST Service</servlet-name>

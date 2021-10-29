@@ -330,6 +330,4 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         this.idThesoOrigin = idThesoOrigin;
     }
 
-
-
 }
