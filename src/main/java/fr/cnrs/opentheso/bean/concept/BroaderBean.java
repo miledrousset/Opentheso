@@ -212,14 +212,13 @@ public class BroaderBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getSelectedLang());
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formLeftTab");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
-
         PrimeFaces.current().executeScript("srollToSelected();");
         PrimeFaces.current().executeScript("PF('addBroaderLink').hide();");
+
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
 
     }
 

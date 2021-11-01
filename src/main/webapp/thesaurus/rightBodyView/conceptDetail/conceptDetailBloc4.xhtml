@@ -19,10 +19,11 @@
 
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                                   icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                        
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_image')}" 
-                                                    actionListener="#{imageBean.reset()}"
-                                                    oncomplete="PF('addImage').show();"
-                                                    style="font-size: 12px;" />
+                                                    actionListener="#{imageBean.reset()}" oncomplete="PF('addImage').show();"
+                                                    icon="fas fa-plus" />
+                                    
                                     </p:menuButton> 
                                 </div>
                             </h:panelGroup>
@@ -37,23 +38,19 @@
 
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                                   title="#{langueBean.getMsg('rightbody.concept.tooltip_image')}"
-                                                  icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                                  icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_image')}" 
-                                                    actionListener="#{imageBean.reset()}"
-                                                    oncomplete="PF('addImage').show();"
-                                                    style="font-size: 12px;" />
+                                                    actionListener="#{imageBean.reset()}" oncomplete="PF('addImage').show();"
+                                                    icon="fas fa-plus" />
 
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_image')}" 
                                                     actionListener="#{imageBean.reset()}"                  
-                                                    oncomplete="PF('updateImage').show();"
-                                                    update="idUpdateImage"
-                                                    style="font-size: 12px;" />
+                                                    oncomplete="PF('updateImage').show();" update="idUpdateImage"
+                                                    icon="fas fa-edit"/>
 
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_image')}" 
-                                                    actionListener="#{imageBean.reset()}"
-                                                    oncomplete="PF('deleteImage').show();"
-                                                    update="idDeleteImage"
-                                                    style="font-size: 12px;" />
+                                                    actionListener="#{imageBean.reset()}" oncomplete="PF('deleteImage').show();"
+                                                    update="idDeleteImage" icon="fas fa-minus" />
                                     </p:menuButton> 
                                 </div>
                             </h:panelGroup>
@@ -93,16 +90,13 @@
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_gps_coordinates')}" 
-                                                actionListener="#{gpsBean.reset()}"
-                                                oncomplete="PF('setGps').show();"
-                                                update="idSetGps"
-                                                style="font-size: 12px;" />
+                                                actionListener="#{gpsBean.reset()}" oncomplete="PF('setGps').show();"
+                                                update="idSetGps" icon="fas fa-plus" />
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}" 
-                                                actionListener="#{gpsBean.reset()}"
-                                                oncomplete="PF('deleteGps').show();"
-                                                update="idDeleteGps"
-                                                style="font-size: 12px;" />
+                                                actionListener="#{gpsBean.reset()}" oncomplete="PF('deleteGps').show();"
+                                                update="idDeleteGps" icon="fas fa-minus"
+                                                disabled="#{conceptView.nodeConcept.nodeGps == null}"/>
                                 </p:menuButton>
                             </div> 
 

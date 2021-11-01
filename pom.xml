@@ -190,12 +190,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.primefaces.extensions</groupId>
-            <artifactId>all-themes</artifactId>
-            <version>${all.themes.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.openlink.virtuoso</groupId>
             <artifactId>virt_jena3</artifactId>
             <version>3.0</version>
