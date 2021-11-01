@@ -87,6 +87,10 @@ body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-auto
     padding: 6px;
 }
 
+body .ui-inputfiled.ui-state-hover {
+    border-color: #f47b2a;
+}
+
 
 
 .input-dialog {

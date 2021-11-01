@@ -4,46 +4,146 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
 
-    <div class="row" style="width: 100%">
-        <div class="col-12">
-            <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
-                <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}" style="width: 200px; color: #000"
-                                 title="#{langueBean.getMsg('search.change_thesaurus_language')}">
-                    <p:ajax event="valueChange" update="containerIndex" 
-                            listener="#{selectedTheso.changeLang()}" />
-                    <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                    <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all" />
-                </p:selectOneMenu>
+    <style>
+        .bg-soft-base {
+            background-color: #e1f5f7;
+        }
+        .bg-soft-warning {
+            background-color: #fff4e1;
+        }
+        .bg-soft-success {
+            background-color: #d1f6f2;
+        }
+        .bg-soft-danger {
+            background-color: #fedce0;
+        }
+        .bg-soft-info {
+            background-color: #d7efff;
+        }
 
-                <p:autoComplete value="#{searchBean.searchSelected}" var="values" style="margin-left: 10px"
-                                completeMethod="#{searchBean.completTermFullText}"
-                                minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
-                                scrollHeight="600" inputStyle="font-size: 12px; width: 400px; height: 27px;box-shadow: none; color: #000">
-                    <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
-                        <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
-                                      style="font-style: italic;" />
-                        <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
-                    </p:column>
+        .search-form {
+            width: 80%;
+            height: 45px;
+            margin: 0 auto;
+            margin-top: 1rem;
+        }
 
-                    <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
-                        <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
-                    </p:column>
-                    <p:ajax event="itemSelect" listener="#{searchBean.onSelect()}" update="containerIndex:formLeftTab containerIndex:formRightTab"/>
-                </p:autoComplete>
+        .search-form input {
+            height: 100%;
+            background: transparent;
+            border: 0;
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            height: 45px;
+            font-size: 1rem;
+        }
 
-                <p:commandButton icon="pi pi-search" styleClass="ui-button-warning" action="#{searchBean.applySearch()}"
-                                 update="containerIndex messageIndex"
-                                 style="color: #FAFAFA; background: #F7A269; border: none; height: 27px; border-color: #43B572"/>   
+        .search-form select {
+            background: transparent;
+            border: 0;
+            padding: 2rem;
+            font-size: 16px;
+            height: 45px;
+            padding: 3px;
+        }
+
+        .search-form select:focus {
+            border: 0;
+        }
+
+        .search-form button {
+            height: 45px;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .search-form button svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .card-margin {
+            margin-bottom: 1.875rem;
+        }
+
+        .card {
+            border: 0;
+            box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1);
+            -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1);
+            -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1);
+            -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1);
+        }
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #ffffff;
+            background-clip: border-box;
+            border: 1px solid #e6e4e9;
+            border-radius: 8px;
+        }
+
+    </style>
+
+    <div class="container" style="margin-top: -25px">
+        <div class="row">
+            <div class="col-lg-12 card-margin">
+                <div class="card search-form">
+                    <div class="card-body p-0">
+                        <div class="row" style="height: 45px">
+                            <div class="col-12">
+                                <div class="row no-gutters">
+                                    <div class="col-3">
+                                        <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}"
+                                                         class="form-control" title="#{langueBean.getMsg('search.change_thesaurus_language')}"
+                                                         style="background: transparent; border-color: transparent; background-color: transparent; font-size: 14px;
+                                                         padding-left: 10px; padding-top: 8px">
+                                            <p:ajax event="valueChange" update="containerIndex" listener="#{selectedTheso.changeLang()}" />
+                                            <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}"  />
+                                            <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="col-8">
+                                        <p:autoComplete value="#{searchBean.searchSelected}" var="values" placeholder="Rechercher..." 
+                                                        completeMethod="#{searchBean.completTermFullText}" minQueryLength="1" itemLabel="#{values.prefLabel}" 
+                                                        itemValue="#{values}" converter="searchConverter" scrollHeight="600"
+                                                        inputStyle="font-size: 16px; width: 100%; height: 100%; box-shadow: none; padding-top: 10px"
+                                                        style="background-color: transparent; border-color: transparent; width: 100%">
+
+                                            <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
+                                                <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"  style="font-style: italic;" />
+                                                <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
+                                            </p:column>
+
+                                            <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
+                                                <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
+                                            </p:column>
+                                            <p:ajax event="itemSelect" listener="#{searchBean.onSelect()}" update="containerIndex messageIndex"/>
+                                        </p:autoComplete>
+                                    </div>
+                                    <div class="col-1" style="text-align: right; padding-top: 2px ">
+                                        <p:link class="btn btn-base" onclick="#{searchBean.applySearch()}" >
+                                            <i class="fas fa-search" style="color: #f47b2a;" />
+                                        </p:link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <h:form id="formSearch" style="background-color: #f5f6f9; margin-top: 10px">
-        <div class="row" style="width: 100%; margin-top: 10px; margin-bottom: 10px; background-color: #f5f6f9">
-            <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center" >
+    <h:form id="formSearch">
+        <div class="row" style="width: 100%; margin-top: -20px;">
+            <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center;" >
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
                                          style="color: #000; background-color: transparent;">
-                    <p:ajax update="formSearch" listener="#{searchBean.activateIndexMatch}"/>
+                    <p:ajax listener="#{searchBean.activateIndexMatch()}"/>
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
@@ -83,6 +183,6 @@
                                 title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
                 </p:menuButton>
             </div>
-        </div>   
+        </div>
     </h:form>
 </ui:fragment>
