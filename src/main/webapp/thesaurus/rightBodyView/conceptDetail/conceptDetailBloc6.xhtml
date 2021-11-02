@@ -30,15 +30,15 @@
                     </h:panelGroup> 
 
                     <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                     icon="fa fa-history"
-                                     actionListener="#{historyBean.reset()}"
-                                     oncomplete="PF('historicalView').show();"
+                                     icon="fa fa-history" actionListener="#{historyBean.reset()}"
+                                     oncomplete="PF('historicalView').show();" style=" font-size: 14px;"
                                      title="#{langueBean.getMsg('rightbody.concept.view_change_history')}"
-                                     style=" font-size: 14px;"
-                                     styleClass="buttonIconOrange"/>                      
+                                     styleClass="buttonIconOrange" update="idHistoricalView"/>                      
                 </div>
             </div>
         </div>
     </div>
+    
+    <ui:include src="../../../dialog/history/historicalView.xhtml" />
 
 </ui:fragment>
