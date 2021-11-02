@@ -112,6 +112,11 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-handle {
     border-color: #f47b2a;
 }
 
+body .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
+    background: #f47b2a;
+    border-color: #f47b2a;
+}
+
 
 .dialog-titre {
     font-size: 12px; 

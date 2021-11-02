@@ -20,6 +20,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -73,7 +74,9 @@ public class MyAccountBean implements Serializable {
     }
 
     public void updatePseudo() {
+        
         FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
 
         if (nodeUser.getName() == null || nodeUser.getName().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le pseudo est obligatoire !!!");
@@ -94,6 +97,11 @@ public class MyAccountBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Pseudo changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
+        
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }
 
     public void updateAlertEmail() {
@@ -116,6 +124,7 @@ public class MyAccountBean implements Serializable {
 
     public void updateEmail() {
         FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
 
         if (nodeUser.getMail() == null || nodeUser.getMail().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un Email est obligatoire !!!");
@@ -135,11 +144,17 @@ public class MyAccountBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Email changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
+        
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }
 
     public void updatePassword() {
         FacesMessage msg;
-        UserHelper userHelper = new UserHelper();
+        PrimeFaces pf = PrimeFaces.current();
+        
         if (passWord1 == null || passWord1.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -156,9 +171,7 @@ public class MyAccountBean implements Serializable {
             return;
         }
 
-        if (!userHelper.updatePwd(
-                connect.getPoolConnexion(),
-                nodeUser.getIdUser(),
+        if (!new UserHelper().updatePwd(connect.getPoolConnexion(), nodeUser.getIdUser(),
                 MD5Password.getEncodedPassword(passWord2))) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de passe !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -168,6 +181,11 @@ public class MyAccountBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Mot de passe changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
+        
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }
 
     public NodeUser getNodeUser() {

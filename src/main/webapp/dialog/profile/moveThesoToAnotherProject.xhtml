@@ -1,75 +1,64 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idMoveThesoToAnotherProject" header="Déplacer le thésaurus" widgetVar="moveThesoToAnotherProject" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >        
-        <h:form id="moveThesoToAnotherProjectForm"
-                rendered="#{(currentUser.nodeUser != null)}">
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >      
 
-            
-            <!-- thésaurus -->
-            <b:row style="margin-left: 10px; "> 
-                <b:column span="5">
-                    <h:outputText value="Déplacer le thesaurus : " style="font-size: 12px;"/> 
-                </b:column>
-                <b:column span="7">
-                    <h:outputText value="#{moveThesoToProjectBean.selectedThesoToMove.value} (#{moveThesoToProjectBean.selectedThesoToMove.id})"
-                                  style="font-size: 13px; color: #43B572;"/>
-                </b:column> 
-            </b:row>            
-            <p:spacer/>
-            <!-- Projets -->
-            <b:row style="margin-left: 10px; "> 
-                <b:column span="5">
-                    <h:outputText value="Du projet : " style="font-size: 12px;"/> 
-                </b:column>
-                <b:column span="7">
-                    <h:outputText value="#{myProjectBean.selectedProjectName}"
-                                  style="font-size: 13px; color: #43B572;"/>
-                </b:column> 
-            </b:row>             
+        <!-- thésaurus -->
+        <div class="row">
+            <div class="col-5">
+                <h:outputText value="Déplacer le thesaurus : " style="font-size: 12px;"/> 
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{moveThesoToProjectBean.selectedThesoToMove.value} (#{moveThesoToProjectBean.selectedThesoToMove.id})"
+                              style="font-size: 13px; color: #43B572;"/>
+            </div> 
+        </div>
+        
+        <!-- Projets -->
+        <div class="row" style="margin-top: 5px;"> 
+            <div class="col-5">
+                <h:outputText value="Du projet : " style="font-size: 12px;"/> 
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{myProjectBean.selectedProjectName}"
+                              style="font-size: 13px; color: #43B572;"/>
+            </div> 
+        </div>
 
-            <p:spacer/>
-            
-            <!-- Utilisateur autocomplete -->
-            <b:row style="margin-left: 10px; "> 
-                <b:column span="5">
-                    <h:outputText value="vers le projet : " style="font-size: 12px;"/> 
-                </b:column>                
-                <b:column span="7">            
-                    <p:autoComplete id="nomTerme" value="#{moveThesoToProjectBean.newProject}"
-                                    var="project"
-                                    forceSelection="true"
-                                    completeMethod="#{moveThesoToProjectBean.autoCompleteProject}"                                  
-                                    minQueryLength="1" itemLabel="#{project.groupName}" itemValue="#{project}" converter="projectConverter"
-                                    scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 25px;box-shadow: none;border-color: #43B572"
-                                    style="font-size: 12px; width: 100%">
-                        <p:column style="font-size: 12px;">
-                            <h:outputText title="#{project.idGroup}" value="#{project.groupName}" />
-                        </p:column>
-                    </p:autoComplete>   
-                </b:column> 
-            </b:row>                      
-            
-            <p:spacer/>
+        <!-- Utilisateur autocomplete -->
+        <div class="row" style="margin-top: 5px;"> 
+            <div class="col-5">
+                <h:outputText value="vers le projet : " style="font-size: 12px;"/> 
+            </div>                
+            <div class="col-7">            
+                <p:autoComplete value="#{moveThesoToProjectBean.newProject}" var="project" forceSelection="true"
+                                completeMethod="#{moveThesoToProjectBean.autoCompleteProject}"                                  
+                                minQueryLength="1" itemLabel="#{project.groupName}" itemValue="#{project}" converter="projectConverter"
+                                scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 25px;box-shadow: none;border-color: #43B572"
+                                style="font-size: 12px; width: 100%">
+                    <p:column style="font-size: 12px;">
+                        <h:outputText title="#{project.idGroup}" value="#{project.groupName}" />
+                    </p:column>
+                </p:autoComplete>   
+            </div> 
+        </div>
+        
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-            <b:row style="margin-left: 10px; "> 
-                <b:column span="5" offset="6" >
-                    <b:commandButton id="buttonSubmit" value="Déplacer"
-                                     update="profileForm:myProjectForm moveThesoToAnotherProjectForm profileForm:myProjectForm:idMoveThesoToAnotherProject messageIndex" 
-                                     tooltip="Ajouter l'utilisateur au projet" tooltip-delay-show="1000"
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary"
-                                     action="#{moveThesoToProjectBean.moveThesoToProject()}"
-                                     oncomplete="PF('moveThesoToAnotherProject').hide();"/>
-                </b:column>                    
-            </b:row>                    
-         <p:spacer/>
-        </h:form>
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('moveThesoToAnotherProject').hide();" update="idMoveThesoToAnotherProject"/>
+
+                <p:commandButton title="Déplacer" update="containerIndex messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('moveThesoToAnotherProject').hide();"
+                                 actionListener="#{moveThesoToProjectBean.moveThesoToProject()}" >
+                    <p:tooltip value="Ajouter l'utilisateur au projet" showDelay="1000" />
+                </p:commandButton>
+            </div>                    
+        </f:facet>
     </p:dialog>   
 </ui:fragment>

@@ -1,40 +1,34 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idNewProject" header="Ajouter un nouveau projet" widgetVar="newProject" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >        
-        <h:form id="newProjectForm"
-                rendered="#{(currentUser.nodeUser != null)}">
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-            <!-- Projets -->
-            <b:row style="margin-left: 10px; "> 
-                <b:column span="3">
-                    <h:outputText value="Projet : " style="font-size: 12px;"/> 
-                </b:column>
-                <b:column span="8">
-                    <b:inputText value="#{newProjectBean.projectName}" style="font-size: 12px; height: 25px;"/>
-                </b:column> 
-            </b:row>             
+        <!-- Projets -->
+        <div class="row"> 
+            <div class="col-5">
+                <h:outputText value="Projet : " style="font-size: 12px;"/> 
+            </div>
+            <div class="col-7">
+                <p:inputText value="#{newProjectBean.projectName}" style="width: 100%"/>
+            </div> 
+        </div>
+        
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-            <p:spacer/>
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('newProject').hide();" update="idNewProject"/>
 
-            <b:row style="margin-left: 10px; "> 
-                <b:column span="5" offset="6" >
-                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnAdd')}"  update="profileForm:myProjectForm newProjectForm profileForm:myProjectForm:idNewProject
-                                     messageIndex" 
-                                     tooltip="Modifier le label du projet" tooltip-delay-show="1000"
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary"
-                                     action="#{newProjectBean.addNewProject()}"
-                                     oncomplete="PF('newProject').hide();"/>
-                </b:column>                    
-            </b:row>                    
-               <p:spacer/>
-        </h:form>
+                <p:commandButton title="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('newProject').hide();"
+                                 actionListener="#{modifyRoleBean.addUserToProject()}" >
+                    <p:tooltip value="Modifier le label du projet" showDelay="1000" />
+                </p:commandButton>
+            </div>                    
+        </f:facet>
     </p:dialog>   
 </ui:fragment>

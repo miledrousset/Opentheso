@@ -1,163 +1,220 @@
-<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-             xmlns:h="http://java.sun.com/jsf/html"  
-             xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGroup id="myProjectForm" >
-        <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
-            <b:row style="margin-left: 30px; margin-right: 30px;">
-                <b:column span="3">
-                    <h:outputText value="#{langueBean.getMsg('profile.my_authorized_projects')} : " style="font-size: 12px;" />
-                </b:column>
-            </b:row >
-            <b:row style="margin-left: 30px;">
-                <b:column span="4">
-                    <p:selectOneMenu id="selectProjects" value="#{myProjectBean.selectedProject}"
-                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                     style="width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="border: none; box-shadow: none; max-width: 300px">
+    <h:head>
+        <title>Opentheso</title>
 
-                        <f:selectItem itemLabel="...." itemValue="" />
-                        <f:selectItems value="#{myProjectBean.listeGroupsOfUser.entrySet()}" var="project" itemLabel="#{project.value}" itemValue="#{project.key}"/>
-                        <p:ajax event="change" listener="#{myProjectBean.setLists()}" update="profileForm myProjectForm"/>                        
+        <link href="../resources/images/icon_opentheso2.png" rel="icon" />
 
-                    </p:selectOneMenu>
-                </b:column>
-                <b:column span="2">
-                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
-                                      iconAwesome="fa-plus-circle" icon-size="l" style="color: #f47b2a;"
-                                      tooltip="#{langueBean.getMsg('profile.create_new_project')}" tooltip-delay-show="1000"
-                                      actionListener="#{newProjectBean.init()}"
-                                      update="profileForm:idNewProject profileForm:newProjectForm"
-                                      oncomplete="PF('newProject').show();"/>
+        <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
 
-                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
-                                      iconAwesome="fa-edit" icon-size="l" style="color: #f47b2a; margin-left: 10px;"
-                                      tooltip="#{langueBean.getMsg('profile.change_label_projects')}" tooltip-delay-show="1000"
-                                      actionListener="#{newProjectBean.init()}"
-                                      update="profileForm:idModifyProject profileForm:modifyProjectForm"
-                                      oncomplete="PF('modifyProject').show();"/>
-                </b:column>                
-            </b:row>
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
 
-            <p:spacer />
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+    </h:head>
 
-            <h:form id="tabUserProjectForm">
-                <b:row style="margin-left: 30px; margin-right: 30px;">
-                    <b:column span="12">
-                        <p:tabView >
-                            <!-- Vue liste d'utilisateurs par groupe -->
-                            <p:tab title="#{langueBean.getMsg('profile.list_of_users')}" titleStyle="font-size: 12px;">
-                                <b:row>
-                                    <b:column span="2" offset="10">
-                                        <b:dropMenu rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesoOfProject != null)}"
-                                                    icon-awesome="fa-user-plus" icon-size="l"  value=""
-                                                    style="color: #f47b2a; background: none; border: none; box-shadow: none; "
-                                                    class="dropdown-submenu pull-left">
 
-                                            <b:navCommandLink value="#{langueBean.getMsg('profile.new_user')}" style="font-size: 12px;"
-                                                              tooltip="#{langueBean.getMsg('profile.tooltip_new_user')}" tooltip-delay-show="1000"
-                                                              actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
-                                                              update="profileForm:idNewUser profileForm:newUserForm" oncomplete="PF('newUser').show();"/>
+    <h:body id="page-top" style="font-size: 12px;">
 
-                                            <b:navCommandLink value="#{langueBean.getMsg('profile.add_existing_user')}" style="font-size: 12px;"
-                                                              tooltip="#{langueBean.getMsg('profile.tooltip_add_existing_user')}" tooltip-delay-show="1000"
-                                                              actionListener="#{modifyRoleBean.setSelectedProject(myProjectBean.selectedProject)}"
-                                                              update="profileForm:idAddExistingUserToProject profileForm:addExistingUserToProjectForm"
-                                                              oncomplete="PF('addExistingUserToProject').show();"/>                                           
-                                        </b:dropMenu>
-                                    </b:column>
+        <p:idleMonitor timeout="#{connect.timeout}">
+            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
+        </p:idleMonitor>
 
-                                </b:row>                                
+        <f:metadata>
+            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+        </f:metadata>
 
-                                <b:row>
-                                    <b:column span="12">                                
-                                        <p:dataTable id="tabUser" rendered="#{myProjectBean.isAdminOnThisGroup() and myProjectBean.listeUser != null}"
-                                                     value="#{myProjectBean.listeUser}" var="listUser" scrollable="true" resizableColumns="true" scrollHeight="450"
-                                                     style="font-size: 12px;">
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-                                            <p:column width="50" headerText="#{langueBean.getMsg('profile.pseudo')}" rendered="#{!listUser.isActive}">
-                                                <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" value="#{listUser.userName}" style="color: red; font-style: oblique" />
-                                            </p:column>
-                                            <p:column width="50" headerText="#{langueBean.getMsg('profile.pseudo')}" rendered="#{listUser.isActive}">
-                                                <h:outputText value="#{listUser.userName}"/>
-                                            </p:column>
-                                            <p:column headerText="#{langueBean.getMsg('profile.role')}" width="60">
-                                                <h:outputText value="#{listUser.roleName}" />
-                                            </p:column>
+        <div id="wrapper" style="height: 100%">
 
-                                            <p:column width="20" >
-                                                <b:navCommandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
-                                                                  iconAwesome="fa-edit" icon-size="lg" style="color: #f47b2a; "
-                                                                  tooltip="#{langueBean.getMsg('profile.modify_user')}" tooltip-delay-show="1000"
-                                                                  actionListener="#{modifyUSerBean.selectUser(listUser.idUser)}"
-                                                                  update="profileForm:idModifyUser profileForm:modifyUserForm" oncomplete="PF('modifyUser').show();"/>
-                                            </p:column>
+            <ui:include src="../commun/menu.xhtml" />
 
-                                            <p:column width="20" >
-                                                <b:navCommandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
-                                                                  iconAwesome="fa-cog" icon-size="lg" style="color: #f47b2a; "
-                                                                  tooltip="#{langueBean.getMsg('profile.modify_roles')}" tooltip-delay-show="1000"
-                                                                  actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
-                                                                  update="profileForm:idModifyRole profileForm:modifyRoleForm" oncomplete="PF('modifyRole').show();"/>
-                                            </p:column>
-                                            <p:column width="20" >
-                                                <b:navCommandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
-                                                                  iconAwesome="fa-remove" icon-size="lg" style="color: #C63632;"
-                                                                  tooltip="#{langueBean.getMsg('profile.remove_user_from_group')}" tooltip-delay-show="1000"
-                                                                  actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
-                                                                  update="profileForm:idConfirmRemoveUserFromProject profileForm:confirmRemoveUserFromProjectForm"
-                                                                  oncomplete="PF('confirmRemoveUserFromProject').show();"/>
-                                            </p:column>                                
+            <div id="content-wrapper" style="width: 100%">
 
-                                        </p:dataTable>
-                                    </b:column>
-                                </b:row>                                          
-                            </p:tab>
-                            
-                            <p:tab title="#{langueBean.getMsg('profile.list_of_thesauri')}" titleStyle="font-size: 12px;" >
+                <h:form id="containerIndex">
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
+                    </div>
 
-                                <!-- Vue liste de thesaurus -->
-                                <b:row>
-                                    <b:column span="12">                                
-                                        <p:dataTable rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesoOfProject != null)}"
-                                                     value="#{myProjectBean.listeThesoOfProject}" var="listTheso" 
-                                                     style="font-size: 12px;" >
+                    <div class="container-fluid">
 
-                                            <p:column width="10%" headerText="Id">
-                                                <h:outputText value="#{listTheso.id}" style="font-size: 12px; " />
-                                            </p:column>
-                                            <p:column width="70%" headerText="#{langueBean.getMsg('profile.name')}">
-                                                <h:outputText value="#{listTheso.value}" style="font-size: 12px;" />
-                                            </p:column>
-                                            <p:column width="20%" headerText="#{langueBean.getMsg('profile.action')}" >
-                                                <b:navCommandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
-                                                                  iconAwesome="fa-share" icon-size="lg" style="color: #f47b2a; "
-                                                                  tooltip="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}" tooltip-delay-show="1000"
-                                                                  actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
-                                                                  update="profileForm:idMoveThesoToAnotherProject profileForm:moveThesoToAnotherProjectForm"
-                                                                  oncomplete="PF('moveThesoToAnotherProject').show();"/>
-                                            </p:column>                                            
-                                        </p:dataTable>
-                                    </b:column>
-                                </b:row>
-                            </p:tab>                            
-                        </p:tabView>
-                    </b:column>
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Profil / Mon compte</h1>
+                        </div>
 
-                </b:row>
-            </h:form>   
-        </b:panel>
-    </h:panelGroup>
+                        <div class="col-12" style="height: 100%">
+                            <div class="card shadow mb-4" style="height: 100%;"> 
+                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
+                                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                                        <div class="col-3">
+                                            <h:outputText value="#{langueBean.getMsg('profile.my_authorized_projects')} : " style="font-size: 12px;" />
+                                        </div>
+                                    </div >
 
-    <ui:include src="/dialog/profile/modifyUser.xhtml" />
-    <ui:include src="/dialog/profile/modifyRole.xhtml" />
-    <ui:include src="/dialog/profile/confirmRemoveUserFromProject.xhtml" />     
-    <ui:include src="/dialog/profile/newUser.xhtml" /> 
-    <ui:include src="/dialog/profile/addExistingUserToProject.xhtml" />     
-    <ui:include src="/dialog/profile/newProject.xhtml" />  
-    <ui:include src="/dialog/profile/modifyProject.xhtml" />
-    <ui:include src="/dialog/profile/moveThesoToAnotherProject.xhtml" />    
-</ui:fragment>
+                                    <div class="row" style="margin-left: 30px;">
+                                        <div class="col-4">
+                                            <p:selectOneMenu id="selectProjects" value="#{myProjectBean.selectedProject}"
+                                                             styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                                             style="width: 100%; background: none;  box-shadow: none; "
+                                                             panelStyle="border: none; box-shadow: none; width: 300px">
+
+                                                <f:selectItem itemLabel="...." itemValue="" />
+                                                <f:selectItems value="#{myProjectBean.listeGroupsOfUser.entrySet()}" var="project" itemLabel="#{project.value}" itemValue="#{project.key}"/>
+                                                <p:ajax event="change" listener="#{myProjectBean.setLists()}" update="containerIndex"/>                        
+
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="col-2" style="margin-top: 5px">
+                                            <p:commandLink rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
+                                                           actionListener="#{newProjectBean.init()}"
+                                                           update="containerIndex" oncomplete="PF('newProject').show();">
+                                                <i class="fas fa-plus-square" style="color: #f47b2a; margin-left: 10px;" />
+                                                <p:tooltip value="#{langueBean.getMsg('profile.create_new_project')}" showDelay="1000" />
+                                            </p:commandLink>
+
+                                            <p:commandLink rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
+                                                           actionListener="#{newProjectBean.init()}"
+                                                           update="idModifyProject" oncomplete="PF('modifyProject').show();" >
+                                                <i class="fas fa-edit" style="color: #f47b2a; margin-left: 10px;" />
+                                                <p:tooltip value="#{langueBean.getMsg('profile.change_label_projects')}" showDelay="1000" />
+                                            </p:commandLink>
+                                        </div>                
+                                    </div>
+
+                                    <h:form id="tabUserProjectForm">
+                                        <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                                            <div class="col-12">
+                                                <p:tabView >
+                                                    <!-- Vue liste d'utilisateurs par groupe -->
+                                                    <p:tab title="#{langueBean.getMsg('profile.list_of_users')}" titleStyle="font-size: 12px;">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <p:menuButton rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesoOfProject != null)}"
+                                                                              icon="fas fa-plus" style="color: #f47b2a; background: none; border: none; box-shadow: none; "
+                                                                              class="dropdown-submenu pull-left">
+
+                                                                    <p:menuitem value="#{langueBean.getMsg('profile.new_user')}" style="font-size: 12px;"
+                                                                                   actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
+                                                                                   update="idNewUser" oncomplete="PF('newUser').show();">
+                                                                        <p:tooltip value="#{langueBean.getMsg('profile.tooltip_new_user')}" showDelay="1000" />
+                                                                    </p:menuitem>
+
+                                                                    <p:menuitem value="#{langueBean.getMsg('profile.add_existing_user')}" style="font-size: 12px;"
+                                                                                   actionListener="#{modifyRoleBean.setSelectedProject(myProjectBean.selectedProject)}"
+                                                                                   update="idAddExistingUserToProject" oncomplete="PF('addExistingUserToProject').show();">
+                                                                        <p:tooltip value="#{langueBean.getMsg('profile.tooltip_add_existing_user')}" showDelay="1000" />
+                                                                    </p:menuitem>
+                                                                </p:menuButton>
+                                                            </div>
+
+                                                        </div>                                
+
+                                                        <div class="row">
+                                                            <div class="col-12">                                
+                                                                <p:dataTable id="tabUser" rendered="#{myProjectBean.isAdminOnThisGroup() and myProjectBean.listeUser != null}"
+                                                                             value="#{myProjectBean.listeUser}" var="listUser" scrollable="true" resizableColumns="true" scrollHeight="450"
+                                                                             style="font-size: 12px;">
+
+                                                                    <p:column width="50" headerText="#{langueBean.getMsg('profile.pseudo')}" rendered="#{!listUser.isActive}">
+                                                                        <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" value="#{listUser.userName}" style="color: red; font-style: oblique" />
+                                                                    </p:column>
+                                                                    <p:column width="50" headerText="#{langueBean.getMsg('profile.pseudo')}" rendered="#{listUser.isActive}">
+                                                                        <h:outputText value="#{listUser.userName}"/>
+                                                                    </p:column>
+                                                                    <p:column headerText="#{langueBean.getMsg('profile.role')}" width="60">
+                                                                        <h:outputText value="#{listUser.roleName}" />
+                                                                    </p:column>
+
+                                                                    <p:column width="20" >
+                                                                        <p:commandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
+                                                                                       actionListener="#{modifyUSerBean.selectUser(listUser.idUser)}"
+                                                                                       update="idModifyUser" oncomplete="PF('modifyUser').show();">
+                                                                            <i class="fa-edit" style="color: #f47b2a; margin-left: 10px;" />
+                                                                            <p:tooltip value="#{langueBean.getMsg('profile.modify_user')}" showDelay="1000" />
+                                                                        </p:commandLink>
+                                                                    </p:column>
+
+                                                                    <p:column width="20" >
+                                                                        <p:commandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
+                                                                                       actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
+                                                                                       update="idModifyRole" oncomplete="PF('modifyRole').show();">
+                                                                            <i class="fa-cog" style="color: #f47b2a; margin-left: 10px;" />
+                                                                            <p:tooltip value="#{langueBean.getMsg('profile.modify_roles')}" showDelay="1000" />
+                                                                        </p:commandLink>
+                                                                    </p:column>
+                                                                    <p:column width="20" >
+                                                                        <p:commandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}" 
+                                                                                       actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
+                                                                                       update="idConfirmRemoveUserFromProject" oncomplete="PF('confirmRemoveUserFromProject').show();">
+                                                                            <i class="fa-remove" style="color: #f47b2a; margin-left: 10px;" />
+                                                                            <p:tooltip value="#{langueBean.getMsg('profile.remove_user_from_group')}" showDelay="1000" />
+                                                                        </p:commandLink>
+                                                                    </p:column>                                
+
+                                                                </p:dataTable>
+                                                            </div>
+                                                        </div>                                          
+                                                    </p:tab>
+
+                                                    <p:tab title="#{langueBean.getMsg('profile.list_of_thesauri')}" titleStyle="font-size: 12px;" >
+
+                                                        <!-- Vue liste de thesaurus -->
+                                                        <div class="row">
+                                                            <div class="col-12">                                
+                                                                <p:dataTable rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesoOfProject != null)}"
+                                                                             value="#{myProjectBean.listeThesoOfProject}" var="listTheso" 
+                                                                             style="font-size: 12px;" >
+
+                                                                    <p:column width="10%" headerText="Id">
+                                                                        <h:outputText value="#{listTheso.id}" style="font-size: 12px; " />
+                                                                    </p:column>
+                                                                    <p:column width="70%" headerText="#{langueBean.getMsg('profile.name')}">
+                                                                        <h:outputText value="#{listTheso.value}" style="font-size: 12px;" />
+                                                                    </p:column>
+                                                                    <p:column width="20%" headerText="#{langueBean.getMsg('profile.action')}" >
+                                                                        <p:commandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
+                                                                                       actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
+                                                                                       update="idMoveThesoToAnotherProject" oncomplete="PF('moveThesoToAnotherProject').show();">
+                                                                            <i class="fa-share" style="color: #f47b2a; margin-left: 10px;" />
+                                                                            <p:tooltip value="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}" showDelay="1000" />
+                                                                        </p:commandLink>
+                                                                    </p:column>                                            
+                                                                </p:dataTable>
+                                                            </div>
+                                                        </div>
+                                                    </p:tab>                            
+                                                </p:tabView>
+                                            </div>
+                                        </div>
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ui:include src="../commun/footer.xhtml" />
+
+                    <ui:include src="../dialog/profile/modifyUser.xhtml" />
+                    <ui:include src="../dialog/profile/modifyRole.xhtml" />
+                    <ui:include src="../dialog/profile/confirmRemoveUserFromProject.xhtml" />     
+                    <ui:include src="../dialog/profile/newUser.xhtml" /> 
+                    <ui:include src="../dialog/profile/addExistingUserToProject.xhtml" />     
+                    <ui:include src="../dialog/profile/newProject.xhtml" />  
+                    <ui:include src="../dialog/profile/modifyProject.xhtml" />
+                    <ui:include src="../dialog/profile/moveThesoToAnotherProject.xhtml" />    
+
+                </h:form>
+            </div>
+        </div> 
+    </h:body>
+</html>

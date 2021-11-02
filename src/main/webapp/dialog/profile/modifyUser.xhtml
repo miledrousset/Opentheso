@@ -1,95 +1,89 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idModifyUser" header="Modifier l'utilisateur" widgetVar="modifyUser" 
-              modal="true" resizable="true" position="top" width="500" style="margin-top: 50px" >        
-        <h:form id="modifyUserForm"
-                rendered="#{(currentUser.nodeUser != null)}">
-            <b:row style="margin-left: 30px; margin-right: 30px;"> 
-                <!-- Nom Pseudo -->
-                <b:column span="5" >
-                    <h:outputText value="Pseudo : " style="font-size: 12px;"/>  
-                </b:column>
-                <b:column span="7">
-                    <h:outputText value="#{modifyUSerBean.nodeUser.name}"
-                                  style="font-size: 13px; color: #f47b2a;"/>
-                </b:column>                    
-            </b:row>
-            <p:spacer/>
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        
+        <div class="row" style="margin-left: 30px; margin-right: 30px;"> 
+            <!-- Nom Pseudo -->
+            <div class="col-5" >
+                <h:outputText value="Pseudo : " style="font-size: 12px;"/>  
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{modifyUSerBean.nodeUser.name}"
+                              style="font-size: 13px; color: #f47b2a;"/>
+            </div>                    
+        </div>
 
-            <!-- Alertes -->
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="5">
-                    <h:outputText value="Alerte par mail : "  style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="1" offset="5">
-                    <p:toggleSwitch value="#{modifyUSerBean.nodeUser.isAlertMail}" style="font-size: 12px;" /> 
-                </b:column>
-            </b:row>             
+        <!-- Alertes -->
+        <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+            <div class="col-5">
+                <h:outputText value="Alerte par mail : "  style="font-size: 12px;"/>
+            </div>
+            <div class="col-5">
+                <p:toggleSwitch value="#{modifyUSerBean.nodeUser.isAlertMail}" style="font-size: 12px;" /> 
+            </div>
+        </div>             
 
-            <!-- Pour activer / désactiver le compte -->
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="6">
-                    <h:outputText value="Activer le compte : "  style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="1" offset="4">
-                    <p:toggleSwitch value="#{modifyUSerBean.nodeUser.isActive}" style="font-size: 12px;" /> 
-                </b:column>
-            </b:row>              
+        <!-- Pour activer / désactiver le compte -->
+        <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+            <div class="col-6">
+                <h:outputText value="Activer le compte : "  style="font-size: 12px;"/>
+            </div>
+            <div class="col-4">
+                <p:toggleSwitch value="#{modifyUSerBean.nodeUser.isActive}" style="font-size: 12px;" /> 
+            </div>
+        </div>              
 
-            <p:spacer/>
+        <p:spacer/>
 
-            <b:row style="margin-bottom: 10px;">
-                <b:column span="4" offset="7" >
-                    <b:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="profileForm modifyUserForm" 
-                                     tooltip="Valider les changements de l'utilisateur" tooltip-delay-show="1000"
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary"
-                                     action="#{modifyUSerBean.updateUser()}"/>
-                </b:column>                    
-            </b:row>
-            
-            <p:separator/>
-            
-            <!-- Initialiser le passe de l'utilisateur -->
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="5">
-                    <h:outputText value="Nouveau passe : "  style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="7">
-                    <b:inputSecret  value="#{modifyUSerBean.passWord1}" style="height: 25px;font-size: 12px;"/>
-                </b:column>
-            </b:row>
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="5">
-                    <h:outputText value="Confirmation : "  style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="7">
-                    <b:inputSecret  value="#{modifyUSerBean.passWord2}"  style="height: 25px;font-size: 12px;" />
-                </b:column>
-            </b:row>
-            <b:row style="margin-bottom: 10px;">
-                <b:column span="4" offset="7" >
-                    <b:commandButton value="#{langueBean.getMsg('btnValidate')}"  update="modifyUserForm"
-                                     tooltip="Pour changer le mot de passe de l'utilisateur" tooltip-delay-show="1000"
-                                     style="width:100%; font-size: 13px; 
-                                     font-weight: normal;
-                                     color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary"
-                                     action="#{modifyUSerBean.updatePassword()}"/>
-                </b:column>                    
-            </b:row>            
-            
-            <b:row>
-                <b:column span="12">
-                    <b:messages autoUpdate="true"/>
-                </b:column>
-            </b:row>
-        </h:form>
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-7" >
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}"  update="containerIndex idModifyUser" 
+                                 style="width:100%; font-size: 13px; font-weight: normal;
+                                 color: white; background: #43B572; border: none; box-shadow: none;"
+                                 class="btn btn-primary"  action="#{modifyUSerBean.updateUser()}">
+                    <p:tooltip value="Valider les changements de l'utilisateur" showDelay="1000" />
+                </p:commandButton>
+            </div>                    
+        </div>
+
+        <p:separator/>
+
+        <!-- Initialiser le passe de l'utilisateur -->
+        <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+            <div class="col-5">
+                <h:outputText value="Nouveau passe : "  style="font-size: 12px;"/>
+            </div>
+            <div class="col-7">
+                <p:password value="#{modifyUSerBean.passWord1}" style="height: 25px;font-size: 12px;"/>
+            </div>
+        </div>
+        
+        <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+            <div class="col-5">
+                <h:outputText value="Confirmation : "  style="font-size: 12px;"/>
+            </div>
+            <div class="col-7">
+                <p:password  value="#{modifyUSerBean.passWord2}"  style="height: 25px;font-size: 12px;" />
+            </div>
+        </div>
+        
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('modifyUser').hide();" update="idModifyUser"/>
+                
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('modifyUser').hide();"
+                                 actionListener="#{modifyUSerBean.updatePassword()}">
+                    <p:tooltip value="Pour changer le mot de passe de l'utilisateur" showDelay="1000" />
+                </p:commandButton>
+            </div>                    
+        </f:facet>
     </p:dialog>   
 </ui:fragment>

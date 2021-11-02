@@ -15,10 +15,12 @@
 
             <hr class="sidebar-divider my-0"/>
 
-            <li class="nav-item active">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span style="font-size: 12px;">Thésaurus</span></a>
+            <li class="nav-item">
+                <span class="nav-link">
+                    <i class="fas fa-fw fa-tachometer-alt" />
+                    <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
+                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;">Thésaurus</p:commandLink>
+                </span>
             </li>
 
             <h:panelGroup rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" > 

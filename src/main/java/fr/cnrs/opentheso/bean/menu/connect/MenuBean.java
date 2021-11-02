@@ -26,35 +26,41 @@ public class MenuBean implements Serializable {
     private MyProjectBean myProjectBean;
     
     
+    // LOGIN Page
+    public void redirectToThesaurus() throws IOException {
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/index.xhtml");
+    }
+    
     // MENU Profile
     public void redirectToUsersPage() throws IOException {
         superAdminBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/profile/usersV1.xhtml");
+        context.redirect(context.getRequestContextPath() + "/profile/users.xhtml");
     }
 
     public void redirectToProjetsPage() throws IOException {
         superAdminBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/profile/projectsV1.xhtml");
+        context.redirect(context.getRequestContextPath() + "/profile/projects.xhtml");
     }
 
     public void redirectToThesorusPage() throws IOException {
         superAdminBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/profile/thesaurusV1.xhtml");
+        context.redirect(context.getRequestContextPath() + "/profile/thesaurus.xhtml");
     }
     
     public void redirectToMyProfilePage() throws IOException {
         myAccountBean.reset();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/profile/myAccountV1.xhtml");
+        context.redirect(context.getRequestContextPath() + "/profile/myAccount.xhtml");
     }
     
     public void redirectToMesProjectsPage() throws IOException {
         myProjectBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/profile/projectsV1.xhtml");
+        context.redirect(context.getRequestContextPath() + "/profile/myProject.xhtml");
     }
     
     // MENU Paramètres

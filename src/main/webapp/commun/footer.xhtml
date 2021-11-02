@@ -1,11 +1,13 @@
 <ui:composition 
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
-
-    <footer class="sticky-footer bg-white" style="bottom: 0; left: 0;">
+    
+    <footer class="sticky-footer bg-white" style="position: fixed; bottom: 0; width: 100%;">
         <div class="container my-auto">
             <div class="copyright text-center my-auto">
-                <span>Copyright © Opentheso 2021</span>
+                <center>
+                    Copyright © Opentheso 2021
+                </center>
             </div>
         </div>
     </footer>
@@ -14,13 +16,12 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="pi pi-angle-up" />
     </a>
-
     <script src="../resources/js/bootstrap.bundle.min.js"></script>
     <script src="../resources/js/jquery.easing.min.js"></script>
     <script src="../resources/js/sb-admin-2.js"></script>
 
     <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false">
         <p:graphicImage value="../resources/img/wait_old.gif" width="150px" />
-    </p:dialog> 
+    </p:dialog>
 
 </ui:composition>

@@ -1,136 +1,200 @@
-<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-             xmlns:h="http://java.sun.com/jsf/html"  
-             xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui">
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
-    <h:form id="myAccountForm">
-        <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
-            
-            <p:spacer/>
-            
-            <!-- Compte d'utilisateur -->
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('profile.user')} : "  title="#{langueBean.getMsg('profile.tootltip_user')}" style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="6">
-                    <b:inputText value="#{myAccountBean.nodeUser.name}"  title="#{langueBean.getMsg('profile.tootltip_user')}" style="height: 25px;font-size: 12px;" />
-                </b:column>
-                <b:column span="2">
-                    <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
-                                      action="#{myAccountBean.updatePseudo()}"
-                                     update="profileForm myAccountForm"/>       
-                </b:column>
-            </b:row>
-          
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="9">
-                    <p:separator /> 
-                </b:column>
-            </b:row>         
-            
-           
-            <!-- Passe de l'utilisateur -->
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('profile.new_password')} : "  style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="6">
-                    <b:inputSecret  value="#{myAccountBean.passWord1}" style="height: 25px;font-size: 12px;"/>
-                </b:column>
-            </b:row>
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('profile.confirmation')} : "  style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="6">
-                    <b:inputSecret  value="#{myAccountBean.passWord2}"  style="height: 25px;font-size: 12px;" />
-                </b:column>
-                <b:column span="2">
-                    <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
-                                      action="#{myAccountBean.updatePassword()}"
-                                     update="profileForm myAccountForm"/>       
-                </b:column>
-            </b:row> 
-            
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="9">
-                    <p:separator /> 
-                </b:column>
-            </b:row>             
-            
-            <!-- Email -->
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('profile.email')} : "  style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="6">
-                    <b:inputText  value="#{myAccountBean.nodeUser.mail}"  style="height: 25px;font-size: 12px;" />
-                </b:column>
-                <b:column span="2">
-                    <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
-                                      action="#{myAccountBean.updateEmail()}"
-                                     update="profileForm myAccountForm"/>       
-                </b:column>
-            </b:row>
-            
-            <!-- Alertes -->
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="2">
-                    <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : "  style="font-size: 12px;"/>
-                </b:column>
-                <b:column span="1" offset="5">
-                    <p:toggleSwitch value="#{myAccountBean.nodeUser.isAlertMail}" style="font-size: 12px;" /> 
-                </b:column>
-                <b:column span="2">
-                    <b:navCommandLink icon-awesome="fas fa-check-circle" iconSize="lg" style="color: #F7A269;"
-                                      action="#{myAccountBean.updateAlertEmail()}"
-                                     update="profileForm myAccountForm"/>       
-                </b:column>
-            </b:row>    
-            
-            <b:row style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                <b:column span="9">
-                    <p:separator /> 
-                </b:column>
-            </b:row>    
-            
-            <!-- Les rôles existants de l'utilisateur --> 
-            <b:row style="margin-left: 10px; "> 
-                <b:column span="11">
-                    <h:outputText value="#{langueBean.getMsg('profile.list_user_roles')}" style="font-size: 12px;" />
-                </b:column>
-            </b:row>
-            
-            <b:row style="margin-left: 10px; "> 
-                <b:column span="11" rendered="#{!myAccountBean.nodeUser.isSuperAdmin}">
-                    <b:panel>
-                        <p:dataTable id="tabUser" 
-                                     value="#{myAccountBean.allMyRoleProject}" var="allRoleProject"  scrollable="true" resizableColumns="true" scrollHeight="450"
-                             style="font-size: 12px;">
-                            <p:column width="30%" headerText="#{langueBean.getMsg('profile.role')}">
-                                <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
-                            </p:column>
-                            <p:column width="70%" headerText="#{langueBean.getMsg('profile.project')}" >
-                                <h:outputText value="#{allRoleProject.groupName}" style="font-size: 12px;" />
-                            </p:column>                              
-                        </p:dataTable>                            
-                    </b:panel>
-                </b:column>
-                <b:column span="11" rendered="#{myAccountBean.nodeUser.isSuperAdmin}">
-                    <b:panel>
-                        <h:outputText value="SuperAdmin" style="font-size: 12px; color: #C63632" />
-                    </b:panel>
-                </b:column>                 
-            </b:row>            
-            
-            
-            <b:row>
-                <b:column span="8" offset="2" style="font-size: 12px;"> 
-                    <b:messages autoUpdate="true" />
-                </b:column> 
-            </b:row>  
-        </b:panel>
-    </h:form>        
-</ui:fragment>
+    <h:head>
+        <title>Opentheso</title>
+
+        <link href="../resources/img/icon_opentheso2.png" rel="icon" />
+
+        <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
+
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
+
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+    </h:head>
+
+
+    <h:body id="page-top" style="font-size: 12px;">
+
+        <p:idleMonitor timeout="#{connect.timeout}">
+            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
+        </p:idleMonitor>
+
+        <f:metadata>
+            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+        </f:metadata>
+
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+
+        <div id="wrapper" style="height: 100%">
+
+            <ui:include src="../commun/menu.xhtml" />
+
+            <div id="content-wrapper" style="width: 100%">
+
+                <h:form id="containerIndex">
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
+                    </div>
+
+                    <div class="container-fluid">
+
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Profil / Mon compte</h1>
+                        </div>
+
+                        <div class="col-12" style="height: 100%">
+
+                            <!-- Compte d'utilisateur -->
+                            <div class="card shadow mb-4" style="height: 100%;"> 
+                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
+                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">                                        
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-3" style="text-align: right; margin-top: 4px;">
+                                                    <h:outputText value=" #{langueBean.getMsg('profile.user')}" title="#{langueBean.getMsg('profile.tootltip_user')}"
+                                                                  style="font-size: 14px; font-weight: bold;"/> 
+                                                </div>
+
+                                                <div class="col-8">
+                                                    <p:inputText value="#{myAccountBean.nodeUser.name}" title="#{langueBean.getMsg('profile.tootltip_user')}" 
+                                                                 style="width: 100%; height: 100%" />
+                                                </div>
+
+                                                <div class="col-1" style="vertical-align: central; margin-top: 3px">
+                                                    <p:commandLink action="#{myAccountBean.updatePseudo()}" update="containerIndex">
+                                                        <i class="pi pi-check-circle" style="color: #F7A269;" />
+                                                    </p:commandLink> 
+                                                </div>
+                                            </div>
+                                        </div>                                     
+                                    </div>
+                                </div>
+
+                                <!-- Passe de l'utilisateur -->
+                                <div class="card mb-4 py-3 border-left-success" style="margin-top: -30px; vertical-align: central; 
+                                     margin: 30px; margin-top: -10px">
+                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">                                        
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-3" style="text-align: right; margin-top: 4px;">
+                                                    <h:outputText value="#{langueBean.getMsg('profile.new_password')}" style="font-size: 14px; font-weight: bold;"/> 
+                                                </div>
+
+                                                <div class="col-8">
+                                                    <p:inputText value="#{myAccountBean.passWord1}" title="#{langueBean.getMsg('profile.tootltip_user')}" 
+                                                                 style="width: 100%; height: 100%" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-3" style="text-align: right; margin-top: 4px;">
+                                                    <h:outputText value="#{langueBean.getMsg('profile.confirmation')}" style="font-size: 14px; font-weight: bold;"/> 
+                                                </div>
+
+                                                <div class="col-8">
+                                                    <p:inputText value="#{myAccountBean.passWord2}" style="width: 100%; height: 100%" />
+                                                </div>
+
+                                                <div class="col-1" style="vertical-align: central; margin-top: 3px">
+                                                    <p:commandLink action="#{myAccountBean.updatePassword()}" update="containerIndex">
+                                                        <i class="pi pi-check-circle" style="color: #F7A269;" />
+                                                    </p:commandLink> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px; margin-top: -10px">
+                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">                                        
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-3" style="text-align: right; margin-top: 4px;">
+                                                    <h:outputText value="#{langueBean.getMsg('profile.email')}" style="font-size: 14px; font-weight: bold;"/> 
+                                                </div>
+
+                                                <div class="col-8">
+                                                    <p:inputText value="#{myAccountBean.nodeUser.mail}" style="width: 100%; height: 100%" />
+                                                </div>
+
+                                                <div class="col-1" style="vertical-align: central; margin-top: 3px">
+                                                    <p:commandLink action="#{myAccountBean.updateEmail()}" update="containerIndex">
+                                                        <i class="pi pi-check-circle" style="color: #F7A269;" />
+                                                    </p:commandLink> 
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-3" style="text-align: right; margin-top: 7px;">
+                                                    <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')}" style="font-size: 14px; font-weight: bold;"/> 
+                                                </div>
+
+                                                <div class="col-8" style="margin-top: 4px;">
+                                                    <p:toggleSwitch value="#{myAccountBean.nodeUser.isAlertMail}" />
+                                                </div>
+
+                                                <div class="col-1" style="vertical-align: central; margin-top: 3px">
+                                                    <p:commandLink action="#{myAccountBean.updateAlertEmail()}" update="containerIndex">
+                                                        <i class="pi pi-check-circle" style="color: #F7A269;" />
+                                                    </p:commandLink> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Les rôles existants de l'utilisateur -->
+                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px; margin-top: -10px">
+                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">                                        
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="row" style="margin-left: 10px; "> 
+                                                <div class="col-11">
+                                                    <h:outputText value="#{langueBean.getMsg('profile.list_user_roles')}" style="font-size: 12px;" />
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-left: 20px; margin-right: 20px"> 
+                                                <h:panelGroup rendered="#{!myAccountBean.nodeUser.isSuperAdmin}">
+                                                    <div class="col-12">
+                                                        <p:dataTable id="tabUser" value="#{myAccountBean.allMyRoleProject}" var="allRoleProject" 
+                                                                     scrollable="true" resizableColumns="true" scrollHeight="450">
+                                                            <p:column width="30%" headerText="#{langueBean.getMsg('profile.role')}">
+                                                                <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
+                                                            </p:column>
+                                                            <p:column width="70%" headerText="#{langueBean.getMsg('profile.project')}" >
+                                                                <h:outputText value="#{allRoleProject.groupName}" style="font-size: 12px;" />
+                                                            </p:column>                              
+                                                        </p:dataTable>  
+                                                    </div>                          
+                                                </h:panelGroup>
+                                                <h:panelGroup rendered="#{myAccountBean.nodeUser.isSuperAdmin}">
+                                                    <div class="col-12">
+                                                        <h:outputText value="SuperAdmin" style="font-size: 12px; color: #C63632" />
+                                                    </div>    
+                                                </h:panelGroup>             
+                                            </div>
+                                        </div>                                     
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <ui:include src="../commun/footer.xhtml" />
+                </h:form>
+            </div>
+        </div>
+    </h:body>
+</html>
