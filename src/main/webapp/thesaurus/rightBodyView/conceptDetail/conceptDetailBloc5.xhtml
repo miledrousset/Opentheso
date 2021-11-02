@@ -28,26 +28,24 @@
                                                                   conceptView.selectedLang)}"
                                                 action="#{alignmentBean.nextTen(conceptView.selectedLang, selectedTheso.currentIdTheso)}"                                      
                                                 oncomplete="PF('addAlignment').show();" update="idAddAlignment"
-                                                style="font-size: 12px;" />
+                                                icon="fas fa-plus" />
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}" 
-                                                actionListener="#{alignmentManualBean.reset()}"
-                                                oncomplete="PF('addManualAlignment').show();"
-                                                style="font-size: 12px;" />                                      
+                                                actionListener="#{alignmentManualBean.reset()}" oncomplete="PF('addManualAlignment').show();"
+                                                icon="fas fa-pen" update="idAddManualAlignment" />                                      
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_alignment')}" 
-                                                action="#{alignmentManualBean.reset()}"                                      
-                                                oncomplete="PF('updateAlignment').show();"
-                                                style="font-size: 12px;" />
+                                                action="#{alignmentManualBean.reset()}" oncomplete="PF('updateAlignment').show();"
+                                                icon="fas fa-edit"
+                                                disabled="#{conceptView.nodeConcept.nodeAlignments.size() == 0}"/>
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_alignment')}" 
-                                                actionListener="#{alignmentBean.initAlignementByStep(
-                                                                  selectedTheso.currentIdTheso, 
-                                                                  conceptView.nodeConcept.concept.idConcept,
-                                                                  conceptView.selectedLang)}"
+                                                actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso, 
+                                                                  conceptView.nodeConcept.concept.idConcept, conceptView.selectedLang)}"
                                                 action="#{alignmentManualBean.reset()}"                                      
                                                 oncomplete="PF('deleteAlignment').show();"
-                                                style="font-size: 12px;" />                                        
+                                                icon="fas fa-minus"
+                                                disabled="#{conceptView.nodeConcept.nodeAlignments.size() == 0}" />                                        
                                 </p:menuButton>
                             </div>
 

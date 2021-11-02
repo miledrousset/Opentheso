@@ -99,9 +99,8 @@ public class AlignmentManualBean implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptAlignment");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteAlignmentForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }
 
     }
@@ -137,9 +136,8 @@ public class AlignmentManualBean implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptAlignment");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:deleteAlignmentForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }
     
@@ -183,9 +181,8 @@ public class AlignmentManualBean implements Serializable {
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptAlignment");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addManualAlignmentForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
         }
     }    
     

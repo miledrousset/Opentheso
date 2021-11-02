@@ -217,37 +217,6 @@ body .ui-selectonemenu-panel .ui-selectonemenu-items {
     margin-top: 1px;
 }
 
-body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link {
-    padding-top: 4px;
-    padding-bottom: 4px;
-    padding-left: 6px;
-    padding-right: 6px;
-}
-
-body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-menuitem-text {
-    background: #ecf8f1;
-    color: #43B572;
-}
-
-body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link {
-    background: #ecf8f1;
-    color: #43B572;
-}
-
-.ui-menuitem-link .ui-corner-all .ui-state-hover {
-    background: #f47b2a;
-}
-
-body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
-    font-size: 14px;
-}
-
-body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-hover {
-    background: #ecf8f1;
-    color: #43B572;
-}
-
-
 
 
 body .ui-panel .ui-panel-content {
@@ -334,6 +303,40 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
     border-color: #f47b2a;
     background: #f47b2a;
     color: #ffffff;
+}
+
+
+
+/** MENU ITEM**/
+body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-menuitem-text {
+    background: #ecf8f1;
+    color: #43B572;
+}
+
+body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link {
+    background: #ecf8f1;
+    color: #43B572;
+}
+
+.ui-menuitem-link .ui-corner-all .ui-state-hover {
+    background: #f47b2a;
+    color: #43B572;
+}
+
+body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
+    font-size: 14px;
+}
+
+body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-hover {
+    background: #ecf8f1;
+    color: #43B572;
 }
 
 

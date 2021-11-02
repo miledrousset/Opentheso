@@ -5,37 +5,60 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddManualAlignment" header="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}" widgetVar="addManualAlignment" 
-              width="450" showEffect="fade" modal="true" resizable="false">         
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <p:inputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                             label="#{langueBean.getMsg('rightbody.conceptdialog.local_concept')}"
-                             disabled="true" style="color: #43B572; font-size: 12px;"/>
+            <div class="col-5">
+                <p:outputLabel value="Terme : " />
+            </div>
+            <div class="col-7">
+                <p:outputLabel value="#{conceptView.nodeConcept.term.lexical_value}" />
             </div>
         </div>
 
         <div class="row" style="margin-top: 5px">
-            <div class="col-12" style="margin-top: 3px">
-                <p:selectOneMenu id="relationType" value="#{alignmentManualBean.manualAlignmentType}"  
-                                 label="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')}"
-                                 style="font-size: 12px; background: white; border-color: #43B572">
+            <div class="col-5">
+                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')} : " />
+            </div>
+            <div class="col-7">
+                <p:selectOneMenu value="#{alignmentManualBean.manualAlignmentType}"
+                                 style="font-size: 12px; background: white; border-color: #43B572; width: 100%">
                     <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
                                    itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
                 </p:selectOneMenu>
+            </div>
+        </div>
+        
+        <div class="row" style="margin-top: 5px">
+            <div class="col-5">
+                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')} : " />
+            </div>
+            <div class="col-7">
+                <p:inputText value="#{alignmentManualBean.manualAlignmentUri}" 
+                             style="color: #43B572; font-size: 12px; width: 100%" />
+            </div>
+        </div>
+        
+        <div class="row" style="margin-top: 5px">
+            <div class="col-5">
+                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.source_name')} : " />
+            </div>
+            <div class="col-7">
+                <p:inputText value="#{alignmentManualBean.manualAlignmentSource}" 
+                             style="color: #43B572; font-size: 12px; width: 100%" />
             </div>
         </div>
 
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton value="Fermer" class="btn" style="background-color: transparent; color: #000"
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('addManualAlignment').hide();" update="idAddManualAlignment"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-success" oncomplete="PF('addManualAlignment').hide();"
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('addManualAlignment').hide();"
                                  actionListener="#{alignmentManualBean.addManualAlignement()}" style="color: white;"/>
             </div>
-        </f:facet>
+        </f:facet>        
     </p:dialog> 
 </ui:fragment>
