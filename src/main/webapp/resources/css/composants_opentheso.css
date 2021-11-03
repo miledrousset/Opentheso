@@ -68,15 +68,17 @@ body .ui-inputfield {
     font-size: 15px;
     border-radius: 4px;
     appearance: none;
+    border-color: #43B572;
 }
 
-body .ui-inputfiled.ui-state-hover {
+body .ui-inputfield.ui-state-hover {
     border-color: #f47b2a;
+}
+s
+body .ui-inputfield.ui-state-focus {
+    border-color: #43B572;
 }
 
-.ui-inputfiled.ui-state-hover{
-    border-color: #f47b2a;
-}
 
 /** Autocomplete **/
 .ui-autocomplete-input .ui-inputfield .ui-widget .ui-state-default .ui-corner-all .ui-state-hover {

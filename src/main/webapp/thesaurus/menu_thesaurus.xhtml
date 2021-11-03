@@ -5,7 +5,6 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
 
-    <!-- MENU -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" >
 
         <h:panelGroup id="menuBar">
@@ -16,10 +15,12 @@
 
             <hr class="sidebar-divider my-0"/>
 
-            <li class="nav-item active">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span style="font-size: 12px;">Thésaurus</span></a>
+            <li class="nav-item">
+                <span class="nav-link">
+                    <i class="fas fa-fw fa-tachometer-alt" />
+                    <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
+                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;">Thésaurus</p:commandLink>
+                </span>
             </li>
 
             <h:panelGroup rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" > 
@@ -86,9 +87,9 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                            <a class="collapse-item" href="../setting/preferenceV2.xhtml"  style="font-size: 12px;">Préférence</a>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToPreferencePage()}" style="font-size: 12px;">Préférence</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToIdetifiantPage()}" style="font-size: 12px;">Identifiant</p:commandLink>
-                            <a class="collapse-item" href="utilities-animation.html" style="font-size: 12px;">Corpus</a>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCorpusPage()}" style="font-size: 12px;">Corpus</p:commandLink>
                         </div>
                     </div>
                 </li>
@@ -106,6 +107,6 @@
                 <img src="resources/img/logo1.png" style="width:80px;" />
             </div>
         </div>
+
     </ul>
-    <!-- FIN MENU -->
 </ui:composition>
