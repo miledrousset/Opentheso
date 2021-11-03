@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Opentheso</title>
+
+        <link href="../resources/images/icon_opentheso2.png" rel="icon" />
+
+        <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
+
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
+
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+    </h:head>
+
+
+    <h:body id="page-top" style="font-size: 12px;">
+
+        <p:idleMonitor timeout="#{connect.timeout}">
+            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
+        </p:idleMonitor>
+
+        <f:metadata>
+            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+        </f:metadata>
+
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+
+        <div id="wrapper" style="height: 100%">
+
+            <ui:include src="../commun/menu.xhtml" />
+
+            <div id="content-wrapper" style="width: 100%">
+
+                <h:form id="containerIndex">
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
+                    </div>
+
+                    <div class="container-fluid">
+
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Boite à outils / Edition</h1>
+                        </div>
+
+                        <div class="col-12" style="height: 100%">
+                            <div class="card shadow mb-4" style="height: 100%;">
+
+                                <p:panel rendered="#{viewEditionBean.isViewListTheso}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+                                    <ui:include src="edition/viewListTheso.xhtml" />
+                                </p:panel>
+                                
+                                <p:panel rendered="#{viewEditionBean.isViewImportSkos}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+                                    <ui:include src="edition/viewImportSkos.xhtml" />
+                                </p:panel>
+                                
+                                <p:panel rendered="#{viewEditionBean.isViewImportCsv}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+                                    <ui:include src="edition/viewImportCsv.xhtml" />
+                                </p:panel>  
+                                
+                                <p:panel rendered="#{viewEditionBean.isViewNewTheso}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+                                    <ui:include src="edition/viewNewTheso.xhtml" />
+                                </p:panel>  
+                                
+                                <p:panel rendered="#{viewEditionBean.isViewModifyTheso}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+                                    <ui:include src="edition/viewModifyTheso.xhtml" />
+                                </p:panel>
+                                
+                                <p:panel rendered="#{viewEditionBean.isExportView()}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+                                    <ui:include src="../toolbox/edition/exportThesaurus.xhtml" />
+                                </p:panel>
+
+                            </div>
+                        </div>
+                    </div>
+                    <ui:include src="../commun/footer.xhtml" />
+                </h:form>
+            </div>
+        </div>
+    </h:body>
+</html>

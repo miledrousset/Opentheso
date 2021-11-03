@@ -60,7 +60,7 @@ public class CorpusBean implements Serializable {
         nodeCorpuses = corpusHelper.getAllCorpus(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso());
-        nodeCorpusForEdit = null;
+        nodeCorpusForEdit = new NodeCorpus();
         oldName = null;
     }
 
@@ -164,7 +164,7 @@ public class CorpusBean implements Serializable {
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeCorpusForEdit)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification de corpus !");
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de création du corpus !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
@@ -172,7 +172,7 @@ public class CorpusBean implements Serializable {
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus modifié avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus crée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().executeScript("PF('newCorpus').hide();");
         init();
@@ -195,7 +195,7 @@ public class CorpusBean implements Serializable {
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeCorpusForEdit.getCorpusName())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification de corpus !");
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression de corpus !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
@@ -203,7 +203,7 @@ public class CorpusBean implements Serializable {
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus modifié avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus suprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().executeScript("PF('newCorpus').hide();");
         init();

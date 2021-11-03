@@ -37,7 +37,7 @@ public class CorpusHelper {
                         nodeCorpus.setUriCount(resultSet.getString("uri_count"));
                         nodeCorpus.setUriLink(resultSet.getString("uri_link"));
                         nodeCorpus.setActive(resultSet.getBoolean("active"));
-                        nodeCorpus.setIsOnlyUriLink(resultSet.getBoolean("only_uri_link"));                        
+                        nodeCorpus.setIsOnlyUriLink(resultSet.getBoolean("only_uri_link"));
                         nodeCorpuses.add(nodeCorpus);
                     }
                 }
@@ -111,6 +111,8 @@ public class CorpusHelper {
                         + "','" + nodeCorpus.getUriLink() + "'," + nodeCorpus.isActive()
                         + "," + nodeCorpus.isIsOnlyUriLink() + ")");
                 status = true;
+            } catch (SQLException sqle) {
+                log.error("Error while insert new Corpus : " + nodeCorpus.getCorpusName(), sqle);
             }
         } catch (SQLException sqle) {
             log.error("Error while insert new Corpus : " + nodeCorpus.getCorpusName(), sqle);

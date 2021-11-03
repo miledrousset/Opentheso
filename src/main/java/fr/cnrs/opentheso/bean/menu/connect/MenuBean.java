@@ -5,6 +5,8 @@ import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 import fr.cnrs.opentheso.bean.setting.CorpusBean;
 import fr.cnrs.opentheso.bean.setting.PreferenceBean;
+import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
+import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -32,6 +34,12 @@ public class MenuBean implements Serializable {
 
     @Inject 
     private PreferenceBean preferenceBean;
+    
+    @Inject
+    private ViewEditionBean viewEditionBean;
+    
+    @Inject
+    private AtelierThesBean atelierThesBean;
     
     
     // LOGIN Page
@@ -87,6 +95,19 @@ public class MenuBean implements Serializable {
         corpusBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/corpus.xhtml");
+    }
+    
+    ///Boite à outils
+    public void redirectToEditionPage() throws IOException {
+        viewEditionBean.init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/toolbox/edition.xhtml");
+    }
+    
+    public void redirectToAtelierPage() throws IOException {
+        atelierThesBean.init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/toolbox/atelier.xhtml");
     }
 
     // LOGIN Page

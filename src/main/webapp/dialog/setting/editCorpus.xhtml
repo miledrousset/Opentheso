@@ -8,8 +8,11 @@
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
-            <div class="col-12" >
-                <p:inputText label="Nom" value="#{corpusBean.nodeCorpusForEdit.corpusName}" style="width: 100%"/>
+            <div class="col-5" >
+                <p:outputLabel value="Nom" style="font-size: 12px"/>
+            </div>
+            <div class="col-7" >
+                <p:inputText value="#{corpusBean.nodeCorpusForEdit.corpusName}" style="width: 100%"/>
             </div>                    
         </div>
 

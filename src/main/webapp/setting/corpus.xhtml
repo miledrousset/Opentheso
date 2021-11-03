@@ -69,8 +69,7 @@
                                         <div class="col-12" style="text-align: right; margin-top: 6px">
                                             <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}" 
                                                            actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
-                                                           title="Nouveau Corpus"
-                                                           update="idNewCorpus" oncomplete="PF('newCorpus').show();" class="btn btn-primary">
+                                                           title="Nouveau Corpus" update="idNewCorpus" oncomplete="PF('newCorpus').show();" class="btn btn-primary">
                                                 <p:tooltip value="Ajouter un nouveau corpus" showDelay="1000" />
                                             </p:commandButton>
                                         </div>

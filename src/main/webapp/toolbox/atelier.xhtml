@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Opentheso</title>
+
+        <link href="../resources/images/icon_opentheso2.png" rel="icon" />
+
+        <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
+
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
+
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+    </h:head>
+
+
+    <h:body id="page-top" style="font-size: 12px;">
+
+        <p:idleMonitor timeout="#{connect.timeout}">
+            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
+        </p:idleMonitor>
+
+        <f:metadata>
+            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+        </f:metadata>
+
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+
+        <div id="wrapper" style="height: 100%">
+
+            <ui:include src="../commun/menu.xhtml" />
+
+            <div id="content-wrapper" style="width: 100%">
+
+                <h:form id="containerIndex">
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
+                    </div>
+
+                    <div class="container-fluid">
+
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Boite à outils / Edition</h1>
+                        </div>
+
+                        <div class="col-12" style="height: 100%">
+                            <div class="card shadow mb-4" style="height: 100%;">
+
+                                <p:wizard nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}" >
+
+                                    <p:tab id="actions" title="Choix de l'action" titleStyleClass="tabCostum">
+
+                                        <p:panel styleClass="redColoredPanel" >
+                                            <p:outputLabel value="Veuillez choisir l'action que vous voulez faire : "/>
+                                            <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
+                                                <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
+                                                <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
+                                            </p:selectOneRadio>
+                                        </p:panel>
+                                    </p:tab>
+
+                                    <p:tab id="entre" title="Entrées" titleStyleClass="tabCostum">
+
+                                        <p:panel header="Les données de comparaison" styleClass="redColoredPanel">
+                                            <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                                                <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px" />
+                                                <p:selectOneMenu value="#{atelierThesBean.choiceDelimiter}" style="font-size: 12px; background: white; border-color: #43B572">
+                                                    <f:selectItem itemLabel="," itemValue="0" />
+                                                    <f:selectItem itemLabel=";" itemValue="1" />
+                                                    <f:selectItem itemLabel="\t" itemValue="2" />
+                                                    <p:ajax event="change" listener="#{atelierThesBean.actionChoice()}" />
+                                                </p:selectOneMenu>
+                                            </h:panelGrid>
+
+                                            <p:fileUpload listener="#{atelierThesBean.loadFileCsv}" label="parcourir" mode="advanced" auto="true"
+                                                          update="containerIndex" allowTypes="/(\.|\/)(csv|txt)$/" style="font-size: 12px;" />
+
+                                            <p:panel header="Données chargées" style="margin-top: 20px">
+
+                                                <h:outputText value="Nombre des données récupérées : #{atelierThesBean.values.size()}" />
+
+                                                <h:form style="margin-top: 15px">
+
+                                                    <p:scrollPanel mode="native" style="width: 100%; max-height: 200px; border-width: 0">
+
+                                                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+
+                                                        <h:panelGroup rendered="#{atelierThesBean.values.size() == 0}" >
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <h:outputText  value="Aucune donnée pour le moment ..." style="font-size: 12px; color: grey; font-style: italic" />
+                                                                </div>
+                                                            </div>
+                                                        </h:panelGroup>
+
+                                                        <div class="row">
+                                                            <ui:repeat var="title" value="#{atelierThesBean.titles}">
+                                                                <div span="#{atelierThesBean.spanTable}">
+                                                                    <h:outputText value="#{title}"/>
+                                                                </div>
+                                                            </ui:repeat>
+                                                        </div>
+
+                                                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px" 
+                                                                     rendered="#{atelierThesBean.values.size() > 0}"/>
+
+                                                        <ui:repeat var="ligne" value="#{atelierThesBean.values}">
+                                                            <div class="row">
+                                                                <ui:repeat var="value" value="#{ligne}">
+                                                                    <div span="#{atelierThesBean.spanTable}">
+                                                                        <h:outputText value="#{value}"/>
+                                                                    </div>
+                                                                </ui:repeat>
+                                                            </div>
+                                                        </ui:repeat>
+
+                                                        <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+
+                                                    </p:scrollPanel>
+
+                                                </h:form>
+
+                                                <h:panelGrid columns="2" style="margin-top: 15px" cellpadding="5" rendered="#{atelierThesBean.titles.size() > 0}">
+                                                    <p:outputLabel for="@next" value="Colone à comparer :" style="margin-right: 10px" />
+                                                    <p:selectOneMenu value="#{atelierThesBean.selectedColumn}" style="font-size: 12px; background: white; border-color: #43B572">
+                                                        <f:selectItems value="#{atelierThesBean.titles}" var="titre"
+                                                                       itemLabel="#{titre}" itemValue="#{titre}"/>
+                                                    </p:selectOneMenu> 
+                                                </h:panelGrid>
+
+                                            </p:panel>
+
+                                        </p:panel>
+
+                                    </p:tab>
+
+                                    <p:tab id="thesaurus" title="Les thésaurus" titleStyleClass="tabCostum">
+                                        <p:panel header="Liste des thésaurus">
+                                            <h:outputText value="Veuillez selectionez un thésaurus : " />
+                                            <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" 
+                                                         selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-top: 10px">
+                                                <p:column selectionMode="single" style="width: 35px; text-align: center" />
+                                                <p:column headerText="Id">
+                                                    <h:outputText value="#{thes.id}" />
+                                                </p:column>
+                                                <p:column headerText="Valeur">
+                                                    <h:outputText value="#{thes.value}" />
+                                                </p:column>
+                                                <p:column headerText="Statut">
+                                                    <h:outputText value="#{thes.status}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </p:tab>
+
+                                    <p:tab id="resultat" title="Résultat" titleStyleClass="tabCostum">
+
+                                        <p:panel header="Résultat">
+
+                                            <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemble des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
+
+                                            <br/>
+
+                                            <p:commandButton value="Lancer la comparaison" icon="fa-search"
+                                                             actionListener="#{atelierThesBean.comparer()}"
+                                                             update="containerIndex" onclick="PF('bui').show()" style="margin-top: 10px"/>
+
+                                            <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px; border-width: 0">
+                                                <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
+                                                             var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
+                                                    <p:column headerText="Id Origine" style="background-color: #ebedf0;">
+                                                        <h:outputText value="#{resultat.idOrigine}" />
+                                                    </p:column>
+                                                    <p:column headerText="PrefLabel Origine" style="background-color: #ebedf0;">
+                                                        <h:outputText value="#{resultat.prefLabelOrigine}" />
+                                                    </p:column>
+                                                    <p:column headerText="Id #{atelierThesBean.thesoSelected.value}">
+                                                        <h:outputText value="#{resultat.idConcept}" />
+                                                    </p:column>
+                                                    <p:column headerText="PrefLabel #{atelierThesBean.thesoSelected.value}">
+                                                        <h:outputText value="#{resultat.prefLabelConcept}" />
+                                                    </p:column>
+                                                    <p:column headerText="AltLabel">
+                                                        <h:outputText value="#{resultat.altLabelConcept}" />
+                                                    </p:column>
+                                                    <p:column headerText="Terme Génerique">
+                                                        <h:outputText value="#{resultat.termGenerique}" />
+                                                    </p:column>
+                                                    <p:column headerText="Définition">
+                                                        <h:outputText value="#{resultat.definition}" />
+                                                    </p:column>
+                                                    <p:column headerText="URI Ark">
+                                                        <h:outputText value="#{resultat.uriArk}" />
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </p:scrollPanel>
+
+                                            <div class="row" style="margin-top: 15px; margin-right: 0px" rendered="#{atelierThesBean.result.size() > 0}">
+                                                <p:commandButton value="Export Résultat" icon="ui-icon-valider" ajax="false"
+                                                                 style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
+                                                                 onclick="PF('pbAjax').start();" update="containerIndex" >
+                                                    <p:fileDownload value="#{atelierThesBean.exportResultat()}" />
+                                                </p:commandButton>
+                                            </div>
+                                        </p:panel>
+
+                                    </p:tab>
+
+                                </p:wizard>
+
+                                <p:blockUI block="containerIndex" widgetVar="bui">
+                                    Chargement ...<br />
+                                    <p:progressBar style="height:6px" mode="indeterminate"/>
+                                </p:blockUI>
+
+                            </div>
+                        </div>
+                    </div>
+                    <ui:include src="../commun/footer.xhtml" />
+                </h:form>
+            </div>
+        </div>
+    </h:body>
+</html>
