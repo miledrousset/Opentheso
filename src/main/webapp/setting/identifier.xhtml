@@ -1,247 +1,320 @@
-<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-             xmlns:h="http://java.sun.com/jsf/html"  
-             xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
-    <h:form id="identifierForm">
-        <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+    <h:head>
+        <title>Opentheso</title>
 
-            <!-- Ark -->
-            <b:row>
-                <b:column span="8" offset="1">
-                    <b:panel contentStyle="font-size: 12px" collapsed="true" >  
-                        <f:facet name="heading">
-                            <h:outputText value="Serveur Ark " style="font-size: 12px; color: #666666" />
-                            <b:badge rendered="#{preferenceBean.nodePreference.useArk}" 
-                                     style="margin-left:10px; background-color:#5cb85c;" value="On"  />
-                            <b:badge rendered="#{!preferenceBean.nodePreference.useArk}"
-                                     style="margin-left:10px; background-color:#666666; font-size: 12px; width: 40px;" value="Off"  />                
-                        </f:facet>                
+        <link href="../resources/img/icon_opentheso2.png" rel="icon" />
 
-                        <!-- Activer / désactiver Ark -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="5">
-                                <h:outputText value="Désactiver/Activer le serveur Ark" />
-                            </b:column>
-                            <b:column span="1" offset="4">
-                                <p:toggleSwitch value="#{preferenceBean.nodePreference.useArk}" style="font-size: 12px;" />                    
-                            </b:column>
-                        </b:row>              
-                        <p:spacer/>    
+        <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
 
-                        <!-- Serveur Ark -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Serveur Ark" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="height: 25px;font-size: 12px;"
-                                             tooltip="L'adresse du serveur distant qui permet de générer les identifiants ARK " tooltip-delay-show="500"/>
-                            </b:column>                
-                        </b:row>
-                        
-                        <!-- Uri Ark -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Uri Ark" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.uriArk}" style="height: 25px;font-size: 12px;"
-                                             tooltip="L'URI ARK qui doit précéder chaque identifiant, cette URI est interpétée par le serveur ARK ci-dessus " tooltip-delay-show="500"/>
-                            </b:column>                
-                        </b:row>
-                        
-                        <!-- Naan Ark -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="votre Naan" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.idNaan}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>  
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
 
-                        <!-- Prefixe Ark -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Préfixe Ark" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.prefixArk}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>   
-
-                        <!-- User Ark -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="User Ark" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.userArk}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>   
-
-                        <!-- pass Ark -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Passe Ark" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputSecret value="#{preferenceBean.nodePreference.passArk}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>
-                        <p:spacer/>
-                        
-                        <!-- use generateHAndle -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="5">
-                                <h:outputText value="Générer handle avec Ark" />
-                            </b:column>
-                            <b:column span="1" offset="4">
-                                <p:toggleSwitch value="#{preferenceBean.nodePreference.generateHandle}" style="font-size: 12px;" />                    
-                            </b:column>                            
-                        </b:row>
-                        <p:spacer/>                        
-
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3" offset="8"> 
-                                <b:commandButton iconAwesome="fas fa-save"  class="btn btn-success"
-                                                 value="Enregistrer" style="width: 100%; font-size: 12px;"
-                                                 tooltip="Enregistrer les modifications"  tooltip-delay-show="1000"
-                                                 action="#{preferenceBean.savePreference()}"
-                                                 update="settingForm identifierForm messageIndex">
-                                </b:commandButton>
-                            </b:column>
-                        </b:row>
-
-                        <b:row>
-                            <b:column span="8" offset="2" style="font-size: 12px;"> 
-                                <b:messages autoUpdate="true" />
-                            </b:column> 
-                        </b:row>  
-                    </b:panel>                     
-                </b:column>
-            </b:row>
-
-            
-            <!-- Handle -->
-            <b:row>
-                <b:column span="8" offset="1">
-                    <b:panel contentStyle="font-size: 12px" collapsed="true" >  
-                        <f:facet name="heading">
-                            <h:outputText value="Serveur Handle " style="font-size: 12px; color: #666666" />
-                            <b:badge rendered="#{preferenceBean.nodePreference.useHandle}" 
-                                     style="margin-left:10px; background-color:#5cb85c;" value="On"  />
-                            <b:badge rendered="#{!preferenceBean.nodePreference.useHandle}"
-                                     style="margin-left:10px; background-color:#666666; font-size: 12px; width: 40px;" value="Off"  />                
-                        </f:facet>                
-
-                        <!-- Activer / désactiver Handle -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="6">
-                                <h:outputText value="Désactiver/Activer le serveur Handle" />
-                            </b:column>
-                            <b:column span="1" offset="3">
-                                <p:toggleSwitch value="#{preferenceBean.nodePreference.useHandle}" style="font-size: 12px;" />                    
-                            </b:column>
-                        </b:row>              
-                        <p:spacer/>    
-
-                        <!-- Serveur Handle -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Serveur Handle" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.urlApiHandle}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>
-
-                        <!-- Prefixe Handle -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Préfixe Handle" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.prefixIdHandle}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>  
-
-                        <!-- Prefixe privé -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Préfixe privé" title="Le préfixe à ajouter avant chaque identifiant"/>
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.privatePrefixHandle}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>   
-
-                        <!-- User Handle -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="User Handle" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.userHandle}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>   
-
-                        <!-- pass Handle -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Passe Handle" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputSecret value="#{preferenceBean.nodePreference.passHandle}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>
-                        
-                        <!-- Path Clé Handle -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Chemin clé Handle" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.pathKeyHandle}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>   
-
-                        <!-- Path certificat Handle -->
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3">
-                                <h:outputText value="Chemin certificat Handle" />
-                            </b:column>
-                            <b:column span="8">
-                                <b:inputText value="#{preferenceBean.nodePreference.pathCertHandle}" style="height: 25px;font-size: 12px;"/>
-                            </b:column>                
-                        </b:row>                        
-                        <p:spacer/>
-
-                        <b:row style="margin-left: 30px; font-size: 12px;">
-                            <b:column span="3" offset="8"> 
-                                <b:commandButton iconAwesome="fas fa-save"  class="btn btn-success"
-                                                 value="Enregistrer" style="width: 100%; font-size: 12px;"
-                                                 tooltip="Enregistrer les modifications"  tooltip-delay-show="1000"
-                                                 action="#{preferenceBean.savePreference()}"
-                                                 update="settingForm identifierForm messageIndex">
-                                </b:commandButton>
-                            </b:column>
-                        </b:row>
-
-                        <b:row>
-                            <b:column span="8" offset="2" style="font-size: 12px;"> 
-                                <b:messages autoUpdate="true" />
-                            </b:column> 
-                        </b:row>  
-                    </b:panel>                     
-                </b:column>
-            </b:row>            
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+    </h:head>
 
 
+    <h:body id="page-top" style="font-size: 12px;">
 
-        </b:panel>
-    </h:form>        
-</ui:fragment>
+        <p:idleMonitor timeout="#{connect.timeout}">
+            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
+        </p:idleMonitor>
+
+        <f:metadata>
+            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+        </f:metadata>
+
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+
+        <div id="wrapper" style="height: 100%">
+
+            <ui:include src="../commun/menu.xhtml" />
+
+            <div id="content-wrapper" style="width: 100%">
+
+                <h:form id="containerIndex">
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
+                    </div>
+
+                    <div class="container-fluid">
+
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Paramètres / Identifiant</h1>
+                        </div>
+
+                        <div class="col-12" style="height: 100%">
+
+                            <!-- Ark -->
+                            <div class="card shadow mb-4" style="height: 100%; "> 
+                                <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
+                                    <p:panel style="border-color: transparent">
+
+                                        <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
+                                            <div class="col-6" style="padding-top: 3px">
+                                                <h:outputText value="Serveur Ark" style="font-size: 14px; font-weight: bold;; color: #FFF !important;" />
+                                            </div>
+                                            <div class="col-6" style="text-align: right; padding-top: 3px">
+                                                <p:badge rendered="#{preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #f47b2a" value="ON"  />                                                
+                                                <p:badge rendered="#{!preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #f47b2a" value="OFF"  /> 
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group" >
+                                            <!-- Activer / désactiver Ark -->                                      
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Désactiver/Activer le serveur Ark" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputSwitch value="#{preferenceBean.nodePreference.useArk}" style="color: #f47b2a" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Serveur Ark -->                                     
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Serveur Ark" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="width: 100%;font-size: 12px;">
+                                                            <p:tooltip value="L'adresse du serveur distant qui permet de générer les identifiants ARK" showDelay="500" />
+                                                        </p:inputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Uri Ark -->                                    
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Uri Ark" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.uriArk}" style="width: 100%; font-size: 12px;">
+                                                            <p:tooltip value="L'URI ARK qui doit précéder chaque identifiant, cette URI est interpétée par le serveur ARK ci-dessus" showDelay="500" />
+                                                        </p:inputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Naan Ark -->                                    
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Votre Naan" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.idNaan}" style="width: 100%; font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Prefixe Ark -->                                    
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Préfixe Ark" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixArk}" style="width: 100%; font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- User Ark -->                                   
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="User Ark" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.userArk}" style="width: 100%; font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- pass Ark -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Passe Ark" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:password value="#{preferenceBean.nodePreference.passArk}" style="width: 100%; font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- use generateHAndle -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Générer handle avec Ark" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.generateHandle}" style="font-size: 12px;" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- use generateHAndle -->
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-11" style="text-align: right; margin-top: 2px;">
+                                                    <p:commandButton class="btn btn-primary" title="Enregistrer" style="width: 150px; font-size: 12px;"
+                                                                     actionListener="#{preferenceBean.savePreference()}" update="containerIndex messageIndex">
+                                                        <p:tooltip value="Enregistrer les modifications" showDelay="500" />
+                                                    </p:commandButton>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4" style="height: 100%;"> 
+                                <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
+                                    <p:panel style="border-color: transparent">
+                                        <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
+                                            <div class="col-6" style="padding-top: 3px">
+                                                <h:outputText value="Serveur Handle " style="font-size: 14px; font-weight: bold;; color: #FFF !important;" />
+                                            </div>
+                                            <div class="col-6" style="text-align: right; padding-top: 3px">
+                                                <p:badge rendered="#{preferenceBean.nodePreference.useArk}" style="background-color:#FFF; color: #f47b2a" value="ON"  />                                               
+                                                <p:badge rendered="#{!preferenceBean.nodePreference.useArk}" style="background-color:#FFF; color: #f47b2a" value="OFF"  /> 
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group" style="margin-bottom: -10px">
+
+                                            <!-- Activer / désactiver Handle -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Désactiver/Activer le serveur Handle" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8"> 
+                                                        <p:inputSwitch value="#{preferenceBean.nodePreference.useHandle}" style="color: #f47b2a" onLabel="OUI" offLabel="NON" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Serveur Handle -->                                    
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Serveur Handle" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.urlApiHandle}" style="width: 100%;font-size: 12px;" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Prefixe Handle -->                                 
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Préfixe Handle" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixIdHandle}" style="width: 100%; font-size: 12px;" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Prefixe privé -->                                
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Préfixe privé" title="Le préfixe à ajouter avant chaque identifiant" 
+                                                                      style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.privatePrefixHandle}" style="width: 100%; font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- User Handle -->                                
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="User Handle" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.userHandle}" style="width: 100%; font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- pass Handle -->                                  
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Passe Handle" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:password value="#{preferenceBean.nodePreference.passHandle}" style="width: 100%; font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Path Clé Handle -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Chemin clé Handle" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.pathKeyHandle}" style="width: 100%; font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Path certificat Handle -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Chemin certificat Handle" style="font-size: 14px; font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:inputText value="#{preferenceBean.nodePreference.pathCertHandle}" style="width: 100%; font-size: 12px;" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- use generateHAndle -->
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-11" style="text-align: right; margin-top: 2px;">
+                                                    <p:commandButton class="btn btn-primary" style="width: 150px; font-size: 12px;"
+                                                                     title="Enregistrer" actionListener="#{preferenceBean.savePreference()}"
+                                                                     update="containerIndex messageIndex">
+                                                        <p:tooltip value="Enregistrer les modifications" showDelay="500" />
+                                                    </p:commandButton>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <ui:include src="../commun/footer.xhtml" />
+                </h:form>
+            </div>
+        </div>
+    </h:body>
+</html>

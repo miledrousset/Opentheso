@@ -1,77 +1,75 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
+
     <p:dialog id="idNewCorpus" header="Ajouter un corpus" widgetVar="newCorpus" 
               modal="true" resizable="true" position="top" width="550" style="margin-top: 50px" >         
 
-        <h:form id="newCorpusForm">           
-            <b:row >
-                <b:column span="12" >
-                    <b:inputText label="Nom" value="#{corpusBean.nodeCorpusForEdit.corpusName}" style="font-size: 12px; height: 28px;"/>
-                </b:column>                    
-            </b:row>
-            <b:row >
-                <b:column span="12" >
-                    <!-- Choix d'un lien vers un corpus par URL uniquement sans récupération du compteur -->
-                    <b:row >
-                        <b:column span="10" >
-                            <h:outputText value="Activer uniquement un lien vers le corpus sans compteur off/On" style="font-size: 12px;"/>
-                        </b:column>
-                        <b:column span="1">
-                            <p:toggleSwitch label="Off/On" id="toggleOnlyLink" value="#{corpusBean.nodeCorpusForEdit.isOnlyUriLink}" style="font-size: 12px">
-                                <p:ajax  update="uriCount"/>
-                            </p:toggleSwitch>
-                        </b:column>                    
-                    </b:row>
-                </b:column>
-            </b:row>              
-            
-            
-            <b:row id="uriCount" contentDisabled="#{corpusBean.nodeCorpusForEdit.isOnlyUriLink}">
-                <b:column span="12" >
-                    <b:inputText label="Uri pour le count" value="#{corpusBean.nodeCorpusForEdit.uriCount}" style="font-size: 12px; height: 28px;"
-                                 tooltip="Valeur non obligatoire !!! Mettez (##id##) pour remplacer par l'id du concept ou (##value##) pour remplacer par le label"
-                                 tooltipDelayShow="500"/>
-                </b:column>
-            </b:row>
-            <b:row >
-                <b:column span="12" >
-                    <b:inputText label="Uri pour le lien" value="#{corpusBean.nodeCorpusForEdit.uriLink}" style="font-size: 12px; height: 28px;"
-                                 tooltip="Mettez (##id##) pour remplacer par l'id du concept ou (##value##) pour remplacer par le label"
-                                 tooltipDelayShow="500"/>
-                </b:column>
-            </b:row>    
-            <b:row >
-                <b:column span="12" >
-                    <!-- Changement de status On/Off -->
-                    <b:row >
-                        <b:column span="10" >
-                            <h:outputText value="Pour activer ou désactiver ce corpus Off/On" style="font-size: 12px;"/>
-                        </b:column>
-                        <b:column span="1">
-                            <p:toggleSwitch label="Off/On" id="toggleThesoStatus" value="#{corpusBean.nodeCorpusForEdit.active}" style="font-size: 12px"/>
-                        </b:column>                    
-                    </b:row>
-                </b:column>
-            </b:row>
-            
-            <b:row >
-                <b:column span="10" offset="1" >
-                    <b:messages autoUpdate="true"/>
-                </b:column>
-            </b:row>                
+        <div class="row">
+            <div class="col-5" >
+                <p:outputLabel value="Nom" style="font-size: 12px;"/>
+            </div>
+            <div class="col-7" >
+                <p:inputText value="#{corpusBean.nodeCorpusForEdit.corpusName}" style="width: 100%"/>
+            </div>                
+        </div>
 
-            <b:row style="margin-top:  20px;">
-                <b:column span="6" offset="3" >
-                    <b:commandButton value="#{langueBean.getMsg('btnAdd')}" update="newCorpusForm"
-                                     class="btn btn-primary"
-                                     action="#{corpusBean.addNewCorpus()}" 
-                                     style="width:100%; font-size: 12px;
-                                     color: white; background: #43B572;"/>
-                </b:column>
-            </b:row>    
-        </h:form>
+        <div class="row" style="margin-top: 5px">
+            <!-- Choix d'un lien vers un corpus par URL uniquement sans récupération du compteur -->
+            <div class="col-10" >
+                <h:outputText value="Activer uniquement un lien vers le corpus sans compteur off/On" style="font-size: 12px;"/>
+            </div>
+            <div class="col-1">
+                <p:toggleSwitch label="Off/On" value="#{corpusBean.nodeCorpusForEdit.isOnlyUriLink}" style="font-size: 12px">
+                    <p:ajax update="idNewCorpus"/>
+                </p:toggleSwitch>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 5px" contentDisabled="#{corpusBean.nodeCorpusForEdit.isOnlyUriLink}">
+            <div class="col-5" >
+                <p:outputLabel value="Uri pour le count" style="font-size: 12px;"/>
+            </div>
+            <div class="col-7" >
+                <p:inputText label="" value="#{corpusBean.nodeCorpusForEdit.uriCount}" style="width: 100%">
+                    <p:tooltip value="Valeur non obligatoire !!! Mettez (##id##) pour remplacer par l'id du concept ou (##value##) pour remplacer par le label" showDelay="500" />
+                </p:inputText>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 5px" contentDisabled="#{corpusBean.nodeCorpusForEdit.isOnlyUriLink}">
+            <div class="col-5" >
+                <p:outputLabel value="Uri pour le lien" style="font-size: 12px;"/>
+            </div>
+            <div class="col-7" >
+                <p:inputText value="#{corpusBean.nodeCorpusForEdit.uriLink}" style="width: 100%">
+                    <p:tooltip value="Mettez (##id##) pour remplacer par l'id du concept ou (##value##) pour remplacer par le label" showDelay="500" />
+                </p:inputText>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 5px">
+            <div class="col-10" >
+                <h:outputText value="Pour activer ou désactiver ce corpus Off/On" style="font-size: 12px;"/>
+            </div>
+            <div class="col-1">
+                <p:toggleSwitch label="Off/On" value="#{corpusBean.nodeCorpusForEdit.active}" style="font-size: 12px"/>
+            </div>
+        </div> 
+        
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('newCorpus').hide();" update="idNewCorpus"/>
+                
+                <p:commandButton title="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('newCorpus').hide();"
+                                 actionListener="#{corpusBean.addNewCorpus()}" />
+            </div>                    
+        </f:facet>
+
     </p:dialog>  
 </ui:fragment>

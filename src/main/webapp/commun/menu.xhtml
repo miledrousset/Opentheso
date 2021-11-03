@@ -87,9 +87,9 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                            <a class="collapse-item" href="../setting/preferenceV2.xhtml"  style="font-size: 12px;">Préférence</a>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToPreferencePage()}" style="font-size: 12px;">Préférence</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToIdetifiantPage()}" style="font-size: 12px;">Identifiant</p:commandLink>
-                            <a class="collapse-item" href="utilities-animation.html" style="font-size: 12px;">Corpus</a>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCorpusPage()}" style="font-size: 12px;">Corpus</p:commandLink>
                         </div>
                     </div>
                 </li>

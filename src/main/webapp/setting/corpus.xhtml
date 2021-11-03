@@ -1,84 +1,128 @@
-<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-             xmlns:h="http://java.sun.com/jsf/html"  
-             xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
-    <h:form id="corpusForm">
-        <b:panel style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
+    <h:head>
+        <title>Opentheso</title>
 
-            <!-- Gestion des corpus -->
-            <b:row>
-                <b:column span="12">
-                    <h:outputText value="Gestion des corpus liés pour : " />
-                    <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" style="color: #f47b2a" />
-                </b:column>              
-            </b:row>
-            
-            <p:separator/>
-            
-            <b:row>
-                <b:column span="1" offset="11">
-                    <b:navCommandLink rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}" 
-                                      iconAwesome="fa-plus-circle" icon-size="l" style="color: #f47b2a;"
-                                      tooltip="Ajouter un nouveau corpus" tooltip-delay-show="1000"
-                                      actionListener="#{corpusBean.init()}"
-                                      action="#{corpusBean.setCorpusForNew()}"
-                                    update="settingForm:corpusForm:newCorpusForm settingForm:idNewCorpus"
-                                    oncomplete="PF('newCorpus').show();"/>
-                </b:column>          
-            </b:row>
-            <p:spacer/>
-            <b:row>
-                <b:column span="12">                                
-                    <p:dataTable id="tabCorpus" 
-                                 value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true" resizableColumns="true" scrollHeight="450"
-                                 style="font-size: 12px;">
+        <link href="../resources/images/icon_opentheso2.png" rel="icon" />
 
-                        <p:column width="25" headerText="Nom">
-                            <h:outputText value="#{corpus.corpusName}" title="Obligatoire"/>
-                        </p:column>
-                        <p:column width="90" headerText="URI pour le total"> 
-                            <h:inputText value="#{corpus.uriCount}" title="facultatif" style="font-size: 12px; width: 100%" disabled="true"/>
-                        </p:column>
-                        <p:column width="90" headerText="URI pour le lien" >
-                            <h:inputText value="#{corpus.uriLink}" title="Obligatoire" style="font-size: 12px; width: 100%" disabled="true"/>
-                        </p:column>
-                        <p:column width="15" headerText="Off/On">
-                            <p:toggleSwitch id="toggleThesoStatus" value="#{corpus.active}" style="font-size: 10px;" disabled="true" />
-                        </p:column>
-                        <p:column width="5" headerText="edit">
-                            <b:navCommandLink iconAwesome="fa-pencil" icon-size="l"
-                                              actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
-                                              tooltip="Modifier ce corpus" tooltip-delay-show="500"
-                                              update="settingForm:corpusForm:editCorpusForm settingForm:idEditCorpus"
-                                              oncomplete="PF('editCorpus').show();"
-                                              style="color: #f47b2a; ">
-                            </b:navCommandLink>       
-                        </p:column>
-                        <p:column width="5" headerText="supprimer">
-                            <b:navCommandLink iconAwesome="fa-trash" icon-size="l"
-                                              actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
-                                              tooltip="Modifier ce corpus" tooltip-delay-show="500"
-                                              update="settingForm:corpusForm:confirmDeleteForm settingForm:idConfirmDeleteCorpus"
-                                              oncomplete="PF('confirmDeleteCorpus').show();"
-                                              style="color: #f47b2a; ">
-                            </b:navCommandLink>       
-                        </p:column>                        
-                    </p:dataTable>
-                </b:column>
-            </b:row>
-        </b:panel>
-    </h:form>   
-                                                 
-    <b:column span="9" rendered="#{settingAndToolsBean.isCorpusActive}">
-        <ui:include src="/dialog/setting/editCorpus.xhtml" />
-    </b:column>  
-    <b:column span="9" rendered="#{settingAndToolsBean.isCorpusActive}">
-        <ui:include src="/dialog/setting/newCorpus.xhtml" />
-    </b:column>   
-    <b:column span="9" rendered="#{settingAndToolsBean.isCorpusActive}">
-        <ui:include src="/dialog/setting/confirmDeleteCorpus.xhtml" />
-    </b:column>     
-</ui:fragment>
+        <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
+
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
+
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+    </h:head>
+
+
+    <h:body id="page-top" style="font-size: 12px;">
+
+        <p:idleMonitor timeout="#{connect.timeout}">
+            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
+        </p:idleMonitor>
+
+        <f:metadata>
+            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+        </f:metadata>
+
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+
+        <div id="wrapper" style="height: 100%">
+
+            <ui:include src="../commun/menu.xhtml" />
+
+            <div id="content-wrapper" style="width: 100%">
+
+                <h:form id="containerIndex">
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
+                    </div>
+
+                    <div class="container-fluid">
+
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Paramètres / Corpus</h1>
+                        </div>
+
+                        <div class="col-12" style="height: 100%">
+                            <div class="card shadow mb-4" style="height: 100%;">
+
+                                <div class="row" style="padding-left: 20px; margin-top: 20px; margin-left: 10px; font-size: 16px">
+                                    <div class="col-12">
+                                        <h:outputText value="Gestion des corpus liés pour  " />
+                                        <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" style="color: #f47b2a" />
+                                    </div>
+                                </div>
+
+                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 20px; vertical-align: central; 
+                                     margin-left: 30px; margin-right: 30px; padding: 20px">
+
+                                    <div class="row" style="padding-top: 3px;">
+                                        <div class="col-12" style="text-align: right; margin-top: 6px">
+                                            <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}" 
+                                                           actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
+                                                           title="Nouveau Corpus"
+                                                           update="idNewCorpus" oncomplete="PF('newCorpus').show();" class="btn btn-primary">
+                                                <p:tooltip value="Ajouter un nouveau corpus" showDelay="1000" />
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+
+                                    <p:dataTable id="tabCorpus" value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true" resizableColumns="true" 
+                                                 scrollHeight="450" style="font-size: 12px; margin-top: 10px">
+
+                                        <p:column width="25" headerText="Nom">
+                                            <h:outputText value="#{corpus.corpusName}" title="Obligatoire"/>
+                                        </p:column>
+
+                                        <p:column width="90" headerText="URI pour le total"> 
+                                            <h:inputText value="#{corpus.uriCount}" title="facultatif" style="font-size: 12px; width: 100%" disabled="true"/>
+                                        </p:column>
+
+                                        <p:column width="90" headerText="URI pour le lien" >
+                                            <h:inputText value="#{corpus.uriLink}" title="Obligatoire" style="font-size: 12px; width: 100%" disabled="true"/>
+                                        </p:column>
+
+                                        <p:column width="15" headerText="Off/On">
+                                            <p:toggleSwitch id="toggleThesoStatus" value="#{corpus.active}" style="font-size: 10px;" disabled="true" />
+                                        </p:column>
+
+                                        <p:column width="5" headerText="edit">
+                                            <p:commandLink actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
+                                                           update="idEditCorpus" oncomplete="PF('editCorpus').show();">
+                                                <a class="fas fa-edit" style="color: #f47b2a;"  />
+                                                <p:tooltip value="Modifier ce corpus" showDelay="500" />
+                                            </p:commandLink>
+                                        </p:column>
+
+                                        <p:column width="5" headerText="supprimer">
+                                            <p:commandLink actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
+                                                           update="idConfirmDeleteCorpus" oncomplete="PF('confirmDeleteCorpus').show();">
+                                                <a class="fas fa-trash-alt" style="color: #f47b2a;"  />
+                                                <p:tooltip value="Supprimer ce corpus" showDelay="500" />
+                                            </p:commandLink>
+                                        </p:column>                        
+                                    </p:dataTable>      
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ui:include src="../dialog/setting/editCorpus.xhtml" />
+                    <ui:include src="../dialog/setting/newCorpus.xhtml" />
+                    <ui:include src="../dialog/setting/confirmDeleteCorpus.xhtml" />
+
+                    <ui:include src="../commun/footer.xhtml" />
+                </h:form>
+            </div>
+        </div>
+    </h:body>
+</html>

@@ -3,6 +3,8 @@ package fr.cnrs.opentheso.bean.menu.connect;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
+import fr.cnrs.opentheso.bean.setting.CorpusBean;
+import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -24,6 +26,12 @@ public class MenuBean implements Serializable {
 
     @Inject 
     private MyProjectBean myProjectBean;
+
+    @Inject 
+    private CorpusBean corpusBean;
+
+    @Inject 
+    private PreferenceBean preferenceBean;
     
     
     // LOGIN Page
@@ -66,7 +74,19 @@ public class MenuBean implements Serializable {
     // MENU Paramètres
     public void redirectToIdetifiantPage() throws IOException {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/setting/identifierV1.xhtml");
+        context.redirect(context.getRequestContextPath() + "/setting/identifier.xhtml");
+    }
+    
+    public void redirectToPreferencePage() throws IOException {
+        preferenceBean.init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/setting/preference.xhtml");
+    }
+    
+    public void redirectToCorpusPage() throws IOException {
+        corpusBean.init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/setting/corpus.xhtml");
     }
 
     // LOGIN Page

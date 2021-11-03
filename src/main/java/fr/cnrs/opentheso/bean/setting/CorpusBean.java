@@ -26,33 +26,37 @@ import org.primefaces.PrimeFaces;
 @Named(value = "corpusBean")
 @SessionScoped
 public class CorpusBean implements Serializable {
-    @Inject private Connect connect;  
-    @Inject private SelectedTheso selectedTheso;
-    
-    private ArrayList <NodeCorpus> nodeCorpuses;
-    
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private SelectedTheso selectedTheso;
+
+    private ArrayList<NodeCorpus> nodeCorpuses;
+
     private String oldName;
     private NodeCorpus nodeCorpusForEdit;
-    
+
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
-        if(nodeCorpuses!= null){
+    }
+
+    public void clear() {
+        if (nodeCorpuses != null) {
             nodeCorpuses.clear();
             nodeCorpuses = null;
         }
         oldName = null;
-        nodeCorpusForEdit = null;        
-    }     
-    
+        nodeCorpusForEdit = null;
+    }
+
     public CorpusBean() {
     }
-    
+
     public void init() {
         // récupération des informations sur les corpus liés 
-        CorpusHelper corpusHelper = new CorpusHelper();        
+        CorpusHelper corpusHelper = new CorpusHelper();
         nodeCorpuses = corpusHelper.getAllCorpus(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso());
@@ -60,40 +64,53 @@ public class CorpusBean implements Serializable {
         oldName = null;
     }
 
-
-    public void updateCorpus(){
+    public void updateCorpus() {
         FacesMessage msg;
-        if (nodeCorpusForEdit == null) return;
+        PrimeFaces pf = PrimeFaces.current();
+        if (nodeCorpusForEdit == null) {
+            return;
+        }
 
-        if(nodeCorpusForEdit.getCorpusName().isEmpty()) {
+        if (nodeCorpusForEdit.getCorpusName().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " le nom du corpus est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;            
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
         }
-        
-        if(nodeCorpusForEdit.getUriLink().isEmpty()) {
+
+        if (nodeCorpusForEdit.getUriLink().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'URI du lien est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;            
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
         }
-        
+
         CorpusHelper corpusHelper = new CorpusHelper();
-        if(corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName()))
-        {
-            if(!nodeCorpusForEdit.getCorpusName().equalsIgnoreCase(oldName)) {
+        if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
+            if (!nodeCorpusForEdit.getCorpusName().equalsIgnoreCase(oldName)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " ce corpus existe déjà, changez de nom !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
                 return;
             }
         }
 
-        if(!corpusHelper.updateCorpus(
+        if (!corpusHelper.updateCorpus(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 oldName,
-                nodeCorpusForEdit)){
+                nodeCorpusForEdit)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification de corpus !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -102,44 +119,56 @@ public class CorpusBean implements Serializable {
         PrimeFaces.current().executeScript("PF('editCorpus').hide();");
         init();
 
-        PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("settingForm:corpusForm:tabCorpus");
-        }        
+            pf.ajax().update("containerIndex");
+        }
     }
-    
-    
-    public void addNewCorpus(){
-        FacesMessage msg;
-        if (nodeCorpusForEdit == null) return;
 
-        if(nodeCorpusForEdit.getCorpusName().isEmpty()) {
+    public void addNewCorpus() {
+        FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
+        if (nodeCorpusForEdit == null) {
+            return;
+        }
+
+        if (nodeCorpusForEdit.getCorpusName().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " le nom du corpus est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;            
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
         }
-        
-        if(nodeCorpusForEdit.getUriLink().isEmpty()) {
+
+        if (nodeCorpusForEdit.getUriLink().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'URI du lien est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;            
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
         }
-        
+
         CorpusHelper corpusHelper = new CorpusHelper();
-        if(corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName()))
-        {
+        if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " ce corpus existe déjà, changez de nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
-        if(!corpusHelper.addNewCorpus(
+        if (!corpusHelper.addNewCorpus(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                nodeCorpusForEdit)){
+                nodeCorpusForEdit)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification de corpus !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -148,25 +177,29 @@ public class CorpusBean implements Serializable {
         PrimeFaces.current().executeScript("PF('newCorpus').hide();");
         init();
 
-        PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("settingForm:corpusForm:tabCorpus");
-        }        
-    }    
-    
-    
-    public void deleteCorpus(){
+            pf.ajax().update("containerIndex");
+        }
+    }
+
+    public void deleteCorpus() {
         FacesMessage msg;
-        if (nodeCorpusForEdit == null) return;
+        PrimeFaces pf = PrimeFaces.current();
+        if (nodeCorpusForEdit == null) {
+            return;
+        }
 
         CorpusHelper corpusHelper = new CorpusHelper();
-        if(!corpusHelper.deleteCorpus(
+        if (!corpusHelper.deleteCorpus(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                nodeCorpusForEdit.getCorpusName())){
+                nodeCorpusForEdit.getCorpusName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification de corpus !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
             return;
         }
 
@@ -175,21 +208,20 @@ public class CorpusBean implements Serializable {
         PrimeFaces.current().executeScript("PF('newCorpus').hide();");
         init();
 
-        PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("settingForm:corpusForm:tabCorpus");
-        }        
-    }       
-    
+            pf.ajax().update("containerIndex");
+        }
+    }
+
     public void setCorpusForEdit(NodeCorpus nodeCorpus) {
         nodeCorpusForEdit = nodeCorpus;
         oldName = nodeCorpus.getCorpusName();
     }
-    
+
     public void setCorpusForNew() {
         nodeCorpusForEdit = new NodeCorpus();
-    }    
+    }
 
     public ArrayList<NodeCorpus> getNodeCorpuses() {
         return nodeCorpuses;
@@ -206,7 +238,5 @@ public class CorpusBean implements Serializable {
     public void setNodeCorpusForEdit(NodeCorpus nodeCorpusForEdit) {
         this.nodeCorpusForEdit = nodeCorpusForEdit;
     }
-    
-    
-    
+
 }
