@@ -203,7 +203,7 @@ public class BroaderBean implements Serializable {
 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
@@ -281,10 +281,15 @@ public class BroaderBean implements Serializable {
 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept());
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
+
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formRightTab:viewTabConcept:idConceptBroader");
+            pf.ajax().update("formRightTab:viewTabConcept:deleteBroaderLinkForm");
+        }
 
         tree.initAndExpandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
@@ -292,7 +297,6 @@ public class BroaderBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("formLeftTab:tabTree:tree");
         }
 
         PrimeFaces.current().executeScript("srollToSelected();");

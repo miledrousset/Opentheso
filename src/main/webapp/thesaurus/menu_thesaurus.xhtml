@@ -66,10 +66,10 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                            <a class="collapse-item" href="utilities-color.html" style="font-size: 12px;">Edition</a>
-                            <a class="collapse-item" href="utilities-border.html" style="font-size: 12px;">Atelier thésaurus</a>
-                            <a class="collapse-item" href="utilities-animation.html" style="font-size: 12px;">Maintenance</a>
-                            <a class="collapse-item" href="utilities-other.html" style="font-size: 12px;">Statistique</a>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToEditionPage()}" style="font-size: 12px;">Edition</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}" style="font-size: 12px;">Atelier thésaurus</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" style="font-size: 12px;">Maintenance</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" style="font-size: 12px;">Statistique</p:commandLink>
                         </div>
                     </div>
                 </li>

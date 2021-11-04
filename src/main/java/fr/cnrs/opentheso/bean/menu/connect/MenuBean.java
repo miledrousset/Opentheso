@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bean.setting.CorpusBean;
 import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
+import fr.cnrs.opentheso.bean.toolbox.statistique.StatistiqueBean;
 import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -40,6 +41,9 @@ public class MenuBean implements Serializable {
     
     @Inject
     private AtelierThesBean atelierThesBean;
+    
+    @Inject
+    private StatistiqueBean statistiqueBean;
     
     
     // LOGIN Page
@@ -108,6 +112,18 @@ public class MenuBean implements Serializable {
         atelierThesBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/atelier.xhtml");
+    }
+    
+    public void redirectToMaintenancePage() throws IOException {
+        atelierThesBean.init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/toolbox/service.xhtml");
+    }
+    
+    public void redirectToStatistiquePage() throws IOException {
+        statistiqueBean.init();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/toolbox/statistic.xhtml");
     }
 
     // LOGIN Page

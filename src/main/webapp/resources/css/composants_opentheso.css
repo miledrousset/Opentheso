@@ -63,7 +63,7 @@ body .ui-inputfield {
     color: #495057;
     background: #ffffff;
     padding: 4px;
-    border: 1px solid #ced4da;
+    border: 1px solid #8f8f8f;
     outline: 0 none;
     font-size: 15px;
     border-radius: 4px;
@@ -74,7 +74,7 @@ body .ui-inputfield {
 body .ui-inputfield.ui-state-hover {
     border-color: #f47b2a;
 }
-s
+
 body .ui-inputfield.ui-state-focus {
     border-color: #43B572;
 }
@@ -152,12 +152,29 @@ body .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
 }
 
 /*** Panel Header ***/
-.ui-panel-titlebar {
+body .ui-panel .ui-panel-titlebar {
+    border: 5px;
     background: #f47b2a !important;
+    color: #495057;
+    padding: 0px;
+    font-weight: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+body .ui-fileupload .ui-fileupload-buttonbar {
+    padding: 0rem;
 }
 
 .ui-panel-title {
     color: #FFF !important;
+}
+
+/** MESSAGE **/
+body .ui-messages > div {
+    padding: 1rem;
 }
 
 
@@ -431,4 +448,65 @@ body .ui-commandlink, body .ui-link:hover {
 body .ui-commandlink, body .ui-link:active {
     color: #000;
     text-decoration: none;
+}
+
+/** Radio Button **/
+body .ui-radiobutton .ui-radiobutton-box.ui-state-active .ui-icon-bullet {
+    background-color: #f47b2a;
+}
+
+body .ui-radiobutton .ui-radiobutton-box.ui-state-active {
+    border-color: #f47b2a;
+    background: #f47b2a;
+    color: #f47b2a;
+}
+
+body .ui-radiobutton .ui-radiobutton-box.ui-state-hover {
+    border-color: #f47b2a;
+}
+
+
+/** selectoneradio **/
+.ui-selectoneradio label {
+    color: #000;
+}
+
+/** WIZAR **/
+body .ui-wizard .ui-wizard-step-titles .ui-wizard-step-title.ui-state-highlight {
+    background: #f47b2a;
+    color: #FFF;
+}
+
+/** BUTTON **/
+body .ui-button {
+    background: #f47b2a;
+    color: #ffffff;
+    border: 1px solid #f47b2a;
+    margin: 0;
+    outline: 0 none;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+/** accordion  **/
+body .ui-accordion .ui-accordion-header {
+    border: none;
+    border-top: none;
+    padding: 5px;
+}
+
+body .ui-accordion .ui-accordion-header.ui-state-hover {
+    border: none;
+    background: #ecf8f1;
+    color: #43B572;
+}
+
+body .ui-accordion .ui-accordion-header.ui-state-active {
+    border-color: #f47b2a;
+    background: #f47b2a;
+    color: #FFF;
+}
+
+body .ui-accordion .ui-accordion-content {
+    padding: auto;
 }

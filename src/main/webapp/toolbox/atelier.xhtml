@@ -53,14 +53,14 @@
                         </div>
 
                         <div class="col-12" style="height: 100%">
-                            <div class="card shadow mb-4" style="height: 100%;">
+                            <div class="card shadow mb-4" style="height: 100%; padding: 20px; color: #000">
 
                                 <p:wizard nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}" >
 
                                     <p:tab id="actions" title="Choix de l'action" titleStyleClass="tabCostum">
 
-                                        <p:panel styleClass="redColoredPanel" >
-                                            <p:outputLabel value="Veuillez choisir l'action que vous voulez faire : "/>
+                                        <p:panel styleClass="redColoredPanel" style="padding: 10px">
+                                            <p:outputLabel value="Veuillez choisir l'action que vous voulez faire : " style="color: #000"/>
                                             <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
                                                 <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
                                                 <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
@@ -70,9 +70,9 @@
 
                                     <p:tab id="entre" title="Entrées" titleStyleClass="tabCostum">
 
-                                        <p:panel header="Les données de comparaison" styleClass="redColoredPanel">
+                                        <p:panel header="   Les données de comparaison" styleClass="redColoredPanel" style="padding: 10px">
                                             <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
-                                                <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px" />
+                                                <p:outputLabel for="@next" value="Délimiteur Csv :" style="margin-right: 10px; color: #000" />
                                                 <p:selectOneMenu value="#{atelierThesBean.choiceDelimiter}" style="font-size: 12px; background: white; border-color: #43B572">
                                                     <f:selectItem itemLabel="," itemValue="0" />
                                                     <f:selectItem itemLabel=";" itemValue="1" />
@@ -84,7 +84,7 @@
                                             <p:fileUpload listener="#{atelierThesBean.loadFileCsv}" label="parcourir" mode="advanced" auto="true"
                                                           update="containerIndex" allowTypes="/(\.|\/)(csv|txt)$/" style="font-size: 12px;" />
 
-                                            <p:panel header="Données chargées" style="margin-top: 20px">
+                                            <p:panel header="   Données chargées" style="margin-top: 20px">
 
                                                 <h:outputText value="Nombre des données récupérées : #{atelierThesBean.values.size()}" />
 

@@ -63,20 +63,21 @@ public class AddConceptToGroupBean implements Serializable {
      */
     public List<NodeAutoCompletion> getAutoCompletCollection(String value) {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
+        List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            return new GroupHelper().getAutoCompletionGroup(
+            liste = new GroupHelper().getAutoCompletionGroup(
                     connect.getPoolConnexion(),
                     selectedTheso.getCurrentIdTheso(),
                     conceptView.getSelectedLang(),
                     value);
         }
-        return new ArrayList<>();
+        return liste;
     }
 
     /**
      * permet d'ajouter le concept à une collection ou groupe
      */
-    public void addConceptToGroup() {
+    public void addConceptToGroup(int idUser) {
 
         // selectedAtt.getIdConcept() est le terme TG à ajouter
         // terme.getIdC() est le terme séléctionné dans l'arbre
@@ -95,13 +96,14 @@ public class AddConceptToGroupBean implements Serializable {
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
+        //    FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:addConceptToGroupForm:addConceptToCollection", msg);
             FacesContext.getCurrentInstance().addMessage(null, msg);            
             return;
         }
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept());
+                conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),

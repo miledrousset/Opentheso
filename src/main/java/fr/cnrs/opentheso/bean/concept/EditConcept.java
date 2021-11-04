@@ -9,9 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -43,19 +41,21 @@ public class EditConcept implements Serializable {
 
     @Inject
     private Connect connect;
+
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
+
     @Inject
     private LanguageBean languageBean;
+
     @Inject
     private ConceptView conceptView;
+
     @Inject
     private SelectedTheso selectedTheso;
+
     @Inject
     private Tree tree;
-    
-    @Inject
-    private IndexSetting indexSetting;
 
     private String prefLabel;
     private String notation;
@@ -113,7 +113,10 @@ public class EditConcept implements Serializable {
      * @param idTheso
      * @param idUser
      */
-    public void updateLabel(String idTheso, String idLang, int idUser) {
+    public void updateLabel(
+            String idTheso,
+            String idLang,
+            int idUser) {
 
         duplicate = false;
         PrimeFaces pf = PrimeFaces.current();
@@ -156,6 +159,27 @@ public class EditConcept implements Serializable {
         }
 
         updateForced(idTheso, idLang, idUser);
+
+        //   if(tree.getSelectedNode() == null) return;
+        // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+        //    if( !((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)){
+        //   }
+
+        /*    tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
+
+        tree.expandTreeToPath(idNewConcept, idTheso, idLang);
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formLeftTab");
+        }*/
+        // cas où l'arbre est déjà déplié ou c'est un concept sans fils
+        /*    if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
+            tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("formLeftTab");
+            }
+        }*/
+        // sinon, on ne fait rien, l'arbre sera déplié automatiquement
+        //    PrimeFaces.current().executeScript("$('.addNT1').modal('hide');"); 
     }
 
     public void updateForced(
@@ -201,7 +225,7 @@ public class EditConcept implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idTheso,
-                conceptView.getNodeConcept().getConcept().getIdConcept());
+                conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         conceptView.getConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idLang);
 
@@ -242,7 +266,7 @@ public class EditConcept implements Serializable {
         }
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention !", message);
-        FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
+        FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
         PrimeFaces pf = PrimeFaces.current();
         forDelete = true;
     }
@@ -311,8 +335,6 @@ public class EditConcept implements Serializable {
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été supprimé");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        
-        indexSetting.setIsHomeSelected(true);
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
@@ -338,7 +360,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                idConcept);
+                idConcept, idUser);
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept a bien été déprécié");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -348,10 +370,9 @@ public class EditConcept implements Serializable {
             pf.ajax().update("containerIndex:formLeftTab");
             pf.ajax().update("containerIndex:formRightTab");
         }
-
     }
-
-    public void approveConcept(String idConcept, String idTheso, int idUser) {
+    
+    public void approveConcept(String idConcept, String idTheso, int idUser){
         DeprecateHelper deprecateHelper = new DeprecateHelper();
         FacesMessage msg;
         if (!deprecateHelper.approveConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser)) {
@@ -371,7 +392,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                idConcept);
+                idConcept, idUser);
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept a bien été approuvé");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -394,8 +415,8 @@ public class EditConcept implements Serializable {
         }
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                idConceptDeprecated);
+                selectedTheso.getCurrentIdTheso(), 
+                idConceptDeprecated, idUser);          
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
@@ -406,12 +427,12 @@ public class EditConcept implements Serializable {
         }
     }
 
-    public void deleteReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy) {
-        FacesMessage msg;
-        if (idConceptReplaceBy == null || idConceptReplaceBy.isEmpty()) {
+    public void deleteReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy, int idUser){
+        FacesMessage msg;        
+        if(idConceptReplaceBy == null || idConceptReplaceBy.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de concept sélectionné !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
+            return;              
         }
         DeprecateHelper deprecateHelper = new DeprecateHelper();
 
@@ -423,8 +444,8 @@ public class EditConcept implements Serializable {
         }
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                idConceptDeprecated);
+                selectedTheso.getCurrentIdTheso(), 
+                idConceptDeprecated, idUser);         
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation supprimée avec succès");
@@ -441,7 +462,7 @@ public class EditConcept implements Serializable {
 ///////////////////////////////////////////////////////////////////////////////
 //////////// générer les identifiants Ark    //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////   
+///////////////////////////////////////////////////////////////////////////////
     public void infosArk() {
         String message = "Permet de générer un identifiant Ark, si l'identifiant existe, il sera mise à jour !!";
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
@@ -538,7 +559,7 @@ public class EditConcept implements Serializable {
 ///////////////////////////////////////////////////////////////////////////////
 //////////// générer les identifiants Handle //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////    
+///////////////////////////////////////////////////////////////////////////////
     public void infosHandle() {
         String message = "Permet de générer un identifiant Handle, si l'identifiant existe, il sera mise à jour !!";
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
@@ -552,8 +573,7 @@ public class EditConcept implements Serializable {
     }
 
     /**
-     * permet de générer l'identifiant Handle, s'il n'existe pas, il sera créé,
-     * sinon, il sera mis à jour.
+     * permet de générer l'identifiant Handle, s'il n'existe pas, il sera créé, sinon, il sera mis à jour.
      */
     public void deleteHandle() {
         FacesMessage msg;
@@ -588,8 +608,7 @@ public class EditConcept implements Serializable {
     }
 
     /**
-     * permet de générer l'identifiant Handle, s'il n'existe pas, il sera créé,
-     * sinon, il sera mis à jour.
+     * permet de générer l'identifiant Handle, s'il n'existe pas, il sera créé, sinon, il sera mis à jour.
      */
     public void generateHandle() {
         ConceptHelper conceptHelper = new ConceptHelper();

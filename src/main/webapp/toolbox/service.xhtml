@@ -1,0 +1,224 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Opentheso</title>
+
+        <link href="../resources/images/icon_opentheso2.png" rel="icon" />
+
+        <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
+
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
+
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+    </h:head>
+
+
+    <h:body id="page-top" style="font-size: 12px;">
+
+        <p:idleMonitor timeout="#{connect.timeout}">
+            <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
+        </p:idleMonitor>
+
+        <f:metadata>
+            <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+        </f:metadata>
+
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+
+        <div id="wrapper" style="height: 100%">
+
+            <ui:include src="../commun/menu.xhtml" />
+
+            <div id="content-wrapper" style="width: 100%">
+
+
+                <div>
+                    <ui:include src="../commun/header.xhtml" />
+                </div>
+
+                <div class="container-fluid">
+
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Boite à outils / Statistiques</h1>
+                    </div>
+
+                    <h:form id="containerIndex">
+                        <h:panelGroup rendered="#{selectedTheso.currentIdTheso != null}" style="font-size: 12px;">
+
+                            <p:scrollPanel mode="native" style="min-height: 680px; max-height: 680px; border: #FAFAFA; background-color: #FFFFFF;">        
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h:outputText value="Thesaurus séléctionné : #{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
+                                    </div>
+                                </div>
+
+                                <p:spacer/>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="p-my-3">
+                                            <p:commandButton value="Correction 1 - restructuration" icon="pi pi-check" iconPos="right"
+                                                             style="font-size: 12px; "
+                                                             action="#{restoreTheso.reorganizing(selectedTheso.currentIdTheso)}"/>
+                                        </div>           
+                                    </div>
+                                </div>        
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p:outputPanel deferred="true">
+                                            <h5>Permet de corriger les incohérences dans le thésaurus en cours :</h5>
+                                            <p>1- détecter les concepts TT erronés : si le concept n'a pas de BT, alors, il est forcement TopTerm.<br/>
+                                                2- compléter le thésaurus par les relations qui manquent NT ou BT.<br/>
+                                                3- supprimer les relations en boucle (100 -> BT -> 100) ou  (100 -> NT -> 100) ou (100 -> RT -> 100).
+                                            </p>
+                                            <p style="color:red;">!!! Ne pas oublier de recharger le thésaurus à la fin du traitement !!!</p>                   
+                                        </p:outputPanel>                
+                                    </div>
+                                </div>  
+                                <p:spacer/>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="p-my-3">
+                                            <p:commandButton value="Correction 2 - créateur/contributeur" icon="pi pi-check" iconPos="right"
+                                                             style="font-size: 12px; "
+                                                             action="#{restoreTheso.switchRolesFromTermToConcept(selectedTheso.currentIdTheso)}"/>
+                                        </div>           
+                                    </div>
+                                </div>        
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p:outputPanel deferred="true">
+                                            <h5>Permet de corriger les contributreurs et les créateurs des concepts</h5>
+                                            <p>Transfert des informations du niveau du terme vers le concept général.<br/>
+                                            </p>
+                                        </p:outputPanel>                
+                                    </div>
+                                </div>  
+                                <p:spacer/>
+
+                                <!-- partie pour générer les identifiants Ark en local (identifiant basé sur l'Id interne)-->            
+                                <p:panel >
+                                    <div class="row">
+                                        <div class="col-12" >
+                                            <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>   
+                                            <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>
+                                            <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>                    
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3" >
+                                            <h:outputText value ="*Naan: "/>
+                                            <p:inputText  value="#{restoreTheso.naan}"  style="height: 22px;"/>
+                                        </div>   
+                                        <div class="col-3" >
+                                            <h:outputText value ="Prefixe: "/>
+                                            <p:inputText  value="#{restoreTheso.prefix}" style="height: 22px;"/>
+                                        </div>                 
+                                        <div class="col-5" >
+                                            <h:outputText value ="!!!! Ecraser les Ark Existants? " style=" color: red; font-weight: bold"/>
+                                            <p:toggleSwitch value="#{restoreTheso.overwrite}" style="height: 22px; font-size: 12px;"/>
+                                        </div>  
+                                    </div> 
+                                    <p:spacer/>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
+                                                             style="font-size: 12px; "
+                                                             action="#{restoreTheso.generateArkFromConceptId(selectedTheso.currentIdTheso)}"/>        
+                                        </div>
+                                    </div>             
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p:outputPanel deferred="true" >
+                                                <h5>Permet de générer les identifiants Ark en se basant sur l'identifiant du concept</h5>
+                                                <p> Pas de connexion à un serveur, les Identifiants Ark sont en local. <br/>
+                                                    les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
+                                                    exemple: Idconcept=300, prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndp300<br/>
+                                                </p>
+                                            </p:outputPanel>                
+                                        </div>
+                                    </div>  
+                                </p:panel>            
+                                <p:spacer/>
+
+                                <!-- partie pour générer les identifiants Ark en local (identifiant Opaque)-->
+                                <p:panel >
+                                    <div class="row">
+                                        <div class="col-12" >
+                                            <h:outputText value ="!!! Pour ajuster les paramètres, aller dans /Paramètres/identifiant !!!" style="color: red; background-color: #FAEDE5"/>   
+                                        </div>
+                                    </div>
+                                    <p:spacer/> 
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <h:outputText value ="Naan: " style="font-size: 12px;"/>
+                                            <h:outputText value ="#{roleOnTheso.nodePreference.naanArkLocal} " style="font-size: 12px;font-weight: bold; color: #f47b2a"/>
+
+                                            <h:outputText value =" / Prefixe: " style="height: 28px; font-size: 12px;"/>
+                                            <h:outputText value =" #{roleOnTheso.nodePreference.prefixArkLocal} " style="font-size: 12px;font-weight: bold; color: #f47b2a"/>
+
+                                            <h:outputText value =" / taille Id: " style="height: 28px; font-size: 12px;"/>
+                                            <h:outputText value =" #{roleOnTheso.nodePreference.sizeIdArkLocal}" style="font-size: 12px;font-weight: bold; color: #f47b2a"/>                         
+                                        </div>   
+
+                                        <div class="col-6" >
+                                            <h:outputText value ="!!!! Ecraser les Ark Existants? " style="color: red;  font-size: 12px; font-weight: bold"/>
+                                            <p:toggleSwitch value="#{restoreTheso.overwriteLocalArk}" style="height: 22px; font-size: 12px;" />
+                                        </div>  
+
+                                    </div> 
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
+                                                             style="font-size: 12px; "
+                                                             action="#{restoreTheso.generateArkLacal(selectedTheso.currentIdTheso, roleOnTheso.nodePreference)}"/>        
+                                        </div>
+                                    </div>             
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p:outputPanel deferred="true" >
+                                                <h5>Permet de générer les identifiants Ark en local en utilisant les paramètres prédéfinis</h5>
+                                                <p> Pas de connexion à un serveur, les Identifiants Ark sont en local. <br/>
+                                                    les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
+                                                    exemple: Id=sxpzwkhfbm5gm9uje3qyrdj3uw96ccynx3se , prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndpsxpzwkhfbm5gm9uje3qyrdj3uw96ccynx3se <br/>
+                                                </p>
+                                            </p:outputPanel>                
+                                        </div>
+                                    </div>  
+                                </p:panel>            
+                                <p:spacer/>             
+
+                            </p:scrollPanel>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{selectedTheso.currentIdTheso == null}" >
+                            <div class="row" style="margin-top: 50px;">
+                                <div class="col-12">
+                                    <p:outputPanel deferred="true">
+                                        <h4>
+                                            <h:outputText value="!!! Choisissez un thésaurus avant !!!" style="color: #C63632"/>
+                                        </h4>
+                                    </p:outputPanel>                
+                                </div>
+                            </div>          
+                        </h:panelGroup> 
+                    </h:form>
+                </div>
+                <ui:include src="../commun/footer.xhtml" />
+            </div>
+        </div>
+    </h:body>
+</html>
