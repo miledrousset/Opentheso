@@ -20,49 +20,58 @@
         </div>
 
         <div class="row">
-            <div class="col-xl-3 col-lg-5" style=" height: 100%">
-                <div class="card shadow mb-4" style=" height: 100%">    
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4" style=" height: 100%">
+                <div class="card shadow mb-1" style=" height: 100%">    
                     <h:form id="formLeftTab" style=" height: 100%;">
-                        <p:tabView activeIndex="#{leftBodySetting.index}" style="border-style: none; height: 100%" >
-                            <p:tab>
-                                <f:facet name="title">
-                                    <i class="pi pi-sitemap" />
-                                    <h:outputText value=" #{langueBean.getMsg('leftbody.concept')}"/>
-                                </f:facet>
-                                <ui:include src="leftBodyView/tree.xhtml"/>
-                            </p:tab>
+                        <div class="row">
+                            <p:tabView activeIndex="#{leftBodySetting.index}" style="border-style: none; height: 100%; font-size: 12px;" >
 
-                            <p:tab>
-                                <f:facet name="title">
-                                    <i class="pi pi-list" />
-                                    <h:outputText value=" #{langueBean.getMsg('leftbody.index')}"/>
-                                </f:facet>
-                                <ui:include src="leftBodyView/list.xhtml"/>
-                            </p:tab>
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2" style=" height: 100%">
+                                    <p:tab>
+                                        <f:facet name="title">
+                                            <i class="pi pi-sitemap" />
+                                            <h:outputText value=" #{langueBean.getMsg('leftbody.concept')}"/>
+                                        </f:facet>
+                                        <ui:include src="leftBodyView/tree.xhtml"/>
+                                    </p:tab>                                            
+                                </div>
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2" style=" height: 100%">
+                                    <p:tab>
+                                        <f:facet name="title">
+                                            <i class="pi pi-list" />
+                                            <h:outputText value=" #{langueBean.getMsg('leftbody.index')}"/>
+                                        </f:facet>
+                                        <ui:include src="leftBodyView/list.xhtml"/>
+                                    </p:tab>                                            
+                                </div>
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2" style=" height: 100%">
 
-                            <p:tab>
-                                <f:facet name="title">
-                                    <i class="pi pi-folder-open" />
-                                    <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}"/>
-                                </f:facet>
-                                <ui:include src="leftBodyView/groups.xhtml"/>
-                            </p:tab>
+                                    <p:tab>
+                                        <f:facet name="title">
+                                            <i class="pi pi-folder-open" />
+                                            <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}"/>
+                                        </f:facet>
+                                        <ui:include src="leftBodyView/groups.xhtml"/>
+                                    </p:tab>                                            
+                                </div>
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2" style=" height: 100%">
+                                    <p:tab>
+                                        <f:facet name="title">
+                                            <i class="pi pi-sitemap" />
+                                            <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
+                                        </f:facet>
+                                    </p:tab>
+                                    <ui:include src="leftBodyView/conceptsTree.xhtml" />                                            
+                                </div>                                        
 
-                            <p:tab>
-                                <f:facet name="title">
-                                    <i class="pi pi-sitemap" />
-                                    <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
-                                </f:facet>
-                            </p:tab>
-                            <ui:include src="leftBodyView/conceptsTree.xhtml" />
-                        </p:tabView>
-
+                            </p:tabView>
+                        </div>
                         <ui:include src="../dialog/dragAndDrop/dragAndDrop.xhtml" />
                     </h:form>
                 </div>
             </div>
 
-            <div class="col-xl-9 col-lg-7" style="height: 100%">
+            <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="height: 100%">
                 <div class="card shadow mb-4" style="height: 100%;">                               
                     <p:panel id="formRightTab" style="height: 100%; border-style: none;" >
                         <p:tabView activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
