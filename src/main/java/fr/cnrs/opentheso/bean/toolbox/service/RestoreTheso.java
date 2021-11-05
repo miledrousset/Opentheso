@@ -5,10 +5,14 @@
  */
 package fr.cnrs.opentheso.bean.toolbox.service;
 
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
+import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
@@ -33,6 +37,12 @@ public class RestoreTheso implements Serializable {
     public void clear(){
     }
 
+    private boolean overwrite = false;
+    private String naan;
+    private String prefix;
+    
+    private boolean overwriteLocalArk = false;    
+    
     /**
      * Creates a new instance of RestoreTheso
      */
@@ -91,5 +101,149 @@ public class RestoreTheso implements Serializable {
             return false;
         return new ToolsHelper().removeLoopRelations(connect.getPoolConnexion(), "RT", idTheso);
     }    
+    
+    public void switchRolesFromTermToConcept(String idTheso) {
+        String lang = connect.getWorkLanguage();
+       
+        ConceptHelper conceptHelper = new ConceptHelper();
+        TermHelper termHelper = new TermHelper();
+        
+        String idTerm;
+        int idCreator;
+        int idContributor;        
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        
+        for (String idConcept : allConcepts) {
+            if(!conceptHelper.isHaveCreator(connect.getPoolConnexion(), idTheso, idConcept)) {
+                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
+                if(idTerm != null) {
+                    idCreator = termHelper.getCreator(connect.getPoolConnexion(), idTheso, idTerm, lang);
+                    if(idCreator != -1)
+                        conceptHelper.setCreator(connect.getPoolConnexion(), idTheso, idConcept, idCreator);
+                }
+            }
+            if(!conceptHelper.isHaveContributor(connect.getPoolConnexion(), idTheso, idConcept)) {
+                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
+                if(idTerm != null) {
+                    idContributor = termHelper.getContributor(connect.getPoolConnexion(), idTheso, idTerm, lang);
+                    if(idContributor != -1)
+                        conceptHelper.setContributor(connect.getPoolConnexion(), idTheso, idConcept, idContributor);
+                }
+            }
+        }
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction réussie !!!"));
+    }    
+    
+    /**
+     * permet de générer les id Ark d'après l'id du concept,
+     * si overwrite est activé, on écrase tout et on recommence avec des nouveaus Id Ark
+     * @param idTheso
+     */
+    public void generateArkFromConceptId(String idTheso) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        int count = 0; 
+        if(naan == null || naan.isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de Naan !! "));            
+            return;
+        }
+        
+        if(prefix == null || prefix.isEmpty())
+            prefix = "";
+        else 
+            prefix = prefix.trim();
+        
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        
+        for (String conceptId : allConcepts) {
+            if(!overwrite) {
+                if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), idTheso, conceptId)) {
+                    conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso, naan + "/" + prefix + conceptId);
+                    count++;
+                }
+            } else {
+                conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso, naan + "/" + prefix + conceptId);
+                count++;
+            }
+        }        
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concepts changés: " + count));
+    }   
+    
+    /**
+     * permet de générer les id Ark en local en se basant au paramètre prédéfini dans Identifiant 
+     * si overwrite est activé, on écrase tout et on recommence avec des nouveaus Id Ark
+     * @param idTheso
+     * @param nodePreference
+     */
+    public void generateArkLacal(String idTheso, NodePreference nodePreference) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        int count = 0; 
+        
+        if(nodePreference == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de paramètres !! "));            
+            return;
+        }
+        if(nodePreference.getNaanArkLocal() == null || nodePreference.getNaanArkLocal().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de Naan !! "));            
+            return;
+        }
+        
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        
+        ToolsHelper toolsHelper = new ToolsHelper();
+        String idArk;
+        
+        for (String conceptId : allConcepts) {
+            if(!overwriteLocalArk) {
+                if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), idTheso, conceptId)) {
+                    idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());              
+                    conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
+                            nodePreference.getNaanArkLocal() + "/" +
+                            nodePreference.getPrefixArkLocal() + idArk);
+                    count++;
+                }
+            } else {
+                idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());              
+                conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
+                        nodePreference.getNaanArkLocal() + "/" +
+                        nodePreference.getPrefixArkLocal() + idArk);
+                count++;
+            }
+        }
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concepts changés: " + count));
+    }      
+
+    public boolean isOverwrite() {
+        return overwrite;
+    }
+
+    public void setOverwrite(boolean overwrite) {
+        this.overwrite = overwrite;
+    }
+
+    public String getNaan() {
+        return naan;
+    }
+
+    public void setNaan(String naan) {
+        this.naan = naan;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public boolean isOverwriteLocalArk() {
+        return overwriteLocalArk;
+    }
+
+    public void setOverwriteLocalArk(boolean overwriteLocalArk) {
+        this.overwriteLocalArk = overwriteLocalArk;
+    }
+    
+    
     
 }

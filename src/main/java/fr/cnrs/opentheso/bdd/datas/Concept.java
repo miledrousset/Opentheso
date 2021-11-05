@@ -19,6 +19,12 @@ public class Concept {
     private int idUser;
     private String lang;
     private boolean isDeprecated;
+    
+    private int creator;
+    private int contributor;
+    private String creatorName;
+    private String contributorName;    
+    
 
     public Concept(String idConcept, String status, String notation, String idThesaurus, String idGroup,
             boolean topConcept) {
@@ -154,6 +160,38 @@ public class Concept {
 
     public void setIsDeprecated(boolean isDeprecated) {
         this.isDeprecated = isDeprecated;
+    }
+
+    public int getCreator() {
+        return creator;
+    }
+
+    public void setCreator(int creator) {
+        this.creator = creator;
+    }
+
+    public int getContributor() {
+        return contributor;
+    }
+
+    public void setContributor(int contributor) {
+        this.contributor = contributor;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
+    public String getContributorName() {
+        return contributorName;
+    }
+
+    public void setContributorName(String contributorName) {
+        this.contributorName = contributorName;
     }
     
     

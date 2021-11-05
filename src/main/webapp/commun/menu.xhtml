@@ -68,8 +68,8 @@
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToEditionPage()}" style="font-size: 12px;">Edition</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}" style="font-size: 12px;">Atelier thésaurus</p:commandLink>
-                            <a class="collapse-item" href="utilities-animation.html" style="font-size: 12px;">Maintenance</a>
-                            <a class="collapse-item" href="utilities-other.html" style="font-size: 12px;">Statistique</a>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" style="font-size: 12px;">Maintenance</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" style="font-size: 12px;">Statistique</p:commandLink>
                         </div>
                     </div>
                 </li>

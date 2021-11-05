@@ -13,11 +13,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.Term;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTab2Levels;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
@@ -34,7 +32,6 @@ public class TermHelper {
 
     private final Log log = LogFactory.getLog(ThesaurusHelper.class);
 
-
     /**
      * ************************************************************
      * /**************************************************************
@@ -42,8 +39,8 @@ public class TermHelper {
      * /**************************************************************
      * /*************************************************************
      */
-    
-    
+
+
     /**
      * Cette fonction permet de savoir si le terme est un parfait doublon ou non
      */
@@ -52,7 +49,7 @@ public class TermHelper {
         boolean existe = false;
         StringPlus stringPlus = new StringPlus();
         title = stringPlus.convertString(title);
-        title = stringPlus.unaccentLowerString(title);        
+        title = stringPlus.unaccentLowerString(title);
 
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
@@ -69,7 +66,7 @@ public class TermHelper {
         }
         return existe;
     }
-    
+
     /**
      * Cette fonction permet de savoir si le synonyme est un parfait doublon ou non
      */
@@ -78,11 +75,11 @@ public class TermHelper {
         boolean existe = false;
 
         try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_term from non_preferred_term where f_unaccent(lower(lexical_value)) like '"
-                        + new StringPlus().convertString(title) + "' and lang = '" + idLang +"' and id_thesaurus = '"
+                        + new StringPlus().convertString(title) + "' and lang = '" + idLang + "' and id_thesaurus = '"
                         + idThesaurus + "'");
-                try(ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         existe = resultSet.getRow() != 0;
                     }
@@ -93,7 +90,7 @@ public class TermHelper {
             log.error("Error while asking if Title of altLabel exist : " + new StringPlus().convertString(title), sqle);
         }
         return existe;
-    }    
+    }
 
     /**
      * Permet de modifier le libellé d'un synonyme
@@ -107,7 +104,7 @@ public class TermHelper {
         Statement stmt;
         boolean isPassed = false;
         StringPlus stringPlus = new StringPlus();
-        
+
         oldValue = stringPlus.convertString(oldValue);
         newValue = stringPlus.convertString(newValue);
         try {
@@ -151,7 +148,7 @@ public class TermHelper {
         }
         return isPassed;
     }
-    
+
     /**
      * Permet de modifier le status du synonyme (caché ou non)
      *
@@ -171,7 +168,7 @@ public class TermHelper {
         Connection conn = null;
         Statement stmt;
         boolean isPassed = false;
-        value = (new StringPlus().convertString(value));        
+        value = (new StringPlus().convertString(value));
         try {
             conn = ds.getConnection();
             conn.setAutoCommit(false);
@@ -183,7 +180,7 @@ public class TermHelper {
                             + " modified = current_date "
                             + " WHERE lang ='" + idLang + "'"
                             + " AND id_thesaurus = '" + idTheso + "'"
-                            + " AND id_term = '" + idTerm + "'" 
+                            + " AND id_term = '" + idTerm + "'"
                             + " AND lexical_value = '" + value + "'";
 
                     stmt.executeUpdate(query);
@@ -211,7 +208,7 @@ public class TermHelper {
             }
         }
         return isPassed;
-    }    
+    }
 
     /**
      * Cette fonction permet de supprimer un Terme Non descripteur ou synonyme
@@ -485,55 +482,30 @@ public class TermHelper {
             String idTheso,
             int idUser) {
 
-        Statement stmt;
-        Connection conn = null;
         boolean passed = false;
-
         label = new StringPlus().convertString(label);
-        try {
-            conn = ds.getConnection();
-            conn.setAutoCommit(false);
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into term "
-                            + "(id_term, lexical_value, lang, "
-                            + "id_thesaurus, source, status,contributor, creator)"
-                            + " values ("
-                            + "'" + idTerm + "'"
-                            + ",'" + label + "'"
-                            + ",'" + idLang + "'"
-                            + ",'" + idTheso + "'"
-                            + ",'" + source + "'"
-                            + ",'" + status + "'"
-                            + ", " + idUser
-                            + ", " + idUser + ")";
-
-                    stmt.executeUpdate(query);
-                    if (addNewTermHistorique(conn, idTerm, label, idLang, idTheso, "", "New", idUser)) {
-                        conn.commit();
-                        passed = true;
-                    } else {
-                        conn.rollback();
-                    }
-                } finally {
-                    stmt.close();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("Insert into term "
+                        + "(id_term, lexical_value, lang, "
+                        + "id_thesaurus, source, status,contributor, creator)"
+                        + " values ("
+                        + "'" + idTerm + "'"
+                        + ",'" + label + "'"
+                        + ",'" + idLang + "'"
+                        + ",'" + idTheso + "'"
+                        + ",'" + source + "'"
+                        + ",'" + status + "'"
+                        + ", " + idUser
+                        + ", " + idUser + ")");
+                if (addNewTermHistorique(conn, idTerm, label, idLang, idTheso, "", "New", idUser)) {
+                    passed = true;
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // duppliqué
             if (sqle.getSQLState().equalsIgnoreCase("23505")) {
                 passed = true;
-            }
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(TermHelper.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
         }
         return passed;
@@ -635,7 +607,9 @@ public class TermHelper {
                         lexicalValue = resultSet.getString("lexical_value");
                     }
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -734,7 +708,9 @@ public class TermHelper {
                         existe = resultSet.getRow() != 0;
                     }
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -870,7 +846,7 @@ public class TermHelper {
      * @return
      */
     public boolean addLinkTerm(Connection conn, Term term, String idConcept, int idUser) {
-        try (Statement stmt = conn.createStatement()){
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into preferred_term (id_concept, id_term, id_thesaurus) values ('"
                     + idConcept + "','" + term.getId_term() + "','" + term.getId_thesaurus() + "')");
             return true;
@@ -894,27 +870,29 @@ public class TermHelper {
         term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
         try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select max(id) from term");
-            try (ResultSet resultSet = stmt.getResultSet()){
-                if(resultSet.next()) {
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                if (resultSet.next()) {
                     int idTermNum = resultSet.getInt(1);
                     idTermNum++;
                     idTerm = "" + (idTermNum);
                     // si le nouveau Id existe, on l'incrémente
                     while (isIdOfTermExist(conn, idTerm, term.getId_thesaurus())) {
                         idTerm = "" + (++idTermNum);
-                    }                    
+                    }
                 }
                 term.setId_term(idTerm);
             }
-            if(term.getId_term() == null || term.getId_term().isEmpty()) return null;
-            
+            if (term.getId_term() == null || term.getId_term().isEmpty()) {
+                return null;
+            }
+
             stmt.executeUpdate("Insert into term (id_term, lexical_value, lang, id_thesaurus, source, status, contributor, creator)"
                     + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
                     + ",'" + term.getId_thesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
                     + ", " + idUser + ", " + idUser + ")");
             if (!addNewTermHistorique(conn, term, idUser)) {
                 return null;
-            }            
+            }
         } catch (SQLException sqle) {
             // Log exception
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
@@ -934,7 +912,7 @@ public class TermHelper {
      */
     public boolean addNewTermHistorique(Connection conn, Term term, int idUser) {
 
-        try (Statement stmt = conn.createStatement()){
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into term_historique "
                     + "(id_term, lexical_value, lang, "
                     + "id_thesaurus, source, status, id_user)"
@@ -966,7 +944,7 @@ public class TermHelper {
      */
     public boolean deleteTerm(Connection conn, String idTerm, String idThesaurus, int idUser) {
 
-        try (Statement stmt = conn.createStatement()){
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("delete from term where id_thesaurus = '" + idThesaurus + "' and id_term  = '" + idTerm + "'");
 
             // Suppression de la relation Term_Concept
@@ -1032,7 +1010,7 @@ public class TermHelper {
      */
     public boolean addNonPreferredTerm(HikariDataSource ds, Term term, int idUser) {
 
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
             if (!addUSE(conn, term, idUser)) {
                 conn.rollback();
@@ -1065,7 +1043,7 @@ public class TermHelper {
     private boolean addUSE(Connection conn, Term term, int idUser) {
 
         term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
-        try (Statement stmt = conn.createStatement()){
+        try (Statement stmt = conn.createStatement()) {
             String query = "Insert into non_preferred_term "
                     + "(id_term, lexical_value, lang, "
                     + "id_thesaurus, source, status, hiden)"
@@ -1099,7 +1077,7 @@ public class TermHelper {
     private boolean addUSEHistorique(Connection conn, Term term, int idUser, String action) {
 
         term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
-        try (Statement stmt = conn.createStatement()){
+        try (Statement stmt = conn.createStatement()) {
             String query = "Insert into non_preferred_term_historique "
                     + "(id_term, lexical_value, lang, "
                     + "id_thesaurus, source, status, id_user, action)"
@@ -1132,7 +1110,7 @@ public class TermHelper {
     public boolean addTermTraduction(Connection conn, Term term, int idUser) {
 
         term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
-        try (Statement stmt = conn.createStatement()){
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into term (id_term, lexical_value, lang, id_thesaurus, source, status,contributor, creator)"
                     + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
                     + ",'" + term.getId_thesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
@@ -1474,7 +1452,9 @@ public class TermHelper {
                         }
 
                     } finally {
-                        if (resultSet != null) resultSet.close();
+                        if (resultSet != null) {
+                            resultSet.close();
+                        }
                         stmt.close();
                     }
                 } finally {
@@ -1509,7 +1489,9 @@ public class TermHelper {
                         }
 
                     } finally {
-                        if (resultSet != null) resultSet.close();
+                        if (resultSet != null) {
+                            resultSet.close();
+                        }
                         stmt.close();
                     }
                 } finally {
@@ -1535,11 +1517,11 @@ public class TermHelper {
      */
     public String getIdTermOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
-        try (Connection conn = ds.getConnection()){
-            try (Statement stmt = conn.createStatement()){
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
                         + "' and id_concept = '" + idConcept + "'");
-                try (ResultSet resultSet = stmt.getResultSet()){
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         return resultSet.getString("id_term");
                     } else {
@@ -1603,7 +1585,9 @@ public class TermHelper {
                     }
 
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1616,7 +1600,7 @@ public class TermHelper {
 
         return nodeEMList;
     }
-    
+
     /**
      * Cette fonction permet de récupérer les termes synonymes suivant un
      * id_term et son thésaurus et sa langue sous forme de classe NodeEM
@@ -1631,17 +1615,17 @@ public class TermHelper {
             String idTerm, String idThesaurus, String idLang) {
 
         ArrayList<String> listAltLabel = new ArrayList<>();
-        
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT lexical_value"
-                            + " FROM non_preferred_term"
-                            + " WHERE non_preferred_term.id_term = '" + idTerm + "'"
-                            + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                            + " and non_preferred_term.lang ='" + idLang + "'"
-                            + " order by lexical_value ASC");
 
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT lexical_value"
+                        + " FROM non_preferred_term"
+                        + " WHERE non_preferred_term.id_term = '" + idTerm + "'"
+                        + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                        + " and non_preferred_term.lang ='" + idLang + "'"
+                        + " order by lexical_value ASC");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         listAltLabel.add(resultSet.getString("lexical_value"));
                     }
@@ -1649,7 +1633,7 @@ public class TermHelper {
             }
         } catch (SQLException sqle) {
             log.error("Error while getting NonPreferedTerm of Term : " + idTerm, sqle);
-        }        
+        }
         return listAltLabel;
     }
 
@@ -1666,7 +1650,7 @@ public class TermHelper {
 
         ArrayList<NodeEM> nodeEMList = null;
 
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT  non_preferred_term.lexical_value, non_preferred_term.created, non_preferred_term.modified,"
                         + " non_preferred_term.source,  non_preferred_term.status, non_preferred_term.hiden, non_preferred_term.lang"
@@ -1676,7 +1660,7 @@ public class TermHelper {
                         + " AND preferred_term.id_concept = '" + idConcept
                         + "' AND non_preferred_term.id_thesaurus = '" + idThesaurus
                         + "' ORDER BY non_preferred_term.lexical_value ASC;");
-                try (ResultSet resultSet = stmt.getResultSet()){
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     nodeEMList = new ArrayList<>();
                     while (resultSet.next()) {
                         NodeEM nodeEM = new NodeEM();
@@ -1739,7 +1723,9 @@ public class TermHelper {
                     }
 
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1797,7 +1783,9 @@ public class TermHelper {
                     }
 
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1848,7 +1836,9 @@ public class TermHelper {
                     }
 
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1907,7 +1897,9 @@ public class TermHelper {
                     }
 
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -1933,13 +1925,13 @@ public class TermHelper {
         ArrayList<NodeTermTraduction> nodeTraductionsList = new ArrayList<>();
 
         try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT term.id_term, term.lexical_value, term.lang FROM"
                         + " term, preferred_term WHERE term.id_term = preferred_term.id_term"
                         + " and term.id_thesaurus = preferred_term.id_thesaurus"
                         + " and preferred_term.id_concept = '" + idConcept + "'"
                         + " and term.id_thesaurus = '" + idThesaurus + "' order by term.lexical_value");
-                try (ResultSet resultSet = stmt.getResultSet()){
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeTermTraduction nodeTraductions = new NodeTermTraduction();
                         nodeTraductions.setLang(resultSet.getString("lang"));
@@ -1956,7 +1948,8 @@ public class TermHelper {
     }
 
     /**
-     * Cette fonction permet de retourner le nombre de traductions pour un concept
+     * Cette fonction permet de retourner le nombre de traductions pour un
+     * concept
      */
     public int getCountOfTraductions(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
@@ -1985,7 +1978,9 @@ public class TermHelper {
                         count = resultSet.getInt(1);
                     }
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -2021,43 +2016,18 @@ public class TermHelper {
         }
         return idTerm;
     }
-    
+
     /**
-     * Cette fonction permet de savoir si le terme existe ou non en ignorant uniquement la casse
+     * Cette fonction permet de savoir si le terme existe ou non en ignorant
+     * uniquement la casse
      */
     public boolean isTermExistIgnoreCase(HikariDataSource ds, String title, String idThesaurus, String idLang) {
 
         try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_term from term where lexical_value ilike '"
                         + new StringPlus().convertString(title) + "'  and lang = '" + idLang
                         + "' and id_thesaurus = '" + idThesaurus + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        return resultSet.getRow() != 0;
-                    }
-                    return false;
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while asking if Title of Term exist : " + title, sqle);
-            return false;
-        }
-    }    
-
-    /**
-     * Cette fonction permet de savoir si le terme existe ou non
-     */
-    public boolean isTermExist(HikariDataSource ds, String title, String idThesaurus, String idLang) {
-
-        StringPlus stringPlus = new StringPlus();
-        title = stringPlus.convertString(title);
-        title = stringPlus.unaccentLowerString(title);        
-
-        try (Connection conn = ds.getConnection()){
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select id_term from term where f_unaccent(lower(lexical_value)) like '" + title
-                        + "' and lang = '" + idLang + "' and id_thesaurus = '" + idThesaurus + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         return resultSet.getRow() != 0;
@@ -2074,10 +2044,92 @@ public class TermHelper {
     /**
      * Cette fonction permet de savoir si le terme existe ou non
      */
+    public boolean isTermExist(HikariDataSource ds, String title, String idThesaurus, String idLang) {
+
+        StringPlus stringPlus = new StringPlus();
+        title = stringPlus.convertString(title);
+        title = stringPlus.unaccentLowerString(title);
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_term from term where f_unaccent(lower(lexical_value)) like '" + title
+                        + "' and lang = '" + idLang + "' and id_thesaurus = '" + idThesaurus + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        return resultSet.getRow() != 0;
+                    }
+                    return false;
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if Title of Term exist : " + title, sqle);
+            return false;
+        }
+    }
+
+    /**
+     * Cette fonction permet de retourner l'ID du createur
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param idTerm
+     * @param idLang
+     * @return
+     */
+    public int getCreator(HikariDataSource ds, String idThesaurus, String idTerm, String idLang) {
+        int idCreator = -1;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select creator from term where id_thesaurus = '" + idThesaurus + "' and id_term = '" + idTerm + "' and lang = '" + idLang + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        if ((resultSet.getInt("creator") != -1) && (resultSet.getInt("creator") != 0)) {
+                            idCreator = resultSet.getInt("creator");
+                        }
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting creator of : " + idTerm, sqle);
+        }
+        return idCreator;
+    }
+
+    /**
+     * Cette fonction permet de retourner l'ID du contributeur
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param idTerm
+     * @param idLang
+     * @return
+     */
+    public int getContributor(HikariDataSource ds, String idThesaurus, String idTerm, String idLang) {
+        int idContributor = -1;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select contributor from term where id_thesaurus = '" + idThesaurus + "' and id_term = '" + idTerm + "' and lang = '" + idLang + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        if ((resultSet.getInt("contributor") != -1) && (resultSet.getInt("contributor") != 0)) {
+                            idContributor = resultSet.getInt("contributor");
+                        }
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting contributor of : " + idTerm, sqle);
+        }
+        return idContributor;
+    }
+
+    /**
+     * Cette fonction permet de savoir si le terme existe ou non
+     */
     public boolean isIdOfTermExist(Connection conn, String idTerm, String idThesaurus) {
-        try (Statement stmt = conn.createStatement()){
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select id_term from term where id_term = '" + idTerm + "' and id_thesaurus = '" + idThesaurus + "'");
-            try(ResultSet resultSet = stmt.getResultSet()) {
+            try (ResultSet resultSet = stmt.getResultSet()) {
                 if (resultSet.next()) {
                     return resultSet.getRow() != 0;
                 }

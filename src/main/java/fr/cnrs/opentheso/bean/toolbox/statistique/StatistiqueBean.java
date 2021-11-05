@@ -218,6 +218,7 @@ public class StatistiqueBean implements Serializable {
     }
 
     public void onSelectLanguageType() throws SQLException {
+        onSelectStatType();
         clearFilter();
         selectLanguageVisible = true;
 
@@ -248,7 +249,7 @@ public class StatistiqueBean implements Serializable {
     public void getStatisticByConcept() {
         conceptStatistic = new StatistiqueService().searchAllConceptsByThesaurus(this, 
                 connect, selectedTheso.getCurrentIdTheso(),
-                selectedLanguage.getCode(), dateDebut, dateFin, 
+                selectedLanguage.getCode(), dateDebut, dateFin,
                 searchGroupIdFromLabel(selectedCollection), nbrResultat);
 
         //PrimeFaces.current().executeScript("PF('bui').hide();");

@@ -172,7 +172,7 @@ public class RelatedBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
@@ -237,7 +237,7 @@ public class RelatedBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept());        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
