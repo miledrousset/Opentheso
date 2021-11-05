@@ -12,13 +12,13 @@
                 </div>
 
                 <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink ajax="true" actionListener="#{newProjectBean.updateProject(projectList)}" update="containerIndex" >
+                    <p:commandLink ajax="true" actionListener="#{newProjectBean.updateProject(projectList)}" update="containerIndex:idModifyProject" >
                         <a class="fas fa-check-circle" style="color: #F7A269;" />
                     </p:commandLink>
                 </div>
                 
                 <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink ajax="true" actionListener="#{newProjectBean.deleteProject(projectList)}" update="containerIndex">
+                    <p:commandLink ajax="true" actionListener="#{newProjectBean.deleteProject(projectList)}" update="containerIndex:idModifyProject">
                         <a class="fas fa-trash" style="color: #F7A269;" />
                         <p:tooltip value="Supprimer le projet" showDelay="500" />
                     </p:commandLink>

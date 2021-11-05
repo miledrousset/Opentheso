@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.connect;
 
+import fr.cnrs.opentheso.bean.menu.users.NewUSerBean;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
@@ -45,6 +46,9 @@ public class MenuBean implements Serializable {
     @Inject
     private StatistiqueBean statistiqueBean;
     
+    @Inject
+    private NewUSerBean newUSerBean;
+    
     
     // LOGIN Page
     public void redirectToThesaurus() throws IOException {
@@ -79,6 +83,7 @@ public class MenuBean implements Serializable {
     
     public void redirectToMesProjectsPage() throws IOException {
         myProjectBean.init();
+        newUSerBean.clear();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/myProject.xhtml");
     }

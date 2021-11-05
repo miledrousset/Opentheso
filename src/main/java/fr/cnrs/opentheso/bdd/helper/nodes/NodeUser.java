@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bdd.helper.nodes;
 import java.io.Serializable;
 
 public class NodeUser implements Serializable {
+
     private int idUser;
     private String name;
     private String mail;
@@ -11,8 +12,13 @@ public class NodeUser implements Serializable {
     private boolean isSuperAdmin = false;
     private boolean passtomodify = false;
 
-    
     public NodeUser() {
+        name = "";
+        mail = "";
+        isActive = false;
+        isAlertMail = false;
+        isSuperAdmin = false;
+        passtomodify = false;
     }
 
     public int getIdUser() {
@@ -22,7 +28,6 @@ public class NodeUser implements Serializable {
     public void setIdUser(int idUser) {
         this.idUser = idUser;
     }
-
 
     public String getName() {
         return name;
@@ -71,5 +76,5 @@ public class NodeUser implements Serializable {
     public void setPasstomodify(boolean passtomodify) {
         this.passtomodify = passtomodify;
     }
-    
+
 }

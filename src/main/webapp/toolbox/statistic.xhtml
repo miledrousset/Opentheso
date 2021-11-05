@@ -41,7 +41,6 @@
 
             <div id="content-wrapper" style="width: 100%">
 
-
                 <div>
                     <ui:include src="../commun/header.xhtml" />
                 </div>
@@ -51,6 +50,8 @@
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Boite à outils / Statistiques</h1>
                     </div>
+
+                    <h:form id="containerIndex">
                         
                         <div class="col-12" style="height: 100%">
                             <div class="card shadow mb-4" style="height: 100%; padding: 20px; color: #000">
@@ -81,14 +82,12 @@
                                         </p:selectOneMenu>
                                     </div>
                                     <div class="col-4">
-                                        <p:commandButton title="Valider" styleClass="btn btn-primary" update="containerIndex"
+                                        <h:commandButton value="Valider" styleClass="btn btn-primary"
                                                          actionListener="#{statistiqueBean.onSelectLanguageType()}" />
                                     </div>        
                                 </div>
                             </div>
                         </div>
-
-                    <h:form id="containerIndex">
 
                         <h:panelGroup rendered="#{statistiqueBean.conceptTypeVisible}">
                             <div class="col-12" style="height: 100%">
