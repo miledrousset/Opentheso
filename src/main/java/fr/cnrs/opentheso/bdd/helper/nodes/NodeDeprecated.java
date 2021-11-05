@@ -46,6 +46,4 @@ public class NodeDeprecated {
         this.replacedByLabel = replacedByLabel;
     }
     
-    
-    
 }

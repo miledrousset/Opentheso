@@ -44,7 +44,7 @@
                 <h:outputText value="Confirmation passe : "  style="font-size: 12px;"/>
             </div>
             <div class="col-7">
-                <p:password value="#{newUSerBean.passWord2}"  style="height: 25px;font-size: 12px;" />
+                <p:password value="#{newUSerBean.passWord2}"  style="width: 100%" />
             </div>
         </div>            
 
@@ -89,9 +89,7 @@
 
                 <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
                                  class="btn btn-primary" oncomplete="PF('newUser').hide();"
-                                 actionListener="#{newUSerBean.addUser()}" >
-                    <p:tooltip value="Valider les changements de l'utilisateur" showDelay="1000" />
-                </p:commandButton>
+                                 actionListener="#{newUSerBean.addUser()}" />
             </div>                    
         </f:facet>
     </p:dialog>   

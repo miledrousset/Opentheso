@@ -162,12 +162,10 @@ public class MyProjectBean implements Serializable {
      */
    
     private void getListThesoByGroup(){
-        if (selectedProject == null) {
+        if (selectedProject == null || selectedProject.isEmpty()) {
             return;
         }
-        if (selectedProject.isEmpty()) {
-            return;
-        }
+        
         int idGroup = Integer.parseInt(selectedProject);
 
         UserHelper userHelper = new UserHelper();
@@ -177,8 +175,6 @@ public class MyProjectBean implements Serializable {
         
         listeThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idGroup,
                 connect.getWorkLanguage());
-       // listeUser = null;
- //       setUserRoleOnThisGroup();
     } 
     
     /**

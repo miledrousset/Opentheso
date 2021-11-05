@@ -14,14 +14,11 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import javax.annotation.PreDestroy;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 /**
@@ -32,10 +29,14 @@ import javax.inject.Inject;
 @SessionScoped
 public class SuperAdminBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private CurrentUser currentUser;
-    @Inject private SelectedTheso selectedTheso;
+    @Inject 
+    private Connect connect;
+    
+    @Inject 
+    private CurrentUser currentUser;
+    
+    @Inject 
+    private SelectedTheso selectedTheso;
     
     private ArrayList<NodeUser> allUsers;// la liste de tous les utilisateurs  
     private ArrayList<NodeUserGroupUser> nodeUserGroupUsers; // liste des utilisateurs + projets + roles
@@ -85,11 +86,7 @@ public class SuperAdminBean implements Serializable {
      * permet de récupérer la liste de tous les utilisateurs (Pour SuperAdmin)
      */
     private void listAllUsers(){
-        UserHelper userHelper = new UserHelper();
-
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
-            allUsers = userHelper.getAllUsers(connect.getPoolConnexion());
-        } 
+        allUsers = new UserHelper().getAllUsers(connect.getPoolConnexion()); 
     }    
     
     /**
@@ -102,7 +99,7 @@ public class SuperAdminBean implements Serializable {
             idLang = selectedTheso.getCurrentLang();
         
         if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
-            nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);    
+            nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);
         } 
     }      
     
@@ -160,7 +157,4 @@ public class SuperAdminBean implements Serializable {
         this.nodeUserGroupUsers = nodeUserGroupUsers;
     }
 
-
-
-    
 }

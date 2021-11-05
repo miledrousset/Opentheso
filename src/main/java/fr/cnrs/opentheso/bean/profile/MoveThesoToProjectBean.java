@@ -18,6 +18,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -103,19 +104,16 @@ public class MoveThesoToProjectBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
-               
-             
-
+        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Projet déplacé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         myProjectBean.init();
-/*        
+
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("profileForm:myProjectForm");
-            pf.ajax().update("profileForm:modifyProjectForm");
-        }*/
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }
     
     public void moveThesoToProjectSA(){
@@ -143,13 +141,12 @@ public class MoveThesoToProjectBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Projet déplacé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         superAdminBean.init();
-/*        
+        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("profileForm:myProjectForm");
-            pf.ajax().update("profileForm:modifyProjectForm");
-        }*/
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }      
     
 

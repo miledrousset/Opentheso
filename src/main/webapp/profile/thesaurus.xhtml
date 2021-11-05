@@ -81,11 +81,11 @@
                                                     <h:outputText value="#{listTheso.groupName}"/>
                                                 </p:column>
 
-                                                <p:column>
+                                                <p:column headerText="Action">
                                                     <p:commandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                    actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName,  listTheso.idGroup)}"
                                                                    update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();">
-                                                        <i class="pi pi-share" style="color: #f47b2a;" />
+                                                        <i class="fas fa-share-alt" style="color: #f47b2a;" />
                                                     </p:commandLink>                             
                                                 </p:column>
                                             </p:dataTable>                                          
