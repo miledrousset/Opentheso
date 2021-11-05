@@ -7,9 +7,9 @@ public class NodeUser implements Serializable {
     private String name;
     private String mail;
     private boolean isActive;
-    private boolean isAlertMail;
+    private boolean isAlertMail = false;
     private boolean isSuperAdmin = false;
-    private boolean passtomodify;
+    private boolean passtomodify = false;
 
     
     public NodeUser() {

@@ -10,10 +10,10 @@
         <!-- Projets -->
         <div class="row"> 
             <div class="col-5">
-                <h:outputText value="Projet : " style="font-size: 12px;"/> 
+                <h:outputText value="Projet : " style="font-size: 14px;"/> 
             </div>
             <div class="col-7">
-                <p:inputText value="#{newProjectBean.projectName}" style="width: 100%"/>
+                <p:inputText value="#{newProjectBean.projectName}" style="width: 100%; font-size: 14px;"/>
             </div> 
         </div>
         
@@ -25,9 +25,7 @@
 
                 <p:commandButton title="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
                                  class="btn btn-primary" oncomplete="PF('newProject').hide();"
-                                 actionListener="#{modifyRoleBean.addUserToProject()}" >
-                    <p:tooltip value="Modifier le label du projet" showDelay="1000" />
-                </p:commandButton>
+                                 actionListener="#{newProjectBean.addNewProject()}" />
             </div>                    
         </f:facet>
     </p:dialog>   

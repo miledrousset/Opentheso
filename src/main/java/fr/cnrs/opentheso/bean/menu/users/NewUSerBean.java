@@ -145,16 +145,14 @@ public class NewUSerBean implements Serializable {
         
         myProjectBean.setLists();
         
+        PrimeFaces.current().executeScript("PF('newUser').hide();");
+        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("profileForm");
-            pf.ajax().update("profileForm:myProjectForm");
-            pf.ajax().update("profileForm:tabUserProjectForm");
+            pf.ajax().update("containerIndex");
             
-        }        
-        PrimeFaces.current().executeScript("PF('newUser').hide();");        
-        
+        }
     }      
 
     public NodeUser getNodeUser() {

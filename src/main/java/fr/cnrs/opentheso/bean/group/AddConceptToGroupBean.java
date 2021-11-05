@@ -8,7 +8,6 @@ package fr.cnrs.opentheso.bean.group;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -31,7 +30,6 @@ import org.primefaces.PrimeFaces;
 
 public class AddConceptToGroupBean implements Serializable {
     @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private ConceptView conceptView;
     
