@@ -138,6 +138,7 @@ body .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
     box-shadow: none !important;
     font-size: 12px !important;
 }
+
 .cbLite {
     background: none !important;
     border: none !important;
@@ -509,4 +510,56 @@ body .ui-accordion .ui-accordion-header.ui-state-active {
 
 body .ui-accordion .ui-accordion-content {
     padding: auto;
+}
+
+/*  DATATABLE */
+
+body .ui-datatable .ui-datatable-data > tr > td {
+    padding: 5px 5px;;
+}
+
+body .ui-datatable thead th {
+    background: #ecf8f1;
+    color: #43B572;
+    padding: 7px 7px;
+    border: 1px solid #f47b2a;
+    border-width: 0 0 1px 0;
+    text-align: left;
+    font-size: 14px;
+    box-sizing: content-box;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+body .ui-datatable .ui-datatable-footer {
+    background: #ecf8f1;
+    border: 1px solid #f47b2a;
+    border-width: 1px 0 0 0;
+    color: #43B572;
+    padding: 7px 7px;
+    font-weight: 600;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+body .ui-datatable .ui-datatable-data > tr.ui-state-highlight {
+    background: #ecf8f1;
+    color: #43B572;
+    border: 1px solid #ecf8f1;
+}
+
+body .ui-datatable .ui-datatable-header {
+    background: #ecf8f1;
+    border: 1px solid #ecf8f1;
+    border-width: 1px 0 1px 0;
+    color: #495057;
+    padding: 5px;
+    font-weight: 600;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+/* Toolbar */
+body .ui-toolbar {
+    border: 1px solid #43B572;
+    padding: 7px;
 }

@@ -59,25 +59,32 @@
                                 <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
                                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                                         <div class="col-12">
-                                            <h:outputText value="#{langueBean.getMsg('profile.list_of_all_users')}" style="font-size: 15px;color: #C63632" />
-                                        </div>
-                                    </div>
-
-                                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
-                                        <div class="col-12">
                                             <!-- Vue liste de tous les utilisateurs -->
                                             <p:dataTable id="tabUserRoleProject" rendered="#{superAdminBean.nodeUserGroupUsers != null}"
-                                                         value="#{superAdminBean.nodeUserGroupUsers}" var="listUserRole" scrollable="true" 
-                                                         resizableColumns="true" scrollHeight="600" style="font-size: 12px;">
+                                                         value="#{superAdminBean.nodeUserGroupUsers}" var="listUserRole" scrollable="true" style="width: 100%"
+                                                         resizableColumns="true" scrollHeight="600" >
+                                                
+                                                <f:facet name="header">
+                                                    <center>
+                                                        <h:outputText value="#{langueBean.getMsg('profile.list_of_all_users')}" style="font-size: 15px; color: #C63632" />
+                                                    </center>
+                                                </f:facet>
+
                                                 <p:column headerText="#{langueBean.getMsg('profile.pseudo')}">
                                                     <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" value="#{listUserRole.userName}" />
                                                 </p:column>
+
                                                 <p:column headerText="#{langueBean.getMsg('profile.role')}">
                                                     <h:outputText value="#{listUserRole.roleName}"/>
                                                 </p:column>
+
                                                 <p:column headerText="#{langueBean.getMsg('profile.project')}">
                                                     <h:outputText value="#{listUserRole.groupName}"/>
                                                 </p:column>
+
+                                                <f:facet name="footer">
+                                                    <span class="p-text-bold">Nombre total des utilisateurs :  #{superAdminBean.nodeUserGroupUsers.size()}</span>
+                                                </f:facet>
                                             </p:dataTable>                                        
                                         </div>
                                     </div>

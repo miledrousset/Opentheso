@@ -4,27 +4,24 @@
 
     <p:dialog id="idModifyProject" header="Modifier le label des projets" widgetVar="modifyProject" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        
-        <ui:repeat var="projectList" value="#{newProjectBean.listeProjectOfUser}" >
-            <div class="row">
-                <div class="col-8" style="background: #FAFAFA">
-                    <p:inputText value="#{projectList.groupName}" style="color: #43B572; width: 100%"/>                    
-                </div>
 
-                <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink ajax="true" actionListener="#{newProjectBean.updateProject(projectList)}" update="containerIndex:idModifyProject" >
-                        <a class="fas fa-check-circle" style="color: #F7A269;" />
-                    </p:commandLink>
-                </div>
-                
-                <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink ajax="true" actionListener="#{newProjectBean.deleteProject(projectList)}" update="containerIndex:idModifyProject">
-                        <a class="fas fa-trash" style="color: #F7A269;" />
-                        <p:tooltip value="Supprimer le projet" showDelay="500" />
-                    </p:commandLink>
-                </div>               
-            </div>
-        </ui:repeat>
+        <p:dataTable var="projectList" value="#{newProjectBean.listeProjectOfUser}" rowKey="#{product.id}">
+
+            <p:column headerText="Nom">
+                <p:inputText value="#{projectList.groupName}" style="color: #43B572; width: 100%"/>
+            </p:column>
+            <p:column headerText="Modifier">
+                <p:commandLink actionListener="#{newProjectBean.updateProject(projectList)}" update="containerIndex" >
+                    <a class="fas fa-check-circle" style="color: #F7A269;" />
+                </p:commandLink>
+            </p:column>
+            <p:column headerText="Supprimer">
+                <p:commandLink actionListener="#{newProjectBean.deleteProject(projectList)}" update="containerIndex">
+                    <a class="fas fa-trash" style="color: #F7A269;"  />
+                </p:commandLink>
+            </p:column>
+        </p:dataTable>
+
     </p:dialog>
-    
+
 </ui:fragment>
