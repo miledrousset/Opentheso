@@ -8,7 +8,7 @@
     <h:head>
         <title>Opentheso</title>
 
-        <link href="../resources/images/icon_opentheso2.png" rel="icon" />
+        <link href="../resources/img/icon_opentheso2.png" rel="icon" />
 
         <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
@@ -65,50 +65,54 @@
                                 <div class="card mb-4 py-3 border-left-success" style="margin-top: 20px; vertical-align: central; 
                                      margin-left: 30px; margin-right: 30px; padding: 20px">
 
-                                    <div class="row" style="padding-top: 3px;">
-                                        <div class="col-12" style="text-align: right; margin-top: 6px">
+                                    <p:toolbar>
+                                        <p:toolbarGroup align="left" />
+                                        <p:toolbarGroup align="right">
                                             <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}" 
-                                                           actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
-                                                           title="Nouveau Corpus" update="idNewCorpus" oncomplete="PF('newCorpus').show();" class="btn btn-primary">
+                                                             actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
+                                                             title="Nouveau Corpus" update="idNewCorpus" oncomplete="PF('newCorpus').show();" class="btn btn-primary">
                                                 <p:tooltip value="Ajouter un nouveau corpus" showDelay="1000" />
                                             </p:commandButton>
-                                        </div>
-                                    </div>
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
 
-                                    <p:dataTable id="tabCorpus" value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true" resizableColumns="true" 
-                                                 scrollHeight="450" style="font-size: 12px; margin-top: 10px">
+                                    <p:dataTable id="tabCorpus" value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true" 
+                                                 resizableColumns="true" scrollHeight="450" style="margin-top: 10px"
+                                                 reflow="true" styleClass="products-table">
 
                                         <p:column width="25" headerText="Nom">
                                             <h:outputText value="#{corpus.corpusName}" title="Obligatoire"/>
                                         </p:column>
 
                                         <p:column width="90" headerText="URI pour le total"> 
-                                            <h:inputText value="#{corpus.uriCount}" title="facultatif" style="font-size: 12px; width: 100%" disabled="true"/>
+                                            <h:outputText value="#{corpus.uriCount}" title="facultatif"/>
                                         </p:column>
 
                                         <p:column width="90" headerText="URI pour le lien" >
-                                            <h:inputText value="#{corpus.uriLink}" title="Obligatoire" style="font-size: 12px; width: 100%" disabled="true"/>
+                                            <h:outputText value="#{corpus.uriLink}" title="Obligatoire"/>
                                         </p:column>
 
                                         <p:column width="15" headerText="Off/On">
-                                            <p:toggleSwitch id="toggleThesoStatus" value="#{corpus.active}" style="font-size: 10px;" disabled="true" />
+                                            <p:toggleSwitch value="#{corpus.active}" style="font-size: 10px;" disabled="true" />
                                         </p:column>
 
-                                        <p:column width="5" headerText="edit">
-                                            <p:commandLink actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
-                                                           update="idEditCorpus" oncomplete="PF('editCorpus').show();">
-                                                <a class="fas fa-edit" style="color: #f47b2a;"  />
-                                                <p:tooltip value="Modifier ce corpus" showDelay="500" />
-                                            </p:commandLink>
+                                        <p:column width="5" exportable="false">
+                                            <p:commandButton icon="pi pi-pencil" update=":containerIndex:manage-product-content"
+                                                             oncomplete="PF('editCorpus').show()" style="margin-right: 10px" 
+                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this"
+                                                             styleClass="edit-button rounded-button ui-button-success">
+                                                <p:resetInput target=":containerIndex:manage-product-content"/>
+                                            </p:commandButton>
+
+                                            <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
+                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" update="containerIndex:idConfirmDeleteCorpus"
+                                                             oncomplete="PF('confirmDeleteCorpus').show()">
+                                            </p:commandButton>
                                         </p:column>
 
-                                        <p:column width="5" headerText="supprimer">
-                                            <p:commandLink actionListener="#{corpusBean.setCorpusForEdit(corpus)}"
-                                                           update="idConfirmDeleteCorpus" oncomplete="PF('confirmDeleteCorpus').show();">
-                                                <a class="fas fa-trash-alt" style="color: #f47b2a;"  />
-                                                <p:tooltip value="Supprimer ce corpus" showDelay="500" />
-                                            </p:commandLink>
-                                        </p:column>                        
+                                        <f:facet name="footer">
+                                            <span class="p-text-bold">Nombre total des corpus:  #{corpusBean.nodeCorpuses.size()}</span>
+                                        </f:facet>
                                     </p:dataTable>      
                                 </div>
                             </div>
@@ -116,11 +120,12 @@
                     </div>
 
                     <ui:include src="../dialog/setting/editCorpus.xhtml" />
-                    <ui:include src="../dialog/setting/newCorpus.xhtml" />
                     <ui:include src="../dialog/setting/confirmDeleteCorpus.xhtml" />
 
                     <ui:include src="../commun/footer.xhtml" />
                 </h:form>
+
+                <ui:include src="../dialog/setting/newCorpus.xhtml" />
             </div>
         </div>
     </h:body>

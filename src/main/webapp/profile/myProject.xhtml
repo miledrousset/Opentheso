@@ -8,7 +8,7 @@
     <h:head>
         <title>Opentheso</title>
 
-        <link href="../resources/images/icon_opentheso2.png" rel="icon" />
+        <link href="../resources/img/icon_opentheso2.png" rel="icon" />
 
         <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
@@ -96,17 +96,17 @@
                                     <div class="col-12">
                                         <p:tabView>
                                             <!-- Vue liste d'utilisateurs par groupe -->
-                                            <p:tab title="#{langueBean.getMsg('profile.list_of_users')}" titleStyle="font-size: 12px;">
+                                            <p:tab title="#{langueBean.getMsg('profile.list_of_users')}">
                                                 <p:toolbar>
                                                     <p:toolbarGroup align="left" />
                                                     <p:toolbarGroup align="right">
                                                         <p:commandButton value="#{langueBean.getMsg('profile.new_user')}" icon="fas fa-user-plus"
-                                                                        actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
-                                                                        update="containerIndex:idNewUser" oncomplete="PF('newUser').show();" />
-                                                        
+                                                                         actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
+                                                                         update="idNewUser" oncomplete="PF('newUser').show();" />
+
                                                         <p:commandButton value="#{langueBean.getMsg('profile.add_existing_user')}" style="margin-left: 10px"
-                                                                        actionListener="#{modifyRoleBean.setSelectedProject(myProjectBean.selectedProject)}" icon="fas fa-user"
-                                                                        update="containerIndex:idAddExistingUserToProject" oncomplete="PF('addExistingUserToProject').show();" />
+                                                                         actionListener="#{modifyRoleBean.setSelectedProject(myProjectBean.selectedProject)}" icon="fas fa-user"
+                                                                         update="containerIndex:idAddExistingUserToProject" oncomplete="PF('addExistingUserToProject').show();" />
                                                     </p:toolbarGroup>
                                                 </p:toolbar>
 
@@ -156,7 +156,7 @@
                                                             </p:column>
 
                                                             <f:facet name="footer">
-                                                                <span class="p-text-bold">Nombre total des utilisateurs :  #{myProjectBean.listeUser.size()}</span>
+                                                                <span class="p-text-bold">Nombre total des utilisateurs:  #{myProjectBean.listeUser.size()}</span>
                                                             </f:facet>
 
                                                         </p:dataTable>
@@ -199,9 +199,9 @@
                     <ui:include src="../commun/footer.xhtml" /> 
 
                     <ui:include src="../dialog/profile/newProject.xhtml" /> 
-                    <ui:include src="../dialog/profile/modifyProject.xhtml" />
+                    <ui:include src="../dialog/profile/newUser.xhtml" />
+                    <ui:include src="../dialog/profile/modifyProject.xhtml" /> 
 
-                    <ui:include src="../dialog/profile/newUser.xhtml" /> 
                     <ui:include src="../dialog/profile/modifyUser.xhtml" /> 
                     <ui:include src="../dialog/profile/addExistingUserToProject.xhtml" />
                     <ui:include src="../dialog/profile/confirmRemoveUserFromProject.xhtml" /> 

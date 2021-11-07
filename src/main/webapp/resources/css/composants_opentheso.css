@@ -53,7 +53,7 @@ body .ui-dialog .ui-dialog-content {
 
 body .ui-dialog .ui-dialog-footer {
     padding: 5px !important;
-    border-top: 1px solid #858796;
+    /*border-top: 1px solid #858796;*/
 }
 
 /********************************************/
