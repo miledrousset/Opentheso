@@ -90,6 +90,7 @@ public class MenuBean implements Serializable {
     
     // MENU Paramètres
     public void redirectToIdetifiantPage() throws IOException {
+        preferenceBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/identifier.xhtml");
     }

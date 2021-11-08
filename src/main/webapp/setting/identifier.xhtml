@@ -202,7 +202,7 @@
                                             <div class="list-group-item list-group-item-action">                                           
                                                 <div class="row" style="padding: 3px;">
                                                     <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Désactiver/Activer le serveur Handle" style="font-size: 14px; font-weight: bold;" />
+                                                        <h:outputText value="Désactiver/Activer le serveur Handle" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8"> 
                                                         <p:inputSwitch value="#{preferenceBean.nodePreference.useHandle}" style="color: #f47b2a" onLabel="OUI" offLabel="NON" />
@@ -214,10 +214,10 @@
                                             <div class="list-group-item list-group-item-action">                                           
                                                 <div class="row" style="padding: 3px;">
                                                     <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Serveur Handle" style="font-size: 14px; font-weight: bold;" />
+                                                        <h:outputText value="Serveur Handle" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.urlApiHandle}" style="width: 100%;font-size: 12px;" />
+                                                        <p:inputText value="#{preferenceBean.nodePreference.urlApiHandle}" style="width: 100%;" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -226,10 +226,10 @@
                                             <div class="list-group-item list-group-item-action">                                           
                                                 <div class="row" style="padding: 3px;">
                                                     <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Préfixe Handle" style="font-size: 14px; font-weight: bold;" />
+                                                        <h:outputText value="Préfixe Handle" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixIdHandle}" style="width: 100%; font-size: 12px;" />
+                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixIdHandle}" style="width: 100%;" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -242,7 +242,7 @@
                                                                       style="font-size: 14px; font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.privatePrefixHandle}" style="width: 100%; font-size: 12px;"/>
+                                                        <p:inputText value="#{preferenceBean.nodePreference.privatePrefixHandle}" style="width: 100%;"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -251,10 +251,10 @@
                                             <div class="list-group-item list-group-item-action">                                           
                                                 <div class="row" style="padding: 3px;">
                                                     <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="User Handle" style="font-size: 14px; font-weight: bold;" />
+                                                        <h:outputText value="User Handle" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.userHandle}" style="width: 100%; font-size: 12px;"/>
+                                                        <p:inputText value="#{preferenceBean.nodePreference.userHandle}" style="width: 100%;"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -263,10 +263,10 @@
                                             <div class="list-group-item list-group-item-action">                                           
                                                 <div class="row" style="padding: 3px;">
                                                     <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Passe Handle" style="font-size: 14px; font-weight: bold;" />
+                                                        <h:outputText value="Passe Handle" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:password value="#{preferenceBean.nodePreference.passHandle}" style="width: 100%; font-size: 12px;"/>
+                                                        <p:password value="#{preferenceBean.nodePreference.passHandle}" style="width: 100%;"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -275,10 +275,10 @@
                                             <div class="list-group-item list-group-item-action">                                           
                                                 <div class="row" style="padding: 3px;">
                                                     <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Chemin clé Handle" style="font-size: 14px; font-weight: bold;" />
+                                                        <h:outputText value="Chemin clé Handle" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.pathKeyHandle}" style="width: 100%; font-size: 12px;"/>
+                                                        <p:inputText value="#{preferenceBean.nodePreference.pathKeyHandle}" style="width: 100%;"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -287,10 +287,10 @@
                                             <div class="list-group-item list-group-item-action">                                           
                                                 <div class="row" style="padding: 3px;">
                                                     <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Chemin certificat Handle" style="font-size: 14px; font-weight: bold;" />
+                                                        <h:outputText value="Chemin certificat Handle" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.pathCertHandle}" style="width: 100%; font-size: 12px;" />
+                                                        <p:inputText value="#{preferenceBean.nodePreference.pathCertHandle}" style="width: 100%;" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -298,11 +298,9 @@
                                             <!-- use generateHAndle -->
                                             <div class="row" style="padding: 3px;">
                                                 <div class="col-11" style="text-align: right; margin-top: 2px;">
-                                                    <p:commandButton class="btn btn-primary" style="width: 150px; font-size: 12px;"
-                                                                     title="Enregistrer" actionListener="#{preferenceBean.savePreference()}"
-                                                                     update="containerIndex messageIndex">
-                                                        <p:tooltip value="Enregistrer les modifications" showDelay="500" />
-                                                    </p:commandButton>
+                                                    <p:commandButton class="btn btn-primary" title="Enregistrer" 
+                                                                     actionListener="#{preferenceBean.savePreference()}"
+                                                                     update="containerIndex messageIndex"/>
                                                 </div>
                                             </div>
                                         </div>
