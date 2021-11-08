@@ -76,9 +76,9 @@
                                         </p:toolbarGroup>
                                     </p:toolbar>
 
-                                    <p:dataTable id="tabCorpus" value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true" 
+                                    <p:dataTable value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true" 
                                                  resizableColumns="true" scrollHeight="450" style="margin-top: 10px"
-                                                 reflow="true" styleClass="products-table">
+                                                 reflow="true">
 
                                         <p:column width="25" headerText="Nom">
                                             <h:outputText value="#{corpus.corpusName}" title="Obligatoire"/>
@@ -106,8 +106,7 @@
 
                                             <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
                                                              actionListener="#{corpusBean.setCorpusForEdit(corpus)}" update="containerIndex:idConfirmDeleteCorpus"
-                                                             oncomplete="PF('confirmDeleteCorpus').show()">
-                                            </p:commandButton>
+                                                             oncomplete="PF('confirmDeleteCorpus').show()"/>
                                         </p:column>
 
                                         <f:facet name="footer">

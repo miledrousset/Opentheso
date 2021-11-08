@@ -17,6 +17,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -61,7 +62,9 @@ public class ModifyUSerBean implements Serializable {
     
     
     public void updateUser(){
+        
         FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
         
         if(nodeUser== null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
@@ -83,6 +86,11 @@ public class ModifyUSerBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         selectUser(nodeUser.getIdUser());
         myProjectBean.setLists();
+        
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
     }      
     
     public void updatePassword(){

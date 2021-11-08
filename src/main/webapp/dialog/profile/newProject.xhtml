@@ -7,26 +7,26 @@
     <p:dialog id="idNewProject" header="Ajouter un nouveau projet" widgetVar="newProject" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <!-- Projets -->
-        <div class="row"> 
-            <div class="col-5">
-                <h:outputText value="Projet : " style="font-size: 14px;"/> 
+        <h:form>
+            <!-- Projets -->
+            <div class="row"> 
+                <div class="col-5">
+                    <h:outputText value="Projet : " style="font-size: 14px;"/> 
+                </div>
+                <div class="col-7">
+                    <p:inputText value="#{newProjectBean.projectName}" style="width: 100%; font-size: 14px;"/>
+                </div> 
             </div>
-            <div class="col-7">
-                <p:inputText value="#{newProjectBean.projectName}" style="width: 100%; font-size: 14px;"/>
-            </div> 
-        </div>
-        
-        <f:facet name="footer">
+
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('newProject').hide();" update="idNewProject"/>
+                                 actionListener="PF('newProject').hide();" />
 
                 <p:commandButton title="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
                                  class="btn btn-primary" oncomplete="PF('newProject').hide();"
                                  actionListener="#{newProjectBean.addNewProject()}" />
-            </div>                    
-        </f:facet>
+            </div>
+        </h:form>
     </p:dialog>   
 </ui:fragment>

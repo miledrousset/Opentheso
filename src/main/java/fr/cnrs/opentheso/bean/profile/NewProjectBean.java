@@ -160,10 +160,9 @@ public class NewProjectBean implements Serializable {
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("profileForm:myProjectForm");
-            pf.ajax().update("profileForm:modifyProjectForm");
-        }
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }     
     }      
     
     /**
@@ -185,10 +184,8 @@ public class NewProjectBean implements Serializable {
         init();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            //    pf.ajax().update("messageIndex");
-            pf.ajax().update("profileForm:myProjectForm");
-            pf.ajax().update("profileForm:modifyProjectForm");
-            pf.ajax().update("profileForm:selectProjects");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
         }        
     }    
     

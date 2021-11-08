@@ -7,74 +7,75 @@
     <p:dialog id="idModifyRole" header="Modifier les rôles" widgetVar="modifyRole" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <div class="row"> 
-            <!-- Nom Pseudo -->
-            <div class="col-4" >
-                <h:outputText value="Utilisateur : " style="font-size: 12px;"/>  
+        <h:form>
+            <div class="row"> 
+                <!-- Nom Pseudo -->
+                <div class="col-5" >
+                    <h:outputText value="Utilisateur : " style="font-size: 12px;"/>  
+                </div>
+                <div class="col-7">
+                    <h:outputText value="#{modifyRoleBean.nodeUser.name}" style="font-size: 13px; color: #43B572;"/>
+                </div>                    
             </div>
-            <div class="col-8">
-                <h:outputText value="#{modifyRoleBean.nodeUser.name}" style="font-size: 13px; color: #43B572;"/>
-            </div>                    
-        </div>
 
-        <!-- Projets -->
-        <div class="row" style="margin-top: 5px;"> 
-            <div class="col-4">
-                <h:outputText value="Projet : " style="font-size: 12px;"/> 
+            <!-- Projets -->
+            <div class="row" style="margin-top: 5px;"> 
+                <div class="col-5">
+                    <h:outputText value="Projet : " style="font-size: 12px;"/> 
+                </div>
+                <div class="col-7">
+                    <h:outputText value="#{myProjectBean.selectedProjectName}"
+                                  style="font-size: 13px; color: #43B572;"/>
+                </div> 
             </div>
-            <div class="col-8">
-                <h:outputText value="#{myProjectBean.selectedProjectName}"
-                              style="font-size: 13px; color: #43B572;"/>
-            </div> 
-        </div>
 
-        <!-- Roles -->
-        <div class="row" style="margin-top: 5px;">
-            <div class="col-4">
-                <h:outputText value="Rôle : " style="font-size: 12px;"/> 
+            <!-- Roles -->
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-5">
+                    <h:outputText value="Rôle : " style="font-size: 12px;"/> 
+                </div>
+                <div class="col-7">                       
+                    <p:selectOneMenu value="#{modifyRoleBean.roleOfSelectedUser}"
+                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                     style="width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="border: none; box-shadow: none; max-width: 300px">
+                        <f:selectItems value="#{myProjectBean.myAuthorizedRoles}" var="myRoles" itemLabel="#{myRoles.value}" itemValue="#{myRoles.id}"/>
+                    </p:selectOneMenu>
+                </div> 
             </div>
-            <div class="col-8">                       
-                <p:selectOneMenu value="#{modifyRoleBean.roleOfSelectedUser}"
-                                 styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                 style="width: 100%; background: none;  box-shadow: none; "
-                                 panelStyle="border: none; box-shadow: none; max-width: 300px">
-                    <f:selectItems value="#{myProjectBean.myAuthorizedRoles}" var="myRoles" itemLabel="#{myRoles.value}" itemValue="#{myRoles.id}"/>
-                </p:selectOneMenu>
-            </div> 
-        </div>
 
-        <div class="row" style="margin-top: 5px;">
-            <div class="col-6" >
-                <p:commandButton value="Modifier le rôle"  update="containerIndex messageIndex" 
-                                 style="width:100%; font-size: 13px; font-weight: normal;
-                                 color: white; background: #43B572; border: none; box-shadow: none;"
-                                 actionListener="#{modifyRoleBean.updateRoleForSelectedUser()}"
-                                 oncomplete="PF('modifyRole').hide();">
-                    <p:tooltip value="Modifier le rôle de l'utilisateur sur ce projet" showDelay="1000" />
-                </p:commandButton>
-            </div>                    
-        </div>
-
-        <!-- Les rôles existants de l'utilisateur --> 
-        <div class="row" style="margin-top: 5px;">
-            <div class="col-12">
-                <h:outputText value="Liste des rôles de l'utilisateur" style="font-size: 12px;" />
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-12" style="text-align: right" >
+                    <p:commandButton value="Modifier le rôle"  update="containerIndex messageIndex" 
+                                     style="width:100%; font-size: 13px; font-weight: normal;
+                                     color: white; background: #43B572; border: none; box-shadow: none;"
+                                     actionListener="#{modifyRoleBean.updateRoleForSelectedUser()}"
+                                     oncomplete="PF('modifyRole').hide();">
+                        <p:tooltip value="Modifier le rôle de l'utilisateur sur ce projet" showDelay="1000" />
+                    </p:commandButton>
+                </div>                    
             </div>
-        </div>
 
-        <div class="row" style="margin-top: 5px;"> 
-            <div class="col-12">
-                <p:dataTable id="tabUser" value="#{modifyRoleBean.allMyRoleProject}" var="allRoleProject" 
-                             scrollable="true" resizableColumns="true" scrollHeight="450">
-                    <p:column width="30%" headerText="Rôle">
-                        <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
-                    </p:column>
-                    <p:column width="70%" headerText="Projet" >
-                        <h:outputText value="#{allRoleProject.groupName}" style="font-size: 12px;" />
-                    </p:column>                              
-                </p:dataTable>
-            </div>                
-        </div>
+            <!-- Les rôles existants de l'utilisateur --> 
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-12">
+                    <h:outputText value="Liste des rôles de l'utilisateur" style="font-size: 12px;" />
+                </div>
+            </div>
 
+            <div class="row" style="margin-top: 5px;"> 
+                <div class="col-12">
+                    <p:dataTable id="tabUser" value="#{modifyRoleBean.allMyRoleProject}" var="allRoleProject" 
+                                 scrollable="true" resizableColumns="true" scrollHeight="450">
+                        <p:column width="30%" headerText="Rôle">
+                            <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
+                        </p:column>
+                        <p:column width="70%" headerText="Projet" >
+                            <h:outputText value="#{allRoleProject.groupName}" style="font-size: 12px;" />
+                        </p:column>                              
+                    </p:dataTable>
+                </div>                
+            </div>
+        </h:form>
     </p:dialog>   
 </ui:fragment>

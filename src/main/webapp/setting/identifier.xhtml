@@ -58,128 +58,127 @@
                             <div class="card shadow mb-4" style="height: 100%; "> 
                                 <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
                                     <p:panel style="border-color: transparent">
-
                                         <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
-                                            <div class="col-6" style="padding-top: 3px">
-                                                <h:outputText value="Serveur Ark" style="font-size: 14px; font-weight: bold;; color: #FFF !important;" />
+                                                <div class="col-6" style="padding-top: 3px">
+                                                    <h:outputText value="Serveur Ark" style="font-weight: bold;; color: #FFF !important;" />
+                                                </div>
+                                                <div class="col-6" style="text-align: right; padding-top: 3px">
+                                                    <p:badge rendered="#{preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #f47b2a" value="ON"  />                                                
+                                                    <p:badge rendered="#{!preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #f47b2a" value="OFF"  /> 
+                                                </div>
                                             </div>
-                                            <div class="col-6" style="text-align: right; padding-top: 3px">
-                                                <p:badge rendered="#{preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #f47b2a" value="ON"  />                                                
-                                                <p:badge rendered="#{!preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #f47b2a" value="OFF"  /> 
-                                            </div>
-                                        </div>
 
-                                        <div class="list-group" >
-                                            <!-- Activer / désactiver Ark -->                                      
-                                            <div class="list-group-item list-group-item-action">                                           
+                                            <div class="list-group" >
+                                                <!-- Activer / désactiver Ark -->                                      
+                                                <div class="list-group-item list-group-item-action">                                           
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="Désactiver/Activer le serveur Ark" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputSwitch value="#{preferenceBean.nodePreference.useArk}" style="color: #f47b2a" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Serveur Ark -->                                     
+                                                <div class="list-group-item list-group-item-action">                                           
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="Serveur Ark" style="font-size: 14px; font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="width: 100%;">
+                                                                <p:tooltip value="L'adresse du serveur distant qui permet de générer les identifiants ARK" showDelay="500" />
+                                                            </p:inputText>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Uri Ark -->                                    
+                                                <div class="list-group-item list-group-item-action">                                           
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="Uri Ark" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.uriArk}" style="width: 100%;">
+                                                                <p:tooltip value="L'URI ARK qui doit précéder chaque identifiant, cette URI est interpétée par le serveur ARK ci-dessus" showDelay="500" />
+                                                            </p:inputText>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Naan Ark -->                                    
+                                                <div class="list-group-item list-group-item-action">                                           
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="Votre Naan" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.idNaan}" style="width: 100%;"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Prefixe Ark -->                                    
+                                                <div class="list-group-item list-group-item-action">                                           
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="Préfixe Ark" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.prefixArk}" style="width: 100%; font-size: 12px;"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- User Ark -->                                   
+                                                <div class="list-group-item list-group-item-action">                                           
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="User Ark" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.userArk}" style="width: 100%;"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- pass Ark -->
+                                                <div class="list-group-item list-group-item-action">                                           
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="Passe Ark" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:password value="#{preferenceBean.nodePreference.passArk}" style="width: 100%;"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- use generateHAndle -->
+                                                <div class="list-group-item list-group-item-action">                                           
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="Générer handle avec Ark" style="font-size: 14px; font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputSwitch value="#{preferenceBean.nodePreference.generateHandle}" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- use generateHAndle -->
                                                 <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Désactiver/Activer le serveur Ark" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputSwitch value="#{preferenceBean.nodePreference.useArk}" style="color: #f47b2a" />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Serveur Ark -->                                     
-                                            <div class="list-group-item list-group-item-action">                                           
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Serveur Ark" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="width: 100%;font-size: 12px;">
-                                                            <p:tooltip value="L'adresse du serveur distant qui permet de générer les identifiants ARK" showDelay="500" />
-                                                        </p:inputText>
+                                                    <div class="col-11" style="text-align: right; margin-top: 2px;">
+                                                        <p:commandButton class="btn btn-primary" title="Enregistrer" update="containerIndex messageIndex"
+                                                                         actionListener="#{preferenceBean.savePreference()}" >
+                                                            <p:tooltip value="Enregistrer les modifications" showDelay="500" />
+                                                        </p:commandButton>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <!-- Uri Ark -->                                    
-                                            <div class="list-group-item list-group-item-action">                                           
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Uri Ark" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.uriArk}" style="width: 100%; font-size: 12px;">
-                                                            <p:tooltip value="L'URI ARK qui doit précéder chaque identifiant, cette URI est interpétée par le serveur ARK ci-dessus" showDelay="500" />
-                                                        </p:inputText>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Naan Ark -->                                    
-                                            <div class="list-group-item list-group-item-action">                                           
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Votre Naan" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.idNaan}" style="width: 100%; font-size: 12px;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Prefixe Ark -->                                    
-                                            <div class="list-group-item list-group-item-action">                                           
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Préfixe Ark" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixArk}" style="width: 100%; font-size: 12px;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- User Ark -->                                   
-                                            <div class="list-group-item list-group-item-action">                                           
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="User Ark" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.userArk}" style="width: 100%; font-size: 12px;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- pass Ark -->
-                                            <div class="list-group-item list-group-item-action">                                           
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Passe Ark" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:password value="#{preferenceBean.nodePreference.passArk}" style="width: 100%; font-size: 12px;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- use generateHAndle -->
-                                            <div class="list-group-item list-group-item-action">                                           
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Générer handle avec Ark" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.generateHandle}" style="font-size: 12px;" />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- use generateHAndle -->
-                                            <div class="row" style="padding: 3px;">
-                                                <div class="col-11" style="text-align: right; margin-top: 2px;">
-                                                    <p:commandButton class="btn btn-primary" title="Enregistrer" style="width: 150px; font-size: 12px;"
-                                                                     actionListener="#{preferenceBean.savePreference()}" update="containerIndex messageIndex">
-                                                        <p:tooltip value="Enregistrer les modifications" showDelay="500" />
-                                                    </p:commandButton>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </p:panel>
                                 </div>
                             </div>

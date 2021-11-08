@@ -18,6 +18,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -175,6 +176,13 @@ public class ModifyRoleBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'utilisateur a été ajouté avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         myProjectBean.resetListUsers();
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+            
+        }
     }      
     
     
