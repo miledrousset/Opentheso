@@ -4,10 +4,10 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGroup id="facetView" styleClass="textOpentheso"> 
+    <h:panelGroup id="facetView" styleClass="textOpentheso" style="margin: 20px"> 
 
-        <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central">
-            <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+        <div class="card mb-4 py-3 border-left-success" style="margin: 30px; vertical-align: central">
+            <div class="list-group" >
 
                 <div class="list-group-item list-group-item-action" style="">
                     <div class="row" style="padding-top: 3px;">
@@ -154,18 +154,22 @@
             </div>
         </div>
 
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and 
-                                  (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-            <p:commandButton title="Supprimer la facette" actionListener="#{editFacet.supprimerFacette}"
-                             update="containerIndex messageIndex" class="btn btn-primary">
-                <p:confirm header="Confirmation" message="Vous êtes sûr ?" icon="pi pi-exclamation-triangle" />
-            </p:commandButton>
+        <div class="mb-4 " style="margin-right: 30px">          
+            <div class="row">
+                <div class="col-12" style="text-align: right;">
+                    <p:commandButton title="Supprimer la facette" actionListener="#{editFacet.supprimerFacette}"
+                                     update="containerIndex messageIndex" class="btn btn-danger"
+                                     rendered="#{(currentUser.nodeUser != null) and  (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                        <p:confirm header="Confirmation" message="Vous êtes sûr ?" icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
 
-            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
-                <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
-            </p:confirmDialog>  
-        </h:panelGroup>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                        <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                    </p:confirmDialog>
+                </div>
+            </div>
+        </div>
     </h:panelGroup>
 
     <ui:include src="../../dialog/facet/renameFacet.xhtml" />

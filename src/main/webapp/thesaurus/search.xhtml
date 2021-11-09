@@ -125,9 +125,9 @@
                                         </p:autoComplete>
                                     </div>
                                     <div class="col-1" style="text-align: right; padding-top: 2px ">
-                                        <p:link class="btn btn-base" onclick="#{searchBean.applySearch()}" >
+                                        <p:commandLink class="btn btn-base" actionListener="#{searchBean.applySearch()}" >
                                             <i class="fas fa-search" style="color: #f47b2a;" />
-                                        </p:link>
+                                        </p:commandLink>
                                     </div>
                                 </div>
                             </div>
@@ -138,51 +138,52 @@
         </div>
     </div>
 
-    <h:form id="formSearch">
-        <div class="row" style="width: 100%; margin-top: -20px;">
-            <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center;" >
-                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
-                                         style="color: #000; background-color: transparent;">
-                    <p:ajax listener="#{searchBean.activateIndexMatch()}"/>
-                </p:selectBooleanCheckbox>
+    <div class="row" style="width: 100%; margin-top: -20px;">
+        <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center;" >
+            <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
+                                     style="color: #000; background-color: transparent;">
+                <p:ajax listener="#{searchBean.activateIndexMatch()}"/>
+            </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
-                                         style="color: #000; background-color: transparent;">
-                    <p:ajax listener="#{searchBean.activateExactMatch()}"/>
-                </p:selectBooleanCheckbox>
+            <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
+                                     style="color: #000; background-color: transparent;">
+                <p:ajax listener="#{searchBean.activateExactMatch()}"/>
+            </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
-                                         style="color: #000; background-color: transparent;">
-                    <p:ajax listener="#{searchBean.activateWithNote()}"/>
-                </p:selectBooleanCheckbox>
+            <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
+                                     style="color: #000; background-color: transparent;">
+                <p:ajax listener="#{searchBean.activateWithNote()}"/>
+            </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
-                                         style="color: #000; background-color: transparent;">
-                    <p:ajax listener="#{searchBean.activateWithId()}"/>
-                </p:selectBooleanCheckbox>
+            <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
+                                     style="color: #000; background-color: transparent;">
+                <p:ajax listener="#{searchBean.activateWithId()}"/>
+            </p:selectBooleanCheckbox>
 
-                <p:menuButton style="font-size: 12px;" title="Recherche pré-programmée" icon="pi pi-align-justify">
-                    <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" 
-                                update="containerIndex:formRightTab" style="font-size: 12px;" 
-                                title="Rechercher les concepts polyhiérarchiques"/>
+            <p:menuButton style="font-size: 12px;" title="Recherche pré-programmée" icon="pi pi-align-justify">
+                <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" 
+                            update="containerIndex:formRightTab" style="font-size: 12px;" 
+                            title="Rechercher les concepts polyhiérarchiques"/>
 
-                    <p:menuitem value="Multi-groupes" action="#{searchBean.searchConceptWithMultiGroup()}" 
-                                update="containerIndex:formRightTab" style="font-size: 12px;" 
-                                title="Rechercher les concepts qui ont plusieurs groupes"/>
+                <p:menuitem value="Multi-groupes" action="#{searchBean.searchConceptWithMultiGroup()}" 
+                            update="containerIndex:formRightTab" style="font-size: 12px;" 
+                            title="Rechercher les concepts qui ont plusieurs groupes"/>
 
-                    <p:menuitem value="Sans-groupes" action="#{searchBean.searchConceptWithoutGroup()}" 
-                                update="containerIndex:formRightTab" style="font-size: 12px;" 
-                                title="Rechercher les concepts qui n'ont pas de groupes"/>
+                <p:menuitem value="Sans-groupes" action="#{searchBean.searchConceptWithoutGroup()}" 
+                            update="containerIndex:formRightTab" style="font-size: 12px;" 
+                            title="Rechercher les concepts qui n'ont pas de groupes"/>
 
-                    <p:menuitem value="Doublons" action="#{searchBean.searchConceptDuplicated()}" 
-                                update="containerIndex:formRightTab" style="font-size: 12px;" 
-                                title="Rechercher les concepts qui ont un libellé en doublon"/>
+                <p:menuitem value="Doublons" action="#{searchBean.searchConceptDuplicated()}" 
+                            update="containerIndex:formRightTab" style="font-size: 12px;" 
+                            title="Rechercher les concepts qui ont un libellé en doublon"/>
 
-                    <p:menuitem value="Relations interdites" action="#{searchBean.searchConceptWithRTandBT()}" 
-                                update="containerIndex:formRightTab" style="font-size: 12px;" 
-                                title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
-                </p:menuButton>
-            </div>
+                <p:menuitem value="Relations interdites" action="#{searchBean.searchConceptWithRTandBT()}" 
+                            update="containerIndex:formRightTab" style="font-size: 12px;" 
+                            title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
+            </p:menuButton>
         </div>
+    </div>
+    <h:form id="formSearch">
+
     </h:form>
 </ui:fragment>

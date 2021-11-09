@@ -9,6 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -36,7 +37,8 @@ public class SearchBean implements Serializable {
     @Inject private SelectedTheso selectedTheso;
     @Inject private RightBodySetting rightBodySetting;
     @Inject private LeftBodySetting leftBodySetting;
-    @Inject private ConceptView conceptBean;    
+    @Inject private ConceptView conceptBean;
+    @Inject private IndexSetting indexSetting;
     
     private NodeSearchMini searchSelected;
     private ArrayList<NodeSearchMini> listResultAutoComplete;    
@@ -296,6 +298,9 @@ public class SearchBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
+        
+        rightBodySetting.setIndex("2");
+        indexSetting.setIsValueSelected(true);
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

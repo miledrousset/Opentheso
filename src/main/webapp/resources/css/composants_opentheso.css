@@ -6,7 +6,7 @@
         #f47b2a orange
 
         #FAFAFA blanc (couleur de fonds)
-
+        #ecf8f1 vert clair
 
 */
 
@@ -262,6 +262,11 @@ body .ui-tabs.ui-tabs-top > .ui-tabs-nav {
     font-size: 13px;
 }
 
+body .ui-tabs .ui-tabs-nav li.ui-tabs-header {
+    padding: 10px;
+    margin-top: 3px;
+}
+
 body .ui-tabs.ui-tabs-top > .ui-tabs-nav li.ui-tabs-header.ui-state-active {
     border-color: #f47b2a;
 }
@@ -275,6 +280,15 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
 .ui-tree {
     padding: 0px;
     border-collapse: collapse;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-hover {
+    background-color: #43B572;
+    color: #FFF;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
+    padding: 0px;
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {

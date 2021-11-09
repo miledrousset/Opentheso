@@ -19,12 +19,12 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="margin-left: 15px; margin-right: 15px">
             <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4" style=" height: 100%">
-                <div class="card shadow mb-1" style=" height: 100%">    
+                <div class="card shadow mb-1" style=" height: 100%">
                     <h:form id="formLeftTab" style=" height: 100%;">
                         <div class="row">
-                            <p:tabView activeIndex="#{leftBodySetting.index}" style="border-style: none; height: 100%; font-size: 12px;" >
+                            <p:tabView activeIndex="#{leftBodySetting.index}" style="border-style: none; width: 100%" >
 
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2" style=" height: 100%">
                                     <p:tab>
@@ -72,7 +72,7 @@
             </div>
 
             <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="height: 100%">
-                <div class="card shadow mb-4" style="height: 100%;">                               
+                <div class="card shadow mb-4" style="height: 100%;">
                     <p:panel id="formRightTab" style="height: 100%; border-style: none;" >
                         <p:tabView activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
                                    style="border-style: none; height: 100%">
