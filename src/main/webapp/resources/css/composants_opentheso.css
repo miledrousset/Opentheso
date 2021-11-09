@@ -478,6 +478,18 @@ body .ui-wizard .ui-wizard-step-titles .ui-wizard-step-title.ui-state-highlight 
     color: #FFF;
 }
 
+body .ui-wizard .ui-wizard-step-titles .ui-wizard-step-title {
+    border: 1px solid #dee2e6;
+    font-weight: bold;
+    font-size: 14px;
+    background: #f8f9fa;
+    color: #495057;
+    padding: 7px;
+    margin: 0;
+    border-right: 0 none;
+    border-radius: 0;
+}
+
 /** BUTTON **/
 body .ui-button {
     background: #f47b2a;

@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -32,8 +33,15 @@ import javax.inject.Inject;
 @Named(value = "deleteThesoBean")
 @SessionScoped
 public class DeleteThesoBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
+    
+    @Inject 
+    private Connect connect;
+    
+    @Inject 
+    private SelectedTheso selectedTheso;
+    
+    @Inject
+    private ViewEditionBean viewEditionBean;
     
     private String idThesoToDelete;
     private String valueOfThesoToDelelete;
@@ -64,12 +72,14 @@ public class DeleteThesoBean implements Serializable {
         
         // récupération de l'idTheso en cours
         this.currentIdTheso = cucurrentIdTheso;
+        
+        deleteTheso();
     }
     
     /**
      * Permet de supprimer un thésaurus 
      */
-    public void deleteTheso() throws IOException {
+    public void deleteTheso() {
         if(idThesoToDelete == null) return;
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoToDelete);
@@ -116,6 +126,12 @@ public class DeleteThesoBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "thesaurus supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();
+        viewEditionBean.init();
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }    
     }
 
     public boolean isIsDeleteOn() {

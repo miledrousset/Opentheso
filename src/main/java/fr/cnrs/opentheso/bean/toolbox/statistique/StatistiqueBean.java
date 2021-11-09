@@ -47,7 +47,7 @@ public class StatistiqueBean implements Serializable {
     private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;
     private int nbrCanceptByThes;
     private Date dateDebut, dateFin, derniereModification;
-    private NodeLangTheso selectedLanguage;
+    private String selectedLanguage;
     private ConceptStatisticData canceptStatistiqueSelected;
 
     private List<GenericStatistiqueData> genericStatistiques;
@@ -226,7 +226,7 @@ public class StatistiqueBean implements Serializable {
 
             ConceptHelper conceptHelper = new ConceptHelper();
 
-            genericStatistiques = new StatistiqueService().searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage.getCode());
+            genericStatistiques = new StatistiqueService().searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage);
 
             nbrCanceptByThes = conceptHelper.getNbrOfCanceptByThes(connect.getPoolConnexion().getConnection(), selectedTheso.getCurrentIdTheso());
 
@@ -255,7 +255,7 @@ public class StatistiqueBean implements Serializable {
     public void getStatisticByConcept() {
         conceptStatistic = new StatistiqueService().searchAllConceptsByThesaurus(this, 
                 connect, selectedTheso.getCurrentIdTheso(),
-                selectedLanguage.getCode(), dateDebut, dateFin,
+                selectedLanguage, dateDebut, dateFin,
                 searchGroupIdFromLabel(selectedCollection), nbrResultat);
 
         //PrimeFaces.current().executeScript("PF('bui').hide();");
@@ -335,11 +335,11 @@ public class StatistiqueBean implements Serializable {
         this.languagesOfTheso = languagesOfTheso;
     }
 
-    public NodeLangTheso getSelectedLanguage() {
+    public String getSelectedLanguage() {
         return selectedLanguage;
     }
 
-    public void setSelectedLanguage(NodeLangTheso selectedLanguage) {
+    public void setSelectedLanguage(String selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
     }
 

@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.connect;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.NewUSerBean;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
@@ -13,9 +14,12 @@ import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.primefaces.PrimeFaces;
 
 
 @Named(value = "menuBean")
@@ -48,6 +52,9 @@ public class MenuBean implements Serializable {
     
     @Inject
     private NewUSerBean newUSerBean;
+    
+    @Inject 
+    private SelectedTheso selectedTheso;
     
     
     // LOGIN Page
@@ -121,12 +128,26 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToMaintenancePage() throws IOException {
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", 
+                    "Vous devez choisir un Thesorus avant !"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+            return;
+        }
         atelierThesBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/service.xhtml");
     }
     
     public void redirectToStatistiquePage() throws IOException {
+        if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", 
+                    "Vous devez choisir un Thesorus avant !"));
+            PrimeFaces pf = PrimeFaces.current();
+            pf.ajax().update("messageIndex");
+            return;
+        }
         statistiqueBean.init();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/statistic.xhtml");

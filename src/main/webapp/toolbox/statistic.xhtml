@@ -21,7 +21,7 @@
     </h:head>
 
 
-    <h:body id="page-top" style="font-size: 12px;">
+    <h:body id="page-top">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -59,9 +59,9 @@
                                     <div class="col-4" style="text-align: right; margin-top: 5px">
                                         <h:outputText style="font-size: 13px; color: #000;" value="#{langueBean.getMsg('statistique.choix_mode')}"/>
                                     </div>
-                                    <div class="col-4" style="font-size: 12px;">
+                                    <div class="col-4">
                                         <p:selectOneMenu value="#{statistiqueBean.selectedStatistiqueTypeCode}"
-                                                         style="font-size: 15px; height: 100%; background: white; border-color: #43B572; width: 100%">
+                                                         style="font-size: 15px; background: white; border-color: #43B572; width: 100%">
                                             <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.general')}" itemValue="0" />
                                             <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.par_concept')}" itemValue="1" />
                                         </p:selectOneMenu>
@@ -75,15 +75,16 @@
                                                       value="#{langueBean.getMsg('statistique.choix_lang')}"/>
                                     </div>
                                     <div class="col-4">
-                                        <p:selectOneMenu id="langue" value="#{statistiqueBean.selectedLanguage}"
-                                                         style="font-size: 15px; height: 100%; background: white; border-color: #43B572; width: 100%">
+                                        <p:selectOneMenu id="langue" value="#{statistiqueBean.selectedLanguage}" 
+                                                         style="font-size: 15px; background: white; border-color: #43B572; width: 100%">
                                             <f:selectItems value="#{statistiqueBean.languagesOfTheso}" var="langue"
-                                                           itemLabel="#{statistiqueBean.formatLanguage(langue.value)}" itemValue="#{langue}"/>
+                                                           itemLabel="#{statistiqueBean.formatLanguage(langue.value)}" itemValue="#{langue.code}"/>
                                         </p:selectOneMenu>
                                     </div>
                                     <div class="col-4">
-                                        <p:commandButton title="Valider" styleClass="btn btn-primary" update="containerIndex:bloc1 containerIndex:bloc2"
-                                                         actionListener="#{statistiqueBean.onSelectLanguageType()}" process="@this" />
+                                        <p:commandButton title="Valider" styleClass="btn btn-primary" 
+                                                         update="containerIndex:bloc1 containerIndex:bloc2 resultat2"
+                                                         actionListener="#{statistiqueBean.onSelectLanguageType()}" />
                                     </div>        
                                 </div>
                             </div>
@@ -100,7 +101,7 @@
                                                 </div>
                                                 <div class="col-3">
                                                     <p:selectOneMenu value="#{statistiqueBean.nbrResultat}" 
-                                                                     styleClass="selectOneMenu_custom" style="font-size: 12px;">
+                                                                     styleClass="selectOneMenu_custom">
                                                         <f:selectItem itemLabel="50" itemValue="50" />
                                                         <f:selectItem itemLabel="100" itemValue="100" />
                                                         <f:selectItem itemLabel="200" itemValue="200" />
@@ -130,7 +131,7 @@
                                                 <h:outputText style="font-size: 14px" value="#{langueBean.getMsg('statistique.filtre_collection.title')}"/>
 
                                                 <p:autoComplete value="#{statistiqueBean.selectedCollection}" completeMethod="#{statistiqueBean.searchDomaineName}" 
-                                                                style="font-size: 12px; margin-left: 10px; background: white; border-color: #43B572" />
+                                                                style="margin-left: 10px; background: white; border-color: #43B572" />
                                             </h:panelGrid>
                                         </p:tab>
                                     </p:accordionPanel>
@@ -138,79 +139,61 @@
                                     <div class="row" style="margin-top: 10px">
                                         <div class="col-12" style="text-align: right">
                                             <p:commandButton title="Initialiser" update="containerIndex:filterParams" styleClass="btn btn-secondary"
-                                                             actionListener="#{statistiqueBean.clearFilter()}" style="margin-right: 5px">
-                                                <p:tooltip value="Effecer tous les filtres et le résultat" showDelay="1000" />
-                                            </p:commandButton>
+                                                             actionListener="#{statistiqueBean.clearFilter()}" style="margin-right: 5px" />
 
-                                            <p:commandButton title="#{langueBean.getMsg('statistique.validate')}" process="@this" ajax="true"
+                                            <p:commandButton title="#{langueBean.getMsg('statistique.validate')}"
                                                              update="containerIndex:resultat" styleClass="btn btn-primary"
                                                              actionListener="#{statistiqueBean.getStatisticByConcept()}"/>
                                         </div>
                                     </div>
 
-                                    <div class="row" style="font-size: 12px; color: #666666; margin-top: 10px;">
-                                        <div class="col-1" style="font-weight: bold;">
-                                            <h:outputText value="#{langueBean.getMsg('statistique.id')}"/>
-                                        </div>
-                                        <div class="col-3" style="font-weight: bold;">
-                                            <h:outputText value="#{langueBean.getMsg('statistique.label')}"/>
-                                        </div>
-                                        <div class="col-2" style="font-weight: bold;">
-                                            <h:outputText value="#{langueBean.getMsg('statistique.type')}"/>
-                                        </div> 
-                                        <div class="col-2" style="font-weight: bold;">
-                                            <h:outputText value="#{langueBean.getMsg('statistique.creation_date')}"/>
-                                        </div> 
-                                        <div class="col-2" style="font-weight: bold;">
-                                            <h:outputText value="#{langueBean.getMsg('statistique.modification_date')}"/>
-                                        </div>  
-                                        <div class="col-1" style="font-weight: bold;">
-                                            <h:outputText value="#{langueBean.getMsg('statistique.user')}"/>
-                                        </div>     
-                                        <div class="col-1">
-                                            <h:outputText value="Info"/>
-                                        </div>                     
-                                    </div>
+                                    <p:dataTable id="resultat" var="stat" value="#{statistiqueBean.canceptStatistiques}"
+                                                 style="margin-top: 10px" paginator="true" rows="10"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}">
 
-                                    <p:panel id="resultat">
-                                        <div class="row" style="font-size: 12px; color: #666666; margin-top: 10px;">
-                                            <div class="col-12">
-                                                <p:scrollPanel mode="native" style=" height:290px" 
-                                                               rendered="#{statistiqueBean.canceptStatistiques.size() > 0}">
-                                                    <ui:repeat var="stat" value="#{statistiqueBean.canceptStatistiques}">
-                                                        <div class="row" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(statistiqueBean.canceptStatistiques.indexOf(stat))}; 
-                                                             padding-top: 5px">
-                                                            <div class="col-1" >
-                                                                <h:outputText value="#{stat.idConcept}"/>
-                                                            </div>
-                                                            <div class="col-3" >
-                                                                <h:outputText value="#{stat.label}"/>
-                                                            </div>  
-                                                            <div class="col-2" >
-                                                                <h:outputText value="#{stat.type}"/>
-                                                            </div>
-                                                            <div class="col-2" >
-                                                                <h:outputText value="#{stat.dateCreation}"/>
-                                                            </div>  
-                                                            <div class="col-2" >
-                                                                <h:outputText value="#{stat.dateModification}"/>
-                                                            </div> 
-                                                            <div class="col-1" >
-                                                                <h:outputText value="#{stat.utilisateur}"/>
-                                                            </div>
-                                                            <div class="col-1" >
-                                                                <p:commandLink oncomplete="PF('conceptDdetail').show();" 
-                                                                               actionListener="#{statistiqueBean.setConceptSelected(stat)}"
-                                                                               update="containerIndex">
-                                                                    <a class="fas fa-broom" style="color: #f47b2a;" />
-                                                                </p:commandLink>
-                                                            </div>
-                                                        </div>   
-                                                    </ui:repeat>
-                                                </p:scrollPanel>
-                                            </div>
+                                        <p:column width="10%" headerText="#{langueBean.getMsg('statistique.id')}" sortBy="#{customer.name}" >
+                                            <h:outputText value="#{stat.idConcept}"/>
+                                        </p:column>
+
+                                        <p:column width="40%" headerText="#{langueBean.getMsg('statistique.label')}">
+                                            <h:outputText value="#{stat.label}"/>
+                                        </p:column> 
+
+                                        <p:column width="10%" headerText="#{langueBean.getMsg('statistique.type')}">
+                                            <h:outputText value="#{stat.type}"/>
+                                        </p:column> 
+
+                                        <p:column width="15%" headerText="#{langueBean.getMsg('statistique.creation_date')}">
+                                            <h:outputText value="#{stat.dateCreation}"/>
+                                        </p:column> 
+
+                                        <p:column width="15%" headerText="#{langueBean.getMsg('statistique.modification_date')}">
+                                            <h:outputText value="#{stat.dateModification}"/>
+                                        </p:column>
+
+                                        <p:column width="10%" headerText="#{langueBean.getMsg('statistique.user')}">
+                                            <h:outputText value="#{stat.utilisateur}"/>
+                                        </p:column>
+
+                                        <p:column width="5%" headerText="Info">
+                                            <p:commandButton icon="pi pi-pencil" update="idConceptStat conceptDdetailForm"
+                                                             actionListener="#{statistiqueBean.setConceptSelected(stat)}"
+                                                             oncomplete="PF('conceptDdetail').show()" process="@this"
+                                                             styleClass="edit-button rounded-button ui-button-success"/>
+                                        </p:column>
+                                    </p:dataTable>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p:commandButton title="#{langueBean.getMsg('statistique.exporter_csv')}"
+                                                             icon="fas fa-download" styleClass="btn btn-primary"
+                                                             update="containerIndex:bloc1 containerIndex:bloc2" >
+                                                <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
+                                            </p:commandButton>
                                         </div>
-                                    </p:panel>
+                                    </div>
                                 </div>
                             </div>
                         </h:panelGroup>
@@ -245,87 +228,64 @@
                                         </div>
                                     </div>
 
-                                    <div class="row" style="margin-top: 20px">
-                                        <div class="col-12">
-                                            <h:form id="statistic">
-                                                <div class="row" style="font-size: 12px;  color: #666666">
-                                                    <div class="col-5">
-                                                        <h:outputText style="font-weight: bold; margin-left: 10px" value="#{langueBean.getMsg('statistique.collection')}"/>
-                                                    </div>
-                                                    <div class="col-1">
-                                                        <p:commandLink oncomplete="PF('conceptChart').show();" style="color: #f47b2a;" update="containerIndex">
-                                                            <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
-                                                        </p:commandLink>
-                                                    </div>
-                                                    <div class="col-1">
-                                                        <p:commandLink oncomplete="PF('synonymChart').show();" style="color: #f47b2a;" update="containerIndex">
-                                                            <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.synonyms')}"/>
-                                                        </p:commandLink>
-                                                    </div> 
-                                                    <div class="col-1">
-                                                        <p:commandLink oncomplete="PF('termChart').show();" style="color: #f47b2a;" update="containerIndex">
-                                                            <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.untranslated_terms')}"/>
-                                                        </p:commandLink>
-                                                    </div> 
-                                                    <div class="col-1">
-                                                        <p:commandLink oncomplete="PF('noteChart').show();" style="color: #f47b2a;" update="containerIndex">
-                                                            <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.notes')}"/>
-                                                        </p:commandLink>
-                                                    </div>      
-                                                    <div class="col-1">
-                                                        <h:outputText style="font-weight: bold;" value="Align Wikidata"/>
-                                                    </div>
-                                                    <div class="col-1">
-                                                        <h:outputText style="font-weight: bold;" value="Total alignement"/>
-                                                    </div>                             
-                                                </div>
+                                    <p:dataTable id="resultat2" var="stat" value="#{statistiqueBean.genericStatistiques}" 
+                                                 style="margin-top: 10px" paginator="true" rows="10"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}">
 
-                                                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/>
+                                        <p:column width="30%" headerText="#{langueBean.getMsg('statistique.collection')}">
+                                            <h:outputText value="#{stat.collection} (#{stat.idCollection})"/>
+                                        </p:column>
 
-                                                <p:scrollPanel mode="native" style="width:100%; height:380px" 
-                                                               rendered="#{statistiqueBean.genericStatistiques.size() > 0}">
-                                                    <ui:repeat id="data_stat" var="stat" value="#{statistiqueBean.genericStatistiques}">
-                                                        <div class="row" style="font-size: 12px; background-color: #{viewEditionBean.getAlternateColor(statistiqueBean.genericStatistiques.indexOf(stat))}; 
-                                                             padding-top: 5px">
-                                                            <div class="col-5" >
-                                                                <h:outputText style="margin-left: 10px" value="#{stat.collection} (#{stat.idCollection})"/>
-                                                            </div>
-                                                            <div class="col-1" >
-                                                                <h:outputText value="#{stat.conceptsNbr}"/>
-                                                            </div>  
-                                                            <div class="col-1" >
-                                                                <h:outputText value="#{stat.synonymesNbr}"/>
-                                                            </div>
-                                                            <div class="col-1" >
-                                                                <h:outputText value="#{stat.termesNonTraduitsNbr}"/>
-                                                            </div>  
-                                                            <div class="col-1" >
-                                                                <h:outputText value="#{stat.notesNbr}"/>
-                                                            </div>
-                                                            <div class="col-1" >
-                                                                <h:outputText value="#{stat.wikidataAlignNbr}"/>
-                                                            </div>
-                                                            <div class="col-1" >
-                                                                <h:outputText value="#{stat.totalAlignment}"/>
-                                                            </div>                                     
-                                                        </div>   
-                                                    </ui:repeat>
-                                                </p:scrollPanel>
-                                            </h:form>
-                                        </div>
-                                    </div>
+                                        <p:column width="30%" headerText="#{langueBean.getMsg('statistique.concepts')}">
+                                            <h:outputText value="#{stat.conceptsNbr}"/>
+                                        </p:column> 
+
+                                        <p:column width="10%" headerText="#{langueBean.getMsg('statistique.untranslated_terms')}">
+                                            <h:outputText value="#{stat.termesNonTraduitsNbr}"/>
+                                        </p:column> 
+
+                                        <p:column width="10%" headerText="#{langueBean.getMsg('statistique.notes')}">
+                                            <h:outputText value="#{stat.notesNbr}"/>
+                                        </p:column> 
+
+                                        <p:column width="10%" headerText="Align Wikidata">
+                                            <h:outputText value="#{stat.wikidataAlignNbr}"/>
+                                        </p:column>
+
+                                        <p:column width="10%" headerText="Total alignement">
+                                            <h:outputText value="#{stat.totalAlignment}"/>
+                                        </p:column>
+
+                                        <f:facet name="footer">
+                                            <span class="p-text-bold">
+                                                <h:outputText value="Shémas : "/>
+                                                <p:commandLink oncomplete="PF('conceptChart').show();" style="color: #f47b2a; margin-left: 10px" 
+                                                               update="containerIndex">
+                                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
+                                                </p:commandLink>
+
+                                                <p:commandLink oncomplete="PF('termChart').show();" style="color: #f47b2a; margin-left: 10px" update="containerIndex">
+                                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.untranslated_terms')}"/>
+                                                </p:commandLink>
+
+                                                <p:commandLink oncomplete="PF('noteChart').show();" style="color: #f47b2a; margin-left: 10px" update="containerIndex">
+                                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.notes')}"/>
+                                                </p:commandLink>
+                                            </span>
+                                        </f:facet>
+                                    </p:dataTable>
+
+                                    <p:commandButton icon="fa fa-fw fa-download" styleClass="btn btn-success"
+                                                     update="containerIndex:bloc1 containerIndex:bloc2" >
+                                        <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
+                                    </p:commandButton>
                                 </div>
                             </div>
                         </h:panelGroup>
 
                     </h:form>
-
-                    <p:commandButton value="#{langueBean.getMsg('statistique.exporter_csv')}" rendered="#{statistiqueBean.isExportVisible()}"
-                                     widgetVar="exportButton" icon="fa fa-fw fa-download" ajax="false"
-                                     class="btn btn-success" style="font-size: 13px; color: white; background: #43B572; 
-                                     border: #43B572; height: 35px; margin-top: 10px" update="viewExportThesaurus" >
-                        <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
-                    </p:commandButton>
 
                     <p:dialog widgetVar="noteChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px"
                               closable="false">
@@ -357,7 +317,7 @@
                     </p:dialog>
 
                     <p:dialog id="idConceptStat" header="Détail du concept '#{statistiqueBean.canceptStatistiqueSelected.label}'" 
-                              widgetVar="conceptDdetail" modal="true" resizable="true" position="top" width="400" 
+                              widgetVar="conceptDdetail" modal="true" resizable="true" position="top" width="600" 
                               style="margin-top: 50px" >         
 
                         <h:form id="conceptDdetailForm">  

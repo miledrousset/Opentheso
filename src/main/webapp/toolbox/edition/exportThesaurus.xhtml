@@ -17,8 +17,8 @@
 
 
                 <p:panel header="Types" style="padding: 20px" rendered="#{viewExportBean.isPdfExport()}">
-                    
-                    <p:dataTable var="type" value="#{viewExportBean.types}" style="padding: 20px"
+
+                    <p:dataTable var="type" value="#{viewExportBean.types}"
                                  selection="#{viewExportBean.typeSelected}" rowKey="#{type}">
                         <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
                         <p:column headerText="Code">
@@ -26,11 +26,11 @@
                         </p:column>
                     </p:dataTable>
 
-                    <div class="row">
-                        <div class="col-6" >
-                            <h:outputText value="Langue 1:"/>
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px; color: #000">
+                            <h:outputText value="Première langue"/>
                         </div>
-                        <div class="col-6" >
+                        <div class="col-5" >
                             <p:selectOneMenu value="#{viewExportBean.selectedLang1_PDF}"
                                              style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                              panelStyle="font-size: 12px;  border: none; box-shadow: none;">
@@ -40,11 +40,11 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-6" >
-                            <h:outputText value="Langue 2:" />
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px; color: #000">
+                            <h:outputText value="Deuxième langue" />
                         </div>
-                        <div class="col-6" >
+                        <div class="col-5" >
                             <p:selectOneMenu value="#{viewExportBean.selectedLang2_PDF}"
                                              style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                              panelStyle="font-size: 12px;  border: none; box-shadow: none;">
@@ -56,240 +56,242 @@
                     </div>
                 </p:panel>
 
+                <p:panel visible="false" header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
+                         closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+                    <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}"
+                                 selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                        <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllLangsSelect}" process="@this" partialSubmit="true" />
+
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
+                        <p:column headerText="Code" width="60">
+                            <h:outputText value="#{langue.code}" />
+                        </p:column>
+                        <p:column headerText="Langue">
+                            <h:outputText value="#{langue.value}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+
+                <p:panel visible="false" header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500"
+                         closeSpeed="500" style="margin-bottom:20px" collapsed="true">
+                    <p:dataTable id="listGroupe" var="groupOfTheso" value="#{viewExportBean.groupList}" style=";margin-bottom:0"
+                                 selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}">
+                        <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllGroupsSelect}" process="@this" partialSubmit="true" />
+
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
+                        <p:column headerText="Id" width="200" styleClass="styleText2">
+                            <h:outputText value="#{groupOfTheso.conceptGroup.idgroup}" />
+                        </p:column>
+                        <p:column headerText="Group" styleClass="styleText2">
+                            <h:outputText value="#{groupOfTheso.lexicalValue}" styleClass="styleText2"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+
+                <h:panelGroup rendered="#{viewExportBean.isRdfExport()}">
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px">
+                            <h:outputText value="Format de sortie SKOS" />
+                        </div>
+                        <div class="col-5" >
+                            <p:selectOneMenu value="#{viewExportBean.selectedExportFormat}"
+                                             style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                             panelStyle="border: none; box-shadow: none;">
+                                <f:selectItems  value="#{viewExportBean.exportFormat}" var="format" itemLabel="#{format}" itemValue="#{format}"/>
+
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px">
+                            <h:outputText value="Filtre par collection/groupe" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{viewExportBean.selectedGroup}"
+                                             style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                             panelStyle="border: none; box-shadow: none;">
+                                <f:selectItem  itemLabel="all" itemValue="all"/>                    
+                                <f:selectItems  value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{viewExportBean.isCsvExport()}">
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px">
+                            <h:outputText value="Délimiteur Csv" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{viewExportBean.csvDelimiter}" styleClass="selectOneMenu_custom" 
+                                             panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none; box-shadow: none;">
+                                <f:selectItem itemLabel=";" itemValue=";" />
+                                <f:selectItem itemLabel="," itemValue="," />
+                                <f:selectItem itemLabel="\t" itemValue="\t" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px">
+                            <h:outputText value="Langue" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{viewExportBean.selectedIdLangTheso}" styleClass="selectOneMenu_custom" 
+                                             panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none; box-shadow: none; ">
+                                <f:selectItems value="#{viewExportBean.languagesOfTheso}" var="lang"
+                                               itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+
+                <p:panel rendered="#{viewEditionBean.isViewImportVirtuoso()}" toggleable="true" closable="false"
+                         toggleSpeed="500" closeSpeed="500" style="color: #000">
+
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px; color: #000">
+                            <h:outputText value="Graphe" />
+                        </div>
+                        <div class="col-5">
+                            <p:inputText id="graphe" type="text" value="#{viewEditionBean.nomGraphe}" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px; color: #000">
+                            <h:outputText value="Adresse du serveur" />
+                        </div>
+                        <div class="col-5">
+                            <p:inputText id="adresse" type="text" value="#{viewEditionBean.urlServer}" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px; color: #000">
+                            <h:outputText value="Nom d'utilisateur" />
+                        </div>
+                        <div class="col-5">
+                            <p:inputText id="login" type="text" value="#{viewEditionBean.login}" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right; margin-top: 3px; color: #000">
+                            <h:outputText value="Mot de passe" />
+                        </div>
+                        <div class="col-5">
+                            <p:inputText id="password" type="text" value="#{viewEditionBean.password}" />
+                        </div>
+                    </div>
+                </p:panel>
+            </div>
+
+            <div class="row" style="margin-bottom: 20px">
+                <div class="col-6">
+                    <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" ajax="false"
+                                     onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     icon="fa fa-upload" class="btn btn-success"
+                                     rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
+                                     style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;">
+                        <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
+                    </p:commandButton>
+                    <p:commandButton value="Exporter vers Vertuoso" ajax="false"
+                                     onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     icon="fa fa-upload" class="btn btn-success"
+                                     update="messageIndex" actionListener="#{exportFileBean.exportToVertuoso()}"
+                                     rendered="#{viewEditionBean.isViewImportVirtuoso()}"
+                                     style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;" />
+                </div>
+
+                <div class="col-6">
+                    <p:commandButton icon="fa fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
+                                     style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
+                                     actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
+                                     update="containerIndex"/>
+                </div>
             </div>
         </div>
     </div>
 
-    <h:panelGroup id="viewExportThesaurus">
+    <script type="text/javascript">
+        function start() {
+            PF('statusDialog').show();
+        }
+
+        function stop() {
+            PF('statusDialog').hide();
+        }
+    </script>
 
 
+    <p:dialog modal="true" widgetVar="statusDialog" header="     Exportation du fichier     " draggable="false" closable="false" resizable="false"
+              style="width: 400px">
 
+        <div id='laodingDiv' class="loader" >Loading...</div>
 
-
-        <p:panel visible="false" header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
-                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
-            <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}"
-                         selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
-                <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllLangsSelect}" process="@this" partialSubmit="true" />
-
-                <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
-                <p:column headerText="Code" width="60">
-                    <h:outputText value="#{langue.code}" />
-                </p:column>
-                <p:column headerText="Langue">
-                    <h:outputText value="#{langue.value}" />
-                </p:column>
-            </p:dataTable>
-        </p:panel>
-
-        <p:panel visible="false" header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500"
-                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
-            <p:dataTable id="listGroupe" var="groupOfTheso" value="#{viewExportBean.groupList}" style=";margin-bottom:0"
-                         selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}">
-                <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllGroupsSelect}" process="@this" partialSubmit="true" />
-
-                <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
-                <p:column headerText="Id" width="200" styleClass="styleText2">
-                    <h:outputText value="#{groupOfTheso.conceptGroup.idgroup}" />
-                </p:column>
-                <p:column headerText="Group" styleClass="styleText2">
-                    <h:outputText value="#{groupOfTheso.lexicalValue}" styleClass="styleText2"/>
-                </p:column>
-            </p:dataTable>
-        </p:panel>
-
-        <h:panelGroup rendered="#{viewExportBean.isRdfExport()}">
-            <div class="row">
-                <div class="col-6">
-                    <h:outputText value="Format de sortie SKOS:" />
-                </div>
-                <div class="col-6" >
-                    <p:selectOneMenu value="#{viewExportBean.selectedExportFormat}"
-                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
-                        <f:selectItems  value="#{viewExportBean.exportFormat}" var="format" itemLabel="#{format}" itemValue="#{format}"/>
-
-                    </p:selectOneMenu>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <h:outputText value="Filtre par collection/groupe :" />
-                </div>
-                <div class="col-6">
-                    <p:selectOneMenu value="#{viewExportBean.selectedGroup}"
-                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
-                        <f:selectItem  itemLabel="all" itemValue="all"/>                    
-                        <f:selectItems  value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
-                    </p:selectOneMenu>
-                </div>
-            </div>
-        </h:panelGroup>
-
-        <h:panelGroup rendered="#{viewExportBean.isCsvExport()}">
-            <div class="row" style="margin-left: 30px; margin-right: 30px;">
-                <div class="col-6">
-                    <h:outputText value="Délimiteur Csv :" style="font-size: 12px;" />
-                </div>
-                <div class="col-6">
-                    <p:selectOneMenu value="#{viewExportBean.csvDelimiter}"
-                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                     style="width: 100%; background: none;  box-shadow: none; ">
-                        <f:selectItem itemLabel=";" itemValue=";" />
-                        <f:selectItem itemLabel="," itemValue="," />
-                        <f:selectItem itemLabel="\t" itemValue="\t" />
-                    </p:selectOneMenu>
-                </div>
-            </div>
-
-            <div class="row" style="margin-left: 30px; margin-right: 30px;">
-                <div class="col-6">
-                    <h:outputText value="Langue :" style="font-size: 12px;" />
-                </div>
-                <div class="col-6">
-                    <p:selectOneMenu value="#{viewExportBean.selectedIdLangTheso}" 
-                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                     style="width: 100%; background: none;  box-shadow: none; ">
-                        <f:selectItems value="#{viewExportBean.languagesOfTheso}" var="lang"
-                                       itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
-                    </p:selectOneMenu>
-                </div>
-            </div>
-        </h:panelGroup>
-
-
-        <p:panel rendered="#{viewEditionBean.isViewImportVirtuoso()}" toggleable="true" closable="false"
-                 toggleSpeed="500" closeSpeed="500" style="margin-bottom:20px; margin-top: 20px">
-            <div class="p-field p-grid">
-                <label for="graphe" class="p-col-fixed" style="width:100px">Graphe</label>
-                <div class="p-col">
-                    <p:inputText id="graphe" type="text" value="#{viewEditionBean.nomGraphe}" />
-                </div>
-            </div>
-            <div class="p-field p-grid">
-                <label for="adresse" class="p-col-fixed" style="width:100px">Adresse</label>
-                <div class="p-col">
-                    <p:inputText id="adresse" type="text" value="#{viewEditionBean.urlServer}" />
-                </div>
-            </div>
-            <div class="p-field p-grid">
-                <label for="login" class="p-col-fixed" style="width:100px">Login</label>
-                <div class="p-col">
-                    <p:inputText id="login" type="text" value="#{viewEditionBean.login}" />
-                </div>
-            </div>
-            <div class="p-field p-grid">
-                <label for="password" class="p-col-fixed" style="width:100px">Password</label>
-                <div class="p-col">
-                    <p:inputText id="password" type="text" value="#{viewEditionBean.password}" />
-                </div>
-            </div>
-        </p:panel>
-
-        <br /><br />
-
-        <div class="row">
-            <div class="col-6">
-                <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" ajax="false"
-                                 onclick="PrimeFaces.monitorDownload(start, stop);"
-                                 icon="fa fa-upload" class="btn btn-success"
-                                 rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
-                                 style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;">
-                    <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
-                </p:commandButton>
-                <p:commandButton value="Exporter vers Vertuoso" ajax="false"
-                                 onclick="PrimeFaces.monitorDownload(start, stop);"
-                                 icon="fa fa-upload" class="btn btn-success"
-                                 update="messageIndex" actionListener="#{exportFileBean.exportToVertuoso()}"
-                                 rendered="#{viewEditionBean.isViewImportVirtuoso()}"
-                                 style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;" />
-            </div>
-
-            <div class="col-6">
-                <p:commandButton icon="fa fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
-                                 style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
-                                 actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
-                                 update="containerIndex containerIndex:listThesoForm"/>
-            </div>
-        </div>
-
-        <script type="text/javascript">
-            function start() {
-                PF('statusDialog').show();
+        <style type="text/css">
+            .loader,
+            .loader:before,
+            .loader:after {
+                border-radius: 50%;
+                width: 2.5em;
+                height: 2.5em;
+                -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+                -webkit-animation: load7 1.8s infinite ease-in-out;
+                animation: load7 1.8s infinite ease-in-out;
             }
-
-            function stop() {
-                PF('statusDialog').hide();
+            .loader {
+                color: #f47b2a;
+                font-size: 10px;
+                margin: 80px auto;
+                position: relative;
+                text-indent: -9999em;
+                -webkit-transform: translateZ(0);
+                -ms-transform: translateZ(0);
+                transform: translateZ(0);
+                -webkit-animation-delay: -0.16s;
+                animation-delay: -0.16s;
             }
-        </script>
-
-
-        <p:dialog modal="true" widgetVar="statusDialog" header="     Exportation du fichier     " draggable="false" closable="false" resizable="false"
-                  style="width: 400px">
-
-            <div id='laodingDiv' class="loader" >Loading...</div>
-
-            <style type="text/css">
-                .loader,
-                .loader:before,
-                .loader:after {
-                    border-radius: 50%;
-                    width: 2.5em;
-                    height: 2.5em;
-                    -webkit-animation-fill-mode: both;
-                    animation-fill-mode: both;
-                    -webkit-animation: load7 1.8s infinite ease-in-out;
-                    animation: load7 1.8s infinite ease-in-out;
+            .loader:before,
+            .loader:after {
+                content: '';
+                position: absolute;
+                top: 0;
+            }
+            .loader:before {
+                left: -3.5em;
+                -webkit-animation-delay: -0.32s;
+                animation-delay: -0.32s;
+            }
+            .loader:after {
+                left: 3.5em;
+            }
+            @-webkit-keyframes load7 {
+                0%,
+                80%,
+                100% {
+                    box-shadow: 0 2.5em 0 -1.3em;
                 }
-                .loader {
-                    color: #f47b2a;
-                    font-size: 10px;
-                    margin: 80px auto;
-                    position: relative;
-                    text-indent: -9999em;
-                    -webkit-transform: translateZ(0);
-                    -ms-transform: translateZ(0);
-                    transform: translateZ(0);
-                    -webkit-animation-delay: -0.16s;
-                    animation-delay: -0.16s;
+                40% {
+                    box-shadow: 0 2.5em 0 0;
                 }
-                .loader:before,
-                .loader:after {
-                    content: '';
-                    position: absolute;
-                    top: 0;
+            }
+            @keyframes load7 {
+                0%,
+                80%,
+                100% {
+                    box-shadow: 0 2.5em 0 -1.3em;
                 }
-                .loader:before {
-                    left: -3.5em;
-                    -webkit-animation-delay: -0.32s;
-                    animation-delay: -0.32s;
+                40% {
+                    box-shadow: 0 2.5em 0 0;
                 }
-                .loader:after {
-                    left: 3.5em;
-                }
-                @-webkit-keyframes load7 {
-                    0%,
-                    80%,
-                    100% {
-                        box-shadow: 0 2.5em 0 -1.3em;
-                    }
-                    40% {
-                        box-shadow: 0 2.5em 0 0;
-                    }
-                }
-                @keyframes load7 {
-                    0%,
-                    80%,
-                    100% {
-                        box-shadow: 0 2.5em 0 -1.3em;
-                    }
-                    40% {
-                        box-shadow: 0 2.5em 0 0;
-                    }
-                }
-            </style>
-        </p:dialog>
-    </h:panelGroup>
+            }
+        </style>
+    </p:dialog>
 </ui:fragment>

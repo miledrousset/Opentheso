@@ -75,13 +75,13 @@
                                 </p:column>
 
                                 <p:column width="10" headerText="Supprimer">
-                                    <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
+                                    <p:commandButton icon="pi pi-trash" update="containerIndex messageIndex" process="@this"
                                                      actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
-                                                     update="containerIndex" />
+                                                     class="ui-button-danger rounded-button" />
                                 </p:column>
 
                                 <f:facet name="footer">
-                                    <span class="p-text-bold">Nombre total des thésaurus: #{corpusBean.nodeCorpuses.size()}</span>
+                                    <span class="p-text-bold">Nombre total des thésaurus: #{roleOnTheso.nodeListThesoAsAdmin.size()}</span>
                                 </f:facet>
                             </p:dataTable>
                         </div>
