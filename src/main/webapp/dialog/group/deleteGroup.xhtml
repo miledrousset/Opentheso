@@ -4,24 +4,33 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idDeleteGroup" header="supprimer groupe/collection" widgetVar="deleteGroup" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >  
-        
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >
+
         <h:form id="deleteGroupForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-            
-            <p:panelGrid columns="1">        
-                <h:outputText value="Suppression du groupe/collection: " />
 
-                <h:outputText value="#{treeGroups.selectedNode.data}" style="font-size: 14px; color: #43B572"/>
+            <div class="row">
+                <div class="col-2" />
+                <div class="col-8">
+                    <h:outputText value="Suppression du groupe/collection : " style="font-weight: bold;"/>
+                    <h:outputText value="#{treeGroups.selectedNode.data}" style="font-size: 14px; color: #43B572"/>
+                </div>
+                <div class="col-2" />
+            </div>
 
-                <h:outputText value="Permet de supprimer la collection, tous les concepts qui appartiennent à cette collection seront libérés, ils n'appertiendront plus à cette collection" />  
+            <div class="row" style="margin-top: 10px">
+                <div class="col-2" />
+                <div class="col-8">
+                    <h:outputText value="Permet de supprimer la collection, tous les concepts qui appartiennent à cette collection seront libérés, ils n'appertiendront plus à cette collection"/>
+                </div>
+                <div class="col-2" />
+            </div>
 
-                <p:commandButton id="buttonSubmit" value="#{langueBean.getMsg('btnValidate')}"  update="deleteGroupForm containerIndex:formRightTab" 
-                                         style="width:100%; font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
-                                         action="#{removeConceptAndChildFromGroupBean.deleteGroup(treeGroups.selectedNodeId, currentUser.nodeUser.idUser)}"
-                                         class="btn btn-primary" oncomplete="PF('deleteGroup').hide();"/> 
-            </p:panelGrid>
-            
+            <div style="width: 100%; text-align: right; margin-top: 10px; margin-bottom: 5px;">
+                <p:commandButton class="btn btn-danger" title="#{langueBean.getMsg('btnValidate')}" process="@this" 
+                                 update="containerIndex messageIndex" oncomplete="PF('deleteGroup').hide();"
+                                 actionListener="#{removeConceptAndChildFromGroupBean.deleteGroup(treeGroups.selectedNodeId, currentUser.nodeUser.idUser)}"/>
+            </div>
         </h:form>
     </p:dialog>   
 </ui:fragment>

@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.group;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -30,7 +31,7 @@ import org.primefaces.PrimeFaces;
 
 public class AddGroupBean implements Serializable {
     @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
+    @Inject private LeftBodySetting leftBodySetting;
     @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private TreeGroups treeGroups;    
     
@@ -78,10 +79,7 @@ public class AddGroupBean implements Serializable {
      * @param idLang
      * @param idUser
      */
-    public void addGroup(
-            String idTheso,
-            String idLang,
-            int idUser) {
+    public void addGroup(String idTheso, String idLang, int idUser) {
 
         if (roleOnThesoBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
@@ -123,11 +121,13 @@ public class AddGroupBean implements Serializable {
                 titleGroup + " a été ajouté avec succès"));
 
         PrimeFaces.current().executeScript("PF('addGroup').hide();");
+        
+        leftBodySetting.setIndex("2");
+        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-    //        pf.ajax().update("formLeftTab:tabTree:tree");
-            pf.ajax().update("formLeftTab:tabGroups:treeGroups");
+            pf.ajax().update("containerIndex");
         }
     }
 

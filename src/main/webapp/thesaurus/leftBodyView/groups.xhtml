@@ -7,25 +7,24 @@
         <div style="width: 50%;" />
         <div style="width: 50%; text-align: right;">
             <!-- ajout des collections et sous collections -->
-            <p:menuButton icon="fa-plus-circle"
+            <p:menuButton icon="fas fa-plus-circle"
                           rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null) 
-                                                        and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                      and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                           style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
                           class="dropdown-submenu pull-left">
 
-                <p:menuitem value="Ajouter un groupe/collection" action="#{addGroupBean.init()}"
-                            oncomplete="PF('addGroup').show();" update="idAddGroup addGroupForm"
-                            styleClass="buttonIconOrange" style="font-size: 12px; " />
+                <p:menuitem value="Ajouter un groupe/collection" actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group"
+                            oncomplete="PF('addGroup').show();" update="idAddGroup" />
 
                 <p:menuitem rendered="#{treeGroups.isGroupNode and treeGroups.selectedNode != null}"
-                            value="Ajouter un sous-group/collection" action="#{addGroupBean.init()}"
-                            oncomplete="PF('addSubGroup').show();" update="idAddSubGroup addSubGroupForm"
-                            styleClass="buttonIconOrange" style="font-size: 12px; " />
+                            value="Ajouter un sous-group/collection" actionListener="#{addGroupBean.init()}"
+                            oncomplete="PF('addSubGroup').show();" update="idAddSubGroup" 
+                            icon="far fa-object-ungroup"/>
 
                 <p:menuitem rendered="#{treeGroups.isGroupNode and treeGroups.selectedNode != null and !treeGroups.isThisGroupHaveSubGroup}"
-                            value="Supprimer group/collection" action="#{addGroupBean.init()}"
-                            oncomplete="PF('deleteGroup').show();" update="idDeleteGroup deleteGroupForm"
-                            styleClass="buttonIconOrange" style="font-size: 12px; " />                  
+                            value="Supprimer group/collection" actionListener="#{addGroupBean.init()}"
+                            oncomplete="PF('deleteGroup').show();" update="idDeleteGroup"
+                            icon="fas fa-minus"/>                  
             </p:menuButton>
 
             <ui:include src="../../dialog/group/addGroup.xhtml" />
@@ -39,7 +38,7 @@
             widgetVar="groupWidget">
 
         <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
-        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formRightTab indexTitle"/>
+        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formRightTab @this indexTitle"/>
 
         <p:treeNode expandedIcon="fa object-group" collapsedIcon="fa object-group" >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>

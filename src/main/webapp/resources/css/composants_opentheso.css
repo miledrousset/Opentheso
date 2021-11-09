@@ -277,7 +277,7 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
 
 
 /** Tree **/
-.ui-tree {
+body .ui-tree {
     padding: 0px;
     border-collapse: collapse;
 }
