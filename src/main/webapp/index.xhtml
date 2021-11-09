@@ -80,9 +80,8 @@
         <script src="resources/js/sb-admin-2.js"></script>
 
         <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
-        <p:dialog widgetVar="waitDialog" modal="false" draggable="false"  closable="false" resizable="false" showHeader="false" position="top"
-                  style="margin-top: 250px; border: none">
-            <i class="fas fa-spinner fa-spin fa-2x" style="color: #F7A269"></i>
+        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="resources/img/wait_old.gif" width="150px" />
         </p:dialog>
     </h:body>
 </html>

@@ -48,7 +48,7 @@
                 <div class="container-fluid">
 
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Boite à outils / Statistiques</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Boite à outils / <span style="color: #f47b2a">Statistiques</span></h1>
                     </div>
 
                     <h:form id="containerIndex">
@@ -151,7 +151,7 @@
                                                  style="margin-top: 10px" paginator="true" rows="10"
                                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
-                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}">
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'Tous'}">
 
                                         <p:column width="10%" headerText="#{langueBean.getMsg('statistique.id')}" sortBy="#{customer.name}" >
                                             <h:outputText value="#{stat.idConcept}"/>
@@ -232,7 +232,7 @@
                                                  style="margin-top: 10px" paginator="true" rows="10"
                                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
-                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}">
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'Tous'}">
 
                                         <p:column width="30%" headerText="#{langueBean.getMsg('statistique.collection')}">
                                             <h:outputText value="#{stat.collection} (#{stat.idCollection})"/>
@@ -260,7 +260,7 @@
 
                                         <f:facet name="footer">
                                             <span class="p-text-bold">
-                                                <h:outputText value="Shémas : "/>
+                                                <h:outputText value="Graphe : "/>
                                                 <p:commandLink oncomplete="PF('conceptChart').show();" style="color: #f47b2a; margin-left: 10px" 
                                                                update="containerIndex">
                                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
@@ -278,7 +278,7 @@
                                     </p:dataTable>
 
                                     <p:commandButton icon="fa fa-fw fa-download" styleClass="btn btn-success"
-                                                     update="containerIndex:bloc1 containerIndex:bloc2" >
+                                                     update="containerIndex:bloc1 containerIndex:bloc2" style="margin-top: 10px" >
                                         <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
                                     </p:commandButton>
                                 </div>
@@ -287,14 +287,13 @@
 
                     </h:form>
 
-                    <p:dialog widgetVar="noteChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px"
-                              closable="false">
+                    <p:dialog widgetVar="noteChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px">
                         <div class="card">
                             <p:donutChart widgetVar="chart" model="#{statistiqueBean.createChartModel(4)}" style="width: 100%; height: 500px;"/>
                         </div>
-                        <div class="row">
-                            <p:commandButton type="button" value="Export" icon="pi pi-home" onclick="$('#output').empty().append(PF('chart').exportAsImage());PF('dlg').show();" oncomplete="PF('noteChart').hide();"/>
-                            <p:button value="Fermer" onclick="PF('noteChart').hide();" />
+                        <div class="row" style="margin-top: 10px">
+                            <p:commandButton type="button" title="Export" icon="pi pi-home" oncomplete="PF('noteChart').hide();"
+                                             onclick="$('#output').empty().append(PF('chart').exportAsImage());PF('dlg').show();" />
                         </div>
                     </p:dialog>
 
