@@ -8,7 +8,7 @@
     <h:head>
         <title>Opentheso</title>
 
-        <link href="../resources/images/icon_opentheso2.png" rel="icon" />
+        <link href="../resources/img/icon_opentheso2.png" rel="icon" />
 
         <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
@@ -52,35 +52,29 @@
                             <h1 class="h3 mb-0 text-gray-800">Boite à outils / Edition</h1>
                         </div>
 
-                        <div class="col-12" style="height: 100%">
-                            <div class="card shadow mb-4" style="height: 100%;">
+                        <p:panel rendered="#{viewEditionBean.isViewListTheso}">
+                            <ui:include src="edition/viewListTheso.xhtml" />
+                        </p:panel>
 
-                                <p:panel rendered="#{viewEditionBean.isViewListTheso}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
-                                    <ui:include src="edition/viewListTheso.xhtml" />
-                                </p:panel>
-                                
-                                <p:panel rendered="#{viewEditionBean.isViewImportSkos}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
-                                    <ui:include src="edition/viewImportSkos.xhtml" />
-                                </p:panel>
-                                
-                                <p:panel rendered="#{viewEditionBean.isViewImportCsv}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
-                                    <ui:include src="edition/viewImportCsv.xhtml" />
-                                </p:panel>  
-                                
-                                <p:panel rendered="#{viewEditionBean.isViewNewTheso}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
-                                    <ui:include src="edition/viewNewTheso.xhtml" />
-                                </p:panel>  
-                                
-                                <p:panel rendered="#{viewEditionBean.isViewModifyTheso}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
-                                    <ui:include src="edition/viewModifyTheso.xhtml" />
-                                </p:panel>
-                                
-                                <p:panel rendered="#{viewEditionBean.isExportView()}" style="margin-top: -20px; margin-left: -30px;  height: 700px; background-color: #FAFAFA; border: none;">
-                                    <ui:include src="../toolbox/edition/exportThesaurus.xhtml" />
-                                </p:panel>
+                        <p:panel rendered="#{viewEditionBean.isViewImportSkos}">
+                            <ui:include src="edition/viewImportSkos.xhtml" />
+                        </p:panel>
 
-                            </div>
-                        </div>
+                        <p:panel rendered="#{viewEditionBean.isViewImportCsv}">
+                            <ui:include src="edition/viewImportCsv.xhtml" />
+                        </p:panel>  
+
+                        <p:panel rendered="#{viewEditionBean.isViewNewTheso}">
+                            <ui:include src="edition/viewNewTheso.xhtml" />
+                        </p:panel>  
+
+                        <p:panel rendered="#{viewEditionBean.isViewModifyTheso}">
+                            <ui:include src="edition/viewModifyTheso.xhtml" />
+                        </p:panel>
+
+                        <p:panel rendered="#{viewEditionBean.isExportView()}">
+                            <ui:include src="../toolbox/edition/exportThesaurus.xhtml" />
+                        </p:panel>
                     </div>
                     <ui:include src="../commun/footer.xhtml" />
                 </h:form>

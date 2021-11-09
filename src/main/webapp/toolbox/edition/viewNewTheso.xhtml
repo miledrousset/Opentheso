@@ -4,90 +4,89 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:form id="viewNewThesoForm">
+    <div class="col-12" style="height: 100%">
+        <div class="card shadow mb-4" style="height: 100%;">
+            <div class="card mb-4 py-3 border-left-success" style="color: #000">
 
-        <div class="row" style="margin-left: 30px; margin-right: 30px; ">
-            <div class="col-12">
-                <h:outputText value="Nouveau thésaurus" style="font-size: 14px; color: #C63632"/>
+                <div class="row" >
+                    <div class="col-12" style="padding-left: 30px">
+                        <h:outputText value="Nouveau thésaurus" style="font-size: 17px; font-weight: bold; color: #43B572"/>
+                    </div>
+                </div>
+
+                <!-- Nom du thésaurus -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right;">
+                        <h:outputText value="Nom" />
+                    </div>
+                    <div class="col-5">
+                        <p:inputText placeholder="Nom du thésaurus" value="#{newThesoBean.title}"
+                                     style="width: 100%"/>
+                    </div>
+                </div>
+
+                <!-- Langue par defaut -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right;">
+                        <h:outputText value="langue ISO_639" />
+                    </div>
+
+                    <div class="col-5" >
+                        <p:selectOneMenu value="#{newThesoBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                         style="width: 100%; background: none;  box-shadow: none; "
+                                         panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                            <f:selectItems  value="#{newThesoBean.allLangs}" var="lang" itemValue="#{lang.id_iso639_1}"
+                                            itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})"/> 
+                        </p:selectOneMenu>  
+                    </div>
+                </div>      
+
+                <!-- dans quel projet ajouter le thesaurus -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right;">
+                        <h:outputText value="Projet" title="A quel projet ajouter le thésaurus à importer"/>
+                    </div>
+                    <div class="col-5">
+                        <p:selectOneMenu rendered="#{currentUser.nodeUser.isSuperAdmin}" styleClass="selectOneMenu_custom" 
+                                         panelStyleClass="selectOneMenu_panelStyle_custom"
+                                         style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                         panelStyle="font-size: 12px;  border: none; box-shadow: none;"
+                                         value="#{newThesoBean.selectedProject}" >
+                            <f:selectItem  itemLabel="..." itemValue="" />
+                            <f:selectItems value="#{newThesoBean.nodeProjects}" var="selectedProject" 
+                                           itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                        </p:selectOneMenu>
+
+                        <p:selectOneMenu rendered="#{!currentUser.nodeUser.isSuperAdmin}" styleClass="selectOneMenu_custom" 
+                                         panelStyleClass="selectOneMenu_panelStyle_custom"
+                                         style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                         panelStyle="font-size: 12px;  border: none; box-shadow: none;"
+                                         value="#{newThesoBean.selectedProject}" >
+                            <f:selectItems value="#{newThesoBean.nodeProjects}" var="selectedProject" 
+                                           itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                        </p:selectOneMenu>
+                    </div>           
+                </div>         
+
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-6"> 
+                        <p:commandButton value="#{langueBean.getMsg('btnBack')}" style="width: 100%; font-size: 12px;"
+                                         actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}"
+                                         update="containerIndex" class="btn btn-secondary">
+                            <a class="fas fa-undo" />
+                            <p:tooltip value="#{langueBean.getMsg('btnBack')}" showDelay="1000" />
+                        </p:commandButton>
+                    </div>
+                    <div class="col-6"> 
+                        <p:commandButton class="btn btn-primary" ajax="true" value="Créer"
+                                         update="containerIndex"
+                                         actionListener="#{newThesoBean.addNewTheso()}">
+                            <a class="fas fa-check-circle" />
+                            <p:tooltip value="Créer un nouveau thésaurus" showDelay="1000" />
+                        </p:commandButton>   
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- Nom du thésaurus -->
-        <div class="row">
-            <div class="col-5">
-                <h:outputText value="Nom " style="font-size: 12px;" />
-            </div>
-            <div class="col-7">
-                <p:inputText placeholder="Nom du thésaurus" value="#{newThesoBean.title}" style="font-size: 12px;"/>
-            </div>
-        </div>
-
-        <!-- Langue par defaut -->
-        <div class="row">
-            <div class="col-5">
-                <h:outputText value="langue ISO_639 :" style="font-size: 12px;"/>
-            </div>
-
-            <div class="col-7" >
-                <p:selectOneMenu value="#{newThesoBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                 style="width: 100%; background: none;  box-shadow: none; "
-                                 panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                    <f:selectItems  value="#{newThesoBean.allLangs}" var="lang" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" itemValue="#{lang.id_iso639_1}"/> 
-
-                </p:selectOneMenu>  
-            </div>
-        </div>      
-
-        <!-- dans quel projet ajouter le thesaurus -->
-        <div class="row">
-            <div class="col-5">
-                <h:outputText value="Projet:" title="A quel projet ajouter le thésaurus à importer" style="font-size: 12px;"/>
-            </div>
-            <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}">
-                <div class="col-7">
-                    <p:selectOneMenu id="idGroupSelected1" 
-                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;"
-                                     value="#{newThesoBean.selectedProject}" >
-                        <f:selectItem  itemLabel="..." itemValue="" />
-                        <f:selectItems value="#{newThesoBean.nodeProjects}" var="selectedProject" 
-                                       itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
-                    </p:selectOneMenu>
-                </div>
-            </h:panelGroup>
-
-            <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}">
-                <div class="col-7" rendered="#{!currentUser.nodeUser.isSuperAdmin}">
-                    <p:selectOneMenu id="idGroupSelected2"
-                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;"
-                                     value="#{newThesoBean.selectedProject}" >
-                        <f:selectItems value="#{newThesoBean.nodeProjects}" var="selectedProject" 
-                                       itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
-                    </p:selectOneMenu>
-                </div>
-            </h:panelGroup>            
-        </div>         
-
-        <div class="row">
-            <div class="col-6"> 
-                <p:commandButton value="#{langueBean.getMsg('btnBack')}" style="width: 100%; font-size: 12px;"
-                                 actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}"
-                                 update="toolBoxForm toolBoxForm:listThesoForm" class="btn btn-secondary">
-                    <a class="fas fa-undo" />
-                    <p:tooltip value="#{langueBean.getMsg('btnBack')}" showDelay="1000" />
-                </p:commandButton>
-            </div>
-            <div class="col-6"> 
-                <p:commandButton class="btn btn-primary" ajax="true" value="Créer"
-                                 update="toolBoxForm toolBoxForm:listThesoForm"
-                                 actionListener="#{newThesoBean.addNewTheso()}">
-                    <a class="fas fa-check-circle" />
-                    <p:tooltip value="Créer un nouveau thésaurus" showDelay="1000" />
-                </p:commandButton>   
-            </div>
-        </div>              
-    </h:form>
+    </div>
 </ui:fragment>

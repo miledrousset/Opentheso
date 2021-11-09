@@ -4,54 +4,67 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:panelGroup id="viewExportThesaurus">
+    <div class="col-12" style="height: 100%">
+        <div class="card shadow mb-4" style="height: 100%;">
+            <div class="card mb-4 py-3 border-left-success" style="color: #000; margin: 30px;">
 
-        <div class="row" style="margin-bottom: 15px">
-            <div class="col-12">
-                <h:outputText value="Exportation du thésaurus : 
-                              #{viewExportBean.nodeIdValueOfTheso.value} (#{viewExportBean.nodeIdValueOfTheso.id})" styleClass="textInfo"/>
+                <div class="row" style="margin-bottom: 15px">
+                    <div class="col-12">
+                        <h:outputText value="Exportation du thésaurus : 
+                                      #{viewExportBean.nodeIdValueOfTheso.value} (#{viewExportBean.nodeIdValueOfTheso.id})" styleClass="textInfo"/>
+                    </div>
+                </div>
+
+
+                <p:panel header="Types" style="padding: 20px" rendered="#{viewExportBean.isPdfExport()}">
+                    
+                    <p:dataTable var="type" value="#{viewExportBean.types}" style="padding: 20px"
+                                 selection="#{viewExportBean.typeSelected}" rowKey="#{type}">
+                        <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
+                        <p:column headerText="Code">
+                            <h:outputText value="#{type}" />
+                        </p:column>
+                    </p:dataTable>
+
+                    <div class="row">
+                        <div class="col-6" >
+                            <h:outputText value="Langue 1:"/>
+                        </div>
+                        <div class="col-6" >
+                            <p:selectOneMenu value="#{viewExportBean.selectedLang1_PDF}"
+                                             style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                             panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                                <f:selectItems  value="#{viewExportBean.languagesOfTheso}"
+                                                actionListener="#{viewExportBean.selectedLang1_PDF}" var="langs" itemLabel="#{langs.value}" itemValue="#{langs.code}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6" >
+                            <h:outputText value="Langue 2:" />
+                        </div>
+                        <div class="col-6" >
+                            <p:selectOneMenu value="#{viewExportBean.selectedLang2_PDF}"
+                                             style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                             panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                                <f:selectItem itemLabel="..." itemValue=""/>
+                                <f:selectItems  value="#{viewExportBean.languagesOfTheso}" var="langs2" itemLabel="#{langs2.value}" itemValue="#{langs2.code}"/>
+
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </p:panel>
+
             </div>
         </div>
+    </div>
 
-        <p:panel header="Types" rendered="#{viewExportBean.isPdfExport()}" toggleable="true" closable="false" toggleSpeed="500"
-                 closeSpeed="500" style="margin-bottom:20px" collapsed="false">
-            <p:dataTable id="listType" var="type" value="#{viewExportBean.types}"
-                         selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0">
-                <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
-                <p:column headerText="Code">
-                    <h:outputText value="#{type}" />
-                </p:column>
-            </p:dataTable>
+    <h:panelGroup id="viewExportThesaurus">
 
-            <div class="row">
-                <div class="col-6" >
-                    <h:outputText value="Langue 1:"/>
-                </div>
-                <div class="col-6" >
-                    <p:selectOneMenu value="#{viewExportBean.selectedLang1_PDF}"
-                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
-                        <f:selectItems  value="#{viewExportBean.languagesOfTheso}"
-                                        actionListener="#{viewExportBean.selectedLang1_PDF}" var="langs" itemLabel="#{langs.value}" itemValue="#{langs.code}"/>
-                    </p:selectOneMenu>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-6" >
-                    <h:outputText value="Langue 2:" />
-                </div>
-                <div class="col-6" >
-                    <p:selectOneMenu value="#{viewExportBean.selectedLang2_PDF}"
-                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;">
-                        <f:selectItem itemLabel="..." itemValue=""/>
-                        <f:selectItems  value="#{viewExportBean.languagesOfTheso}" var="langs2" itemLabel="#{langs2.value}" itemValue="#{langs2.code}"/>
 
-                    </p:selectOneMenu>
-                </div>
-            </div>
-        </p:panel>
+
 
         <p:panel visible="false" header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
                  closeSpeed="500" style="margin-bottom:20px" collapsed="true">
@@ -198,7 +211,7 @@
                 <p:commandButton icon="fa fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
                                  style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
                                  actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
-                                 update="toolBoxForm toolBoxForm:listThesoForm"/>
+                                 update="containerIndex containerIndex:listThesoForm"/>
             </div>
         </div>
 

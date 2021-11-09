@@ -4,88 +4,108 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <div class="row" style="margin-left: 30px; margin-right: 30px; ">
-        <div class="col-12">
-            <h:outputText value="Modifier le thésaurus " style="font-size: 14px;"/>
-            <h:outputText value="#{editThesoBean.nodeIdValueOfTheso.value} (#{editThesoBean.nodeIdValueOfTheso.id})" style="font-size: 14px; color: #C63632"/>
-        </div>
-    </div>    
-    <p:spacer height="40px;"/>
+    <div class="col-12" style="height: 100%">
+        <div class="card shadow mb-4" style="height: 100%;">
+            <div class="card mb-4 py-3 border-left-success" style="color: #000; margin: 30px">
 
-    <!-- choix de la langue par defaut -->
-    <div class="row">
-        <div class="col-4">
-            <h:outputText value="langue par defaut: " style="font-size: 12px;" />
-        </div>
-        <div class="col-4" >
-            <p:selectOneMenu id="langOfTheso" value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                             style="width: 100%; background: none;  box-shadow: none; "
-                             panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                <f:selectItems  value="#{editThesoBean.languagesOfTheso}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/> 
-                <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}"  />
-            </p:selectOneMenu>
-        </div> 
+                <div class="row" style="margin-left: 30px; margin-right: 30px; ">
+                    <div class="col-12">
+                        <h:outputText value="Modifier le thésaurus "/>
+                        <h:outputText value="#{editThesoBean.nodeIdValueOfTheso.value} (#{editThesoBean.nodeIdValueOfTheso.id})" style="color: #C63632"/>
+                    </div>
+                </div>
 
-        <!-- Changement de status Public/Privé -->
-        <div class="col-2" tooltip="Pour changer le statut du thésaurus Public/Privé" tooltip-delay-show="1000">
-            <p:toggleSwitch  label="Public/Privé" id="toggleThesoStatus" value="#{editThesoBean.isPrivateTheso}" style="font-size: 12px">
-                <p:ajax listener="#{editThesoBean.changeStatus()}" update="columnStatus toolBoxForm toolBoxForm:listThesoForm" />
-            </p:toggleSwitch>
-        </div>            
+                <!-- choix de la langue par defaut -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right">
+                        <h:outputText value="Langue par defaut" />
+                    </div>
 
-        <!-- Ajout d'une nouvelle langue au thésaurus -->
-        <div class="col-2"  >
-            <p:commandLink update="idAddLangToTheso" oncomplete="PF('addLangToTheso').show();" >
-                <a class="fa-plus-circle" style="color: #f47b2a;" />
-                <p:tooltip value="Ajouter une langue au thésaurus" showDelay="1000"/>
-            </p:commandLink>
-            <ui:include src="../../toolbox/edition/addLangToTheso.xhtml" />                 
-        </div>             
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <p:separator style="color: #f47b2a; margin-top: 5px;"/>
-        </div>
-    </div>
+                    <div class="col-5" >
+                        <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
+                                         panelStyleClass="selectOneMenu_panelStyle_custom"
+                                         style="width: 500x; background: none;  box-shadow: none; "
+                                         panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                            <f:selectItems  value="#{editThesoBean.languagesOfTheso}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/> 
+                            <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
+                        </p:selectOneMenu>
+                    </div>       
+                </div>
 
-    <!-- Liste des langues à modifier -->
-    <div class="row" id="idLangToModify">
-        <div class="col-12" >
-            <ui:repeat var="langOfTheso" value="#{editThesoBean.languagesOfTheso}" >
-                <div class="row">
-                    <div class="col-1" style="background: #FAFAFA">
-                        <p:commandLink actionListener="#{editThesoBean.deleteLangFromTheso(langOfTheso.code)}"
-                                       update="containerIndex">
-                            <a class="fas fa-trash" style="color: #F7A269;" />
-                            <p:tooltip value="Supprimer la langue du thésaurus" showDelay="1000"/>
+                <!-- choix de la langue par defaut -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right">
+                        <h:outputText value="Status du thésaurus" />
+                    </div>
+                    <div class="col-5" >
+                        <p:toggleSwitch label="Public/Privé" value="#{editThesoBean.isPrivateTheso}">
+                            <p:ajax listener="#{editThesoBean.changeStatus()}" update="containerIndex messageIndex" />
+                        </p:toggleSwitch>
+                    </div>         
+
+                    <!-- Ajout d'une nouvelle langue au thésaurus -->
+                    <div class="col-2"  >
+                        <p:commandLink update="idAddLangToTheso" oncomplete="PF('addLangToTheso').show();" >
+                            <a class="fa-plus-circle" style="color: #f47b2a;" />
+                            <p:tooltip value="Ajouter une langue au thésaurus" showDelay="1000"/>
+                        </p:commandLink>                
+                    </div>             
+                </div>
+
+                <!-- choix de la langue par defaut -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right">
+                        <h:outputText value="Ajouter langue" />
+                    </div>
+                    <div class="col-5"  >
+                        <p:commandLink update="idAddLangToTheso" oncomplete="PF('addLangToTheso').show();" >
+                            <a class="fas fa-plus-circle" style="color: #f47b2a;" />
+                            <p:tooltip value="Ajouter une langue au thésaurus" showDelay="1000"/>
                         </p:commandLink>
-                    </div>                         
-                    <div class="col-8" style="background: #FAFAFA">
-                        <p:inputText value="#{langOfTheso.labelTheso}"
-                                     style="color: #43B572; font-size: 12px;height: 25px;"/>                    
-                    </div>
-                    <div class="col-2" style="background: #FAFAFA">
-                        <p:inputText value="#{langOfTheso.code}" disabled="true"
-                                     style="color: #43B572;font-size: 12px; height: 25px;"/>
-                    </div>
-                    <div class="col-1" style="background: #FAFAFA">
-                        <p:commandLink actionListener="#{editThesoBean.updateLang(langOfTheso)}"
-                                       update="containerIndex">
-                            <a class="fas fa-check-circle" style="color: #F7A269;" />
-                            <p:tooltip value="valider la modification sur cette langue" showDelay="1000"/>
-                        </p:commandLink>
-                    </div>
-                </div>                            
-            </ui:repeat>
-        </div>  
-    </div>
+                        <ui:include src="../../toolbox/edition/addLangToTheso.xhtml" />                 
+                    </div>             
+                </div>
+            </div>
 
-    <div class="row">
-        <div class="col-2"> 
-            <p:commandButton icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" style="width: 100%; font-size: 12px;"
-                             actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" update="containerIndex">
-                <p:tooltip value="#{langueBean.getMsg('btnBack')}" showDelay="1000" />
-            </p:commandButton>
-        </div>    
+            <div class="card mb-4 py-3 border-left-success" style="color: #000; margin: 30px">
+                <!-- Liste des langues à modifier -->
+                <div class="row" style="margin: 20px">
+                    <div class="col-12">
+                        <p:dataTable value="#{editThesoBean.languagesOfTheso}" var="langOfTheso" scrollable="true" 
+                                     resizableColumns="true" scrollHeight="450" reflow="true">
+
+                            <p:column width="40" headerText="Label">
+                                <p:inputText value="#{langOfTheso.labelTheso}"/>
+                            </p:column>
+
+                            <p:column width="20" headerText="Code"> 
+                                <p:inputText value="#{langOfTheso.code}"/>
+                            </p:column>
+
+                            <p:column width="20" headerText="Modifier">
+                                <p:commandButton icon="pi pi-pencil" update="containerIndex messageIndex" process="@this"
+                                                 actionListener="#{editThesoBean.updateLang(langOfTheso)}"
+                                                 styleClass="edit-button rounded-button ui-button-success" />
+                            </p:column>
+
+                            <p:column width="20" headerText="Supprimer" >
+                                <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash"
+                                                 actionListener="#{editThesoBean.deleteLangFromTheso(langOfTheso.code)}" 
+                                                 update="containerIndex messageIndex" process="@this" />
+                            </p:column>
+                        </p:dataTable>
+                    </div>  
+                </div>
+            </div>
+
+            <div class="row" style="margin: 20px">
+                <div class="col-2"> 
+                    <p:commandButton icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" style="width: 100%; font-size: 12px;"
+                                     actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" update="containerIndex">
+                        <p:tooltip value="#{langueBean.getMsg('btnBack')}" showDelay="1000" />
+                    </p:commandButton>
+                </div>    
+            </div>
+        </div>
     </div>
 </ui:fragment>

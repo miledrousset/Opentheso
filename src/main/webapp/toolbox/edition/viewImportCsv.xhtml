@@ -4,195 +4,191 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:panelGroup id="viewImportCsvForm">
+    <h:panelGroup id="viewImportCsvForm" style="color: #000">
+        <div class="col-12" style="height: 100%">
+            <div class="card shadow mb-4" style="height: 100%;">
+                <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin: 30px;">
 
-        <div class="row" style="margin-left: 30px; margin-right: 30px;">
-            <div class="col-6" offset="2">
-                <h:outputText value="Import en CSV" style="font-size: 14px; color: #43B572"/>
-            </div>
-            <div class="col-6">
-                <p:commandLink value="Exemple" update="idCsvImportHelp" oncomplete="PF('csvImportHelp').show();">
-                    <a class="fas fa-info-circle" style="font-size: 12px; color: #C63632; " />
-                    <p:tooltip value="Exemple de format supporté" showDelay="1000" />
-                </p:commandLink>     
-            </div>            
-        </div>
+                    <div class="row" style="height: 40px">
+                        <div class="col-6" style="padding-left: 30px">
+                            <h:outputText value="Import en CSV" style="font-size: 17px; font-weight: bold; color: #43B572"/>
+                        </div>
+                        <div class="col-6" style="padding-right: 30px; text-align: right">
+                            <p:commandLink value="Exemple" update="idCsvImportHelp" oncomplete="PF('csvImportHelp').show();">
+                                <a class="fas fa-info-circle" style="font-size: 12px; color: #C63632; " />
+                                <p:tooltip value="Exemple de format supporté" showDelay="1000" />
+                            </p:commandLink>     
+                        </div>            
+                    </div>
 
-        <!-- Nom du thésaurus à créer -->
-        <div class="row" style="margin-left: 30px; margin-right: 30px;">
-            <div class="col-6" >
-                <h:outputText value="Nom du thésaurus :" style="font-size: 12px;"/>
-            </div>            
-            <div class="col-6">
-                <p:inputText placeholder="Nom du thésaurus" value="#{importFileBean.thesaurusName}" style="font-size: 12px;">
-                    <p:tooltip value="Nom du thésaurus" showDelay="1000" />
-                </p:inputText>
-            </div>
-        </div> 
+                    <!-- Nom du thésaurus à créer -->
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="Nom du thésaurus" />
+                        </div>
+                        <div class="col-5">
+                            <p:inputText placeholder="Nom du thésaurus" style="width: 100%"
+                                         value="#{importFileBean.thesaurusName}" />
+                        </div>
+                    </div>
 
-        <!-- Langue par defaut -->
-        <div class="row" style="margin-left: 30px; margin-right: 30px;">
-            <div class="col-6" >
-                <h:outputText value="langues source :" style="font-size: 12px;"/>
-            </div>
+                    <!-- Langue par defaut -->
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="Langues source" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{importFileBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none;  box-shadow: none; "
+                                             panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                                <f:selectItems  value="#{importFileBean.allLangs}" var="lang" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" itemValue="#{lang.id_iso639_1}"/> 
 
-            <div class="col-6" >
-                <p:selectOneMenu value="#{importFileBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                 style="width: 100%; background: none;  box-shadow: none; "
-                                 panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                    <f:selectItems  value="#{importFileBean.allLangs}" var="lang" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" itemValue="#{lang.id_iso639_1}"/> 
+                            </p:selectOneMenu>  
+                        </div>
+                    </div>
 
-                </p:selectOneMenu>  
-            </div>
-        </div>
+                    <!-- délimiteur CSV -->
+                    <div class="row" style="margin-top: 3px">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="Délimiteur Csv" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu id="idDelimiter" value="#{importFileBean.choiceDelimiter}" 
+                                             styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none; box-shadow: none; ">
+                                <f:selectItem itemLabel="," itemValue="0" />
+                                <f:selectItem itemLabel=";" itemValue="1" />
+                                <f:selectItem itemLabel="\t" itemValue="2" />
+                                <p:ajax event="change" listener="#{importFileBean.actionChoice()}"  />
+                            </p:selectOneMenu> 
+                        </div>
+                    </div>
 
-        <!-- délimiteur CSV -->
-        <div class="row" style="margin-left: 30px; margin-right: 30px;">
-            <div class="col-6">
-                <h:outputText value="Délimiteur Csv :" style="font-size: 12px;" />
-            </div>
-            <div class="col-6">
-                <p:selectOneMenu id="idDelimiter" value="#{importFileBean.choiceDelimiter}" 
-                                 styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                 style="width: 100%; background: none;  box-shadow: none; ">
-                    <f:selectItem itemLabel="," itemValue="0" />
-                    <f:selectItem itemLabel=";" itemValue="1" />
-                    <f:selectItem itemLabel="\t" itemValue="2" />
-                    <p:ajax event="change" listener="#{importFileBean.actionChoice()}"  />
-                </p:selectOneMenu>
-            </div>
-        </div>
+                    <!-- format de date -->
+                    <div class="row" style="margin-top: 3px">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="Format de la date" />
+                        </div>
+                        <div class="col-5">
+                            <p:inputText placeholder="yyyy-MM-dd" value="#{importFileBean.formatDate}" style="width: 100%"/>
+                        </div>
+                    </div>
 
-        <!-- format de date -->
-        <div class="row" style="margin-left: 30px; margin-right: 30px;">
-            <div class="col-6">
-                <h:outputText value="Format de la date : " style="font-size: 12px;" />
-            </div>            
-            <div class="col-6">
-                <p:inputText placeholder="yyyy-MM-dd" value="#{importFileBean.formatDate}" 
-                             style="font-size: 12px; height: 25px;">
-                    <p:tooltip value="Format de la date" showDelay="1000" />
-                </p:inputText>
-            </div>
-        </div>        
+                    <!-- dans quel projet ajouter le thesaurus -->
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="Projet" />
+                        </div>
+                        <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}" >
+                            <div class="col-5">
+                                <p:selectOneMenu id="idGroupSelected1" 
+                                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;"
+                                                 value="#{importFileBean.selectedUserProject}" >
+                                    <f:selectItem  itemLabel="..." itemValue="" />
+                                    <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
+                                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </h:panelGroup> 
 
-        <!-- dans quel projet ajouter le thesaurus -->
-        <div class="row" style="margin-left: 30px; margin-right: 30px;">
-            <div class="col-6" >
-                <h:outputText value="Projet:" title="A quel projet ajouter le thésaurus à importer" style="font-size: 12px;"/>
-            </div>
+                        <h:panelGroup rendered="#{!currentUser.nodeUser.isSuperAdmin}" >
+                            <div class="col-5">
+                                <p:selectOneMenu id="idGroupSelected2"
+                                                 style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
+                                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;"
+                                                 value="#{importFileBean.selectedUserProject}" >
+                                    <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
+                                                   itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
+                                </p:selectOneMenu>
+                            </div> 
+                        </h:panelGroup>
+                    </div>
 
-            <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}" >
-                <div class="col-6">
-                    <p:selectOneMenu id="idGroupSelected1" 
-                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;"
-                                     value="#{importFileBean.selectedUserProject}" >
-                        <f:selectItem  itemLabel="..." itemValue="" />
-                        <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
-                                       itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
-                    </p:selectOneMenu>
-                </div>
-            </h:panelGroup> 
+                    <!-- Choix du fichier -->   
+                    <div class="row" style="margin-top: 10px; margin-left: 20px; margin-right: 20px">
+                        <div class="col-12" > 
+                            <p:fileUpload listener="#{importFileBean.loadFileCsv}" 
+                                          label="parcourir" 
+                                          mode="advanced" auto="true"
+                                          allowTypes="/(\.|\/)(csv|txt)$/"
+                                          update="viewImportCsvForm" disabled="#{importFileBean.loadDone}"
+                                          style="font-size: 12px;" />  
+                        </div>
+                    </div> 
 
-            <h:panelGroup rendered="#{!currentUser.nodeUser.isSuperAdmin}" >
-                <div class="col-6">
-                    <p:selectOneMenu id="idGroupSelected2"
-                                     style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
-                                     panelStyle="font-size: 12px;  border: none; box-shadow: none;"
-                                     value="#{importFileBean.selectedUserProject}" >
-                        <f:selectItems value="#{importFileBean.nodeUserProjects}" var="selectedProject" 
-                                       itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
-                    </p:selectOneMenu>
-                </div> 
-            </h:panelGroup>            
-        </div>
+                    <h:panelGroup rendered="#{importFileBean.loadDone}">
+                        <div class="row" style="margin-top: 10px; margin-top: 10px; margin-left: 20px; margin-right: 20px">
+                            <div class="col-12">
+                                <h:outputText value="URI: " />
+                                <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 10px">
+                            <div class="col-12">
+                                <h:outputText value="Total des concepts: " />
+                                <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                            </div>
+                        </div>
+                    </h:panelGroup>
 
-        <h:panelGroup id="panelValidation">
-            <!-- Choix du fichier -->   
-            <div class="row" style="margin-left: 30px; margin-right: 30px; ">
-                <div class="col-12" > 
-                    <p:fileUpload listener="#{importFileBean.loadFileCsv}" 
-                                  label="parcourir" 
-                                  mode="advanced" auto="true"
-                                  allowTypes="/(\.|\/)(csv|txt)$/"
-                                  update="panelValidation" disabled="#{importFileBean.loadDone}"
-                                  style="font-size: 12px;" />  
-                </div>
-            </div> 
+                    <!-- infos -->
+                    <h:panelGroup rendered="#{importFileBean.loadDone or importFileBean.importDone}">
+                        <div class="row" style="margin-top: 10px; margin-left: 20px; margin-right: 20px">
+                            <div class="col-12">
+                                <p:accordionPanel activeIndex="-1">
+                                    <p:tab title="Info" titleStyleClass="infoAcordionPanel" >
+                                        <p:scrollPanel mode="native" style="height:200px">
+                                            <pre><h:outputText value="#{importFileBean.info}" styleClass="infoAcordionPanel" /></pre>
+                                            <hr/>
+                                            <pre><h:outputText rendered="#{!importFileBean.warningIsEmpty()}" value="Warning : #{importFileBean.warning}" styleClass="warningAcordionPanel" /></pre>
+                                        </p:scrollPanel>
+                                    </p:tab>
+                                    <p:tab title="Error" titleStyleClass="errorAcordionPanel">
+                                        <p:scrollPanel mode="native" style="height:200px">
+                                            <pre><h:outputText value="#{importFileBean.error}" styleClass="errorAcordionPanel" /></pre>
+                                        </p:scrollPanel>
+                                    </p:tab>
+                                </p:accordionPanel> 
+                            </div>
+                        </div>
+                    </h:panelGroup>
 
-            <h:panelGroup rendered="#{importFileBean.loadDone}">
-                <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                    <div class="col-12">
-                        <h:outputText value="URI: " />
-                        <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                    <div class="row" style="margin: 20px">
+                        <div class="col-12">
+                            <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" 
+                                           labelTemplate="{value}%" styleClass="animated" global="false"
+                                           style="height: 20px;" />
+                        </div>                
+                    </div>
+
+                    <div class="row" style="margin: 20px">
+                        <div class="col-6"> 
+                            <p:commandButton id="cancelCsv" icon="fa fa-undo"  
+                                             value="#{langueBean.getMsg('btnBack')}"
+                                             class="btn btn-success"
+                                             style="width: 100%; background-color: #FFC107; color: black; border: none;"
+                                             actionListener="#{viewEditionBean.init()}"
+                                             action="#{importFileBean.init()}"
+                                             update="containerIndex">
+                            </p:commandButton>
+                        </div>
+                        <div class="col-6"> 
+                            <p:commandButton id="buttonImportCsv" class="btn btn-success" widgetVar="buttonImportCsv"
+                                             icon="fa fa-download" update="containerIndex"
+                                             onclick="PrimeFaces.monitorDownload(start, stop);"
+                                             style="width: 100%; background-color: #5CB85C; border: none;"
+                                             actionListener="#{importFileBean.addCsvThesoToBDD()}"
+                                             ajax="true"
+                                             value="Importer"
+                                             disabled="#{!importFileBean.loadDone}">
+                            </p:commandButton>                       
+                        </div> 
                     </div>
                 </div>
-                <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                    <div class="col-12">
-                        <h:outputText value="Total des concepts: " />
-                        <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
-                    </div>
-                </div>
-            </h:panelGroup>
-
-            <div class="row">
-                <div class="col-6"> 
-                    <p:commandButton id="cancelCsv" icon="fa fa-undo"  
-                                     value="#{langueBean.getMsg('btnBack')}"
-                                     class="btn btn-success"
-                                     style="width: 100%; background-color: #FFC107; color: black; border: none;"
-                                     actionListener="#{viewEditionBean.init()}"
-                                     action="#{importFileBean.init()}"
-                                     update="toolBoxForm toolBoxForm:listThesoForm">
-                    </p:commandButton>
-                </div>
-                <div class="col-6"> 
-                    <p:commandButton id="buttonImportCsv" class="btn btn-success" widgetVar="buttonImportCsv"
-                                     icon="fa fa-download"
-                                     update="toolBoxForm toolBoxForm:listThesoForm"
-                                     onclick="PrimeFaces.monitorDownload(start, stop);"
-                                     style="width: 100%; background-color: #5CB85C; border: none;"
-                                     actionListener="#{importFileBean.addCsvThesoToBDD()}"
-                                     ajax="true"
-                                     value="Importer"
-                                     disabled="#{!importFileBean.loadDone}">
-                    </p:commandButton>                       
-                </div> 
             </div>
-            <p:spacer/>
-            <div class="row">
-                <div class="col-12">
-                    <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" labelTemplate="{value}%" styleClass="animated" global="false"
-                                   style="font-size: 12px; height: 20px;">
-                    </p:progressBar> 
-                </div>                
-            </div>
+        </div>
 
-            <p:spacer/>
-
-            <!-- infos -->
-            <h:panelGroup rendered="#{importFileBean.loadDone or importFileBean.importDone}">
-                <div class="row" style="margin-left: 30px; margin-right: 30px;">
-                    <div class="col-12">
-                        <p:accordionPanel activeIndex="-1">
-                            <p:tab title="Info" titleStyleClass="infoAcordionPanel" >
-                                <p:scrollPanel mode="native" style="height:200px">
-                                    <pre><h:outputText value="#{importFileBean.info}" styleClass="infoAcordionPanel" /></pre>
-                                    <hr/>
-                                    <pre><h:outputText rendered="#{!importFileBean.warningIsEmpty()}" value="Warning : #{importFileBean.warning}" styleClass="warningAcordionPanel" /></pre>
-                                </p:scrollPanel>
-                            </p:tab>
-                            <p:tab title="Error" titleStyleClass="errorAcordionPanel">
-                                <p:scrollPanel mode="native" style="height:200px">
-                                    <pre><h:outputText value="#{importFileBean.error}" styleClass="errorAcordionPanel" /></pre>
-                                </p:scrollPanel>
-                            </p:tab>
-                        </p:accordionPanel> 
-                    </div>
-                </div>
-            </h:panelGroup>
-        </h:panelGroup>
         <ui:include src="../../dialog/import/csvImportHelp.xhtml" />   
     </h:panelGroup>
 
@@ -205,7 +201,6 @@
             PF('statusDialog').hide();
         }
     </script>
-
 
     <p:dialog modal="true" widgetVar="statusDialog" header="     Importation du fichier     " draggable="false" closable="false" resizable="false"
               style="width: 400px">
@@ -272,5 +267,4 @@
             }
         </style>
     </p:dialog>
-
 </ui:fragment>
