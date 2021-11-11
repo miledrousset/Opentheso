@@ -1,92 +1,81 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <b:panel id="panelCandidateList" style="padding: 10px">
-        <b:row>
-            <b:column span="2" colXs="5">
-                <b:commandButton id="addNewCandidat" value="#{langueBean.getMsg('candidat.add')}" size="sm" class="btn btn-success"
-                                 style="font-size: 13px; color: white; background: #43B572; border: #43B572; padding-left: 20px;
-                                 padding-right: 20px;" ajax="true" actionListener="#{candidatBean.initialNewCandidat()}" update="candidatForm"/>
-            </b:column>
-            <b:column span="3" colXs="7">
-                <b:dropButton  tooltip="#{langueBean.getMsg('candidat.import_export_candidates_tooltip')}" tooltip-delay-show="500"
-                               value="#{langueBean.getMsg('candidat.import_export_candidates')}"  icon-size="l" iconAlign="right"
-                               style="width: 100%; background: none; border: none; box-shadow: none; font-size: 12px;"  >
-                    <b:navCommandLink value="#{langueBean.getMsg('candidat.retrieve_from_old_version')}"
-                                      tooltip="#{langueBean.getMsg('candidat.retrieve_from_old_version_tooltip')}"
-                                      tooltip-delay-show="500"
-                                      style="font-size: 12px;"
-                                      iconAwesome="fa-download fas_color_orange"
-                                      action="#{candidatBean.getOldCandidates()}"
-                                      update="candidatForm messageIndex"/>
+    <p:panel id="panelCandidateList" rendered="#{candidatBean.isListCandidatsActivate()}">
 
-                    <b:navCommandLink value="#{langueBean.getMsg('candidat.export_in_SKOS')}"
-                                      tooltip="#{langueBean.getMsg('candidat.export_in_SKOS_tooltip')}"
-                                      tooltip-delay-show="500"
-                                      style="font-size: 12px;"
-                                      iconAwesome="fa-download fas_color_orange"
-                                      action="#{candidatBean.setExportViewActivate(true)}"
-                                      update="candidatForm messageIndex"/>
+        <p:toolbar>
+            <p:toolbarGroup align="left">
+                <p:commandButton title="#{langueBean.getMsg('candidat.add')}" class="btn btn-primary" process="@this"
+                                 actionListener="#{candidatBean.initialNewCandidat()}" update="containerIndex"/>
+            </p:toolbarGroup>
+            <p:toolbarGroup align="right">
+                <p:menuButton  value="#{langueBean.getMsg('candidat.import_export_candidates')}" icon="fas fa-download"
+                               style="background: none; border: none; box-shadow: none; margin-left: 10px"  >
 
-                    <b:navCommandLink value="#{langueBean.getMsg('candidat.import_in_SKOS_format')}"
-                                      tooltip="#{langueBean.getMsg('candidat.import_in_SKOS_format_tooltip')}"
-                                      tooltip-delay-show="500"
-                                      style="font-size: 12px;"
-                                      iconAwesome="fa-download fas_color_orange"
-                                      action="#{candidatBean.setImportViewActivate(true)}"
-                                      update="candidatForm messageIndex"/>
-                </b:dropButton>
-            </b:column>
-        </b:row>
+                    <p:menuitem value="#{langueBean.getMsg('candidat.retrieve_from_old_version')}"
+                                icon="fas fa-box" update="containerIndex messageIndex" process="@this"
+                                actionListener="#{candidatBean.getOldCandidates()}" />
 
-        <b:row style="margin-top: 20px">
-            <b:column medium-screen="6">
-                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('candidat.my_candidats')}" value="#{candidatBean.myCandidatsSelected1}"
-                                         onclick="ajax:candidatBean.selectMyCandidats()" update="candidatForm" style="font-size: 11px;"/>
-            </b:column>
-            <b:column medium-screen="6">
-                <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
-                              text-align: right; vertical-align: central" value="#{langueBean.getMsg('candidat.search')}"/>
-                <b:inputText id="submitSearchCandidate" value="#{candidatBean.searchValue1}" >
+                    <p:menuitem value="#{langueBean.getMsg('candidat.export_in_SKOS')}"                              
+                                disabled="#{candidatBean.candidatList.size() == 0}"
+                                icon="fas fa-download" update="containerIndex messageIndex" process="@this"
+                                actionListener="#{candidatBean.setExportViewActivate(true)}" />
+
+                    <p:menuitem value="#{langueBean.getMsg('candidat.import_in_SKOS_format')}"
+                                icon="fas fa-upload" update="containerIndex messageIndex" process="@this"
+                                action="#{candidatBean.setImportViewActivate(true)}" />
+                </p:menuButton>
+            </p:toolbarGroup>
+        </p:toolbar>
+
+        <div class="row" style="margin-top: 20px">
+            <div class="col-6">
+                <p:selectBooleanCheckbox value="#{candidatBean.myCandidatsSelected1}" style="color: #000;" 
+                                         itemLabel="#{langueBean.getMsg('candidat.my_candidats')}" >
+                    <p:ajax update="containerIndex" listener="#{candidatBean.selectMyCandidats()}" />
+                </p:selectBooleanCheckbox>
+            </div>
+            <div class="col-6" style="text-align: right">
+                <h:outputText class="col-md-6 control-label" style="color: #000; height: 34px; margin-top: 7px; text-align: right; vertical-align: central" 
+                              value="#{langueBean.getMsg('candidat.search')}"/>
+                <p:inputText id="submitSearchCandidate" value="#{candidatBean.searchValue1}" >
                     <f:facet name="append">
-                        <b:commandButton id="commandSubmitSearchCandidate" look="success" iconAwesome="search" icon-align="right"
-                                         update="candidatForm" actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
+                        <p:commandButton id="commandSubmitSearchCandidate" update="containerIndex" 
+                                         actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
                     </f:facet>
                     <p:defaultCommand target="commandSubmitSearchCandidate" scope="submitSearchCandidate"/>
-                </b:inputText>
-            </b:column>
-        </b:row>
+                </p:inputText>
+            </div>
+        </div>
 
         <!-- tableau des candidats -->
-        <b:row>
-            <b:column span="12"> 
-                <p:dataTable id="checkboxDT" var="listCandidats" value="#{candidatBean.candidatList}"
-                             selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
-                             style="margin-bottom:0; font-size: 12px;" paginator="true" rows="15" >
-                    
-                    <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="candidatForm:tabViewCandidat:submitList candidatForm:tabViewCandidat:panelCandidateList"></p:ajax>
-                    <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="candidatForm:tabViewCandidat:submitList candidatForm:tabViewCandidat:panelCandidateList"></p:ajax>
-                    <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="candidatForm:tabViewCandidat:submitList candidatForm:tabViewCandidat:panelCandidateList"></p:ajax>
+        <div class="row">
+            <div class="col-12"> 
+                <p:dataTable var="listCandidats" value="#{candidatBean.candidatList}" paginator="true" rows="15"
+                             selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}" >
+
+                    <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
+                    <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
+                    <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
                     <p:column rendered="#{(currentUser.nodeUser != null) and 
-                                        (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                          (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                               selectionMode="multiple" style="width:16px;text-align:center"/>
                     <p:column  width="20" headerText="id">
                         <h:outputText value="#{listCandidats.idConcepte}" />
                     </p:column>                    
-                    
+
                     <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
-                        <b:navCommandLink value="(#{listCandidats.idConcepte})" ajax="true" update="candidatForm" style="font-size: 13px; color: #43B572; "
-                                          actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
+                        <p:commandLink value="(#{listCandidats.idConcepte})" ajax="true" update="containerIndex" style="font-size: 13px; color: #43B572; "
+                                       actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
                     </p:column>  
                     <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
-                        <b:navCommandLink value="#{listCandidats.nomPref}" ajax="true" update="candidatForm" style="font-size: 13px; color: #43B572;"
-                                          actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
+                        <p:commandLink value="#{listCandidats.nomPref}" ajax="true" update="containerIndex" style="font-size: 13px; color: #43B572;"
+                                       actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
                     </p:column> 
-                    
+
                     <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
                         <h:outputText value="#{listCandidats.creationDate}" />
                     </p:column>  
@@ -100,99 +89,95 @@
                         <h:outputText value="#{listCandidats.nbrParticipant}" />
                     </p:column>  
                 </p:dataTable>        
-            </b:column>
-        </b:row>    
-        
-        <b:row id="submitList" rendered="#{(currentUser.nodeUser != null) and 
-                            (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and
-                            (candidatBean.isListSelected())}">
-            <b:column span="12" style="align-content: center">
-                <b:commandButton value="#{langueBean.getMsg('candidat.submitList')}" 
-                                 style="background: #F47B2A; border-color: #F47B2A; display: block; 
-                                 margin-left: auto; margin-right: auto; margin-top: 10px; color: white" look="primary" size="l" 
-                                 update="idProcessCandidateList processCandidateListForm"
-                                 oncomplete="PF('processCandidateList').show();"
-                                 actionListener="#{processCandidateBean.resetForList(candidatBean.selectedCandidates)}"/>
-            </b:column>
-        </b:row>          
-    </b:panel>
+            </div>
+        </div>    
 
-  
-    
+        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) 
+                                  and (candidatBean.isListSelected())}">
+            <div class="row" >
+                <div class="col-12" style="text-align: right; margin-top: 20px">
+                    <p:commandButton title="#{langueBean.getMsg('candidat.submitList')}"
+                                     update="containerIndex:idProcessCandidateList"
+                                     oncomplete="PF('processCandidateList').show();" class="btn btn-primary"
+                                     actionListener="#{processCandidateBean.resetForList(candidatBean.selectedCandidates)}"/> 
+                </div>
+            </div>
+        </h:panelGroup>          
+    </p:panel>
+
     <p:panel visible="#{candidatBean.isExportViewActivate()}">
 
-        <b:row style="margin-bottom: 15px">
-            <b:column>
-                <h:outputText value="#{langueBean.getMsg('candidat.exporting_candidates')}" />
-            </b:column>
-        </b:row>
+        <div class="row" style="margin-bottom: 15px">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('candidat.exporting_candidates')}"
+                              style="color: #f47b2a; font-weight: bold;"/>
+            </div>
+        </div>
 
-        <p:panel header="#{langueBean.getMsg('candidat.language_list')}" toggleable="true" closable="false" toggleSpeed="500"
-                 closeSpeed="500" style="margin-bottom:20px" collapsed="true">
-            <p:dataTable id="listLangue" var="langue" value="#{candidatBean.languagesOfTheso}"
-                         selection="#{candidatBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
-                <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
-                <p:column headerText="Code" width="60">
-                    <h:outputText value="#{langue.code}" />
-                </p:column>
-                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.language')}">
-                    <h:outputText value="#{langue.value}" />
-                </p:column>
-            </p:dataTable>
-        </p:panel>
+        <p:accordionPanel widgetVar="basic">
+            <p:tab title="#{langueBean.getMsg('candidat.language_list')}" >
+                <p:dataTable var="langue" value="#{candidatBean.languagesOfTheso}"
+                             selection="#{candidatBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                    <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
+                    <p:column headerText="Code" width="60">
+                        <h:outputText value="#{langue.code}" />
+                    </p:column>
+                    <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.language')}">
+                        <h:outputText value="#{langue.value}" />
+                    </p:column>
+                </p:dataTable>
+            </p:tab>
+        </p:accordionPanel>
 
-        <b:row>
-            <b:column span="2" offset="7">
-                <h:outputText value="#{langueBean.getMsg('candidat.output_format')} :" />
-            </b:column>
-            <b:column span="2" >
+        <div class="row" style="margin-top: 20px">
+            <div class="col-6" style="text-align: right; margin-top: 5px">
+                <h:outputText value="#{langueBean.getMsg('candidat.output_format')}" style="color: #000"/>
+            </div>
+            <div class="col-3" >
                 <p:selectOneMenu value="#{candidatBean.selectedExportFormat}"
                                  style="font-size: 12px; width: 100%; background: none;  box-shadow: none;"
-                                 panelStyle="font-size: 12px;  border: none; box-shadow: none;">
+                                 panelStyle="border: none; box-shadow: none;">
                     <f:selectItems  value="#{candidatBean.exportFormat}" var="format" itemLabel="#{format}" itemValue="#{format}"/>
 
                 </p:selectOneMenu>
-            </b:column>
-        </b:row>
+            </div>
+        </div>
 
-        <br /><br />
+        <div class="row" style="margin-top: 20px">
+            <div class="col-6" style="text-align: right">
+                <p:commandButton title="#{langueBean.getMsg('btnBack')}" process="@this"
+                                 class="btn btn-secondary" update="containerIndex"
+                                 actionListener="#{candidatBean.setListCandidatsActivate(true)}"/>
+            </div>
 
-        <b:row>
-            <b:column span="6">
-                <p:commandButton value="#{langueBean.getMsg('candidat.export')}" widgetVar="exportButton" icon="ui-icon-valider" ajax="false"
-                                 class="btn btn-success" style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
-                                 onclick="PF('pbAjax').start();" update="viewExportCandidats candidatForm">
+            <div class="col-6">
+                <p:commandButton title="#{langueBean.getMsg('candidat.export')}" process="@this"
+                                 class="btn btn-primary" onclick="PF('pbAjax').start();"
+                                 update="containerIndex messageIndex">
                     <p:fileDownload value="#{exportFileBean.exportCandidatsEnSkos()}" />
                 </p:commandButton>
-            </b:column>
-
-            <b:column span="6">
-                <p:commandButton icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
-                                 style="font-size: 13px; color: white; background: #FFC107; border: #FFC107;"
-                                 actionListener="#{candidatBean.setListCandidatsActivate(true)}" update="candidatForm"/>
-            </b:column>
-        </b:row>
-
-        <br/><br/>
+            </div>
+        </div>
 
         <p:progressBar widgetVar="pbAjax" ajax="true" value="#{candidatProgressBar.progress}" labelTemplate="" styleClass="animated"
-                       global="false" interval="1000" style="font-size: 13px; color: white;"/>
+                       global="false" interval="1000"  style="margin-top: 35px"/>
     </p:panel>
 
-    <b:panel id="viewImportSkosForm" rendered="#{candidatBean.isImportViewActivate()}">
+    <p:panel id="viewImportSkosForm" rendered="#{candidatBean.isImportViewActivate()}" style="color: #000">
 
-        <b:row>
-            <b:column>
-                <h:outputText value="#{langueBean.getMsg('candidat.import_in_Skos')}" style="font-size: 14px; color: #C63632"/>
-            </b:column>
-        </b:row>
+        <div class="row">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('candidat.import_in_Skos')}" 
+                              style="color: #f47b2a; font-weight: bold;"/>
+            </div>
+        </div>
 
         <!-- choix du format de sortie Skos, Json, JsonLd, Turtle -->
-        <b:row style="margin-top: 10px">
-            <b:column span="1" >
+        <div class="row" style="margin-top: 10px">
+            <div class="col-6" style="text-align: right; color: #000; margin-top: 3px">
                 <h:outputText value="#{langueBean.getMsg('candidat.format')}: " />
-            </b:column>
-            <b:column span="2">
+            </div>
+            <div class="col-3">
                 <p:selectOneMenu id="idTypeImportSingle" value="#{importFileBean.typeImport}"
                                  style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;">
@@ -202,65 +187,56 @@
                     <f:selectItem itemLabel="Json" itemValue="3" />
                     <p:ajax event="change" listener="#{importFileBean.stateChangeListener}" />
                 </p:selectOneMenu> 
-            </b:column>
-        </b:row>  
+            </div>
+        </div>  
 
         <!-- Choix du fichier -->   
-        <b:row style="margin-top: 10px">
-            <b:column span="12" > 
-                <p:fileUpload listener="#{importFileBean.loadFileSkos}" label="#{langueBean.getMsg('candidat.parcourir')}" mode="advanced" auto="true"
-                              allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/" update="viewImportSkosForm importButton" 
-                              style="font-size: 12px;" >
+        <div class="row" style="margin-top: 10px">
+            <div class="col-12"> 
+                <p:fileUpload listener="#{importFileBean.loadFileSkos}" label="#{langueBean.getMsg('candidat.parcourir')}" 
+                              mode="advanced" auto="true" process="@this"
+                              allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/" update="viewImportSkosForm importButton" >
                     <f:attribute name="isCandidatImport" value="true" />
                 </p:fileUpload>
-            </b:column>
-        </b:row> 
+            </div>
+        </div> 
 
-        <b:row rendered="#{importFileBean.loadDone}" style="font-size: 12px; margin-top: 10px">
-            <b:column span="5">
-                <h:outputText value="URI: " />
-                <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
-            </b:column>
-        </b:row>
-
-        <b:row rendered="#{importFileBean.loadDone}" style="margin-top: 10px; font-size: 12px;">
-            <b:column span="5">
-                <h:outputText value="#{langueBean.getMsg('candidat.total_concepts')}: " />
-                <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
-            </b:column>
-        </b:row>
-
-        <p:spacer/>
-
-        <h:panelGroup id="importButton">  
-            <b:row >
-                <b:column span="2" offset="3">
-                    <p:commandButton id="buttonImportSkos" class="btn btn-success" widgetVar="buttonImportSkos"
-                                     icon="fas fa-check-circle fas 2x" ajax="true" value="#{langueBean.getMsg('candidat.import')}" disabled="#{!importFileBean.loadDone}"
-                                     update="toolBoxForm toolBoxForm:listThesoForm toolBoxForm:viewImportSkosForm candidatForm"
-                                     onclick="PF('pbAjax').start(); PF('buttonImportSkos').disable();"
-                                     style="width: 100%; background-color: #5CB85C; border: none;"
-                                     actionListener="#{importFileBean.addSkosCandidatToBDD()}"/>
-                </b:column>
-                <b:column span="2" offset="2" >
-                    <p:commandButton id="cancelSkos" icon="fas fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
-                                     style="width: 100%; background-color: #FFC107; color: black; border: none;"
-                                     actionListener="#{candidatBean.setListCandidatsActivate(true)}"
-                                     update="candidatForm"/>
-                </b:column> 
-            </b:row>
+        <h:panelGroup rendered="#{importFileBean.loadDone}">
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12">
+                    <h:outputText value="URI: " />
+                    <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-12">
+                    <h:outputText value="#{langueBean.getMsg('candidat.total_concepts')}: " />
+                    <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                </div>
+            </div>
         </h:panelGroup>
 
-        <p:spacer/>
+        <h:panelGroup id="importButton">  
+            <div class="row" style="margin: 20px">
+                <div class="col-6" style="text-align: right">
+                    <p:commandButton title="#{langueBean.getMsg('btnBack')}" class="btn btn-secondary"
+                                     actionListener="#{candidatBean.setListCandidatsActivate(true)}"
+                                     update="containerIndex" process="@this"/>
+                </div>
+                <div class="col-6" >
+                    <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('candidat.import')}" 
+                                     disabled="#{!importFileBean.loadDone}" update="containerIndex messageIndex" 
+                                     onclick="PF('pbAjax').start(); PF('buttonImportSkos').disable();"
+                                     actionListener="#{importFileBean.addSkosCandidatToBDD()}"/>
+                </div> 
+            </div>
+        </h:panelGroup>
 
-        <b:row >
-            <b:column span="10" offset="1">
+        <div class="row">
+            <div class="col-12">
                 <p:progressBar widgetVar="pbAjax" ajax="true" value="#{candidatProgressBar.progress}" 
-                               labelTemplate="{value}%" styleClass="animated" global="false" 
-                               style="font-size: 12px; height: 20px;"/>
-            </b:column>                
-        </b:row>               
-
-    </b:panel>
-
+                               labelTemplate="{value}%" styleClass="animated" global="false" />
+            </div>                
+        </div>               
+    </p:panel>
 </ui:fragment>

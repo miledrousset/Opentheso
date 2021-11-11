@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:b="http://bootsfaces.net/ui">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
 
     <head>
         <title>Se connecter</title>
@@ -15,7 +15,7 @@
 
     <body class="bg-gradient-primary">
 
-        <b:growl id="messageIndex" globalOnly="true" showDetail="true" placementFrom="bottom"/>
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <div class="container">
             <div class="row justify-content-center">
@@ -31,7 +31,7 @@
                                             <h1 class="h4 text-gray-900 mb-4">Connexion</h1>
                                         </div>
 
-                                        <h:form class="user">
+                                        <h:form id="containerIndex" class="user">
                                             <div class="form-group">
                                                 <p:inputText class="form-control form-control-user" value="#{currentUser.username}" />
                                             </div>
@@ -57,14 +57,17 @@
                                                     Retour
                                                 </a>
                                             </div>
+
+                                            <hr/>
+
+                                            <div class="text-center">
+                                                <p:commandLink actionListener="PF('forgetPass').show();" 
+                                                               value="Mot de passe oublié ?"
+                                                               update="containerIndex:forgetPassForm"/>
+                                            </div>
+
+                                                <ui:include src="dialog/login/forgetPass.xhtml" />
                                         </h:form>
-
-                                        <hr/>
-
-                                        <div class="text-center">
-                                            <a class="small" href="forgot-password.html">Mot de passe oublié ?</a>
-                                        </div>
-
                                     </div>
                                 </div>
                             </div>

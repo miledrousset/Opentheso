@@ -22,7 +22,7 @@
                         <b:row>
                             <b:column span="12">
                                 <b:navCommandLink value="#{langueBean.getMsg('candidat.return')}" 
-                                                  update="candidatForm" ajax="false" style="color: #F47B2A" 
+                                                  update="containerIndex" ajax="false" style="color: #F47B2A" 
                                                   action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
                                                   actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
                             </b:column>
@@ -41,7 +41,7 @@
                                 <b:commandButton value="#{langueBean.getMsg('candidat.submit')}" 
                                                  style="background: #F47B2A; border-color: #F47B2A; display: block; 
                                                  margin-left: auto; margin-right: auto; margin-top: 10px; color: white" look="primary" size="l" 
-                                                 update="idProcessCandidate processCandidateForm"
+                                                 update="containerIndex:idProcessCandidate processCandidateForm"
                                                  oncomplete="PF('processCandidate').show();"
                                                  actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"/>
                             </b:column>

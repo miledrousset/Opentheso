@@ -1,41 +1,41 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idEditTraduction" header="Modifier une traduction" widgetVar="editTraduction" 
-              modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" >  
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
 
         <h:form id="editTraductionForm">
-            
-            <b:inputText value="#{traductionService.langage}" required="true" disabled="true"
-                         label="Langage : " style="font-size: 12px;" />
 
-            <b:inputText value="#{traductionService.traduction}" required="true" 
-                         label="Traduction : " style="font-size: 12px;" />
+            <div class="row">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Langage" style="font-weight: bold;"/>
+                </div>
+                <div class="col-7">
+                    <h:outputText value="#{traductionService.langage}" />
+                </div>
+            </div>
 
-            <b:row>
-                
-                <b:column span="5" offset="1">
-                    <p:commandButton value="Modifier"  styleClass="ui-priority-primary" ajax="false"
-                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #43B572;" 
-                                     class="btn btn-primary" action="#{traductionService.updateTraduction()}" 
-                                     oncomplete="PF('editTraduction').hide();"/>
-                </b:column>
-                <b:column span="5" >
-                    <p:commandButton value="#{langueBean.getMsg('btnBack')}" 
-                                     icon="fas fa-undo fas 2x"                                       
-                                     styleClass="ui-priority-primary" ajax="false"
-                                     style="width: 100%; font-size: 13px; font-weight: normal; color: white; background: #FFC107; 
-                                     border: none; box-shadow: none; float: right" class="btn btn-primary"
-                                     oncomplete="PF('editTraduction').hide();"/>
-                </b:column>                
+            <div class="row" style="margin-top: 10px">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Traduction" style="font-weight: bold;"/>
+                </div>
+                <div class="col-7">
+                    <p:inputText value="#{traductionService.traduction}" required="true" />
+                </div>
+            </div>
 
-            </b:row>
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('editTraduction').hide();"/>
 
+                <p:commandButton class="btn btn-primary" title="Modifier"
+                                 oncomplete="PF('editTraduction').hide();"
+                                 update="containerIndex messageIndex"
+                                 actionListener="#{traductionService.updateTraduction()}"/>
+            </div>
         </h:form>
-
     </p:dialog>   
 </ui:fragment>

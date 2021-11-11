@@ -25,10 +25,10 @@
 
             <h:panelGroup rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" > 
                 <li class="nav-item">
-                    <a class="nav-link" href="candidat/condidat.xhtml" >
+                    <span class="nav-link">
                         <i class="fas fa-fw fa-cog"></i>
-                        <span style="font-size: 12px;">Candidat</span>
-                    </a>
+                        <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" style="font-size: 12px;">Candidat</p:commandLink>
+                    </span>
                 </li>
             </h:panelGroup>
 

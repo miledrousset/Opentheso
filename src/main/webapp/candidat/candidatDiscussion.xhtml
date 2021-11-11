@@ -1,86 +1,84 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui">
 
-    <b:row style="font-weight: bold;">
-        <b:column span="2">
+    <div class="row" style="font-weight: bold;">
+        <div class="col-2">
             <h:outputLabel value="#{langueBean.getMsg('candidat.discussion')}" style=" margin-left: 10px"/>
-        </b:column>
-        <b:column span="1" style=" margin-left: 5px">
-            <b:navCommandLink  tooltip="Recharger les messages "
-                               tooltip-delay-show="500"
-                              icon-awesome="fas fa-sync" icon-size="l" style=" color: #43B572"
-                              action="#{discussionService.reloadMessage()}" 
-                              update="candidatForm:rowMessages candidatForm:rowValue messageIndex " />                
-        </b:column>        
-    </b:row>
+        </div>
+        <div class="col-1" style=" margin-left: 5px">
+            <p:commandLink actionListener="#{discussionService.reloadMessage()}" 
+                           update="containerIndex messageIndex" >
+                <a class="fas fa-sync" style=" color: #43B572" />
+            </p:commandLink>                
+        </div>        
+    </div>
 
-    <b:row id="rowMessages" style="background-color: #FFFFFF; margin-left: 10px; margin-right: 10px">
-        <b:column>
+    <div class="row" id="rowMessages" style="background-color: #FFFFFF; margin-left: 10px; margin-right: 10px">
+        <div class="col-12">
             <p:scrollPanel mode="native" style="max-height: 940px; border: #FAFAFA; background-color: #FFFFFF;">
 
                 <ui:repeat id="chatBox" var="msg" value="#{candidatBean.candidatSelected.messages}">
 
-                    <b:row style="float: #{msg.getMessagePossition()}; font-size: 15px; width: 80%;
-                           background-color: #{msg.getMessageColor()}; margin-top: 5px; font-weight: bold; margin-left: 5px;
-                           margin-right: 5px">
+                    <div class="row" style="float: #{msg.getMessagePossition()}; font-size: 15px; width: 80%;
+                         background-color: #{msg.getMessageColor()}; margin-top: 5px; font-weight: bold; margin-left: 5px;
+                         margin-right: 5px">
 
-                        <b:column style="width: 25%; ">
+                        <div class="col-3">
                             <h:outputText value="#{msg.nom}"/>
-                        </b:column>
+                        </div>
 
-                        <b:column style="width: 75%; font-size: 12px; text-align: right; font-style: italic; color: #8C8C8C">
+                        <div class="col-9" style="text-align: right; font-style: italic; color: #8C8C8C">
                             <h:outputText value="#{msg.date}"/>
-                        </b:column> 
+                        </div> 
 
-                    </b:row>  
+                    </div>  
 
-                    <b:row style="float: #{msg.getMessagePossition()}; font-size: 12px; width: 80%;
-                        background-color: #{msg.getMessageColor()}; margin-bottom: 5px; text-align: justify;
-                        text-justify: inter-word; margin-left: 5px; margin-right: 5px">
+                    <div class="row" style="float: #{msg.getMessagePossition()}; font-size: 12px; width: 80%;
+                         background-color: #{msg.getMessageColor()}; margin-bottom: 5px; text-align: justify;
+                         text-justify: inter-word; margin-left: 5px; margin-right: 5px">
 
-                        <b:column style="width: 90%;">
+                        <div class="col-10">
                             <h:outputText value="#{msg.msg}"/>
-                        </b:column>
-                    </b:row>
+                        </div>
+                    </div>
 
                 </ui:repeat>
 
             </p:scrollPanel>
-        </b:column>
-    </b:row>
+        </div>
+    </div>
 
-    <b:row id="rowValue" style="background-color: #FFFFFF; height: 80px; margin-top: 2px; 
-           margin-left: 10px; margin-right: 10px; border: #FAFAFA">
-        <b:column>
-            <b:inputTextarea value="#{candidatBean.message}" placeholder="#{langueBean.getMsg('candidat.write_here')}"
+    <div class="row" id="rowValue" style="background-color: #FFFFFF; height: 80px; margin-top: 2px; 
+         margin-left: 10px; margin-right: 10px; border: #FAFAFA">
+        <div class="col-12">
+            <p:inputTextarea value="#{candidatBean.message}" placeholder="#{langueBean.getMsg('candidat.write_here')}"
                              style="width: 100%; height: 80px; border: #FFFFFF; resize: none; padding: 5px"/>
-        </b:column>
-    </b:row>
+        </div>
+    </div>
 
-    <b:row style="background-color: #FFFFFF; margin-bottom: 5px; 
-           border: #FAFAFA; margin-left: 10px; margin-right: 10px">
-        <b:column>
-            <b:commandButton value="#{langueBean.getMsg('candidat.send')}" style="background: #FFFFFF; color: #43B572; border-color: #43B572; float: right;
-                    margin-bottom: 15px" ajax="true" look="primary" size="sm" actionListener="#{discussionService.sendMessage()}"
-                    update="candidatForm:rowMessages candidatForm:rowValue messageIndex " />
-        </b:column>
-    </b:row>
+    <div class="row" style="background-color: #FFFFFF; margin-bottom: 5px; 
+         border: #FAFAFA; margin-left: 10px; margin-right: 10px">
+        <div class="col-12">
+            <p:commandButton value="#{langueBean.getMsg('candidat.send')}" style="background: #FFFFFF; color: #43B572; border-color: #43B572; float: right;
+                             margin-bottom: 15px" ajax="true" actionListener="#{discussionService.sendMessage()}"
+                             update="containerIndex messageIndex " />
+        </div>
+    </div>
 
-    <b:row style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px; 
-           margin-left: 10px; margin-right: 10px ">
-        <b:column span="6">
-            <b:commandButton value="#{langueBean.getMsg('candidat.show_participants')}" style="background: #43B572; border: #43B572; color: white;"
-                             update="newParticipantForm" ajax="true"
+    <div class="row" style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px; 
+         margin-left: 10px; margin-right: 10px ">
+        <div class="col-6">
+            <p:commandButton value="#{langueBean.getMsg('candidat.show_participants')}" style="background: #43B572; border: #43B572; color: white;"
+                             update="containerIndex" ajax="true"
                              actionListener="#{discussionService.getParticipantsInConversation()}" />
-        </b:column>
-        <b:column span="6">
-            <b:commandButton value="#{langueBean.getMsg('candidat.send_invitation')}"
+        </div>
+        <div class="col-6">
+            <p:commandButton value="#{langueBean.getMsg('candidat.send_invitation')}"
                              style="background: #43B572; float: right; border: #43B572; color: white"
                              oncomplete="PF('sendChatInvitation').show();" ajax="true" />
-        </b:column>
-    </b:row>
+        </div>
+    </div>
 
 </ui:fragment>

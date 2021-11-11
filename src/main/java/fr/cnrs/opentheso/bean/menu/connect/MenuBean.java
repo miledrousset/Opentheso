@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.connect;
 
+import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.NewUSerBean;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
@@ -56,11 +57,21 @@ public class MenuBean implements Serializable {
     @Inject 
     private SelectedTheso selectedTheso;
     
+    @Inject 
+    private CandidatBean candidatBean;
+    
     
     // LOGIN Page
     public void redirectToThesaurus() throws IOException {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/index.xhtml");
+    }
+    
+    // LOGIN Page
+    public void redirectToCandidatPage() throws IOException {
+        candidatBean.initCandidatModule();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/candidat/condidat.xhtml");
     }
     
     // MENU Profile

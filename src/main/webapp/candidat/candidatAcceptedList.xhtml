@@ -1,88 +1,90 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
-    <b:panel style="padding: 10px">
-        <b:row style="margin-top: 20px">
-            <b:column medium-screen="6">
-                <b:selectBooleanCheckbox caption="#{langueBean.getMsg('candidat.my_candidats')}" value="#{candidatBean.myCandidatsSelected2}"
-                                         onclick="ajax:candidatBean.selectMyAcceptedCandidats()" update="candidatForm" style="font-size: 11px;"/>
-            </b:column>
-            <b:column medium-screen="6">
+
+    <p:panel style="padding: 10px">
+        <div class="row" style="margin-top: 20px">
+            <div class="col-6">
+                <h:outputLabel value="#{langueBean.getMsg('candidat.my_candidats')}" />
+                <p:selectBooleanCheckbox value="#{candidatBean.myCandidatsSelected2}">
+                    <p:ajax update="containerIndex" listener="#{candidatBean.selectMyAcceptedCandidats()}" />
+                </p:selectBooleanCheckbox>
+            </div>
+            <div class="col-6">
                 <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
                               text-align: right; vertical-align: central" value="#{langueBean.getMsg('candidat.search')}"/>
-                <b:inputText value="#{candidatBean.searchValue2}">
+                <p:inputText value="#{candidatBean.searchValue2}">
                     <f:facet name="append">
-                        <b:commandButton look="success" iconAwesome="search" icon-align="right" 
-                                         update="candidatForm" actionListener="#{candidatBean.searchAcceptedCandByTermeAndAuteur()}"/>
+                        <p:commandButton icon="search" update="containerIndex" actionListener="#{candidatBean.searchAcceptedCandByTermeAndAuteur()}"/>
                     </f:facet>
-                </b:inputText>
-            </b:column>
-        </b:row>
+                </p:inputText>
+            </div>
+        </div>
 
-        <b:row style="margin-top: 20px">
-            <b:column>
-                <b:row style="font-size: 12px; color: #666666">
-                    <b:column span="1">
+        <div class="row" style="margin-top: 20px">
+            <div class="col-12">
+                <div class="row" style="font-size: 12px; color: #666666">
+                    <div class="col-1">
                         <h:outputText value="id"/>
-                    </b:column>                  
-                    <b:column span="4">
+                    </div>                  
+                    <div class="col-4">
                         <h:outputText value="#{langueBean.getMsg('candidat.titre')}"/>
-                    </b:column>              
-                    <b:column span="2">
+                    </div>              
+                    <div class="col-2">
                         <h:outputText value="#{langueBean.getMsg('candidat.creation_date')}"/>
-                    </b:column>
-                    <b:column span="2">
+                    </div>
+                    <div class="col-2">
                         <h:outputText value="Votes"/>
-                    </b:column> 
-                    <b:column span="2">
+                    </div> 
+                    <div class="col-2">
                         <h:outputText value="Votes Note"/>
-                    </b:column>  
-                    <b:column span="1">
+                    </div>  
+                    <div class="col-1">
                         <h:outputText value="Messages"/>
-                    </b:column>                          
-                </b:row>
-                <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-                <b:row rendered="#{candidatBean.acceptedCadidat.size() == 0}">
-                    <b:column>
+                    </div>                          
+                </div>
+
+                <div class="row" rendered="#{candidatBean.acceptedCadidat.size() == 0}">
+                    <div class="col-12">
                         <h:outputText value="#{langueBean.getMsg('candidat.save.msg10')}" 
                                       style="font-size: 12px; color: grey; font-style: italic " />
-                    </b:column>
-                </b:row>
-                <b:row>
+                    </div>
+                </div>
 
-                </b:row>
                 <ui:repeat var="candidat" value="#{candidatBean.acceptedCadidat}">
-                    <b:row style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.acceptedCadidat.indexOf(candidat))};
-                           padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
-                        <b:column span="1" >
+                    <div class="row" style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.acceptedCadidat.indexOf(candidat))};
+                         padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
+                        <div class="col-1" >
                             <h:outputText value="#{candidat.idConcepte}" />
-                        </b:column>
-                        <b:column span="4" >
-                            <b:navCommandLink value="#{candidat.nomPref}" ajax="true" update="candidatForm" style="color: #43B572"
-                                              actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
-                        </b:column>
+                        </div>
 
-                        <b:column span="2" >
+                        <div class="col-4" >
+                            <p:commandLink value="#{candidat.nomPref}" ajax="true" update="containerIndex" style="color: #43B572"
+                                           actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
+                        </div>
+
+                        <div class="col-2" >
                             <h:outputText value="#{candidat.creationDate}" />
-                        </b:column>
-                        <b:column span="2">
+                        </div>
+
+                        <div class="col-2">
                             <h:outputText value="#{candidat.nbrVote}" />
-                        </b:column>
-                        <b:column span="2">
+                        </div>
+
+                        <div class="col-2">
                             <h:outputText value="#{candidat.nbrNoteVote}" />
-                        </b:column>
-                        <b:column span="1">
+                        </div>
+
+                        <div class="col-1">
                             <h:outputText value="#{candidat.nbrParticipant}" />
-                        </b:column>
-                    </b:row>
+                        </div>
+                    </div>
                 </ui:repeat>
                 <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-            </b:column>
-        </b:row>
-    </b:panel>
+            </div>
+        </div>
+    </p:panel>
 
 </ui:fragment>
