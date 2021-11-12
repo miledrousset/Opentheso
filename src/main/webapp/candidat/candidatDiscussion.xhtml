@@ -4,27 +4,23 @@
              xmlns:p="http://primefaces.org/ui">
 
     <div class="row" style="font-weight: bold;">
-        <div class="col-2">
+        <div class="col-6">
             <h:outputLabel value="#{langueBean.getMsg('candidat.discussion')}" style=" margin-left: 10px"/>
         </div>
-        <div class="col-1" style=" margin-left: 5px">
-            <p:commandLink actionListener="#{discussionService.reloadMessage()}" 
-                           update="containerIndex messageIndex" >
-                <a class="fas fa-sync" style=" color: #43B572" />
-            </p:commandLink>                
+        <div class="col-6" style="text-align: right;">
+            <p:commandButton actionListener="#{discussionService.reloadMessage()}"
+                             icon="fas fa-sync" class="btn btn-primary"
+                             update="containerIndex messageIndex" process="@this" />       
         </div>        
     </div>
 
     <div class="row" id="rowMessages" style="background-color: #FFFFFF; margin-left: 10px; margin-right: 10px">
         <div class="col-12">
             <p:scrollPanel mode="native" style="max-height: 940px; border: #FAFAFA; background-color: #FFFFFF;">
-
                 <ui:repeat id="chatBox" var="msg" value="#{candidatBean.candidatSelected.messages}">
-
                     <div class="row" style="float: #{msg.getMessagePossition()}; font-size: 15px; width: 80%;
                          background-color: #{msg.getMessageColor()}; margin-top: 5px; font-weight: bold; margin-left: 5px;
                          margin-right: 5px">
-
                         <div class="col-3">
                             <h:outputText value="#{msg.nom}"/>
                         </div>
@@ -32,7 +28,6 @@
                         <div class="col-9" style="text-align: right; font-style: italic; color: #8C8C8C">
                             <h:outputText value="#{msg.date}"/>
                         </div> 
-
                     </div>  
 
                     <div class="row" style="float: #{msg.getMessagePossition()}; font-size: 12px; width: 80%;
@@ -43,9 +38,7 @@
                             <h:outputText value="#{msg.msg}"/>
                         </div>
                     </div>
-
                 </ui:repeat>
-
             </p:scrollPanel>
         </div>
     </div>
@@ -61,23 +54,23 @@
     <div class="row" style="background-color: #FFFFFF; margin-bottom: 5px; 
          border: #FAFAFA; margin-left: 10px; margin-right: 10px">
         <div class="col-12">
-            <p:commandButton value="#{langueBean.getMsg('candidat.send')}" style="background: #FFFFFF; color: #43B572; border-color: #43B572; float: right;
-                             margin-bottom: 15px" ajax="true" actionListener="#{discussionService.sendMessage()}"
+            <p:commandButton value="#{langueBean.getMsg('candidat.send')}" 
+                             style="background: #FFFFFF; color: #43B572; border-color: #43B572; float: right;"
+                             ajax="true" actionListener="#{discussionService.sendMessage()}"
                              update="containerIndex messageIndex " />
         </div>
     </div>
 
-    <div class="row" style="background-color: #FAFAFA; border: #FAFAFA; margin-top: 20px; 
-         margin-left: 10px; margin-right: 10px ">
+    <div class="row" style="margin-top: 10px; margin-left: 10px; margin-right: 10px ">
         <div class="col-6">
-            <p:commandButton value="#{langueBean.getMsg('candidat.show_participants')}" style="background: #43B572; border: #43B572; color: white;"
-                             update="containerIndex" ajax="true"
+            <p:commandButton title="#{langueBean.getMsg('candidat.show_participants')}" 
+                             class="btn btn-primary" update="containerIndex:idParticipantsList" ajax="true"
                              actionListener="#{discussionService.getParticipantsInConversation()}" />
         </div>
-        <div class="col-6">
-            <p:commandButton value="#{langueBean.getMsg('candidat.send_invitation')}"
-                             style="background: #43B572; float: right; border: #43B572; color: white"
-                             oncomplete="PF('sendChatInvitation').show();" ajax="true" />
+        <div class="col-6" style="text-align: right">
+            <p:commandButton title="#{langueBean.getMsg('candidat.send_invitation')}"
+                             update="containerIndex:idSendChatInvitation" ajax="true"
+                             class="btn btn-primary" oncomplete="PF('sendChatInvitation').show();" />
         </div>
     </div>
 

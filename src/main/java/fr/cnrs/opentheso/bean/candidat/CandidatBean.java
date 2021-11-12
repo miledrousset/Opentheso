@@ -443,31 +443,6 @@ public class CandidatBean implements Serializable {
 
             candidatService.saveNewTerm(connect, terme,
                     candidatSelected.getIdConcepte(), candidatSelected.getUserId());
-
-
-            /**
-             * à déplacer au moment d'insérer le candidat dans le thésaurus
-             *
-             */
-   /*         if (conceptHelper.getNodePreference() != null) {
-                ArrayList<String> idConcepts = new ArrayList<>();
-                // création de l'identifiant Handle
-                if (conceptHelper.getNodePreference().isUseHandle()) {
-                    if (!conceptHelper.addIdHandle(connect.getPoolConnexion().getConnection(), candidatSelected.getIdConcepte(),
-                            candidatSelected.getIdThesaurus())) {
-                        showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.save.msg6"));
-                        return;
-                    }
-                }
-
-                if (conceptHelper.getNodePreference().isUseArk()) {
-                    idConcepts.add(candidatSelected.getIdConcepte());
-                    if (!conceptHelper.generateArkId(connect.getPoolConnexion(), candidatSelected.getIdThesaurus(), idConcepts)) {
-                        showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.save.msg7"));
-                        return;
-                    }
-                }
-            }*/
             setIsListCandidatsActivate(true);
 
         } else {
@@ -497,11 +472,9 @@ public class CandidatBean implements Serializable {
 
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
 
-    //    setIsListCandidatsActivate(true);
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-  //          PrimeFaces.current().ajax().update("messageIndex");
-  //          PrimeFaces.current().ajax().update("candidatForm");
+        if (pf.isAjaxRequest()) {         
+            PrimeFaces.current().ajax().update("messageIndex");
         }
 
     }
@@ -602,7 +575,7 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, "Vote enregistré");
 
         PrimeFaces.current().ajax().update("messageIndex");
-        PrimeFaces.current().ajax().update("candidatForm:vote");
+        PrimeFaces.current().ajax().update("containerIndex:panelCandidate:vote");
     }
 
     /**

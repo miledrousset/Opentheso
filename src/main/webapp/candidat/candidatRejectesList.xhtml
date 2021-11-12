@@ -1,91 +1,50 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
-
-    <div class="row">
-        <div class="col-6">
-            <h:outputLabel value="#{langueBean.getMsg('candidat.my_candidats')}" />
-            <p:selectBooleanCheckbox value="#{candidatBean.myCandidatsSelected3}">
+             xmlns:p="http://primefaces.org/ui">
+    
+    <p:toolbar>
+        <p:toolbarGroup align="left">
+            <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('candidat.my_candidats')}" 
+                                     value="#{candidatBean.myCandidatsSelected3}">
                 <p:ajax update="containerIndex" listener="#{candidatBean.selectMyRejectCandidats()}" />
             </p:selectBooleanCheckbox>
-        </div>
-        <div class="col-6">
-            <h:outputText class="col-md-6 control-label" style="font-size: 13px; height: 34px; margin-top: 7px;
-                          text-align: right; vertical-align: central" value="#{langueBean.getMsg('candidat.search')}"/>
-            <p:inputText value="#{candidatBean.searchValue3}">
-                <f:facet name="append">
-                    <p:commandButton icon="search" update="containerIndex" actionListener="#{candidatBean.searchRejectCandByTermeAndAuteur()}"/>
-                </f:facet>
-            </p:inputText>
-        </div>
-    </div>
+        </p:toolbarGroup>
+        <p:toolbarGroup align="right">
+            <h:outputText value="#{langueBean.getMsg('candidat.search')}"/>
+            <p:inputText value="#{candidatBean.searchValue3}" style="margin-left: 10px" />
+            <p:commandButton icon="fas fa-search" update="containerIndex" style="height: 31px; margin-left: 5px"
+                             actionListener="#{candidatBean.searchRejectCandByTermeAndAuteur()}"/>
+        </p:toolbarGroup>
+    </p:toolbar>
+    
+    <p:dataTable var="candidat" value="#{candidatBean.rejetCadidat}" paginator="true" rows="15"
+                 selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
+                 style="margin-top: 20px" emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}" >
 
-    <div class="row" style="margin-top: 20px">
-        <div class="col-1">
-            <h:outputText value="id"/>
-        </div>          
+        <p:column width="5%" headerText="ID">
+            <h:outputText value="#{candidat.idConcepte}" />
+        </p:column>  
 
-        <div class="col-4">
-            <h:outputText value="#{langueBean.getMsg('candidat.titre')}"/>
-        </div>              
+        <p:column width="50%" headerText="#{langueBean.getMsg('candidat.titre')}">
+            <p:commandLink value="#{candidat.nomPref}" ajax="true" update="containerIndex" style="color: #43B572"
+                           actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
+        </p:column>  
 
-        <div class="col-2">
-            <h:outputText value="#{langueBean.getMsg('candidat.creation_date')}"/>
-        </div>
+        <p:column width="15%" headerText="#{langueBean.getMsg('candidat.creation_date')}">
+            <h:outputText value="#{candidat.creationDate}" />
+        </p:column>  
 
-        <div class="col-2">
-            <h:outputText value="Votes"/>
-        </div> 
+        <p:column width="10%" headerText="Votes">
+            <h:outputText value="#{candidat.nbrVote}" />
+        </p:column>  
 
-        <div class="col-2">
-            <h:outputText value="Votes Note"/>
-        </div>  
+        <p:column width="10%" headerText="Votes Note">
+            <h:outputText value="#{candidat.nbrNoteVote}" />
+        </p:column>  
 
-        <div class="col-1">
-            <h:outputText value="Messages"/>
-        </div>                         
-    </div>
-
-    <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-
-    <h:panelGroup rendered="#{candidatBean.rejetCadidat.size() == 0}">
-        <div class="row">
-            <div class="col-12">
-                <h:outputText value="#{langueBean.getMsg('candidat.save.msg10')}" 
-                              style="font-size: 12px; color: grey; font-style: italic" />
-            </div>
-        </div>
-    </h:panelGroup>
-
-    <ui:repeat var="candidat" value="#{candidatBean.rejetCadidat}">
-        <div class="row" style="font-size: 13px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.rejetCadidat.indexOf(candidat))}; 
-             padding-top: 5px; height: 25px; vertical-align: central; border-color: #8C8C8C;" >
-            <div class="col-1" >
-                <h:outputText value="#{candidat.idConcepte}" />
-            </div>  
-
-            <div class="col-4" >
-                <p:commandLink value="#{candidat.nomPref}" ajax="true" update="containerIndex" style="color: #43B572" 
-                               actionListener="#{candidatBean.showRejectCandidatSelected(candidat)}" />
-            </div>
-
-            <div class="col-2" >
-                <h:outputText value="#{candidat.creationDate}" />
-            </div>
-
-            <div class="col-2">
-                <h:outputText value="#{candidat.nbrVote}" />  
-            </div>
-
-            <div class="col-1">
-                <h:outputText value="#{candidat.nbrNoteVote}" />
-            </div> 
-
-            <div class="col-1">
-                <h:outputText value="#{candidat.nbrParticipant}" />
-            </div>                         
-        </div>   
-    </ui:repeat>
+        <p:column width="10%" headerText="Nbr Participants">
+            <h:outputText value="#{candidat.nbrParticipant}" />
+        </p:column>  
+    </p:dataTable>
 </ui:fragment>

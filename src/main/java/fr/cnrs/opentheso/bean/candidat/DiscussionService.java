@@ -103,8 +103,7 @@ public class DiscussionService implements Serializable {
     }
     
     public void reloadMessage(){
-        MessageDao messageDao = new MessageDao();
-        candidatBean.getCandidatSelected().setMessages(messageDao.getAllMessagesByCandidat(
+        candidatBean.getCandidatSelected().setMessages(new MessageDao().getAllMessagesByCandidat(
                 connect.getPoolConnexion(), 
                 candidatBean.getCandidatSelected().getIdConcepte(), 
                 candidatBean.getCandidatSelected().getIdThesaurus(), 

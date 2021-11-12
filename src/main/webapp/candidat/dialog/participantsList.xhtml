@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idParticipantsList" header="Liste des participants" widgetVar="participantsList"
-              modal="true" resizable="false" position="top" width="400" height="200" style="margin: 10px; border: 10px" >  
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
 
         <h:form id="newParticipantForm">
             
@@ -20,7 +20,7 @@
             
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                 <p:commandButton title="#{langueBean.getMsg('candidat.close')}" class="btn btn-secondary"
-                                 actionListener="PF('participantsList').hide();" update="newParticipantForm"/>
+                                 actionListener="PF('participantsList').hide();" update="containerIndex:idParticipantsList"/>
             </div>
         </h:form>
 

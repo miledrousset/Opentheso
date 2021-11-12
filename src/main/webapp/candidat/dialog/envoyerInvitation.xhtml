@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idSendChatInvitation" header="Envoyer une invitation" widgetVar="sendChatInvitation" 
-              modal="true" resizable="false" position="top" width="350" height="150" style="margin: 10px; border: 10px" >
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form id="sendChatInvitationForm" style="width: 100%">
             
@@ -13,20 +13,19 @@
                     <h:outputText value="E-mail" style="font-weight: bold;"/>
                 </div>
                 <div class="col-7">
-                    <p:inputText placeholder="toto@gmail.com" value="#{discussionService.email}"/>
+                    <p:inputText placeholder="toto@gmail.com" value="#{discussionService.email}" style="width: 100%"/>
                 </div>
             </div>
             
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('participantsList').hide();" update="sendChatInvitationForm"/>
+                                 actionListener="PF('participantsList').hide();" update="containerIndex:idSendChatInvitation"/>
 
-                <p:commandButton class="btn btn-primary" title="Envoyer"
+                <p:commandButton class="btn btn-primary" title="Envoyer" process="@this"
                                  oncomplete="PF('participantsList').hide();"
-                                 update="sendChatInvitationForm containerIndex messageIndex"
+                                 update="containerIndex messageIndex"
                                  actionListener="#{discussionService.sendInvitation()}"/>
             </div>
         </h:form>
-
     </p:dialog>   
 </ui:fragment>

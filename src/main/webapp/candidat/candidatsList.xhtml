@@ -52,45 +52,42 @@
         </div>
 
         <!-- tableau des candidats -->
-        <div class="row">
-            <div class="col-12"> 
-                <p:dataTable var="listCandidats" value="#{candidatBean.candidatList}" paginator="true" rows="15"
-                             selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}" >
+        <p:dataTable var="listCandidats" value="#{candidatBean.candidatList}" paginator="true" rows="15"
+                     selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
+                     emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}">
 
-                    <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
-                    <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
-                    <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
-                    <p:column rendered="#{(currentUser.nodeUser != null) and 
-                                          (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                              selectionMode="multiple" style="width:16px;text-align:center"/>
-                    <p:column  width="20" headerText="id">
-                        <h:outputText value="#{listCandidats.idConcepte}" />
-                    </p:column>                    
+            <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
+            <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
+            <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
+            <p:column rendered="#{(currentUser.nodeUser != null) and 
+                                  (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                      selectionMode="multiple" style="width:16px;text-align:center"/>
+            <p:column  width="20" headerText="id">
+                <h:outputText value="#{listCandidats.idConcepte}" />
+            </p:column>                    
 
-                    <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
-                        <p:commandLink value="(#{listCandidats.idConcepte})" ajax="true" update="containerIndex" style="font-size: 13px; color: #43B572; "
-                                       actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
-                    </p:column>  
-                    <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
-                        <p:commandLink value="#{listCandidats.nomPref}" ajax="true" update="containerIndex" style="font-size: 13px; color: #43B572;"
-                                       actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
-                    </p:column> 
+            <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
+                <p:commandLink value="(#{listCandidats.idConcepte})" ajax="true" update="containerIndex" style="font-size: 13px; color: #43B572; "
+                               actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
+            </p:column>  
+            <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
+                <p:commandLink value="#{listCandidats.nomPref}" ajax="true" update="containerIndex" style="color: #43B572;"
+                               process="@this" actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
+            </p:column> 
 
-                    <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
-                        <h:outputText value="#{listCandidats.creationDate}" />
-                    </p:column>  
-                    <p:column width="20" headerText="Votes">
-                        <h:outputText value="#{listCandidats.nbrVote}" />
-                    </p:column>   
-                    <p:column width="20" headerText="Votes Note">
-                        <h:outputText value="#{listCandidats.nbrNoteVote}" />
-                    </p:column>      
-                    <p:column width="20" headerText="Messages">
-                        <h:outputText value="#{listCandidats.nbrParticipant}" />
-                    </p:column>  
-                </p:dataTable>        
-            </div>
-        </div>    
+            <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
+                <h:outputText value="#{listCandidats.creationDate}" />
+            </p:column>  
+            <p:column width="20" headerText="Votes">
+                <h:outputText value="#{listCandidats.nbrVote}" />
+            </p:column>   
+            <p:column width="20" headerText="Votes Note">
+                <h:outputText value="#{listCandidats.nbrNoteVote}" />
+            </p:column>      
+            <p:column width="20" headerText="Messages">
+                <h:outputText value="#{listCandidats.nbrParticipant}" />
+            </p:column>  
+        </p:dataTable>   
 
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) 
                                   and (candidatBean.isListSelected())}">
