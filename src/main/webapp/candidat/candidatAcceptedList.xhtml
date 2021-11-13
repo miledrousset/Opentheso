@@ -1,8 +1,7 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:p="http://primefaces.org/ui">
 
     <p:toolbar>
         <p:toolbarGroup align="left">
@@ -29,7 +28,7 @@
 
         <p:column width="50%" headerText="#{langueBean.getMsg('candidat.titre')}">
             <p:commandLink value="#{candidat.nomPref}" ajax="true" update="containerIndex" style="color: #43B572"
-                           actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
+                           process="@this" actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
         </p:column>  
 
         <p:column width="15%" headerText="#{langueBean.getMsg('candidat.creation_date')}">

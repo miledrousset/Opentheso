@@ -68,7 +68,7 @@
                                             <div class="row">
                                                 <div class="col-12">
                                                     <p:commandLink value="#{langueBean.getMsg('candidat.return')}" process="@this" 
-                                                                   update="containerIndex" ajax="false" style="color: #F47B2A" 
+                                                                   update="containerIndex:tabViewCandidat" style="color: #F47B2A" 
                                                                    action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
                                                                    actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
                                                 </div>
@@ -81,13 +81,15 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-6" style="vertical-align: top;" rendered="#{!candidatBean.isNewCandidatActivate()}">
-                                                    <div class="card mb-4 py-3 border-left-success">
-                                                        <div class="list-group" style="padding-left: 10px; margin-right: 10px">
-                                                            <ui:include src="../candidat/candidatDiscussion.xhtml" />
+                                                <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
+                                                    <div class="col-6" style="vertical-align: top;" >
+                                                        <div class="card mb-4 py-3 border-left-success">
+                                                            <div class="list-group" style="padding-left: 10px; margin-right: 10px">
+                                                                <ui:include src="../candidat/candidatDiscussion.xhtml" />
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </h:panelGroup>
                                             </div>
 
                                             <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and candidatBean.isShowCandidatActivate()}">

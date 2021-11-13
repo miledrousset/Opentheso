@@ -589,3 +589,16 @@ body .ui-toolbar {
     border: 1px solid #43B572;
     padding: 7px;
 }
+
+/* DataList */
+body .ui-datalist .ui-datalist-header, body .ui-datalist .ui-datalist-footer {
+    background: #ecf8f1;
+    border: 1px solid #43B572;
+    color: #43B572;
+    padding: 0rem;
+    font-weight: 700;
+}
+
+body .ui-datalist .ui-datalist-content {
+    padding: 0.5rem;
+}

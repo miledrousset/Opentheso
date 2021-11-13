@@ -1,16 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
@@ -29,24 +22,20 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class ProcessCandidateBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private CandidatBean candidatBean;
+    @Inject 
+    private Connect connect;
+    
+    @Inject 
+    private CandidatBean candidatBean;
 
     private CandidatDto selectedCandidate;
     private String adminMessage;
-    
-    private List<CandidatDto> selectedCandidates;
 
     @PreDestroy
     public void destroy(){
         clear();
     }  
     public void clear(){
-        if(selectedCandidates!= null){
-            selectedCandidates.clear();
-            selectedCandidates = null;
-        } 
         selectedCandidate = null;
         adminMessage = null;
     }    
@@ -58,12 +47,6 @@ public class ProcessCandidateBean implements Serializable {
         this.selectedCandidate = candidatSelected;
     }
     
-    public void resetForList(List<CandidatDto> selectedCandidates) {
-        this.selectedCandidates = selectedCandidates;
-    }    
-
-    
-
     public void insertCandidat(int idUser) {
         if(selectedCandidate == null) {
             printErreur("Pas de candidat sélectionné");
@@ -83,11 +66,13 @@ public class ProcessCandidateBean implements Serializable {
         } catch (IOException ex) {
             Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        candidatBean.initCandidatModule();
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-   //         pf.ajax().update("candidatForm:listTraductionForm");
-            pf.ajax().update("candidatForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
         } 
     }
     
@@ -102,7 +87,7 @@ public class ProcessCandidateBean implements Serializable {
             printErreur("Erreur d'insertion");
             return;
         }
-        printMessage("Candidat inséré avec succès");
+        printMessage("Candidat(s) rejeté(s) avec succès");
         reset(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
         try { 
@@ -111,21 +96,23 @@ public class ProcessCandidateBean implements Serializable {
             Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        candidatBean.initCandidatModule();
+        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-   //         pf.ajax().update("candidatForm:listTraductionForm");
-            pf.ajax().update("candidatForm");
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
         }         
     }
     
     public void insertListCandidat(int idUser) {
-        if(selectedCandidates == null || selectedCandidates.isEmpty()) {
+        if(candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
             printErreur("Pas de candidat sélectionné");
             return;
         }
         CandidatService candidatService = new CandidatService();
 
-        for (CandidatDto selectedCandidate1 : selectedCandidates) {
+        for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
             if(!candidatService.insertCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
                 printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")" );
                 return;
@@ -134,28 +121,22 @@ public class ProcessCandidateBean implements Serializable {
 
         printMessage("Canditats insérés avec succès");
         reset(null);
-        resetForList(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
         try { 
             candidatBean.setIsListCandidatsActivate(true);
         } catch (IOException ex) {
             Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-//        PrimeFaces pf = PrimeFaces.current();
-//        if (pf.isAjaxRequest()) {
-//            pf.ajax().update("candidatForm");           
-//        } 
     }
     
     public void rejectCandidatList(int idUser){
-        if(selectedCandidates == null || selectedCandidates.isEmpty()) {
+        if(candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
             printErreur("Pas de candidat sélectionné");
             return;
         }
         CandidatService candidatService = new CandidatService();
 
-        for (CandidatDto selectedCandidate1 : selectedCandidates) {
+        for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
             if(!candidatService.rejectCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
                 printErreur("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")" );
                 return;
@@ -163,20 +144,13 @@ public class ProcessCandidateBean implements Serializable {
         }        
 
         printMessage("Candidats insérés avec succès");
-        reset(null);
-        resetForList(null);        
+        reset(null);       
         candidatBean.getAllCandidatsByThesoAndLangue();
         try { 
             candidatBean.setIsListCandidatsActivate(true);
         } catch (IOException ex) {
             Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-//        PrimeFaces pf = PrimeFaces.current();
-//        if (pf.isAjaxRequest()) {
-//   //         pf.ajax().update("candidatForm:listTraductionForm");
-//            pf.ajax().update("candidatForm");
-//        }         
+        }     
     }    
     
 

@@ -30,14 +30,14 @@
             
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('processCandidate').hide();" update="processCandidateForm"/>
+                                 actionListener="PF('processCandidate').hide();" update="containerIndex:idProcessCandidate"/>
 
                 <p:commandButton class="btn btn-primary" title="Rejeter" style="margin-right: 10px"
-                                 update="containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
+                                 update="containerIndex:idProcessCandidate containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
                                  actionListener="#{processCandidateBean.rejectCandidat(currentUser.nodeUser.idUser)}" />
 
                 <p:commandButton class="btn btn-primary" title="Insérer"
-                                 update="containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
+                                 update="containerIndex:idProcessCandidate containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
                                  actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser)}"/>
             </div>
         </h:form>

@@ -182,6 +182,24 @@ public class CandidatBean implements Serializable {
             acceptedCadidat.clear();
         }
     }
+    
+    public void test() {
+        if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
+            if (tabViewIndexSelected == 1) {
+                acceptedCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
+                        getIdLang(), tabViewIndexSelected++, null);
+            } else {
+                rejetCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
+                        getIdLang(), tabViewIndexSelected++, "CA");
+            }
+        } else {
+            if (tabViewIndexSelected == 1) {
+                acceptedCadidat.clear();
+            } else {
+                rejetCadidat.clear();
+            }
+        }
+    }
 
     /**
      * permet de déctercter la langue préférée d'un thésaurus
@@ -471,49 +489,6 @@ public class CandidatBean implements Serializable {
         getAllCandidatsByThesoAndLangue();
 
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {         
-            PrimeFaces.current().ajax().update("messageIndex");
-        }
-
-    }
-
-
-
-
-    public void showAllignementDialog(int pos) {
-
-/*        if (initialCandidat == null) {
-            showMessage(FacesMessage.SEVERITY_INFO, "Vous devez enregistrer votre candidat avant de gérer les alignements.");
-            return;
-        }
-
-        switch (pos) {
-            case 1:
-                alignmentBean.initAlignementByStep(
-                        selectedTheso.getCurrentIdTheso(),
-                        candidatSelected.getIdConcepte(),
-                        languageBean.getIdLangue());
-                alignmentBean.nextTen(languageBean.getIdLangue(), selectedTheso.getCurrentIdTheso());
-                PrimeFaces.current().executeScript("PF('addAlignment').show();");
-                return;
-            case 2:
-                alignmentManualBean.reset();
-                PrimeFaces.current().executeScript("PF('addManualAlignment').show();");
-                return;
-            case 3:
-                alignmentManualBean.reset();
-                PrimeFaces.current().executeScript("PF('updateAlignment').show();");
-                return;
-            default:
-                alignmentManualBean.reset();
-                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
-                        candidatSelected.getIdConcepte(), languageBean.getIdLangue());
-                PrimeFaces.current().executeScript("PF('deleteAlignment').show();");
-        }
-        PrimeFaces.current().ajax().update("addAlignmentForm");*/
-
     }
 
     public ArrayList<NodeIdValue> searchCollection(String enteredValue) {
@@ -526,22 +501,7 @@ public class CandidatBean implements Serializable {
                     selectedTheso.getCurrentLang(),
                     enteredValue);
         }
-        return nodeIdValues;        
-        /*
-        
-        GroupHelper groupHelper = new GroupHelper();
-        groupHelper.get
-        if ("%".equals(enteredValue)) {
-            return domaines.stream().map(domaineDto -> domaineDto.getName()).collect(Collectors.toList());
-        } else {
-            List<String> matches = new ArrayList<>();
-            for (DomaineDto s : domaines) {
-                if (s.getName() != null && s.getName().toLowerCase().startsWith(enteredValue.toLowerCase())) {
-                    matches.add(s.getName());
-                }
-            }
-            return matches;
-        }*/
+        return nodeIdValues;
     }
 
     //// ajouté par Miled
@@ -611,18 +571,6 @@ public class CandidatBean implements Serializable {
         PrimeFaces.current().ajax().update("candidatForm:vote");
     }
 
-//// déprécié par Miled    
-    /*
-    public List<String> searchTerme(String enteredValue) {
-        List<String> matches = new ArrayList<>();
-        //using data factory for getting suggestions
-        for (CandidatDto s : allTermes) {
-            if (s.getNomPref().toLowerCase().startsWith(enteredValue.toLowerCase())) {
-                matches.add(s.getNomPref());
-            }
-        }
-        return matches;
-    }*/
     /**
      * permet de retourner la liste des concepts possibles pour ajouter une
      * relation NT (en ignorant les relations interdites) on ignore les concepts
@@ -631,7 +579,6 @@ public class CandidatBean implements Serializable {
      * @param value
      * @return
      */
-
     public ArrayList<NodeIdValue> searchTerme2(String value) {
         ArrayList<NodeIdValue> liste = new ArrayList<>();
         SearchHelper searchHelper = new SearchHelper();
@@ -654,8 +601,6 @@ public class CandidatBean implements Serializable {
         candidatSelected.setLang(getIdLang());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
-
-//        domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), getIdLang());
 
         allTermes = candidatList;
 

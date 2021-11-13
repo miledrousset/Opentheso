@@ -254,19 +254,6 @@ public class CandidatService implements Serializable {
                     candidatSelected.getIdThesaurus(),
                     candidatSelected.getIdConcepte());            
         }
-    /*    if(initialCandidat.getDomaine() != null) {
-
-        }
-        if (initialCandidat == null || (StringUtils.isEmpty(initialCandidat.getDomaine())
-                || (!StringUtils.isEmpty(candidatSelected.getDomaine())))) {
-            new DomaineDao().addNewDomaine(connect, getDomaineId(allDomaines, candidatSelected.getDomaine()),
-                    candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
-
-        } else if (!candidatSelected.getDomaine().equals(initialCandidat.getDomaine()) && !StringUtils.isEmpty(initialCandidat.getDomaine())) {
-            new DomaineDao().updateDomaine(connect, getDomaineId(allDomaines, initialCandidat.getDomaine()),
-                    getDomaineId(allDomaines, candidatSelected.getDomaine()),
-                    candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
-        }*/
 
         // gestion des relations
         RelationDao relationDao = new RelationDao();
@@ -276,8 +263,6 @@ public class CandidatService implements Serializable {
                 candidatSelected.getIdThesaurus(), idUser);
 
         //update terme générique
-        /*     termeDao.deleteAllT(connect, candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus(), TermEnum.TERME_GENERIQUE.getLabel());*/
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesGenerique())) {
             candidatSelected.getTermesGenerique().stream().forEach(nodeBT -> {
                 relationDao.addRelationBT(connect,
@@ -288,8 +273,6 @@ public class CandidatService implements Serializable {
         }
 
         //update terme associés
-        /*      termeDao.deleteAllTermesByConcepteAndRole(connect, candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus(), TermEnum.TERME_ASSOCIE.getLabel());*/
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesAssocies())) {
             candidatSelected.getTermesAssocies().stream().forEach(nodeRT -> {
                 relationDao.addRelationRT(connect,
@@ -319,57 +302,7 @@ public class CandidatService implements Serializable {
             }            
         }
     }
-
-    // déprécié par Miled , ca se passe dans TraductionService
-    // il faut faire l'aciton de création en temps réel, ceci évite à lutilisateur 
-    //d'oublier d'enregistrer et surtout de controler en temps réel l'existance des traductions dans le thésaurus 
-/*    private void saveTraduction(Connect connect, CandidatDto candidatSelected) throws SQLException {
-        HikariDataSource connection = connect.getPoolConnexion();
-
-        TermeDao termeDao = new TermeDao();
-
-    //    String idTerm = termeDao.getIdTermeByCandidatAndThesaurus(connection, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
-
-        termeDao.deleteTermsByIdTerm(connection, candidatSelected.getIdTerm(), candidatSelected.getLang());
-
-        for (TraductionDto traduction : candidatSelected.getTraductions()) {
-            Term term = new Term();
-            term.setStatus("D");
-            term.setSource("Candidat");
-            term.setLang(traduction.getLangue().trim().toLowerCase());
-            term.setLexical_value(traduction.getTraduction());
-            term.setId_thesaurus(candidatSelected.getIdThesaurus());
-            term.setContributor(candidatSelected.getUserId());
-            term.setIdUser(candidatSelected.getUserId() + "");
-            term.setId_term(candidatSelected.getIdTerm());
-
-            termeDao.addNewTerme(connection, term);
-        }
-
-        connection.close();
-    }*/
-
-    /// déprécié par Miled, on ne peut pas récupérer un Id d'après un label,
-    // le label peut être en doublon
-    /*
-    private String getIdCancepteFromLabel(List<CandidatDto> termes, String label) {
-        for (CandidatDto candidat : termes) {
-            if (candidat.getNomPref().equals(label)) {
-                return candidat.getIdConcepte();
-            }
-        }
-        return null;
-    }*/
-
-    private String getDomaineId(List<DomaineDto> domaines, String label) {
-        for (DomaineDto domaineDto : domaines) {
-            if (domaineDto.getName().equals(label)) {
-                return domaineDto.getId();
-            }
-        }
-        return "";
-    }
-
+    
     public List<DomaineDto> getDomainesList(Connect connect, String idThesaurus, String lang) {
         return new DomaineDao().getAllDomaines(connect.getPoolConnexion(), idThesaurus, lang);
     }

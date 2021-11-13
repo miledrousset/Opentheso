@@ -59,9 +59,11 @@
             <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
             <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
             <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
+            
             <p:column rendered="#{(currentUser.nodeUser != null) and 
                                   (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                       selectionMode="multiple" style="width:16px;text-align:center"/>
+            
             <p:column  width="20" headerText="id">
                 <h:outputText value="#{listCandidats.idConcepte}" />
             </p:column>                    
@@ -94,9 +96,8 @@
             <div class="row" >
                 <div class="col-12" style="text-align: right; margin-top: 20px">
                     <p:commandButton title="#{langueBean.getMsg('candidat.submitList')}"
-                                     update="containerIndex:idProcessCandidateList"
-                                     oncomplete="PF('processCandidateList').show();" class="btn btn-primary"
-                                     actionListener="#{processCandidateBean.resetForList(candidatBean.selectedCandidates)}"/> 
+                                     update="containerIndex:idProcessCandidateList" class="btn btn-primary"
+                                     oncomplete="PF('processCandidateList').show();" /> 
                 </div>
             </div>
         </h:panelGroup>          
