@@ -41,13 +41,10 @@
             <div class="col-6" style="text-align: right">
                 <h:outputText class="col-md-6 control-label" style="color: #000; height: 34px; margin-top: 7px; text-align: right; vertical-align: central" 
                               value="#{langueBean.getMsg('candidat.search')}"/>
-                <p:inputText id="submitSearchCandidate" value="#{candidatBean.searchValue1}" >
-                    <f:facet name="append">
-                        <p:commandButton id="commandSubmitSearchCandidate" update="containerIndex" 
-                                         actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
-                    </f:facet>
-                    <p:defaultCommand target="commandSubmitSearchCandidate" scope="submitSearchCandidate"/>
-                </p:inputText>
+                <p:inputText id="submitSearchCandidate" value="#{candidatBean.searchValue1}" />
+                <p:commandButton icon="pi pi-search" update="containerIndex:tabViewCandidat" 
+                                 process="@this" ajax="true" style="height: 31px; margin-left: 5px"
+                                 actionListener="#{candidatBean.searchByTermeAndAuteur()}"/>
             </div>
         </div>
 

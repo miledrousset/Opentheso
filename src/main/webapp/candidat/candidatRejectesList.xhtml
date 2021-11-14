@@ -28,7 +28,7 @@
 
         <p:column width="50%" headerText="#{langueBean.getMsg('candidat.titre')}">
             <p:commandLink value="#{candidat.nomPref}" ajax="true" update="containerIndex" style="color: #43B572"
-                           process="@this" actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
+                           process="@this" actionListener="#{candidatBean.showRejectCandidatSelected(candidat)}" />
         </p:column>  
 
         <p:column width="15%" headerText="#{langueBean.getMsg('candidat.creation_date')}">

@@ -52,9 +52,7 @@
                     </div>
 
                     <h:form id="containerIndex">
-
                         <div class="col-12" style="height: 100%">
-
                             <div class="card shadow mb-4" style="height: 100%; margin: 20px; padding: 20px; color: #000">
                                 <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
                                            style="background-color: #FAFAFA;">
@@ -105,12 +103,12 @@
                                         </h:panelGroup>
                                     </p:tab>
 
-                                    <p:tab title="#{langueBean.getMsg('candidat.inserted_concepts')}" >
+                                    <p:tab id="accept" title="#{langueBean.getMsg('candidat.inserted_concepts')}" >
                                         <h:panelGroup rendered="#{candidatBean.isAcceptedCandidatsActivate()}">
                                             <ui:include src="../candidat/candidatAcceptedList.xhtml" />
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{!candidatBean.isAcceptedCandidatsActivate()}">
-                                            <ui:include src="../candidat/rejectCandidatDetails.xhtml" />
+                                            <ui:include src="../candidat/acceptedCandidatDetails.xhtml" />
                                         </h:panelGroup>
                                     </p:tab>
 

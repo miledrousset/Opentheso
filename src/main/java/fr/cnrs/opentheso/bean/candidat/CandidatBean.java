@@ -181,24 +181,7 @@ public class CandidatBean implements Serializable {
         } else {
             acceptedCadidat.clear();
         }
-    }
-    
-    public void test() {
-        if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
-            if (tabViewIndexSelected == 1) {
-                acceptedCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
-                        getIdLang(), tabViewIndexSelected++, null);
-            } else {
-                rejetCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
-                        getIdLang(), tabViewIndexSelected++, "CA");
-            }
-        } else {
-            if (tabViewIndexSelected == 1) {
-                acceptedCadidat.clear();
-            } else {
-                rejetCadidat.clear();
-            }
-        }
+        isAcceptedCandidatsActivate = true;
     }
 
     /**
@@ -386,7 +369,12 @@ public class CandidatBean implements Serializable {
     public void setIsNewCandidatActivate(boolean isNewCandidatActivate) {
         this.isNewCandidatActivate = isNewCandidatActivate;
         isListCandidatsActivate = false;
-        isShowCandidatActivate = false;
+        isImportViewActivate = false;
+        isExportViewActivate = false;
+    }
+
+    public void setIsNewCandidatRejected(boolean isCandidatRejected) {
+        isRejectCandidatsActivate = true;
         isImportViewActivate = false;
         isExportViewActivate = false;
     }
