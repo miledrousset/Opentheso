@@ -110,7 +110,9 @@
             <div class="col-12" style="text-align: right" >
                 <p:commandButton title="#{langueBean.getMsg('candidat.save')}" ajax="false" process="@this"
                                  class="btn btn-primary" actionListener="#{candidatBean.saveConcept()}"
-                                 update="messageIndex" />
+                                 update="containerIndex" >
+                    <f:ajax execute="@form" render="@none" />
+                </p:commandButton>
             </div>
         </div>       
     </h:form>  

@@ -19,7 +19,7 @@
                 <span class="nav-link">
                     <i class="fas fa-fw fa-tachometer-alt" />
                     <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
-                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;">Thésaurus</p:commandLink>
+                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">Thésaurus</p:commandLink>
                 </span>
             </li>
 
@@ -27,7 +27,8 @@
                 <li class="nav-item">
                     <span class="nav-link">
                         <i class="fas fa-fw fa-cog"></i>
-                        <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" style="font-size: 12px; color: #FFF; margin-left: 5px">Candidat</p:commandLink>
+                        <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
+                                       style="font-size: 12px; color: #FFF; margin-left: 5px;text-decoration: none;">Candidat</p:commandLink>
                     </span>
                 </li>
             </h:panelGroup>
@@ -42,12 +43,17 @@
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" style="font-size: 12px;">Mon compte</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}" style="font-size: 12px;">Mes projets/utilisateurs</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" 
+                                           process="@this" style="font-size: 12px;">Mon compte</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
+                                           style="font-size: 12px;" process="@this">Mes projets/utilisateurs</p:commandLink>
                             <hr class="sidebar-divider">
-                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" style="font-size: 12px;">Tous les utilisateurs</p:commandLink>
-                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}" style="font-size: 12px;">Tous les projets</p:commandLink>
-                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}" style="font-size: 12px;">Tous les thésaurus</p:commandLink>
+                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
+                                               style="font-size: 12px;" process="@this">Tous les utilisateurs</p:commandLink>
+                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
+                                               style="font-size: 12px;" process="@this">Tous les projets</p:commandLink>
+                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
+                                               style="font-size: 12px;" process="@this">Tous les thésaurus</p:commandLink>
                             </hr>
                         </div>
                     </div>
@@ -66,10 +72,14 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToEditionPage()}" style="font-size: 12px;">Edition</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}" style="font-size: 12px;">Atelier thésaurus</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" style="font-size: 12px;">Maintenance</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" style="font-size: 12px;">Statistique</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToEditionPage()}" 
+                                           style="font-size: 12px;" process="@this">Edition</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}" 
+                                           style="font-size: 12px;" process="@this">Atelier thésaurus</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" 
+                                           style="font-size: 12px;"  process="@this">Maintenance</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" 
+                                           style="font-size: 12px;"  process="@this">Statistique</p:commandLink>
                         </div>
                     </div>
                 </li>
@@ -87,9 +97,12 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToPreferencePage()}" style="font-size: 12px;">Préférence</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToIdetifiantPage()}" style="font-size: 12px;">Identifiant</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCorpusPage()}" style="font-size: 12px;">Corpus</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToPreferencePage()}" 
+                                           style="font-size: 12px;" process="@this">Préférence</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToIdetifiantPage()}" 
+                                           style="font-size: 12px;" process="@this">Identifiant</p:commandLink>
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCorpusPage()}" 
+                                           style="font-size: 12px;" process="@this">Corpus</p:commandLink>
                         </div>
                     </div>
                 </li>
