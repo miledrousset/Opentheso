@@ -37,7 +37,7 @@ public final class NodeJson2 {
                 + "\"creator\":\"" + creator + "\","
                 + "\"useHandle\":" + useHandle + ","                
                 + "\"modificationDate\":\""+ new FileUtilities().getDate() + "\","
-                + "\"dcElments\":" + getStringFromDcElements() + ","
+                + "\"dcElements\":" + getStringFromDcElements() + ","
                 + "\"qualifiers\":" + getStringFromQualifiers()                
                 + "}";
 

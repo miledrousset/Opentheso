@@ -147,18 +147,25 @@ public final class ArkClientRest {
         if(loginJson == null) return false;
 
         Client client= ClientBuilder.newClient();
-        WebTarget webTarget = client.target(propertiesArk.getProperty("serverHost")).path("rest/v1/ark/add");
-
-        try(Response response =  webTarget.request(MediaType.APPLICATION_JSON).put(Entity.json(arkString))) {
+        try (Response response = client
+            .target(propertiesArk.getProperty("serverHost"))
+            .path("rest/v1/ark/add")
+            .request(MediaType.APPLICATION_JSON)
+            .header("Content-type", "application/json")
+            .put(Entity.json(arkString))){
+            
             if (response.getStatus() != 200) {
                 message =  "Erreur lors de l'ajout d'un Ark" + response.getStatus();
                 response.close();
                 client.close();
                 return false;
             }
-            jsonArk = response.readEntity(String.class);
+            jsonArk = response.readEntity(String.class);            
+            
+        } catch (Exception e) {
+            message =  "Exception lors de l'ajout d'un Ark";
+            return false;            
         }
-        client.close();
         return setIdArkHandle();
     }
     
@@ -195,16 +202,17 @@ public final class ArkClientRest {
     }    
     private boolean isExist(String jsonResponse){
         if(jsonResponse == null) return false;
-        JsonReader reader = Json.createReader(new StringReader(jsonResponse));
-        JsonObject jsonObject = reader.readObject();
-        reader.close();
-
-        JsonString values = jsonObject.getJsonString("description");
-        if(values != null){
-            if(values.getString().contains("Inexistant ARK")) return false;
-            else
-                if(values.getString().contains("Ark retreived")) return true;
+        JsonObject jsonObject;
+        try (JsonReader reader = Json.createReader(new StringReader(jsonResponse))) {
+            jsonObject = reader.readObject();
+            JsonString values = jsonObject.getJsonString("description");
+            if(values != null){
+                if(values.getString().contains("Inexistant ARK")) return false;
+                else
+                    if(values.getString().contains("Ark retreived")) return true;
+            }            
         }
+        message = "Erreur de format";
         return false; 
     }    
     
@@ -219,26 +227,25 @@ public final class ArkClientRest {
         // il faut se connecter avant
         if(loginJson == null) return false;
         
-        Client client= ClientBuilder.newClient();        
-        WebTarget webTarget = client
-                .target(propertiesArk.getProperty("serverHost"))
-                .path("rest/v1/ark/update");
-        
-        Response response =  webTarget.request(MediaType.APPLICATION_JSON).put(Entity.json(arkString));   
-
-        try {
+        Client client= ClientBuilder.newClient();
+        try (Response response = client
+            .target(propertiesArk.getProperty("serverHost"))
+            .path("rest/v1/ark/update")
+            .request(MediaType.APPLICATION_JSON)
+            .header("Content-type", "application/json")
+            .put(Entity.json(arkString))){
+            
             if (response.getStatus() != 200) {
                 message = "Erreur lors de la mise à jour d'un Ark : " + response.getStatus();
                 response.close();
                 client.close();
                 return false;
             }
-            jsonArk = response.readEntity(String.class);
-        } finally {
-            response.close();
-            client.close();
-        }   
-         
+            jsonArk = response.readEntity(String.class);           
+        } catch (Exception e) {
+            message =  "Exception lors de la mise à jour de Ark";
+            return false;            
+        } 
         return setForUpdate();
     }      
     
