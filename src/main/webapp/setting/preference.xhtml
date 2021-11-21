@@ -35,188 +35,185 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <div id="wrapper" style="height: 100%">
+        <ui:include src="../commun/menu.xhtml" />
 
-            <ui:include src="../commun/menu.xhtml" />
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
 
-            <div id="content-wrapper" style="width: 100%">
+            <h:form id="containerIndex">
+                <div>
+                    <ui:include src="../commun/header.xhtml" />
+                </div>
 
-                <h:form id="containerIndex">
-                    <div>
-                        <ui:include src="../commun/header.xhtml" />
+                <div class="container-fluid">
+
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Paramètres / <span style="color: #f47b2a">Préférence</span></h1>
                     </div>
 
-                    <div class="container-fluid">
+                    <div class="col-12" style="height: 100%">
+                        <div class="card shadow mb-4" style="height: 100%;"> 
+                            <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
+                                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
 
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800">Paramètres / <span style="color: #f47b2a">Préférence</span></h1>
-                        </div>
-
-                        <div class="col-12" style="height: 100%">
-                            <div class="card shadow mb-4" style="height: 100%;"> 
-                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
-                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
-
-                                        <!-- Url du site local -->
-                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Url du site local" style="font-size: 14px; font-weight: bold;"
-                                                                  title="L'URL local du serveur qui héberge Opentheso, elle sert aussi à générer les identifiants pérennes (exp: https://monsite.fr/opentheso/)"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:inputText value="#{preferenceBean.nodePreference.cheminSite}" style="width: 100%;"
-                                                                 title="L'URL local du serveur qui héberge Opentheso, elle sert aussi à générer les identifiants pérennes (exp: https://monsite.fr/opentheso/)"/>
-                                                </div>
+                                    <!-- Url du site local -->
+                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                <h:outputText value="Url du site local" style="font-size: 14px; font-weight: bold;"
+                                                              title="L'URL local du serveur qui héberge Opentheso, elle sert aussi à générer les identifiants pérennes (exp: https://monsite.fr/opentheso/)"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p:inputText value="#{preferenceBean.nodePreference.cheminSite}" style="width: 100%;"
+                                                             title="L'URL local du serveur qui héberge Opentheso, elle sert aussi à générer les identifiants pérennes (exp: https://monsite.fr/opentheso/)"/>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Uri d'origine -->
-                                        <div class="list-group-item list-group-item-action" style="margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3"  style="text-align: right;  margin-top: 6px">
-                                                    <h:outputText value="Uri d'origine " title="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!"
-                                                                  style="font-size: 14px; font-weight: bold;"/>
-                                                    <i class="fas fa-info-circle" size="l" style="color: #C63632; margin-left: 5px;" 
-                                                       tooltip="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!
-                                                       C'est ce choix qui va servir à construire l'URI du concept à l'export"
-                                                       tooltip-delay-show="500"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:selectOneRadio id="customRadioUri" value="#{preferenceBean.uriType}"  >
-                                                        <f:selectItem itemLabel="Uri classique" itemValue="uri" />
-                                                        <f:selectItem itemLabel="Ark" itemValue="ark" />
-                                                        <f:selectItem itemLabel="Handle" itemValue="handle" />
-                                                        <f:selectItem itemLabel="Doi" itemValue="doi" />
-                                                    </p:selectOneRadio>
-                                                    <p:inputText value="#{preferenceBean.nodePreference.originalUri}" style="width: 100%;"/> 
-                                                </div> 
-                                            </div>      
-                                        </div>
+                                    <!-- Uri d'origine -->
+                                    <div class="list-group-item list-group-item-action" style="margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3"  style="text-align: right;  margin-top: 6px">
+                                                <h:outputText value="Uri d'origine " title="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!"
+                                                              style="font-size: 14px; font-weight: bold;"/>
+                                                <i class="fas fa-info-circle" size="l" style="color: #C63632; margin-left: 5px;" 
+                                                   tooltip="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!
+                                                   C'est ce choix qui va servir à construire l'URI du concept à l'export"
+                                                   tooltip-delay-show="500"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p:selectOneRadio id="customRadioUri" value="#{preferenceBean.uriType}"  >
+                                                    <f:selectItem itemLabel="Uri classique" itemValue="uri" />
+                                                    <f:selectItem itemLabel="Ark" itemValue="ark" />
+                                                    <f:selectItem itemLabel="Handle" itemValue="handle" />
+                                                    <f:selectItem itemLabel="Doi" itemValue="doi" />
+                                                </p:selectOneRadio>
+                                                <p:inputText value="#{preferenceBean.nodePreference.originalUri}" style="width: 100%;"/> 
+                                            </div> 
+                                        </div>      
+                                    </div>
 
-                                        <!-- Langue Source -->
-                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Langue par defaut" style="font-size: 14px; font-weight: bold;"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:selectOneMenu id="langOfTheso" value="#{preferenceBean.nodePreference.sourceLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                                                     style="width: 100%; background: none;  box-shadow: none; "
-                                                                     panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                                                        <f:selectItems  value="#{preferenceBean.languagesOfTheso}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/> 
-                                                    </p:selectOneMenu>
-                                                </div>
+                                    <!-- Langue Source -->
+                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                <h:outputText value="Langue par defaut" style="font-size: 14px; font-weight: bold;"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p:selectOneMenu id="langOfTheso" value="#{preferenceBean.nodePreference.sourceLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                                                 style="width: 100%; background: none;  box-shadow: none; "
+                                                                 panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                                                    <f:selectItems  value="#{preferenceBean.languagesOfTheso}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/> 
+                                                </p:selectOneMenu>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Type d'identification -->
-                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Type d'identifiant" style="font-size: 14px; font-weight: bold;"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:selectOneMenu value="#{preferenceBean.nodePreference.identifierType}" 
-                                                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                                                     style="width: 100%; background: none;  box-shadow: none; ">
-                                                        <f:selectItem itemLabel="Alphanumérique" itemValue="1" />
-                                                        <f:selectItem itemLabel="Numérique" itemValue="2" />                        
-                                                    </p:selectOneMenu>
-                                                </div>
+                                    <!-- Type d'identification -->
+                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                <h:outputText value="Type d'identifiant" style="font-size: 14px; font-weight: bold;"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p:selectOneMenu value="#{preferenceBean.nodePreference.identifierType}" 
+                                                                 styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                                                 style="width: 100%; background: none;  box-shadow: none; ">
+                                                    <f:selectItem itemLabel="Alphanumérique" itemValue="1" />
+                                                    <f:selectItem itemLabel="Numérique" itemValue="2" />                        
+                                                </p:selectOneMenu>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Nom d'identifiant du thésaurus -->
-                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Nom pérenne du thésaurus" style="font-size: 14px; font-weight: bold;"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:inputText value="#{preferenceBean.nodePreference.preferredName}" style="width: 100%;"/>
-                                                </div>
+                                    <!-- Nom d'identifiant du thésaurus -->
+                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                <h:outputText value="Nom pérenne du thésaurus" style="font-size: 14px; font-weight: bold;"/>
                                             </div>
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" />
-                                                <div class="col-6" style="text-align: right; margin-top: 6px">
-                                                    <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="Testez le lien" >
-                                                        <a class="fas fa-link" style="font-size: 12px; color: #43B572;" />
-                                                    </p:link>
-                                                </div>
+                                            <div class="col-6">
+                                                <p:inputText value="#{preferenceBean.nodePreference.preferredName}" style="width: 100%;"/>
                                             </div>
                                         </div>
-
-                                        <!-- Activer/ désactiver le déployement auto de l'arbre  -->
-                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Désactiver/Activer le déploiement auto de l'arbre" style="font-size: 14px; font-weight: bold;"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:toggleSwitch value="#{preferenceBean.nodePreference.auto_expand_tree}" style="font-size: 12px;" /> 
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Activer/ désactiver le cache de l'arbre  -->
-                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Désactiver/Activer le cache de l'arbre" 
-                                                                  title="Quand c'est activé, si on raffraichi la page, l'arbre se déplie même quand les dossiers sont fermés" 
-                                                                  style="font-size: 14px; font-weight: bold;"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:toggleSwitch value="#{preferenceBean.nodePreference.tree_cache}" style="font-size: 12px;"  /> 
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Activer/ désactiver le tri par notation par défaut -->
-                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Désactiver/Activer le tri par notation par defaut"
-                                                                  style="font-size: 14px; font-weight: bold;"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:toggleSwitch value="#{preferenceBean.nodePreference.sort_by_notation}" style="font-size: 12px;"  />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Activer/ désactiver le tri par notation par défaut -->
-                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Désactiver/Activer le webservices"
-                                                                  style="font-size: 14px; font-weight: bold;"/>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p:toggleSwitch value="#{preferenceBean.nodePreference.webservices}" style="font-size: 12px;" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row" style="padding-top: 5px;">
+                                        <div class="row" style="padding-top: 3px;">
                                             <div class="col-3" />
-                                            <div class="col-6" style="text-align: right;">
-                                                <p:commandButton title="Enregistrer" class="btn btn-primary" actionListener="#{preferenceBean.savePreference()}"
-                                                                 update="containerIndex messageIndex">
-                                                    <p:tooltip value="Enregistrer les modifications" showDelay="1000" />
-                                                </p:commandButton>
+                                            <div class="col-6" style="text-align: right; margin-top: 6px">
+                                                <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="Testez le lien" >
+                                                    <a class="fas fa-link" style="font-size: 12px; color: #43B572;" />
+                                                </p:link>
                                             </div>
                                         </div>
+                                    </div>
 
-                                    </div>        
-                                </div>
+                                    <!-- Activer/ désactiver le déployement auto de l'arbre  -->
+                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                <h:outputText value="Désactiver/Activer le déploiement auto de l'arbre" style="font-size: 14px; font-weight: bold;"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p:toggleSwitch value="#{preferenceBean.nodePreference.auto_expand_tree}" style="font-size: 12px;" /> 
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Activer/ désactiver le cache de l'arbre  -->
+                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                <h:outputText value="Désactiver/Activer le cache de l'arbre" 
+                                                              title="Quand c'est activé, si on raffraichi la page, l'arbre se déplie même quand les dossiers sont fermés" 
+                                                              style="font-size: 14px; font-weight: bold;"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p:toggleSwitch value="#{preferenceBean.nodePreference.tree_cache}" style="font-size: 12px;"  /> 
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Activer/ désactiver le tri par notation par défaut -->
+                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                <h:outputText value="Désactiver/Activer le tri par notation par defaut"
+                                                              style="font-size: 14px; font-weight: bold;"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p:toggleSwitch value="#{preferenceBean.nodePreference.sort_by_notation}" style="font-size: 12px;"  />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Activer/ désactiver le tri par notation par défaut -->
+                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                        <div class="row" style="padding-top: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                <h:outputText value="Désactiver/Activer le webservices"
+                                                              style="font-size: 14px; font-weight: bold;"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p:toggleSwitch value="#{preferenceBean.nodePreference.webservices}" style="font-size: 12px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="padding-top: 5px;">
+                                        <div class="col-3" />
+                                        <div class="col-6" style="text-align: right;">
+                                            <p:commandButton title="Enregistrer" class="btn btn-primary" actionListener="#{preferenceBean.savePreference()}"
+                                                             update="containerIndex messageIndex">
+                                                <p:tooltip value="Enregistrer les modifications" showDelay="1000" />
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+
+                                </div>        
                             </div>
                         </div>
                     </div>
-                    <ui:include src="../commun/footer.xhtml" />
-                </h:form>
-            </div>
-        </div>
+                </div>
+                <ui:include src="../commun/footer.xhtml" />
+            </h:form>
+        </h:panelGroup>
     </h:body>
 </html>

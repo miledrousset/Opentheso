@@ -35,7 +35,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <div id="wrapper" style="height: 100%">
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -60,9 +60,8 @@
                                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                                         <div class="col-12">
                                             <!-- Vue liste de tous les utilisateurs -->
-                                            <p:dataTable id="tabUserRoleProject" rendered="#{superAdminBean.nodeUserGroupUsers != null}"
-                                                         value="#{superAdminBean.nodeUserGroupUsers}" var="listUserRole" scrollable="true" style="width: 100%"
-                                                         resizableColumns="true" scrollHeight="600" >
+                                            <p:dataTable scrollable="true" style="width: 100%" value="#{superAdminBean.nodeUserGroupUsers}" 
+                                                         var="listUserRole" resizableColumns="true" scrollHeight="600" >
                                                 
                                                 <f:facet name="header">
                                                     <center>
@@ -95,6 +94,6 @@
                     <ui:include src="../commun/footer.xhtml" />
                 </h:form>
             </div>
-        </div>
+        </h:panelGroup>
     </h:body>
 </html>

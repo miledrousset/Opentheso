@@ -1,7 +1,7 @@
 <ui:composition 
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
-    
+
     <footer class="sticky-footer bg-white" style="width: 100%;">
         <div class="container my-auto">
             <div class="copyright text-center my-auto">
@@ -20,7 +20,8 @@
     <script src="../resources/js/jquery.easing.min.js"></script>
     <script src="../resources/js/sb-admin-2.js"></script>
 
-    <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false">
+    <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
+    <p:dialog widgetVar="waitDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false">
         <p:graphicImage value="../resources/img/wait_old.gif" width="150px" />
     </p:dialog>
 

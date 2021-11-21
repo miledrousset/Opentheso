@@ -34,13 +34,12 @@
         </f:metadata>
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
-
-        <div id="wrapper" style="height: 100%">
-
+        
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
+            
             <ui:include src="../commun/menu.xhtml" />
-
+            
             <div id="content-wrapper" style="width: 100%">
-
                 <h:form id="containerIndex">
                     <div>
                         <ui:include src="../commun/header.xhtml" />
@@ -80,23 +79,23 @@
                                                  resizableColumns="true" scrollHeight="450" style="margin-top: 10px"
                                                  reflow="true">
 
-                                        <p:column width="25" headerText="Nom">
+                                        <p:column headerText="Nom">
                                             <h:outputText value="#{corpus.corpusName}" title="Obligatoire"/>
                                         </p:column>
 
-                                        <p:column width="90" headerText="URI pour le total"> 
+                                        <p:column headerText="URI pour le total"> 
                                             <h:outputText value="#{corpus.uriCount}" title="facultatif"/>
                                         </p:column>
 
-                                        <p:column width="90" headerText="URI pour le lien" >
+                                        <p:column headerText="URI pour le lien" >
                                             <h:outputText value="#{corpus.uriLink}" title="Obligatoire"/>
                                         </p:column>
 
-                                        <p:column width="15" headerText="Off/On">
+                                        <p:column headerText="Off/On">
                                             <p:toggleSwitch value="#{corpus.active}" style="font-size: 10px;" disabled="true" />
                                         </p:column>
 
-                                        <p:column width="5" exportable="false">
+                                        <p:column exportable="false">
                                             <p:commandButton icon="pi pi-pencil" update=":containerIndex:manage-product-content"
                                                              oncomplete="PF('editCorpus').show()" style="margin-right: 10px" 
                                                              actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this"
@@ -123,9 +122,8 @@
 
                     <ui:include src="../commun/footer.xhtml" />
                 </h:form>
-
                 <ui:include src="../dialog/setting/newCorpus.xhtml" />
             </div>
-        </div>
+        </h:panelGroup>
     </h:body>
 </html>

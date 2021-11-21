@@ -35,7 +35,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <div id="wrapper" style="height: 100%">
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -261,16 +261,19 @@
                                         <f:facet name="footer">
                                             <span class="p-text-bold">
                                                 <h:outputText value="Graphe : "/>
-                                                <p:commandLink oncomplete="PF('conceptChart').show();" style="color: #f47b2a; margin-left: 10px" 
-                                                               update="containerIndex">
+                                                <p:commandLink oncomplete="PF('conceptChart').show();" style="color: #f47b2a; margin-left: 10px" update="conceptChartID">
                                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
                                                 </p:commandLink>
 
-                                                <p:commandLink oncomplete="PF('termChart').show();" style="color: #f47b2a; margin-left: 10px" update="containerIndex">
+                                                <p:commandLink oncomplete="PF('termChart').show();" style="color: #f47b2a; margin-left: 10px" update="termChartID">
                                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.untranslated_terms')}"/>
                                                 </p:commandLink>
 
-                                                <p:commandLink oncomplete="PF('noteChart').show();" style="color: #f47b2a; margin-left: 10px" update="containerIndex">
+                                                <p:commandLink oncomplete="PF('synonymChart').show();" style="color: #f47b2a; margin-left: 10px" update="synonymChartID">
+                                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.synonyms')}"/>
+                                                </p:commandLink>
+
+                                                <p:commandLink oncomplete="PF('noteChart').show();" style="color: #f47b2a; margin-left: 10px" update="noteChartID">
                                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.notes')}"/>
                                                 </p:commandLink>
                                             </span>
@@ -287,29 +290,29 @@
 
                     </h:form>
 
-                    <p:dialog widgetVar="noteChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px">
+                    <p:dialog id="noteChartID" widgetVar="noteChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px">
                         <div class="card">
                             <p:donutChart widgetVar="chart" model="#{statistiqueBean.createChartModel(4)}" style="width: 100%; height: 500px;"/>
                         </div>
-                        <div class="row" style="margin-top: 10px">
+                        <!--<div class="row" style="margin-top: 10px">
                             <p:commandButton type="button" title="Export" icon="pi pi-home" oncomplete="PF('noteChart').hide();"
                                              onclick="$('#output').empty().append(PF('chart').exportAsImage());PF('dlg').show();" />
-                        </div>
+                        </div>-->
                     </p:dialog>
 
-                    <p:dialog widgetVar="termChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+                    <p:dialog id="termChartID" widgetVar="termChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
                         <div class="card">
                             <p:donutChart model="#{statistiqueBean.createChartModel(3)}" style="width: 100%; height: 500px;"/>
                         </div>
                     </p:dialog>
 
-                    <p:dialog widgetVar="synonymChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+                    <p:dialog id="synonymChartID" widgetVar="synonymChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
                         <div class="card">
                             <p:donutChart model="#{statistiqueBean.createChartModel(2)}" style="width: 100%; height: 500px;"/>
                         </div>
                     </p:dialog>
 
-                    <p:dialog widgetVar="conceptChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+                    <p:dialog id="conceptChartID" widgetVar="conceptChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
                         <div class="card">
                             <p:donutChart model="#{statistiqueBean.createChartModel(1)}" style="width: 100%; height: 500px;"/>
                         </div>
@@ -370,6 +373,6 @@
                 </div>
                 <ui:include src="../commun/footer.xhtml" />
             </div>
-        </div>
+        </h:panelGroup>
     </h:body>
 </html>

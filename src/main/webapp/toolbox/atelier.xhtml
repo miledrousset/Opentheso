@@ -35,7 +35,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <div id="wrapper" style="height: 100%">
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -228,6 +228,6 @@
                     <ui:include src="../commun/footer.xhtml" />
                 </h:form>
             </div>
-        </div>
+        </h:panelGroup>
     </h:body>
 </html>
