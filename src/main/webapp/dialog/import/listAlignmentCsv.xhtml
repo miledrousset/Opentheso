@@ -108,10 +108,11 @@
                                           label="parcourir" 
                                           mode="advanced" auto="true"
                                           allowTypes="/(\.|\/)(csv|txt)$/"
-                                          update="listAlignmentCsvForm" disabled="#{importFileBean.loadDone}"
+                                          update="panelListAlignCsv " disabled="#{importFileBean.loadDone}"
                                           style="font-size: 12px;" />  
                         </b:column>
                     </b:row> 
+                                  
                     <p:spacer/>
                     <b:row rendered="#{importFileBean.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
                         <b:column span="5">
@@ -137,7 +138,7 @@
                             <b:messages autoUpdate="true" />
                         </b:column>
                     </b:row>                       
-
+                </h:panelGroup>
                     <p:spacer/>    
                     <b:row >
                         <b:column span="4" offset="1"> 
@@ -150,23 +151,19 @@
                                              oncomplete="PF('listAlignmentCsv').hide();">
                             </p:commandButton>
                         </b:column>
-                        <b:column span="4" offset="2" > 
+                        <b:column id="idValidate" span="4" offset="2"  > 
                             <p:commandButton  class="btn btn-success" widgetVar="buttonImportCsv"
                                              icon="fa fa-check"
-                                             update="panelListAlignCsv"
-
+                                             update="toolBoxForm:panelListAlignCsv "
+                                             ajax="true"
                                              style="width: 100%; background-color: #5CB85C; border: none; font-size: 12px;"
                                              actionListener="#{importFileBean.addAlignmentList()}"
-                                             ajax="true"
-                                             value="Importer"
-                                             disabled="#{!importFileBean.loadDone}">
+                                            
+                                             value="Importer" >
                             </p:commandButton>                       
                         </b:column> 
                     </b:row>
-
                     <p:spacer/>
-
-                </h:panelGroup>
             </b:panel>
         </h:panelGroup>
     </p:dialog> 

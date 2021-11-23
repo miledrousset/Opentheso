@@ -229,6 +229,9 @@ public class ImportFileBean implements Serializable {
         }
     }
     
+    public void actionChoiceIdentifier() {
+        setSelectedIdentifier(selectedIdentifier);
+    }    
     
     /**
      * permet de charger un fichier de notes en Csv
@@ -359,6 +362,7 @@ public class ImportFileBean implements Serializable {
                         loadDone = true;
                         BDDinsertEnable = true;
                         info = "File correctly loaded";
+                        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                     }
                 }
             } catch (Exception e) {
@@ -369,6 +373,7 @@ public class ImportFileBean implements Serializable {
                 showError();
             }
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
     }
 
     /**
@@ -706,6 +711,7 @@ public class ImportFileBean implements Serializable {
         if (importInProgress) {
             return;
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').show();");
         initError();
         loadDone = false;
         progressStep = 0;
@@ -749,6 +755,7 @@ public class ImportFileBean implements Serializable {
                     }
                 }
             }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");            
             loadDone = false;
             importDone = true;
             BDDinsertEnable = false;
@@ -762,6 +769,7 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");        
     }
     
     
