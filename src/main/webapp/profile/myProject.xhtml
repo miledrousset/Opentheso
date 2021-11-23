@@ -35,7 +35,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <div id="wrapper" style="height: 100%">
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -104,7 +104,7 @@
                                                     <p:toolbarGroup align="right">
                                                         <p:commandButton value="#{langueBean.getMsg('profile.new_user')}" icon="fas fa-user-plus"
                                                                          actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
-                                                                         update="idNewUser" oncomplete="PF('newUser').show();" />
+                                                                         update="containerIndex:idNewUser" oncomplete="PF('newUser').show();" />
 
                                                         <p:commandButton value="#{langueBean.getMsg('profile.add_existing_user')}" style="margin-left: 10px"
                                                                          actionListener="#{modifyRoleBean.setSelectedProject(myProjectBean.selectedProject)}" icon="fas fa-user"
@@ -194,12 +194,12 @@
                     </div> 
 
                     <ui:include src="../commun/footer.xhtml" /> 
+                <ui:include src="../dialog/profile/newUser.xhtml" />
                 </h:form>  
 
                 <ui:include src="../dialog/profile/newProject.xhtml" /> 
                 <ui:include src="../dialog/profile/modifyProject.xhtml" />
 
-                <ui:include src="../dialog/profile/newUser.xhtml" />
                 <ui:include src="../dialog/profile/addExistingUserToProject.xhtml" />
 
                 <ui:include src="../dialog/profile/modifyUser.xhtml" /> 
@@ -208,6 +208,6 @@
 
                 <ui:include src="../dialog/profile/moveThesoToAnotherProject.xhtml" />  
             </div>
-        </div> 
+        </h:panelGroup> 
     </h:body>
 </html>

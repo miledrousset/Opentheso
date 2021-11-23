@@ -35,7 +35,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <div id="wrapper" style="height: 100%">
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -142,23 +142,11 @@
                         <ui:include src="../dialog/alignment/addManualAlignment.xhtml" />
                         <ui:include src="../dialog/alignment/deleteAlignment.xhtml" />
                         <ui:include src="../dialog/alignment/updateAlignment.xhtml" />
-
+                        
+                        <ui:include src="../commun/footer.xhtml" />
                     </h:form>
                 </div>
             </div>
-        </div>
-
-        <!-- Scroll to Top Button-->
-        <a class="scroll-to-top rounded" href="#page-top">
-            <i class="pi pi-angle-up" />
-        </a>
-
-        <script src="../resources/js/bootstrap.bundle.min.js"></script>
-        <script src="../resources/js/jquery.easing.min.js"></script>
-        <script src="../resources/js/sb-admin-2.js"></script>
-
-        <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false">
-            <p:graphicImage value="../resources/img/wait_old.gif" width="150px" />
-        </p:dialog>  
+        </h:panelGroup> 
     </h:body>
 </html>

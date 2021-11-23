@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class CurrentUser implements Serializable {
     @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private IndexSetting indexSetting;
+    @Inject private MenuBean menuBean;
 
     private NodeUser nodeUser;
     private String username;
@@ -89,6 +91,8 @@ public class CurrentUser implements Serializable {
             pf.ajax().update("containerIndex");
         }
         initHtmlPages();
+        
+        menuBean.redirectToThesaurus();
     }
 
     /**

@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.menu.connect;
 
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.menu.users.NewUSerBean;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
@@ -60,6 +61,18 @@ public class MenuBean implements Serializable {
     @Inject 
     private CandidatBean candidatBean;
     
+    @Inject 
+    private CurrentUser currentUser;
+    
+    
+    
+    public boolean checkIfUserIsConnected() throws IOException {
+        if (currentUser.getNodeUser() == null) {
+            redirectToThesaurus();
+            return false;
+        }
+        return true;
+    }
     
     // LOGIN Page
     public void redirectToThesaurus() throws IOException {

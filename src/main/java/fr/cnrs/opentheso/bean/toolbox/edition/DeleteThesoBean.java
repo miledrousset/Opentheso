@@ -65,7 +65,7 @@ public class DeleteThesoBean implements Serializable {
         currentIdTheso = null;
     }
     
-    public void confirmDelete(NodeIdValue nodeTheso, String cucurrentIdTheso) {
+    public void confirmDelete(NodeIdValue nodeTheso, String cucurrentIdTheso) throws IOException {
         this.idThesoToDelete = nodeTheso.getId();
         this.valueOfThesoToDelelete = nodeTheso.getValue();
         isDeleteOn = true;
@@ -79,7 +79,7 @@ public class DeleteThesoBean implements Serializable {
     /**
      * Permet de supprimer un thésaurus 
      */
-    public void deleteTheso() {
+    public void deleteTheso() throws IOException {
         if(idThesoToDelete == null) return;
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoToDelete);

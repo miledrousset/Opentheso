@@ -2,13 +2,13 @@ package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
+import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
@@ -27,6 +27,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.primefaces.PrimeFaces;
 
+
 @Named(value = "selectedTheso")
 @SessionScoped
 public class SelectedTheso implements Serializable {
@@ -42,6 +43,7 @@ public class SelectedTheso implements Serializable {
     @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private RightBodySetting rightBodySetting;
+    @Inject private MenuBean menuBean;
 
     private static final long serialVersionUID = 1L;
 
@@ -150,7 +152,7 @@ public class SelectedTheso implements Serializable {
      * l'application
      */
 //    public void setSelectedTheso() throws IOException {
-    public void setSelectedTheso() {
+    public void setSelectedTheso() throws IOException {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
         connect.setLocalUri(localUri);
@@ -196,10 +198,7 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsHomeSelected(true);
         indexSetting.setIsThesoActive(true);
         
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex");
-        }
+        menuBean.redirectToThesaurus();
     }
     
     /**

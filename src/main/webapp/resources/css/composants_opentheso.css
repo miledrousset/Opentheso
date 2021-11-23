@@ -584,6 +584,30 @@ body .ui-datatable .ui-datatable-header {
     border-top-right-radius: 4px;
 }
 
+body .ui-datatable thead th.ui-state-active {
+    background: #ecf8f1;
+    background-color: #ecf8f1;
+    color: #43B572;
+}
+
+body .ui-datatable thead th.ui-state-hover {
+    background: #ecf8f1;
+    background-color: #ecf8f1;
+    color: #43B572;
+}
+
+body .ui-datatable thead th.ui-state-focus{
+    background: #ecf8f1;
+    background-color: #ecf8f1;
+    color: #43B572;
+}
+
+body .ui-datatable thead th.ui-state-highlight{
+    background: #ecf8f1;
+    background-color: #ecf8f1;
+    color: #43B572;
+}
+
 /* Toolbar */
 body .ui-toolbar {
     border: 1px solid #43B572;
