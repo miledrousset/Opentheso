@@ -96,6 +96,8 @@ public class ImportFileBean implements Serializable {
     private ArrayList<String> langs;
     private ArrayList<NodeAlignmentImport> nodeAlignmentImports; 
     
+    private String selectedIdentifierImportAlign;    
+    
     private ArrayList<NodeNote> nodeNotes;     
 
     private String formatDate = "yyyy-MM-dd";
@@ -230,7 +232,7 @@ public class ImportFileBean implements Serializable {
     }
     
     public void actionChoiceIdentifier() {
-        setSelectedIdentifier(selectedIdentifier);
+        setSelectedIdentifier(selectedIdentifierImportAlign);
     }    
     
     /**
@@ -728,19 +730,24 @@ public class ImportFileBean implements Serializable {
                 if (nodeAlignmentImport.getLocalId()== null || nodeAlignmentImport.getLocalId().isEmpty()) {
                     continue;
                 }
-                if("ark".equalsIgnoreCase(selectedIdentifier)){
+                if("ark".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
                 }
-                if("handle".equalsIgnoreCase(selectedIdentifier)){
+                if("handle".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
                 } 
-                if("identifier".equalsIgnoreCase(selectedIdentifier)){
+                if("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = nodeAlignmentImport.getLocalId();
                 }                
                 
                 if (idConcept == null || idConcept.isEmpty()) {
                     continue;
                 }
+                // controle pour vérifier l'existance de l'Id
+                if(!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())){
+                    continue;
+                }
+                
                 for (NodeAlignmentSmall nodeAlignmentSmall : nodeAlignmentImport.getNodeAlignmentSmalls()) {
                     if(nodeAlignmentSmall == null) continue;
                     nodeAlignment.setId_author(currentUser.getNodeUser().getIdUser());
@@ -1490,6 +1497,14 @@ public class ImportFileBean implements Serializable {
 
     public void setClearNoteBefore(boolean clearNoteBefore) {
         this.clearNoteBefore = clearNoteBefore;
+    }
+
+    public String getSelectedIdentifierImportAlign() {
+        return selectedIdentifierImportAlign;
+    }
+
+    public void setSelectedIdentifierImportAlign(String selectedIdentifierImportAlign) {
+        this.selectedIdentifierImportAlign = selectedIdentifierImportAlign;
     }
 
 }
