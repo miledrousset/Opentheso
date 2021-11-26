@@ -84,14 +84,15 @@
                                         <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
                                                          actionListener="#{newProjectBean.init()}" oncomplete="PF('modifyProject').show();" 
                                                          class="btn btn-primary" update="idModifyProject" icon="fas fa-pen" process="@this"
-                                                         style="color: #FFF; background-color: #f47b2a; border-color: #f47b2a; height: 100%;">
-                                            <p:tooltip value="#{langueBean.getMsg('profile.change_label_projects')}" showDelay="1000" />; 
+                                                         style="color: #FFF; background-color: #f47b2a; border-color: #f47b2a; height: 100%; margin-left: 5px">
+                                            <p:tooltip value="#{langueBean.getMsg('profile.change_label_projects')}" showDelay="1000" /> 
                                         </p:commandButton>
                                     </div>               
                                 </div>
                             </div>
                         </div>
-
+                        
+                        <h:panelGroup rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesoOfProject != null)}" >
                         <div class="card shadow mb-4" style="height: 100%;"> 
                             <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
                                 <div class="row" style="margin-left: 30px; margin-right: 30px;">
@@ -191,6 +192,7 @@
                                 </div>
                             </div>
                         </div>
+                        </h:panelGroup>
                     </div> 
 
                     <ui:include src="../commun/footer.xhtml" /> 
