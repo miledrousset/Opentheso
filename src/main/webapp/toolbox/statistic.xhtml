@@ -15,8 +15,6 @@
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
 
-        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
-
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
     </h:head>
 
@@ -62,31 +60,38 @@
                                     <div class="col-4">
                                         <p:selectOneMenu value="#{statistiqueBean.selectedStatistiqueTypeCode}"
                                                          style="font-size: 15px; background: white; border-color: #43B572; width: 100%">
+                                             <p:ajax event="change" update="containerIndex:typeBtn" listener="#{statistiqueBean.setStatisticTypeEnable(true)}" />
                                             <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.general')}" itemValue="0" />
                                             <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.par_concept')}" itemValue="1" />
                                         </p:selectOneMenu>
                                     </div>
-                                    <div class="col-4"/>
+                                    <div class="col-4">
+                                        <p:commandButton id="typeBtn" title="Valider" styleClass="btn btn-primary" update="containerIndex" 
+                                                         disabled="#{!statistiqueBean.statisticTypeEnable}"
+                                                         actionListener="#{statistiqueBean.onSelectStatType()}"/>
+                                    </div>
                                 </div>
 
-                                <div class="row" style="margin-top: 5px">
-                                    <div class="col-4" style="text-align: right; margin-top: 5px">
-                                        <h:outputText class="control-label" style="font-size: 13px; color: #000;" 
-                                                      value="#{langueBean.getMsg('statistique.choix_lang')}"/>
+                                <h:panelGroup rendered="#{statistiqueBean.selectLanguageVisible}">
+                                    <div class="row" style="margin-top: 5px">
+                                        <div class="col-4" style="text-align: right; margin-top: 5px">
+                                            <h:outputText class="control-label" style="font-size: 13px; color: #000;" 
+                                                          value="#{langueBean.getMsg('statistique.choix_lang')}"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <p:selectOneMenu id="langue" value="#{statistiqueBean.selectedLanguage}" 
+                                                             style="font-size: 15px; background: white; border-color: #43B572; width: 100%">
+                                                <f:selectItems value="#{statistiqueBean.languagesOfTheso}" var="langue"
+                                                               itemLabel="#{statistiqueBean.formatLanguage(langue.value)}" itemValue="#{langue.code}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="col-4">
+                                            <p:commandButton title="Valider" styleClass="btn btn-primary" 
+                                                             update="containerIndex:bloc1 containerIndex:bloc2 resultat2"
+                                                             actionListener="#{statistiqueBean.onSelectLanguageType()}" />
+                                        </div>        
                                     </div>
-                                    <div class="col-4">
-                                        <p:selectOneMenu id="langue" value="#{statistiqueBean.selectedLanguage}" 
-                                                         style="font-size: 15px; background: white; border-color: #43B572; width: 100%">
-                                            <f:selectItems value="#{statistiqueBean.languagesOfTheso}" var="langue"
-                                                           itemLabel="#{statistiqueBean.formatLanguage(langue.value)}" itemValue="#{langue.code}"/>
-                                        </p:selectOneMenu>
-                                    </div>
-                                    <div class="col-4">
-                                        <p:commandButton title="Valider" styleClass="btn btn-primary" 
-                                                         update="containerIndex:bloc1 containerIndex:bloc2 resultat2"
-                                                         actionListener="#{statistiqueBean.onSelectLanguageType()}" />
-                                    </div>        
-                                </div>
+                                </h:panelGroup>
                             </div>
                         </div>
 

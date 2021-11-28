@@ -54,8 +54,7 @@ public class StatistiqueBean implements Serializable {
     private List<ConceptStatisticData> conceptStatistic;
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<DomaineDto> groupList;
-
-    //private DonutChartModel donutModel = new DonutChartModel();
+    private boolean statisticTypeEnable, statisticLangEnable;
 
     private List<String> colors = new ArrayList<>(List.of("rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"));
 
@@ -97,7 +96,8 @@ public class StatistiqueBean implements Serializable {
         genericTypeVisible = false;
         conceptTypeVisible = false;
 
-        //donutModel = new DonutChartModel();
+        statisticTypeEnable = false;
+        statisticLangEnable = false;
 
         genericStatistiques = new ArrayList<>();
         conceptStatistic = new ArrayList<>();
@@ -409,6 +409,22 @@ public class StatistiqueBean implements Serializable {
 
     public ConceptStatisticData getCanceptStatistiqueSelected() {
         return canceptStatistiqueSelected;
+    }
+
+    public boolean isStatisticTypeEnable() {
+        return statisticTypeEnable;
+    }
+
+    public void setStatisticTypeEnable(boolean statisticTypeEnable) {
+        this.statisticTypeEnable = statisticTypeEnable;
+    }
+
+    public boolean isStatisticLangEnable() {
+        return statisticLangEnable;
+    }
+
+    public void setStatisticLangEnable(boolean statisticLangEnable) {
+        this.statisticLangEnable = statisticLangEnable;
     }
 
 }

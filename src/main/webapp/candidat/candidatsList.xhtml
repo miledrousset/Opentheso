@@ -33,10 +33,10 @@
 
         <div class="row" style="margin-top: 20px">
             <div class="col-6">
-                <p:selectBooleanCheckbox value="#{candidatBean.myCandidatsSelected1}" style="color: #000;" 
-                                         itemLabel="#{langueBean.getMsg('candidat.my_candidats')}" >
+                <p:selectBooleanCheckbox value="#{candidatBean.myCandidatsSelected1}">
                     <p:ajax update="containerIndex" listener="#{candidatBean.selectMyCandidats()}" />
                 </p:selectBooleanCheckbox>
+                <h:outputLabel value="#{langueBean.getMsg('candidat.my_candidats')}" style="color: #000; margin-left: 10px; margin-top: 5px" />
             </div>
             <div class="col-6" style="text-align: right">
                 <h:outputText class="col-md-6 control-label" style="color: #000; height: 34px; margin-top: 7px; text-align: right; vertical-align: central" 
