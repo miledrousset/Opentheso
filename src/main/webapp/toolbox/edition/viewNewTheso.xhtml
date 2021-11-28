@@ -67,26 +67,18 @@
                         </p:selectOneMenu>
                     </div>           
                 </div> 
-            </div>
-        </div>        
+            </div>        
 
-                <div class="row" style="margin-top: 10px">
-                    <div class="col-6"> 
-                        <p:commandButton value="#{langueBean.getMsg('btnBack')}" style="width: 100%; font-size: 12px;"
-                                         actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}"
-                                         update="containerIndex" class="btn btn-secondary">
-                            <a class="fas fa-undo" />
-                            <p:tooltip value="#{langueBean.getMsg('btnBack')}" showDelay="1000" />
-                        </p:commandButton>
-                    </div>
-                    <div class="col-6"> 
-                        <p:commandButton class="btn btn-primary" ajax="true" value="Créer"
-                                         update="containerIndex"
-                                         actionListener="#{newThesoBean.addNewTheso()}">
-                            <a class="fas fa-check-circle" />
-                            <p:tooltip value="Créer un nouveau thésaurus" showDelay="1000" />
-                        </p:commandButton>   
-                    </div>
+            <div class="row" style="margin: 10px;">
+                <div class="col-6" style="text-align: right"> 
+                    <p:commandButton value="Créer" icon="fas fa-plus-circle" update="containerIndex" 
+                                     actionListener="#{newThesoBean.addNewTheso()}" />
                 </div>
+                <div class="col-6"> 
+                    <p:commandButton value="#{langueBean.getMsg('btnBack')}" icon="fas fa-undo-alt" update="containerIndex"
+                                     actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" />
+                </div>
+            </div>
+        </div>
     </div>
 </ui:fragment>

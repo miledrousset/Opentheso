@@ -54,8 +54,8 @@
 
                         <div class="col-12" style="height: 100%">
 
-                            <!-- Ark -->
-                            <div class="card shadow mb-4" style="height: 100%; "> 
+                            <div class="card shadow mb-4" style="height: 100%;">
+                                <!-- Ark -->
                                 <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
                                     <p:panel style="border-color: transparent">
                                         <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
@@ -181,9 +181,7 @@
                                         </div>
                                     </p:panel>
                                 </div>
-                            </div>
-
-                            <div class="card shadow mb-4" style="height: 100%;"> 
+                                
                                 <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
                                     <p:panel style="border-color: transparent">
                                         <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
@@ -304,6 +302,81 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </p:panel>
+                                </div>
+                                
+                                <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
+                                    <p:panel style="border-color: transparent">
+                                        <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
+                                            <div class="col-6" style="padding-top: 3px">
+                                                <h:outputText value="Ark en local sans serveur" style="font-size: 14px; font-weight: bold;; color: #FFF !important;"
+                                                              title="Permet de générer des identifiants Ark en local sans passer par un serveur"/>
+                                            </div>
+                                            <div class="col-6" style="text-align: right; padding-top: 3px">
+                                                <p:badge rendered="#{preferenceBean.nodePreference.useArkLocal}" style="background-color:#FFF; color: #f47b2a" value="ON"  />                                                
+                                                <p:badge rendered="#{!preferenceBean.nodePreference.useArkLocal}" style="background-color:#FFF; color: #f47b2a" value="OFF"  /> 
+                                            </div>
+                                        </div>
+                                        
+                                         <div class="list-group" style="margin-bottom: -10px">
+
+                                            <!-- Activer / désactiver Handle -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Désactiver/Activer le serveur Ark local" style="font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8"> 
+                                                        <p:inputSwitch value="#{preferenceBean.nodePreference.useArkLocal}" style="color: #f47b2a" onLabel="OUI" offLabel="NON" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Naan Ark -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Votre Naan" style="font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8"> 
+                                                        <p:inputText value="#{preferenceBean.nodePreference.naanArkLocal}" style="width: 100%;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Prefixe Ark -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Préfixe Ark" style="font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8"> 
+                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixArkLocal}" style="width: 100%;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- size of Id Ark -->
+                                            <div class="list-group-item list-group-item-action">                                           
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="Taille de l'identifiant Ark" title="10 caractères par défaut" style="font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8"> 
+                                                        <p:inputText value="#{preferenceBean.nodePreference.sizeIdArkLocal}" style="width: 100%;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- size of Id Ark -->
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-11" style="text-align: right; margin-top: 2px;">
+                                                    <p:commandButton class="btn btn-primary" title="Enregistrer" 
+                                                                     actionListener="#{preferenceBean.savePreference()}"
+                                                                     update="containerIndex messageIndex"/>
+                                                </div>
+                                            </div>
+                                         </div>
                                     </p:panel>
                                 </div>
                             </div>

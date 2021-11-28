@@ -42,6 +42,7 @@ public class EditThesoBean implements Serializable {
     @Inject private CurrentUser currentUser;
     @Inject private RoleOnThesoBean roleOnThesoBean;
 
+    private NodeLangTheso langSelected;
     private ArrayList<Languages_iso639> allLangs;
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private boolean isPrivateTheso;
@@ -210,14 +211,6 @@ public class EditThesoBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init(nodeIdValueOfTheso);
-        /*        roleOnThesoBean.showListTheso();
-        viewEditionBean.init();
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("toolBoxForm");
-            pf.ajax().update("toolBoxForm:listThesoForm");
-            pf.ajax().update("messageIndex");            
-        }*/
     }
     
     public void updateLang(NodeLangTheso NodeLangThesoSelected){
@@ -234,24 +227,30 @@ public class EditThesoBean implements Serializable {
             return;
         }
 
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         Thesaurus thesaurus = new Thesaurus();
         thesaurus.setCreator(currentUser.getNodeUser().getName());
         thesaurus.setContributor(currentUser.getNodeUser().getName());
         thesaurus.setId_thesaurus(nodeIdValueOfTheso.getId());
-        thesaurus.setTitle(NodeLangThesoSelected.getLabelTheso());
+        thesaurus.setTitle(langSelected.getLabelTheso());
         thesaurus.setLanguage(NodeLangThesoSelected.getCode());
-        if (!thesaurusHelper.UpdateThesaurus(
-                connect.getPoolConnexion(),
-                thesaurus)) {
+        if (!new ThesaurusHelper().UpdateThesaurus(connect.getPoolConnexion(), thesaurus)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Traduction modifiée avec succès");
+        roleOnThesoBean.showListTheso();
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        init(nodeIdValueOfTheso);
+        
+        languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:listLangThes");
+        }
     }
     
     public void deleteLangFromTheso(String idLang){
@@ -339,5 +338,12 @@ public class EditThesoBean implements Serializable {
         this.preferredLang = preferredLang;
     }
 
+    public NodeLangTheso getLangSelected() {
+        return langSelected;
+    }
+
+    public void setLangSelected(NodeLangTheso langSelected) {
+        this.langSelected = langSelected;
+    }
 
 }

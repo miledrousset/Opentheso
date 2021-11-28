@@ -41,8 +41,9 @@ public class RestoreTheso implements Serializable {
     private String naan;
     private String prefix;
     
-    private boolean overwriteLocalArk = false;    
-    
+    private boolean overwriteLocalArk = false;
+
+
     /**
      * Creates a new instance of RestoreTheso
      */

@@ -115,12 +115,14 @@ public class CurrentUser implements Serializable {
 
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             showErrorMessage("champ vide non autorisé");
+            return;
         }
 
         int idUser = -1;
         if (ldapEnable) {
             if (!new LDAPUtils().authentificationLdapCheck(username, password)) {
                 showErrorMessage("User or password wrong, please try again");
+                return;
             }
         } else {
             idUser = userHelper.getIdUser(connect.getPoolConnexion(),
@@ -129,12 +131,14 @@ public class CurrentUser implements Serializable {
 
         if (idUser == -1) {
             showErrorMessage("User or password wrong, please try again");
+            return;
         }
 
         // on récupère le compte de l'utilisatreur
         nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
         if (nodeUser == null) {
             showErrorMessage("Incohérence base de données");
+            return;
         }
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
@@ -143,7 +147,6 @@ public class CurrentUser implements Serializable {
         indexSetting.setIsThesoActive(true);
         
         FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
-
     }
 
     private void showErrorMessage(String msg) {

@@ -51,6 +51,11 @@
                                 update="idApproveConcept" action="#{editConcept.reset('')}"
                                 oncomplete="PF('approveConcept').show();"  />
 
+                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addConceptTofacet')}"
+                            icon="fas fa-magnet" update="idAddConceptToFacet addConceptToFacetForm"
+                            action="#{editConcept.reset('')}"
+                            oncomplete="PF('addConceptToFacet').show();" />
+
                     <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                                 value="#{langueBean.getMsg('rightbody.concept.generate_ark')}" 
                                 disabled="false"                                      
@@ -132,6 +137,20 @@
                                 update="idListImportCsv listImportCsvForm" action="#{importFileBean.init()}"
                                 oncomplete="PF('listImportCsv').show();"/>
 
+                    <p:menuitem rendered="#{currentUser.nodeUser.isSuperAdmin}"
+                                      value="importer des alignements d'après un tableau CSV"
+                                      update="idListAlignmentCsv listAlignmentCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('listAlignmentCsv').show();"
+                                      style="font-size: 12px; "/>
+
+                    <p:menuitem rendered="#{currentUser.nodeUser.isSuperAdmin}"
+                                      value="Supprimer des alignements d'après un tableau CSV"
+                                      update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
+                                      action="#{importFileBean.init()}"
+                                      oncomplete="PF('deleteListAlignmentCsv').show();"
+                                      style="font-size: 12px; color: #C63632" />
+
                 </p:menuButton>
             </h:panelGroup>
         </div>
@@ -157,6 +176,8 @@
     </div>
 
     <ui:include src="../../../dialog/facet/addFacet.xhtml" />
+    <ui:include src="../../../dialog/facet/addConceptToFace.xhtml" />
+
     <ui:include src="../../../dialog/concept/addNT.xhtml" /> 
     <ui:include src="../../../dialog/concept/deleteConcept.xhtml" />
     <ui:include src="../../../dialog/concept/deprecateConcept.xhtml" />
@@ -164,6 +185,9 @@
     <ui:include src="../../../dialog/concept/generateArk.xhtml" />
     <ui:include src="../../../dialog/concept/generateHandle.xhtml" />
     <ui:include src="../../../dialog/concept/deleteHandle.xhtml" />
+
     <ui:include src="../../../dialog/import/listImportCsv.xhtml" />
+    <ui:include src="../../../dialog/import/listAlignmentCsv.xhtml" />
+    <ui:include src="../../../dialog/import/deleteListAlignmentCsv.xhtml" />
 
 </ui:fragment>

@@ -184,9 +184,6 @@ public class AtelierThesBean implements Serializable {
             if (StringUtils.isEmpty(actionSelected)) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez selectionnez une action !");
                 return event.getOldStep();
-            } else if (!"opt1".equals(actionSelected)) {
-                showMessage(FacesMessage.SEVERITY_INFO, "Cette action n'est pas disponible pour le moment ..");
-                return event.getOldStep();
             } else {
                 return event.getNewStep();
             }

@@ -72,7 +72,7 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
-    
+
     /**
      * permet de récupérer les concepts dépréciés
      * @param ds
@@ -124,14 +124,9 @@ public class ConceptHelper {
         }
         return null;
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
     /**
      * permet de retourner un noeud de données optimisées pour l'affichage du graphe D3Js
      * @param ds
@@ -1104,6 +1099,17 @@ public class ConceptHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE concept set modified = current_date, contributor = " + contributor + " WHERE id_concept ='" + idConcept + "'"
+                        + " AND id_thesaurus='" + idTheso + "'");
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating date of concept : " + idConcept, sqle);
+        }
+    }
+
+    public void updateDateOfConcept(HikariDataSource ds, String idTheso, String idConcept) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept set modified = current_date WHERE id_concept ='" + idConcept + "'"
                         + " AND id_thesaurus='" + idTheso + "'");
             }
         } catch (SQLException sqle) {

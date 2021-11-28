@@ -56,7 +56,7 @@
                             <div class="card shadow mb-4" style="height: 100%; margin: 20px; padding: 20px; color: #000">
                                 <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
                                            style="background-color: #FAFAFA;">
-                                    <p:tab title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
+                                    <p:tab id="tab1" title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
                                         <h:panelGroup rendered="#{candidatBean.isListCandidatsActivate() || 
                                                                   candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
                                             <ui:include src="../candidat/candidatsList.xhtml" />
@@ -143,9 +143,9 @@
                         <ui:include src="../dialog/alignment/deleteAlignment.xhtml" />
                         <ui:include src="../dialog/alignment/updateAlignment.xhtml" />
                         
-                        <ui:include src="../commun/footer.xhtml" />
                     </h:form>
                 </div>
+                        <ui:include src="../commun/footer.xhtml" />
             </div>
         </h:panelGroup> 
     </h:body>

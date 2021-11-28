@@ -54,6 +54,8 @@ public class ViewExportBean implements Serializable {
     private boolean isAllLangsSelected;
     private String selectedGroup;
     private String selectedIdLangTheso;
+    private List<String> selectedIdGroups;
+    private boolean toogleFilterByGroup;
     
     // pour le format PDF
     private String selectedLang1_PDF; // pour comparer entre 2 langues maxi pour le PDF
@@ -93,6 +95,10 @@ public class ViewExportBean implements Serializable {
             selectedGroups.clear();
             selectedGroups = null;
         }
+        if(selectedIdGroups != null){
+            selectedIdGroups.clear();
+            selectedIdGroups = null;
+        }
         exportFormat = null;
         types = null;
     }    
@@ -124,6 +130,18 @@ public class ViewExportBean implements Serializable {
         typeSelected = types.get(0);
 
         groupList = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
+
+        toogleFilterByGroup = false;
+        if(selectedIdGroups == null){
+            selectedIdGroups = new ArrayList<>();
+        } else
+            selectedIdGroups.clear();
+
+        if(groupList != null) {
+            for (NodeGroup nodeGroup : groupList) {
+                selectedIdGroups.add(nodeGroup.getConceptGroup().getIdgroup());
+            }
+        }
 
         if(selectedLanguages == null)
             selectedLanguages = new ArrayList<>();
@@ -193,7 +211,11 @@ public class ViewExportBean implements Serializable {
     
     public String getFormat() {
         return formatFile;
-    } 
+    }
+
+    public boolean isDeprecatedExport() {
+        return "deprecated".equals(formatFile);
+    }
 
     public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
         return languagesOfTheso;
@@ -355,4 +377,19 @@ public class ViewExportBean implements Serializable {
         this.selectedIdLangTheso = selectedIdLangTheso;
     }
 
+    public List<String> getSelectedIdGroups() {
+        return selectedIdGroups;
+    }
+
+    public void setSelectedIdGroups(List<String> selectedIdGroups) {
+        this.selectedIdGroups = selectedIdGroups;
+    }
+
+    public boolean isToogleFilterByGroup() {
+        return toogleFilterByGroup;
+    }
+
+    public void setToogleFilterByGroup(boolean toogleFilterByGroup) {
+        this.toogleFilterByGroup = toogleFilterByGroup;
+    }
 }

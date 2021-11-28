@@ -31,14 +31,14 @@ public final class NodeJson2 {
                 + "\"token\":\""+ token + "\","
                 + "\"ark\":\""+ ark + "\","
                 + "\"naan\":\"" + naan + "\","
-                + "\"type\":\""+  type + "\","                
+                + "\"type\":\""+  type + "\","
                 + "\"urlTarget\":\""+ urlTarget + "\","
                 + "\"title\":\" "+ title + "\","
                 + "\"creator\":\"" + creator + "\","
-                + "\"useHandle\":" + useHandle + ","                
+                + "\"useHandle\":" + useHandle + ","
                 + "\"modificationDate\":\""+ new FileUtilities().getDate() + "\","
-                + "\"dcElments\":" + getStringFromDcElements() + ","
-                + "\"qualifiers\":" + getStringFromQualifiers()                
+                + "\"dcElements\":" + getStringFromDcElements() + ","
+                + "\"qualifiers\":" + getStringFromQualifiers()
                 + "}";
 
         return arkString;

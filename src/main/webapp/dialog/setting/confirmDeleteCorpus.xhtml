@@ -26,8 +26,8 @@
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('confirmDeleteCorpus').hide();" update="idConfirmDeleteCorpus"/>
 
-                <p:commandButton title="Supprimer" update="containerIndex messageIndex"
-                                 class="btn btn-primary" style="background-color: #C63632; border-color: #C63632" oncomplete="PF('confirmDeleteCorpus').hide();"
+                <p:commandButton title="Supprimer" update="containerIndex messageIndex" oncomplete="PF('confirmDeleteCorpus').hide();"
+                                 class="btn btn-primary" style="background-color: #C63632; border-color: #C63632"
                                  actionListener="#{corpusBean.deleteCorpus()}" />
             </div>                    
         </f:facet>

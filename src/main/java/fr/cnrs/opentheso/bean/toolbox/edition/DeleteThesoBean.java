@@ -123,7 +123,7 @@ public class DeleteThesoBean implements Serializable {
             selectedTheso.setSelectedTheso();
         }
         
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "thesaurus supprimé avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Thesaurus supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();
         viewEditionBean.init();

@@ -103,12 +103,6 @@
         </dependency>
 
         <dependency>
-            <groupId>net.bootsfaces</groupId>
-            <artifactId>bootsfaces</artifactId>
-            <version>${bootsfaces.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>${mail.version}</version>
@@ -318,7 +312,6 @@
         <itextpdf.version>5.1.2</itextpdf.version>
         <hikariCP.version>3.4.1</hikariCP.version>
         <treelayout.version>1.0.3</treelayout.version>
-        <bootsfaces.version>1.4.2</bootsfaces.version>
         <all.themes.version>1.0.8</all.themes.version>
         <javax.json.version>1.1.4</javax.json.version>
         <postgresql.version>42.2.9</postgresql.version>

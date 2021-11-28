@@ -64,11 +64,40 @@
                                             <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
                                                 <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
                                                 <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
+                                                <f:selectItem itemLabel="Fusionner deux thésaurus" itemValue="opt3"/>
                                             </p:selectOneRadio>
                                         </p:panel>
                                     </p:tab>
 
                                     <p:tab id="entre" title="Entrées" titleStyleClass="tabCostum">
+
+                                        <p:panel id="fussion" header="Importation du thésorus source" styleClass="redColoredPanel" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}">
+                                            <div class="row" style="margin-left: 30px; margin-right: 30px; ">
+                                                <div class="col-12" >
+                                                    <p:fileUpload listener="#{fusionService.importTheso}"
+                                                                  label="parcourir"
+                                                                  mode="advanced" auto="true"
+                                                                  allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
+                                                                  update="fussion"
+                                                                  style="font-size: 12px;" />
+                                                </div>
+                                            </div>
+
+                                            <h:panelGroup rendered="#{fusionService.loadDone}">
+                                                <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                                                    <div class="col-12">
+                                                        <h:outputText value="URI: " />
+                                                        <h:outputText value="#{fusionService.uri}" style="color: #C63632"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row" rendered="#{fusionService.loadDone}" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                                                    <div class="col-12">
+                                                        <h:outputText value="Total des concepts: " />
+                                                        <h:outputText value="#{fusionService.total}" style="color: #C63632"/>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </p:panel>
 
                                         <p:panel header="   Les données de comparaison" styleClass="redColoredPanel" style="padding: 10px">
                                             <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
@@ -166,56 +195,95 @@
 
                                         <p:panel header="Résultat">
 
-                                            <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemble des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
+                                            <p:panel header="Récapitulatif" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}">
+                                                <h:outputText value="Vous êtes sur le point de fussioner un thésaurus importé dans la thésaurus ' #{atelierThesBean.thesoSelected.value}' ! " />
+                                                <br/>
 
-                                            <br/>
+                                                <p:commandButton id="fussionBtn" value="Lancer la fussion" icon="fa-search"
+                                                                 actionListener="#{atelierThesBean.fusionner()}"
+                                                                 disabled="#{fusionService.fusionBtnEnable}"
+                                                                 update="containerIndex" onclick="PF('bui').show()"
+                                                                 style="margin-top: 10px"/>
 
-                                            <p:commandButton value="Lancer la comparaison" icon="fa-search"
-                                                             actionListener="#{atelierThesBean.comparer()}"
-                                                             update="containerIndex" onclick="PF('bui').show()" style="margin-top: 10px"/>
+                                                <br/>
+                                                <br/>
 
-                                            <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px; border-width: 0">
-                                                <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
-                                                             var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
-                                                    <p:column headerText="Id Origine" style="background-color: #ebedf0;">
-                                                        <h:outputText value="#{resultat.idOrigine}" />
-                                                    </p:column>
-                                                    <p:column headerText="PrefLabel Origine" style="background-color: #ebedf0;">
-                                                        <h:outputText value="#{resultat.prefLabelOrigine}" />
-                                                    </p:column>
-                                                    <p:column headerText="Id #{atelierThesBean.thesoSelected.value}">
-                                                        <h:outputText value="#{resultat.idConcept}" />
-                                                    </p:column>
-                                                    <p:column headerText="PrefLabel #{atelierThesBean.thesoSelected.value}">
-                                                        <h:outputText value="#{resultat.prefLabelConcept}" />
-                                                    </p:column>
-                                                    <p:column headerText="AltLabel">
-                                                        <h:outputText value="#{resultat.altLabelConcept}" />
-                                                    </p:column>
-                                                    <p:column headerText="Terme Génerique">
-                                                        <h:outputText value="#{resultat.termGenerique}" />
-                                                    </p:column>
-                                                    <p:column headerText="Définition">
-                                                        <h:outputText value="#{resultat.definition}" />
-                                                    </p:column>
-                                                    <p:column headerText="URI Ark">
-                                                        <h:outputText value="#{resultat.uriArk}" />
-                                                    </p:column>
-                                                </p:dataTable>
-                                            </p:scrollPanel>
+                                                <p:panel id="statistiques" rendered="#{fusionService.fusionDone}">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <h5>Conceptes ajoutés : #{fusionService.conceptsAjoutes.size()}</h5>
+                                                            <p:orderList value="#{fusionService.conceptsAjoutes}" var="concepte1" controlsLocation="none"
+                                                                         itemLabel="#{concepte1}" itemValue="#{concepte1}" />
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h5>Conceptes modifiés : #{fusionService.conceptsModifies.size()}</h5>
+                                                            <p:orderList value="#{fusionService.conceptsModifies}" var="concepte2" controlsLocation="none"
+                                                                         itemLabel="#{concepte2}" itemValue="#{concepte2}" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        Le nombre de conceptes déjà existent : #{fusionService.conceptsExists.size()}
+                                                    </div>
+                                                    <br/>
+                                                </p:panel>
+                                            </p:panel>
 
-                                            <div class="row" style="margin-top: 15px; margin-right: 0px" rendered="#{atelierThesBean.result.size() > 0}">
-                                                <p:commandButton value="Export Résultat" icon="ui-icon-valider" ajax="false"
-                                                                 style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
-                                                                 onclick="PF('pbAjax').start();" update="containerIndex" >
-                                                    <p:fileDownload value="#{atelierThesBean.exportResultat()}" />
-                                                </p:commandButton>
-                                            </div>
+                                            <p:panel header="Récapitulatif" rendered="#{atelierThesBean.isRubriqueSelected('opt1')}">
+                                                <h:outputText value="Vous êtes sur le point de comparer chaque valeur de la colone '#{atelierThesBean.selectedColumn}' à l'ensemble des termes du thésaurus '#{atelierThesBean.thesoSelected.value}' ! " />
+
+                                                <br/>
+
+                                                <p:commandButton value="Lancer la comparaison" icon="fa-search"
+                                                                 actionListener="#{atelierThesBean.comparer()}"
+                                                                 update="containerIndex" onclick="PF('bui').show()" style="margin-top: 10px"/>
+
+                                                <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px; border-width: 0">
+                                                    <p:dataTable id="tbl" rendered="#{atelierThesBean.result.size() > 0}"
+                                                                 var="resultat" value="#{atelierThesBean.result}" style="margin-top:20px">
+                                                        <p:column headerText="Id Origine" style="background-color: #ebedf0;">
+                                                            <h:outputText value="#{resultat.idOrigine}" />
+                                                        </p:column>
+                                                        <p:column headerText="PrefLabel Origine" style="background-color: #ebedf0;">
+                                                            <h:outputText value="#{resultat.prefLabelOrigine}" />
+                                                        </p:column>
+                                                        <p:column headerText="Id #{atelierThesBean.thesoSelected.value}">
+                                                            <h:outputText value="#{resultat.idConcept}" />
+                                                        </p:column>
+                                                        <p:column headerText="PrefLabel #{atelierThesBean.thesoSelected.value}">
+                                                            <h:outputText value="#{resultat.prefLabelConcept}" />
+                                                        </p:column>
+                                                        <p:column headerText="AltLabel">
+                                                            <h:outputText value="#{resultat.altLabelConcept}" />
+                                                        </p:column>
+                                                        <p:column headerText="Terme Génerique">
+                                                            <h:outputText value="#{resultat.termGenerique}" />
+                                                        </p:column>
+                                                        <p:column headerText="Définition">
+                                                            <h:outputText value="#{resultat.definition}" />
+                                                        </p:column>
+                                                        <p:column headerText="URI Ark">
+                                                            <h:outputText value="#{resultat.uriArk}" />
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                </p:scrollPanel>
+
+                                                <div class="row" style="margin-top: 15px; margin-right: 0px" rendered="#{atelierThesBean.result.size() > 0}">
+                                                    <p:commandButton value="Export Résultat" icon="ui-icon-valider" ajax="false"
+                                                                     style="float: right; font-size: 13px; color: white; background: #43B572; border: #43B572;"
+                                                                     onclick="PF('pbAjax').start();" update="containerIndex" >
+                                                        <p:fileDownload value="#{atelierThesBean.exportResultat()}" />
+                                                    </p:commandButton>
+                                                </div>
+                                            </p:panel>
                                         </p:panel>
-
                                     </p:tab>
 
                                 </p:wizard>
+
+                                <p:commandButton id="cancelBtn" icon="fa fa-undo" class="btn btn-success"
+                                                 style="font-size: 13px; color: white; background: #FFC107; border: #FFC107; margin-top: 10px"
+                                                 actionListener="#{atelierThesBean.init()}"
+                                                 onclick="PF('wiz').loadStep(PF('wiz').cfg.steps[0], false);" update="containerIndex"/>
 
                                 <p:blockUI block="containerIndex" widgetVar="bui">
                                     Chargement ...<br />

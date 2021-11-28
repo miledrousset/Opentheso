@@ -61,9 +61,13 @@
                                                     action="#{viewEditionBean.setIsViewExportCSV(true)}" update="containerIndex" icon="fas fa-upload"
                                                     title="Exporter les labels, identifiants, definitions au format CSV"/>
 
+                                        <p:menuitem value="Concepts dépréciés en CSV" ajax="false" update="containerIndex"
+                                                    actionListener="#{viewExportBean.init(listTheso, 'deprecated')}"
+                                                    action="#{viewEditionBean.setIsViewExportCSV(true)}" />
+
                                         <p:menuitem value="Virtuoso (SKOS)" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
                                                     action="#{viewEditionBean.setIsViewExportVirtuoso(true)}" update="containerIndex"
-                                                    title="Exporter le thésaurus dans vertuoso au format S" icon="fas fa-upload"/>
+                                                    title="Exporter le thésaurus dans vertuoso au format RDF" icon="fas fa-upload"/>
                                     </p:menuButton>
                                 </p:column>
 
@@ -75,7 +79,7 @@
                                 </p:column>
 
                                 <p:column width="10" headerText="Supprimer">
-                                    <p:commandButton icon="pi pi-trash" update="containerIndex messageIndex" process="@this"
+                                    <p:commandButton icon="pi pi-trash" update="containerIndex messageIndex" process="@this" ajax="true"
                                                      actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
                                                      class="ui-button-danger rounded-button" />
                                 </p:column>

@@ -271,7 +271,7 @@ public class ImportRdf4jHelper {
             if(selectedIdentifier.equalsIgnoreCase("doi")){
                 nodePreference.setOriginalUriIsDoi(true);
             }             
-            preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);            
+            //preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
         } else {
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
@@ -284,9 +284,9 @@ public class ImportRdf4jHelper {
             }    
             if(selectedIdentifier.equalsIgnoreCase("doi")){
                 nodePreference.setOriginalUriIsDoi(true);
-            }               
-            preferencesHelper.addPreference(ds, nodePreference, idTheso); 
+            }
         }
+        preferencesHelper.addPreference(ds, nodePreference, idTheso);
     }
     
     private void setOriginalUri(String idTheso, String uri){
@@ -501,6 +501,15 @@ public class ImportRdf4jHelper {
         addDocumentation(acs);
         addDate(acs);
         addReplaces(acs);
+
+        for (SKOSCreator c : conceptResource.getCreatorList()) {
+            if (c.getProperty() == SKOSProperty.creator) {
+                acs.concept.setCreatorName(c.getCreator());
+            }
+            if (c.getProperty() == SKOSProperty.contributor) {
+                acs.concept.setContributorName(c.getCreator());
+            }
+        }
 
         if (isCandidatImport) {
             addMessages(acs);

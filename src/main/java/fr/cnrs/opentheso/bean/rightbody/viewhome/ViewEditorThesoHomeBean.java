@@ -57,7 +57,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
     
     public void initText() {
-        String lang = languageBean.getIdLangue().toLowerCase();
+        String lang = selectedTheso.getSelectedLang();
         if(lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         } 
@@ -71,7 +71,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
 
     public String getThesoHomePage(){
-        String lang = languageBean.getIdLangue().toLowerCase();
+        String lang = selectedTheso.getSelectedLang();
         if(lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         }         
@@ -88,7 +88,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     public void updateThesoHomePage() {
         FacesMessage msg;
 
-        String lang = languageBean.getIdLangue().toLowerCase();
+        String lang = selectedTheso.getSelectedLang();
         if(lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         }         

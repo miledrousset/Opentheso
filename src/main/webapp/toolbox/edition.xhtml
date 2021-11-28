@@ -15,8 +15,6 @@
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
 
-        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
-
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
     </h:head>
 
@@ -56,6 +54,10 @@
                             <ui:include src="edition/viewListTheso.xhtml" />
                         </p:panel>
 
+                        <p:panel rendered="#{viewEditionBean.isViewModifyTheso}">
+                            <ui:include src="edition/viewModifyTheso.xhtml" />
+                        </p:panel>
+
                         <p:panel rendered="#{viewEditionBean.isViewImportSkos}">
                             <ui:include src="edition/viewImportSkos.xhtml" />
                         </p:panel>
@@ -67,10 +69,6 @@
                         <p:panel rendered="#{viewEditionBean.isViewNewTheso}">
                             <ui:include src="edition/viewNewTheso.xhtml" />
                         </p:panel>  
-
-                        <p:panel rendered="#{viewEditionBean.isViewModifyTheso}">
-                            <ui:include src="edition/viewModifyTheso.xhtml" />
-                        </p:panel>
 
                         <p:panel rendered="#{viewEditionBean.isExportView()}">
                             <ui:include src="../toolbox/edition/exportThesaurus.xhtml" />

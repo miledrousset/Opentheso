@@ -5,43 +5,43 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html lang="fr">
-    <head>
-        <title>javascript autocomplete pour opentheso</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
-        <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
-        <link rel="stylesheet" href="auto-complete.css">
-        <script src="auto-complete.js"></script>
-        <script type="text/javascript" src="jquery-3.5.1.min.js"></script>        
-    </head>
-    <body>
-        <form onsubmit="return false;" class="pure-form" style="margin:30px 0; padding:20px 10px; 
+<head>
+    <title>javascript autocomplete pour opentheso</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+    <link rel="stylesheet" href="auto-complete.css">
+    <script src="auto-complete.js"></script>
+    <script type="text/javascript" src="jquery-3.5.1.min.js"></script>
+</head>
+<body>
+<form onsubmit="return false;" class="pure-form" style="margin:30px 0; padding:20px 10px;
               text-align:center;">
-            
-            <div id="autoComplete">
-                <div><input id="demoAutoComplete" type="text" name="q" placeholder="Titre ..." style="width:400px;" /></div>
-                <div><div id="loading" class="loader" style="visibility: hidden; margin-top: 3px; margin-left: 3px"/></div>
-            </div>
-                
-        </form>
-        
-        <p id="output"></p>
 
-        <script>
-            new autoComplete({
-                selector: '#demoAutoComplete',
-                loading: 'loading',
-                output: 'output',
-            //    url: 'http://localhost:8080/opentheso2/api/autocomplete/',
-            //    url: 'http://localhost:8080/opentheso2/api/autocomplete/
-            //    url: 'https://pactols.frantiq.fr/opentheso/api/autocomplete/',
-	             url: 'https://frollo.notre-dame.science/opentheso/api/autocomplete/',
-             //   thesaurus: 'TH_1',
-                thesaurus: 'th13',
-                lang: 'fr',
-                groupe: ''
-            });
-        </script>
-    </body>
+    <div id="autoComplete">
+        <div><input id="demoAutoComplete" type="text" name="q" placeholder="Titre ..." style="width:400px;" /></div>
+        <div><input id="loading" class="loader" style="visibility: hidden; margin-top: 3px; margin-left: 3px"/></div>
+    </div>
+
+</form>
+
+<p id="output"></p>
+
+<script>
+    new autoComplete({
+        selector: '#demoAutoComplete',
+        loading: 'loading',
+        output: 'output',
+        //    url: 'http://localhost:8080/opentheso2/api/autocomplete/',
+        //    url: 'http://localhost:8080/opentheso2/api/autocomplete/
+        url: 'https://pactols.frantiq.fr/opentheso/api/autocomplete/',
+        //        url: 'https://frollo.notre-dame.science/opentheso/api/autocomplete/',
+        thesaurus: 'TH_1',
+        //   thesaurus: 'th13',
+        lang: 'fr',
+        groupe: '6'
+    });
+</script>
+</body>
 </html>

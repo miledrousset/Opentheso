@@ -111,6 +111,8 @@ public class PreferenceBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();
 
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");

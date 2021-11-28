@@ -10,24 +10,24 @@
         <!-- Nom du thésaurus -->
         <div class="row">
             <div class="col-5">
-                <h:outputText value="Label du thésaurus: " style="font-size: 12px;"/>
+                <h:outputText value="Label du thésaurus: "/>
             </div>
             <div class="col-7">
-                <p:inputText placeholder="Nom du thésaurus" value="#{editThesoBean.title}" style="font-size: 12px;"/>
+                <p:inputText placeholder="Nom du thésaurus" value="#{editThesoBean.title}" style="width: 100%"/>
             </div>
         </div>
 
         <!-- Langue par defaut -->
-        <div class="row">
+        <div class="row" style="margin-top: 10px">
             <div class="col-5">
-                <h:outputText value="Langue à ajouter: " style="font-size: 12px;"/>
+                <h:outputText value="Langue à ajouter: "/>
             </div>
             <div class="col-7">
                 <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                  style="width: 100%; background: none;  box-shadow: none; "
-                                 panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                    <f:selectItems  value="#{editThesoBean.allLangs}" var="lang" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" itemValue="#{lang.id_iso639_1}"/> 
-
+                                 panelStyle="border: none; box-shadow: none; width: 200px" >
+                    <f:selectItems value="#{editThesoBean.allLangs}" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" 
+                                   itemValue="#{lang.id_iso639_1}" var="lang" /> 
                 </p:selectOneMenu>  
             </div>
         </div> 

@@ -39,10 +39,12 @@
                                                 <p:inputText class="form-control form-control-user" type="password" value="#{currentUser.password}"/>
                                             </div>
                                             <div class="form-group">
-                                                <div class="custom-control custom-checkbox small">
-                                                    <input type="checkbox" class="custom-control-input" id="customCheck" />
-                                                    <label class="custom-control-label" for="customCheck">Connexion LDAP</label>
-                                                </div>
+                                                <h:panelGroup rendered="#{selectedTheso.currentIdTheso == 'tetetete'}">
+                                                    <div class="custom-control custom-checkbox small">
+                                                        <input type="checkbox" class="custom-control-input" id="customCheck" />
+                                                        <label class="custom-control-label" for="customCheck">Connexion LDAP</label>
+                                                    </div>
+                                                </h:panelGroup>
                                             </div>
 
                                             <hr/>

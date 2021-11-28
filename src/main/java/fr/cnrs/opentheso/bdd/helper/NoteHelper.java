@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdConceptIdTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import org.apache.commons.logging.Log;
@@ -34,6 +36,125 @@ public class NoteHelper {
     ////////////////// Nouvelles fontions #MR//////////////////////////////
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////  
+
+    /**
+     * Cette fonction permet de passer une note de type concept
+     * vers une note de type term
+     *
+     * @param ds
+     * @param fromIdConcept
+     * @param idThesausus
+     * @param toIdTerm
+     * @param noteTypeCode
+     * @param idUser
+     * @return
+     */
+    public boolean moveConceptNoteToTermNote(HikariDataSource ds,
+                                             String fromIdConcept, String toIdTerm,
+                                             String idThesausus, String noteTypeCode,
+                                             int idUser) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update note" +
+                        " set notetypecode = '" + noteTypeCode + "', id_term = '" + toIdTerm + "'" +
+                        " where" +
+                        " id_concept = '" + fromIdConcept + "'" +
+                        " and" +
+                        " id_thesaurus = '" + idThesausus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while updating Note of Term : " + fromIdConcept, sqle);
+        }
+        return false;
+    }
+
+    /**
+     * Cette fonction permet de passer une note de type terme
+     * vers une note de type concept
+     *
+     * @param ds
+     * @param fromIdTerm
+     * @param idThesausus
+     * @param toIdConcept
+     * @param noteTypeCode
+     * @param idUser
+     * @return
+     */
+    public boolean moveTermNoteToConceptNote(HikariDataSource ds,
+                                             String fromIdTerm, String toIdConcept,
+                                             String idThesausus, String noteTypeCode,
+                                             int idUser) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update note" +
+                        " set notetypecode = '" + noteTypeCode + "', id_concept = '" + toIdConcept + "'" +
+                        " where" +
+                        " id_term = '" + fromIdTerm + "'" +
+                        " and" +
+                        " id_thesaurus = '" + idThesausus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while updating Note of Term : " + fromIdTerm, sqle);
+        }
+        return false;
+    }
+
+    /**
+     * Retourne les identifiants de concepts ou terme suivant le type de note
+     *
+     * @param ds
+     * @param idTheso
+     * @param noteTypeCode
+     * @param isConceptNote
+     * @return
+     */
+    public ArrayList<NodeIdConceptIdTerm> getAllNotesByType(HikariDataSource ds, String idTheso, String noteTypeCode, boolean isConceptNote) {
+        ArrayList<NodeIdConceptIdTerm> listNotes = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                if(isConceptNote){
+                    stmt.executeQuery("SELECT note.id_concept, preferred_term.id_term " +
+                            " FROM note, preferred_term " +
+                            " where " +
+                            " note.id_thesaurus = preferred_term.id_thesaurus" +
+                            " and" +
+                            " note.id_concept = preferred_term.id_concept" +
+                            " and" +
+                            " note.id_thesaurus = '" + idTheso + "'" +
+                            " and notetypecode = '" + noteTypeCode + "'");
+                } else {
+                    stmt.executeQuery("SELECT note.id_term, preferred_term.id_concept " +
+                            " FROM note, preferred_term " +
+                            " where " +
+                            " note.id_thesaurus = preferred_term.id_thesaurus" +
+                            " and" +
+                            " note.id_term = preferred_term.id_term" +
+                            " and" +
+                            " note.id_thesaurus = '" + idTheso + "'" +
+                            " and notetypecode = '" + noteTypeCode + "'");
+                }
+
+                try (ResultSet resultSet = stmt.getResultSet()){
+                    while (resultSet.next()) {
+                        NodeIdConceptIdTerm nodeIdConceptIdTerm = new NodeIdConceptIdTerm();
+                        nodeIdConceptIdTerm.setIdConcept(resultSet.getString("id_concept"));
+                        nodeIdConceptIdTerm.setIdTerm(resultSet.getString("id_term"));
+                        listNotes.add(nodeIdConceptIdTerm);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting Notes by type ", sqle);
+        }
+        return listNotes;
+    }
+
     /**
      * Cette fonction permet d'ajouter l'historique de l'ajout d'une Note Ã  un
      * term insert dans la table Note_hisorique

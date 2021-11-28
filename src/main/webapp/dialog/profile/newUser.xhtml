@@ -86,11 +86,10 @@
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('newUser').hide();" update="containerIndex:idNewUser" process="@this" />
+                                 actionListener="PF('newUser').hide();" update="idNewUser" process="@this" />
 
                 <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('newUser').hide();" process="@this"
-                                 actionListener="#{newUSerBean.addUser()}" />
+                                 class="btn btn-primary" oncomplete="PF('newUser').hide();" actionListener="#{newUSerBean.addUser()}" />
             </div>
         </h:form>
     </p:dialog>   

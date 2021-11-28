@@ -211,7 +211,11 @@ public class ImportFileBean implements Serializable {
             delimiterCsv = '\t';
         }
     }
-    
+
+    public void actionChoiceIdentifier() {
+        setSelectedIdentifier(selectedIdentifier);
+    }
+
     /**
      * permet de charger un fichier en Csv
      *
@@ -290,6 +294,7 @@ public class ImportFileBean implements Serializable {
                         loadDone = true;
                         BDDinsertEnable = true;
                         info = "File correctly loaded";
+                        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                     }
                 }
             } catch (Exception e) {
@@ -300,6 +305,7 @@ public class ImportFileBean implements Serializable {
                 showError();
             }
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
     }
 
     /**
@@ -346,6 +352,7 @@ public class ImportFileBean implements Serializable {
                         }
                     }
                 }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide()");
             } catch (Exception e) {
                 haveError = true;
                 error.append(System.getProperty("line.separator"));
@@ -353,6 +360,7 @@ public class ImportFileBean implements Serializable {
             } finally {
                 showError();
             }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");
         }
     }
 
@@ -402,7 +410,8 @@ public class ImportFileBean implements Serializable {
             preferencesHelper.initPreferences(connect.getPoolConnexion(), idNewTheso, selectedLang);
         } else {
             nodePreference.setPreferredName(thesaurusName);
-            preferencesHelper.updateAllPreferenceUser(connect.getPoolConnexion(), nodePreference, idNewTheso);
+            nodePreference.setSourceLang(selectedLang);
+            preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }
 
         // ajout des concepts et collections
@@ -553,6 +562,7 @@ public class ImportFileBean implements Serializable {
         if (importInProgress) {
             return;
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').show();");
         initError();
         loadDone = false;
         progressStep = 0;
@@ -588,6 +598,7 @@ public class ImportFileBean implements Serializable {
                     }
                 }
             }
+            PrimeFaces.current().executeScript("PF('waitDialog').show();");
             loadDone = false;
             importDone = true;
             BDDinsertEnable = false;
@@ -601,6 +612,7 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').show();");
     }    
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////Fin Ajout des alignements de Wikidata////////////////////////
@@ -717,6 +729,7 @@ public class ImportFileBean implements Serializable {
                 loadJson(event, isCandidatImport);
                 break;
         }
+        PrimeFaces.current().executeScript("PF('waitDialog').hide()");
     }
 
     private void loadSkos(FileUploadEvent event, Boolean isCandidatImport) {

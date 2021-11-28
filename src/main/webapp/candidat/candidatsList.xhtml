@@ -68,11 +68,16 @@
             <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
                 <p:commandLink value="(#{listCandidats.idConcepte})" ajax="true" update="containerIndex" style="font-size: 13px; color: #43B572; "
                                actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
-            </p:column>  
+            </p:column>
+
             <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
                 <p:commandLink value="#{listCandidats.nomPref}" ajax="true" update="containerIndex" style="color: #43B572;"
                                process="@this" actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
-            </p:column> 
+            </p:column>
+
+            <p:column width="30" headerText="#{langueBean.getMsg('rightbody.concept.createdBy')}">
+                <h:outputText value="#{listCandidats.user}" />
+            </p:column>
 
             <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
                 <h:outputText value="#{listCandidats.creationDate}" />

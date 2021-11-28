@@ -21,9 +21,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-//import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.text.StringEscapeUtils;
-
 import org.primefaces.PrimeFaces;
 
 /**
@@ -161,7 +159,7 @@ public class NoteBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+                conceptBean.getNodeConcept().getConcept().getIdConcept());
 
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),

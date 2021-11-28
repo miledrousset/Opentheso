@@ -49,7 +49,7 @@
 
                 <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
                                  class="btn btn-primary" oncomplete="PF('addConceptAndChildToGroup').hide();"
-                                 actionListener="#{addConceptAndChildToGroupBean.addConceptAndChildToGroup()}" style="color: white;"/>
+                                 actionListener="#{addConceptAndChildToGroupBean.addConceptAndChildToGroup(currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
         </f:facet>
     </p:dialog> 

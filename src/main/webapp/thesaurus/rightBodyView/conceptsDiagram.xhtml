@@ -1,33 +1,32 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
-             xmlns:h="http://java.sun.com/jsf/html"
-             xmlns:b="http://bootsfaces.net/ui">
+             xmlns:h="http://java.sun.com/jsf/html">
 
-    <b:row style="margin-top: 20px">
-        <b:column medium-screen="6">
-            <b:row>
-                <b:column style="margin-left: 10px">
-                    <b:navCommandLink value="⬅ Retour" update="containerIndex" ajax="true" action= "#{tree.showDiagram(false)}"
+    <div class="row" style="margin-top: 20px">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-12" style="margin-left: 10px">
+                    <p:commandLink value="⬅ Retour" update="containerIndex" ajax="true" action= "#{tree.showDiagram(false)}"
                                       style="color: #F47B2A"  />
-                </b:column>
-            </b:row>
-        </b:column>
+                </div>
+            </div>
+        </div>
         
-        <b:column medium-screen="6">
+        <div class="col-6">
             <!-- Debut du panel du zoom -->
-            <b:row style="text-align: right; vertical-align: central">
-                <b:column medium-screen="5">
+            <div class="row" style="text-align: right; vertical-align: central">
+                <div class="col-5">
                     <h:outputText id="zomeText" style="float: right; font-weight: bold;" value="Zoom : 100%"/>
-                </b:column>
-                <b:column medium-screen="7" style="margin-top: 10px">
+                </div>
+                <div class="col-7" style="margin-top: 10px">
                     <input id="zoom" type="range" class="circleRange" min="0.1" max="1" value="1" step="0.1"
                            style="color: #F47B2A; width: 300px; -webkit-appearance: none; -moz-appearance: none;
                            background: #43B572; outline: none; height: 3px;"/>
-                </b:column>
-            </b:row>
-        </b:column>
-    </b:row>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <style type="text/css">
         .diagramPanel {
@@ -308,52 +307,50 @@
 
         <h:form id="conceptDdetailForm">  
 
-            <b:row>
-                <b:column medium-screen="6">
+            <div class="row">
+                <div class="col-6">
                     <h:outputText style="float: right; font-weight: bold;" value="Id concept : "/>
-                </b:column>
-                <b:column medium-screen="6">
+                </div>
+                <div class="col-6">
                     <h:outputText style="float: left;" value="#{conceptsDiagramBean.nodeConceptSelected.concept.idConcept}"/>
-                </b:column>
-            </b:row>
+                </div>
+            </div>
 
-            <b:row style="margin-top: 5px">
-                <b:column medium-screen="6">
+            <div class="row" style="margin-top: 5px">
+                <div class="col-6">
                     <h:outputText style="float: right; font-weight: bold;" value="Type : "/>
-                </b:column>
-                <b:column medium-screen="6">
+                </div>
+                <div class="col-6">
                     <h:outputText style="float: left;" value="#{conceptsDiagramBean.nodeConceptSelected.concept.status}"/>
-                </b:column>
-            </b:row>
+                </div>
+            </div>
 
-            <b:row style="margin-top: 5px">
-                <b:column medium-screen="6">
+            <div class="row" style="margin-top: 5px">
+                <div class="col-6">
                     <h:outputText style="float: right; font-weight: bold;" value="Utilisateur : "/>
-                </b:column>
-                <b:column medium-screen="6">
+                </div>
+                <div class="col-6">
                     <h:outputText style="float: left;" value="#{conceptsDiagramBean.nodeConceptSelected.concept.userName}"/>
-                </b:column>
-            </b:row>
+                </div>
+            </div>
 
-            <b:row style="margin-top: 5px">
-                <b:column medium-screen="6">
+            <div class="row" style="margin-top: 5px">
+                <div class="col-6">
                     <h:outputText style="float: right; font-weight: bold;" value="Date de création : "/>
-                </b:column>
-                <b:column medium-screen="6">
+                </div>
+                <div class="col-6">
                     <h:outputText style="float: left;" value="#{conceptsDiagramBean.nodeConceptSelected.concept.created}"/>
-                </b:column>
-            </b:row>
+                </div>
+            </div>
 
-            <b:row style="margin-top: 5px">
-                <b:column medium-screen="6">
+            <div class="row" style="margin-top: 5px">
+                <div class="col-6">
                     <h:outputText style="float: right; font-weight: bold;" value="Date de modification : "/>
-                </b:column>
-                <b:column medium-screen="6">
+                </div>
+                <div class="col-6">
                     <h:outputText style="float: left;" value="#{conceptsDiagramBean.nodeConceptSelected.concept.modified}"/>
-                </b:column>
-            </b:row>
-
+                </div>
+            </div>
         </h:form>
     </p:dialog>
-
 </ui:fragment>

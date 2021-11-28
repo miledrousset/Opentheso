@@ -179,6 +179,8 @@ public class SelectedTheso implements Serializable {
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("containerIndex");
             }
+        
+            menuBean.redirectToThesaurus();
 
             return;
         }
