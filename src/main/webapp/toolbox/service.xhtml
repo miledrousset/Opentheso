@@ -21,7 +21,7 @@
     </h:head>
 
 
-    <h:body id="page-top" style="font-size: 12px;">
+    <h:body id="page-top" onload="closeMenu()">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -41,17 +41,18 @@
 
             <div id="content-wrapper" style="width: 100%">
 
-                <div>
-                    <ui:include src="../commun/header.xhtml" />
-                </div>
+                <h:form id="containerIndex">
 
-                <div class="container-fluid">
-
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Boite à outils / <span style="color: #f47b2a">Maintenance</span></h1>
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
                     </div>
 
-                    <h:form id="containerIndex">
+                    <div class="container-fluid">
+
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Boite à outils / <span style="color: #f47b2a">Maintenance</span></h1>
+                        </div>
+
                         <div class="card shadow mb-4" style="height: 100%;"> 
                             <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
                                 <div class="row" style="margin-left: 30px; margin-right: 30px;">       
@@ -110,100 +111,100 @@
                                         <p:tab title="Correction 3 - Les identifiants Ark">
                                             <p class="p-m-0">
                                                 <!-- partie pour générer les identifiants Ark en local (identifiant basé sur l'Id interne)-->            
-                                            <div class="row" style="margin-top: 10px; margin-bottom: 10px">
-                                                <div class="col-12" >
-                                                    <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>   
-                                                    <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>
-                                                    <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>                    
+                                                <div class="row" style="margin-top: 10px; margin-bottom: 10px">
+                                                    <div class="col-12" >
+                                                        <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>   
+                                                        <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>
+                                                        <h:outputText value ="!!! Lire avec attention !!!" style="color: red; background-color: #FAEDE5"/>                    
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-3" >
-                                                    <h:outputText value ="*Naan: "/>
-                                                    <p:inputText  value="#{restoreTheso.naan}"  style="height: 22px;"/>
-                                                </div>   
-                                                <div class="col-3" >
-                                                    <h:outputText value ="Prefixe: "/>
-                                                    <p:inputText  value="#{restoreTheso.prefix}" style="height: 22px;"/>
-                                                </div>                 
-                                                <div class="col-5" >
-                                                    <h:outputText value ="!!!! Ecraser les Ark Existants? " style=" color: red; font-weight: bold"/>
-                                                    <p:toggleSwitch value="#{restoreTheso.overwrite}" style="height: 22px; font-size: 12px;"/>
-                                                </div>  
-                                            </div> 
-                                            <p:spacer/>
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
-                                                                     action="#{restoreTheso.generateArkFromConceptId(selectedTheso.currentIdTheso)}"
-                                                                     update="containerIndex messageIndex"/>        
+                                                <div class="row">
+                                                    <div class="col-3" >
+                                                        <h:outputText value ="*Naan: "/>
+                                                        <p:inputText  value="#{restoreTheso.naan}"  style="height: 22px;"/>
+                                                    </div>   
+                                                    <div class="col-3" >
+                                                        <h:outputText value ="Prefixe: "/>
+                                                        <p:inputText  value="#{restoreTheso.prefix}" style="height: 22px;"/>
+                                                    </div>                 
+                                                    <div class="col-5" >
+                                                        <h:outputText value ="!!!! Ecraser les Ark Existants? " style=" color: red; font-weight: bold"/>
+                                                        <p:toggleSwitch value="#{restoreTheso.overwrite}" style="height: 22px; font-size: 12px;"/>
+                                                    </div>  
+                                                </div> 
+                                                <p:spacer/>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
+                                                                         action="#{restoreTheso.generateArkFromConceptId(selectedTheso.currentIdTheso)}"
+                                                                         update="containerIndex messageIndex"/>        
+                                                    </div>
+                                                </div>             
+
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p:outputPanel deferred="true" >
+                                                            <h5>Permet de générer les identifiants Ark en se basant sur l'identifiant du concept</h5>
+                                                            <p> Pas de connexion à un serveur, les Identifiants Ark sont en local. <br/>
+                                                                les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
+                                                                exemple: Idconcept=300, prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndp300<br/>
+                                                            </p>
+                                                        </p:outputPanel>                
+                                                    </div>
                                                 </div>
-                                            </div>             
 
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <p:outputPanel deferred="true" >
-                                                        <h5>Permet de générer les identifiants Ark en se basant sur l'identifiant du concept</h5>
-                                                        <p> Pas de connexion à un serveur, les Identifiants Ark sont en local. <br/>
-                                                            les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
-                                                            exemple: Idconcept=300, prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndp300<br/>
-                                                        </p>
-                                                    </p:outputPanel>                
+                                                <!-- partie pour générer les identifiants Ark en local (identifiant Opaque)-->
+                                                <div class="row" style="margin-top: 10px; margin-bottom: 10px">
+                                                    <div class="col-12" >
+                                                        <h:outputText value ="!!! Pour ajuster les paramètres, aller dans /Paramètres/identifiant !!!" style="color: red; background-color: #FAEDE5"/>   
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                <p:spacer/> 
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <h:outputText value ="Naan: " style="font-size: 12px;"/>
+                                                        <h:outputText value ="#{roleOnTheso.nodePreference.naanArkLocal} " style="font-size: 12px;font-weight: bold; color: #f47b2a"/>
 
-                                            <!-- partie pour générer les identifiants Ark en local (identifiant Opaque)-->
-                                            <div class="row" style="margin-top: 10px; margin-bottom: 10px">
-                                                <div class="col-12" >
-                                                    <h:outputText value ="!!! Pour ajuster les paramètres, aller dans /Paramètres/identifiant !!!" style="color: red; background-color: #FAEDE5"/>   
+                                                        <h:outputText value =" / Prefixe: " style="height: 28px; font-size: 12px;"/>
+                                                        <h:outputText value =" #{roleOnTheso.nodePreference.prefixArkLocal} " style="font-size: 12px;font-weight: bold; color: #f47b2a"/>
+
+                                                        <h:outputText value =" / taille Id: " style="height: 28px; font-size: 12px;"/>
+                                                        <h:outputText value =" #{roleOnTheso.nodePreference.sizeIdArkLocal}" style="font-size: 12px;font-weight: bold; color: #f47b2a"/>                         
+                                                    </div>   
+
+                                                    <div class="col-6" >
+                                                        <h:outputText value ="!!!! Ecraser les Ark Existants? " style="color: red;  font-size: 12px; font-weight: bold"/>
+                                                        <p:toggleSwitch value="#{restoreTheso.overwriteLocalArk}" style="height: 22px; font-size: 12px;" />
+                                                    </div>  
+
+                                                </div> 
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
+                                                                         action="#{restoreTheso.generateArkLacal(selectedTheso.currentIdTheso, roleOnTheso.nodePreference)}"
+                                                                         update="containerIndex messageIndex"/>   
+                                                    </div>
+                                                </div>             
+
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p:outputPanel deferred="true" >
+                                                            <h5>Permet de générer les identifiants Ark en local en utilisant les paramètres prédéfinis</h5>
+                                                            <p> Pas de connexion à un serveur, les Identifiants Ark sont en local. <br/>
+                                                                les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
+                                                                exemple: Id=sxpzwkhfbm5gm9uje3qyrdj3uw96ccynx3se , prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndpsxpzwkhfbm5gm9uje3qyrdj3uw96ccynx3se <br/>
+                                                            </p>
+                                                        </p:outputPanel>                
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <p:spacer/> 
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <h:outputText value ="Naan: " style="font-size: 12px;"/>
-                                                    <h:outputText value ="#{roleOnTheso.nodePreference.naanArkLocal} " style="font-size: 12px;font-weight: bold; color: #f47b2a"/>
-
-                                                    <h:outputText value =" / Prefixe: " style="height: 28px; font-size: 12px;"/>
-                                                    <h:outputText value =" #{roleOnTheso.nodePreference.prefixArkLocal} " style="font-size: 12px;font-weight: bold; color: #f47b2a"/>
-
-                                                    <h:outputText value =" / taille Id: " style="height: 28px; font-size: 12px;"/>
-                                                    <h:outputText value =" #{roleOnTheso.nodePreference.sizeIdArkLocal}" style="font-size: 12px;font-weight: bold; color: #f47b2a"/>                         
-                                                </div>   
-
-                                                <div class="col-6" >
-                                                    <h:outputText value ="!!!! Ecraser les Ark Existants? " style="color: red;  font-size: 12px; font-weight: bold"/>
-                                                    <p:toggleSwitch value="#{restoreTheso.overwriteLocalArk}" style="height: 22px; font-size: 12px;" />
-                                                </div>  
-
-                                            </div> 
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
-                                                                     action="#{restoreTheso.generateArkLacal(selectedTheso.currentIdTheso, roleOnTheso.nodePreference)}"
-                                                                     update="containerIndex messageIndex"/>   
-                                                </div>
-                                            </div>             
-
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <p:outputPanel deferred="true" >
-                                                        <h5>Permet de générer les identifiants Ark en local en utilisant les paramètres prédéfinis</h5>
-                                                        <p> Pas de connexion à un serveur, les Identifiants Ark sont en local. <br/>
-                                                            les identifiants ne seront pas écrasés sauf si vous le forcez, le prefixe est facultatif <br/>
-                                                            exemple: Id=sxpzwkhfbm5gm9uje3qyrdj3uw96ccynx3se , prefixe=ndp et NAAN=66666 => on obtientun idArk= 66666/ndpsxpzwkhfbm5gm9uje3qyrdj3uw96ccynx3se <br/>
-                                                        </p>
-                                                    </p:outputPanel>                
-                                                </div>
-                                            </div>
                                             </p>
                                         </p:tab>
                                     </p:accordionPanel>
                                 </div>
                             </div>
                         </div> 
-                    </h:form>
-                </div>
+                    </div>
+                </h:form>
                 <ui:include src="../commun/footer.xhtml" />
             </div>
         </h:panelGroup>
