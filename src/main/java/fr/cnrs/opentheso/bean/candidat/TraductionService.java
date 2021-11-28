@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 @Named(value = "traductionService")
 @SessionScoped
@@ -149,6 +150,10 @@ public class TraductionService implements Serializable {
             messages.append("erreur pour :").append(newTraduction).append(" (").append(langage).append(")");
             messages.append('\n');
         }
+        
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
+        pf.ajax().update("containerIndex");
 
     }
 
@@ -169,6 +174,10 @@ public class TraductionService implements Serializable {
             Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
             candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
         }
+        
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
+        pf.ajax().update("containerIndex");
     }
 
     /**
@@ -250,6 +259,4 @@ public class TraductionService implements Serializable {
     public String getMessages() {
         return messages.toString();
     }
-
-
 }

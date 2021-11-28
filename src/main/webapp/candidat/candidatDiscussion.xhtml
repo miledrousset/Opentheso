@@ -9,7 +9,7 @@
         </div>
         <div class="col-6" style="text-align: right;">
             <p:commandButton actionListener="#{discussionService.reloadMessage()}"
-                             icon="fas fa-sync" class="btn btn-primary"
+                             icon="fas fa-sync" class="btn btn-primary" ajax="false"
                              update="containerIndex messageIndex" process="@this" />       
         </div>        
     </div>

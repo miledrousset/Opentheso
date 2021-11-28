@@ -22,153 +22,149 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class ProcessCandidateBean implements Serializable {
 
-    @Inject 
+    @Inject
     private Connect connect;
-    
-    @Inject 
+
+    @Inject
     private CandidatBean candidatBean;
 
     private CandidatDto selectedCandidate;
     private String adminMessage;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
+    }
+
+    public void clear() {
         selectedCandidate = null;
         adminMessage = null;
-    }    
-    
+    }
+
     public ProcessCandidateBean() {
     }
 
     public void reset(CandidatDto candidatSelected) {
         this.selectedCandidate = candidatSelected;
     }
-    
+
     public void insertCandidat(int idUser) {
-        if(selectedCandidate == null) {
+        if (selectedCandidate == null) {
             printErreur("Pas de candidat sélectionné");
             return;
         }
         CandidatService candidatService = new CandidatService();
 
-        if(!candidatService.insertCandidate(connect, selectedCandidate, adminMessage, idUser)) {
+        if (!candidatService.insertCandidate(connect, selectedCandidate, adminMessage, idUser)) {
             printErreur("Erreur d'insertion");
             return;
         }
         printMessage("Canditat inséré avec succès");
         reset(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
-        try { 
+        try {
             candidatBean.setIsListCandidatsActivate(true);
         } catch (IOException ex) {
             Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         candidatBean.initCandidatModule();
 
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        } 
+        pf.ajax().update("messageIndex");
+        pf.ajax().update("containerIndex:tabViewCandidat");
     }
-    
-    public void rejectCandidat(int idUser){
-        if(selectedCandidate == null) {
+
+    public void rejectCandidat(int idUser) {
+        if (selectedCandidate == null) {
             printErreur("Pas de candidat sélectionné");
             return;
         }
         CandidatService candidatService = new CandidatService();
 
-        if(!candidatService.rejectCandidate(connect, selectedCandidate, adminMessage, idUser)) {
+        if (!candidatService.rejectCandidate(connect, selectedCandidate, adminMessage, idUser)) {
             printErreur("Erreur d'insertion");
             return;
         }
         printMessage("Candidat(s) rejeté(s) avec succès");
         reset(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
-        try { 
+        try {
             candidatBean.setIsListCandidatsActivate(true);
         } catch (IOException ex) {
             Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         candidatBean.initCandidatModule();
-        
+
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }         
+        pf.ajax().update("messageIndex");
+        pf.ajax().update("containerIndex:tabViewCandidat");
     }
-    
+
     public void insertListCandidat(int idUser) {
-        if(candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
+        if (candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
             printErreur("Pas de candidat sélectionné");
             return;
         }
         CandidatService candidatService = new CandidatService();
 
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
-            if(!candidatService.insertCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
-                printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")" );
+            if (!candidatService.insertCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
+                printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
-            }            
+            }
         }
 
         printMessage("Canditats insérés avec succès");
         reset(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
-        try { 
+        try {
             candidatBean.setIsListCandidatsActivate(true);
         } catch (IOException ex) {
             Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void rejectCandidatList(int idUser){
-        if(candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
+
+    public void rejectCandidatList(int idUser) {
+        if (candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
             printErreur("Pas de candidat sélectionné");
             return;
         }
         CandidatService candidatService = new CandidatService();
 
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
-            if(!candidatService.rejectCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
-                printErreur("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")" );
+            if (!candidatService.rejectCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
+                printErreur("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
-            }            
-        }        
+            }
+        }
 
         printMessage("Candidats insérés avec succès");
-        reset(null);       
+        reset(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
-        try { 
+        try {
             candidatBean.setIsListCandidatsActivate(true);
         } catch (IOException ex) {
             Logger.getLogger(ProcessCandidateBean.class.getName()).log(Level.SEVERE, null, ex);
-        }     
-    }    
-    
+        }
+    }
 
     private void printErreur(String message) {
         FacesMessage msg;
         msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces pf = PrimeFaces.current();        
-        pf.ajax().update("messageIndex");           
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
     }
-    
+
     private void printMessage(String message) {
         FacesMessage msg;
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces pf = PrimeFaces.current();        
-        pf.ajax().update("messageIndex");          
-    }    
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
+    }
 
     public CandidatDto getSelectedCandidate() {
         return selectedCandidate;

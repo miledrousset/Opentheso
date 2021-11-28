@@ -29,10 +29,10 @@
             
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('deleteNote').hide();" update="deleteNoteForm"/>
+                                 actionListener="PF('deleteNote').hide();" update="containerIndex:idDeleteNote"/>
 
                 <p:commandButton class="btn btn-danger" title="Supprimer" oncomplete="PF('deleteNote').hide();"
-                                 update="deleteNoteForm containerIndex messageIndex"
+                                 update="containerIndex messageIndex" process="@this"
                                  actionListener="#{noteBeanCandidat.deleteNote(currentUser.nodeUser.idUser)}"/>
             </div>    
         </h:form>  

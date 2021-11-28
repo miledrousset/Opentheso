@@ -32,12 +32,12 @@
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('processCandidate').hide();" update="containerIndex:idProcessCandidate"/>
 
-                <p:commandButton class="btn btn-primary" title="Rejeter" style="margin-right: 10px"
-                                 update="containerIndex:idProcessCandidate containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
+                <p:commandButton class="btn btn-primary" title="Rejeter" style="margin-right: 10px" process="@this" ajax="false"
+                                 update="containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
                                  actionListener="#{processCandidateBean.rejectCandidat(currentUser.nodeUser.idUser)}" />
 
-                <p:commandButton class="btn btn-primary" title="Insérer"
-                                 update="containerIndex:idProcessCandidate containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
+                <p:commandButton class="btn btn-primary" title="Insérer" process="@this"
+                                 update="containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
                                  actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser)}"/>
             </div>
         </h:form>

@@ -73,6 +73,7 @@ public class CandidatBean implements Serializable {
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private List<CandidatDto> selectedCandidates;
     private boolean listSelected;
+    private boolean traductionVisible;
 
     @PreDestroy
     public void destroy(){
@@ -336,12 +337,7 @@ public class CandidatBean implements Serializable {
         allTermes = candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(candidatDto.getNomPref()))
                 .collect(Collectors.toList());
 
-//        domaines = candidatService.getDomainesList(connect, selectedTheso.getCurrentIdTheso(), languageBean.getIdLangue());
-
         setShowCandidatActivate(true);
-
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 
     public void setIsListCandidatsActivate(boolean isListCandidatsActivate) throws IOException {
@@ -479,10 +475,7 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
         
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        pf.ajax().update("containerIndex");
     }
 
     public ArrayList<NodeIdValue> searchCollection(String enteredValue) {
@@ -529,7 +522,7 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, "Vote enregistré");
 
         PrimeFaces.current().ajax().update("messageIndex");
-        PrimeFaces.current().ajax().update("containerIndex:panelCandidate:vote");
+        PrimeFaces.current().ajax().update("containerIndex:votePanel");
     }
 
     /**
@@ -887,6 +880,14 @@ public class CandidatBean implements Serializable {
 
     public void setListSelected(boolean listSelected) {
         this.listSelected = listSelected;
+    }
+
+    public boolean isTraductionVisible() {
+        return traductionVisible;
+    }
+
+    public void setTraductionVisible(boolean traductionVisible) {
+        this.traductionVisible = traductionVisible;
     }
 
 

@@ -162,26 +162,12 @@ public class SelectedTheso implements Serializable {
         viewEditorHomeBean.reset();
         if (isUriRequest) {
             isUriRequest = false;
+            menuBean.redirectToThesaurus();
             return;
         }
         
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
-            roleOnThesoBean.showListTheso();
-            treeGroups.reset();
-            tree.reset();
-            treeConcepts.reset();
-            listIndex.reset();
-            conceptBean.init();
-            init();
-            indexSetting.setIsSelectedTheso(false);
-            
-            PrimeFaces pf = PrimeFaces.current();
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex");
-            }
-        
             menuBean.redirectToThesaurus();
-
             return;
         }
         
@@ -190,6 +176,7 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
+            menuBean.redirectToThesaurus();
             return;
         }
 

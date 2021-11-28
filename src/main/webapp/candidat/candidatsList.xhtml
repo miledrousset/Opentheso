@@ -49,13 +49,13 @@
         </div>
 
         <!-- tableau des candidats -->
-        <p:dataTable var="listCandidats" value="#{candidatBean.candidatList}" paginator="true" rows="15"
+        <p:dataTable id="listCandidats" var="listCandidats" value="#{candidatBean.candidatList}" paginator="true" rows="15"
                      selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
                      emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}">
 
-            <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
-            <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
-            <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex" />
+            <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex:tabViewCandidat" />
+            <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex:tabViewCandidat" />
+            <p:ajax event="toggleSelect" listener="#{candidatBean.setStateForSelectedCandidate()}" update="containerIndex:tabViewCandidat" />
             
             <p:column rendered="#{(currentUser.nodeUser != null) and 
                                   (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"

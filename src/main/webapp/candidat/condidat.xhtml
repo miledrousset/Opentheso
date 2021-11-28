@@ -41,17 +41,19 @@
 
             <div id="content-wrapper" style="width: 100%">
 
-                <div>
-                    <ui:include src="../commun/header.xhtml" />
-                </div>
+                <h:form id="containerIndex">
 
-                <div class="container-fluid">
-
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">Candidat</span></h1>
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
                     </div>
 
-                    <h:form id="containerIndex">
+                    <div class="container-fluid">
+
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">Candidat</span></h1>
+                        </div>
+
+
                         <div class="col-12" style="height: 100%">
                             <div class="card shadow mb-4" style="height: 100%; margin: 20px; padding: 20px; color: #000">
                                 <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
@@ -95,8 +97,7 @@
                                                     <div class="col-12" style="align-content: center">
                                                         <p:commandButton title="#{langueBean.getMsg('candidat.submit')}" class="btn btn-primary"
                                                                          actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"
-                                                                         update="containerIndex:idProcessCandidate" process="@this"
-                                                                         oncomplete="PF('processCandidate').show();"/>
+                                                                         update="containerIndex:idProcessCandidate" oncomplete="PF('processCandidate').show();"/>
                                                     </div>
                                                 </div>
                                             </h:panelGroup>
@@ -129,9 +130,7 @@
                         <ui:include src="../candidat/dialog/editTraduction.xhtml" />
                         <ui:include src="../candidat/dialog/deleteTraduction.xhtml" />
 
-                        <ui:include src="../candidat/dialog/newNote.xhtml" />
                         <ui:include src="../candidat/dialog/deleteNote.xhtml" />
-                        <ui:include src="../candidat/dialog/editNote.xhtml" />
 
                         <ui:include src="../candidat/dialog/participantsList.xhtml" /> 
                         <ui:include src="../candidat/dialog/envoyerInvitation.xhtml" />
@@ -142,10 +141,10 @@
                         <ui:include src="../dialog/alignment/addManualAlignment.xhtml" />
                         <ui:include src="../dialog/alignment/deleteAlignment.xhtml" />
                         <ui:include src="../dialog/alignment/updateAlignment.xhtml" />
-                        
-                    </h:form>
-                </div>
-                        <ui:include src="../commun/footer.xhtml" />
+
+                    </div>
+                    <ui:include src="../commun/footer.xhtml" />
+                </h:form>
             </div>
         </h:panelGroup> 
     </h:body>

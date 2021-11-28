@@ -308,15 +308,16 @@ public class NoteBeanCandidat implements Serializable {
             Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("candidatForm:listNotesForm");
-        }
-
         noteBeanCandidat.setVisible(false);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("candidatForm");
+        }
     }
     
     /*
