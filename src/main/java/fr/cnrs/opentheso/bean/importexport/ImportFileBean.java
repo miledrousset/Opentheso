@@ -750,6 +750,7 @@ public class ImportFileBean implements Serializable {
                 
                 for (NodeAlignmentSmall nodeAlignmentSmall : nodeAlignmentImport.getNodeAlignmentSmalls()) {
                     if(nodeAlignmentSmall == null) continue;
+                    if(nodeAlignmentSmall.getUri_target() == null || nodeAlignmentSmall.getUri_target().isEmpty()) continue;
                     nodeAlignment.setId_author(currentUser.getNodeUser().getIdUser());
                     nodeAlignment.setConcept_target("");
                     nodeAlignment.setThesaurus_target(nodeAlignmentSmall.getSource());
