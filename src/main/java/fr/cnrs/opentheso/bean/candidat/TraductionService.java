@@ -24,9 +24,13 @@ import org.primefaces.PrimeFaces;
 @Named(value = "traductionService")
 @SessionScoped
 public class TraductionService implements Serializable {
-    @Inject private CandidatBean candidatBean;
-    @Inject private LanguageBean languageBean;
-    @Inject private SelectedTheso selectedTheso;
+
+    @Inject
+    private CandidatBean candidatBean;
+    @Inject
+    private LanguageBean languageBean;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private String langage;
     private String traduction;
@@ -36,26 +40,26 @@ public class TraductionService implements Serializable {
 
     private String newLangage;
     private String newTraduction;
-    
-    
+
     private ArrayList<NodeLangTheso> nodeLangs;
     private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits    
-    
+
     private StringBuilder messages;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
-        if(nodeLangs!= null){
+    }
+
+    public void clear() {
+        if (nodeLangs != null) {
             nodeLangs.clear();
             nodeLangs = null;
-        } 
-        if(nodeLangsFiltered!= null){
+        }
+        if (nodeLangsFiltered != null) {
             nodeLangsFiltered.clear();
             nodeLangsFiltered = null;
-        }         
+        }
         langage = null;
         traduction = null;
         langageOld = null;
@@ -63,8 +67,8 @@ public class TraductionService implements Serializable {
         newLangage = null;
         newTraduction = null;
         messages = null;
-    }       
-    
+    }
+
     public TraductionService() {
         langage = null;
         traduction = null;
@@ -73,7 +77,8 @@ public class TraductionService implements Serializable {
 
     /**
      * set pour la modification d'une tradcution
-     * @param traductionDto 
+     *
+     * @param traductionDto
      */
     public void init(TraductionDto traductionDto) {
         langage = traductionDto.getLangue();
@@ -82,24 +87,24 @@ public class TraductionService implements Serializable {
         langageOld = langage;
         traductionOld = traduction;
     }
-    
+
     /**
      * set pour une nouvelle traduction
      */
     public void init() {
         newLangage = "";
         newTraduction = "";
-        nodeLangsFiltered = new ArrayList<>();        
+        nodeLangsFiltered = new ArrayList<>();
         initLanguages();
     }
-    
-    private void initLanguages(){
+
+    private void initLanguages() {
         nodeLangs = selectedTheso.getNodeLangs();
 
         nodeLangs.forEach((nodeLang) -> {
             nodeLangsFiltered.add(nodeLang);
         });
-       
+
         // les langues à ignorer
         ArrayList<String> langsToRemove = new ArrayList<>();
         langsToRemove.add(candidatBean.getCandidatSelected().getLang());
@@ -107,25 +112,22 @@ public class TraductionService implements Serializable {
             langsToRemove.add(traductionDto.getLangue());
         }
         for (NodeLangTheso nodeLang : nodeLangs) {
-            if(langsToRemove.contains(nodeLang.getCode())) {
+            if (langsToRemove.contains(nodeLang.getCode())) {
                 nodeLangsFiltered.remove(nodeLang);
             }
         }
 
-    }        
+    }
 
-    public void addTraductionCandidat(){
+    public void addTraductionCandidat() {
         TermHelper termHelper = new TermHelper();
-        
-        if(termHelper.isTermExistIgnoreCase(candidatBean.getConnect().getPoolConnexion(),
-                newTraduction,
-                candidatBean.getCandidatSelected().getIdThesaurus(),
-                newLangage)) {
-            candidatBean.showMessage(FacesMessage.SEVERITY_ERROR,  "Un label identique existe déjà dans le thésaurus");    
-            messages.append("label existe pour :").append(candidatBean.getCandidatSelected().getIdConcepte())
+
+        if (termHelper.isTermExistIgnoreCase(candidatBean.getConnect().getPoolConnexion(), newTraduction,
+                candidatBean.getCandidatSelected().getIdThesaurus(), newLangage)) {
+            messages = new StringBuilder();
+            messages.append("Un label existe dans le thésaurus pour : ").append(candidatBean.getCandidatSelected().getIdConcepte())
                     .append("#").append(newTraduction).append(" (").append(langage).append(")");
-            messages.append('\n');
-            
+            candidatBean.showMessage(FacesMessage.SEVERITY_ERROR, messages.toString());
             return;
         }
         TermeDao termeDao = new TermeDao();
@@ -142,15 +144,15 @@ public class TraductionService implements Serializable {
         try {
             termeDao.addNewTerme(candidatBean.getConnect().getPoolConnexion(), term);
             candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));            
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));
         } catch (SQLException | IOException ex) {
             Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
             candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
-            
+
             messages.append("erreur pour :").append(newTraduction).append(" (").append(langage).append(")");
             messages.append('\n');
         }
-        
+
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
         pf.ajax().update("containerIndex");
@@ -158,8 +160,7 @@ public class TraductionService implements Serializable {
     }
 
     /**
-     * permet de supprimer une tradcution
-     * #MR
+     * permet de supprimer une tradcution #MR
      */
     public void deleteTraduction() {
         TermeDao termeDao = new TermeDao();
@@ -169,20 +170,19 @@ public class TraductionService implements Serializable {
                     langage,
                     candidatBean.getCandidatSelected().getIdThesaurus());
             candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));            
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));
         } catch (SQLException | IOException ex) {
             Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
             candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
         }
-        
+
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
         pf.ajax().update("containerIndex");
     }
 
     /**
-     * permet de modifier une traduction
-     * #MR
+     * permet de modifier une traduction #MR
      */
     public void updateTraduction() {
         TermeDao termeDao = new TermeDao();
@@ -192,12 +192,16 @@ public class TraductionService implements Serializable {
                     candidatBean.getCandidatSelected().getIdTerm(),
                     candidatBean.getCandidatSelected().getIdThesaurus(),
                     langage);
-            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());            
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO,  languageBean.getMsg("candidat.traduction.msg3"));            
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg3"));
         } catch (SQLException | IOException ex) {
             Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
             candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
-        }        
+        }
+
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
+        pf.ajax().update("containerIndex");
     }
 
     public String getLangage() {

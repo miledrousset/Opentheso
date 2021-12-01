@@ -31,7 +31,7 @@
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('confirmDeleteTraduction').hide();" update="confirmDeleteForm"/>
 
-                <p:commandButton class="btn btn-danger" title="Supprimer"
+                <p:commandButton class="btn btn-danger" title="Supprimer" process="@this" ajax="false"
                                  oncomplete="PF('confirmDeleteTraduction').hide();"
                                  update="containerIndex messageIndex"
                                  actionListener="#{traductionService.deleteTraduction()}" />

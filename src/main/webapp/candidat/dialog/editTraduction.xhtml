@@ -7,8 +7,7 @@
     <p:dialog id="idEditTraduction" header="Modifier une traduction" widgetVar="editTraduction" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
 
-        <h:form id="editTraductionForm">
-
+        <p:outputPanel id="manage-traduction-content" class="ui-fluid">
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
                     <h:outputText value="Langage" style="font-weight: bold;"/>
@@ -27,15 +26,14 @@
                 </div>
             </div>
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('editTraduction').hide();"/>
+            <div style="width: 100%; text-align: right; margin-top: 20px; margin-bottom: 5px;">
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" 
+                                 update="idEditTraduction" actionListener="PF('editTraduction').hide();"/>
 
                 <p:commandButton class="btn btn-primary" title="Modifier"
-                                 oncomplete="PF('editTraduction').hide();"
-                                 update="containerIndex messageIndex"
+                                 oncomplete="PF('editTraduction').hide();" update="containerIndex messageIndex"
                                  actionListener="#{traductionService.updateTraduction()}"/>
             </div>
-        </h:form>
+        </p:outputPanel>
     </p:dialog>   
 </ui:fragment>

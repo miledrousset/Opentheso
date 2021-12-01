@@ -108,7 +108,7 @@
         <!-- Validation et enregistrement des nouvelles données ci-dessus -->
         <div class="row" style="margin-top: 10px">
             <div class="col-12" style="text-align: right" >
-                <p:commandButton title="#{langueBean.getMsg('candidat.save')}" ajax="false" process="@this"
+                <p:commandButton title="#{langueBean.getMsg('candidat.save')}"
                                  class="btn btn-primary" actionListener="#{candidatBean.saveConcept()}"
                                  update="containerIndex messageIndex" />
             </div>
@@ -233,7 +233,7 @@
         <!-- gestion des traductions -->
         <div class="row" style="margin-top: 20px">
             <div class="col-12">
-                <p:commandLink value="Ajouter une nouvelle traduction" update="containerIndex:newTraductionForm"
+                <p:commandLink value="Ajouter une nouvelle traduction" update="containerIndex:idNewTraduction"
                                oncomplete="PF('newTraduction').show();" actionListener="#{traductionService.init()}">
                     <a class="fas fa-plus-circle" style="color: #f47b2a" />
                 </p:commandLink>
@@ -274,10 +274,12 @@
                         <h:outputText value="#{traduction.traduction}"/>
                     </div>
                     <div class="col-2">
-                        <p:commandLink oncomplete="PF('editTraduction').show();" actionListener="#{traductionService.init(traduction)}"
-                                       update="containerIndex:idEditTraduction containerIndex:editTraductionForm">
-                            <a class="fas fa-pencil-alt" style="color: #f47b2a" />
-                        </p:commandLink>
+                        <p:commandButton icon="pi pi-pencil" update=":containerIndex:manage-traduction-content"
+                                         oncomplete="PF('editTraduction').show();" style="width: 25px; height: 25px;"
+                                         actionListener="#{traductionService.init(traduction)}" process="@this"
+                                         styleClass="edit-button rounded-button ui-button-success">
+                            <p:resetInput target=":containerIndex:manage-traduction-content"/>
+                        </p:commandButton>
                     </div>
 
                     <div class="col-2">

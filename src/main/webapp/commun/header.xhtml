@@ -119,7 +119,7 @@
                                  actionListener="PF('addFacet').hide();" update="logoutID"/>
 
                 <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}" 
-                                 update="containerIndex messageIndex" 
+                                 update="containerIndex messageIndex" process="@this"
                                  style="color: white;"
                                  actionListener="#{currentUser.disconnect()}"/>
             </div>

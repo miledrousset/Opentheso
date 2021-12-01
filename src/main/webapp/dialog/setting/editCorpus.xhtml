@@ -9,7 +9,7 @@
 
         <p:outputPanel id="manage-product-content" class="ui-fluid">
             <p:outputPanel rendered="#{not empty corpusBean.nodeCorpusForEdit}">
-                
+
                 <div class="row">
                     <div class="col-5" >
                         <p:outputLabel value="Nom"/>
@@ -53,16 +53,14 @@
             </p:outputPanel>
         </p:outputPanel>
 
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('editCorpus').hide();" update="idEditCorpus"/>
+            <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                             actionListener="PF('editCorpus').hide();" update="idEditCorpus"/>
 
-                <p:commandButton title="Enregistrer" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('editCorpus').hide();"
-                                 actionListener="#{corpusBean.updateCorpus()}" />
-            </div>                    
-        </f:facet>
+            <p:commandButton title="Enregistrer" update="containerIndex messageIndex"
+                             class="btn btn-primary" oncomplete="PF('editCorpus').hide();"
+                             actionListener="#{corpusBean.updateCorpus()}" />
+        </div>   
     </p:dialog>  
 </ui:fragment>

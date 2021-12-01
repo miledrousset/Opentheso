@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
+import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
@@ -40,6 +41,7 @@ public class SessionControl implements Serializable {
     @Inject private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
     @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private IndexSetting indexSetting;
+    @Inject private MenuBean menuBean;
     
     public void isTimeout() throws IOException {
 
@@ -74,7 +76,8 @@ public class SessionControl implements Serializable {
         System.gc();
         System.gc();
         System.runFinalization ();
-       
+        
+        menuBean.redirectToThesaurus();
     }
 
     public void clearComponent() {

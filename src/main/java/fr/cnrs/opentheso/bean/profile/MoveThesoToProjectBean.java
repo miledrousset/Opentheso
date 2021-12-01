@@ -112,7 +112,7 @@ public class MoveThesoToProjectBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
+            pf.ajax().update("containerIndex:contenu");
         }
     }
     
