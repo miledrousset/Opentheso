@@ -9,7 +9,9 @@ import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
+import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.sql.Connection;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ActionEvent;
@@ -114,11 +117,168 @@ public class ImportFileBean implements Serializable {
     private String selectedLang;
 
     private boolean haveError;
+    
+    private boolean clearNoteBefore;
 
     @PreDestroy
     public void destroy() {
         clearMemory();
     }
+    
+    
+///////////////////////////////////////////////////////////////////////////////
+///////////////// Fonctions pour importer des données en CSV //////////////////
+///////////////// L'ajout des données se fait en fusion  //////////////////////
+///////////////////////////////////////////////////////////////////////////////    
+    
+    /**
+     * permet d'ajouter une liste de notes en CSV au thésaurus
+     *
+     */
+    public void addNoteList() {
+        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
+            warning = "pas de thésaurus sélectionné";
+            return;
+        }
+        if (conceptObjects == null || conceptObjects.isEmpty()) {
+            return;
+        }
+        if (importInProgress) {
+            return;
+        }
+        initError();
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+        NoteHelper noteHelper = new NoteHelper();
+        TermHelper termHelper = new TermHelper();
+                
+        String idTerm;
+        try {
+            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(),
+                        conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());   
+                if(idTerm == null){
+                    continue;
+                }
+                if(clearNoteBefore) {
+                    try (Connection conn = connect.getPoolConnexion().getConnection()) {
+                        conn.setAutoCommit(false);
+                        if(!noteHelper.deleteNotesOfConcept(conn, conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+                            conn.rollback();
+                        } else
+                            conn.commit();
+                    } catch (Exception e) {
+                        error.append("erreur de suppression: ");
+                        error.append(conceptObject.getIdConcept());
+                    }
+                    try (Connection conn = connect.getPoolConnexion().getConnection()) {
+                        conn.setAutoCommit(false);
+                        if(!noteHelper.deleteNotesOfTerm(conn, idTerm, selectedTheso.getCurrentIdTheso())) {
+                            conn.rollback();
+                        } else
+                            conn.commit();
+                    } catch (Exception e) {
+                        error.append("erreur de suppression: ");
+                        error.append(idTerm);
+                    } 
+                }
+                
+                //definition
+                for (CsvReadHelper.Label definition : conceptObject.getDefinitions()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), definition.getLang(),
+                            definition.getLabel(), "definition")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, definition.getLang(),
+                                selectedTheso.getCurrentIdTheso(), definition.getLabel(), "definition", -1);
+                        total++;
+                    }
+                }
+                // historyNote
+                for (CsvReadHelper.Label historyNote : conceptObject.getHistoryNotes()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), historyNote.getLang(),
+                            historyNote.getLabel(), "historyNote")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, historyNote.getLang(),
+                                selectedTheso.getCurrentIdTheso(), historyNote.getLabel(), "historyNote", -1);
+                        total++;
+                    }
+                }                
+                // changeNote
+                for (CsvReadHelper.Label changeNote : conceptObject.getChangeNotes()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), changeNote.getLang(),
+                            changeNote.getLabel(), "changeNote")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, changeNote.getLang(),
+                                selectedTheso.getCurrentIdTheso(), changeNote.getLabel(), "changeNote", -1);
+                        total++;
+                    }
+                }                
+                // editorialNote
+                for (CsvReadHelper.Label editorialNote : conceptObject.getEditorialNotes()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), editorialNote.getLang(),
+                            editorialNote.getLabel(), "editorialNote")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, editorialNote.getLang(),
+                                selectedTheso.getCurrentIdTheso(), editorialNote.getLabel(), "editorialNote", -1);
+                        total++;
+                    }
+                }                  
+                // example
+                for (CsvReadHelper.Label example : conceptObject.getExamples()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                            selectedTheso.getCurrentIdTheso(), example.getLang(),
+                            example.getLabel(), "example")) {
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, example.getLang(),
+                                selectedTheso.getCurrentIdTheso(), example.getLabel(), "example", -1);
+                        total++;
+                    }
+                }                 
+                
+                //pour Concept
+                // note
+                for (CsvReadHelper.Label note : conceptObject.getNote()) {
+                    if(!noteHelper.isNoteExistOfConcept(connect.getPoolConnexion(),
+                            conceptObject.getIdConcept(),
+                            selectedTheso.getCurrentIdTheso(), note.getLang(),
+                            note.getLabel(), "note")) {
+                        noteHelper.addConceptNote(connect.getPoolConnexion(), 
+                                conceptObject.getIdConcept(), note.getLang(),
+                                selectedTheso.getCurrentIdTheso(), note.getLabel(), "note", -1);
+                        total++;
+                    }
+                }                 
+                // scopeNote
+                for (CsvReadHelper.Label scopeNote : conceptObject.getScopeNotes()) {
+                    if(!noteHelper.isNoteExistOfConcept(connect.getPoolConnexion(),
+                            conceptObject.getIdConcept(),
+                            selectedTheso.getCurrentIdTheso(), scopeNote.getLang(),
+                            scopeNote.getLabel(), "scopeNote")) {
+                        noteHelper.addConceptNote(connect.getPoolConnexion(), 
+                                conceptObject.getIdConcept(), scopeNote.getLang(),
+                                selectedTheso.getCurrentIdTheso(), scopeNote.getLabel(), "scopeNote", -1);
+                        total++;
+                    }
+                }                 
+             
+                progressStep++;
+                progress = progressStep / total * 100;
+            }
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            info = "import réussie, notes importées = " + (int)total;            
+            total = 0; 
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+    }    
 
     private void clearMemory() {
         if (conceptObjects != null) {
@@ -156,6 +316,7 @@ public class ImportFileBean implements Serializable {
         choiceDelimiter = 0;
         delimiterCsv = ',';
         haveError = false;
+        clearNoteBefore = false;
         progress = 0;
         progressStep = 0;
         info = "";
@@ -1258,6 +1419,14 @@ public class ImportFileBean implements Serializable {
 
     public void setHaveError(boolean haveError) {
         this.haveError = haveError;
+    }
+
+    public boolean isClearNoteBefore() {
+        return clearNoteBefore;
+    }
+
+    public void setClearNoteBefore(boolean clearNoteBefore) {
+        this.clearNoteBefore = clearNoteBefore;
     }
 
 }

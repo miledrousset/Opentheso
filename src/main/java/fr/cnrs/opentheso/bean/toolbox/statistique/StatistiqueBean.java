@@ -43,7 +43,7 @@ public class StatistiqueBean implements Serializable {
     @Inject private SelectedTheso selectedTheso;
     @Inject private LanguageBean languageBean;
 
-    private boolean selectLanguageVisible, genericTypeVisible, conceptTypeVisible;
+    private boolean genericTypeVisible, conceptTypeVisible;
     private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;
     private int nbrCanceptByThes;
     private Date dateDebut, dateFin, derniereModification;
@@ -54,7 +54,6 @@ public class StatistiqueBean implements Serializable {
     private List<ConceptStatisticData> conceptStatistic;
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<DomaineDto> groupList;
-    private boolean statisticTypeEnable, statisticLangEnable;
 
     private List<String> colors = new ArrayList<>(List.of("rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"));
 
@@ -92,12 +91,8 @@ public class StatistiqueBean implements Serializable {
     
     public void init() {
 
-        selectLanguageVisible = false;
         genericTypeVisible = false;
         conceptTypeVisible = false;
-
-        statisticTypeEnable = false;
-        statisticLangEnable = false;
 
         genericStatistiques = new ArrayList<>();
         conceptStatistic = new ArrayList<>();
@@ -182,7 +177,6 @@ public class StatistiqueBean implements Serializable {
             initChamps();
         }
 
-        selectLanguageVisible = true;
         genericTypeVisible = false;
         conceptTypeVisible = false;
     }
@@ -220,7 +214,6 @@ public class StatistiqueBean implements Serializable {
     public void onSelectLanguageType() throws SQLException {
         onSelectStatType();
         clearFilter();
-        selectLanguageVisible = true;
 
         if ("0".equals(selectedStatistiqueTypeCode)) {
 
@@ -343,10 +336,6 @@ public class StatistiqueBean implements Serializable {
         this.selectedLanguage = selectedLanguage;
     }
 
-    public boolean isSelectLanguageVisible() {
-        return selectLanguageVisible;
-    }
-
     public boolean isGenericTypeVisible() {
         return genericTypeVisible;
     }
@@ -410,21 +399,4 @@ public class StatistiqueBean implements Serializable {
     public ConceptStatisticData getCanceptStatistiqueSelected() {
         return canceptStatistiqueSelected;
     }
-
-    public boolean isStatisticTypeEnable() {
-        return statisticTypeEnable;
-    }
-
-    public void setStatisticTypeEnable(boolean statisticTypeEnable) {
-        this.statisticTypeEnable = statisticTypeEnable;
-    }
-
-    public boolean isStatisticLangEnable() {
-        return statisticLangEnable;
-    }
-
-    public void setStatisticLangEnable(boolean statisticLangEnable) {
-        this.statisticLangEnable = statisticLangEnable;
-    }
-
 }
