@@ -533,6 +533,7 @@ public class Tree implements Serializable {
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
+        PrimeFaces.current().executeScript("srollToSelected();");        
     }
 
     // deselectionner et fermer toutes les noeds de l'arbres

@@ -429,7 +429,51 @@ public class DragAndDrop implements Serializable {
         reset();
         dragNode = (TreeNode) event.getDragNode();
         dropNode = (TreeNode) event.getDropNode();
-        FacesMessage msg;  
+        
+        FacesMessage msg;   
+        
+        // à corriger pour traiter le déplacement des facettes par Drag and Drop
+        if("facet".equalsIgnoreCase(dragNode.getType())){
+        
+            new FacetHelper().updateFacetParent(connect.getPoolConnexion(),
+                    ((TreeNodeData) dropNode.getData()).getNodeId(),//termeParentAssocie.getId(),
+                    ((TreeNodeData) dragNode.getData()).getNodeId(),//facetSelected.getIdFacet(),
+                    selectedTheso.getCurrentIdTheso());
+
+            //facetSelected.setIdConceptParent(termeParentAssocie.getId());
+
+            //showMessage(FacesMessage.SEVERITY_INFO, "Concept parent modifié avec sucée !");
+
+            tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+            tree.expandTreeToPath2(
+                    ((TreeNodeData) dropNode.getParent().getData()).getNodeId(),//facetSelected.getIdConceptParent(),
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getSelectedLang(),
+                    ((TreeNodeData) dragNode.getData()).getNodeId() + "");//facetSelected.getIdFacet()+"");
+
+            /*concepParent = new ConceptHelper().getConcept(connect.getPoolConnexion(),
+                    termeParentAssocie.getId(),
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang());
+
+            conceptParentTerme = concepParent.getTerm().getLexical_value();
+            */
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("formRightTab:facetView");
+                pf.ajax().update("formLeftTab:tabTree:tree");
+            }        
+        
+        
+        
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Fécette déplacée avec succès !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        /*    rollBackAfterErrorOrCancelDragDrop();
+            updateMessage();*/
+            return;
+        }
+        
+
         ConceptHelper conceptHelper = new ConceptHelper();
         nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
                 ((TreeNodeData) dragNode.getData()).getNodeId(),
