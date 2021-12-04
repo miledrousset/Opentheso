@@ -5,129 +5,106 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idDeleteListAlignmentCsv" header="Supprimer une liste d'alignement" widgetVar="deleteListAlignmentCsv" 
-              modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" >         
+              modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" > 
+        <h:panelGroup id="deleteListAlignmentCsvForm">             
 
-        <h:panelGroup id="deleteListAlignmentCsvForm">   
-            <p:panel style="height: 450px; margin-top: -20px; margin-left: -20px">
-                <div class="row">                
-                    <div class="col-12" >
-                        <fieldset>
-                            <p:scrollPanel mode="native" style="max-width: 550px; height: 100%; border-width: 0">
-                                <p:panelGrid >
-                                    <f:facet name="header">
-                                        <p:row>
-                                            <p:column colspan="1">uri</p:column>
-                                            <p:column colspan="1">localId</p:column>
-                                        </p:row>
-                                    </f:facet>
-                                    <p:row>
-                                        <p:column>https://www.wikidata.org/wiki/Q65955</p:column>
-                                        <p:column>26678/crtcg26jeN4R9</p:column>
-                                    </p:row>
-                                </p:panelGrid>    
-                                <p:spacer/>
-                            </p:scrollPanel>                                  
-                            <br/>
-                            <p:outputPanel deferred="true">
-                                <p>
-                                    Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
-                                    Si l'identifiant n'existe pas dans le thésaurus, l'alignement sera ignoré.<br/>
-                                    Si le concept a cet alignement, il sera supprimé <br/>
-                                </p>
-                            </p:outputPanel>
-                            <p:spacer/>
-
-                        </fieldset>
-                    </div>  
-                </div>
-
-                <!-- choix du l'identifiant Ark ou Id ou Handle -->
+            <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px">
                 <div class="row">
                     <div class="col-3" offset="5">
-                        <h:outputText value="L'identifiant est de type:" style="font-size: 12px;" />
+                        <h:outputText value="URI :"  style="color: #000; " />
                     </div>
-                    <div class="col-3">
-                        <p:selectOneMenu value="#{importFileBean.selectedIdentifier}" 
-                                         styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 100%; background: none;  box-shadow: none;" title="Choix de l'identifiant pour détecter le concept">
-                            <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
-                            <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
-                            <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
-                        </p:selectOneMenu>
-                    </div>
-                </div>                
-
-                <!-- délimiteur CSV -->
-                <div class="row">
-                    <div class="col-3" offset="5">
-                        <h:outputText value="Délimiteur Csv :" style="font-size: 12px;" />
-                    </div>
-                    <div class="col-3">
-                        <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" 
-                                         styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 100%; background: none;  box-shadow: none; ">
-                            <f:selectItem itemLabel="," itemValue="0" />
-                            <f:selectItem itemLabel=";" itemValue="1" />
-                            <f:selectItem itemLabel="\t" itemValue="2" />
-                            <p:ajax event="change" listener="#{importFileBean.actionChoice()}"  />
-                        </p:selectOneMenu>
+                    <div class="col-7">
+                        <h:outputLabel value="https://www.wikidata.org/wiki/Q65955"  style="color: #000; " />
                     </div>
                 </div>
-
-                <p:spacer/>            
-
-                <h:panelGroup id="panelDeleteListAlignCsv">
-                    <!-- Choix du fichier -->   
-                    <div class="row" style="margin-left: 30px; margin-right: 30px; ">
-                        <div class="col-12" > 
-                            <p:fileUpload listener="#{importFileBean.loadFileAlignmentCsvToDelete}" 
-                                          label="parcourir" 
-                                          mode="advanced" auto="true"
-                                          allowTypes="/(\.|\/)(csv|txt)$/"
-                                          update="deleteListAlignmentCsvForm" disabled="#{importFileBean.loadDone}"
-                                          style="font-size: 12px;" />  
-                        </div>
-                    </div> 
-                    <p:spacer/>
-                    <h:panelGroup rendered="#{importFileBean.loadDone}">
-                        <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                            <div class="col-5">
-                                <h:outputText value="URI: " />
-                                <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                            <div class="col-5">
-                                <h:outputText value="Total des concepts: " />
-                                <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <div class="row">
-                        <div class="col-4" offset="1"> 
-                            <p:commandButton icon="fas fa-undo"  
-                                             value="#{langueBean.getMsg('btnBack')}"
-                                             class="btn btn-success"
-                                             style="width: 100%; background-color: #FFC107; color: black; border: none;"
-                                             action="#{importFileBean.init()}"
-                                             update="idDeleteListAlignmentCsv"
-                                             oncomplete="PF('deleteListAlignmentCsv').hide();" />
-                        </div>
-                        <div class="col-4" offset="2" > 
-                            <p:commandButton  class="btn btn-success" widgetVar="buttonImportCsv"
-                                              icon="fas fa-check-circle fas 2x"
-                                              update="panelDeleteListAlignCsv"
-                                              style="width: 100%; background-color: #5CB85C; border: none;"
-                                              actionListener="#{importFileBean.deleteAlignmentFromCsv()}"
-                                              ajax="true"
-                                              value="Supprimer"
-                                              disabled="#{!importFileBean.loadDone}" />        
-                        </div> 
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-3" offset="5">
+                        <h:outputText value="Local ID :" style="color: #000; " />
                     </div>
-                    <p:spacer/>
-                </h:panelGroup>
+                    <div class="col-7">
+                        <h:outputLabel value="26678/crtcg26jeN4R9"  style="color: #000; " />
+                    </div>
+                </div>
             </p:panel>
+
+            <p:outputPanel deferred="true" style="margin-top: 10px; color: #000; border: 1px solid #43B572; border-radius: 10px; padding: 10px">
+                Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
+                Si l'identifiant n'existe pas dans le thésaurus, l'alignement sera ignoré.<br/>
+                Si le concept a cet alignement, il sera supprimé.
+            </p:outputPanel>
+
+            <!-- choix du l'identifiant Ark ou Id ou Handle -->
+            <div class="row" style="margin-top: 10px">
+                <div class="col-5" offset="5">
+                    <h:outputText value="L'identifiant est de type:" />
+                </div>
+                <div class="col-7">
+                    <p:selectOneMenu value="#{importFileBean.selectedIdentifier}" 
+                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                     style="width: 100%; background: none;  box-shadow: none;" title="Choix de l'identifiant pour détecter le concept">
+                        <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
+                        <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
+                        <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
+                    </p:selectOneMenu>
+                </div>
+            </div>                
+
+            <!-- délimiteur CSV -->
+            <div class="row" style="margin-top: 10px">
+                <div class="col-5" offset="5">
+                    <h:outputText value="Délimiteur Csv :" />
+                </div>
+                <div class="col-7">
+                    <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" 
+                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                     style="width: 100%; background: none;  box-shadow: none; ">
+                        <f:selectItem itemLabel="," itemValue="0" />
+                        <f:selectItem itemLabel=";" itemValue="1" />
+                        <f:selectItem itemLabel="\t" itemValue="2" />
+                        <p:ajax event="change" listener="#{importFileBean.actionChoice()}"  />
+                    </p:selectOneMenu>
+                </div>
+            </div>        
+
+            <h:panelGroup id="panelDeleteListAlignCsv">
+                <!-- Choix du fichier -->   
+                <div class="row" style="margin-left: 30px; margin-right: 30px; ">
+                    <div class="col-12" > 
+                        <p:fileUpload listener="#{importFileBean.loadFileAlignmentCsvToDelete}" 
+                                      label="parcourir" 
+                                      mode="advanced" auto="true"
+                                      allowTypes="/(\.|\/)(csv|txt)$/"
+                                      update="deleteListAlignmentCsvForm" disabled="#{importFileBean.loadDone}"
+                                      style="font-size: 12px;" />  
+                    </div>
+                </div> 
+
+                <h:panelGroup rendered="#{importFileBean.loadDone}">
+                    <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                        <div class="col-5">
+                            <h:outputText value="URI: " />
+                            <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                        <div class="col-5">
+                            <h:outputText value="Total des concepts: " />
+                            <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-12" style="text-align: right"> 
+                        <p:commandButton title="#{langueBean.getMsg('btnBack')}" actionListener="#{importFileBean.init()}" style="margin-right: 10px"
+                                         class="btn btn-secondary" update="idDeleteListAlignmentCsv" oncomplete="PF('idDeleteListAlignmentCsv').hide();"/>
+
+                        <p:commandButton  class="btn btn-primary" widgetVar="buttonImportCsv"
+                                          update="panelDeleteListAlignCsv" actionListener="#{importFileBean.deleteAlignmentFromCsv()}"
+                                          ajax="true" process="@this" title="Supprimer" disabled="#{!importFileBean.loadDone}" />   
+                    </div>
+                </div>
+            </h:panelGroup>
         </h:panelGroup>
     </p:dialog> 
 </ui:fragment>

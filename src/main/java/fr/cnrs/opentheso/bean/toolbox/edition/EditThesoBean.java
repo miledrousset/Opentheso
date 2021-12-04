@@ -222,7 +222,7 @@ public class EditThesoBean implements Serializable {
         }
 
         if (NodeLangThesoSelected == null || NodeLangThesoSelected.getValue() == null || NodeLangThesoSelected.getValue().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "le label est obligatoire !!!");
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Le label est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }

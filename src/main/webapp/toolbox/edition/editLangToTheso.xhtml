@@ -1,44 +1,41 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
-             xmlns:h="http://xmlns.jcp.org/jsf/html"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idEditLangToTheso" header="Modifier une langue au thésaurus" widgetVar="editLangToTheso" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <p:outputPanel id="manage-theso-content" class="ui-fluid">
             <!-- Nom du thésaurus -->
-            <h:form>
             <div class="row">
-                <div class="col-5">
-                    <h:outputText value="Label :"/>
+                    <div class="col-5">
+                        <h:outputText value="Label :"/>
+                    </div>
+                    <div class="col-7">
+                        <h:outputText value="#{editThesoBean.langSelected.value} (#{editThesoBean.langSelected.code})" style="width: 100%"/>
+                    </div>
                 </div>
-                <div class="col-7">
-                    <h:outputText value="#{editThesoBean.langSelected.value} (#{editThesoBean.langSelected.code})" style="width: 100%"/>
+
+                <!-- Langue par defaut -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-5">
+                        <h:outputText value="Langue à ajouter: "/>
+                    </div>
+                    <div class="col-7">
+                        <p:inputText value="#{editThesoBean.langSelected.labelTheso}" style="width: 100%"/>
+                    </div>
+                </div> 
+
+                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                    <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                     actionListener="PF('editLangToTheso').hide();" update="containerIndex:idEditLangToTheso"/>
+
+                    <p:commandButton title="Modifier" update="containerIndex:listThesoDatas messageIndex"
+                                     class="btn btn-primary" oncomplete="PF('editLangToTheso').hide();"
+                                     actionListener="#{editThesoBean.updateLang(editThesoBean.langSelected)}" />
                 </div>
-            </div>
-
-            <!-- Langue par defaut -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5">
-                    <h:outputText value="Langue à ajouter: "/>
-                </div>
-                <div class="col-7">
-                    <h:inputText value="#{editThesoBean.langSelected.labelTheso}" style="width: 100%"/>
-                </div>
-            </div> 
-
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('editLangToTheso').hide();" update="containerIndex:idEditLangToTheso"/>
-
-                <p:commandButton title="Modifier" update="containerIndex:listThesoDatas messageIndex" process="@this" ajax="true"
-                                 class="btn btn-primary" oncomplete="PF('editLangToTheso').hide();"
-                                 actionListener="#{editThesoBean.updateLang(editThesoBean.langSelected)}" />
-            </div>
-            </h:form>
         </p:outputPanel>
     </p:dialog>     
 </ui:fragment>

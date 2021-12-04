@@ -47,12 +47,18 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CandidatBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private CurrentUser currentUser;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptView;
+    @Inject
+    private Connect connect;
+    @Inject
+    private CurrentUser currentUser;
+    @Inject
+    private SelectedTheso selectedTheso;
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+    @Inject
+    private LanguageBean languageBean;
+    @Inject
+    private ConceptView conceptView;
 
     private final CandidatService candidatService = new CandidatService();
 
@@ -76,10 +82,10 @@ public class CandidatBean implements Serializable {
     private boolean traductionVisible;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }    
-    
+    }
+
     public void clear() {
         candidatSelected = null;
         initialCandidat = null;
@@ -93,8 +99,8 @@ public class CandidatBean implements Serializable {
         languagesOfTheso = null;
     }
 
-    public void setStateForSelectedCandidate(){
-        if(selectedCandidates != null){
+    public void setStateForSelectedCandidate() {
+        if (selectedCandidates != null) {
             listSelected = !selectedCandidates.isEmpty();
         }
     }
@@ -109,35 +115,42 @@ public class CandidatBean implements Serializable {
         isExportViewActivate = false;
         listSelected = false;
 
-        if(candidatList == null)
+        if (candidatList == null) {
             candidatList = new ArrayList<>();
-        else
+        } else {
             candidatList.clear();
-        if(allTermes == null)
+        }
+        if (allTermes == null) {
             allTermes = new ArrayList<>();
-        else
+        } else {
             allTermes.clear();
-        if(domaines == null)
+        }
+        if (domaines == null) {
             domaines = new ArrayList<>();
-        else
+        } else {
             domaines.clear();
-        if(selectedLanguages == null)
+        }
+        if (selectedLanguages == null) {
             selectedLanguages = new ArrayList<>();
-        else
+        } else {
             selectedLanguages.clear();
-        if(rejetCadidat == null)
+        }
+        if (rejetCadidat == null) {
             rejetCadidat = new ArrayList<>();
-        else
+        } else {
             rejetCadidat.clear();
-        if(acceptedCadidat == null)
+        }
+        if (acceptedCadidat == null) {
             acceptedCadidat = new ArrayList<>();
-        else
+        } else {
             acceptedCadidat.clear();
+        }
 
-        if(selectedCandidates == null)
+        if (selectedCandidates == null) {
             selectedCandidates = new ArrayList<>();
-        else
+        } else {
             selectedCandidates.clear();
+        }
 
         getAllCandidatsByThesoAndLangue();
         getRejectCandidatByThesoAndLangue();
@@ -147,11 +160,14 @@ public class CandidatBean implements Serializable {
         exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
         selectedExportFormat = "skos";
 
-        languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-        languagesOfTheso.forEach((nodeLang) -> {
-            selectedLanguages.add(nodeLang);
-        });
+        try {
+            languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
+                    connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            languagesOfTheso.forEach((nodeLang) -> {
+                selectedLanguages.add(nodeLang);
+            });
+        } catch (Exception e) {
+        }
     }
 
     public void getAllCandidatsByThesoAndLangue() {
@@ -187,6 +203,7 @@ public class CandidatBean implements Serializable {
 
     /**
      * permet de déctercter la langue préférée d'un thésaurus
+     *
      * @return
      */
     private String getIdLang() {
@@ -259,7 +276,7 @@ public class CandidatBean implements Serializable {
 
     public void searchByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue1)) {
-            
+
             candidatList = candidatService.searchCandidats(connect, searchValue1,
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(),
@@ -309,7 +326,7 @@ public class CandidatBean implements Serializable {
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
 
     }
-    
+
     public void getCandidatInformations(CandidatDto candidatDto) {
         candidatSelected = candidatDto;
         candidatSelected.setLang(languageBean.getIdLangue());
@@ -402,7 +419,6 @@ public class CandidatBean implements Serializable {
         if (initialCandidat == null) {
             ConceptHelper conceptHelper = new ConceptHelper();
 
-
             // en cas d'un nouveau candidat, verification dans les prefLabels
             if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
                     selectedTheso.getCurrentIdTheso(), getIdLang())) {
@@ -449,7 +465,7 @@ public class CandidatBean implements Serializable {
 
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
-                if(termHelper.isTermExistInThisLang(connect.getPoolConnexion(), candidatSelected.getIdTerm(), getIdLang(), candidatSelected.getIdThesaurus())) {
+                if (termHelper.isTermExistInThisLang(connect.getPoolConnexion(), candidatSelected.getIdTerm(), getIdLang(), candidatSelected.getIdThesaurus())) {
                     candidatService.updateIntitule(connect, candidatSelected.getNomPref(), candidatSelected.getIdThesaurus(),
                             getIdLang(), candidatSelected.getIdTerm());
                 } else {
@@ -473,13 +489,13 @@ public class CandidatBean implements Serializable {
         getAllCandidatsByThesoAndLangue();
 
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
-        
+
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("containerIndex");
     }
 
     public ArrayList<NodeIdValue> searchCollection(String enteredValue) {
-        
+
         ArrayList<NodeIdValue> nodeIdValues = null;
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
             nodeIdValues = new GroupHelper().searchGroup(
@@ -500,14 +516,14 @@ public class CandidatBean implements Serializable {
         try {
             // cas où il y a un vote, on le supprime
             if (candidatService.getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                        currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT)) {
+                    currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT)) {
                 candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                         currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT);
                 candidatSelected.setVoted(false);
             } else {
                 // cas ou il n'y a pas de vote, alors on vote
-            candidatService.addVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                    currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT);
+                candidatService.addVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+                        currentUser.getNodeUser().getIdUser(), null, VoteType.CANDIDAT);
                 candidatSelected.setVoted(true);
             }
 
@@ -526,22 +542,24 @@ public class CandidatBean implements Serializable {
     }
 
     /**
-     * permet d'ajouter un vote pour un note de candidat, c'est 1 seul vote par utilisateur
+     * permet d'ajouter un vote pour un note de candidat, c'est 1 seul vote par
+     * utilisateur
+     *
      * @param nodeNote
      */
     public void addNoteVote(NodeNote nodeNote) {
         try {
             // cas où il y a un vote, on le supprime
             if (candidatService.getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                    currentUser.getNodeUser().getIdUser(), nodeNote.getId_note()+"", VoteType.NOTE)) {
+                    currentUser.getNodeUser().getIdUser(), nodeNote.getId_note() + "", VoteType.NOTE)) {
 
                 candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                        currentUser.getNodeUser().getIdUser(), nodeNote.getId_note()+"", VoteType.NOTE);
+                        currentUser.getNodeUser().getIdUser(), nodeNote.getId_note() + "", VoteType.NOTE);
                 nodeNote.setVoted(false);
             } else {
                 // cas ou il n'y a pas de vote, alors on vote
-            candidatService.addVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                    currentUser.getNodeUser().getIdUser(), nodeNote.getId_note()+"", VoteType.NOTE);
+                candidatService.addVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+                        currentUser.getNodeUser().getIdUser(), nodeNote.getId_note() + "", VoteType.NOTE);
                 nodeNote.setVoted(true);
             }
         } catch (SQLException sqle) {
@@ -570,8 +588,8 @@ public class CandidatBean implements Serializable {
         ArrayList<NodeIdValue> liste = new ArrayList<>();
         SearchHelper searchHelper = new SearchHelper();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = searchHelper.searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(),value,
-                    selectedTheso.getCurrentLang(),selectedTheso.getCurrentIdTheso());
+            liste = searchHelper.searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+                    selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
         }
         return liste;
     }
@@ -599,10 +617,11 @@ public class CandidatBean implements Serializable {
 
     /**
      * permet de récupérer le nom d'un utilisateur d'après son ID
+     *
      * @param idUser
      * @return
      */
-    public String getUserName(int idUser){
+    public String getUserName(int idUser) {
         UserHelper userHelper = new UserHelper();
         return userHelper.getNameUser(connect.getPoolConnexion(), idUser);
 
@@ -612,13 +631,12 @@ public class CandidatBean implements Serializable {
      * permet de récupérer les anciens candidats saisies dans l'ancien module
      * uniquement les candidats qui étatient en attente
      */
-    public void getOldCandidates(){
-        String messageInfo = new CandidatService().getOldCandidates(connect,selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser(),roleOnThesoBean.getNodePreference());
+    public void getOldCandidates() {
+        String messageInfo = new CandidatService().getOldCandidates(connect, selectedTheso.getCurrentIdTheso(),
+                currentUser.getNodeUser().getIdUser(), roleOnThesoBean.getNodePreference());
         showMessage(FacesMessage.SEVERITY_INFO, messageInfo);
         getAllCandidatsByThesoAndLangue();
     }
-
 
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
@@ -757,7 +775,6 @@ public class CandidatBean implements Serializable {
         isExportViewActivate = false;
     }
 
-
     public String getDefinition() {
         return definition;
     }
@@ -799,7 +816,7 @@ public class CandidatBean implements Serializable {
         isImportViewActivate = false;
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
-        
+
         setProgressBarStep(0);
         setProgressBarValue(0);
     }
@@ -837,7 +854,7 @@ public class CandidatBean implements Serializable {
         isExportViewActivate = false;
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
-        
+
         setProgressBarStep(0);
         setProgressBarValue(0);
     }
@@ -889,6 +906,5 @@ public class CandidatBean implements Serializable {
     public void setTraductionVisible(boolean traductionVisible) {
         this.traductionVisible = traductionVisible;
     }
-
 
 }

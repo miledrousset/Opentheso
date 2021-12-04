@@ -47,7 +47,7 @@ public class SelectedTheso implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String selectedIdTheso;
+        private String selectedIdTheso;
     private String currentIdTheso;
     private String optionThesoSelected;
 
@@ -326,7 +326,6 @@ public class SelectedTheso implements Serializable {
             }
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang);
             actionFromConceptToOn();
-        //    tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
             initIdsFromUri();
             return;
         }
@@ -339,9 +338,6 @@ public class SelectedTheso implements Serializable {
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
                     actionFromConceptToOn();
-                /*    if (conceptBean.getNodeConcept() != null) {
-                        tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
-                    }*/
                 }
             } else {
                 return;
@@ -350,19 +346,7 @@ public class SelectedTheso implements Serializable {
 
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsThesoActive(true);
-  //      rightBodySetting.setShowConceptToOn();
         rightBodySetting.setIndex("0");
-  //      indexSetting.setIsValueSelected(true);
-
-        // ne marche pas
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("formMenu");
-            pf.ajax().update("formLeftTab");
-            pf.ajax().update("formSearch:languageSelect");
-            pf.ajax().update("formSearch");
-            pf.ajax().update("formRightTab");
-        }
         initIdsFromUri();
     }
 

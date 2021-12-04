@@ -72,11 +72,11 @@
                             </p:column>
 
                             <p:column width="15" headerText="Modifier">
-                                <p:commandButton icon="pi pi-pencil" update=":containerIndex:manage-theso-content"
+                                <p:commandButton icon="pi pi-pencil" update="containerIndex:manage-theso-content"
                                                  oncomplete="PF('editLangToTheso').show()" process="@this"
                                                  actionListener="#{editThesoBean.setLangSelected(langOfTheso)}"
                                                  styleClass="edit-button rounded-button ui-button-success">
-                                    <p:resetInput target=":containerIndex:manage-theso-content"/>
+                                    <p:resetInput target="containerIndex:manage-theso-content"/>
                                 </p:commandButton>
                             </p:column>
 

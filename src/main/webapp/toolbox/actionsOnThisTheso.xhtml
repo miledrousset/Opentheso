@@ -16,12 +16,15 @@
                         oncomplete="PF('listAlignmentCsv').show();"
                         update="idListAlignmentCsv"
                         action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
+            
             <p:menuitem value="Supprimer des alignements" 
                         title="Supprimer des alignements d'après un tableau CSV"
                         oncomplete="PF('deleteListAlignmentCsv').show();"
                         update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
-                        action="#{importFileBean.init()}" icon="pi pi-times" style="font-size: 12px; "/>         
-            <p:divider style="font-size: 11px; color: #F47B2A"/>            
+                        action="#{importFileBean.init()}" icon="pi pi-times" style="font-size: 12px; "/>      
+            
+            <p:divider style="font-size: 11px; color: #F47B2A"/>   
+            
             <p:menuitem value="Importer des notes" 
                         title="Importer des notes d'après un tableau CSV"
                         oncomplete="PF('listNoteCsv').show();"

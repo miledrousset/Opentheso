@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;
 import javax.inject.Named;
@@ -42,6 +43,9 @@ public class DeleteThesoBean implements Serializable {
     
     @Inject
     private ViewEditionBean viewEditionBean;
+    
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
     
     private String idThesoToDelete;
     private String valueOfThesoToDelelete;
@@ -126,7 +130,8 @@ public class DeleteThesoBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Thesaurus supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();
-        viewEditionBean.init();
+        //viewEditionBean.init();
+        roleOnThesoBean.showListTheso();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
