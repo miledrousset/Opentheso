@@ -61,8 +61,8 @@
                                                     action="#{viewEditionBean.setIsViewExportCSV(true)}" update="containerIndex" icon="fas fa-upload"
                                                     title="Exporter les labels, identifiants, definitions au format CSV"/>
 
-                                        <p:menuitem value="Concepts dépréciés en CSV" ajax="false" update="containerIndex"
-                                                    actionListener="#{viewExportBean.init(listTheso, 'deprecated')}"
+                                        <p:menuitem value="Concepts dépréciés en CSV" update="containerIndex" icon="fas fa-upload"
+                                                    actionListener="#{viewExportBean.init(listTheso, 'deprecated')}" 
                                                     action="#{viewEditionBean.setIsViewExportCSV(true)}" />
 
                                         <p:menuitem value="Virtuoso (SKOS)" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
@@ -79,9 +79,9 @@
                                 </p:column>
 
                                 <p:column width="10" headerText="Supprimer">
-                                    <p:commandButton icon="pi pi-trash" update="containerIndex messageIndex" process="@this" ajax="true"
-                                                     actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
-                                                     class="ui-button-danger rounded-button" />
+                                    <p:commandButton icon="pi pi-trash" update="idConfirmDelete" process="@this" ajax="true"
+                                                     actionListener="#{deleteThesoBean.setThesaurusBeforRemove(listTheso.id, listTheso.value)}"
+                                                     oncomplete="PF('confirmDelete').show();" class="ui-button-danger rounded-button" />
                                 </p:column>
 
                                 <f:facet name="footer">
@@ -94,5 +94,4 @@
             </div>
         </div>
     </div>
-    <ui:include src="../../toolbox/edition/confirmDelete.xhtml" />
 </ui:fragment>

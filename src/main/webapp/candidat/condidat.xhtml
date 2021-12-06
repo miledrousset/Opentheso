@@ -51,7 +51,6 @@
                             <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">Candidat</span></h1>
                         </div>
 
-
                         <div class="col-12" style="height: 100%">
                             <div class="card shadow mb-4" style="height: 100%; margin: 20px; padding: 20px; color: #000">
                                 <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
@@ -73,19 +72,11 @@
                                             </div>
                                             <div class="row" style="margin-top: 20px">
                                                 <div class="col-6">
-                                                    <div class="card mb-4 py-3 border-left-success">
-                                                        <div class="list-group" style="padding-left: 10px; margin-right: 10px">
-                                                            <ui:include src="../candidat/candidatDetails.xhtml" />
-                                                        </div>
-                                                    </div>
+                                                    <ui:include src="../candidat/candidatDetails.xhtml" />
                                                 </div>
                                                 <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
                                                     <div class="col-6" style="vertical-align: top;" >
-                                                        <div class="card mb-4 py-3 border-left-success">
-                                                            <div class="list-group" style="padding-left: 10px; margin-right: 10px">
-                                                                <ui:include src="../candidat/candidatDiscussion.xhtml" />
-                                                            </div>
-                                                        </div>
+                                                        <ui:include src="../candidat/candidatDiscussion.xhtml" />
                                                     </div>
                                                 </h:panelGroup>
                                             </div>

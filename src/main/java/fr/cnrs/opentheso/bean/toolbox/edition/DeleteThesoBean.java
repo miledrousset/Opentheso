@@ -42,9 +42,6 @@ public class DeleteThesoBean implements Serializable {
     private SelectedTheso selectedTheso;
     
     @Inject
-    private ViewEditionBean viewEditionBean;
-    
-    @Inject
     private RoleOnThesoBean roleOnThesoBean;
     
     private String idThesoToDelete;
@@ -137,6 +134,11 @@ public class DeleteThesoBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");
         }    
+    }
+    
+    public void setThesaurusBeforRemove(String idThesoToDelete, String valueOfThesoToDelelete) {
+        this.idThesoToDelete = idThesoToDelete;
+        this.valueOfThesoToDelelete = valueOfThesoToDelelete;
     }
 
     public boolean isIsDeleteOn() {
