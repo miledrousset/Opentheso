@@ -354,6 +354,8 @@ public class SelectedTheso implements Serializable {
                 /*    if (conceptBean.getNodeConcept() != null) {
                         tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
                     }*/
+                }else {
+                    indexSetting.setIsHomeSelected(true);
                 }
             } else {
                 return;

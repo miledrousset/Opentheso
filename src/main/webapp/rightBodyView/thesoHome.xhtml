@@ -33,6 +33,14 @@
                     <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 12px; color: #FF7979;"/>
                 </b:column>
             </b:row>
+            <b:row style="margin-top: -20px">
+                <b:column span="8">
+                    <h:outputText value="Lien direct vers ce thésaurus : " style="font-size: 12px;"/>
+                    <b:link href="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
+                            value="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
+                                                    icon="link" icon-size="sm" style="font-size: 12px; color: #43B572;"></b:link>                    
+                </b:column>
+            </b:row>            
             <b:row >
                 <b:column span="12">
                     <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')} : " style="font-size: 12px;"/>
