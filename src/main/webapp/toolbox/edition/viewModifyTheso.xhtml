@@ -32,7 +32,7 @@
                     </div>       
                 </div>
 
-                <!-- choix de la langue par defaut -->
+                <!-- Status du thésaurus -->
                 <div class="row" style="margin-top: 10px">
                     <div class="col-3" style="text-align: right">
                         <h:outputText value="Status du thésaurus" />
@@ -44,13 +44,15 @@
                     </div>           
                 </div>
 
-                <!-- choix de la langue par defaut -->
+                <!-- Ajout d'une langue au thésaurus -->
                 <div class="row" style="margin-top: 10px">
                     <div class="col-3" style="text-align: right">
                         <h:outputText value="Ajouter langue" />
                     </div>
                     <div class="col-5"  >
-                        <p:commandButton update="idAddLangToTheso" oncomplete="PF('addLangToTheso').show();" icon="fas fa-plus-circle" />            
+                        <p:commandButton update="idAddLangToTheso" 
+                                         actionListener="#{editThesoBean.setLangSelected(langOfTheso)}"
+                                         oncomplete="PF('addLangToTheso').show();" icon="fas fa-plus-circle" process="@this"/>            
                     </div>             
                 </div>
             </div>
