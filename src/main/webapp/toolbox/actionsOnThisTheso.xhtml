@@ -14,7 +14,7 @@
             <p:menuitem value="Importer des alignements" 
                         title="Importer des alignements d'après un tableau CSV"
                         oncomplete="PF('listAlignmentCsv').show();"
-                        update="idListAlignmentCsv"
+                        update="idListAlignmentCsv listAlignmentCsvForm"
                         action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
             
             <p:menuitem value="Supprimer des alignements" 

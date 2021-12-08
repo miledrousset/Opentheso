@@ -65,6 +65,7 @@ public class EditThesoBean implements Serializable {
             languagesOfTheso.clear();
             languagesOfTheso = null;
         }
+        langSelected = null;
         title = null;
         selectedLang = null;        
         nodeIdValueOfTheso = null;
@@ -99,6 +100,8 @@ public class EditThesoBean implements Serializable {
                 nodeIdValueOfTheso.getId());
         preferredLang = nodePreference.getSourceLang();
         selectedLang = null;
+        langSelected = null;
+        langSelected = new NodeLangTheso();
         title = "";
     }
 
@@ -343,6 +346,8 @@ public class EditThesoBean implements Serializable {
     }
 
     public void setLangSelected(NodeLangTheso langSelected) {
+        if(langSelected == null) 
+            langSelected = new NodeLangTheso();
         this.langSelected = langSelected;
     }
 
