@@ -44,6 +44,21 @@ public final class NodeJson2 {
         return arkString;
     }
     
+    /**
+     * Pour la mise à jour des URI uniquement pour Ark
+     * @return 
+     */
+    public String getJsonUriString() {
+        String arkString = "{"
+                + "\"token\":\""+ token + "\","
+                + "\"ark\":\""+ ark + "\","
+                + "\"naan\":\"" + naan + "\","
+                + "\"urlTarget\":\""+ urlTarget + "\","
+                + "\"useHandle\":" + useHandle
+                + "}";
+        return arkString;
+    }    
+    
     private String getStringFromDcElements(){
         if(dcElements == null) return "[]";
         String dcElementString = "[";

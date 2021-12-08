@@ -157,7 +157,15 @@
                         update="messageIndex"
                         style="font-size: 12px;">
                     </b:navCommandLink>   
-
+                    <b:navCommandLink 
+                        rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                        value="Mise à jour des URIs Ark pour cette branche" 
+                        tooltip="Mise à jour des URIs Ark pour cette branche"
+                        disabled="false"
+                        action="#{editConcept.updateUriArkForThisBranch()}"
+                        update="messageIndex"
+                        style="font-size: 12px;">
+                    </b:navCommandLink>                      
 
                     <!-- partie pour générer les identifiants Handle d'un thésaurus à déplacer par la suite vers la boite à outils -->
                     <b:navLink rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"/>

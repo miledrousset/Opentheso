@@ -249,6 +249,39 @@ public final class ArkClientRest {
         return setForUpdate();
     }      
     
+    /**
+     * permet de mettre à jour un abjet Ark 
+     * @param arkString
+     * @return 
+     */
+    public boolean updateUriArk(String arkString) {
+        jsonArk = null;
+        
+        // il faut se connecter avant
+        if(loginJson == null) return false;
+        
+        Client client= ClientBuilder.newClient();
+        try (Response response = client
+            .target(propertiesArk.getProperty("serverHost"))
+            .path("rest/v1/ark/uriupdate")
+            .request(MediaType.APPLICATION_JSON)
+            .header("Content-type", "application/json")
+            .put(Entity.json(arkString))){
+            
+            if (response.getStatus() != 200) {
+                message = "Erreur lors de la mise à jour d'un Ark : " + response.getStatus();
+                response.close();
+                client.close();
+                return false;
+            }
+            jsonArk = response.readEntity(String.class);           
+        } catch (Exception e) {
+            message =  "Exception lors de la mise à jour de Ark";
+            return false;            
+        } 
+        return setForUriUpdate();
+    }      
+    
  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -382,6 +415,29 @@ public final class ArkClientRest {
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
   
+    private boolean setForUriUpdate(){
+        if(jsonArk == null) return false;
+    //    System.out.println("avant la lecture : " + jsonArk);
+        JsonReader reader;
+        try {
+            reader = Json.createReader(new StringReader(jsonArk));
+            JsonObject jsonObject = reader.readObject();
+            reader.close();  
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ok")) {
+                token = jsonObject.getJsonString("token").getString();
+                return true;
+            }
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ERROR")) {
+                message = jsonObject.getJsonString("description").getString();
+                token = jsonObject.getJsonString("token").getString();
+                return false;
+            }        
+        } catch (Exception e) {
+        }
+        message = "Erreur lors de la lecture du Json";
+        return false;           
+    }    
+    
     private boolean setForUpdate(){
         if(jsonArk == null) return false;
     //    System.out.println("avant la lecture : " + jsonArk);

@@ -485,6 +485,23 @@ public class EditConcept implements Serializable {
     }      
     
     /**
+     * permet de mettre à jour les URI des identifiants Ark pour cette branche,
+     * cette fonction ne fait que la mise à jour de l'URL et ne permet de créer des identifiants ARK
+     */
+    public void updateUriArkForThisBranch(){
+        if(roleOnThesoBean.getNodePreference() == null) return;        
+        if(conceptView.getNodeConcept() == null) return;
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+        
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        updateUriArkIds(conceptHelper, idConcepts);
+    }     
+    
+    /**
      * permet de générer la totalité des identifiants Ark,
      * si un identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
      */
@@ -498,6 +515,7 @@ public class EditConcept implements Serializable {
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
         generateArkIds(conceptHelper, idConcepts);
     }    
+    
     
     private void generateArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts){
         FacesMessage msg;
@@ -518,6 +536,25 @@ public class EditConcept implements Serializable {
         }
     }
     
+    private void updateUriArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts){
+        FacesMessage msg;
+        if(!conceptHelper.updateUriArk(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                idConcepts)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La mise à jour des URIs Ark a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);             
+            return;
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La mise à jour des URIs Ark a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
+    }
+        
     
     
     

@@ -1568,6 +1568,10 @@ public class ConceptHelper {
 
     /**
      * Cette fonction regenère tous les idArk des concepts fournis en paramètre
+     * @param ds
+     * @param idTheso
+     * @param idConcepts
+     * @return 
      */
     public boolean generateArkId(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts) {
 
@@ -1656,6 +1660,46 @@ public class ConceptHelper {
         }
         return true;
     }
+    
+    /**
+     * Cette fonction regenère tous les idArk des concepts fournis en paramètre
+     * @param ds
+     * @param idTheso
+     * @param idConcepts
+     * @return 
+     */
+    public boolean updateUriArk(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts) {
+
+        ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
+        if (!arkHelper2.login()) {
+            message = "Erreur de connexion !!";
+            return false;
+        }
+
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseArk()) {
+            return false;
+        }
+        String privateUri;
+        String idArk;
+
+        for (String idConcept : idConcepts) {
+            if (idConcept == null || idConcept.isEmpty()) continue;
+            // Mise à jour de l'URI 
+            idArk = getIdArkOfConcept(ds, idConcept, idTheso);
+            if(idArk == null || idArk.isEmpty()) continue;
+            
+            privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
+            if (!arkHelper2.updateUriArk(idArk, privateUri)) {
+                message = arkHelper2.getMessage();
+                message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
+                return false;
+            }
+        }
+        return true;
+    }    
     
     /**
      * Cette fonction permet de générer les idArk en local
