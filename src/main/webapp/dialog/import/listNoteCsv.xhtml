@@ -7,7 +7,7 @@
     <p:dialog id="idListNoteCsv" header="Importer des notes" widgetVar="listNoteCsv"  
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:panelGroup id="listNoteCsvForm">
+        <h:form id="listNoteCsvForm">              
 
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px">
                 <div class="row" style="margin-top: 5px;">
@@ -54,12 +54,13 @@
                         <h:outputText value="L'identifiant est de type:" style="color: #000" />
                     </div>
                     <div class="col-7">
-                        <p:selectOneMenu value="#{importFileBean.selectedIdentifier}" 
+                        <p:selectOneMenu disabled="true" value="#{importFileBean.selectedIdentifierImportAlign}" 
                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; font-size: 12px;" title="Choix de l'identifiant pour détecter le concept">
                             <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
                             <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
                             <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
+                            <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />                            
                         </p:selectOneMenu>
                     </div>
                 </div>     
@@ -100,11 +101,12 @@
                                       label="parcourir" 
                                       mode="advanced" auto="true"
                                       allowTypes="/(\.|\/)(csv|txt)$/"
-                                      update="panelListNoteCsv" disabled="#{importFileBean.loadDone}"
+                                      update="panelListNoteCsv_result" disabled="#{importFileBean.loadDone}"
                                       style="font-size: 12px;" />  
                     </div>
                 </div> 
-
+            </h:panelGroup>                
+            <h:panelGroup id="panelListNoteCsv_result">
                 <h:panelGroup rendered="#{importFileBean.loadDone}" style="margin-top: 10px" >
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-5">
@@ -122,15 +124,17 @@
 
                 <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                     <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                     actionListener="PF('listNoteCsv').hide();" update="idListNoteCsv"/>
-
-                    <p:commandButton class="btn btn-danger" title="Importer" process="@this" ajax="false"
+                                     actionListener="#{importFileBean.init()}"
                                      oncomplete="PF('listNoteCsv').hide();"
-                                     update="containerIndex messageIndex"
+                                     update="listNoteCsvForm"/>
+
+                    <p:commandButton class="btn btn-danger" title="Importer" process="@this"
+                                     
+                                     update="messageIndex listNoteCsvForm"
                                      disabled="#{!importFileBean.loadDone}"
                                      actionListener="#{importFileBean.addNoteList()}" />
                 </div> 
             </h:panelGroup>
-        </h:panelGroup>
+        </h:form>
     </p:dialog> 
 </ui:fragment>

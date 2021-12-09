@@ -7,11 +7,13 @@
     <p:dialog id="idListAlignmentCsv" header="Importer des alignements" widgetVar="listAlignmentCsv" 
               modal="true" resizable="true" position="top" width="650" style="margin-top: 50px; " >         
 
-        <h:panelGroup id="listAlignmentCsvForm">   
+        <h:form id="listAlignmentCsvForm">   
             <div class="row">                
                 <div class="col-12" >
                     <fieldset>
                         <p:scrollPanel mode="native" >
+                            
+                            
                             <p:panelGrid style="font-size: 12px;">
                                 <f:facet name="header">
                                     <p:row style="font-size: 12px;">
@@ -27,19 +29,21 @@
                                     </p:row>
                                 </f:facet>
                                 <p:row style="font-size: 12px;">
-                                    <p:column>26678/crtcg26jeN4R9</p:column>
-                                    <p:column>https://www.wikidata.org/wiki/Q65955</p:column>
-                                    <p:column>http://vocab.getty.edu/aat/300391468##1</p:column>
-                                    <p:column>https://catalogue.bnf.fr/ark:/12148/cb13516297v##2</p:column>
-                                    <p:column>https://www.idref.fr/241395046</p:column>
-                                    <p:column>http://data.culture.fr/thesaurus/page/ark:/67717/9f07583b-1be9-4dab-95d4-c46dce9b20dd</p:column>
-                                    <p:column>https://pleiades.stoa.org/places/570577</p:column>
-                                    <p:column>http://n2t.net/ark:/99152/6c6g3fz6m</p:column>
-                                    <p:column>https://www.geonames.org/9062330</p:column>
+                                    <p:column colspan="1">26678/crtcg26jeN4R9</p:column>
+                                    <p:column colspan="1">https://www.wikidata.org/wiki/Q65955</p:column>
+                                    <p:column colspan="1">http://vocab.getty.edu/aat/300391468##1</p:column>
+                                    <p:column colspan="1">https://catalogue.bnf.fr/ark:/12148/cb13516297v##2</p:column>
+                                    <p:column colspan="1">https://www.idref.fr/241395046</p:column>
+                                    <p:column colspan="1">http://data.culture.fr/thesaurus/page/ark:/67717/9f07583b-1be9-4dab-95d4-c46dce9b20dd</p:column>
+                                    <p:column colspan="1">https://pleiades.stoa.org/places/570577</p:column>
+                                    <p:column colspan="1">http://n2t.net/ark:/99152/6c6g3fz6m</p:column>
+                                    <p:column colspan="1">https://www.geonames.org/9062330</p:column>
                                 </p:row>
                             </p:panelGrid>    
                             <p:spacer/>
                         </p:scrollPanel>    
+              
+                        
 
                         <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px;">
                             <p style="color: #000;">
@@ -62,12 +66,14 @@
                     <h:outputText value="L'identifiant est de type:" />
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu value="#{importFileBean.selectedIdentifier}" 
-                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom" panelStyle="font-size: 12px;"
-                                     style="width: 100%; font-size: 12px;" title="Choix de l'identifiant pour détecter le concept">
+                    <p:selectOneMenu value="#{importFileBean.selectedIdentifierImportAlign}" 
+                                     styleClass="selectOneMenu_custom" 
+                                     panelStyleClass="selectOneMenu_panelStyle_custom" style="width: 100%;"
+                                     title="Choix de l'identifiant pour détecter le concept">
                         <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
                         <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
                         <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
+                        <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />
                     </p:selectOneMenu>
                 </div>
             </div>                   
@@ -88,43 +94,54 @@
                 </div>
             </div>
 
-            <!-- Choix du fichier -->   
-            <div class="row" style="margin-top: 10px; font-size: 12px;">
-                <div class="col-12" style="font-size: 12px;"> 
-                    <p:fileUpload listener="#{importFileBean.loadFileAlignmentCsv}" 
-                                  label="parcourir" 
-                                  mode="advanced" auto="true"
-                                  allowTypes="/(\.|\/)(csv|txt)$/"
-                                  update="panelListAlignCsv" disabled="#{importFileBean.loadDone}"
-                                  style="font-size: 12px;" />  
-                </div>
-            </div>
-
-            <h:panelGroup id="panelListAlignCsv" rendered="#{importFileBean.loadDone}">
-                <div class="row" style="margin-left: 30px; margin-right: 30px;">
-                    <div class="col-5">
-                        <h:outputText value="URI: " />
-                        <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+            <h:panelGroup id="panelListAlignCsv">
+                <!-- Choix du fichier -->   
+                <div class="row" style="margin-top: 10px; font-size: 12px;">
+                    <div class="col-12" style="font-size: 12px;"> 
+                        <p:fileUpload listener="#{importFileBean.loadFileAlignmentCsv}" 
+                                      label="parcourir" 
+                                      mode="advanced" auto="true"
+                                      allowTypes="/(\.|\/)(csv|txt)$/"
+                                      update="panelListAlignCsv_result"
+                                      disabled="#{importFileBean.loadDone}"
+                                      style="font-size: 12px;" />  
                     </div>
-                </div>
+                </div>              
+            </h:panelGroup>            
+            <h:panelGroup id="panelListAlignCsv_result">
+                <h:panelGroup rendered="#{importFileBean.loadDone}">
+                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                        <div class="col-5">
+                            <h:outputText value="URI: " />
+                            <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                        <div class="col-5">
+                            <h:outputText value="Total des concepts: " />
+                            <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                        </div>
+                    </div>                    
+                </h:panelGroup>
                 <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
-                    <div class="col-5">
-                        <h:outputText value="Total des concepts: " />
-                        <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                    <div class="col-11">
+                        <p:messages id="messages" showDetail="true" closable="true" style="font-size: 12px;">
+                            <p:autoUpdate/>
+                        </p:messages>
+                    </div>
+                </div>                      
+              
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-12" style="text-align: right"> 
+                        <p:commandButton title="#{langueBean.getMsg('btnBack')}" actionListener="#{importFileBean.init()}" style="margin-right: 10px"
+                                         class="btn btn-secondary" update="listAlignmentCsvForm" oncomplete="PF('listAlignmentCsv').hide();"/>
+
+                        <p:commandButton  class="btn btn-primary" widgetVar="buttonImportCsv"
+                                          update="listAlignmentCsvForm" actionListener="#{importFileBean.addAlignmentList()}"
+                                          title="Importer" process="@this" disabled="#{!importFileBean.loadDone}" />   
                     </div>
                 </div>
             </h:panelGroup>
-
-            <div class="row" style="margin-top: 10px">
-                <div class="col-12" style="text-align: right"> 
-                    <p:commandButton title="#{langueBean.getMsg('btnBack')}" actionListener="#{importFileBean.init()}" style="margin-right: 10px"
-                                     class="btn btn-secondary" update="idListAlignmentCsv" oncomplete="PF('listAlignmentCsv').hide();"/>
-                    
-                    <p:commandButton  class="btn btn-primary" widgetVar="buttonImportCsv"
-                                      update="panelListAlignCsv" actionListener="#{importFileBean.addAlignmentList()}"
-                                      ajax="true" process="@this" title="Importer" disabled="#{!importFileBean.loadDone}" />   
-                </div>
-            </div>
-        </h:panelGroup>
+        </h:form> 
     </p:dialog> 
 </ui:fragment>

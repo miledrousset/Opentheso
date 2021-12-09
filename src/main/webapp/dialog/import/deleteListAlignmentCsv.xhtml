@@ -4,25 +4,25 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idDeleteListAlignmentCsv" header="Supprimer une liste d'alignement" widgetVar="deleteListAlignmentCsv" 
-              modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" > 
-        <h:panelGroup id="deleteListAlignmentCsvForm">             
+    <p:dialog id="idDeleteListAlignmentCsv" header="Supprimer des alignements" widgetVar="deleteListAlignmentCsv" 
+              modal="true" resizable="true" position="top" width="650" style="margin-top: 50px; " >         
 
+        <h:form id="deleteListAlignmentCsvForm">   
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px">
-                <div class="row">
-                    <div class="col-3" offset="5">
-                        <h:outputText value="URI :"  style="color: #000; " />
+                <div class="row" style="background-color: #aaa">
+                    <div class="col-5">
+                        <h:outputText value="localId" style="color: #000;" />
+                    </div>                      
+                    <div class="col-7">
+                        <h:outputText value="URI"  style="color: #000;" />
+                    </div>
+                </div>  
+                <div class="row" >
+                    <div class="col-5">
+                        <h:outputLabel value="26678/crtcg26jeN4R9"  style="color: #000; " />
                     </div>
                     <div class="col-7">
                         <h:outputLabel value="https://www.wikidata.org/wiki/Q65955"  style="color: #000; " />
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-3" offset="5">
-                        <h:outputText value="Local ID :" style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="26678/crtcg26jeN4R9"  style="color: #000; " />
                     </div>
                 </div>
             </p:panel>
@@ -34,53 +34,56 @@
             </p:outputPanel>
 
             <!-- choix du l'identifiant Ark ou Id ou Handle -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5" offset="5">
+            <div class="row" style="margin-top: 10px; font-size: 12px;" >
+                <div class="col-5">
                     <h:outputText value="L'identifiant est de type:" />
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu value="#{importFileBean.selectedIdentifier}" 
-                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                     style="width: 100%; background: none;  box-shadow: none;" title="Choix de l'identifiant pour détecter le concept">
+                    <p:selectOneMenu value="#{importFileBean.selectedIdentifierImportAlign}" 
+                                     styleClass="selectOneMenu_custom" 
+                                     panelStyleClass="selectOneMenu_panelStyle_custom" style="width: 100%;"
+                                     title="Choix de l'identifiant pour détecter le concept">
                         <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
                         <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
                         <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
+                        <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />
                     </p:selectOneMenu>
                 </div>
-            </div>                
+            </div>                   
 
             <!-- délimiteur CSV -->
-            <div class="row" style="margin-top: 10px">
+            <div class="row" style="font-size: 12px;" >
                 <div class="col-5" offset="5">
                     <h:outputText value="Délimiteur Csv :" />
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" 
-                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                     style="width: 100%; background: none;  box-shadow: none; ">
+                    <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" styleClass="selectOneMenu_custom" 
+                                     panelStyleClass="selectOneMenu_panelStyle_custom" style="width: 100%;">
                         <f:selectItem itemLabel="," itemValue="0" />
                         <f:selectItem itemLabel=";" itemValue="1" />
                         <f:selectItem itemLabel="\t" itemValue="2" />
                         <p:ajax event="change" listener="#{importFileBean.actionChoice()}"  />
                     </p:selectOneMenu>
                 </div>
-            </div>        
+            </div>
 
-            <h:panelGroup id="panelDeleteListAlignCsv">
+            <h:panelGroup id="panelListAlignCsv">
                 <!-- Choix du fichier -->   
-                <div class="row" style="margin-left: 30px; margin-right: 30px; ">
-                    <div class="col-12" > 
+                <div class="row" style="margin-top: 10px; font-size: 12px;">
+                    <div class="col-12" style="font-size: 12px;"> 
                         <p:fileUpload listener="#{importFileBean.loadFileAlignmentCsvToDelete}" 
                                       label="parcourir" 
                                       mode="advanced" auto="true"
                                       allowTypes="/(\.|\/)(csv|txt)$/"
-                                      update="deleteListAlignmentCsvForm" disabled="#{importFileBean.loadDone}"
+                                      update="panelListAlignCsv_result"
+                                      disabled="#{importFileBean.loadDone}"
                                       style="font-size: 12px;" />  
                     </div>
-                </div> 
-
+                </div>              
+            </h:panelGroup>            
+            <h:panelGroup id="panelListAlignCsv_result">
                 <h:panelGroup rendered="#{importFileBean.loadDone}">
-                    <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-5">
                             <h:outputText value="URI: " />
                             <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
@@ -91,20 +94,27 @@
                             <h:outputText value="Total des concepts: " />
                             <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
                         </div>
-                    </div>
+                    </div>                    
                 </h:panelGroup>
-
+                <div class="row" style="margin-left: 30px; margin-right: 30px; font-size: 12px;">
+                    <div class="col-11">
+                        <p:messages id="messages" showDetail="true" closable="true" style="font-size: 12px;">
+                            <p:autoUpdate/>
+                        </p:messages>
+                    </div>
+                </div>                      
+              
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12" style="text-align: right"> 
                         <p:commandButton title="#{langueBean.getMsg('btnBack')}" actionListener="#{importFileBean.init()}" style="margin-right: 10px"
-                                         class="btn btn-secondary" update="idDeleteListAlignmentCsv" oncomplete="PF('idDeleteListAlignmentCsv').hide();"/>
+                                         class="btn btn-secondary" update="deleteListAlignmentCsvForm" oncomplete="PF('deleteListAlignmentCsv').hide();"/>
 
                         <p:commandButton  class="btn btn-primary" widgetVar="buttonImportCsv"
-                                          update="panelDeleteListAlignCsv" actionListener="#{importFileBean.deleteAlignmentFromCsv()}"
-                                          ajax="true" process="@this" title="Supprimer" disabled="#{!importFileBean.loadDone}" />   
+                                          update="deleteListAlignmentCsvForm" actionListener="#{importFileBean.deleteAlignmentFromCsv()}"
+                                          title="Supprimer" process="@this" disabled="#{!importFileBean.loadDone}" />   
                     </div>
                 </div>
             </h:panelGroup>
-        </h:panelGroup>
+        </h:form> 
     </p:dialog> 
 </ui:fragment>

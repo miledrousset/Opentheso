@@ -50,6 +50,11 @@ public class CsvImportHelper {
 
     /**
      * initialisation des paramètres d'import
+     * @param formatDate
+     * @param idUser
+     * @param idGroupUser
+     * @param langueSource
+     * @return 
      */
     public boolean setInfos(
             String formatDate, int idUser,
@@ -69,6 +74,12 @@ public class CsvImportHelper {
     /**
      * Cette fonction permet de créer un thésaurus avec ses traductions (Import)
      * elle retourne l'identifiant du thésaurus, sinon Null
+     * @param ds
+     * @param thesoName
+     * @param idLang
+     * @param idProject
+     * @param nodeUser
+     * @return 
      */
     public String createTheso(HikariDataSource ds, String thesoName, String idLang, int idProject, NodeUser nodeUser) {
 
@@ -119,6 +130,31 @@ public class CsvImportHelper {
         }
         return null;
     }
+    
+    public void addLangsToThesaurus(HikariDataSource ds, ArrayList<String> langs, String idTheso) {
+
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        for (String idLang : langs) {
+            if (!thesaurusHelper.isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
+                Thesaurus thesaurus1 = new Thesaurus();
+                thesaurus1.setId_thesaurus(idTheso);
+                thesaurus1.setContributor("");
+                thesaurus1.setCoverage("");
+                thesaurus1.setCreator("");
+                thesaurus1.setDescription("");
+                thesaurus1.setFormat("");
+                thesaurus1.setLanguage(idLang);
+                thesaurus1.setPublisher("");
+                thesaurus1.setRelation("");
+                thesaurus1.setRights("");
+                thesaurus1.setSource("");
+                thesaurus1.setSubject("");
+                thesaurus1.setTitle("theso_" + idTheso + "_" + idLang);
+                thesaurus1.setType("");
+                thesaurusHelper.addThesaurusTraduction(ds, thesaurus1);
+            }            
+        }
+    }    
 
     public void addSingleConcept(HikariDataSource ds, String idTheso, String idConceptPere, String idGroup, int idUser,
             CsvReadHelper.ConceptObject conceptObject) {
@@ -387,6 +423,7 @@ public class CsvImportHelper {
         concept.setStatus("");
         concept.setNotation(conceptObject.getNotation());
         concept.setIdConcept(conceptObject.getIdConcept());
+        concept.setIdArk(conceptObject.getArkId());
 
         // ajout du concept
         if (!conceptHelper.insertConceptInTable(ds, concept, idUser)) {
