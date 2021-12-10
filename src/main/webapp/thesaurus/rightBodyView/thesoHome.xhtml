@@ -22,21 +22,34 @@
                 <div class="col-6" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('thesohome.totalConcepts')} " style="font-size: 14px;"/>
                     <h:outputText value="#{selectedTheso.thesoName} : " style="font-size: 14px; font-weight: bold"/>
-                    <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" style="font-size: 14px; color:  #FF7979;"/>
+                    <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" style="font-size: 14px; color: #F47B2A;"/>
                 </div>
                 <div class="col-6" style="text-align: right">
                     <h:outputText value="#{langueBean.getMsg('thesohome.lastModification')} : " style="font-size: 14px;"/>
-                    <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 14px; color: #FF7979;"/>
+                    <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 14px; color: #F47B2A;"/>
                 </div>
             </div>
 
+            
+            
+            <div class="row">
+                <div class="col-10" style="margin-top: 3px">
+                    <h:outputText value="Lien direct vers ce thésaurus : " style="font-size: 12px;"/>
+                    <p:link href="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
+                            value="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
+                            target="_blank" style="font-size: 12px; color: #43B572;" >
+                        <i class="pi pi-link" style="color: #43B572;" />
+                    </p:link>   
+                </div>
+            </div>            
+            
             <div class="row">
                 <div class="col-12">
-                    <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')} : " style="font-size: 14px;"/>
+                    <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')} : " style="font-size: 12px;"/>
 
                     <ui:repeat var="value" varStatus="status1" value="#{viewEditorThesoHomeBean.lastModifiedConcepts}">
-                        <h:outputText value="#{value.value}" title="#{value.id}" style="font-size: 14px; color: #43B572;"/>
-                        <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>
+                        <h:outputText value="#{value.value}" title="#{value.id}" style="font-size: 12px; color: #F47B2A;"/>
+                        <h:outputText rendered="#{!status1.last}" value=", " style="color: #000"/>
                     </ui:repeat>
                 </div>                
             </div>
