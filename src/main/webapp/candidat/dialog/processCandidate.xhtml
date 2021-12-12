@@ -29,15 +29,15 @@
             </div>
             
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('processCandidate').hide();" update="containerIndex:idProcessCandidate"/>
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
+                                 actionListener="PF('processCandidate').hide();" update="idProcessCandidate"/>
 
-                <p:commandButton class="btn btn-primary" title="Rejeter" style="margin-right: 10px" process="@this" ajax="false"
-                                 update="containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
+                <p:commandButton class="btn btn-primary" title="Rejeter" style="margin-right: 10px"  ajax="true"
+                                 update="tabViewCandidat messageIndex" oncomplete="PF('processCandidate').hide();"
                                  actionListener="#{processCandidateBean.rejectCandidat(currentUser.nodeUser.idUser)}" />
 
-                <p:commandButton class="btn btn-primary" title="Insérer" process="@this"
-                                 update="containerIndex messageIndex" oncomplete="PF('processCandidate').hide();"
+                <p:commandButton class="btn btn-primary" title="Insérer" ajax="true"
+                                 update="tabViewCandidat messageIndex" oncomplete="PF('processCandidate').hide();"
                                  actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser)}"/>
             </div>
         </h:form>

@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-12">
             <p:commandLink value="#{langueBean.getMsg('candidat.return')}" 
-                           update="containerIndex:tabViewCandidat" style="color: #F47B2A" process="@this" 
+                           update="tabViewCandidat" style="color: #F47B2A" process="@this" 
                            action= "#{candidatBean.getRejectCandidatByThesoAndLangue()}"
                            actionListener="#{candidatBean.setIsNewCandidatRejected(true)}" />
         </div>

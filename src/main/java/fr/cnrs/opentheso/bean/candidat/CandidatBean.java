@@ -489,9 +489,6 @@ public class CandidatBean implements Serializable {
         getAllCandidatsByThesoAndLangue();
 
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
-
-        PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("containerIndex");
     }
 
     public ArrayList<NodeIdValue> searchCollection(String enteredValue) {

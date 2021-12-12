@@ -28,12 +28,12 @@
             </div>
             
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
                                  actionListener="PF('confirmDeleteTraduction').hide();" update="confirmDeleteForm"/>
 
-                <p:commandButton class="btn btn-danger" title="Supprimer" process="@this" ajax="false"
+                <p:commandButton class="btn btn-danger" title="Supprimer" ajax="true"
                                  oncomplete="PF('confirmDeleteTraduction').hide();"
-                                 update="containerIndex messageIndex"
+                                 update="tabViewCandidat messageIndex"
                                  actionListener="#{traductionService.deleteTraduction()}" />
             </div>   
         </h:form>  

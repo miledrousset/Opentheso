@@ -3,20 +3,22 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <p:toolbar>
-        <p:toolbarGroup align="left">
-            <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('candidat.my_candidats')}" 
-                                     value="#{candidatBean.myCandidatsSelected2}" style="color: #000">
-                <p:ajax update="containerIndex" listener="#{candidatBean.selectMyAcceptedCandidats()}" />
-            </p:selectBooleanCheckbox>
-        </p:toolbarGroup>
-        <p:toolbarGroup align="right">
-            <h:outputText value="#{langueBean.getMsg('candidat.search')}"/>
-            <p:inputText value="#{candidatBean.searchValue2}" style="margin-left: 10px" />
-            <p:commandButton icon="fas fa-search" update="containerIndex" style="height: 31px; margin-left: 5px"
-                             actionListener="#{candidatBean.searchAcceptedCandByTermeAndAuteur()}"/>
-        </p:toolbarGroup>
-    </p:toolbar>
+    <h:form>
+        <p:toolbar>
+            <p:toolbarGroup align="left">
+                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('candidat.my_candidats')}" 
+                                         value="#{candidatBean.myCandidatsSelected2}" style="color: #000">
+                    <p:ajax update="tabViewCandidat" listener="#{candidatBean.selectMyAcceptedCandidats()}" />
+                </p:selectBooleanCheckbox>
+            </p:toolbarGroup>
+            <p:toolbarGroup align="right">
+                <h:outputText value="#{langueBean.getMsg('candidat.search')}"/>
+                <p:inputText value="#{candidatBean.searchValue2}" style="margin-left: 10px" />
+                <p:commandButton icon="fas fa-search" update="tabViewCandidat" style="height: 31px; margin-left: 5px"
+                                 actionListener="#{candidatBean.searchAcceptedCandByTermeAndAuteur()}"/>
+            </p:toolbarGroup>
+        </p:toolbar>
+    </h:form>
 
     <p:dataTable var="candidat" value="#{candidatBean.acceptedCadidat}" paginator="true" rows="15"
                  selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
@@ -27,7 +29,7 @@
         </p:column>  
 
         <p:column width="50%" headerText="#{langueBean.getMsg('candidat.titre')}">
-            <p:commandLink value="#{candidat.nomPref}" ajax="true" update="containerIndex" style="color: #43B572"
+            <p:commandLink value="#{candidat.nomPref}" ajax="true" update="tabViewCandidat" style="color: #43B572"
                            process="@this" actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
         </p:column>  
 

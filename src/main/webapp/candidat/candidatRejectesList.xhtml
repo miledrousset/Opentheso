@@ -2,22 +2,24 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
-    
-    <p:toolbar>
-        <p:toolbarGroup align="left">
-            <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('candidat.my_candidats')}" 
-                                     value="#{candidatBean.myCandidatsSelected3}">
-                <p:ajax update="containerIndex" listener="#{candidatBean.selectMyRejectCandidats()}" />
-            </p:selectBooleanCheckbox>
-        </p:toolbarGroup>
-        <p:toolbarGroup align="right">
-            <h:outputText value="#{langueBean.getMsg('candidat.search')}"/>
-            <p:inputText value="#{candidatBean.searchValue3}" style="margin-left: 10px" />
-            <p:commandButton icon="fas fa-search" update="containerIndex" style="height: 31px; margin-left: 5px"
-                             actionListener="#{candidatBean.searchRejectCandByTermeAndAuteur()}"/>
-        </p:toolbarGroup>
-    </p:toolbar>
-    
+
+    <h:form>
+        <p:toolbar>
+            <p:toolbarGroup align="left">
+                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('candidat.my_candidats')}" 
+                                         value="#{candidatBean.myCandidatsSelected3}">
+                    <p:ajax update="tabViewCandidat" listener="#{candidatBean.selectMyRejectCandidats()}" />
+                </p:selectBooleanCheckbox>
+            </p:toolbarGroup>
+            <p:toolbarGroup align="right">
+                <h:outputText value="#{langueBean.getMsg('candidat.search')}"/>
+                <p:inputText value="#{candidatBean.searchValue3}" style="margin-left: 10px" />
+                <p:commandButton icon="fas fa-search" update="tabViewCandidat" style="height: 31px; margin-left: 5px"
+                                 actionListener="#{candidatBean.searchRejectCandByTermeAndAuteur()}"/>
+            </p:toolbarGroup>
+        </p:toolbar>
+    </h:form>
+
     <p:dataTable var="candidat" value="#{candidatBean.rejetCadidat}" paginator="true" rows="15"
                  selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
                  style="margin-top: 20px" emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}" >
@@ -27,7 +29,7 @@
         </p:column>  
 
         <p:column width="50%" headerText="#{langueBean.getMsg('candidat.titre')}">
-            <p:commandLink value="#{candidat.nomPref}" ajax="true" update="containerIndex" style="color: #43B572"
+            <p:commandLink value="#{candidat.nomPref}" ajax="true" update="tabViewCandidat" style="color: #43B572"
                            process="@this" actionListener="#{candidatBean.showRejectCandidatSelected(candidat)}" />
         </p:column>  
 

@@ -193,7 +193,7 @@ public class SelectedTheso implements Serializable {
     /**
      * Permet de Re-charger le thésaurus sélectionné, pour activer des mises à jour non prises en compte
      */
-    public void reloadSelectedTheso() {
+    public void reloadSelectedTheso() throws IOException {
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -206,6 +206,8 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
+        
+        menuBean.redirectToThesaurus();
     }
 
     /**

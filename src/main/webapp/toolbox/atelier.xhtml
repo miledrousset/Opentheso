@@ -53,9 +53,11 @@
                         <div class="col-12" style="height: 100%">
                             <div class="card shadow mb-4" style="height: 100%; padding: 20px; color: #000">
 
-                                <div class="card mb-4 py-3 border-left-success" style="padding-left: 10px; padding-right: 10px">
-                                    <ui:include src="actionsOnThisTheso.xhtml" />
-                                </div>
+                                <h:panelGroup rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
+                                    <div class="card mb-4 py-3 border-left-success" style="padding-left: 10px; padding-right: 10px">
+                                        <ui:include src="actionsOnThisTheso.xhtml" />
+                                    </div>
+                                </h:panelGroup>
 
                                 <div class="card mb-4 py-3 border-left-success" style="padding-left: 10px; padding-right: 10px">
                                     <h:outputText value="D'autres actions structurées avec choix d'un thésaurus en particulier"  /> <br/>
@@ -298,8 +300,10 @@
                             </div>
                         </div>
                     </div>
-                    <ui:include src="../commun/footer.xhtml" />
+                    <ui:include src="../commun/footer.xhtml" /> 
                 </h:form>
+
+                <ui:include src="../dialog/import/listAlignmentCsv.xhtml" />   
             </div>
         </h:panelGroup>
     </h:body>

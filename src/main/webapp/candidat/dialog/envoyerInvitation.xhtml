@@ -6,7 +6,7 @@
     <p:dialog id="idSendChatInvitation" header="Envoyer une invitation" widgetVar="sendChatInvitation" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="sendChatInvitationForm" style="width: 100%">
+        <h:form id="sendChatInvitationForm">
             
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
@@ -19,12 +19,10 @@
             
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('participantsList').hide();" update="containerIndex:idSendChatInvitation"/>
+                                 actionListener="PF('participantsList').hide();" update="idSendChatInvitation"/>
 
-                <p:commandButton class="btn btn-primary" title="Envoyer" process="@this"
-                                 oncomplete="PF('participantsList').hide();"
-                                 update="containerIndex messageIndex"
-                                 actionListener="#{discussionService.sendInvitation()}"/>
+                <p:commandButton class="btn btn-primary" title="Envoyer" oncomplete="PF('participantsList').hide();" ajax="true"
+                                 update="tabViewCandidat messageIndex" actionListener="#{discussionService.sendInvitation()}"/>
             </div>
         </h:form>
     </p:dialog>   

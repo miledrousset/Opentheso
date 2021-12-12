@@ -6,23 +6,17 @@
     <p:dialog id="idParticipantsList" header="Liste des participants" widgetVar="participantsList"
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
 
-        <h:form id="newParticipantForm">
-            
-            <ui:repeat var="participant" value="#{discussionService.participants}">
-                <div class="row" style="font-size: 12px; background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px">
-                    <div class="col-12" >
-                        <h:outputText value="#{participant}"/>
-                    </div>                        
-                </div>   
-            </ui:repeat>
-            
-            <p:separator styleClass="separator" style="margin-top: 2px; margin-bottom: 2px"/> 
-            
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="#{langueBean.getMsg('candidat.close')}" class="btn btn-secondary"
-                                 actionListener="PF('participantsList').hide();" update="containerIndex:idParticipantsList"/>
-            </div>
-        </h:form>
+        <ui:repeat var="participant" value="#{discussionService.participants}">
+            <div class="row" style="background-color: #{viewEditionBean.newAlternateColor}; padding-top: 5px; margin-bottom: 5px">
+                <div class="col-12" >
+                    <h:outputText value="#{participant}"/>
+                </div>                        
+            </div>   
+        </ui:repeat>
 
+        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <p:commandButton title="#{langueBean.getMsg('candidat.close')}" class="btn btn-secondary"
+                             actionListener="PF('participantsList').hide();" update="idParticipantsList"/>
+        </div>
     </p:dialog>   
 </ui:fragment>

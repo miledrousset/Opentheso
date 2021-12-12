@@ -8,32 +8,34 @@
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
 
         <p:outputPanel id="manage-traduction-content" class="ui-fluid">
-            <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Langage" style="font-weight: bold;"/>
+            <h:form>
+                <div class="row">
+                    <div class="col-5" style="margin-top: 3px">
+                        <h:outputText value="Langage" style="font-weight: bold;"/>
+                    </div>
+                    <div class="col-7">
+                        <h:outputText value="#{traductionService.langage}" />
+                    </div>
                 </div>
-                <div class="col-7">
-                    <h:outputText value="#{traductionService.langage}" />
-                </div>
-            </div>
 
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Traduction" style="font-weight: bold;"/>
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-5" style="margin-top: 3px">
+                        <h:outputText value="Traduction" style="font-weight: bold;"/>
+                    </div>
+                    <div class="col-7">
+                        <p:inputText value="#{traductionService.traduction}" required="true" />
+                    </div>
                 </div>
-                <div class="col-7">
-                    <p:inputText value="#{traductionService.traduction}" required="true" />
+
+                <div style="width: 100%; text-align: right; margin-top: 20px; margin-bottom: 5px;">
+                    <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
+                                     update="idEditTraduction" actionListener="PF('editTraduction').hide();"/>
+
+                    <p:commandButton class="btn btn-primary" title="Modifier" ajax="true"
+                                     oncomplete="PF('editTraduction').hide();" update="tabViewCandidat messageIndex"
+                                     actionListener="#{traductionService.updateTraduction()}"/>
                 </div>
-            </div>
-
-            <div style="width: 100%; text-align: right; margin-top: 20px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" 
-                                 update="idEditTraduction" actionListener="PF('editTraduction').hide();"/>
-
-                <p:commandButton class="btn btn-primary" title="Modifier"
-                                 oncomplete="PF('editTraduction').hide();" update="containerIndex messageIndex"
-                                 actionListener="#{traductionService.updateTraduction()}"/>
-            </div>
+            </h:form>
         </p:outputPanel>
     </p:dialog>   
 </ui:fragment>

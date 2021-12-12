@@ -6,37 +6,38 @@
 
     <p:dialog id="idNewTraduction" header="Ajouter une nouvelle traduction" widgetVar="newTraduction" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
-
-        <!-- Langues du thésaurus -->
-        <div class="row">
-            <div class="col-5">
-                <h:outputText value="Langues du thésaurus :"/>
+        <h:form id="newTraductionForm">
+            <!-- Langues du thésaurus -->
+            <div class="row">
+                <div class="col-5">
+                    <h:outputText value="Langues du thésaurus :"/>
+                </div>
+                <div class="col-7">
+                    <p:selectOneMenu id="collection" label="Langue" value="#{traductionService.newLangage}" 
+                                     style="width: 100%; background: white; border-color: #43B572">
+                        <f:selectItems  value="#{traductionService.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                    </p:selectOneMenu>
+                </div>
             </div>
-            <div class="col-7">
-                <p:selectOneMenu id="collection" label="Langue" value="#{traductionService.newLangage}" 
-                                 style="width: 100%; background: white; border-color: #43B572">
-                    <f:selectItems  value="#{traductionService.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                </p:selectOneMenu>
-            </div>
-        </div>
 
-        <!-- traduction à ajouter -->
-        <div class="row" style="margin-top: 10px">
-            <div class="col-5">
-                <h:outputText value="Traduction :" />
-            </div>
-            <div class="col-7">
-                <p:inputText value="#{traductionService.newTraduction}" required="true" style="width: 100%" />
-            </div>
-        </div>       
+            <!-- traduction à ajouter -->
+            <div class="row" style="margin-top: 10px">
+                <div class="col-5">
+                    <h:outputText value="Traduction :" />
+                </div>
+                <div class="col-7">
+                    <p:inputText value="#{traductionService.newTraduction}" required="true" style="width: 100%" />
+                </div>
+            </div>       
 
-        <div style="width: 100%; text-align: right; margin-top: 10px;">
-            <p:commandButton title="Fermer" class="btn btn-secondary" process="@this" style="margin-right: 10px"
-                             actionListener="PF('newTraduction').hide();" update="containerIndex:idNewTraduction"/>
+            <div style="width: 100%; text-align: right; margin-top: 10px;">
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
+                                 actionListener="PF('newTraduction').hide();" update="idNewTraduction"/>
 
-            <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}" process="@this" ajax="false"
-                             oncomplete="PF('newTraduction').hide();"
-                             actionListener="#{traductionService.addTraductionCandidat()}"/>
-        </div>
+                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
+                                 oncomplete="PF('newTraduction').hide();" ajax="true" update="tabViewCandidat"
+                                 actionListener="#{traductionService.addTraductionCandidat()}"/>
+            </div>
+        </h:form>
     </p:dialog>   
 </ui:fragment>

@@ -13,17 +13,17 @@
                     <h:outputText value="Texte" style="font-weight: bold;"/>
                 </div>
                 <div class="col-7">
-                    <p:inputTextarea value="#{noteBeanCandidat.noteValueToChange}" required="true"
+                    <p:inputTextarea value="#{noteBeanCandidat.selectedNodeNote.lexicalvalue}" required="true"
                              style="width: 100%; resize: none; font-size: 13px; background: white;"/>
                 </div>
             </div>
             
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('editNote').hide();" update="editNoteForm"/>
+                                 actionListener="PF('editNote').hide();" update="idEditNote"/>
 
                 <p:commandButton class="btn btn-primary" title="Modifier" oncomplete="PF('editNote').hide();"
-                                 update="editNoteForm containerIndex messageIndex"
+                                 update="tabViewCandidat messageIndex"
                                  actionListener="#{noteBeanCandidat.updateNote(currentUser.nodeUser.idUser)}"/>
             </div>
         </h:form>

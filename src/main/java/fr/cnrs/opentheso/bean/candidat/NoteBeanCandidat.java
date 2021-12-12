@@ -202,7 +202,7 @@ public class NoteBeanCandidat implements Serializable {
                     selectedNodeNote.getId_concept(),
                     selectedNodeNote.getLang(),
                     selectedTheso.getCurrentIdTheso(),
-                    noteValue,
+                    selectedNodeNote.getLexicalvalue(),
                     selectedNodeNote.getNotetypecode(),
                     idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
@@ -215,7 +215,7 @@ public class NoteBeanCandidat implements Serializable {
                     selectedNodeNote.getId_term(),
                     selectedNodeNote.getLang(),                    
                     selectedTheso.getCurrentIdTheso(),
-                    noteValue,
+                    selectedNodeNote.getLexicalvalue(),
                     selectedNodeNote.getNotetypecode(),
                     idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
@@ -231,42 +231,10 @@ public class NoteBeanCandidat implements Serializable {
             Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    /*    PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("candidatForm:listTraductionForm");
-            pf.ajax().update("candidatForm");
-        }        
-*/
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
       
     }
-/*    
-    public ArrayList<NodeNote> nodeToEdit() {
-        if (selectedTypeNote == null) {
-            return null;
-        }
-        switch (selectedTypeNote) {
-            case "note":
-                return conceptBean.getNotes();
-            case "definition":
-                return conceptBean.getDefinitions();
-            case "scopeNote":
-                return conceptBean.getScopeNotes();
-            case "example":
-                return conceptBean.getExamples();
-            case "historyNote":
-                return conceptBean.getHistoryNotes();
-            case "editorialNote":
-                return conceptBean.getEditorialNotes();
-            case "changeNote":
-                return conceptBean.getChangeNotes();
-            default:
-                return null;
-        }
-    }    
-    */
-    
     
     public void deleteNote(int idUser) {
         NoteHelper noteHelper = new NoteHelper();

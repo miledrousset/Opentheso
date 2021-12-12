@@ -6,63 +6,58 @@
 
     <p:dialog id="idNewNote" header="Nouvelle note" widgetVar="newNote" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
-
         <h:form id="newNoteForm">
-            
-            <div class="row" style="margin-top: 10px">
-                <div class="col-12" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " style="font-weight: bold;"/>
-                    <h:outputText value="#{candidatBean.candidatSelected.nomPref}"
-                                  style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
+            <div class="row">
+                <div class="col-12" >
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " style="color: #000;"/>
+                    <h:outputText value="#{candidatBean.candidatSelected.nomPref}" style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
                 </div>
             </div>
 
             <div class="row" style="margin-top: 10px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Type note" style="font-weight: bold;"/>
-                </div>
-                <div class="col-7">
-                    <p:selectOneMenu value="#{noteBeanCandidat.selectedTypeNote}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                <div class="col-12" >
+                    <p:selectOneMenu id="typeNote" label="Type note" value="#{noteBeanCandidat.selectedTypeNote}"
+                                     style="width: 100%; background: white; border-color: #43B572">
 
                         <f:selectItems value="#{noteBeanCandidat.noteTypes}" var="typeNote"
                                        itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
-                    </p:selectOneMenu> 
+                    </p:selectOneMenu>
                 </div>
             </div>
 
-            <!-- Langue de la note -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Langue" style="font-weight: bold;"/>
-                </div>
-                <div class="col-7">
-                    <p:selectOneMenu  value="#{noteBeanCandidat.selectedLang}" 
-                                      style="width: 100%; font-size: 12px; background: white; border-color: #43B572">
+            <div class="row">
+                <div class="col-12" >
+                    <p:selectOneMenu label="Langue" value="#{noteBeanCandidat.selectedLang}" style="width: 100%; background: white; border-color: #43B572">
                         <f:selectItems  value="#{noteBeanCandidat.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                     </p:selectOneMenu>
                 </div>
             </div>
 
-            <!-- Langue de la note -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Texte" style="font-weight: bold;"/>
-                </div>
-                <div class="col-7">
-                    <p:inputTextarea placeholder="tapez votre note ..." value="#{noteBeanCandidat.noteValue}"/>
+            <div class="row">
+                <div class="col-12" >
+                    <p:textEditor value="#{noteBeanCandidat.noteValue}"
+                                  secure="false" height="150" style="width: 100%; font-size: 12px; color: black" placeholder="Ajouter votre note" >
+                        <f:facet name="toolbar">
+                            <span class="ql-formats">
+                                <button class="ql-link" title="Ajouter un lien"></button>
+                                <button class="ql-unlink" title="Supprimer un lien"></button>
+                            </span>
+                        </f:facet>
+                    </p:textEditor>
                 </div>
             </div>
-            
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('newDefinition').hide();" update="newNoteForm"/>
 
-                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
-                                 oncomplete="PF('newDefinition').hide();"
-                                 update="containerIndex messageIndex"
-                                 actionListener="#{traductionService.addTraductionCandidat()}"/>
-            </div>          
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12" style="text-align: right">
+                    <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('newNote').hide();" update="idNewNote"/>
+                    
+                    <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="tabViewCandidat messageIndex"
+                                     ajax="true" class="btn btn-primary" style="margin-left: 10px"
+                                     oncomplete="PF('newNote').hide();"
+                                     action="#{noteBeanCandidat.addNewNote(currentUser.nodeUser.idUser)}"/>
+                </div>
+            </div>
         </h:form>
     </p:dialog>   
 </ui:fragment>
