@@ -118,6 +118,7 @@ public class ProcessCandidateBean implements Serializable {
 
         printMessage("Canditats insérés avec succès");
         reset(null);
+        candidatBean.initCandidatModule();
         candidatBean.getAllCandidatsByThesoAndLangue();
         try {
             candidatBean.setIsListCandidatsActivate(true);
@@ -142,6 +143,7 @@ public class ProcessCandidateBean implements Serializable {
 
         printMessage("Candidats insérés avec succès");
         reset(null);
+        candidatBean.initCandidatModule();
         candidatBean.getAllCandidatsByThesoAndLangue();
         try {
             candidatBean.setIsListCandidatsActivate(true);

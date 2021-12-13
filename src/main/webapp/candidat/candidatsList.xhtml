@@ -97,8 +97,8 @@
                                       and (candidatBean.isListSelected())}">
                 <div class="row" >
                     <div class="col-12" style="text-align: right; margin-top: 20px">
-                        <p:commandButton title="#{langueBean.getMsg('candidat.submitList')}" ajax="true"
-                                         update="tabViewCandidat" class="btn btn-primary" process="@this"
+                        <p:commandButton title="#{langueBean.getMsg('candidat.submitList')}" ajax="true" process="@this"
+                                         update="idProcessCandidateList processCandidateListForm" class="btn btn-primary"
                                          oncomplete="PF('processCandidateList').show();" /> 
                     </div>
                 </div>

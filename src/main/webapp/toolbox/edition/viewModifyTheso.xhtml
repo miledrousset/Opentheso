@@ -95,7 +95,7 @@
 
             <div class="row" style="margin: 10px">
                 <div class="col-2"> 
-                    <p:commandButton value="#{langueBean.getMsg('btnBack')}" icon="fas fa-undo-alt" 
+                    <p:commandButton value="#{langueBean.getMsg('btnBack')}" icon="fas fa-undo-alt"  ajax="true" process="@this"
                                      actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" update="containerIndex" />
                 </div>    
             </div>

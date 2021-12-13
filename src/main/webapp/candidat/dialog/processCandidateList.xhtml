@@ -23,15 +23,15 @@
             
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" process="@this"
-                                 actionListener="PF('processCandidateList').hide();" update="containerIndex:idProcessCandidateList"/>
+                                 actionListener="PF('processCandidateList').hide();" update="idProcessCandidateList"/>
 
                 <p:commandButton class="btn btn-primary" title="Rejeter" style="margin-right: 10px"
-                                 update="processCandidateListForm containerIndex messageIndex" 
+                                 update="processCandidateListForm tabViewCandidat messageIndex" 
                                  oncomplete="PF('processCandidateList').hide();" process="@this"
                                  actionListener="#{processCandidateBean.rejectCandidatList(currentUser.nodeUser.idUser)}"  />
 
                 <p:commandButton class="btn btn-primary" title="Insérer"
-                                 update="processCandidateListForm containerIndex messageIndex" 
+                                 update="processCandidateListForm tabViewCandidat messageIndex" 
                                  oncomplete="PF('processCandidateList').hide();" process="@this"
                                  actionListener="#{processCandidateBean.insertListCandidat(currentUser.nodeUser.idUser)}" />
             </div>
