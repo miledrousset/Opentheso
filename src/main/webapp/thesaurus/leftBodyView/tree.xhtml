@@ -3,7 +3,7 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <div style="max-height: 700px; overflow: auto;" >
+
         <div style="width: 100%; display: flex;">
             <div style="width: 50%;">  
                 <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
@@ -53,7 +53,7 @@
         </div>
 
         <p:tree value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
-                style="border: none; padding: 0px;" animate="true" cache="#{roleOnTheso.nodePreference.tree_cache}" 
+                style="border: none; padding: 0px; min-height: 700px; max-height: 800px;overflow-y:scroll" animate="true" cache="#{roleOnTheso.nodePreference.tree_cache}" 
                 draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
                 widgetVar="treeWidget">
 
@@ -82,7 +82,7 @@
             </p:treeNode>
 
         </p:tree>
-    </div>
+
     
     <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
     
