@@ -119,13 +119,6 @@ body .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
     border-color: #f47b2a;
 }
 
-
-.dialog-titre {
-    font-size: 12px; 
-    color: black; 
-    font-weight: bold;
-}
-
 .dropdown-menu-private{
     color: #42a068 !important;
     font-size: 12px;

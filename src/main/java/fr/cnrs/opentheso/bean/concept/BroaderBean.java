@@ -296,7 +296,6 @@ public class BroaderBean implements Serializable {
                 conceptBean.getSelectedLang());
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
         }
 
         PrimeFaces.current().executeScript("srollToSelected();");

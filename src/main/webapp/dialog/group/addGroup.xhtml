@@ -43,9 +43,9 @@
 
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addGroup').hide();" update="addGroupForm"/>
+                                 actionListener="PF('addGroup').hide();" update="containerIndex:formRightTab"/>
 
-                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}" process="@this"
+                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}" process="@this" ajax="true"
                                  update="containerIndex messageIndex" oncomplete="PF('addGroup').hide();"
                                  actionListener="#{addGroupBean.addGroup(selectedTheso.currentIdTheso,
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>

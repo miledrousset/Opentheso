@@ -8,10 +8,10 @@
         <h:form id="formX">
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+                    <h:outputText value="Nom du concept : " style="font-weight: bold; color: #000" /> 
                 </div>
                 <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #000"/> 
                 </div>
             </div>             
 
@@ -20,7 +20,7 @@
                 <ui:repeat var="broader" value="#{broaderBean.nodeBTs}" >
                     <div class="row">
                         <div class="col-1" style="margin-top: 3px">
-                            <p:commandLink style="color: #FF7979" update="messageIndex"
+                            <p:commandLink style="color: #FF7979" update="messageIndex" process="@this" ajax="true"
                                            action="#{broaderBean.deleteBroaderLink(broader, currentUser.nodeUser.idUser)}">
                                 <i class="pi pi-trash" />
                             </p:commandLink>

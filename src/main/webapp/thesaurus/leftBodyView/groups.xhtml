@@ -14,7 +14,7 @@
                           class="dropdown-submenu pull-left">
 
                 <p:menuitem value="Ajouter un groupe/collection" actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group"
-                            oncomplete="PF('addGroup').show();" update="idAddGroup" />
+                            oncomplete="PF('addGroup').show();" update="addGroupForm idAddGroup" />
 
                 <p:menuitem rendered="#{treeGroups.isGroupNode and treeGroups.selectedNode != null}"
                             value="Ajouter un sous-group/collection" actionListener="#{addGroupBean.init()}"
