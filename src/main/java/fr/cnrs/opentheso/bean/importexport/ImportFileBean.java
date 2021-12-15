@@ -686,7 +686,7 @@ public class ImportFileBean implements Serializable {
             BDDinsertEnable = false;
             importInProgress = false;
             uri = null;
-            info = "import réussie, notes importées = " + (int)total;            
+            info = "import réussi, notes importées = " + (int)total;            
             total = 0; 
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
@@ -769,7 +769,7 @@ public class ImportFileBean implements Serializable {
             BDDinsertEnable = false;
             importInProgress = false;
             uri = null;
-            info = "import réussie, alignements importés = " + (int)total;            
+            info = "import réussi, alignements importés = " + (int)total;            
             total = 0;
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
@@ -837,7 +837,7 @@ public class ImportFileBean implements Serializable {
             BDDinsertEnable = false;
             importInProgress = false;
             uri = null;
-            info = "Suppression réussie, alignements supprimés = " + (int)total;            
+            info = "Suppression réussi, alignements supprimés = " + (int)total;            
             total = 0;
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
@@ -905,7 +905,7 @@ public class ImportFileBean implements Serializable {
             importInProgress = false;
             uri = null;
             total = 0;
-            info = "import réussie";
+            info = "import réussi";
             info = info + "\n" + csvImportHelper.getMessage();
 
             // mise à jour
