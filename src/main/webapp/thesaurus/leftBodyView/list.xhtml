@@ -6,19 +6,19 @@
     <h:panelGroup id="formList" class="user">
         <div class="form-group">
             <p:inputText id="inputList" placeholder="#{langueBean.getMsg('indexview.type_character')}" value="#{listIndex.searchValue}"
-                         class="form-control form-control-user" style="font-size: 15px; border-color: #43B572">
+                         class="form-control form-control-user" style="font-size: 12px; border-color: #43B572">
                 <p:ajax event="keyup" listener="#{listIndex.onChange()}" update="formList" />
             </p:inputText>
         </div>
 
         <div style="margin-top: 5px; margin-bottom: 5px; width: 100%; text-align: center; align-content: center">
             <p:selectBooleanCheckbox value="#{listIndex.permuted}" itemLabel="#{langueBean.getMsg('indexview.permuted')}"
-                                     style="color: #43B572">
+                                     style="color: #43B572; font-size: 12px">
                 <p:ajax update="formList" listener="#{listIndex.onChange()}"/>
             </p:selectBooleanCheckbox>
 
             <p:selectBooleanCheckbox value="#{listIndex.withAltLabel}" itemLabel="#{langueBean.getMsg('indexview.synonym')}"
-                                     style="color: #43B572">
+                                     style="color: #43B572; font-size: 12px">
                 <p:ajax update="formList" listener="#{listIndex.onChange()}"/>
             </p:selectBooleanCheckbox>
         </div>

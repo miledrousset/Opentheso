@@ -13,23 +13,19 @@
                           style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
                           class="dropdown-submenu pull-left">
 
-                <p:menuitem value="Ajouter un groupe/collection" actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group"
-                            oncomplete="PF('addGroup').show();" update="addGroupForm idAddGroup" />
+                <p:menuitem value="Ajouter un groupe/collection" actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
+                            oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
 
-                <p:menuitem rendered="#{treeGroups.isGroupNode and treeGroups.selectedNode != null}"
+                <p:menuitem disabled="#{treeGroups.isGroupNode and treeGroups.selectedNode != null}" process="@this"
                             value="Ajouter un sous-group/collection" actionListener="#{addGroupBean.init()}"
-                            oncomplete="PF('addSubGroup').show();" update="idAddSubGroup" 
+                            oncomplete="PF('addSubGroup').show();" update="containerIndex:idAddSubGroup" 
                             icon="far fa-object-ungroup"/>
 
-                <p:menuitem rendered="#{treeGroups.isGroupNode and treeGroups.selectedNode != null and !treeGroups.isThisGroupHaveSubGroup}"
-                            value="Supprimer group/collection" actionListener="#{addGroupBean.init()}"
-                            oncomplete="PF('deleteGroup').show();" update="idDeleteGroup"
+                <p:menuitem disabled="#{treeGroups.isGroupNode and treeGroups.selectedNode != null and !treeGroups.isThisGroupHaveSubGroup}"
+                            value="Supprimer group/collection" actionListener="#{addGroupBean.init()}"  process="@this"
+                            oncomplete="PF('deleteGroup').show();" update="containerIndex:idDeleteGroup"
                             icon="fas fa-minus"/>                  
             </p:menuButton>
-
-            <ui:include src="../../dialog/group/addGroup.xhtml" />
-            <ui:include src="../../dialog/group/addSubGroup.xhtml" />
-            <ui:include src="../../dialog/group/deleteGroup.xhtml" />
         </div>
     </div>
 
@@ -43,15 +39,18 @@
         <p:treeNode expandedIcon="fa object-group" collapsedIcon="fa object-group" >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{node.nodeId}" value="#{node.name}" style="font-size: 12px"/>
-        </p:treeNode>                
-        <p:treeNode type="group" expandedIcon="fa fa-folder-open far_custom_open" collapsedIcon="fa fa-folder far_custom_collapse" >
+        </p:treeNode>  
+        
+        <p:treeNode type="group" expandedIcon="fa fa-folder-open far_custom_open" collapsedIcon="fa fa-folder far_custom_collapse"  >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{node.nodeId}" value="#{node.name}" style="font-size: 12px"/>
         </p:treeNode>
+        
         <p:treeNode type="subGroup" expandedIcon="fa fa-folder-open far_custom_open" collapsedIcon="fa fa-folder far_custom_collapse">
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{node.nodeId}" value="#{node.name}" style="font-size: 12px"/>
-        </p:treeNode>                
+        </p:treeNode>    
+        
         <p:treeNode type="file" icon="pi pi-file-o pi-file" >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>                        
             <h:outputText title="#{node.nodeId}" value="#{node.name}"  style="font-size: 12px"/>

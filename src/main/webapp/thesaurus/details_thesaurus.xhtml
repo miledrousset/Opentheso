@@ -59,10 +59,9 @@
                                             <i class="pi pi-sitemap" />
                                             <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
                                         </f:facet>
-                                    </p:tab>
-                                    <ui:include src="leftBodyView/conceptsTree.xhtml" />                                            
+                                        <ui:include src="leftBodyView/conceptsTree.xhtml" />       
+                                    </p:tab>                                     
                                 </div>                                        
-
                             </p:tabView>
                         </div>
                         <ui:include src="../dialog/dragAndDrop/dragAndDrop.xhtml" />
@@ -110,4 +109,7 @@
         </div>
     </div>
     <ui:include src="../dialog/concept/addTopConcept.xhtml" />
+    <ui:include src="../dialog/group/addGroup.xhtml" />
+    <ui:include src="../dialog/group/addSubGroup.xhtml" />
+    <ui:include src="../dialog/group/deleteGroup.xhtml" />
 </ui:composition>

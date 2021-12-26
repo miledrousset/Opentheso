@@ -13,14 +13,14 @@
         </div>
 
         <ui:repeat var="traductionToEdit" value="#{traductionGroupBean.nodeGroupTraductionses}" >
-            <div class="row">
-                <div class="col-8" style="margin-top: 3px">
-                    <p:inputText value="#{traductionToEdit.title}" style="color: #43B572; font-size: 12px;"/>   
+            <div class="row"  style="margin-top: 8px">
+                <div class="col-9">
+                    <p:inputText value="#{traductionToEdit.title}" style="color: #43B572; width: 100%"/>   
                 </div>
-                <div class="col-2" style="margin-top: 8px;">
-                    <h:outputText value="#{traductionToEdit.idLang}" style="color: #43B572; font-size: 14px;"/>                    
+                <div class="col-2">
+                    <h:outputText value="#{traductionToEdit.idLang}" style="color: #43B572;"/>                    
                 </div>
-                <div class="col-2" style="margin-top: 8px;">
+                <div class="col-1">
                     <p:commandLink action="#{traductionGroupBean.updateTraduction(traductionToEdit, currentUser.nodeUser.idUser)}"
                                    style="color: #F7A269;" update="containerIndex:formRightTab">
                         <i class="pi pi-check-circle" style="color: #F7A269;" />

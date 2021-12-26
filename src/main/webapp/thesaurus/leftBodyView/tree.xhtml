@@ -4,86 +4,85 @@
              xmlns:p="http://primefaces.org/ui">
 
 
-        <div style="width: 100%; display: flex;">
-            <div style="width: 50%;">  
-                <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
-                              title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
-                              style="color: red; font-style: italic; background-color: yellow"/>
-            </div>
-            <div style="width: 50%; text-align: right;">
-                <p:link href="#{request.contextPath}/graph/index.xhtml"
-                        target="_blank" disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
-                        style="color: #F47B2A; float: right; margin-top: 2px;">
-                    <i class="pi pi-share-alt" style="font-size: 1rem" />
-                </p:link>
-
-                <p:menuButton style="margin-right: 10px; background-color: transparent" icon="pi pi-align-justify" >
-
-                    <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
-                                actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
-                                action="#{selectedTheso.reloadSelectedTheso()}"
-                                process="@this" disabled="#{!selectedTheso.sortByNotation}"
-                                update="containerIndex:formLeftTab" icon="fas fa-sort-alpha-down"/>
-
-                    <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
-                                actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
-                                action="#{selectedTheso.reloadSelectedTheso()}"
-                                disabled="#{selectedTheso.sortByNotation}" icon="fas fa-sort-numeric-down"
-                                process="@this" update="containerIndex:formLeftTab" />
-
-                    <p:menuitem value="Add top concept" onclick="#{newConcept.reset()}" icon="fas fa-folder-plus"
-                                oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
-                                rendered="#{(currentUser.nodeUser != null) and 
-                                            (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
-
-                    <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
-                                            and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
-                                value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
-                                update="idGlobalActionsTree messageIndex" icon="far fa-window-close" />                
-
-                    <p:menuitem disabled="false" styleClass="buttonIconOrange"
-                                rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                                value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
-                                actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
-                                action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
-                                update="idCopyAndPasteBetweenThesoToTop"
-                                oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />
-                </p:menuButton> 
-            </div>
+    <div style="width: 100%; display: flex;">
+        <div style="width: 50%;">  
+            <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
+                          title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
+                          style="color: red; font-style: italic; background-color: yellow"/>
         </div>
+        <div style="width: 50%; text-align: right;">
+            <p:link href="#{request.contextPath}/graph/index.xhtml"
+                    target="_blank" disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
+                    style="color: #F47B2A; float: right; margin-top: 2px;">
+                <i class="pi pi-share-alt" style="font-size: 1rem" />
+            </p:link>
 
-        <p:tree value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
-                style="border: none; padding: 0px; min-height: 700px; max-height: 800px;overflow-y:scroll" animate="true" cache="#{roleOnTheso.nodePreference.tree_cache}" 
-                draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
-                widgetVar="treeWidget">
+            <p:menuButton style="margin-right: 10px; background-color: transparent" icon="pi pi-align-justify" >
 
-            <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
-            <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-            <p:ajax event="select" listener="#{tree.onNodeSelect}" />
-            <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
+                <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
+                            actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
+                            action="#{selectedTheso.reloadSelectedTheso()}"
+                            process="@this" disabled="#{!selectedTheso.sortByNotation}"
+                            update="containerIndex:formLeftTab" icon="fas fa-sort-alpha-down"/>
 
-            <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
-                <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue"/>
-                <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}"/>
-            </p:treeNode>
+                <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
+                            actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
+                            action="#{selectedTheso.reloadSelectedTheso()}"
+                            disabled="#{selectedTheso.sortByNotation}" icon="fas fa-sort-numeric-down"
+                            process="@this" update="containerIndex:formLeftTab" />
 
-            <p:treeNode type="concept" expandedIcon="pi pi-folder-open pi_custom_open" collapsedIcon="pi pi-folder pi_custom_collapse" >
-                <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue"/>
-                <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}"/>
-            </p:treeNode>
+                <p:menuitem value="Add top concept" onclick="#{newConcept.reset()}" icon="fas fa-folder-plus"
+                            oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
+                            rendered="#{(currentUser.nodeUser != null) and 
+                                        (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
 
-            <p:treeNode type="file" icon="pi pi-file-o pi-file">
-                <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue"/>
-                <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" />
-            </p:treeNode>
+                <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
+                                        and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
+                            value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
+                            update="idGlobalActionsTree messageIndex" icon="far fa-window-close" />                
 
-            <p:treeNode type="facet" icon="fa fa-magnet fa_custom_magnet">
-                <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" />
-            </p:treeNode>
+                <p:menuitem disabled="false" styleClass="buttonIconOrange"
+                            rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
+                            value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
+                            actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
+                            action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
+                            update="idCopyAndPasteBetweenThesoToTop"
+                            oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />
+            </p:menuButton> 
+        </div>
+    </div>
 
-        </p:tree>
+    <p:tree value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
+            style="border: none; padding: 0px; min-height: 700px; max-height: 800px;overflow-y:scroll" animate="true" cache="#{roleOnTheso.nodePreference.tree_cache}" 
+            draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
+            widgetVar="treeWidget">
 
-    
+        <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
+        <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
+        <p:ajax event="select" listener="#{tree.onNodeSelect}" />
+        <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
+
+        <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
+            <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
+            <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
+        </p:treeNode>
+
+        <p:treeNode type="concept" expandedIcon="pi pi-folder-open pi_custom_open" collapsedIcon="pi pi-folder pi_custom_collapse" >
+            <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
+            <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
+        </p:treeNode>
+
+        <p:treeNode type="file" icon="pi pi-file-o pi-file">
+            <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
+            <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px" />
+        </p:treeNode>
+
+        <p:treeNode type="facet" icon="fa fa-magnet fa_custom_magnet">
+            <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px" />
+        </p:treeNode>
+
+    </p:tree>
+
     <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
-    
+
 </ui:fragment>

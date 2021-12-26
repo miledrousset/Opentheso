@@ -3,24 +3,27 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <p:tree id="treeConcepts" value="#{treeConcepts.root}"  dynamic="true" var="treeConcept" selectionMode="single"  selection="#{treeConcepts.selectedNode}"
+    <p:tree value="#{treeConcepts.root}"  dynamic="true" var="treeConcept" selectionMode="single"  selection="#{treeConcepts.selectedNode}"
             style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll" widgetVar="conceptTreeWidget" >
         <p:ajax event="expand"  listener="#{treeConcepts.onNodeExpand}"/>
         <p:ajax event="select" listener="#{treeConcepts.onNodeSelect}" />
 
-        <p:treeNode expandedIcon="fa fa-folder-open-o fa_custom_open" collapsedIcon="fa fa-folder-o fa_custom_collapse" >
+        <p:treeNode expandedIcon="fa object-group" collapsedIcon="fa object-group" >
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}" style="font-size: 12px"/>
         </p:treeNode>
+        
         <p:treeNode type="group" expandedIcon="fa fa-folder-open far_custom_open" collapsedIcon="fa fa-folder far_custom_collapse" >
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}" style="font-size: 12px"/>
         </p:treeNode>
+        
         <p:treeNode type="subGroup" expandedIcon="fa fa-folder-open far_custom_open" collapsedIcon="fa fa-folder far_custom_collapse">
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}" style="font-size: 12px"/>
         </p:treeNode>
-        <p:treeNode type="file" icon="fa fa-file-o fa_custom_file">
+        
+        <p:treeNode type="file" icon="pi pi-file-o pi-file" >
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.notation} " style="font-size: 12px; color: blue"/>
             <h:outputText title="#{treeConcept.nodeId}" value="#{treeConcept.name}"  style="font-size: 12px"/>
         </p:treeNode>

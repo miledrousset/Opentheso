@@ -14,14 +14,13 @@
                     <div class="row">
                         <div class="col-3" style="text-align: right;">
                             <h:outputText value="Label" title="Label de la collection"
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+                                          style="font-size: 14px; font-weight: bold;"/>
 
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="pi pi-cog"
                                           style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                <p:menuitem value="Modifier" action="#{modifyGroupBean.init()}"
-                                            oncomplete="PF('modifyGroup').show();"
-                                            update="idModifyGroup"/>
+                                <p:menuitem value="Modifier" action="#{modifyGroupBean.init()}" oncomplete="PF('modifyGroup').show();"
+                                            update="idModifyGroup" icon="fas fa-pen"/>
                             </p:menuButton>
                         </div>
 
@@ -36,8 +35,7 @@
                     <!-- ligne Type de groupe -->    
                     <div class="row">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Type" title="Type de la collection"
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px; margin-right: 40px"/>
+                            <h:outputText value="Type" title="Type de la collection" style="font-size: 14px; font-weight: bold;"/>
                         </div>
 
                         <div class="col-9">
@@ -52,8 +50,7 @@
                     <!-- ligne Type de groupe -->    
                     <div class="row">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Membres" title="Membres de la collection"
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px; margin-right: 40px"/>
+                            <h:outputText value="Membres" title="Membres de la collection" style="font-size: 14px; font-weight: bold;"/>
                         </div>
 
                         <div class="col-9">
@@ -68,8 +65,7 @@
                     <!-- ligne Type de groupe -->    
                     <div class="row">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Notation" title="Notation de la collection"
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px; margin-right: 40px"/>
+                            <h:outputText value="Notation" title="Notation de la collection" style="font-size: 14px; font-weight: bold;"/>
                         </div>
 
                         <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
@@ -93,26 +89,27 @@
                     <div class="list-group-item list-group-item-action">   
                         <div class="row">
                             <div class="col-3" style="text-align: right;">
-                                <h:outputText value="Traduction" title="Traduction de la collection"
-                                              style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+                                <h:outputText value="Traduction" title="Traduction de la collection" style="font-size: 14px; font-weight: bold;"/>
 
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     
-                                    <p:menuitem value="Ajouter une traduction" 
+                                    <p:menuitem value="Ajouter une traduction" icon="fas fa-plus"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 action = "#{traductionGroupBean.setLangWithNoTraduction()}"
                                                 oncomplete="PF('addTraductionGroup').show();"
                                                 update="idAddTraductionGroup"  />
                                     
-                                    <p:menuitem value="Modifier une traduction" 
+                                    <p:menuitem value="Modifier une traduction" icon="fas fa-pen"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 oncomplete="PF('renameTraductionGroup').show();"
+                                                disabled="#{groupView.nodeGroupTraductions.size() == 0}"
                                                 update="idRenameTraductionGroup" />
                                     
-                                    <p:menuitem value="Supprimer une traduction" 
+                                    <p:menuitem value="Supprimer une traduction" icon="fas fa-trash-alt"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 oncomplete="PF('deleteTraductionGroup').show();"
+                                                disabled="#{groupView.nodeGroupTraductions.size() == 0}"
                                                 update="idDeleteTraductionGroup" />
                                 </p:menuButton> 
                             </div>
@@ -142,8 +139,7 @@
                     <!-- ligne Type de groupe -->    
                     <div class="row">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Notation" title="Notation de la collection"
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px; margin-right: 40px"/>
+                            <h:outputText value="Notation" title="Notation de la collection" style="font-size: 14px; font-weight: bold;"/>
                         </div>
 
                         <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
@@ -167,7 +163,7 @@
                     <div class="row">
                         <div class="col-3" style="text-align: right;">
                             <h:outputText value="Identifiant / Lien permament" 
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px; margin-right: 40px"/>
+                                          style="font-size: 14px; font-weight: bold;"/>
                         </div>
                     </div>
                 </div>
@@ -176,8 +172,7 @@
                 <div class="list-group-item list-group-item-action">  
                     <div class="row">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Id interne" style="font-size: 14px; font-weight: bold; 
-                                          margin-right: 10px; margin-right: 40px"/>
+                            <h:outputText value="Id interne" style="font-size: 14px; font-weight: bold;"/>
                         </div>
                         <div class="col-9">
                             <p:link href="#{request.contextPath}/?idg=#{groupView.nodeGroup.conceptGroup.idgroup}&amp;idt=#{groupView.nodeGroup.conceptGroup.idthesaurus}"
@@ -192,8 +187,7 @@
                     <div class="list-group-item list-group-item-action"> 
                         <div class="row">
                             <div class="col-3" style="text-align: right;">
-                                <h:outputText value="IdArk" style="font-size: 14px; font-weight: bold; 
-                                              margin-right: 10px; margin-right: 40px"/>
+                                <h:outputText value="IdArk" style="font-size: 14px; font-weight: bold;"/>
                             </div>
                             <div class="col-9">
                                 <p:link href="#{roleOnTheso.nodePreference.uriArk}#{groupView.nodeGroup.conceptGroup.idARk}"
@@ -209,8 +203,7 @@
                 <h:panelGroup rendered="#{groupView.nodeGroup.conceptGroup.idHandle != ''}">
                     <div class="row">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="IdHandle" style="font-size: 14px; font-weight: bold; 
-                                          margin-right: 10px; margin-right: 40px"/>
+                            <h:outputText value="IdHandle" style="font-size: 14px; font-weight: bold;"/>
                         </div>
                         <div class="col-9">
                             <p:link href="https://hdl.handle.net/#{groupView.nodeGroup.conceptGroup.idHandle}"

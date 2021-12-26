@@ -6,24 +6,17 @@
     <p:dialog id="idDeleteGroup" header="supprimer groupe/collection" widgetVar="deleteGroup" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >
 
-        <h:form id="deleteGroupForm"
-                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-
-            <div class="row">
-                <div class="col-2" />
-                <div class="col-8">
-                    <h:outputText value="Suppression du groupe/collection : " style="font-weight: bold;"/>
-                    <h:outputText value="#{treeGroups.selectedNode.data}" style="font-size: 14px; color: #43B572"/>
+        <div class="row">
+                <div class="col-12">
+                    <h:outputText value="Suppression du groupe/collection : "/>
+                    <h:outputText value="#{treeGroups.selectedNode.data}" style="font-weight: bold; color: #43B572"/>
                 </div>
-                <div class="col-2" />
             </div>
 
             <div class="row" style="margin-top: 10px">
-                <div class="col-2" />
-                <div class="col-8">
+                <div class="col-12">
                     <h:outputText value="Permet de supprimer la collection, tous les concepts qui appartiennent à cette collection seront libérés, ils n'appertiendront plus à cette collection"/>
                 </div>
-                <div class="col-2" />
             </div>
 
             <div style="width: 100%; text-align: right; margin-top: 10px; margin-bottom: 5px;">
@@ -31,6 +24,5 @@
                                  update="containerIndex messageIndex" oncomplete="PF('deleteGroup').hide();"
                                  actionListener="#{removeConceptAndChildFromGroupBean.deleteGroup(treeGroups.selectedNodeId, currentUser.nodeUser.idUser)}"/>
             </div>
-        </h:form>
     </p:dialog>   
 </ui:fragment>

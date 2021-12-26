@@ -7,7 +7,6 @@ package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -207,7 +206,6 @@ public class AddGroupBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-    //        pf.ajax().update("formLeftTab:tabTree:tree");
             pf.ajax().update("formLeftTab:tabGroups:treeGroups");
         }        
     }

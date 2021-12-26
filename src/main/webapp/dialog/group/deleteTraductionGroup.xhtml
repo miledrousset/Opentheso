@@ -13,11 +13,11 @@
         </div>
 
         <ui:repeat var="traductions" value="#{traductionGroupBean.nodeGroupTraductionses}" >
-            <div class="row">
-                <div class="col-10" style="margin-top: 3px">
+            <div class="row" style="margin-top: 5px">
+                <div class="col-11">
                     <h:outputText value="#{traductions.title} (#{traductions.idLang})" style="color: #43B572"/> 
                 </div>
-                <div class="col-2">
+                <div class="col-1">
                     <p:commandLink style="color: #FF7979" update="containerIndex:formRightTab"
                                    action="#{traductionGroupBean.deleteTraduction(traductions, currentUser.nodeUser.idUser)}">
                         <i class="pi pi-trash" style="color: #F7A269;" />
