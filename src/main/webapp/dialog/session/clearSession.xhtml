@@ -20,8 +20,7 @@
                                  actionListener="PF('clearSession').hide();" update="idClearSession"/>
 
                 <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('menu.delete_session')}" 
-                                 update="messageIndex" 
-                                 oncomplete="PF('clearSession)'.hide();"
+                                 update="messageIndex" oncomplete="PF('clearSession)'.hide();"
                                  actionListener="#{sessionControl.isTimeout()}"/>
             </div>
         </f:facet>

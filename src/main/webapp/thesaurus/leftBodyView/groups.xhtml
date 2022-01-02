@@ -30,7 +30,7 @@
     </div>
 
     <p:tree id="treeGroups" value="#{treeGroups.root}" dynamic="true" var="node" selectionMode="single" selection="#{treeGroups.selectedNode}"
-            style="width: auto; border: none; font-size: 12px;  min-height: 700px; max-height: 800px; overflow-y:scroll"
+            style="width: auto; border: none; font-size: 12px;  min-height: 700px; max-height: 800px; overflow-y:scroll; overflow: visible"
             widgetVar="groupWidget">
 
         <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>

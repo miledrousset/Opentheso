@@ -48,7 +48,7 @@ public class SessionControl implements Serializable {
         if(FacesContext.getCurrentInstance()== null) return;
 
         if (currentUser.getNodeUser() != null) {
-            currentUser.disconnect();
+            currentUser.disconnect(false);
         } else {
             tree.reset();
             listIndex.reset();
@@ -71,13 +71,13 @@ public class SessionControl implements Serializable {
         PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
 
-        externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI()); 
+        //externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI()); 
 
         System.gc();
         System.gc();
         System.runFinalization ();
         
-        menuBean.redirectToThesaurus();
+        //menuBean.redirectToThesaurus();
     }
 
     public void clearComponent() {

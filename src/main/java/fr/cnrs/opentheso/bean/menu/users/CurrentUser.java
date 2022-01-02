@@ -75,7 +75,7 @@ public class CurrentUser implements Serializable {
         this.password = password;
     }
 
-    public void disconnect() throws IOException {
+    public void disconnect(boolean redirectionEnable) throws IOException {
         FacesMessage facesMessage;
         facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
@@ -92,7 +92,9 @@ public class CurrentUser implements Serializable {
         }
         initHtmlPages();
         
-        menuBean.redirectToThesaurus();
+        if (redirectionEnable) {
+            menuBean.redirectToThesaurus();
+        }
     }
 
     /**
