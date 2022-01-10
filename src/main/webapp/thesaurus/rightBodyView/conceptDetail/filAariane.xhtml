@@ -138,18 +138,16 @@
                                 oncomplete="PF('listImportCsv').show();"/>
 
                     <p:menuitem rendered="#{currentUser.nodeUser.isSuperAdmin}"
-                                      value="importer des alignements d'après un tableau CSV"
+                                      value="Importer des alignements d'après un tableau CSV"
                                       update="idListAlignmentCsv listAlignmentCsvForm"
-                                      action="#{importFileBean.init()}"
-                                      oncomplete="PF('listAlignmentCsv').show();"
-                                      style="font-size: 12px; "/>
+                                      action="#{importFileBean.init()}" icon="fas fa-file-import"
+                                      oncomplete="PF('listAlignmentCsv').show();" />
 
                     <p:menuitem rendered="#{currentUser.nodeUser.isSuperAdmin}"
                                       value="Supprimer des alignements d'après un tableau CSV"
                                       update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
-                                      action="#{importFileBean.init()}"
-                                      oncomplete="PF('deleteListAlignmentCsv').show();"
-                                      style="font-size: 12px; color: #C63632" />
+                                      action="#{importFileBean.init()}" icon="fas fa-remove-format"
+                                      oncomplete="PF('deleteListAlignmentCsv').show();" />
 
                 </p:menuButton>
             </h:panelGroup>

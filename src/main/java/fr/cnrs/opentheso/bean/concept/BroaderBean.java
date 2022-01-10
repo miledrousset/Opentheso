@@ -274,8 +274,7 @@ public class BroaderBean implements Serializable {
             }
         }
 
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
 

@@ -1,0 +1,159 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:panel id="alignementPanel">
+        <p:dataTable var="alignement" value="#{selectedTheso.listAlignementElement}"
+                     rows="10" paginator="true" resizableColumns="true" showGridlines="true" size="small"
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} alignement"
+                     rowsPerPageTemplate="5,10,{ShowAll|'All'}" paginatorPosition="bottom">
+
+            <p:columnGroup type="header">
+                <p:row>
+                    <p:column colspan="3" headerText="Concept d'orgine" />
+                    <p:column rowspan="2" headerText="Type d'Alignement" sortBy="#{alignement.typeAlignement}" width="14%" />
+                    <p:column rowspan="2" headerText="Concept cible" sortBy="#{alignement.labelConceptCible}" filterBy="#{alignement.labelConceptCible}" width="25%"/>
+                    <p:column rowspan="2" headerText="Suggérer" style="writing-mode: vertical-rl;" width="3%" />
+                    <p:column rowspan="2" headerText="Supprimer" style="writing-mode: vertical-rl;" width="3%" />
+                </p:row>
+                <p:row>
+                    <p:column headerText="Identifiant" sortBy="#{alignement.idConceptOrig}" sortOrder="asc" width="25%" />
+                    <p:column headerText="Etiquette" sortBy="#{alignement.labelConceptOrig}" filterBy="#{alignement.labelConceptOrig}" width="15%" />
+                    <p:column headerText="Traduction" sortBy="#{alignement.tradConceptOrig}" width="15%" />
+                </p:row>
+            </p:columnGroup>
+
+            <p:column>
+                <h:outputText value="#{alignement.idConceptOrig}" />
+            </p:column>
+
+            <p:column >
+                <h:outputText value="#{alignement.labelConceptOrig}" />
+            </p:column>
+
+            <p:column>
+                <h:outputText value="#{alignement.tradConceptOrig}" />
+            </p:column>
+
+            <p:column>
+                <h:outputText value="#{alignement.typeAlignement}" />
+            </p:column>
+
+            <p:column>
+                <h:outputText value="#{alignement.labelConceptCible}" />
+            </p:column>
+
+            <p:column>
+                <p:commandButton icon="pi pi-pencil" process="@this" 
+                                 onclick="PF('saerchAlignement').show()"
+                                 styleClass="edit-button rounded-button ui-button-success" />
+            </p:column>
+
+            <p:column>
+                <p:commandButton icon="pi pi-trash" process="@this" ajax="true"
+                                 class="ui-button-danger rounded-button" />
+            </p:column>
+        </p:dataTable>
+
+        <p:toolbar style="margin-top: 10px">
+            <p:toolbarGroup align="center">
+                <p:commandButton value="Importer JSON" icon="fas fa-plus-circle" 
+                                 actionListener="#{newThesoBean.init()}"
+                                 action="#{viewEditionBean.setIsViewNewTheso(true)}"
+                                 update="containerIndex" />
+
+                <p:commandButton value="Exporter JSON" icon="fas fa-plus-circle" 
+                                 actionListener="#{newThesoBean.init()}" style="margin-left: 5px"
+                                 action="#{viewEditionBean.setIsViewNewTheso(true)}"
+                                 update="containerIndex" />
+
+                <p:commandButton value="Ajouter une nouvelle ligne" icon="fas fa-plus-circle" 
+                                 actionListener="#{newThesoBean.init()}" style="margin-left: 5px"
+                                 action="#{viewEditionBean.setIsViewNewTheso(true)}"
+                                 update="containerIndex" />
+
+                <p:commandButton value="Lignes claires" icon="fas fa-plus-circle" 
+                                 actionListener="#{newThesoBean.init()}" style="margin-left: 5px"
+                                 action="#{viewEditionBean.setIsViewNewTheso(true)}"
+                                 update="containerIndex" />
+
+                <p:commandButton value="Aide" icon="fas fa-plus-circle" 
+                                 actionListener="#{newThesoBean.init()}" style="margin-left: 5px"
+                                 action="#{viewEditionBean.setIsViewNewTheso(true)}"
+                                 update="containerIndex" />
+            </p:toolbarGroup>
+        </p:toolbar>
+    </p:panel>
+
+
+
+    <p:dialog widgetVar="saerchAlignement" width="450" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
+
+        <div class="row">
+            <div class="col-12">
+                <i class="fas fa-search" />
+                <h:outputText value="AAT" />
+                <h:outputText value="Search" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <h:inputText value="" style="width: 200px" /> 
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" class="btn btn-primary" 
+                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <p:orderList value="#{selectedTheso.resultAlignementList}" var="alignementResult" itemValue="#{alignementResult}" controlsLocation="none" >
+                    <p:ajax event="select" listener="#{selectedTheso.onSelect}" update="alignementDetail messageIndex"/>
+                    <p:ajax event="unselect" listener="#{selectedTheso.onUnselect}" update="alignementDetail messageIndex"/>
+
+                    <f:facet name="caption">Résultat</f:facet>
+
+                    <p:column style="width:40px">
+                        <i class="fas fa-tag" />
+                    </p:column>
+
+                    <p:column>
+                        <h:outputText value="#{alignementResult.title}"/>
+                    </p:column>
+                </p:orderList>
+            </div>
+        </div>
+
+        <p:panel id="alignementDetail">
+            <div class="row">
+                <div class="col-12">
+                    <i class="fas fa-tag" style="color: #000"/>
+                    <h:outputText value="Amphola (url : http://google.fr)" style="color: #000"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="Borader : " style="color: #000"/>
+                    <i class="fas fa-tag"  style="color: #000"/>
+                    <h:outputText value="Borader 1" style="color: #000"/>
+                </div>
+            </div>
+        </p:panel>
+
+        <f:facet name="footer">
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('saerchAlignement').hide();" update="containerIndex:formRightTab"/>
+
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('saerchAlignement').hide();"
+                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
+            </div>
+        </f:facet>
+    </p:dialog> 
+</ui:fragment>

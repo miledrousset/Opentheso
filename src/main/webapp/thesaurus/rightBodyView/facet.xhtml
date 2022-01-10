@@ -19,7 +19,7 @@
                                                       or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" icon="pi pi-cog"
                                           style="background: none; border: none; color: #000; box-shadow: none;">
                                 <p:menuitem value="Renommer la facette" oncomplete="PF('renameFacet').show();" 
-                                            style="font-size: 12px;" update="containerIndex:idRenameFacet"/>
+                                            icon="fas fa-pencil-alt" update="containerIndex:idRenameFacet"/>
                             </p:menuButton>
                         </div>
 
@@ -40,7 +40,7 @@
                                                       or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
                                 <p:menuitem value="Modifer le concept Parent" oncomplete="PF('addConceptParentToFacet').show();" 
-                                            style="font-size: 12px;" update="containerIndex:modifierFacet"/>
+                                            icon="fas fa-pencil-alt" update="containerIndex:modifierFacet"/>
                             </p:menuButton>
                         </div>
 
@@ -66,14 +66,14 @@
                                           icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                 <p:menuitem value="Nouveau concept"
                                             actionListener="#{addConcept.resetForFacet(editFacet.facetSelected)}"                    
-                                            oncomplete="PF('addNTFacette').show();"
+                                            oncomplete="PF('addNTFacette').show();" icon="fas fa-file-alt"
                                             update="containerIndex:idAddNTFacette"/>
 
-                                <p:menuitem value="Ajouter des concepts existants"
+                                <p:menuitem value="Ajouter des concepts existants" icon="far fa-file-alt"
                                             oncomplete="PF('addMembersFacette').show();"
                                             update="containerIndex:idAddMembersFacette"/>
 
-                                <p:menuitem value="Supprimer des membres de la facette"
+                                <p:menuitem value="Supprimer des membres de la facette" icon="far fa-trash-alt"
                                             oncomplete="PF('removeMembersFacette').show();"
                                             update="containerIndex:idRemoveMembersFacette"/>  
                             </p:menuButton>
@@ -118,13 +118,16 @@
 
                                     <p:menuitem value="Ajouter une traduction" oncomplete="PF('addFacetTraduction').show();"
                                                 action = "#{editFacet.setLangListForTraduction()}"
-                                                update="containerIndex:idAddFacetTraduction"/>
+                                                update="containerIndex:idAddFacetTraduction"
+                                                icon="fas fa-plus"/>
 
                                     <p:menuitem value="Modifier une traduction" oncomplete="PF('renameFacetTraduction').show();"
-                                                update="containerIndex:idRenameFacetTraduction"/>
+                                                update="containerIndex:idRenameFacetTraduction"
+                                                icon="fas fa-pencil-alt"/>
 
                                     <p:menuitem value="Supprimer une traduction" oncomplete="PF('deleteFacetTraduction').show();"
-                                                update="containerIndex:idDeleteFacetTraduction"/>
+                                                update="containerIndex:idDeleteFacetTraduction"
+                                                icon="far fa-trash-alt"/>
                                 </p:menuButton> 
                             </div>
 

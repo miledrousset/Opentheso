@@ -71,7 +71,7 @@
 
             <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="height: 100%">
                 <div class="card shadow mb-4" style="height: 100%;">
-                    <p:panel id="formRightTab" style="height: 100%; border-style: none;" >
+                    <p:panel id="formRightTab">
                         <p:tabView activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
                                    style="border-style: none; height: 100%">
                             <p:tab id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
@@ -93,6 +93,13 @@
                                     <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                 </f:facet>
                                 <ui:include  src="rightBodyView/resultSearch.xhtml"/>
+                            </p:tab>              
+
+                            <p:tab title="#{langueBean.getMsg('rightbody.alignement')}" >
+                                <f:facet name="anchor">
+                                    <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                </f:facet>
+                                <ui:include src="rightBodyView/alignement.xhtml"/>
                             </p:tab>
                         </p:tabView>
 

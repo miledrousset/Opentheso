@@ -2,6 +2,8 @@ package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
+import fr.cnrs.opentheso.bean.alignment.AlignementElement;
+import fr.cnrs.opentheso.bean.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -17,6 +19,7 @@ import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
@@ -25,7 +28,10 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import org.primefaces.PrimeFaces;
+import java.util.List;
+import javax.faces.application.FacesMessage;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 
 @Named(value = "selectedTheso")
@@ -47,7 +53,7 @@ public class SelectedTheso implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-        private String selectedIdTheso;
+    private String selectedIdTheso;
     private String currentIdTheso;
     private String optionThesoSelected;
 
@@ -66,6 +72,9 @@ public class SelectedTheso implements Serializable {
     private boolean sortByNotation;
     
     private String localUri;
+    
+    private List<AlignementElement> listAlignementElement;
+    private List<ResultatAlignement> resultAlignementList;
 
     @PreDestroy
     public void destroy(){
@@ -188,6 +197,45 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsThesoActive(true);
         
         menuBean.redirectToThesaurus();
+        
+        listAlignementElement = new ArrayList<>();
+        AlignementElement alignementElement = new AlignementElement();
+        alignementElement.setIdConceptOrig("https://www.google.fr");
+        alignementElement.setLabelConceptCible("Amphore");
+        alignementElement.setTradConceptOrig("FR");
+        alignementElement.setTypeAlignement("Corespondance");
+        alignementElement.setLabelConceptCible("Amphore (storage vessels)");
+        listAlignementElement.add(alignementElement);
+        
+        
+        resultAlignementList = new ArrayList<>();
+        ResultatAlignement resultatAlignement = new ResultatAlignement();
+        resultatAlignement.setHierarchy("hierarchy");
+        resultatAlignement.setBroarder(Arrays.asList(new String[]{"Broarder 1", "Broarder 2"}));
+        resultatAlignement.setNarrowers(Arrays.asList(new String[]{"Narrower 1", "Narrower 2"}));
+        resultatAlignement.setTerms(Arrays.asList(new String[]{"Term 1", "Term 2"}));
+        resultatAlignement.setTitle("Title 1");
+        resultatAlignement.setUrl("http://www.google.fr");
+        resultatAlignement.setNote("It just a note for test");
+        resultAlignementList.add(resultatAlignement);
+    }
+    
+    public List<AlignementElement> getListAlignementElement() {
+        return listAlignementElement;
+    }
+
+    public List<ResultatAlignement> getResultAlignementList() {
+        return resultAlignementList;
+    }
+    
+    public void onSelect(SelectEvent<ResultatAlignement> event) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().getTitle()));
+    }
+
+    public void onUnselect(UnselectEvent<ResultatAlignement> event) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));
     }
     
     /**

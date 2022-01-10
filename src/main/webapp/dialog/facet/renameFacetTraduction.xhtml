@@ -14,17 +14,23 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <p:panel style="max-height: 300px;overflow-y:scroll ">
-                    <ui:repeat var="traductionToEdit" value="#{editFacet.facetTraductions}" >
-                        <div class="col-12" style="margin-top: 3px">
-                            <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})"
-                                          style="font-size: 13px; color: #43B572; margin-left: 5px;" />
-                        </div>
-                    </ui:repeat>
-                </p:panel>
-            </div>
-        </div>
+        <p:panel style="max-height: 300px;overflow-y:scroll ">
+            <ui:repeat var="traductionToEdit" value="#{editFacet.facetTraductions}" >
+                <div class="row" style="margin-top: 3px;">
+                    <div class="col-8">
+                        <p:inputText value="#{traductionToEdit.lexicalValue}" style="width: 100%"/>
+                    </div>
+                    <div class="col-2">
+                        <h:outputText value="#{traductionToEdit.lang}" style="color: #43B572; font-size: 14px;"/>
+                    </div>
+                    <div class="col-1">
+                        <p:commandLink action="#{editFacet.updateTraduction(traductionToEdit)}" 
+                                       update="containerIndex:formRightTab containerIndex:formLeftTab messageIndex">
+                            <i class="pi pi-check-circle" style="color: #F7A269;" />
+                        </p:commandLink>
+                    </div>
+                </div>
+            </ui:repeat>
+        </p:panel>
     </p:dialog>
 </ui:fragment>

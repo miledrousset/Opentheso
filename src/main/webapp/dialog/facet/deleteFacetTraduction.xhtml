@@ -19,7 +19,8 @@
                     <h:outputText value="#{traductions.lexicalValue} (#{traductions.lang})" style="color: #43B572"/>
                 </div>
                 <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink style="color: #FF7979" action="#{editFacet.deleteTraduction(traductions)}">
+                    <p:commandLink style="color: #FF7979" action="#{editFacet.deleteTraduction(traductions)}"
+                                    update="containerIndex messageIndex">
                         <i class="pi pi-trash" />
                     </p:commandLink>
                 </div>
