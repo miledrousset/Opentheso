@@ -227,6 +227,10 @@ public class SelectedTheso implements Serializable {
     public List<ResultatAlignement> getResultAlignementList() {
         return resultAlignementList;
     }
+
+    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
+        this.resultAlignementList = resultAlignementList;
+    }
     
     public void onSelect(SelectEvent<ResultatAlignement> event) {
         FacesContext context = FacesContext.getCurrentInstance();
