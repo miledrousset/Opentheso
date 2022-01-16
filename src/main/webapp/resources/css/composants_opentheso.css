@@ -318,6 +318,21 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
     font-size: x-small;
 }
 
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon {
+    width: 2rem;
+    height: 2rem;
+    margin: 0 0 0 0;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+body .ui-tree .ui-tree-container {
+    padding: none;
+    margin: 0;
+}
+
 /** **** **/
 
 
@@ -618,4 +633,12 @@ body .ui-datalist .ui-datalist-header, body .ui-datalist .ui-datalist-footer {
 
 body .ui-datalist .ui-datalist-content {
     padding: 0.5rem;
+}
+
+.ui-growl {
+    font-size: 14px;
+}
+
+.ui-growl-message {
+    font-size: 14px;
 }

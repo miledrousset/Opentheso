@@ -112,12 +112,12 @@
                                                title="#{value.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #43B572;" styleClass="textOpentheso"/>
+                                               style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
                                 <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #FF7979;" styleClass="textOpentheso"/> 
+                                               style="color: #FF7979; font-size: 14px;" styleClass="textOpentheso"/> 
                                 <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>    
                             </ui:repeat>
 
@@ -129,21 +129,21 @@
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" 
                                                update="containerIndex:formRightTab indexTitle"
-                                               style="color: #43B572;" styleClass="textOpentheso"/>
+                                               style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
 
                                 <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})" 
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
-                                               style="color: #FF7979;"
+                                               style="color: #FF7979; font-size: 14px;"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab"
                                                styleClass="textOpentheso"/>  
-                                <h:outputText  value=" , " style="color: #FF7979"/>
+                                <h:outputText  value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
 
                             <p:commandLink rendered="#{conceptView.nodeConcept.nodeNT.size() gt (conceptView.sizeToShowNT)}"
                                            action="#{conceptView.incrementSizeToShowNT()}" update="containerIndex:formRightTab"
                                            style="color: #FF7979" styleClass="textOpentheso">
-                                <i class="pi pi-angle-double-right" style="color:#f47b2a;" />
+                                <i class="pi pi-angle-double-right" style="color:#f47b2a; font-size: 14px;" />
                             </p:commandLink>
                         </div>
                     </h:panelGroup>
@@ -195,7 +195,7 @@
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #FF7979; background: none; box-shadow: none; border: none;" styleClass="textOpentheso"/> 
+                                               style="color: #FF7979; background: none; box-shadow: none; border: none; font-size: 14px;" styleClass="textOpentheso"/> 
 
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                             </ui:repeat>             
@@ -243,13 +243,9 @@
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}"> 
                         <div class="col-9">
                             <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
-                                <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})"
-                                               title="#{conceptView.nodeConcept.concept.idConcept}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                               update="containerIndex indexTitle"
-                                               style="color: #43B572;"
-                                               styleClass="textOpentheso"/>  
+                                <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})" title="#{conceptView.nodeConcept.concept.idConcept}"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
+                                               update="containerIndex indexTitle" style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>  
                                 <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
                             </ui:repeat>
                         </div>
