@@ -2203,7 +2203,7 @@ public class ConceptHelper {
             TermHelper termHelper, RelationsHelper relationsHelper, NoteHelper noteHelper, AlignmentHelper alignmentHelper) {
         String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
         if (idTerm == null) {
-            return false;
+            return true;
         }
         Connection conn = null;
         try {
@@ -2213,61 +2213,52 @@ public class ConceptHelper {
             if (!termHelper.deleteTerm(conn, idTerm, idThesaurus, idUser)) {
                 conn.rollback();
                 conn.close();
-                System.out.println("term :" + idTerm);
                 return false;
             }
 
             if (!relationsHelper.deleteAllRelationOfConcept(conn, idConcept, idThesaurus, idUser)) {
                 conn.rollback();
-                conn.close();
-                System.out.println("relation :" + idConcept);                
+                conn.close();               
                 return false;
             }
 
             if (!noteHelper.deleteNotesOfConcept(conn, idConcept, idThesaurus)) {
                 conn.rollback();
-                conn.close();
-                System.out.println("NotesC :" + idConcept);                 
+                conn.close();             
                 return false;
             }
 
             if (!noteHelper.deleteNotesOfTerm(conn, idTerm, idThesaurus)) {
                 conn.rollback();
-                conn.close();
-                System.out.println("NotesT :" + idConcept);                   
+                conn.close();                  
                 return false;
             }
 
             if (!alignmentHelper.deleteAlignmentOfConcept(conn, idConcept, idThesaurus)) {
                 conn.rollback();
-                conn.close();
-                System.out.println("Alignement :" + idConcept);                   
+                conn.close();                 
                 return false;
             }
 
             if (!deleteConceptFromTable(conn, idConcept, idThesaurus, idUser)) {
                 conn.rollback();
-                conn.close();
-                System.out.println("Concept :" + idConcept);                   
+                conn.close();                  
                 return false;
             }
 
             if (!deleteConceptReplacedby(conn, idThesaurus, idConcept)) {
                 conn.rollback();
-                conn.close();
-                System.out.println("ReplaceBy :" + idConcept);                   
+                conn.close();                  
                 return false;
             }
             if (!deleteFacets(ds, idThesaurus, idConcept)) {
                 conn.rollback();
-                conn.close();
-                System.out.println("Facets :" + idConcept);                   
+                conn.close();                  
                 return false;
             }
             if (!deleteAllGroupOfConcept(ds, idConcept, idThesaurus, idUser)) {
                 conn.rollback();
-                conn.close();
-                System.out.println("Group :" + idConcept);                   
+                conn.close();                  
                 return false;
             }            
 
@@ -2301,8 +2292,7 @@ public class ConceptHelper {
                 } catch (SQLException ex1) {
                     Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex1);
                 }
-            }
-            System.out.println("exception :" + idConcept);               
+            }           
             return false;
         }
     }
@@ -2327,7 +2317,6 @@ public class ConceptHelper {
                 ds,
                 idConceptTop,
                 idTheso);
-
         // supprimer les concepts
         for (String idConcept : idConcepts) {
             if(!deleteConcept__(ds,
@@ -2436,49 +2425,11 @@ public class ConceptHelper {
      * @return 
      */
     private boolean deleteConceptFromTable(Connection conn, String idConcept, String idThesaurus, int idUser) {
-
         boolean status = false;
-        String idterm = "";
-
         try ( Statement stmt = conn.createStatement()) {
-
             stmt.executeUpdate("delete from concept where id_thesaurus ='" + idThesaurus
                     + "' and id_concept ='" + idConcept + "'");
-
-            stmt.executeUpdate("delete from permuted where id_thesaurus ='" + idThesaurus
-                    + "' and id_concept ='" + idConcept + "'");
-
-            stmt.executeQuery("select id_term from preferred_term where id_thesaurus ='"
-                    + idThesaurus + "' and id_concept ='" + idConcept + "'");
-
-            try ( ResultSet resultSet = stmt.getResultSet()) {
-                while (resultSet.next()) {
-                    idterm = resultSet.getString(1);
-                }
-
-                stmt.executeUpdate("delete from preferred_term where id_thesaurus ='" + idThesaurus
-                        + "' and id_concept ='" + idConcept + "' and id_term = '" + idterm + "'");
-
-                stmt.executeUpdate("delete from term where id_thesaurus ='" + idThesaurus
-                        + "' and id_term ='" + idterm + "'");
-
-                stmt.executeUpdate("delete from hierarchical_relationship where id_thesaurus ='"
-                        + idThesaurus + "' and id_concept1 ='" + idConcept + "'");
-
-                stmt.executeUpdate("delete from images where id_thesaurus ='" + idThesaurus
-                        + "' and id_concept ='" + idConcept + "'");
-
-                stmt.executeUpdate("delete from note where id_thesaurus ='" + idThesaurus
-                        + "' and id_concept ='" + idConcept + "'");
-
-                stmt.executeUpdate("delete from note where id_thesaurus ='" + idThesaurus
-                        + "' and id_term ='" + idterm + "'");
-
-                stmt.executeUpdate("delete from hierarchical_relationship where id_thesaurus ='"
-                        + idThesaurus + "' and id_concept2 ='" + idConcept + "'");
-
-                status = true;
-            }
+               status = true;
         } catch (SQLException sqle) {
             log.error("Error while deleting Concept : " + idConcept, sqle);
         }
@@ -3822,18 +3773,6 @@ public class ConceptHelper {
             log.error("Error while getting Id of group of Concept : " + idConcept, sqle);
         }
         return idGroup;
-    }
-
-    public void insertID_grouptoPermuted(HikariDataSource ds, String id_thesaurus, String id_concept) {
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.execute("update permuted set id_group = (select id_group from concept where id_thesaurus = '"
-                        + id_thesaurus + "' and id_concept = '" + id_concept
-                        + "') where  id_concept ='" + id_concept + "'");
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting Id of group of Concept : " + id_concept, sqle);
-        }
     }
 
     /**
