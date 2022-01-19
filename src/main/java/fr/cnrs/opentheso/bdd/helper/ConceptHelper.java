@@ -2213,49 +2213,63 @@ public class ConceptHelper {
             if (!termHelper.deleteTerm(conn, idTerm, idThesaurus, idUser)) {
                 conn.rollback();
                 conn.close();
+                System.out.println("term :" + idTerm);
                 return false;
             }
 
             if (!relationsHelper.deleteAllRelationOfConcept(conn, idConcept, idThesaurus, idUser)) {
                 conn.rollback();
                 conn.close();
+                System.out.println("relation :" + idConcept);                
                 return false;
             }
 
             if (!noteHelper.deleteNotesOfConcept(conn, idConcept, idThesaurus)) {
                 conn.rollback();
                 conn.close();
+                System.out.println("NotesC :" + idConcept);                 
                 return false;
             }
 
             if (!noteHelper.deleteNotesOfTerm(conn, idTerm, idThesaurus)) {
                 conn.rollback();
                 conn.close();
+                System.out.println("NotesT :" + idConcept);                   
                 return false;
             }
 
             if (!alignmentHelper.deleteAlignmentOfConcept(conn, idConcept, idThesaurus)) {
                 conn.rollback();
                 conn.close();
+                System.out.println("Alignement :" + idConcept);                   
                 return false;
             }
 
             if (!deleteConceptFromTable(conn, idConcept, idThesaurus, idUser)) {
                 conn.rollback();
                 conn.close();
+                System.out.println("Concept :" + idConcept);                   
                 return false;
             }
 
             if (!deleteConceptReplacedby(conn, idThesaurus, idConcept)) {
                 conn.rollback();
                 conn.close();
+                System.out.println("ReplaceBy :" + idConcept);                   
                 return false;
             }
             if (!deleteFacets(ds, idThesaurus, idConcept)) {
                 conn.rollback();
                 conn.close();
+                System.out.println("Facets :" + idConcept);                   
                 return false;
             }
+            if (!deleteAllGroupOfConcept(ds, idConcept, idThesaurus, idUser)) {
+                conn.rollback();
+                conn.close();
+                System.out.println("Group :" + idConcept);                   
+                return false;
+            }            
 
             if (nodePreference != null) {
                 // Si on arrive ici, c'est que tout va bien 
@@ -2288,6 +2302,7 @@ public class ConceptHelper {
                     Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex1);
                 }
             }
+            System.out.println("exception :" + idConcept);               
             return false;
         }
     }
@@ -2303,20 +2318,19 @@ public class ConceptHelper {
      */
     public boolean deleteBranchConcept(HikariDataSource ds,
             String idConceptTop, String idTheso, int idUser) {
-        ConceptHelper conceptHelper = new ConceptHelper();
         
         TermHelper termHelper = new TermHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         NoteHelper noteHelper = new NoteHelper();
         AlignmentHelper alignmentHelper = new AlignmentHelper();        
-        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(
+        ArrayList<String> idConcepts = getIdsOfBranch(
                 ds,
                 idConceptTop,
                 idTheso);
 
         // supprimer les concepts
         for (String idConcept : idConcepts) {
-            if(!conceptHelper.deleteConcept__(ds,
+            if(!deleteConcept__(ds,
                     idConcept, idTheso, idUser,
                     termHelper, relationsHelper, noteHelper, alignmentHelper)) {
                 return false;
@@ -2324,9 +2338,51 @@ public class ConceptHelper {
         }
         return true;
     }
+    
+    /**
+     * Cette fonction permet de supprimer tous les concepts d'une collection 
+     * les Concepts avec les relations et
+     * traductions, notes, alignements, ...pas de controle s'il a des fils,
+     * c'est une suppression définitive
+     * 
+     * @param ds
+     * @param idGroup
+     * @param idUser
+     * @param idTheso
+     * @return 
+     */
+    public boolean deleteBranchCollectionConcept(HikariDataSource ds,
+            String idGroup, String idTheso, int idUser) {
+        
+        TermHelper termHelper = new TermHelper();
+        RelationsHelper relationsHelper = new RelationsHelper();
+        NoteHelper noteHelper = new NoteHelper();
+        AlignmentHelper alignmentHelper = new AlignmentHelper();        
+        ArrayList<String> idConcepts = getAllIdConceptOfThesaurusByGroup(
+                ds,
+                idTheso,
+                idGroup);
+
+        // supprimer les concepts
+        for (String idConcept : idConcepts) {
+            if(!deleteConcept__(ds,
+                    idConcept, idTheso, idUser,
+                    termHelper, relationsHelper, noteHelper, alignmentHelper)) {
+                return false;
+            }
+        }
+        return true;
+    }    
 
     /**
      * permet de supprimer l'appertenance d'un concept à un groupe
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idGroup
+     * @param idThesaurus
+     * @param idUser
+     * @return 
      */
     public boolean deleteGroupOfConcept(HikariDataSource ds,
             String idConcept, String idGroup, String idThesaurus, int idUser) {
@@ -2344,6 +2400,32 @@ public class ConceptHelper {
         }
         return status;
     }
+    
+    /**
+     * permet de supprimer tous les groupes du concept (cas de suppression du concept)
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idUser
+     * @return 
+     */
+    public boolean deleteAllGroupOfConcept(HikariDataSource ds,
+            String idConcept, String idThesaurus, int idUser) {
+
+        boolean status = false;
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from concept_group_concept where idthesaurus ='"
+                        + idThesaurus + "' and idconcept ='" + idConcept + "'");
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while deleting all groupe of Concept : " + idConcept, sqle);
+        }
+        return status;
+    }    
 
     /**
      * Cette fonction permet de supprimer le concept par ID de la table Concept
