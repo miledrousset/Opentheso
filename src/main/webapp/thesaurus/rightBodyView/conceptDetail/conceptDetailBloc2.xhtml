@@ -36,14 +36,14 @@
                     </div>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeBT.size() == 0}">   
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                            style="font-size: 14px; color: grey; font-style: italic " /> 
                         </div>
                     </h:panelGroup>  
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeBT.size() != 0}">   
-                        <div class="col-9" id="conceptGeneriqueList">
+                        <div class="col-9" style="margin-left: -10px">
                             <ui:repeat var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
                                 <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
                                                title="#{value.idConcept}"
@@ -98,13 +98,13 @@
                     </div>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}" >            
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                         </div> 
                     </h:panelGroup> 
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeNT.size() != 0}" >
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() lt 21}" var="value"
                                        varStatus="status1" 
                                        value="#{conceptView.nodeConcept.nodeNT}">
@@ -177,13 +177,13 @@
                     </div>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeRT.size() == 0}" >            
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                         </div> 
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeRT.size() != 0}" >
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <ui:repeat var="rt" value="#{conceptView.nodeConcept.nodeRT}" varStatus="status">
                                 <p:commandLink rendered="#{rt.title != ''}" value="#{rt.title}"
                                                title="#{rt.idConcept}"
@@ -235,13 +235,13 @@
                     </div>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}" >            
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                         </div> 
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}"> 
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
                                 <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})" title="#{conceptView.nodeConcept.concept.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"

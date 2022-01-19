@@ -271,7 +271,6 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
 
 /** Tree **/
 body .ui-tree {
-    padding: 0px;
     border-collapse: collapse;
 }
 
@@ -280,14 +279,9 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     color: #FFF;
 }
 
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
-    padding: 0px;
-}
-
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
     background: #f47b2a;
     color: #FFF;
-    padding: 0px;
 }
 
 .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
@@ -329,7 +323,6 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 }
 
 body .ui-tree .ui-tree-container {
-    padding: none;
     margin: 0;
 }
 
@@ -641,4 +634,15 @@ body .ui-datalist .ui-datalist-content {
 
 .ui-growl-message {
     font-size: 14px;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
+    margin: 0;
+    padding: 0px;
+    border-radius: 4px;
+}
+
+body .ui-tree .ui-tree-container {
+    padding: 1 !important;
+    margin: 0;
 }
