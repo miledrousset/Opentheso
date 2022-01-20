@@ -221,16 +221,16 @@
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
                         <div class="col-9" style="margin-left: -10px">
                             <ui:repeat var="em" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
-                                <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
-                                <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979"/>
+                                <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>                     
+                                <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
 
                             <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
                                 <h:outputText rendered="#{em2.hiden}" value=" #{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
                                               title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}" 
                                               style="font-size: 12px; color: #FF7979; font-style: italic " />
-                                <h:outputText rendered="#{em2.hiden}" value=" #{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
-                                <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=" , " style="color: #FF7979"/>
+                                <h:outputText rendered="#{em2.hiden}" value=" #{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>                     
+                                <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
                         </div>
                     </h:panelGroup>

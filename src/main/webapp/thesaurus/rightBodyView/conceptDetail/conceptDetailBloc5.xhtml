@@ -60,8 +60,8 @@
                                     <ui:repeat var="align" value="#{conceptView.nodeConcept.nodeAlignments}" >
                                         <div class="row">
                                             <div class="col-12">
-                                                <h:outputText value=" #{align.alignmentLabelType} :  " />
-                                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>
+                                                <h:outputText value=" #{align.alignmentLabelType} :  " style="font-size: 12px;"/>
+                                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 12px;"/>
                                                 <p:link href="#{align.uri_target}"
                                                         value="#{align.uri_target}"
                                                         target="_blank" style="font-size: 12px; color: #43B572;" >
@@ -104,7 +104,7 @@
                                             <div class="row">
                                                 <h:panelGroup rendered="#{!corpus.isOnlyUriLink}">
                                                     <div class="col-6">
-                                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>
+                                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 12px;"/>
                                                         <p:link href="#{corpus.uriLink}"
                                                                 value="#{corpus.corpusName} (#{corpus.count} #{langueBean.getMsg('rightbody.concept.notices')})"
                                                                 target="_blank" style="font-size: 12px; color: #43B572;">
@@ -113,7 +113,7 @@
                                                 </h:panelGroup>
                                                 <h:panelGroup rendered="#{corpus.isOnlyUriLink}">
                                                     <div class="col-6">
-                                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>                                                    
+                                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 12px;"/>                                                    
                                                         <p:link href="#{corpus.uriLink}" value="#{corpus.corpusName}" target="_blank"
                                                                 style="font-size: 12px; color: #43B572;">
                                                         </p:link>
@@ -171,9 +171,9 @@
                                       style="font-size: 14px; font-weight: bold; margin-right: 37px"/>
                     </div>
                     <div class="col-9" style="margin-left: -10px">
-                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>
+                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 12px;"/>
                         <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeConcept.concept.idConcept}&amp;idt=#{conceptView.nodeConcept.concept.idThesaurus}"
-                                value="#{conceptView.nodeConcept.concept.idConcept}" style="color: #43B572;">
+                                value="#{conceptView.nodeConcept.concept.idConcept}" style="color: #43B572; font-size: 12px;">
                         </p:link>
                     </div>
                 </div>
@@ -195,10 +195,10 @@
                                     <div class="col-8" style="text-align: left">
                                         <!-- Cas d'uri de type Ark -->
                                         <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
-                                            <div class="col-9" style="margin-left: -13px">
-                                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a"/>
+                                            <div class="col-9" style="margin-left: -23px">
+                                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 12px;"/>
                                                 <p:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
-                                                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" style="color: #43B572;">
+                                                        value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" style="color: #43B572; font-size: 12px;">
                                                 </p:link>
                                             </div>
                                         </h:panelGroup>
