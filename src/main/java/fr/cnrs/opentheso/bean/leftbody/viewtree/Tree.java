@@ -433,6 +433,8 @@ public class Tree implements Serializable {
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
         }
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+        PrimeFaces.current().ajax().update("indexTitle");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:treeActions");          
         PrimeFaces.current().executeScript("srollToSelected();");
     }
 

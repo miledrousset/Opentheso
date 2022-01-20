@@ -31,18 +31,33 @@ public final class NodeJson2 {
                 + "\"token\":\""+ token + "\","
                 + "\"ark\":\""+ ark + "\","
                 + "\"naan\":\"" + naan + "\","
-                + "\"type\":\""+  type + "\","
+                + "\"type\":\""+  type + "\","                
                 + "\"urlTarget\":\""+ urlTarget + "\","
                 + "\"title\":\" "+ title + "\","
                 + "\"creator\":\"" + creator + "\","
-                + "\"useHandle\":" + useHandle + ","
+                + "\"useHandle\":" + useHandle + ","                
                 + "\"modificationDate\":\""+ new FileUtilities().getDate() + "\","
                 + "\"dcElements\":" + getStringFromDcElements() + ","
-                + "\"qualifiers\":" + getStringFromQualifiers()
+                + "\"qualifiers\":" + getStringFromQualifiers()                
                 + "}";
 
         return arkString;
     }
+    
+    /**
+     * Pour la mise à jour des URI uniquement pour Ark
+     * @return 
+     */
+    public String getJsonUriString() {
+        String arkString = "{"
+                + "\"token\":\""+ token + "\","
+                + "\"ark\":\""+ ark + "\","
+                + "\"naan\":\"" + naan + "\","
+                + "\"urlTarget\":\""+ urlTarget + "\","
+                + "\"useHandle\":" + useHandle
+                + "}";
+        return arkString;
+    }    
     
     private String getStringFromDcElements(){
         if(dcElements == null) return "[]";

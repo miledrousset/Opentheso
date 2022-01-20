@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.ws.ark;
 import java.util.Properties;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeMetaData;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.util.ArrayList;
 
 /**
@@ -215,7 +216,7 @@ public class ArkHelper2 {
         NodeJson2 nodeJson2 = new NodeJson2();
         nodeJson2.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
         nodeJson2.setArk(idArk);
-        nodeJson2.setTitle(nodeMetaData.getTitle());
+        nodeJson2.setTitle(new StringPlus().convertString(nodeMetaData.getTitle()));
         nodeJson2.setCreator(nodeMetaData.getCreator());
         nodeJson2.setDcElements(nodeMetaData.getDcElementsList()); // n'est pas encore exploité
         nodeJson2.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection
@@ -245,6 +246,40 @@ public class ArkHelper2 {
         return true;
     }    
     
+    /**
+     * Permet de mettre à jour l'URI de l'identifiant ARK suivant l'Id Ark (serveur MOM)
+     * @param idArk
+     * @param privateUri
+     * @return
+     */
+    public boolean updateUriArk(
+            String idArk,
+            String privateUri) {
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseArk()) {
+            return false;
+        }
+     
+        NodeJson2 nodeJson2 = new NodeJson2();
+        nodeJson2.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
+        nodeJson2.setArk(idArk);
+        nodeJson2.setNaan(nodePreference.getIdNaan());
+        nodeJson2.setUseHandle(nodePreference.isGenerateHandle());
+        String token = arkClientRest.getToken();
+        nodeJson2.setToken(token);        
+
+        String jsonDatas = nodeJson2.getJsonUriString();
+        if(jsonDatas == null) return false;        
+        
+        if(!arkClientRest.updateUriArk(nodeJson2.getJsonString())) {
+            message = message + arkClientRest.getMessage();
+            System.out.println(message);
+            return false;
+        }
+        return true;
+    }       
     
     
     

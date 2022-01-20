@@ -13,22 +13,28 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+//import org.primefaces.shaded.json.JSONObject;
 
 
 public final class ArkClientRest {
-
-    private Properties propertiesArk;
+    private Properties propertiesArk;  
+//    private Client client;
     
     private String idArk;
     private String idHandle;
     private String Uri;
     
+    
     // prefix MOM
     private String prefixHandle = "20.500.11859";
+    
     private String urlHandle = "http://193.48.137.68:8000/api/handles/";
     private String jsonArk;
+    
     private JsonObject loginJson;
+    
     private String token;
+    
     private String message;
     
     
@@ -136,29 +142,29 @@ public final class ArkClientRest {
      */
     public boolean addArk(String arkString) {
         jsonArk = null;
-
+       
         // il faut vérifier la connexion avant 
         if(loginJson == null) return false;
 
         Client client= ClientBuilder.newClient();
         try (Response response = client
-                .target(propertiesArk.getProperty("serverHost"))
-                .path("rest/v1/ark/add")
-                .request(MediaType.APPLICATION_JSON)
-                .header("Content-type", "application/json")
-                .put(Entity.json(arkString))){
-
+            .target(propertiesArk.getProperty("serverHost"))
+            .path("rest/v1/ark/add")
+            .request(MediaType.APPLICATION_JSON)
+            .header("Content-type", "application/json")
+            .put(Entity.json(arkString))){
+            
             if (response.getStatus() != 200) {
                 message =  "Erreur lors de l'ajout d'un Ark" + response.getStatus();
                 response.close();
                 client.close();
                 return false;
             }
-            jsonArk = response.readEntity(String.class);
-
+            jsonArk = response.readEntity(String.class);            
+            
         } catch (Exception e) {
             message =  "Exception lors de l'ajout d'un Ark";
-            return false;
+            return false;            
         }
         return setIdArkHandle();
     }
@@ -193,8 +199,7 @@ public final class ArkClientRest {
             client.close();
         }           
         return isExist(output);        
-    }
-
+    }    
     private boolean isExist(String jsonResponse){
         if(jsonResponse == null) return false;
         JsonObject jsonObject;
@@ -204,12 +209,12 @@ public final class ArkClientRest {
             if(values != null){
                 if(values.getString().contains("Inexistant ARK")) return false;
                 else
-                if(values.getString().contains("Ark retreived")) return true;
-            }
+                    if(values.getString().contains("Ark retreived")) return true;
+            }            
         }
         message = "Erreur de format";
-        return false;
-    }
+        return false; 
+    }    
     
     /**
      * permet de mettre à jour un abjet Ark 
@@ -218,31 +223,64 @@ public final class ArkClientRest {
      */
     public boolean updateArk(String arkString) {
         jsonArk = null;
-
+        
         // il faut se connecter avant
         if(loginJson == null) return false;
-
+        
         Client client= ClientBuilder.newClient();
         try (Response response = client
-                .target(propertiesArk.getProperty("serverHost"))
-                .path("rest/v1/ark/update")
-                .request(MediaType.APPLICATION_JSON)
-                .header("Content-type", "application/json")
-                .put(Entity.json(arkString))){
-
+            .target(propertiesArk.getProperty("serverHost"))
+            .path("rest/v1/ark/update")
+            .request(MediaType.APPLICATION_JSON)
+            .header("Content-type", "application/json")
+            .put(Entity.json(arkString))){
+            
             if (response.getStatus() != 200) {
                 message = "Erreur lors de la mise à jour d'un Ark : " + response.getStatus();
                 response.close();
                 client.close();
                 return false;
             }
-            jsonArk = response.readEntity(String.class);
+            jsonArk = response.readEntity(String.class);           
         } catch (Exception e) {
             message =  "Exception lors de la mise à jour de Ark";
-            return false;
-        }
+            return false;            
+        } 
         return setForUpdate();
-    }
+    }      
+    
+    /**
+     * permet de mettre à jour un abjet Ark 
+     * @param arkString
+     * @return 
+     */
+    public boolean updateUriArk(String arkString) {
+        jsonArk = null;
+        
+        // il faut se connecter avant
+        if(loginJson == null) return false;
+        
+        Client client= ClientBuilder.newClient();
+        try (Response response = client
+            .target(propertiesArk.getProperty("serverHost"))
+            .path("rest/v1/ark/uriupdate")
+            .request(MediaType.APPLICATION_JSON)
+            .header("Content-type", "application/json")
+            .put(Entity.json(arkString))){
+            
+            if (response.getStatus() != 200) {
+                message = "Erreur lors de la mise à jour d'un Ark : " + response.getStatus();
+                response.close();
+                client.close();
+                return false;
+            }
+            jsonArk = response.readEntity(String.class);           
+        } catch (Exception e) {
+            message =  "Exception lors de la mise à jour de Ark";
+            return false;            
+        } 
+        return setForUriUpdate();
+    }      
     
  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -309,12 +347,9 @@ public final class ArkClientRest {
         client = Client.create();        
         WebResource webResource = client
                 .resource(urlHandle + prefixHandle + "/" + idHandle);
-
         ClientResponse response = webResource.accept("application/json")
                 .get(ClientResponse.class);
-
         output = response.getEntity(String.class);
-
         JSONObject json = new JSONObject(output);
         if (json.getInt("responseCode") == 100) {
             return false;
@@ -350,11 +385,9 @@ public final class ArkClientRest {
         // il faut se connecter avant 
         if(loginJson == null) return false;
         loginJson.put("content", arkString);
-
         WebResource webResource = client
                 .resource(propertiesArk.getProperty("serverHost")
                         + "/rest/ark/deletehandle");
-
         ClientResponse response = webResource.type("application/json")
                 .put(ClientResponse.class, loginJson.toString());
         if (response.getStatus() == 200) {
@@ -377,6 +410,29 @@ public final class ArkClientRest {
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
   
+    private boolean setForUriUpdate(){
+        if(jsonArk == null) return false;
+    //    System.out.println("avant la lecture : " + jsonArk);
+        JsonReader reader;
+        try {
+            reader = Json.createReader(new StringReader(jsonArk));
+            JsonObject jsonObject = reader.readObject();
+            reader.close();  
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ok")) {
+                token = jsonObject.getJsonString("token").getString();
+                return true;
+            }
+            if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ERROR")) {
+                message = jsonObject.getJsonString("description").getString();
+                token = jsonObject.getJsonString("token").getString();
+                return false;
+            }        
+        } catch (Exception e) {
+        }
+        message = "Erreur lors de la lecture du Json";
+        return false;           
+    }    
+    
     private boolean setForUpdate(){
         if(jsonArk == null) return false;
     //    System.out.println("avant la lecture : " + jsonArk);

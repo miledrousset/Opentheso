@@ -72,7 +72,7 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
-
+    
     /**
      * permet de récupérer les concepts dépréciés
      * @param ds
@@ -124,9 +124,14 @@ public class ConceptHelper {
         }
         return null;
     }
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * permet de retourner un noeud de données optimisées pour l'affichage du graphe D3Js
      * @param ds
@@ -1106,17 +1111,6 @@ public class ConceptHelper {
         }
     }
 
-    public void updateDateOfConcept(HikariDataSource ds, String idTheso, String idConcept) {
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set modified = current_date WHERE id_concept ='" + idConcept + "'"
-                        + " AND id_thesaurus='" + idTheso + "'");
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while updating date of concept : " + idConcept, sqle);
-        }
-    }
-
     /**
      * Permet de retourner la date de la dernière modification sur un thésaurus
      * @param ds
@@ -1574,6 +1568,10 @@ public class ConceptHelper {
 
     /**
      * Cette fonction regenère tous les idArk des concepts fournis en paramètre
+     * @param ds
+     * @param idTheso
+     * @param idConcepts
+     * @return 
      */
     public boolean generateArkId(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts) {
 
@@ -1662,6 +1660,46 @@ public class ConceptHelper {
         }
         return true;
     }
+    
+    /**
+     * Cette fonction regenère tous les idArk des concepts fournis en paramètre
+     * @param ds
+     * @param idTheso
+     * @param idConcepts
+     * @return 
+     */
+    public boolean updateUriArk(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts) {
+
+        ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
+        if (!arkHelper2.login()) {
+            message = "Erreur de connexion !!";
+            return false;
+        }
+
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseArk()) {
+            return false;
+        }
+        String privateUri;
+        String idArk;
+
+        for (String idConcept : idConcepts) {
+            if (idConcept == null || idConcept.isEmpty()) continue;
+            // Mise à jour de l'URI 
+            idArk = getIdArkOfConcept(ds, idConcept, idTheso);
+            if(idArk == null || idArk.isEmpty()) continue;
+            
+            privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
+            if (!arkHelper2.updateUriArk(idArk, privateUri)) {
+                message = arkHelper2.getMessage();
+                message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
+                return false;
+            }
+        }
+        return true;
+    }    
     
     /**
      * Cette fonction permet de générer les idArk en local
@@ -2165,7 +2203,7 @@ public class ConceptHelper {
             TermHelper termHelper, RelationsHelper relationsHelper, NoteHelper noteHelper, AlignmentHelper alignmentHelper) {
         String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
         if (idTerm == null) {
-            return false;
+            return true;
         }
         Connection conn = null;
         try {
@@ -2180,44 +2218,49 @@ public class ConceptHelper {
 
             if (!relationsHelper.deleteAllRelationOfConcept(conn, idConcept, idThesaurus, idUser)) {
                 conn.rollback();
-                conn.close();
+                conn.close();               
                 return false;
             }
 
             if (!noteHelper.deleteNotesOfConcept(conn, idConcept, idThesaurus)) {
                 conn.rollback();
-                conn.close();
+                conn.close();             
                 return false;
             }
 
             if (!noteHelper.deleteNotesOfTerm(conn, idTerm, idThesaurus)) {
                 conn.rollback();
-                conn.close();
+                conn.close();                  
                 return false;
             }
 
             if (!alignmentHelper.deleteAlignmentOfConcept(conn, idConcept, idThesaurus)) {
                 conn.rollback();
-                conn.close();
+                conn.close();                 
                 return false;
             }
 
             if (!deleteConceptFromTable(conn, idConcept, idThesaurus, idUser)) {
                 conn.rollback();
-                conn.close();
+                conn.close();                  
                 return false;
             }
 
             if (!deleteConceptReplacedby(conn, idThesaurus, idConcept)) {
                 conn.rollback();
-                conn.close();
+                conn.close();                  
                 return false;
             }
             if (!deleteFacets(ds, idThesaurus, idConcept)) {
                 conn.rollback();
-                conn.close();
+                conn.close();                  
                 return false;
             }
+            if (!deleteAllGroupOfConcept(ds, idConcept, idThesaurus, idUser)) {
+                conn.rollback();
+                conn.close();                  
+                return false;
+            }            
 
             if (nodePreference != null) {
                 // Si on arrive ici, c'est que tout va bien 
@@ -2249,7 +2292,7 @@ public class ConceptHelper {
                 } catch (SQLException ex1) {
                     Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex1);
                 }
-            }
+            }           
             return false;
         }
     }
@@ -2265,20 +2308,18 @@ public class ConceptHelper {
      */
     public boolean deleteBranchConcept(HikariDataSource ds,
             String idConceptTop, String idTheso, int idUser) {
-        ConceptHelper conceptHelper = new ConceptHelper();
         
         TermHelper termHelper = new TermHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         NoteHelper noteHelper = new NoteHelper();
         AlignmentHelper alignmentHelper = new AlignmentHelper();        
-        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(
+        ArrayList<String> idConcepts = getIdsOfBranch(
                 ds,
                 idConceptTop,
                 idTheso);
-
         // supprimer les concepts
         for (String idConcept : idConcepts) {
-            if(!conceptHelper.deleteConcept__(ds,
+            if(!deleteConcept__(ds,
                     idConcept, idTheso, idUser,
                     termHelper, relationsHelper, noteHelper, alignmentHelper)) {
                 return false;
@@ -2286,9 +2327,51 @@ public class ConceptHelper {
         }
         return true;
     }
+    
+    /**
+     * Cette fonction permet de supprimer tous les concepts d'une collection 
+     * les Concepts avec les relations et
+     * traductions, notes, alignements, ...pas de controle s'il a des fils,
+     * c'est une suppression définitive
+     * 
+     * @param ds
+     * @param idGroup
+     * @param idUser
+     * @param idTheso
+     * @return 
+     */
+    public boolean deleteBranchCollectionConcept(HikariDataSource ds,
+            String idGroup, String idTheso, int idUser) {
+        
+        TermHelper termHelper = new TermHelper();
+        RelationsHelper relationsHelper = new RelationsHelper();
+        NoteHelper noteHelper = new NoteHelper();
+        AlignmentHelper alignmentHelper = new AlignmentHelper();        
+        ArrayList<String> idConcepts = getAllIdConceptOfThesaurusByGroup(
+                ds,
+                idTheso,
+                idGroup);
+
+        // supprimer les concepts
+        for (String idConcept : idConcepts) {
+            if(!deleteConcept__(ds,
+                    idConcept, idTheso, idUser,
+                    termHelper, relationsHelper, noteHelper, alignmentHelper)) {
+                return false;
+            }
+        }
+        return true;
+    }    
 
     /**
      * permet de supprimer l'appertenance d'un concept à un groupe
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idGroup
+     * @param idThesaurus
+     * @param idUser
+     * @return 
      */
     public boolean deleteGroupOfConcept(HikariDataSource ds,
             String idConcept, String idGroup, String idThesaurus, int idUser) {
@@ -2306,6 +2389,32 @@ public class ConceptHelper {
         }
         return status;
     }
+    
+    /**
+     * permet de supprimer tous les groupes du concept (cas de suppression du concept)
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idUser
+     * @return 
+     */
+    public boolean deleteAllGroupOfConcept(HikariDataSource ds,
+            String idConcept, String idThesaurus, int idUser) {
+
+        boolean status = false;
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from concept_group_concept where idthesaurus ='"
+                        + idThesaurus + "' and idconcept ='" + idConcept + "'");
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while deleting all groupe of Concept : " + idConcept, sqle);
+        }
+        return status;
+    }    
 
     /**
      * Cette fonction permet de supprimer le concept par ID de la table Concept
@@ -2316,49 +2425,11 @@ public class ConceptHelper {
      * @return 
      */
     private boolean deleteConceptFromTable(Connection conn, String idConcept, String idThesaurus, int idUser) {
-
         boolean status = false;
-        String idterm = "";
-
         try ( Statement stmt = conn.createStatement()) {
-
             stmt.executeUpdate("delete from concept where id_thesaurus ='" + idThesaurus
                     + "' and id_concept ='" + idConcept + "'");
-
-            stmt.executeUpdate("delete from permuted where id_thesaurus ='" + idThesaurus
-                    + "' and id_concept ='" + idConcept + "'");
-
-            stmt.executeQuery("select id_term from preferred_term where id_thesaurus ='"
-                    + idThesaurus + "' and id_concept ='" + idConcept + "'");
-
-            try ( ResultSet resultSet = stmt.getResultSet()) {
-                while (resultSet.next()) {
-                    idterm = resultSet.getString(1);
-                }
-
-                stmt.executeUpdate("delete from preferred_term where id_thesaurus ='" + idThesaurus
-                        + "' and id_concept ='" + idConcept + "' and id_term = '" + idterm + "'");
-
-                stmt.executeUpdate("delete from term where id_thesaurus ='" + idThesaurus
-                        + "' and id_term ='" + idterm + "'");
-
-                stmt.executeUpdate("delete from hierarchical_relationship where id_thesaurus ='"
-                        + idThesaurus + "' and id_concept1 ='" + idConcept + "'");
-
-                stmt.executeUpdate("delete from images where id_thesaurus ='" + idThesaurus
-                        + "' and id_concept ='" + idConcept + "'");
-
-                stmt.executeUpdate("delete from note where id_thesaurus ='" + idThesaurus
-                        + "' and id_concept ='" + idConcept + "'");
-
-                stmt.executeUpdate("delete from note where id_thesaurus ='" + idThesaurus
-                        + "' and id_term ='" + idterm + "'");
-
-                stmt.executeUpdate("delete from hierarchical_relationship where id_thesaurus ='"
-                        + idThesaurus + "' and id_concept2 ='" + idConcept + "'");
-
-                status = true;
-            }
+               status = true;
         } catch (SQLException sqle) {
             log.error("Error while deleting Concept : " + idConcept, sqle);
         }
@@ -3702,18 +3773,6 @@ public class ConceptHelper {
             log.error("Error while getting Id of group of Concept : " + idConcept, sqle);
         }
         return idGroup;
-    }
-
-    public void insertID_grouptoPermuted(HikariDataSource ds, String id_thesaurus, String id_concept) {
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.execute("update permuted set id_group = (select id_group from concept where id_thesaurus = '"
-                        + id_thesaurus + "' and id_concept = '" + id_concept
-                        + "') where  id_concept ='" + id_concept + "'");
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting Id of group of Concept : " + id_concept, sqle);
-        }
     }
 
     /**

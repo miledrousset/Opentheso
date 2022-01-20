@@ -3,53 +3,55 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <div class="row">
-        <div class="col-6">
-            <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
-                          title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
-                          style="color: red; font-style: italic; background-color: yellow"/>
+    <h:panelGroup id="treeActions">
+        <div class="row">
+            <div class="col-6">
+                <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
+                              title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
+                              style="color: red; font-style: italic; background-color: yellow"/>
+            </div>
+            <div class="col-6" style="text-align: right;">
+                <p:link href="#{request.contextPath}/graph/index.xhtml"
+                        target="_blank" disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
+                        style="color: #F47B2A; float: right; margin-top: 2px;">
+                    <i class="pi pi-share-alt" style="font-size: 1rem" />
+                </p:link>
+
+                <p:menuButton style="margin-right: 10px; background-color: transparent" icon="pi pi-align-justify" >
+
+                    <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
+                                actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
+                                action="#{selectedTheso.reloadSelectedTheso()}"
+                                process="@this" disabled="#{!selectedTheso.sortByNotation}"
+                                update="containerIndex:formLeftTab" icon="fas fa-sort-alpha-down"/>
+
+                    <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
+                                actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
+                                action="#{selectedTheso.reloadSelectedTheso()}"
+                                disabled="#{selectedTheso.sortByNotation}" icon="fas fa-sort-numeric-down"
+                                process="@this" update="containerIndex:formLeftTab" />
+
+                    <p:menuitem value="Add top concept" onclick="#{newConcept.reset()}" icon="fas fa-folder-plus"
+                                oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
+                                rendered="#{(currentUser.nodeUser != null) and 
+                                            (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
+
+                    <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
+                                            and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
+                                value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
+                                update="idGlobalActionsTree messageIndex" icon="far fa-window-close" />                
+
+                    <p:menuitem disabled="false" styleClass="buttonIconOrange"
+                                rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
+                                value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
+                                actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
+                                action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
+                                update="idCopyAndPasteBetweenThesoToTop"
+                                oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />
+                </p:menuButton> 
+            </div>
         </div>
-        <div class="col-6" style="text-align: right;">
-            <p:link href="#{request.contextPath}/graph/index.xhtml"
-                    target="_blank" disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
-                    style="color: #F47B2A; float: right; margin-top: 2px;">
-                <i class="pi pi-share-alt" style="font-size: 1rem" />
-            </p:link>
-
-            <p:menuButton style="margin-right: 10px; background-color: transparent" icon="pi pi-align-justify" >
-
-                <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
-                            actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
-                            action="#{selectedTheso.reloadSelectedTheso()}"
-                            process="@this" disabled="#{!selectedTheso.sortByNotation}"
-                            update="containerIndex:formLeftTab" icon="fas fa-sort-alpha-down"/>
-
-                <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
-                            actionListener="#{selectedTheso.setSortByNotation(true)}" ajax="true"
-                            action="#{selectedTheso.reloadSelectedTheso()}"
-                            disabled="#{selectedTheso.sortByNotation}" icon="fas fa-sort-numeric-down"
-                            process="@this" update="containerIndex:formLeftTab" />
-
-                <p:menuitem value="Add top concept" onclick="#{newConcept.reset()}" icon="fas fa-folder-plus"
-                            oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
-                            rendered="#{(currentUser.nodeUser != null) and 
-                                        (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
-
-                <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
-                                        and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
-                            value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
-                            update="idGlobalActionsTree messageIndex" icon="far fa-window-close" />                
-
-                <p:menuitem disabled="false" styleClass="buttonIconOrange"
-                            rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                            value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
-                            actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
-                            action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
-                            update="idCopyAndPasteBetweenThesoToTop"
-                            oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />
-            </p:menuButton> 
-        </div>
-    </div>
+    </h:panelGroup>
 
     <div class="row">
         <div class="col-12">
