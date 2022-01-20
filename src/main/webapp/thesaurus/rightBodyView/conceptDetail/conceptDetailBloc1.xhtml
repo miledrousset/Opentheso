@@ -23,7 +23,7 @@
                         </p:menuButton>
                     </div>
 
-                    <div class="col-9">
+                    <div class="col-9" style="margin-left: -10px">
                         <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
                                       title="#{conceptView.nodeConcept.concept.idConcept}" style="font-size: 14px;" />
 
@@ -61,14 +61,14 @@
                         </div>
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() == 0}">
-                            <div class="col-9">
+                            <div class="col-9" style="margin-left: -10px">
                                 <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                             </div>
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() != 0}">
-                            <div class="col-9">
-                                <ui:repeat   var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status">
+                            <div class="col-9" style="margin-left: -10px">
+                                <ui:repeat var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status">
                                     <p:commandLink rendered="#{replace.value != ''}" value="#{replace.value}"
                                                    title="#{replace.id}"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
@@ -97,8 +97,8 @@
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_replace')}"
                                           style="font-size: 14px; margin-right: 10px; background-color: #f47b2a;"/>
                         </div>
-                        <div class="col-9" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
-                            <ui:repeat   var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status">
+                        <div class="col-9" style="margin-left: -10px">
+                            <ui:repeat var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
                                 <p:commandLink rendered="#{replaces.value != ''}" value="#{replaces.value}"
                                                title="#{replaces.id}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
@@ -151,13 +151,13 @@
                     </div>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}" >                          
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                         </div>
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() != 0}" > 
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <ui:repeat var="domaine" value="#{conceptView.nodeConcept.nodeConceptGroup}" varStatus="status">
                                 <p:commandLink rendered="#{domaine.lexicalValue != ''}"
                                                value="#{domaine.lexicalValue}"
@@ -213,13 +213,13 @@
                     </div>
 
                     <h:panelGroup rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" >            
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />              
                         </div> 
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
-                        <div class="col-9">
+                        <div class="col-9" style="margin-left: -10px">
                             <ui:repeat var="em" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
                                 <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666"/>                     
                                 <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979"/>
@@ -254,7 +254,7 @@
                         </p:commandLink>
                     </div>
 
-                    <div class="col-9">
+                    <div class="col-9" style="margin-left: -10px">
                         <h:outputText rendered="#{conceptView.countOfBranch != 0}" value="#{conceptView.countOfBranch} concept(s)" 
                                       title="#{langueBean.getMsg('rightbody.concept.clic_branch_count')}"
                                       style="font-size: 14px;" />

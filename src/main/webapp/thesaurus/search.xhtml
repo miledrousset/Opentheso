@@ -110,15 +110,15 @@
                                         <p:autoComplete value="#{searchBean.searchSelected}" var="values" placeholder="Rechercher..." 
                                                         completeMethod="#{searchBean.completTermFullText}" minQueryLength="1" itemLabel="#{values.prefLabel}" 
                                                         itemValue="#{values}" converter="searchConverter" scrollHeight="600"
-                                                        inputStyle="font-size: 16px; width: 100%; height: 100%; box-shadow: none; padding-top: 10px"
+                                                        inputStyle="font-size: 14px; width: 100%; height: 100%; box-shadow: none; padding-top: 10px"
                                                         style="background-color: transparent; border-color: transparent; width: 100%">
 
-                                            <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
+                                            <p:column rendered="#{values.isAltLabel}">
                                                 <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"  style="font-style: italic;" />
                                                 <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
                                             </p:column>
 
-                                            <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
+                                            <p:column rendered="#{!values.isAltLabel}">
                                                 <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
                                             </p:column>
                                             <p:ajax event="itemSelect" listener="#{searchBean.onSelect()}" update="containerIndex messageIndex"/>
@@ -142,22 +142,22 @@
         <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center;" >
             <h:panelGroup id="choixPanel">
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
-                                         style="color: #000; background-color: transparent;">
+                                         style="color: #000; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateIndexMatch()}" update="choixPanel"/>
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
-                                         style="color: #000; background-color: transparent;">
+                                         style="color: #000; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateExactMatch()}" update="choixPanel"/>
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
-                                         style="color: #000; background-color: transparent;">
+                                         style="color: #000; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateWithNote()}" update="choixPanel"/>
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
-                                         style="color: #000; background-color: transparent;">
+                                         style="color: #000; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateWithId()}"  update="choixPanel"/>
                 </p:selectBooleanCheckbox>
 
