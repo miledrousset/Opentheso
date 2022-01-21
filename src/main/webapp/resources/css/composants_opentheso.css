@@ -290,6 +290,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 
 .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
     margin-top: -14px;
+    
 }
 
 .ui-tree .ui-tree-container {
@@ -324,7 +325,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     width: 2rem;
     height: 2rem;
     margin: 0 0 0 0;
-    margin-top: -2px;
+    margin-top: 0px;
     margin-right: 0px;
     margin-bottom: 0px;
     margin-left: 0px;
@@ -351,6 +352,12 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode 
     margin-right: 0px;
     margin-bottom: -5px;
     margin-left: 0px;
+
+}
+
+/* pour éviter la coupure du texte dans l'arbre*/
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
+   display: block;
 }
 /* fin ajouté par Miled*/
 
