@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup id="treeActions">
-        <div class="row">
+        <div class="row" style="margin-top: -15px;">
             <div class="col-6">
                 <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
                               title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
@@ -52,42 +52,39 @@
             </div>
         </div>
     </h:panelGroup>
+        <div class="row">
+            <div class="col-12">
+                <p:tree value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
+                        style="width: auto; border: none; min-height: 700px; max-height: 800px; overflow-y: scroll; font-size: 12px;" 
+                        cache="#{roleOnTheso.nodePreference.tree_cache}" draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
+                        droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" widgetVar="treeWidget">
 
-    <div class="row">
-        <div class="col-12">
-            <p:tree value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
-                    style="border: none; min-height: 700px; max-height: 800px; overflow-y: scroll; font-size: 12px;" 
-                    animate="true" cache="#{roleOnTheso.nodePreference.tree_cache}" draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
-                    droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" widgetVar="treeWidget">
+                    <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
+                    <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
+                    <p:ajax event="select" listener="#{tree.onNodeSelect}" />
+                    <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
 
-                <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
-                <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-                <p:ajax event="select" listener="#{tree.onNodeSelect}" />
-                <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
+                    <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
+                    </p:treeNode>
 
-                <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
-                    <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
-                    <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
-                </p:treeNode>
+                    <p:treeNode type="concept" expandedIcon="pi pi-folder-open pi_custom_open" collapsedIcon="pi pi-folder pi_custom_collapse" >
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
+                    </p:treeNode>
 
-                <p:treeNode type="concept" expandedIcon="pi pi-folder-open pi_custom_open" collapsedIcon="pi pi-folder pi_custom_collapse" >
-                    <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
-                    <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
-                </p:treeNode>
+                    <p:treeNode type="file" icon="pi pi-file-o pi-file">
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px" />
+                    </p:treeNode>
 
-                <p:treeNode type="file" icon="pi pi-file-o pi-file">
-                    <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
-                    <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px" />
-                </p:treeNode>
-
-                <p:treeNode type="facet" icon="fa fa-magnet fa_custom_magnet">
-                    <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px" />
-                </p:treeNode>
-
-            </p:tree>
+                    <p:treeNode type="facet" icon="fa fa-magnet fa_custom_magnet">
+                        <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px" />
+                    </p:treeNode>
+                </p:tree>                
+            </div>
         </div>
-    </div>
-
     <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
 
 </ui:fragment>
