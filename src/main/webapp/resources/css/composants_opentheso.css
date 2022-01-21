@@ -337,33 +337,13 @@ body .ui-tree .ui-tree-container {
     margin-left: -12px;
 }
 
-
-/* ajouté par Miled*/
-
-.ui-tree .ui-treenode {
-    margin: -2px;
-}
-
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode {
-    width: 2rem;
-    height: 1rem;
-    margin: 0 0 0 0;
-    margin-top: -5px;
-    margin-right: 0px;
-    margin-bottom: -5px;
-    margin-left: 0px;
-
-}
-
-/* pour éviter la coupure du texte dans l'arbre*/
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
-   display: block;
+   text-align: justify;
 }
-/* fin ajouté par Miled*/
 
-
-
-/** **** **/
+.ui-tree .ui-tree-container {
+    white-space: normal;
+}
 
 
 
@@ -672,10 +652,3 @@ body .ui-datalist .ui-datalist-content {
 .ui-growl-message {
     font-size: 14px;
 }
-
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
-    margin: 0;
-    padding: 0px;
-    border-radius: 4px;
-}
-

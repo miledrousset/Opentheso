@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:tree value="#{treeConcepts.root}"  dynamic="true" var="treeConcept" selectionMode="single"  selection="#{treeConcepts.selectedNode}"
-            style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll;" 
+            style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px;overflow-y:scroll; padding: none !important;" 
             widgetVar="conceptTreeWidget" >
         <p:ajax event="expand"  listener="#{treeConcepts.onNodeExpand}"/>
         <p:ajax event="select" listener="#{treeConcepts.onNodeSelect}" />
