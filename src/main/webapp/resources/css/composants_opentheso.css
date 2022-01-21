@@ -272,6 +272,10 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
 /** Tree **/
 body .ui-tree {
     border-collapse: collapse;
+    padding: 0.1rem;
+    margin-left: -1rem;
+    margin-right: -1.8rem;    
+    margin-top: -0.1rem;
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-hover {
@@ -328,6 +332,8 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 
 body .ui-tree .ui-tree-container {
     margin: 0;
+    padding: 9px !important;
+    margin-left: -12px;
 }
 
 
@@ -666,7 +672,3 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     border-radius: 4px;
 }
 
-body .ui-tree .ui-tree-container {
-    padding: 1px !important;
-    margin: 0;
-}
