@@ -64,7 +64,7 @@
                     <p:ajax event="select" listener="#{tree.onNodeSelect}" />
                     <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
 
-                    <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
+                    <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
                     </p:treeNode>
@@ -74,7 +74,7 @@
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px"/>
                     </p:treeNode>
 
-                    <p:treeNode type="file" icon="pi pi-file-o pi-file">
+                    <p:treeNode type="file" icon="pi pi-file pi_custom_file">
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.name}" style="font-size: 12px" />
                     </p:treeNode>

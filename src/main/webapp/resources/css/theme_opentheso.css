@@ -11275,3 +11275,21 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
     width: 100%;
 }
+
+/*pour l'arbre*/
+.pi_custom_open {
+    color: #4f1915 !important;
+    font-size: 0.8rem !important;
+}
+.pi_custom_collapse {
+    color: #4f1915 !important;
+    font-size: 0.8rem !important;    
+}
+.pi_custom_file {
+    color: #4f1915 !important;
+    font-size: 0.8rem !important;     
+}
+.fa_custom_magnet {
+    color: #C63632 !important;
+    font-size: 0.8rem !important;
+}
