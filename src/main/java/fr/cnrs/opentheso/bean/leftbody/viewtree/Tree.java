@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -69,6 +70,9 @@ public class Tree implements Serializable {
 
     @Inject
     private EditFacet editFacet;
+    
+    @Inject
+    private AlignmentBean alignmentBean;
 
     private DataService dataService;
     private TreeNode selectedNode; // le neoud sélectionné par clique
@@ -432,6 +436,10 @@ public class Tree implements Serializable {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
         }
+        
+        alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
+        alignmentBean.nextTenRecresive(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("indexTitle");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:treeActions");          

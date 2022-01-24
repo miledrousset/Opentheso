@@ -230,6 +230,30 @@ public class AlignmentBean implements Serializable {
         }
         getIdsAndValues(idLang, idTheso);
     }
+    
+    public void nextTenRecresive(String idLang, String idTheso) {
+
+        if (allIdsOfBranch == null) {
+            idsAndValues = null;
+            return;
+        }
+        if (counter >= allIdsOfBranch.size()) {
+            return;
+        }
+        idsToGet.clear();
+        int counterTemp = counter;
+
+        for (int i = counterTemp; i < counterTemp + 10; i++) {
+            if (counter >= allIdsOfBranch.size()) {
+                counter = allIdsOfBranch.size();
+                break;
+            }
+            idsToGet.add(allIdsOfBranch.get(i));
+            counter++;
+        }
+        getIdsAndValues(idLang, idTheso);
+        nextTenRecresive(idLang, idTheso);
+    }
 
     /**
      * retourne les dix valeurs précédantes
