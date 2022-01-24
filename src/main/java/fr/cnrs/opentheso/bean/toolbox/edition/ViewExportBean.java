@@ -52,11 +52,11 @@ public class ViewExportBean implements Serializable {
     // ajouté par Miled
     private boolean isAllGroupsSelected; 
     private boolean isAllLangsSelected;
+    private boolean toogleFilterByGroup;
     private String selectedGroup;
     private String selectedIdLangTheso;
     private List<String> selectedIdGroups;
-    private boolean toogleFilterByGroup;
-    
+
     // pour le format PDF
     private String selectedLang1_PDF; // pour comparer entre 2 langues maxi pour le PDF
     private String selectedLang2_PDF;
@@ -99,6 +99,7 @@ public class ViewExportBean implements Serializable {
             selectedIdGroups.clear();
             selectedIdGroups = null;
         }
+
         exportFormat = null;
         types = null;
     }    
@@ -192,7 +193,7 @@ public class ViewExportBean implements Serializable {
         }
     }
 
-    
+
     public boolean isPdfExport() {
         return "PDF".equals(formatFile);
     }
@@ -209,6 +210,10 @@ public class ViewExportBean implements Serializable {
         return "CSV_id".equals(formatFile);
     }
     
+    public boolean isDeprecatedExport() {
+        return "deprecated".equals(formatFile);
+    }
+
     public String getFormat() {
         return formatFile;
     }

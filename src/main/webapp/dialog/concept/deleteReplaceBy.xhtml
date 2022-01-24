@@ -11,18 +11,18 @@
                 <div>
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.deprecated_concept')}: " style="font-size: 14px; color: black;"/>                    
                     <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 14px; color: #C63632;"/>
-                </div>      
+                </div>
 
-                <p:spacer/> 
+                <p:spacer/>
 
                 <div>
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.is_replaced_by')}:" style="font-size: 12px; color: black;"/> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.is_replaced_by')}:" style="font-size: 12px; color: black;"/>
                 </div>
 
                 <div>
                     <ui:repeat var="replaceBy" value="#{editConcept.nodeReplaceBy}" >
                         <div class="col-9" offset="1" style="background: #FAFAFA">
-                            <h:outputText value="#{replaceBy.value} (#{replaceBy.id})" style="color: #43B572"/> 
+                            <h:outputText value="#{replaceBy.value} (#{replaceBy.id})" style="color: #43B572"/>
                         </div>
                         <div class="col-3" style="background: #FAFAFA">
                             <p:commandLink style="color: #FF7979"
@@ -35,7 +35,7 @@
                         <p:spacer height="20" />
                     </ui:repeat>
                 </div>
-            </div>     
+            </div>
         </h:form>
     </p:dialog> 
 </ui:fragment>

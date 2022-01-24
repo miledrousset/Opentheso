@@ -296,70 +296,70 @@ public class ReadRdf4j {
     private boolean readRelationships(ReadStruct readStruct) {
 
         if (readStruct.property.getLocalName().equals("broader")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.broader);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.broader);
             return false;
         } else if (readStruct.property.getLocalName().equals("broaderGeneric")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.broaderGeneric);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.broaderGeneric);
             return false;
         } else if (readStruct.property.getLocalName().equals("broaderInstantial")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.broaderInstantial);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.broaderInstantial);
             return false;
         } else if (readStruct.property.getLocalName().equals("broaderPartitive")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.broaderPartitive);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.broaderPartitive);
             return false;
         } else if (readStruct.property.getLocalName().equals("narrower")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.narrower);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.narrower);
             return false;
         } else if (readStruct.property.getLocalName().equals("narrowerGeneric")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.narrowerGeneric);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.narrowerGeneric);
             return false;
         } else if (readStruct.property.getLocalName().equals("narrowerInstantial")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.narrowerInstantial);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.narrowerInstantial);
             return false;
         } else if (readStruct.property.getLocalName().equals("narrowerPartitive")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.narrowerPartitive);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.narrowerPartitive);
             return false;
         } else if (readStruct.property.getLocalName().equals("related")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.related);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.related);
             return false;
         } else if (readStruct.property.getLocalName().equals("relatedHasPart")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.relatedHasPart);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.relatedHasPart);
             return false;
         } else if (readStruct.property.getLocalName().equals("relatedPartOf")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.relatedPartOf);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.relatedPartOf);
             return false;
         } else if (readStruct.property.getLocalName().equals("hasTopConcept")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.hasTopConcept);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.hasTopConcept);
             return false;
         } else if (readStruct.property.getLocalName().equals("inScheme")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.inScheme);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.inScheme);
             return false;
         } else if (readStruct.property.getLocalName().equals("member")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.member);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.member);
             return false;
         } else if (readStruct.property.getLocalName().equals("topConceptOf")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.topConceptOf);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.topConceptOf);
             return false;
         } else if (readStruct.property.getLocalName().equals("microThesaurusOf")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.microThesaurusOf);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.microThesaurusOf);
             return false;
         } else if (readStruct.property.getLocalName().equals("subGroup")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.subGroup);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.subGroup);
             return false;
         } else if (readStruct.property.getLocalName().equals("superGroup")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.superGroup);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.superGroup);
             return false;
         } else if (readStruct.property.getLocalName().equals("hasMainConcept")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.hasMainConcept);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.hasMainConcept);
             return false;
         } else if (readStruct.property.getLocalName().equals("memberOf")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.memberOf);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.memberOf);
             return false;
         } else if (readStruct.property.getLocalName().equals("mainConceptOf")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.mainConceptOf);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.mainConceptOf);
             return false;
         } else if (readStruct.property.getLocalName().equals("superOrdinate")) {
-            readStruct.resource.addRelation(readStruct.value.toString(), SKOSProperty.superOrdinate);
+            readStruct.resource.addRelation("",readStruct.value.toString(), SKOSProperty.superOrdinate);
             return false;
         } else {            
             return true;

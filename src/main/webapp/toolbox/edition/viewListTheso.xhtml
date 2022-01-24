@@ -21,7 +21,7 @@
                         </p:menuButton>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
-                        <p:commandButton value="Nouveau" icon="fas fa-plus-circle" 
+                        <p:commandButton value="Nouveau" icon="fas fa-plus-circle"
                                          actionListener="#{newThesoBean.init()}"
                                          action="#{viewEditionBean.setIsViewNewTheso(true)}"
                                          update="containerIndex" />
@@ -32,14 +32,14 @@
                     <div class="row" style="margin-left: 20px; margin-right: 20px;">
                         <div class="col-12">
 
-                            <p:dataTable value="#{roleOnTheso.nodeListThesoAsAdmin}" var="listTheso" scrollable="true" 
+                            <p:dataTable value="#{roleOnTheso.nodeListThesoAsAdmin}" var="listTheso" scrollable="true"
                                          resizableColumns="true" scrollHeight="450" reflow="true">
 
                                 <p:column width="60" headerText="Nom du thésaurus">
                                     <h:outputText value="#{listTheso.value} (#{listTheso.id})"/>
                                 </p:column>
 
-                                <p:column width="10" headerText="Public/Privé"> 
+                                <p:column width="10" headerText="Public/Privé">
                                     <p:toggleSwitch value="#{listTheso.status}" disabled="true" />
                                 </p:column>
 
@@ -54,7 +54,7 @@
                                                     title="Exporter le thésaurus au format PDF" icon="fas fa-upload" />
 
                                         <p:menuitem value="Format CSV" actionListener="#{viewExportBean.init(listTheso, 'CSV')}"
-                                                    action="#{viewEditionBean.setIsViewExportCSV(true)}" update="containerIndex" 
+                                                    action="#{viewEditionBean.setIsViewExportCSV(true)}" update="containerIndex"
                                                     title="Exporter le thésaurus au format CSV" icon="fas fa-upload" />
 
                                         <p:menuitem value="Identifiants en CSV" actionListener="#{viewExportBean.init(listTheso, 'CSV_id')}"
@@ -62,7 +62,7 @@
                                                     title="Exporter les labels, identifiants, definitions au format CSV"/>
 
                                         <p:menuitem value="Concepts dépréciés en CSV" update="containerIndex" icon="fas fa-upload"
-                                                    actionListener="#{viewExportBean.init(listTheso, 'deprecated')}" 
+                                                    actionListener="#{viewExportBean.init(listTheso, 'deprecated')}"
                                                     action="#{viewEditionBean.setIsViewExportCSV(true)}" />
 
                                         <p:menuitem value="Virtuoso (SKOS)" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
@@ -89,7 +89,7 @@
                                 </f:facet>
                             </p:dataTable>
                         </div>
-                    </div>             
+                    </div>
                 </p:scrollPanel>
             </div>
         </div>

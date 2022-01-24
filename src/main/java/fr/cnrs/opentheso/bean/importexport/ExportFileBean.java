@@ -157,7 +157,6 @@ public class ExportFileBean implements Serializable {
             }
 
         }
-
     }
 
     public StreamedContent exportThesorus() {
@@ -221,6 +220,55 @@ public class ExportFileBean implements Serializable {
 
 
         /// autres exports
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            try (ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();
+        }
+
+
+        ///////////////////////////////////
+
+        /// export des concepts avec Id, label
+        if ("CSV_id".equalsIgnoreCase(viewExportBean.getFormat())) {
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas;
+            if(viewExportBean.isToogleFilterByGroup()) {
+                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+            } else {
+                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), null);
+            }
+            if(datas == null) return null;
+
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            try (ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();
+        }
+        ///////////////////////////////////
+
+
+
+
+        /// autres exports
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                 viewExportBean.getSelectedIdGroups(),
                 viewExportBean.getSelectedLanguages());
@@ -235,7 +283,7 @@ public class ExportFileBean implements Serializable {
                     viewExportBean.getSelectedLang1_PDF(),
                     viewExportBean.getSelectedLang2_PDF(),
                     viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
-
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent
                         .builder()
                         .contentType("application/pdf")
@@ -243,6 +291,7 @@ public class ExportFileBean implements Serializable {
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();
             }
 
@@ -257,12 +306,13 @@ public class ExportFileBean implements Serializable {
                 str = null;
                 skosxd = null;
                 System.gc();
-
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent.builder().contentType("text/csv")
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();
             }
         } else {
@@ -297,7 +347,7 @@ public class ExportFileBean implements Serializable {
                 skosxd.clear();
                 skosxd = null;
                 System.gc();
-
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 try (ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
                     out.close();
                     return DefaultStreamedContent.builder()
@@ -307,6 +357,7 @@ public class ExportFileBean implements Serializable {
                             .build();
                 }
             } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();
             }
         }
@@ -337,6 +388,7 @@ public class ExportFileBean implements Serializable {
             }
             out.close();
             if (virtGraph != null) virtGraph.close();
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             return true;
         } catch(Exception e){
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
@@ -344,6 +396,7 @@ public class ExportFileBean implements Serializable {
             PrimeFaces pf = PrimeFaces.current();
             pf.ajax().update("messageIndex");
             if (virtGraph != null) virtGraph.close();
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             return false;
         }
     }
@@ -391,6 +444,7 @@ public class ExportFileBean implements Serializable {
         }
 
         viewExportBean.setExportDone(true);
+
         return exportRdf4jHelperNew.getSkosXmlDocument();
     }
 

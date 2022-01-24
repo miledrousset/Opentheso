@@ -1365,9 +1365,9 @@ public class Rest_new {
                 return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
             }
             return Response
-                    .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();
+                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
         }
 
 

@@ -14,8 +14,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.AddConceptsStruct;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
-import fr.cnrs.opentheso.skosapi.SKOSResource;
-import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.skosapi.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -217,6 +216,7 @@ public class FusionService implements Serializable {
     /**
      * pour comparer la traduction locale à la traduction importée
      * @param nodeTermTraductionImport
+     * @param nodeTermTraductionLocal
      * @return 
      * #MR
      */

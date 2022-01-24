@@ -416,7 +416,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                idConceptDeprecated, idUser);          
+                idConceptDeprecated, idUser);
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
@@ -445,7 +445,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                idConceptDeprecated, idUser);         
+                idConceptDeprecated, idUser);
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation supprimée avec succès");
@@ -519,6 +519,25 @@ public class EditConcept implements Serializable {
         generateArkIds(conceptHelper, idConcepts);
     }
 
+    }
+
+    /**
+     * permet de mettre à jour les URI des identifiants Ark pour cette branche,
+     * cette fonction ne fait que la mise à jour de l'URL et ne permet de créer des identifiants ARK
+     */
+    public void updateUriArkForThisBranch(){
+        if(roleOnThesoBean.getNodePreference() == null) return;
+        if(conceptView.getNodeConcept() == null) return;
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        updateUriArkIds(conceptHelper, idConcepts);
+    }
+
     /**
      * permet de générer la totalité des identifiants Ark, si un identifiant
      * n'existe pas, il sera créé, sinon, il sera mis à jour.
@@ -554,6 +573,29 @@ public class EditConcept implements Serializable {
             PrimeFaces.current().ajax().update("messageIndex");
         }
     }
+
+
+    private void updateUriArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts){
+        FacesMessage msg;
+        if(!conceptHelper.updateUriArk(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                idConcepts)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La mise à jour des URIs Ark a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La mise à jour des URIs Ark a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
+    }
+
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

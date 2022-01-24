@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
+import org.primefaces.PrimeFaces;
+
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;

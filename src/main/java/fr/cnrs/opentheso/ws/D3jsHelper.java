@@ -54,8 +54,8 @@ public class D3jsHelper {
     }
 
     private NodeDatas getRootNode(HikariDataSource ds, String idTheso, String idLang,
-                                  String idTopConcept, ArrayList<NodeIdValue> listIds){
-
+            String idTopConcept, ArrayList<NodeIdValue> listIds){
+        
         NodeDatas nodeDatas = getNodeDatas(ds, idTopConcept, idTheso, idLang);
 
         //Children

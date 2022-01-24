@@ -839,7 +839,7 @@ public class ImportFileBean implements Serializable {
             BDDinsertEnable = false;
             importInProgress = false;
             uri = null;
-            info = "Suppression réussie, alignements supprimés = " + (int)total;            
+            info = "Suppression réussi, alignements supprimés = " + (int)total;            
             total = 0;
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));

@@ -8,11 +8,10 @@
 
     <context-param>
         <param-name>version</param-name>
-        <param-value>21.07</param-value>
+        <param-value>22.01</param-value>
     </context-param>
 
     <!-- thème de Primefaces omega (n'est plus supporté dans la version 10 de primefaces) -->
-    
     <context-param>
         <param-name>primefaces.THEME</param-name>
         <param-value>saga</param-value>
@@ -40,7 +39,7 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
-   
+
     <!-- pour le webservices-->
     <servlet>
         <servlet-name>Jersey REST Service</servlet-name>
@@ -62,7 +61,7 @@
     -->
     <session-config>
         <session-timeout>
-            30
+            120
         </session-timeout>
     </session-config>
 

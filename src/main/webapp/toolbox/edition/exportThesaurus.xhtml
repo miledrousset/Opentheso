@@ -136,7 +136,7 @@
                             </p:selectOneMenu>
                         </div>
                     </div>
-                    
+
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-3" style="text-align: right">
                             <h:outputText value="Filtre par collection/groupe" title="Par défaut, tout est sélectionné !!" style="color: #000"/>
@@ -148,7 +148,7 @@
                             </p:toggleSwitch>
                         </div>
                     </div>
-                    
+
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-3" />
                         <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
@@ -242,7 +242,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{viewExportBean.isDeprecatedExport()}">     
+                <h:panelGroup rendered="#{viewExportBean.isDeprecatedExport()}">
                     <!-- export des concepts dépréciés en CSV -->
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-3" style="text-align: right">
@@ -260,7 +260,7 @@
                 </h:panelGroup>
 
                 <!-- export pour Virtuoso -->
-                <p:panel rendered="#{viewEditionBean.isViewImportVirtuoso()}" toggleable="true" closable="false" 
+                <p:panel rendered="#{viewEditionBean.isViewImportVirtuoso()}" toggleable="true" closable="false"
                          style="margin-bottom:10px; margin-top: 10px">
                     <div class="row">
                         <div class="col-3" style="text-align: right">
@@ -270,7 +270,7 @@
                             <p:inputText id="graphe" type="text" value="#{viewEditionBean.nomGraphe}" style="width: 100%; color: #000" />
                         </div>
                     </div>
-                    
+
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right">
                             <h:outputText value="Adresse" style="color: #000" />
@@ -279,7 +279,7 @@
                             <p:inputText id="adresse" type="text" value="#{viewEditionBean.urlServer}" style="width: 100%; color: #000" />
                         </div>
                     </div>
-                    
+
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right">
                             <h:outputText value="Login" style="color: #000" />
@@ -288,7 +288,7 @@
                             <p:inputText id="login" type="text" value="#{viewEditionBean.login}" style="width: 100%; color: #000" />
                         </div>
                     </div>
-                    
+
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right">
                             <h:outputText value="Password" style="color: #000" />
