@@ -110,9 +110,9 @@ public class CurrentUser implements Serializable {
      */
     public void login() throws IOException {
         
-        username = "admin";
+    /*    username = "admin";
         password = "admin";
-        
+      */  
         UserHelper userHelper = new UserHelper();
 
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {

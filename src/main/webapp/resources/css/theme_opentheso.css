@@ -11278,18 +11278,32 @@ body.sidebar-toggled footer.sticky-footer {
 
 /*pour l'arbre*/
 .pi_custom_open {
-    color: #4f1915 !important;
+    color: #F47B2A !important;
     font-size: 0.8rem !important;
 }
 .pi_custom_collapse {
-    color: #4f1915 !important;
+    color: #F47B2A !important;
     font-size: 0.8rem !important;    
 }
 .pi_custom_file {
-    color: #4f1915 !important;
+    color: #143a1e !important;
     font-size: 0.8rem !important;     
 }
 .fa_custom_magnet {
     color: #C63632 !important;
-    font-size: 0.8rem !important;
+    font-size: 11px !important;
+}
+
+/*Tree Groups */
+.fa_custom_open {
+    color: #143a1e  !important;
+    font-size: 11px !important;    
+}
+.fa_custom_collapse {
+    color:  #143a1e !important;
+    font-size: 11px !important;    
+}
+.fa_custom_file{
+    color: #164A78 !important;
+    font-size: 11px !important;    
 }

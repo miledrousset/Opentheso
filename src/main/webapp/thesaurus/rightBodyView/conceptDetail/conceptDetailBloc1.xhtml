@@ -73,12 +73,12 @@
                                                    title="#{replace.id}"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
                                                    update="containerIndex:formRightTab indexTitle"
-                                                   style="color: #C63632;" />
+                                                   style="color: #C63632;font-size: 12px;" />
 
                                     <p:commandLink rendered="#{replace.value == ''}" value="(#{replace.id})"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
                                                    update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
-                                                   style="color: #C63632;" />
+                                                   style="color: #C63632;font-size: 12px;" />
 
                                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                                 </ui:repeat>
