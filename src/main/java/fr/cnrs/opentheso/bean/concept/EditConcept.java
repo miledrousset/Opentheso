@@ -519,8 +519,6 @@ public class EditConcept implements Serializable {
         generateArkIds(conceptHelper, idConcepts);
     }
 
-    }
-
     /**
      * permet de mettre à jour les URI des identifiants Ark pour cette branche,
      * cette fonction ne fait que la mise à jour de l'URL et ne permet de créer des identifiants ARK

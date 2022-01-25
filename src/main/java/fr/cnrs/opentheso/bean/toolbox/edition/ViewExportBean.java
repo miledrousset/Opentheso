@@ -218,10 +218,6 @@ public class ViewExportBean implements Serializable {
         return formatFile;
     }
 
-    public boolean isDeprecatedExport() {
-        return "deprecated".equals(formatFile);
-    }
-
     public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
         return languagesOfTheso;
     }
