@@ -39,7 +39,7 @@
                     <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
                                             and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
                                 value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
-                                update="idGlobalActionsTree messageIndex" icon="far fa-window-close" />                
+                                update="containerIndex messageIndex" icon="far fa-window-close" />
 
                     <p:menuitem disabled="false" styleClass="buttonIconOrange"
                                 rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
