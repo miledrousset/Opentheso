@@ -342,6 +342,7 @@ body .ui-tree .ui-tree-container {
 
 .ui-tree .ui-treenode {
     margin: -2px;
+    min-width: max-content;
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode {
