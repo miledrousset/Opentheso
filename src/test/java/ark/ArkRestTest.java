@@ -123,7 +123,7 @@ public class ArkRestTest {
 
         String urlArkeo = "http://localhost:8082/Arkeo/rest/v1/ark/add";
 
-        String jsonData = "{\"token\":\"" + token + "\",\"ark\":\"\",\"naan\":\"66666\",\"type\":\"prefix\",\"urlTarget\":\"http://testgg11.fr\",\"title\":\"test1\",\"creator\":\"Miled23\",\"useHandle\":false,\"modificationDate\":\"2019-12-10\",\"dcElments\":[{\"name\":\"creator\",\"value\":\"miledDC\",\"language\":\"fr\"},{\"name\":\"title\",\"value\":\"pour tester1\",\"language\":\"fr\"},{\"name\":\"description\",\"value\":\"description 1\",\"language\":\"fr\"}]}";          
+        String jsonData = "{\"token\":\"" + token + "\",\"ark\":\"\",\"naan\":\"66666\",\"type\":\"prefix\",\"urlTarget\":\"http://testgg11.fr\",\"title\":\"test1\",\"creator\":\"Miled23\",\"useHandle\":false,\"modificationDate\":\"2019-12-10\",\"dcElements\":[{\"name\":\"creator\",\"value\":\"miledDC\",\"language\":\"fr\"},{\"name\":\"title\",\"value\":\"pour tester1\",\"language\":\"fr\"},{\"name\":\"description\",\"value\":\"description 1\",\"language\":\"fr\"}]}";          
     //    String jsonData = getJsonData("http://www.mom.fr");
         
         Client client= Client.create();
@@ -183,7 +183,7 @@ public class ArkRestTest {
             i++;
             jsonArrayBuilderDC.add(jobDC.build());
         }
-        job.add("dcElments", jsonArrayBuilderDC.build()); 
+        job.add("dcElements", jsonArrayBuilderDC.build()); 
 
         jsonObjectBuilder.add("result", job.build()); 
         return jsonObjectBuilder.build().toString();

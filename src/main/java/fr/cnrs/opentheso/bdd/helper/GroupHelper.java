@@ -1631,6 +1631,7 @@ public class GroupHelper {
         if (idArk == null) {
             idArk = "";
         }
+        String idHandle = "";
         /*
          * récupération de l'identifiant Ark pour le ConceptGroup de type : ark:/66666/srvq9a5Ll41sk
          * Controler si l'identifiant du Group existe
@@ -1638,8 +1639,8 @@ public class GroupHelper {
         // à faire
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate("Insert into concept_group values ('" + idGroup + "','" + idArk + "','"
-                        + idThesaurus + "','" + typeCode + "','" + notation + "')");
+                stmt.executeUpdate("Insert into concept_group(idgroup, id_ark, idthesaurus, idtypecode, notation, id_handle) values ('" + idGroup + "','" + idArk + "','"
+                        + idThesaurus + "','" + typeCode + "','" + notation + "','" + idHandle + "')");
                 return true;
             }
         } catch (SQLException sqle) {

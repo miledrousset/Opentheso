@@ -51,9 +51,9 @@ public class TermHelper {
         title = stringPlus.convertString(title);
         title = stringPlus.unaccentLowerString(title);
 
-        try (Connection conn = ds.getConnection()){
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery( "select id_term from term where f_unaccent(lower(term.lexical_value)) like '"
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_term from term where f_unaccent(lower(term.lexical_value)) like '"
                         + title + "' and lang = '" + idLang + "' and id_thesaurus = '" + idThesaurus + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
@@ -68,7 +68,8 @@ public class TermHelper {
     }
 
     /**
-     * Cette fonction permet de savoir si le synonyme est un parfait doublon ou non
+     * Cette fonction permet de savoir si le synonyme est un parfait doublon ou
+     * non
      */
     public boolean isAltLabelExist(HikariDataSource ds, String title, String idThesaurus, String idLang) {
 

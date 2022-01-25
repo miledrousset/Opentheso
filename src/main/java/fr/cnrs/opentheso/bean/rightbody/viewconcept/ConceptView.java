@@ -530,7 +530,7 @@ public class ConceptView implements Serializable {
             return count;
         } catch (Exception e) {
             System.err.println(e + " " + jsonText + " " + nodeConcept.getConcept().getIdConcept());
-            // Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, e + " " + jsonText);            
+            // Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, e + " " + jsonText);
             return -1;
         }
     }
@@ -602,15 +602,15 @@ public class ConceptView implements Serializable {
             return "";
         }
         UserHelper userHelper = new UserHelper();
-        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getCreator());
+        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getConcept().getCreator());
     }
 
     public String getContributor() {
         if (nodeConcept == null || nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
             return "";
         }
-        UserHelper userHelper = new UserHelper();
-        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getTerm().getContributor());
+        UserHelper userHelper = new UserHelper();;
+        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getConcept().getContributor());
     }
 
 /////////////////////////////////
@@ -687,7 +687,7 @@ public class ConceptView implements Serializable {
         this.selectedLang = selectedLang;
     }
 
-/////// notes    
+/////// notes
     public ArrayList<NodeNote> getNotes() {
         return notes;
     }

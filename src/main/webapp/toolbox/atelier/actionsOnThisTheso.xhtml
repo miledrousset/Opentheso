@@ -1,0 +1,41 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:b="http://bootsfaces.net/ui"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    
+    <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" value=" Actions sur le thésaurus en cours"  /> <br/>
+    <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+
+        <!--Pour importer des alignements -->
+        <p:menuButton value="Actions"  style="box-shadow: 0 0 0px; background: none; background-color: transparent; color: transparent;  font-size: 12px;" >
+            <p:menuitem value="Importer des alignements" 
+                        title="Importer des alignements d'après un tableau CSV"
+                        oncomplete="PF('listAlignmentCsv').show();"
+                        update="idListAlignmentCsv listAlignmentCsvForm"
+                        action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
+            <p:menuitem value="Supprimer des alignements" 
+                        title="Supprimer des alignements d'après un tableau CSV"
+                        oncomplete="PF('deleteListAlignmentCsv').show();"
+                        update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
+                        action="#{importFileBean.init()}" icon="pi pi-times" style="font-size: 12px; "/>         
+            <p:divider style="font-size: 11px; color: #F47B2A"/>            
+            <p:menuitem value="Importer des notes" 
+                        title="Importer des notes d'après un tableau CSV"
+                        oncomplete="PF('listNoteCsv').show();"
+                        update="idListNoteCsv listNoteCsvForm"
+                        action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
+    
+            <p:divider style="font-size: 11px; color: #F47B2A"/> 
+        </p:menuButton>
+    </p:panel>
+    
+    <p:separator rendered="#{selectedTheso.currentIdTheso != null}" style="height: 0px;margin-top: 5px; margin-bottom: 40px; background-color: #F47B2A; color: #F47B2A"/>
+
+    
+    <ui:include src="/dialog/import/listAlignmentCsv.xhtml" />   
+    <ui:include src="/dialog/import/deleteListAlignmentCsv.xhtml" />   
+    <ui:include src="/dialog/import/listNoteCsv.xhtml" />      
+</ui:fragment>

@@ -7,15 +7,18 @@ package fr.cnrs.opentheso.skosapi;
  */
 public class SKOSRelation implements SKOSProperty {
 
+    private String localIdentifier;
     private String targetUri;
     private int property;
 
-    public SKOSRelation(String uri, int prop) throws Exception {
+    public SKOSRelation(String identifier, String uri, int prop) throws Exception {
         if (-1 <= prop && prop <= 22 ) {
+            this.localIdentifier = identifier;
             this.targetUri = uri;
             this.property = prop;
         } else {
             if (100 <= prop && prop <= 105 ){
+                this.localIdentifier = identifier;                
                 this.targetUri = uri;
                 this.property = prop;                
             } else
@@ -30,6 +33,15 @@ public class SKOSRelation implements SKOSProperty {
     public int getProperty() {
         return property;
     }
+
+    public String getLocalIdentifier() {
+        return localIdentifier;
+    }
+
+    public void setLocalIdentifier(String localIdentifier) {
+        this.localIdentifier = localIdentifier;
+    }
+
 
     public String toString() {
         String propertyName = new String();
