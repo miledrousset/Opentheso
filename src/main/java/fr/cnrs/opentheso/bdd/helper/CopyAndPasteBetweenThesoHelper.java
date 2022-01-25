@@ -10,6 +10,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.concept.SynonymBean;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
+import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
@@ -124,6 +125,20 @@ public class CopyAndPasteBetweenThesoHelper {
         if (nodePreference == null) {
             return null;
         }
+        String DATE_FORMAT = "dd-mm-yyyy";
+        
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.exportTheso(ds, fromIdTheso, nodePreference);        
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> allConcepts = conceptHelper.getIdsOfBranch(ds, fromIdConcept, fromIdTheso);
+        
+        for (String idConcept : allConcepts) {
+            exportRdf4jHelperNew.exportConcept(ds, fromIdTheso, idConcept, false);
+        }        
+        return exportRdf4jHelperNew.getSkosXmlDocument();
+        /*
         nodePreference.setOriginalUriIsArk(false);
         nodePreference.setOriginalUriIsHandle(false);   
         nodePreference.setOriginalUriIsDoi(false);
@@ -132,9 +147,13 @@ public class CopyAndPasteBetweenThesoHelper {
         exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, fromIdTheso, nodePreference.getCheminSite());
         exportRdf4jHelper.setNodePreference(nodePreference);
 
+        
+        
+        
+        
         exportRdf4jHelper.addBranch(fromIdTheso, fromIdConcept);
 
-        return exportRdf4jHelper.getSkosXmlDocument();
+        return exportRdf4jHelper.getSkosXmlDocument();*/
     }
 
     private boolean addBranch(HikariDataSource ds, SKOSXmlDocument sKOSXmlDocument, NodePreference nodePreference,

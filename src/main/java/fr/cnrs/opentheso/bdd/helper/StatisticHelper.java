@@ -33,17 +33,26 @@ public class StatisticHelper {
         int count = 0;
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
-                    " where" +
-                    " concept_group_concept.idconcept = alignement.internal_id_concept" +
-                    " and" +
-                    " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
-                    " and" +
-                    " concept_group_concept.idgroup = '" + idGroup + "'" +
-                    " and" +
-                    " concept_group_concept.idthesaurus = '" + idThesaurus + "'" +
-                    " and" +
-                    " uri_target like '%www.wikidata.org%'");                
+                if(idGroup == null || idGroup.isEmpty()){
+                    stmt.executeQuery("select count(alignement.internal_id_concept) from alignement " +
+                        " where" +
+                        " alignement.internal_id_thesaurus = '" + idThesaurus + "'" +
+                        " and uri_target like '%wikidata.org%'" +
+                        " and" +
+                        " internal_id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "')");
+                } else{
+                    stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
+                        " where" +
+                        " concept_group_concept.idconcept = alignement.internal_id_concept" +
+                        " and" +
+                        " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
+                        " and" +
+                        " concept_group_concept.idgroup = '" + idGroup + "'" +
+                        " and" +
+                        " concept_group_concept.idthesaurus = '" + idThesaurus + "'" +
+                        " and" +
+                        " uri_target like '%wikidata.org%'");                    
+                }
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
@@ -61,15 +70,24 @@ public class StatisticHelper {
         int count = 0;
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
-                    " where" +
-                    " concept_group_concept.idconcept = alignement.internal_id_concept" +
-                    " and" +
-                    " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
-                    " and" +
-                    " concept_group_concept.idgroup = '" + idGroup + "'" +
-                    " and" +
-                    " concept_group_concept.idthesaurus = '" + idThesaurus + "'");                
+                if(idGroup == null || idGroup.isEmpty()) {
+                    stmt.executeQuery("select count(alignement.internal_id_concept)" +
+                        " from alignement " +
+                        " where" +
+                        " alignement.internal_id_thesaurus = '" + idThesaurus + "'" +
+                        " and" +
+                        " internal_id_concept NOT IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "')"); 
+                } else {
+                    stmt.executeQuery("select count(idconcept) from concept_group_concept, alignement " +
+                        " where" +
+                        " concept_group_concept.idconcept = alignement.internal_id_concept" +
+                        " and" +
+                        " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
+                        " and" +
+                        " concept_group_concept.idgroup = '" + idGroup + "'" +
+                        " and" +
+                        " concept_group_concept.idthesaurus = '" + idThesaurus + "'");
+                }
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
@@ -409,31 +427,16 @@ public class StatisticHelper {
     }    
     
     public int getNbCpt(HikariDataSource ds, String idThesaurus) {
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
         int count = 0;
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT count(id_concept) FROM concept WHERE"
-                            + " id_thesaurus = '" + idThesaurus + "'";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    if (resultSet != null) {
-                        resultSet.next();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery( "SELECT count(id_concept) FROM concept WHERE"
+                            + " id_thesaurus = '" + idThesaurus + "' and status != 'CA'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
                         count = resultSet.getInt(1);
                     }
-
-                } finally {
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -607,6 +610,14 @@ public class StatisticHelper {
         return count;
     }
     
+    /**
+     * Retourne le nombre des traductions filtré par groupe
+     * @param ds
+     * @param idThesaurus
+     * @param idGroup
+     * @param langue
+     * @return 
+     */
     public int getNbTradOfGroup(HikariDataSource ds, String idThesaurus, String idGroup, String langue) {
         Connection conn;
         Statement stmt;
@@ -618,18 +629,30 @@ public class StatisticHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    //modification de la requête SQL #jm
-                    String query="SELECT count(distinct term.id_term) FROM term INNER JOIN "
-                            + " (SELECT preferred_term.id_concept,"
-                            + " preferred_term.id_term FROM preferred_term, concept "
-                            + " WHERE"
-                            + " concept.id_concept = preferred_term.id_concept and "
-                            + " concept.id_thesaurus = preferred_term.id_thesaurus and "
-                            + " concept.status != 'CA' and "      
-                            + " preferred_term.id_concept IN "
-                            + "(SELECT idconcept FROM concept_group_concept "
-                            + " WHERE idgroup='"+idGroup+"' AND idthesaurus='"+idThesaurus+"'))"
-                            + " as Tabl ON Tabl.id_term=term.id_term WHERE term.lang='"+langue+"' AND id_thesaurus='"+idThesaurus+"'";
+                    String query="SELECT " +
+                        " count (term.id_term) FROM term, preferred_term, concept, concept_group_concept" +
+                        " WHERE " +
+                        " term.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " term.id_term = preferred_term.id_term" +
+                        " and" +
+                        " preferred_term.id_concept = concept.id_concept" +
+                        " and" +
+                        " preferred_term.id_thesaurus = concept.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_concept = concept_group_concept.idconcept" +
+                        " and" +
+                        " preferred_term.id_thesaurus = concept_group_concept.idthesaurus" +
+                        " and" +
+                        " concept.id_concept = concept_group_concept.idconcept" +
+                        " and" +
+                        " concept_group_concept.idgroup='" + idGroup + "'" +
+                        " and" +
+                        " concept.status != 'CA'" +
+                        " and" +
+                        " term.id_thesaurus='" + idThesaurus + "'" +
+                        " and" +
+                        " term.lang='" + langue + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {
@@ -661,19 +684,24 @@ public class StatisticHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    //modification de la requête SQL #jm
-                    String query="SELECT count(term.id_term)" +
-                            " FROM term INNER JOIN " +
-                            " (SELECT preferred_term.id_concept, preferred_term.id_term " +
-                            " FROM preferred_term, concept" +
-                            "   WHERE " +
-                            " 	concept.id_concept = preferred_term.id_concept and " +
-                            "  	concept.id_thesaurus = preferred_term.id_thesaurus and " +
-                            " 	concept.status != 'CA' and " +
-                            "	preferred_term.id_concept NOT IN " +
-                            "    (SELECT idconcept FROM concept_group_concept " +
-                            "      WHERE idthesaurus='" + idThesaurus + "'))" +
-                            " as Tabl ON Tabl.id_term=term.id_term WHERE term.lang='" + idLang + "' AND id_thesaurus='" + idThesaurus + "'";
+                    String query="SELECT " +
+                        "count (concept.id_concept)  FROM term, preferred_term, concept" +
+                        " WHERE " +
+                        " term.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " term.id_term = preferred_term.id_term" +
+                        " and" +
+                        " preferred_term.id_concept = concept.id_concept" +
+                        " and" +
+                        " preferred_term.id_thesaurus = concept.id_thesaurus" +
+                        " and" +
+                        " concept.status != 'CA' " +
+                        " and" +
+                        " term.id_thesaurus='" + idThesaurus + "'" +
+                        " and" +
+                        " term.lang='" + idLang + "'" +
+                        " and" +
+                        " concept.id_concept NOT IN (SELECT concept_group_concept.idconcept FROM concept_group_concept WHERE concept_group_concept.idthesaurus = 'TH_1')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {

@@ -26,9 +26,9 @@ public class PreferencesHelper {
      */
     public String getCodeGoogleAnalytics(HikariDataSource ds) {
         String codeAnalytics = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery("SELECT googleanalytics FROM info")) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet resultSet = stmt.executeQuery("SELECT googleanalytics FROM info")) {
                     if (resultSet.next()) {
                         codeAnalytics = resultSet.getString("googleanalytics");
                     }
@@ -49,8 +49,8 @@ public class PreferencesHelper {
         StringPlus stringPlus = new StringPlus();
         codeJavaScript = stringPlus.addQuotes(codeJavaScript);
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update info set googleanalytics = '" + codeJavaScript + "'");
                 status = true;
             }
@@ -62,22 +62,23 @@ public class PreferencesHelper {
 
     /**
      * permet de retourner les préferences d'un thésaurus
+     *
      * @param ds
      * @param idThesaurus
-     * @return 
+     * @return
      */
     public NodePreference getThesaurusPreferences(HikariDataSource ds, String idThesaurus) {
         NodePreference np = null;
-        
-        if(idThesaurus == null || idThesaurus.isEmpty()) {
+
+        if (idThesaurus == null || idThesaurus.isEmpty()) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, "IdThesaurus = " + idThesaurus + " Erreur à vérifier");
             return np;
         }
-        
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM preferences where id_thesaurus = '" + idThesaurus + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         np = new NodePreference();
                         np.setSourceLang(resultSet.getString("source_lang"));
@@ -126,6 +127,12 @@ public class PreferencesHelper {
                         np.setOriginalUriIsArk(resultSet.getBoolean("original_uri_is_ark"));
                         np.setOriginalUriIsHandle(resultSet.getBoolean("original_uri_is_handle"));
                         //np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
+
+                        // Ark local
+                        np.setUseArkLocal(resultSet.getBoolean("use_ark_local"));
+                        np.setNaanArkLocal(resultSet.getString("naan_ark_local"));
+                        np.setPrefixArkLocal(resultSet.getString("prefix_ark_local"));
+                        np.setSizeIdArkLocal(resultSet.getInt("sizeid_ark_local"));
                     }
                 }
             }
@@ -140,9 +147,9 @@ public class PreferencesHelper {
      */
     public String getWorkLanguageOfTheso(HikariDataSource ds, String idThesourus) {
         String workLanguage = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery(
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet resultSet = stmt.executeQuery(
                         "select source_lang from preferences where id_thesaurus = '" + idThesourus + "'")) {
                     if (resultSet.next()) {
                         workLanguage = resultSet.getString("source_lang");
@@ -162,8 +169,8 @@ public class PreferencesHelper {
 
         boolean status = false;
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update preferences set source_lang = '" + idLang
                         + "' where id_thesaurus = '" + idTheso + "'");
                 status = true;
@@ -176,9 +183,9 @@ public class PreferencesHelper {
 
     public boolean isWebservicesOn(HikariDataSource ds, String idThesaurus) {
         boolean status = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery(
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet resultSet = stmt.executeQuery(
                         "SELECT webservices FROM preferences where id_thesaurus = '" + idThesaurus + "'")) {
                     if (resultSet.next()) {
                         status = resultSet.getBoolean("webservices");
@@ -196,9 +203,9 @@ public class PreferencesHelper {
      */
     public String getIdThesaurusFromName(HikariDataSource ds, String thesoName) {
         String idTheso = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery("select id_thesaurus from preferences where preferredname ilike '"
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet resultSet = stmt.executeQuery("select id_thesaurus from preferences where preferredname ilike '"
                         + thesoName + "'")) {
 
                     if (resultSet.next()) {
@@ -217,8 +224,8 @@ public class PreferencesHelper {
      */
     public void initPreferences(HikariDataSource ds, String idThesaurus, String workLanguage) {
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("insert into preferences (id_thesaurus,source_lang, preferredname)"
                         + " values ('" + idThesaurus + "', '" + workLanguage + "','" + idThesaurus + "')");
             }
@@ -229,13 +236,17 @@ public class PreferencesHelper {
 
     /**
      * Permet de mettre à jour toutes les préférence
+     * @param ds
+     * @param np
+     * @param idThesaurus
+     * @return
      */
     public boolean updateAllPreferenceUser(HikariDataSource ds, NodePreference np, String idThesaurus) {
         boolean status = false;
         StringPlus stringPlus = new StringPlus();
         np = normalizeDatas(np);
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 String query = "update preferences set "
                         + "source_lang='" + stringPlus.convertString(np.getSourceLang()) + "'"
                         //   + ", nb_alert_cdt='" + np.getNbAlertCdt() + "'"
@@ -254,7 +265,7 @@ public class PreferencesHelper {
                         + ", user_ark='" + np.getUserArk() + "'"
                         //+ ", pass_ark='" + MD5Password.getEncodedPassword(np.getPassArk()) + "'"
                         + ", pass_ark='" + np.getPassArk() + "'"
-                        + ", generate_handle='" + np.isGenerateHandle() + "'"
+                        + ", generate_handle='false'" //+ np.isGenerateHandle() + "'"
                         // Handle
                         + ", use_handle = '" + np.isUseHandle() + "'"
                         + ", user_handle = '" + np.getUserHandle() + "'"
@@ -282,6 +293,12 @@ public class PreferencesHelper {
                         + ", original_uri_is_ark=" + np.isOriginalUriIsArk()
                         + ", original_uri_is_handle=" + np.isOriginalUriIsHandle()
                         + ", original_uri_is_doi=" + np.isOriginalUriIsDoi()
+
+                        + ", use_ark_local=" + np.isUseArkLocal()
+                        + ", naan_ark_local='" + np.getNaanArkLocal() + "'"
+                        + ", prefix_ark_local='" + np.getPrefixArkLocal() + "'"
+                        + ", sizeid_ark_local=" + np.getSizeIdArkLocal()
+
                         + " WHERE"
                         + " id_thesaurus = '" + idThesaurus + "'";
                 stmt.executeUpdate(query);
@@ -295,14 +312,19 @@ public class PreferencesHelper {
     }
 
     /**
-     * Permet de mettre à jour toutes les préférence
+     * Permet d'ajouter une nouvelle préférence
+     *
+     * @param ds
+     * @param np
+     * @param idThesaurus
+     * @return
      */
     public boolean addPreference(HikariDataSource ds, NodePreference np, String idThesaurus) {
         boolean status = false;
         StringPlus stringPlus = new StringPlus();
         np = normalizeDatas(np);
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 String query = "insert into preferences("
                         + "id_thesaurus, source_lang, identifier_type, path_image,"
                         + " dossier_resize, bdd_active, bdd_use_id, url_bdd,"
@@ -313,7 +335,9 @@ public class PreferencesHelper {
                         + " use_handle,"
                         + " user_handle, pass_handle, path_key_handle, path_cert_handle,"
                         + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
-                        + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation)"
+                        + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
+                        + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local)"
+
                         + " values('" + idThesaurus + "'"
                         + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
                         + ",'" + np.getIdentifierType() + "'"
@@ -358,6 +382,12 @@ public class PreferencesHelper {
                         + "," + np.isOriginalUriIsDoi()
                         + ",'" + np.isTree_cache() + "'"
                         + ",'" + np.isSort_by_notation() + "'"
+
+                        + ",'" + np.isUseArkLocal()+ "'"
+                        + ",'" + np.getNaanArkLocal()+ "'"
+                        + ",'" + np.getPrefixArkLocal()+ "'"
+                        + "," + np.getSizeIdArkLocal()
+
                         + ")";
                 stmt.executeUpdate(query);
                 status = true;

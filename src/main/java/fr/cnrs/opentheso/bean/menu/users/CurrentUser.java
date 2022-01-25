@@ -110,9 +110,9 @@ public class CurrentUser implements Serializable {
      */
     public void login() throws IOException {
         
-        username = "admin";
+    /*    username = "admin";
         password = "admin";
-        
+      */  
         UserHelper userHelper = new UserHelper();
 
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
@@ -123,9 +123,10 @@ public class CurrentUser implements Serializable {
         int idUser = -1;
         if (ldapEnable) {
             if (!new LDAPUtils().authentificationLdapCheck(username, password)) {
-                showErrorMessage("User or password wrong, please try again");
+                showErrorMessage("User or password LDAP wrong, please try again");
                 return;
             }
+            idUser = userHelper.getIdUserFromPseudo(connect.getPoolConnexion(), username);
         } else {
             idUser = userHelper.getIdUser(connect.getPoolConnexion(),
                     username, MD5Password.getEncodedPassword(password));
@@ -139,7 +140,7 @@ public class CurrentUser implements Serializable {
         // on récupère le compte de l'utilisatreur
         nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
         if (nodeUser == null) {
-            showErrorMessage("Incohérence base de données");
+            showErrorMessage("Incohérence base de données ou utilisateur n'existe pas");
             return;
         }
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);

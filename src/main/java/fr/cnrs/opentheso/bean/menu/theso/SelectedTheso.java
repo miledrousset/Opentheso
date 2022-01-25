@@ -72,7 +72,7 @@ public class SelectedTheso implements Serializable {
     private boolean sortByNotation;
     
     private String localUri;
-    
+
     private List<AlignementElement> listAlignementElement;
     private List<ResultatAlignement> resultAlignementList;
 
@@ -141,7 +141,7 @@ public class SelectedTheso implements Serializable {
     public void actionFromConceptToOn() {
         isActionFromConcept = true;
     }
-    
+
     public void setSelectedOptionTheso() {
         switch(optionThesoSelected) {
             case "Option1":
@@ -174,12 +174,12 @@ public class SelectedTheso implements Serializable {
             menuBean.redirectToThesaurus();
             return;
         }
-        
+
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
             menuBean.redirectToThesaurus();
             return;
         }
-        
+
         // après un raffraichissement F5
         if (selectedIdTheso.equalsIgnoreCase(currentIdTheso)) {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
@@ -195,9 +195,9 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
         indexSetting.setIsThesoActive(true);
-        
+
         menuBean.redirectToThesaurus();
-        
+
         listAlignementElement = new ArrayList<>();
         AlignementElement alignementElement = new AlignementElement();
         alignementElement.setIdConceptOrig("https://www.google.fr");
@@ -206,8 +206,8 @@ public class SelectedTheso implements Serializable {
         alignementElement.setTypeAlignement("Corespondance");
         alignementElement.setLabelConceptCible("Amphore (storage vessels)");
         listAlignementElement.add(alignementElement);
-        
-        
+
+
         resultAlignementList = new ArrayList<>();
         ResultatAlignement resultatAlignement = new ResultatAlignement();
         resultatAlignement.setHierarchy("hierarchy");
@@ -219,7 +219,7 @@ public class SelectedTheso implements Serializable {
         resultatAlignement.setNote("It just a note for test");
         resultAlignementList.add(resultatAlignement);
     }
-    
+
     public List<AlignementElement> getListAlignementElement() {
         return listAlignementElement;
     }
@@ -231,7 +231,7 @@ public class SelectedTheso implements Serializable {
     public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
         this.resultAlignementList = resultAlignementList;
     }
-    
+
     public void onSelect(SelectEvent<ResultatAlignement> event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().getTitle()));
@@ -241,7 +241,7 @@ public class SelectedTheso implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));
     }
-    
+
     /**
      * Permet de Re-charger le thésaurus sélectionné, pour activer des mises à jour non prises en compte
      */
@@ -258,7 +258,7 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
-        
+
         menuBean.redirectToThesaurus();
     }
 
@@ -392,6 +392,11 @@ public class SelectedTheso implements Serializable {
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
                     actionFromConceptToOn();
+                /*    if (conceptBean.getNodeConcept() != null) {
+                        tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
+                    }*/
+                }else {
+                    indexSetting.setIsHomeSelected(true);
                 }
             } else {
                 return;
