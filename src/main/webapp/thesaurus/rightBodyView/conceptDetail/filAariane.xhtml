@@ -124,7 +124,7 @@
                                 value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.here')} !!" 
                                 actionListener="#{copyAndPasteBetweenTheso.validatePaste()}" icon="fas fa-paste"
                                 action="#{copyAndPasteBetweenTheso.setIsDropToRoot(false)}"
-                                update="idCopyAndPasteBetweenTheso copyAndPasteBetweenThesoForm"
+                                update="containerIndex"
                                 oncomplete="PF('copyAndPasteBetweenTheso').show();" />
 
                     <p:menuitem  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
