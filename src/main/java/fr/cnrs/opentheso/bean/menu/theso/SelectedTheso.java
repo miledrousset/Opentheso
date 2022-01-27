@@ -176,6 +176,16 @@ public class SelectedTheso implements Serializable {
         }
 
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
+            
+            roleOnThesoBean.showListTheso();
+            treeGroups.reset();
+            tree.reset();
+            treeConcepts.reset();
+            listIndex.reset();
+            conceptBean.init();
+            init();
+            indexSetting.setIsSelectedTheso(false);            
+            
             menuBean.redirectToThesaurus();
             return;
         }

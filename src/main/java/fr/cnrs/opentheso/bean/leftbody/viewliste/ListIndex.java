@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.bean.leftbody.viewliste;
 
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
@@ -16,8 +17,6 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PreDestroy;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -36,6 +35,8 @@ public class ListIndex implements Serializable {
     private SelectedTheso selectedTheso;
     @Inject
     private RightBodySetting rightBodySetting;
+    @Inject 
+    private LeftBodySetting leftBodySetting;
     @Inject
     private ConceptView conceptBean;
 
@@ -87,15 +88,16 @@ public class ListIndex implements Serializable {
     }
 
     public void onRowSelect(SelectEvent event) {
-        FacesMessage msg = new FacesMessage(((NodeIdValue) event.getObject()).getValue());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-
         rightBodySetting.setShowConceptToOn();
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                 ((NodeIdValue) event.getObject()).getId(), selectedTheso.getCurrentLang());
 
         rightBodySetting.setIndex("0");
-
+        leftBodySetting.setIndex("1");
+        if (PrimeFaces.current().isAjaxRequest()) {
+                    PrimeFaces.current().executeScript("srollToSelected();");
+        }
+        
     }
 
     public String getSearchValue() {

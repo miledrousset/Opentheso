@@ -114,7 +114,7 @@ public class CurrentUser implements Serializable {
         password = "admin";
       */  
         UserHelper userHelper = new UserHelper();
-
+        
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             showErrorMessage("champ vide non autorisé");
             return;
