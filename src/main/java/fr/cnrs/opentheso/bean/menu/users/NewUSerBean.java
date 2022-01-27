@@ -40,7 +40,7 @@ public class NewUSerBean implements Serializable {
         clear();
     }  
     public void clear(){
-        nodeUser = new NodeUser();
+        nodeUser = null;
         passWord1 = null;
         passWord2 = null;
         selectedProject = null;

@@ -232,11 +232,11 @@ public class SelectedTheso implements Serializable {
         this.resultAlignementList = resultAlignementList;
     }
 
-    public void onSelect(SelectEvent<ResultatAlignement> event) {
+/*    public void onSelect(SelectEvent<ResultatAlignement> event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().getTitle()));
     }
-
+*/
     public void onUnselect(UnselectEvent<ResultatAlignement> event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));
