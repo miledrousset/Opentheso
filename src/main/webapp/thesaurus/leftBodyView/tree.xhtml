@@ -11,7 +11,7 @@
                               style="color: red; font-style: italic; background-color: yellow;  font-size: 12px;"/>
             </div>
             <div class="col-6" style="text-align: right;">
-                <p:link href="#{request.contextPath}/graph/index.xhtml"
+                <p:link id="graph" href="#{request.contextPath}/graph/index.xhtml"
                         target="_blank" disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
                         style="color: #F47B2A; float: right; margin-top: 2px;">
                     <i class="pi pi-share-alt" style="font-size: 1rem" />
@@ -52,6 +52,9 @@
             </div>
         </div>
     </h:panelGroup>
+    <h:panelGroup>
+        
+
         <div class="row">
             <div class="col-12">
                 <p:tree id="tree" value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
@@ -61,7 +64,7 @@
 
                     <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
                     <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-                    <p:ajax event="select" listener="#{tree.onNodeSelect}" />
+                    <p:ajax event="select" listener="#{tree.onNodeSelect}"/>
                     <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
 
                     <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
@@ -86,5 +89,5 @@
             </div>
         </div>
     <ui:include src="../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenThesoToTop.xhtml" />
-
+    </h:panelGroup>
 </ui:fragment>
