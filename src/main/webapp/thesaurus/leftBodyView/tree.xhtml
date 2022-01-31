@@ -65,7 +65,7 @@
                     <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
                     <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
                     <p:ajax event="select" listener="#{tree.onNodeSelect}"/>
-                    <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="containerIndex" />
+                    <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree" />
 
                     <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>

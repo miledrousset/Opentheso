@@ -6,7 +6,10 @@
 
     <p:dialog id="idDragAndDrop" header="Drag and Drop control" widgetVar="dragAndDrop" 
               modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >        
+        <h:form id="dragAndDropForm">
+            
 
+        
         <div class="row" style="font-size: 14px; color: black">
             <div class="col-5" style="margin-left: 10px;">
                 <h:outputText value="Déplacer le concept/branche: " title="terme à couper"/>
@@ -108,19 +111,20 @@
 
         <p:spacer />
 
-        <f:facet name="footer">
+
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px"
                                  oncomplete="PF('dragAndDrop').hide();"
                                  actionListener="#{dragAndDrop.rollBackAfterErrorOrCancelDragDrop()}" 
-                                 update="containerIndex:formRightTab messageIndex"/>
+                                 update="containerIndex:rightTab:idConceptViewActions messageIndex containerIndex:formLeftTab:idDragAndDrop"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:rightTab:idConceptViewActions messageIndex containerIndex:formLeftTab:idDragAndDrop"
                                  class="btn btn-primary" oncomplete="PF('dragAndDrop').hide();"
                                  actionListener="#{dragAndDrop.drop()}" style="color: white;"/>
             </div>
-        </f:facet>
+
+        </h:form>        
 
         <style type="text/css">
             .from {

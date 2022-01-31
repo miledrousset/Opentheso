@@ -465,7 +465,7 @@ public class DragAndDrop implements Serializable {
         
         
         
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Fécette déplacée avec succès !!!");
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Facette déplacée avec succès !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         /*    rollBackAfterErrorOrCancelDragDrop();
             updateMessage();*/
@@ -579,8 +579,8 @@ public class DragAndDrop implements Serializable {
                 isGroupToCut = true;
                 PrimeFaces pf = PrimeFaces.current();
                 if (pf.isAjaxRequest()) {
-                    pf.ajax().update("idDragAndDrop");
-                    pf.ajax().update("dragAndDropForm");
+                    pf.ajax().update("containerIndex:formLeftTab:idDragAndDrop");
+              //      pf.ajax().update("containerIndex:formLeftTab:dragAndDropForm");
                 }
                 pf.executeScript("PF('dragAndDrop').show();");
                 return;
@@ -595,7 +595,7 @@ public class DragAndDrop implements Serializable {
                 PrimeFaces pf = PrimeFaces.current();
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("idDragAndDrop");
-                    pf.ajax().update("dragAndDropForm");
+            //        pf.ajax().update("dragAndDropForm");
                 }
                 pf.executeScript("PF('dragAndDrop').show();");
             }
