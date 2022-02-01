@@ -1,32 +1,32 @@
-<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:b="http://bootsfaces.net/ui"
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idAddConceptToFacet" header="Ajouter à une facette" widgetVar="addConceptToFacet" modal="true" resizable="true" 
-              position="top" width="400" style="margin-top: 50px" >         
+    <p:dialog id="idAddConceptToFacet" header="Ajouter à une facette" widgetVar="addConceptToFacet" modal="true" resizable="true"
+              position="top" width="400" style="margin-top: 50px" >
+        
         <h:form id="addConceptToFacetForm"
                 rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-            <b:row >
-                <b:column span="10" offset="1" style=" margin-bottom: 10px; width: 100%">
+            <div class="row">
+                <div class="col-12" style=" margin-bottom: 10px; width: 100%">
                     <h:outputText value="Ajouter " />
                     <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="font-size: 13px; color: #42a068;" />
-                    <h:outputText value=" à la facette :"  />                    
-                </b:column>   
-            </b:row>          
+                    <h:outputText value=" à la facette :"  />
+                </div>
+            </div>
 
-            <b:row >
-                <b:column span="10" offset="1">
+            <div class="row">
+                <div class="col-12">
                     <h:outputText value="Rechercher une facette" style="font-size: 12px; width: 100%" />
-                </b:column>
-            </b:row>  
-            <b:row >
-                <b:column span="10" offset="1">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
                     <p:autoComplete id="autoFacetteSearch" value="#{editFacet.facetSelectedAutocomplete}"
                                     var="facet"
                                     forceSelection="true"
-                                    completeMethod="#{editFacet.searchFacet}"                                  
+                                    completeMethod="#{editFacet.searchFacet}"
                                     minQueryLength="1" itemLabel="#{facet.value}" itemValue="#{facet}" converter="searchConverterIdValue"
                                     scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 28px;box-shadow: none;border-color: #43B572"
                                     style="font-size: 12px; height: 28px; width: 100%">
@@ -34,29 +34,19 @@
                             <h:outputText title="#{facet.id}" value="#{facet.value}" />
                         </p:column>
 
-                    </p:autoComplete>  
-                </b:column>              
-            </b:row>            
+                    </p:autoComplete>
+                </div>
+            </div>
+            
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-            <b:row >
-                <b:column span="10" offset="1" >
-                    <b:messages autoUpdate="true"/>
-                </b:column>               
-            </b:row>
+                <p:commandButton title="#{langueBean.getMsg('btnExit')}" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('addConceptToFacet').hide();" update="addConceptToFacetForm" process="@this" />
 
-            <b:row style="margin-bottom: 20px; margin-top: 30px; width: 100%">
-                <b:column span="4" offset="2">
-                    <b:commandButton value="#{langueBean.getMsg('btnExit')}" class="btn btn-primary"
-                                     oncomplete="PF('addConceptToFacet').hide();" style="width: 100%; font-size: 12px;
-                                     color: white; background: #8C8C8C;"/>
-                </b:column>                  
-                <b:column span="4">
-                    <b:commandButton value="#{langueBean.getMsg('btnAdd')}" class="btn btn-primary" actionListener="#{editFacet.addConceptToFacet()}"
-                                     update="addConceptToFacetForm"
-                                     style="width: 100%; font-size: 12px; 
-                                     color: white; background: #43B572;"/>
-                </b:column>
-            </b:row>  
+                <p:commandButton title="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('addConceptToFacet').hide();" process="@this"
+                                 actionListener="#{editFacet.addConceptToFacet()}" />
+            </div>
         </h:form>
     </p:dialog>
 
