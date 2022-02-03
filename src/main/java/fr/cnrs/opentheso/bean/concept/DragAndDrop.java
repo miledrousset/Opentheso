@@ -294,7 +294,7 @@ public class DragAndDrop implements Serializable {
                 PrimeFaces pf = PrimeFaces.current();
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("idDragAndDrop");
-                    pf.ajax().update("dragAndDropForm");
+                 //   pf.ajax().update("dragAndDropForm");
                     
                 }
                 pf.executeScript("PF('dragAndDrop').show();");
@@ -310,7 +310,7 @@ public class DragAndDrop implements Serializable {
                 PrimeFaces pf = PrimeFaces.current();
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("idDragAndDrop");
-                    pf.ajax().update("dragAndDropForm");
+               //     pf.ajax().update("dragAndDropForm");
                 }
                 pf.executeScript("PF('dragAndDrop').show();");
             }
@@ -417,7 +417,11 @@ public class DragAndDrop implements Serializable {
         }
         isValidPaste = true;
     }    
-    
+/*        public void onDragDrop(TreeDragDropEvent event) {
+            //reset();
+            dragNode = (TreeNode) event.getDragNode();
+            dropNode = (TreeNode) event.getDropNode();
+        }*/
     
     /**
      * Fonction pour récupérer l'évènement drag drop de l'arbre
@@ -811,7 +815,8 @@ public class DragAndDrop implements Serializable {
                     nodeConceptDrag.getConcept().getIdConcept(),
                     conceptBean.getSelectedLang());
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:formRightTab");
+               // pf.ajax().update("containerIndex:formRightTab");
+                pf.ajax().update("containerIndex:rightTab:conceptView");
             }
         }      
     }
@@ -830,7 +835,7 @@ public class DragAndDrop implements Serializable {
                 lang);
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("formLeftTab:tabTree:tree");
+            pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");        
         }
         pf.executeScript("srollToSelected();");
     }

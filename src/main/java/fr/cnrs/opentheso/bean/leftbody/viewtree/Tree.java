@@ -186,7 +186,7 @@ public class Tree implements Serializable {
 
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
 
-        if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+        if (parent.getChildCount() == 1 && ((TreeNode)parent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             parent.getChildren().remove(0);
             idConceptParent = ((TreeNodeData) parent.getData()).getNodeId();
             FacetHelper facetHelper = new FacetHelper();
@@ -568,7 +568,7 @@ public class Tree implements Serializable {
 
     // deselectionner et fermer toutes les noeds de l'arbres
     private void initialiserEtatNoeuds(TreeNode nodeRoot) {
-        for (TreeNode node : nodeRoot.getChildren()) {
+        for (TreeNode node :  nodeRoot.getChildren()) {
             try {
                 TreeNodeData treeNodeData = (TreeNodeData) node.getData();
                 node.setExpanded(false);
@@ -648,7 +648,7 @@ public class Tree implements Serializable {
     private TreeNode selectChildNode(TreeNode treeNodeParent, String idConceptChildToFind) {
         // test si les fils ne sont pas construits
         FacetHelper facetHelper = new FacetHelper();
-        if (treeNodeParent.getChildCount() == 1 && treeNodeParent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+        if (treeNodeParent.getChildCount() == 1 && ((TreeNode)treeNodeParent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             treeNodeParent.getChildren().remove(0);
 
             if ("facet".equals(treeNodeParent.getType())) {
@@ -672,7 +672,7 @@ public class Tree implements Serializable {
                     if (facetHelper.isFacetHaveThisMember(connect.getPoolConnexion(),
                             ((TreeNodeData) treeNode.getData()).getNodeId(),
                             idConceptChildToFind, idTheso)) {
-                        if (treeNode.getChildCount() == 1 && treeNode.getChildren().get(0).getData().toString().equals("DUMMY")) {
+                        if (treeNode.getChildCount() == 1 && ((TreeNode)treeNode.getChildren().get(0)).getData().toString().equals("DUMMY")) {
                             treeNode.getChildren().remove(0);
                             addMembersOfFacet(treeNode);
                         }
@@ -778,7 +778,7 @@ public class Tree implements Serializable {
     }
 
     private void expandedAllRecursively(TreeNode node, boolean expanded) {
-        if (node.getChildCount() == 1 && node.getChildren().get(0).getData().toString().equals("DUMMY")) {
+        if (node.getChildCount() == 1 && ((TreeNode)node.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             node.getChildren().remove(0);
             addConceptsChild(node);
         }

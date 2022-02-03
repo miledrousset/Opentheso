@@ -1,13 +1,11 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idReplaceBy" header="#{langueBean.getMsg('rightbody.conceptdialog.replace_by')}" widgetVar="replaceBy" 
               modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >        
-        <h:form id="replaceByForm"
-                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-
             <div class="row">
                 <div>
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.replace_concept')} " style="font-size: 14px;"/>  
@@ -18,10 +16,10 @@
                 <p:spacer/>
 
                 <div>
-                    <p:autoComplete id="autoReplaceBy" value="#{relatedBean.searchSelected}"
-                                    var="values" 
+                    <p:autoComplete id="autoReplaceBy" value="#{editConcept.searchSelected}"
+                                    var="values" active="true"
                                     forceSelection="true"
-                                    completeMethod="#{relatedBean.getAutoComplet}"                                  
+                                    completeMethod="#{editConcept.getAutoComplet}"                                  
                                     minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
                                     scrollHeight="600" inputStyle="font-size: 12px; min-width: 300px; height: 28px;box-shadow: none;border-color: #43B572"
                                     style="font-size: 12px;">
@@ -40,14 +38,22 @@
 
                 <p:spacer/>
 
-                <div>
-                    <p:commandButton value="#{langueBean.getMsg('btnAdd')}" update="replaceByForm" 
-                                     style="width:100%; font-size: 13px; font-weight: normal; color: white; background: #43B572; border: none; box-shadow: none;"
-                                     class="btn btn-primary" actionListener="#{editConcept.addReplacedBy(conceptView.nodeConcept.concept.idConcept,
-                                                                               selectedTheso.currentIdTheso, relatedBean.searchSelected.idConcept, currentUser.nodeUser.idUser)}"
-                                     action="#{relatedBean.setSearchSelected(null)}"/>
-                </div>
+                <f:facet name="footer">
+                    <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                        <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                         actionListener="PF('replaceBy').hide();" update="idReplaceBy"/>
+
+                        <p:commandButton title="#{langueBean.getMsg('btnAdd')}" 
+                                         update="messageIndex"
+                                         class="btn btn-primary" oncomplete="PF('replaceBy').hide();"
+                                         actionListener="#{editConcept.addReplacedBy(
+                                               conceptView.nodeConcept.concept.idConcept,
+                                               selectedTheso.currentIdTheso,
+                                               currentUser.nodeUser.idUser)}"
+                                         style="color: white;"/>
+                    </div>
+                </f:facet>                
             </div> 
-        </h:form>
     </p:dialog>   
 </ui:fragment>

@@ -345,8 +345,6 @@ public class EditFacet implements Serializable {
      */
     public void addConceptToFacet() {
         FacetHelper facetHelper = new FacetHelper();
-        ConceptHelper conceptHelper = new ConceptHelper();
-
         FacesMessage msg;
 
         if(facetSelectedAutocomplete == null || facetSelectedAutocomplete.getId() == null || facetSelectedAutocomplete.getId().isEmpty()){

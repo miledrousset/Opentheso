@@ -362,8 +362,9 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
-    margin: 0;
-    padding: 0px;
+    margin: 0 0 0 0;
+ /* pour espacer les noeuds */
+    padding: 10px;
     border-radius: 4px;
 }
 
@@ -416,7 +417,7 @@ body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active > .ui-menuitem-link 
 }
 
 body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-hover {

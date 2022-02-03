@@ -6,8 +6,7 @@
     <p:dialog id="idAddConceptToFacet" header="Ajouter à une facette" widgetVar="addConceptToFacet" modal="true" resizable="true"
               position="top" width="400" style="margin-top: 50px" >
         
-        <h:form id="addConceptToFacetForm"
-                rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+
             <div class="row">
                 <div class="col-12" style=" margin-bottom: 10px; width: 100%">
                     <h:outputText value="Ajouter " />
@@ -41,13 +40,13 @@
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton title="#{langueBean.getMsg('btnExit')}" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addConceptToFacet').hide();" update="addConceptToFacetForm" process="@this" />
+                                 actionListener="PF('addConceptToFacet').hide();" update="idAddConceptToFacet" />
 
                 <p:commandButton title="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addConceptToFacet').hide();" process="@this"
+                                 class="btn btn-primary" oncomplete="PF('addConceptToFacet').hide();"
                                  actionListener="#{editFacet.addConceptToFacet()}" />
             </div>
-        </h:form>
+
     </p:dialog>
 
 </ui:fragment>

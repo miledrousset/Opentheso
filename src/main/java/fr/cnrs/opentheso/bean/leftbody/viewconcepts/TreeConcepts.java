@@ -100,7 +100,7 @@ public class TreeConcepts implements Serializable {
 
     public void onNodeExpand(NodeExpandEvent event) {
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
-        if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+        if (parent.getChildCount() == 1 && ((TreeNode)parent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             parent.getChildren().remove(0);
             addGroupsChild(parent);
             addConceptsChild(parent);
