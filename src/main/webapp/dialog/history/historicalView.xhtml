@@ -5,110 +5,110 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idHistoricalView" header="#{langueBean.getMsg('rightbody.concept.view_change_history')}" widgetVar="historicalView" 
-              modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" >
+              modal="true" resizable="true" position="top" width="850" style="margin-top: 0px; font-size: 12px;" >
+        <p:scrollPanel id="listThesoDatas" mode="native" style="min-height: 300px; max-height: 900px; border: #FAFAFA; background-color: #FFFFFF;font-size: 12px; ">
 
-        <div class="row">
-            <div class="col-12">
-                <p:dataTable value="#{historyBean.historyLabels}" var="label"
-                             scrollable="true" scrollHeight="250">
-                    <f:facet name="header">
-                        Historique des labels
-                    </f:facet>
-                    <p:column headerText="Valeur">
-                        <h:outputText value="#{label.value}" />
-                    </p:column>
-                    <p:column headerText="Langue">
-                        <h:outputText value="#{label.lang}" />
-                    </p:column>
-                    <p:column headerText="Action">
-                        <h:outputText value="#{label.action}" />
-                    </p:column>
-                    <p:column headerText="Date">
-                        <h:outputText value="#{label.date}" />
-                    </p:column>
-                    <p:column headerText="Utilisateur">
-                        <h:outputText value="#{label.user}" />
-                    </p:column>                      
-                </p:dataTable>
+
+            <div class="row">
+                <div class="col-12">
+                    <p:dataTable value="#{historyBean.historyLabels}" var="label"
+                                 scrollable="true" scrollHeight="250" style="font-size: 12px;">
+                        <f:facet name="header">
+                            <h:outputText value="Historique des labels" />
+                        </f:facet>
+                        <p:column headerText="Valeur" style="font-size: 12px;">
+                            <h:outputText value="#{label.value}" />
+                        </p:column>
+                        <p:column headerText="Langue" style="font-size: 12px;">
+                            <h:outputText value="#{label.lang}" />
+                        </p:column>
+                        <p:column headerText="Action" style="font-size: 12px;">
+                            <h:outputText value="#{label.action}" />
+                        </p:column>
+                        <p:column headerText="Date" style="font-size: 12px;">
+                            <h:outputText value="#{label.date}" />
+                        </p:column>
+                        <p:column headerText="Utilisateur" style="font-size: 12px;">
+                            <h:outputText value="#{label.user}" />
+                        </p:column>                      
+                    </p:dataTable>
+                </div>
             </div>
-        </div>
-        
-        <div class="row" style="margin-top: 10px;">
-            <div class="col-12">
-                <p:dataTable value="#{historyBean.historySynonyms}" var="synonym"
-                             scrollable="true" scrollHeight="250">
-                    <f:facet name="header">
-                        Historique des synonymes
-                    </f:facet>
-                    <p:column headerText="Valeur">
-                        <h:outputText value="#{synonym.value}" />
-                    </p:column>
-                    <p:column headerText="Langue">
-                        <h:outputText value="#{synonym.lang}" />
-                    </p:column>
-                    <p:column headerText="Action">
-                        <h:outputText value="#{synonym.action}" />
-                    </p:column>
-                    <p:column headerText="Date">
-                        <h:outputText value="#{synonym.date}" />
-                    </p:column>
-                    <p:column headerText="Utilisateur">
-                        <h:outputText value="#{synonym.user}" />
-                    </p:column>                      
-                </p:dataTable>
+
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-12">
+                    <p:dataTable value="#{historyBean.historySynonyms}" var="synonym"
+                                 scrollable="true" scrollHeight="250" style="font-size: 12px;">
+                        <f:facet name="header">
+                            <h:outputText value="Historique des synonymes" />
+                        </f:facet>
+                        <p:column headerText="Valeur" style="font-size: 12px;">
+                            <h:outputText value="#{synonym.value}" />
+                        </p:column>
+                        <p:column headerText="Langue" style="font-size: 12px;">
+                            <h:outputText value="#{synonym.lang}" />
+                        </p:column>
+                        <p:column headerText="Action" style="font-size: 12px;">
+                            <h:outputText value="#{synonym.action}" />
+                        </p:column>
+                        <p:column headerText="Date" style="font-size: 12px;">
+                            <h:outputText value="#{synonym.date}" />
+                        </p:column>
+                        <p:column headerText="Utilisateur" style="font-size: 12px;">
+                            <h:outputText value="#{synonym.user}" />
+                        </p:column>                      
+                    </p:dataTable>
+                </div>
             </div>
-        </div>
-        
-        <div class="row" style="margin-top: 10px;">
-            <div class="col-12">
-                <p:dataTable value="#{historyBean.historyNotes}" var="note"
-                             scrollable="true" scrollHeight="250">
-                    <f:facet name="header">
-                        Historique des notes
-                    </f:facet>
-                    <p:column headerText="Valeur">
-                        <h:outputText value="#{note.value}" />
-                    </p:column>
-                    <p:column headerText="Langue">
-                        <h:outputText value="#{note.lang}" />
-                    </p:column>
-                    <p:column headerText="Action">
-                        <h:outputText value="#{note.action}" />
-                    </p:column>
-                    <p:column headerText="Date">
-                        <h:outputText value="#{note.date}" />
-                    </p:column>
-                    <p:column headerText="Utilisateur">
-                        <h:outputText value="#{note.user}" />
-                    </p:column>                      
-                </p:dataTable>
+
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-12">
+                    <p:dataTable value="#{historyBean.historyNotes}" var="note"
+                                 scrollable="true" scrollHeight="250" style="font-size: 12px;">
+                        <f:facet name="header" >
+                            <h:outputText value="Historique des notes" />
+                        </f:facet>
+                        <p:column headerText="Valeur" style="font-size: 12px;">
+                            <h:outputText value="#{note.value}" />
+                        </p:column>
+                        <p:column headerText="Langue" style="font-size: 12px;">
+                            <h:outputText value="#{note.lang}" />
+                        </p:column>
+                        <p:column headerText="Action" style="font-size: 12px;">
+                            <h:outputText value="#{note.action}" />
+                        </p:column>
+                        <p:column headerText="Date" style="font-size: 12px;">
+                            <h:outputText value="#{note.date}" />
+                        </p:column>
+                        <p:column headerText="Utilisateur" style="font-size: 12px;">
+                            <h:outputText value="#{note.user}" />
+                        </p:column>                      
+                    </p:dataTable>
+                </div>
             </div>
-        </div>
-        
-        <div class="row" style="margin-top: 10px;">
-            <div class="col-12">
-                <p:dataTable value="#{historyBean.historyRelations}" var="relations"
-                             scrollable="true" scrollHeight="250">
-                    <f:facet name="header">
-                        Historique des relations
-                    </f:facet>
-                    <p:column headerText="Valeur">
-                        <h:outputText value="#{relations.value}" />
-                    </p:column>
-                    <p:column headerText="Langue">
-                        <h:outputText value="#{relations.lang}" />
-                    </p:column>
-                    <p:column headerText="Action">
-                        <h:outputText value="#{relations.action}" />
-                    </p:column>
-                    <p:column headerText="Date">
-                        <h:outputText value="#{relations.date}" />
-                    </p:column>
-                    <p:column headerText="Utilisateur">
-                        <h:outputText value="#{relations.user}" />
-                    </p:column>                      
-                </p:dataTable>
+
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-12">
+                    <p:dataTable value="#{historyBean.historyRelations}" var="relations"
+                                 scrollable="true" scrollHeight="250" style="font-size: 12px;">
+                        <f:facet name="header">
+                            <h:outputText value="Historique des relations" />
+                        </f:facet>
+                        <p:column headerText="Action" style="font-size: 12px;">
+                            <h:outputText value="#{relations.action}" />
+                        </p:column>
+                        <p:column headerText="Relation" style="font-size: 12px;">
+                            <h:outputText value="#{relations.role}" />
+                        </p:column>                        
+                        <p:column headerText="Date" style="font-size: 12px;">
+                            <h:outputText value="#{relations.date}" />
+                        </p:column>
+                        <p:column headerText="Utilisateur" style="font-size: 12px;">
+                            <h:outputText value="#{relations.user}" />
+                        </p:column>                      
+                    </p:dataTable>
+                </div>
             </div>
-        </div>
+        </p:scrollPanel>            
     </p:dialog>   
 </ui:fragment>

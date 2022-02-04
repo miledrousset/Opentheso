@@ -891,7 +891,7 @@ public class TermHelper {
                     + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
                     + ",'" + term.getId_thesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
                     + ", " + idUser + ", " + idUser + ")");
-            if (!addNewTermHistorique(conn, term, idUser)) {
+            if (!addNewTermHistorique(conn, term, idUser, "ADD")) {
                 return null;
             }
         } catch (SQLException sqle) {
@@ -909,14 +909,15 @@ public class TermHelper {
      * @param conn
      * @param term
      * @param idUser
+     * @param action
      * @return
      */
-    public boolean addNewTermHistorique(Connection conn, Term term, int idUser) {
+    public boolean addNewTermHistorique(Connection conn, Term term, int idUser, String action) {
 
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into term_historique "
                     + "(id_term, lexical_value, lang, "
-                    + "id_thesaurus, source, status, id_user)"
+                    + "id_thesaurus, source, status, id_user, action)"
                     + " values ("
                     + "'" + term.getId_term() + "'"
                     + ",'" + term.getLexical_value() + "'"
@@ -924,7 +925,8 @@ public class TermHelper {
                     + ",'" + term.getId_thesaurus() + "'"
                     + ",'" + term.getSource() + "'"
                     + ",'" + term.getStatus() + "'"
-                    + ",'" + idUser + "')");
+                    + "," + idUser
+                    + ",'" + action + "')");
             return true;
         } catch (SQLException sqle) {
             System.out.println("Error : " + sqle.getMessage());
@@ -1116,7 +1118,7 @@ public class TermHelper {
                     + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
                     + ",'" + term.getId_thesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
                     + ", " + term.getContributor() + ", " + term.getCreator() + ")");
-            addNewTermHistorique(conn, term, idUser);
+            addNewTermHistorique(conn, term, idUser, "ADD");
         } catch (SQLException sqle) {
             // Log exception
             if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
@@ -1384,7 +1386,7 @@ public class TermHelper {
                     stmt.executeUpdate(query);
                     status = true;
 
-                    addNewTermHistorique(conn, term, idUser);
+                    addNewTermHistorique(conn, term, idUser, "UPDATE");
                 } finally {
                     stmt.close();
                 }

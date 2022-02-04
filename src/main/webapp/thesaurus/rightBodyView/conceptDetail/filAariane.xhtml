@@ -55,6 +55,7 @@
                                 oncomplete="PF('deprecateConcept').show();"  />                    
                     
                     <p:menuitem rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
+                                icon="fa fa-check-circle"
                                 value="#{langueBean.getMsg('rightbody.concept.approve_concept')}"
                                 update="idApproveConcept" action="#{editConcept.reset('')}"
                                 oncomplete="PF('approveConcept').show();"  />
@@ -147,18 +148,6 @@
                                 update="idListImportCsv listImportCsvForm" action="#{importFileBean.init()}"
                                 oncomplete="PF('listImportCsv').show();"/>
 
-                    <p:menuitem rendered="#{currentUser.nodeUser.isSuperAdmin}"
-                                      value="Importer des alignements d'après un tableau CSV"
-                                      update="idListAlignmentCsv listAlignmentCsvForm"
-                                      action="#{importFileBean.init()}" icon="fas fa-file-import"
-                                      oncomplete="PF('listAlignmentCsv').show();" />
-
-                    <p:menuitem rendered="#{currentUser.nodeUser.isSuperAdmin}"
-                                      value="Supprimer des alignements d'après un tableau CSV"
-                                      update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
-                                      action="#{importFileBean.init()}" icon="fas fa-remove-format"
-                                      oncomplete="PF('deleteListAlignmentCsv').show();" />
-
                 </p:menuButton>
             </h:panelGroup>
         </div>
@@ -195,8 +184,6 @@
     <ui:include src="../../../dialog/concept/deleteHandle.xhtml" />
 
     <ui:include src="../../../dialog/import/listImportCsv.xhtml" />
-    <ui:include src="../../../dialog/import/listAlignmentCsv.xhtml" />
-    <ui:include src="../../../dialog/import/deleteListAlignmentCsv.xhtml" />
     
     <ui:include src="../../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />    
     

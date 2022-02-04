@@ -269,7 +269,7 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
 }
 
 
-/** Tree **/
+/** TreeNode **/
 body .ui-tree {
     border-collapse: collapse;
     padding: 0.1rem;
@@ -277,22 +277,14 @@ body .ui-tree {
     margin-right: -1.8rem;    
     margin-top: -0.1rem;
 }
-
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-hover {
     background-color: #43B572;
     color: #FFF;
 }
-
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
     background: #f47b2a;
     color: #FFF;
 }
-
-.ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
-    margin-top: -14px;
-    
-}
-
 .ui-tree .ui-tree-container {
     border-collapse: collapse;
 }
@@ -318,9 +310,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
     font-size: x-small;
     margin-right: -8px;
-
 }
-
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon {
     width: 2rem;
     height: 2rem;
@@ -330,21 +320,17 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     margin-bottom: 0px;
     margin-left: 0px;
 }
-
 body .ui-tree .ui-tree-container {
     margin: 0;
     padding: 9px !important;
     margin-left: -12px;
 }
-
-
 /* ajouté par Miled*/
 
 .ui-tree .ui-treenode {
-    margin: -2px;
+    margin: -4px;
     min-width: max-content;
 }
-
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode {
     width: 2rem;
     height: 1rem;
@@ -353,26 +339,13 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode 
     margin-right: 0px;
     margin-bottom: -5px;
     margin-left: 0px;
-
 }
-
-/* pour éviter la coupure du texte dans l'arbre*/
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
- /*  display: flow;*/
-}
-
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
-    margin: 0 0 0 0;
- /* pour espacer les noeuds */
-    padding: 10px;
-    border-radius: 4px;
-}
-
-/* fin ajouté par Miled*/
-
-
-
-/** **** **/
+/*
+body .ui-tree .ui-tree-container .ui-treenode {
+    padding: 0px;
+    margin: -4px;
+}*/
+/** TreeNode **/
 
 
 
