@@ -276,18 +276,45 @@ body .ui-tree {
     margin-left: -1rem;
     margin-right: -1.8rem;    
     margin-top: -0.1rem;
+   /* display: ruby-text;*/
 }
+
+.ui-tree .ui-treenode {
+    margin: -4px;
+    min-width: max-content;
+}
+
+body .ui-tree .ui-tree-container {
+    margin: 0;
+   /* padding: 9px !important;
+    margin-left: -12px;*/
+    border-collapse: collapse; 
+    display: table;
+}
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode {
+    width: 2rem;
+    height: 1rem;
+    margin: 0 0 0 0;
+    margin-top: -5px;
+    margin-right: 0px;
+    margin-bottom: -5px;
+    margin-left: 0px;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
+    margin: -4px;
+ /*   display: ruby-text;*/
+}
+
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-hover {
-    background-color: #43B572;
-    color: #FFF;
+   /*background-color: #43B572;
+    color: #FFF;*/
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
     background: #f47b2a;
     color: #FFF;
 }
-.ui-tree .ui-tree-container {
-    border-collapse: collapse;
-}
+
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler {
     margin: 0px;
@@ -320,26 +347,8 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     margin-bottom: 0px;
     margin-left: 0px;
 }
-body .ui-tree .ui-tree-container {
-    margin: 0;
-    padding: 9px !important;
-    margin-left: -12px;
-}
-/* ajouté par Miled*/
 
-.ui-tree .ui-treenode {
-    margin: -4px;
-    min-width: max-content;
-}
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode {
-    width: 2rem;
-    height: 1rem;
-    margin: 0 0 0 0;
-    margin-top: -5px;
-    margin-right: 0px;
-    margin-bottom: -5px;
-    margin-left: 0px;
-}
+
 /*
 body .ui-tree .ui-tree-container .ui-treenode {
     padding: 0px;
