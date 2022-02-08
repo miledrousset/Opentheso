@@ -176,6 +176,16 @@ public class SelectedTheso implements Serializable {
         }
 
         if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
+            
+            roleOnThesoBean.showListTheso();
+            treeGroups.reset();
+            tree.reset();
+            treeConcepts.reset();
+            listIndex.reset();
+            conceptBean.init();
+            init();
+            indexSetting.setIsSelectedTheso(false);            
+            
             menuBean.redirectToThesaurus();
             return;
         }
@@ -232,11 +242,11 @@ public class SelectedTheso implements Serializable {
         this.resultAlignementList = resultAlignementList;
     }
 
-    public void onSelect(SelectEvent<ResultatAlignement> event) {
+/*    public void onSelect(SelectEvent<ResultatAlignement> event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().getTitle()));
     }
-
+*/
     public void onUnselect(UnselectEvent<ResultatAlignement> event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));

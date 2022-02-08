@@ -8,8 +8,10 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -20,6 +22,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
@@ -57,6 +60,9 @@ public class EditConcept implements Serializable {
     @Inject
     private Tree tree;
 
+    @Inject private RelatedBean relatedBean;
+    @Inject private ConceptView conceptBean;
+    
     private String prefLabel;
     private String notation;
     private String source;
@@ -69,6 +75,9 @@ public class EditConcept implements Serializable {
 
     // dépréciation
     private ArrayList<NodeIdValue> nodeReplaceBy;
+    
+    private NodeSearchMini searchSelected;    
+    
 
     @PreDestroy
     public void destroy() {
@@ -398,9 +407,10 @@ public class EditConcept implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    public void addReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy, int idUser) {
+    public void addReplacedBy(String idConceptDeprecated, String idTheso, int idUser) {
         FacesMessage msg;
-        if (idConceptReplaceBy == null || idConceptReplaceBy.isEmpty()) {
+        
+        if ( searchSelected == null || searchSelected.getIdConcept() == null || searchSelected.getIdConcept().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pas de concept sélectionné !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -408,7 +418,7 @@ public class EditConcept implements Serializable {
         DeprecateHelper deprecateHelper = new DeprecateHelper();
 
         if (!deprecateHelper.addReplacedBy(connect.getPoolConnexion(),
-                idConceptDeprecated, idTheso, idConceptReplaceBy, idUser)) {
+                idConceptDeprecated, idTheso, searchSelected.getIdConcept(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été ajouté !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -423,9 +433,22 @@ public class EditConcept implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("containerIndex:formRightTab:viewTabConcept:idDeprecatedLabel");
+            PrimeFaces.current().ajax().update("containerIndex:rightTab:idReplaceBy containerIndex:rightTab:idDeprecatedLabel");
         }
     }
+    
+    public List<NodeSearchMini> getAutoComplet(String value) {
+        List<NodeSearchMini> liste = new ArrayList<>();
+        SearchHelper searchHelper = new SearchHelper();
+        if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null){
+            liste = searchHelper.searchAutoCompletionForRelation(
+                    connect.getPoolConnexion(),
+                    value,
+                    conceptBean.getSelectedLang(),
+                    selectedTheso.getCurrentIdTheso());
+        }
+        return liste;
+    }      
 
     public void deleteReplacedBy(String idConceptDeprecated, String idTheso, String idConceptReplaceBy, int idUser){
         FacesMessage msg;        
@@ -803,4 +826,12 @@ public class EditConcept implements Serializable {
         this.isReplacedByRTrelation = isReplacedByRTrelation;
     }
 
+    public NodeSearchMini getSearchSelected() {
+        return searchSelected;
+    }
+
+    public void setSearchSelected(NodeSearchMini searchSelected) {
+        this.searchSelected = searchSelected;
+    }    
+    
 }

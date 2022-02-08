@@ -6,8 +6,6 @@
       xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Opentheso</title>
-
         <link href="resources/img/icon_opentheso2.png" rel="icon" />
 
         <link rel="stylesheet" type="text/css" href="resources/css/all.css" />
@@ -58,7 +56,7 @@
                     
                     <ui:include src="thesaurus/header_thesaurus.xhtml" />
 
-                    <div id="thesorusContent" style="margin-top: -20px;">
+                    <div id="thesorusContent" style="margin-top: -20px; ">
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>

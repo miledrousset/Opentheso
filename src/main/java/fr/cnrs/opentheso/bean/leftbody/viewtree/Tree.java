@@ -186,7 +186,7 @@ public class Tree implements Serializable {
 
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
 
-        if (parent.getChildCount() == 1 && parent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+        if (parent.getChildCount() == 1 && ((TreeNode)parent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             parent.getChildren().remove(0);
             idConceptParent = ((TreeNodeData) parent.getData()).getNodeId();
             FacetHelper facetHelper = new FacetHelper();
@@ -419,16 +419,16 @@ public class Tree implements Serializable {
             indexSetting.setIsFacetSelected(false);
             idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
 
-            if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
+        /*    if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
                 rightBodySetting.setShowConceptToOn();
                 conceptBean.getConceptForTree(idTheso,
                         ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
             }
-            if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {
+            if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {*/
                 rightBodySetting.setShowConceptToOn();
                 conceptBean.getConceptForTree(idTheso,
                         ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-            }
+      //     }
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             rightBodySetting.setIndex("0");
@@ -436,14 +436,20 @@ public class Tree implements Serializable {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
         }
+    
+        /*
+        Il ne faut pas charger le tableau d'alignement ici, mais plutôt au moment où l'utilisateur clique sur l'onglet alignement (voir après avoir sélectionné la source d'alignement)
         
-        alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
-        alignmentBean.nextTenRecresive(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        Désactivé pat MR, ca prend trop de temps quand on a 40.000 concepts dans la branche
+        */
+        ////alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
+        ////alignmentBean.nextTenRecresive(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        /////// 
+        
         
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("indexTitle");
-        PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:treeActions");          
-        PrimeFaces.current().executeScript("srollToSelected();");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");          
     }
 
     public String getIdConceptSelected() {
@@ -562,7 +568,7 @@ public class Tree implements Serializable {
 
     // deselectionner et fermer toutes les noeds de l'arbres
     private void initialiserEtatNoeuds(TreeNode nodeRoot) {
-        for (TreeNode node : nodeRoot.getChildren()) {
+        for (TreeNode node :  nodeRoot.getChildren()) {
             try {
                 TreeNodeData treeNodeData = (TreeNodeData) node.getData();
                 node.setExpanded(false);
@@ -642,7 +648,7 @@ public class Tree implements Serializable {
     private TreeNode selectChildNode(TreeNode treeNodeParent, String idConceptChildToFind) {
         // test si les fils ne sont pas construits
         FacetHelper facetHelper = new FacetHelper();
-        if (treeNodeParent.getChildCount() == 1 && treeNodeParent.getChildren().get(0).getData().toString().equals("DUMMY")) {
+        if (treeNodeParent.getChildCount() == 1 && ((TreeNode)treeNodeParent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             treeNodeParent.getChildren().remove(0);
 
             if ("facet".equals(treeNodeParent.getType())) {
@@ -666,7 +672,7 @@ public class Tree implements Serializable {
                     if (facetHelper.isFacetHaveThisMember(connect.getPoolConnexion(),
                             ((TreeNodeData) treeNode.getData()).getNodeId(),
                             idConceptChildToFind, idTheso)) {
-                        if (treeNode.getChildCount() == 1 && treeNode.getChildren().get(0).getData().toString().equals("DUMMY")) {
+                        if (treeNode.getChildCount() == 1 && ((TreeNode)treeNode.getChildren().get(0)).getData().toString().equals("DUMMY")) {
                             treeNode.getChildren().remove(0);
                             addMembersOfFacet(treeNode);
                         }
@@ -772,7 +778,7 @@ public class Tree implements Serializable {
     }
 
     private void expandedAllRecursively(TreeNode node, boolean expanded) {
-        if (node.getChildCount() == 1 && node.getChildren().get(0).getData().toString().equals("DUMMY")) {
+        if (node.getChildCount() == 1 && ((TreeNode)node.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             node.getChildren().remove(0);
             addConceptsChild(node);
         }

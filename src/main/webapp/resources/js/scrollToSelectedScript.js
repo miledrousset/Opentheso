@@ -25,8 +25,12 @@
 function srollToSelected() {
     var treeWidgetVar = PrimeFaces.widgets["treeWidget"];
     var selectedElement = treeWidgetVar.jq.find('span .ui-state-highlight');
-    if (selectedElement != null && selectedElement != undefined && selectedElement.position() != undefined) {
-        var scrollPanel = document.getElementById("formLeftTab:tabTree:tree");
+    console.log("VAleur de : " + selectedElement.toString());
+    if (selectedElement !== null && selectedElement !== undefined && selectedElement.position() !== undefined) {
+      //  var scrollPanel = document.getElementById("formLeftTab:tabTree:tree");
+        console.log("je passe");
+        var scrollPanel = document.getElementById("containerIndex:formLeftTab:tabTree:tree");
+        
         scrollPanel.scrollTop = selectedElement.position().top;
 
     }

@@ -39,7 +39,7 @@
             </div>
 
             <!-- ligne concepts qui remplacent le concept déprécié -->
-            <h:panelGroup rendered="#{conceptView.nodeConcept.concept.isDeprecated}">
+            <h:panelGroup id="idDeprecatedLabel" rendered="#{conceptView.nodeConcept.concept.isDeprecated}">
                 <div class="list-group-item list-group-item-action">
                     <div class="row" style="padding: 2px">
                         <div class="col-3" style="color: white; text-align: right;">
@@ -50,11 +50,11 @@
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="fas fa-cog" style="background: none; border: none; color: #000; box-shadow: none;">
 
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.replace_with2')}" update="idReplaceBy replaceByForm"
+                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.replace_with2')}" update="idReplaceBy"
                                             action="#{relatedBean.reset()}" actionListener="#{editConcept.reset('')}"
                                             oncomplete="PF('replaceBy').show();"/>
 
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delere_replace_with')}"  update="idDeleteReplaceBy deleteReplaceByForm"
+                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delere_replace_with')}"  update="idDeleteReplaceBy"
                                             action="#{relatedBean.reset()}" actionListener="#{editConcept.reset('')}"
                                             oncomplete="PF('deleteReplaceBy').show();"/>
                             </p:menuButton>

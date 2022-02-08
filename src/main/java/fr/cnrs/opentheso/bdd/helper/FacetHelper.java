@@ -316,33 +316,18 @@ public class FacetHelper {
             String idFacet,
             String idThesaurus,
             String lexicalValue, String idLang) {
-        Connection conn;
-        Statement stmt;
         boolean status = false;
-
         lexicalValue = new StringPlus().convertString(lexicalValue);
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into node_label "
+        try(Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("Insert into node_label "
                             + "(id_facet, id_thesaurus, lexical_value, lang)"
                             + " values ("
                             + "'" + idFacet + "'"
                             + ",'" + idThesaurus + "'"
                             + ",'" + lexicalValue + "'"
-                            + ",'" + idLang + "')";
-
-                    stmt.executeUpdate(query);
-                    status = true;
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+                            + ",'" + idLang + "')");
+                 status = true;
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -368,30 +353,17 @@ public class FacetHelper {
             String idThesaurus,
             String idLang,
             String lexicalValue) {
-
-        Connection conn;
-        Statement stmt;
         boolean status = false;
         lexicalValue = new StringPlus().convertString(lexicalValue);
         
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    stmt.executeUpdate("UPDATE node_label set"
-                            + " lexical_value = '" + lexicalValue + "'"
-                            + " WHERE id_facet = '" + idFacet + "'"
-                            + " AND id_thesaurus = '" + idThesaurus + "'"
-                            + " AND lang = '" + idLang + "'");
-                    status = true;
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE node_label set"
+                        + " lexical_value = '" + lexicalValue + "'"
+                        + " WHERE id_facet = '" + idFacet + "'"
+                        + " AND id_thesaurus = '" + idThesaurus + "'"
+                        + " AND lang = '" + idLang + "'");
+                status = true;
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -1106,19 +1078,12 @@ public class FacetHelper {
     
     public boolean updateLabelFacet(HikariDataSource ds, String newLabel, String idFacet, String idThes, String lang) {
         boolean status = false;
-        try {
-            Connection conn = ds.getConnection();
-            try {
-                Statement stmt = conn.createStatement();
-                try {
-                    stmt.executeUpdate("UPDATE node_label SET lexical_value='"+newLabel+"' WHERE id_facet = '"
-                            +idFacet+"' AND lang = '"+lang+"' AND id_thesaurus = '"+idThes+"'");
-                    status = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        newLabel = (new StringPlus().convertString(newLabel));
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("UPDATE node_label SET lexical_value='"+newLabel+"' WHERE id_facet = '"
+                        +idFacet+"' AND lang = '"+lang+"' AND id_thesaurus = '"+idThes+"'");
+                status = true;
             }
         } catch (SQLException sqle) {
             System.out.println(sqle.getMessage());

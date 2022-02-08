@@ -265,7 +265,7 @@ public class ConceptView implements Serializable {
             }
         }
 
-        if (pf.isAjaxRequest()) {
+       if (pf.isAjaxRequest()) {
             pf.ajax().update("indexTitle");
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formLeftTab");

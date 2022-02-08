@@ -114,7 +114,7 @@ public class CurrentUser implements Serializable {
         password = "admin";
       */  
         UserHelper userHelper = new UserHelper();
-
+        
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             showErrorMessage("champ vide non autorisé");
             return;
@@ -134,6 +134,9 @@ public class CurrentUser implements Serializable {
 
         if (idUser == -1) {
             showErrorMessage("User or password wrong, please try again");
+                if (PrimeFaces.current().isAjaxRequest()) {
+                PrimeFaces.current().ajax().update("messageLogin");
+            }
             return;
         }
 

@@ -116,16 +116,16 @@
         <div class="row">
             <div class="col-12">
                 <h:inputText value="" style="width: 200px" /> 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" class="btn btn-primary" 
-                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
+                <p:commandButton title="# {langueBean.getMsg('btnValidate')}" class="btn btn-primary" 
+                                 actionListener="# {noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
             </div>
         </div>
 
         <div class="row">
             <div class="col-12">
-                <p:orderList value="#{selectedTheso.resultAlignementList}" var="alignementResult" itemValue="#{alignementResult}" controlsLocation="none" >
-                    <p:ajax event="select" listener="#{selectedTheso.onSelect}" update="alignementDetail messageIndex"/>
-                    <p:ajax event="unselect" listener="#{selectedTheso.onUnselect}" update="alignementDetail messageIndex"/>
+                <p:orderList value="# {selectedTheso.resultAlignementList}" var="alignementResult" itemValue="# {alignementResult}" controlsLocation="none" >
+                    <p:ajax event="select" listener="# {selectedTheso.onSelect}" update="alignementDetail messageIndex"/>
+                    <p:ajax event="unselect" listener="# {selectedTheso.onUnselect}" update="alignementDetail messageIndex"/>
 
                     <f:facet name="caption">Résultat</f:facet>
 
@@ -134,7 +134,7 @@
                     </p:column>
 
                     <p:column>
-                        <h:outputText value="#{alignementResult.title}"/>
+                        <h:outputText value="# {alignementResult.title}"/>
                     </p:column>
                 </p:orderList>
             </div>
@@ -162,9 +162,9 @@
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('saerchAlignement').hide();" update="containerIndex:formRightTab"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                <p:commandButton title="# {langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
                                  class="btn btn-primary" oncomplete="PF('saerchAlignement').hide();"
-                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
+                                 actionListener="# {noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
             </div>
         </f:facet>
     </p:dialog>-->

@@ -249,7 +249,14 @@ public class RelatedBean implements Serializable {
             pf.ajax().update("conceptForm:listConceptSpecAssocies");
         }  
     }
+    public void addReplacedBy() {
+        FacesMessage msg;
+        
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "");
+            FacesContext.getCurrentInstance().addMessage(null, msg);        
+        NodeSearchMini nodeSearchMini = searchSelected;
 
+    }
 
     public NodeSearchMini getSearchSelected() {
         return searchSelected;
