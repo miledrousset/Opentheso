@@ -437,7 +437,12 @@ public class DragAndDrop implements Serializable {
         
         // à corriger pour traiter le déplacement des facettes par Drag and Drop
         if("facet".equalsIgnoreCase(dragNode.getType())){
-        
+            if("facet".equalsIgnoreCase(dropNode.getType())){
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " déplacement non permis !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                isValidPaste = false;
+                return;
+            }        
             new FacetHelper().updateFacetParent(connect.getPoolConnexion(),
                     ((TreeNodeData) dropNode.getData()).getNodeId(),//termeParentAssocie.getId(),
                     ((TreeNodeData) dragNode.getData()).getNodeId(),//facetSelected.getIdFacet(),
@@ -481,7 +486,7 @@ public class DragAndDrop implements Serializable {
         nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
                 ((TreeNodeData) dragNode.getData()).getNodeId(),
                 selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang());
+                selectedTheso.getCurrentLang(), -1, -1);
 
         isdragAndDrop = true;
         
@@ -496,7 +501,7 @@ public class DragAndDrop implements Serializable {
             nodeConceptDrop = conceptHelper.getConcept(connect.getPoolConnexion(),
                     ((TreeNodeData) dropNode.getData()).getNodeId(),
                     selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang());
+                    selectedTheso.getCurrentLang(), -1, -1);
             /// Vérifier si le dépalcement est valide (controle des relations interdites)
             ValidateActionHelper validateActionHelper = new ValidateActionHelper();
             if(nodeConceptDrop != null) {

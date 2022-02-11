@@ -48,11 +48,24 @@ public class RelationsHelper {
     ////////////////////////////////////////////////////////////////////        
     /**
      * permet de retourner la liste des termes spécifiques avec le libellé
+     *  ##MR ajout de limitNT, si = -1, pas de limit
+     *  pour gérer la récupération par saut (offset 42 fetch next 21 rows only)
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @param step
+     * @param offset
+     * @return 
      */
-    public ArrayList<NodeNT> getListNT(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+    public ArrayList<NodeNT> getListNT(HikariDataSource ds, String idConcept, String idThesaurus, String idLang, int step, int offset) {
 
         ArrayList<NodeNT> nodeListNT = new ArrayList<>();
-
+        String limit = ""; 
+        if(step != -1) {
+            limit = " offset " +  offset + " fetch next " + step + " rows only";
+        }
+        
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept2, role from hierarchical_relationship, concept"
@@ -61,7 +74,8 @@ public class RelationsHelper {
                         + " and hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
                         + " and id_concept1 = '" + idConcept + "'"
                         + " and role LIKE 'NT%'"
-                        + " and concept.status != 'CA'");
+                        + " and concept.status != 'CA'" + limit
+                );
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeNT nodeNT = new NodeNT();

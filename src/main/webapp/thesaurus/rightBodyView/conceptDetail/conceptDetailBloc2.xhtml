@@ -63,9 +63,10 @@
                     </h:panelGroup>
                 </div>
             </div>
-
+            
+            
             <div class="list-group-item list-group-item-action">
-                <!-- ligne BT -->
+                <!-- ligne NT -->
                 <div class="row" style="padding: 2px;">
                     <div class="col-3" style="text-align: right;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.narrower')}" 
@@ -97,56 +98,58 @@
                         </p:menuButton>
                     </div>
 
-                    <h:panelGroup rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}" >            
-                        <div class="col-9" style="margin-left: -10px">
-                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
-                        </div> 
-                    </h:panelGroup> 
+                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}" >            
+                            <div class="col-9" style="margin-left: -10px">
+                                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
+                            </div> 
+                        </h:panelGroup> 
 
-                    <h:panelGroup rendered="#{conceptView.nodeConcept.nodeNT.size() != 0}" >
-                        <div class="col-9" style="margin-left: -10px">
-                            <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() lt 21}" var="value"
-                                       varStatus="status1" 
-                                       value="#{conceptView.nodeConcept.nodeNT}">
-                                <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
-                                               title="#{value.idConcept}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
-                                <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
-                                               title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #FF7979; font-size: 14px;" styleClass="textOpentheso"/> 
-                                <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>    
-                            </ui:repeat>
+                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeNT.size() != 0}" >
+                            <div class="col-9" style="margin-left: -10px">
+                                <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() lt 21 }" var="value"
+                                           varStatus="status1" 
+                                           value="#{conceptView.nodeConcept.nodeNT}">
+                                    <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
+                                                   title="#{value.idConcept}"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                             value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
+                                                   style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
+                                    <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
+                                                   title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                             value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
+                                                   style="color: #FF7979; font-size: 14px;" styleClass="textOpentheso"/> 
+                                    <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>    
+                                </ui:repeat>
 
-                            <!-- plus de 20 NT -->
-                            <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() gt 20}" var="value" varStatus="status2" 
-                                       value="#{conceptView.nodeConcept.nodeNT}" size="#{conceptView.sizeToShowNT}">
-                                <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
-                                               title="#{value.idConcept}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" 
-                                               update="containerIndex:formRightTab indexTitle"
-                                               style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
+                                <!-- plus de 20 NT -->
+                                <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() gt 20 }" var="value" varStatus="status2" 
+                                           value="#{conceptView.nodeConcept.nodeNT}" size="#{conceptView.nodeConcept.nodeNT.size()}">
+                                    <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
+                                                   title="#{value.idConcept}"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                             value.idConcept, conceptView.selectedLang)}" 
+                                                   update="containerIndex:formRightTab indexTitle"
+                                                   style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
 
-                                <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})" 
-                                               title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
-                                               style="color: #FF7979; font-size: 14px;"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab"
-                                               styleClass="textOpentheso"/>  
-                                <h:outputText  value=" , " style="color: #FF7979; font-size: 14px;"/>
-                            </ui:repeat>
+                                    <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})" 
+                                                   title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
+                                                   style="color: #FF7979; font-size: 14px;"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                                             value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab"
+                                                   styleClass="textOpentheso"/>  
+                                    <h:outputText value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                </ui:repeat>
 
-                            <p:commandLink rendered="#{conceptView.nodeConcept.nodeNT.size() gt (conceptView.sizeToShowNT)}"
-                                           action="#{conceptView.incrementSizeToShowNT()}" update="containerIndex:formRightTab"
-                                           style="color: #FF7979" styleClass="textOpentheso">
-                                <i class="pi pi-angle-double-right" style="color:#f47b2a; font-size: 14px;" />
-                            </p:commandLink>
-                        </div>
-                    </h:panelGroup>
+                                <p:commandLink rendered="#{conceptView.haveNext}"
+                                               action="#{conceptView.getNextNT(selectedTheso.selectedIdTheso,
+                                                             value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab"
+                                               style="color: #FF7979" styleClass="textOpentheso">
+                                    <i class="pi pi-angle-double-right" style="color:#f47b2a; font-size: 14px;" />
+                                </p:commandLink>
+                            </div>
+                        </h:panelGroup>
+                     
                 </div>
             </div>
 

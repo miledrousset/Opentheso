@@ -56,7 +56,7 @@ public class AtelierThesService implements Serializable {
             if (!CollectionUtils.isEmpty(temp)) {
                 temp.forEach(nodeSearchMini -> {
                     NodeConcept concept = conceptHelper.getConcept(connect.getPoolConnexion(), nodeSearchMini.getIdConcept(), 
-                            thesoSelected.getId(), languageBean.getIdLangue());
+                            thesoSelected.getId(), languageBean.getIdLangue(), -1, -1);
 
                     ConceptResultNode conceptResultNode = new ConceptResultNode();
                     if(data.size() == 1) 

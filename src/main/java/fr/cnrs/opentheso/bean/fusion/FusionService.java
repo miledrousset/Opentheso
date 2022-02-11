@@ -92,7 +92,7 @@ public class FusionService implements Serializable {
                 NodeConcept conceptFound = conceptHelper.getConcept(connect.getPoolConnexion(),
                         conceptSource.getIdentifier(),
                         thesoSelected.getId(),
-                        workLang);
+                        workLang, -1, -1);
 
                 
                 if (conceptFound == null && !conceptSource.getLabelsList().isEmpty()) {

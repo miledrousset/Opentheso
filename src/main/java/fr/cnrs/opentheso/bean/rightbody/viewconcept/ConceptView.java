@@ -14,13 +14,16 @@ import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
+import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -91,8 +94,10 @@ public class ConceptView implements Serializable {
     private ArrayList<NodePath> pathLabel;
 
     /// pagination
-    private int sizeToShowNT;
-
+    private int offset;
+    private int step;    
+    private boolean haveNext;
+    
     // total de la branche
     private int countOfBranch;
 
@@ -109,6 +114,7 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> editorialNotes;
     private ArrayList<NodeNote> examples;
     private ArrayList<NodeNote> historyNotes;
+
 
     @PostConstruct
     public void postInit() {
@@ -201,10 +207,14 @@ public class ConceptView implements Serializable {
             historyNotes = new ArrayList<>();
         }
 
-        sizeToShowNT = 0;
+        offset = 0;
+        step = 20;
+        haveNext = false;
+        
         nodeCorpuses = null;
         countOfBranch = 0;
         haveCorpus = false;
+
 
         if (mapModel == null) {
             mapModel = new Map();
@@ -221,19 +231,20 @@ public class ConceptView implements Serializable {
      * @param idLang
      */
     public void getConcept(String idTheso, String idConcept, String idLang) {
+        offset = 0;
         ConceptHelper conceptHelper = new ConceptHelper();
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
         if (nodeConcept == null) {
             return;
         }
-
+        setOffset();
         if (nodeConcept.getNodeGps() != null) {
             initMap();
         }
 
         pathOfConcept(idTheso, idConcept, idLang);
         setNotes();
-        setSizeToShowNT();
+
         selectedLang = idLang;
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
@@ -284,12 +295,13 @@ public class ConceptView implements Serializable {
      * @param idLang
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
+        offset = 0; 
         ConceptHelper conceptHelper = new ConceptHelper();
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
         if (nodeConcept != null) {
             pathOfConcept(idTheso, idConcept, idLang);
             setNotes();
-            setSizeToShowNT();
+            setOffset();
         }
         // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
@@ -558,29 +570,63 @@ public class ConceptView implements Serializable {
         this.countOfBranch = countOfBranch;
     }
 
-    private void setSizeToShowNT() {
-        // Max 20
-        if (nodeConcept.getNodeNT().size() > 20) {
-            sizeToShowNT = 20;
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset() {
+        if(nodeConcept.getNodeNT().size() < step) {
+            offset = 0;
+            haveNext = false;
         } else {
-            sizeToShowNT = nodeConcept.getNodeNT().size();
+            offset = offset + step+1;
+            haveNext = true;
+        } 
+
+    }
+    
+    public void getNextNT(String idTheso, String idConcept, String idLang) {
+        if(tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
+            RelationsHelper relationsHelper = new RelationsHelper();
+            ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
+                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
+                    idTheso,
+                    idLang, step+1, offset);
+            if(nodeNTs != null && !nodeNTs.isEmpty()) {
+                nodeConcept.getNodeNT().addAll(nodeNTs);
+                setOffset();
+                return;
+            }
+            haveNext = false;
+        }
+    } 
+
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
+    }
+    
+/*    private void setSizeToShowNT() {
+        // Max to show = step
+        if (nodeConcept.getNodeNT().size() > step) {
+            offset = step;
+        } else {
+            offset = nodeConcept.getNodeNT().size();
         }
     }
 
-    public void incrementSizeToShowNT() {
-        sizeToShowNT = sizeToShowNT + 20;
-        if (sizeToShowNT > nodeConcept.getNodeNT().size()) {
-            sizeToShowNT = nodeConcept.getNodeNT().size();
-        }
-    }
+
 
     public int getSizeToShowNT() {
-        return sizeToShowNT;
+        return offset;
     }
 
     public void setSizeToShowNT(int sizeToShowNT) {
-        this.sizeToShowNT = sizeToShowNT;
-    }
+        this.offset = sizeToShowNT;
+    }*/
 
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
@@ -762,6 +808,14 @@ public class ConceptView implements Serializable {
 
     public void setHaveCorpus(boolean haveCorpus) {
         this.haveCorpus = haveCorpus;
+    }
+
+    public boolean isHaveNext() {
+        return haveNext;
+    }
+
+    public void setHaveNext(boolean haveNext) {
+        this.haveNext = haveNext;
     }
 
 }

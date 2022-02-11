@@ -105,7 +105,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                 connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getTerm().getLang());
+                conceptBean.getNodeConcept().getTerm().getLang(), -1, -1);
         isCopyOn = true;
         idThesoOrigin = selectedTheso.getCurrentIdTheso();
         if (nodeConceptDrag == null) {

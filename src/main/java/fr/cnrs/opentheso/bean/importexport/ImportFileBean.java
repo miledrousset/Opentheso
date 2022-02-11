@@ -569,25 +569,49 @@ public class ImportFileBean implements Serializable {
         total = 0;
         NoteHelper noteHelper = new NoteHelper();
         TermHelper termHelper = new TermHelper();
-                
+        ConceptHelper conceptHelper = new ConceptHelper();        
+        String idConcept = null;                
         String idTerm;
         try {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                if(conceptObject == null) continue;
+                if (conceptObject.getIdConcept()== null || conceptObject.getIdConcept().isEmpty()) {
+                    continue;
+                }
+                if("ark".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getIdConcept());
+                }
+                if("handle".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getIdConcept());
+                } 
+                if("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = conceptObject.getIdConcept();
+                }                
+                
+                if (idConcept == null || idConcept.isEmpty()) {
+                    continue;
+                }
+                // controle pour vérifier l'existance de l'Id
+                if(!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())){
+                    continue;
+                }                
+                
+                
                 idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(),
-                        conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());   
+                        idConcept, selectedTheso.getCurrentIdTheso());   
                 if(idTerm == null){
                     continue;
                 }
                 if(clearNoteBefore) {
                     try (Connection conn = connect.getPoolConnexion().getConnection()) {
                         conn.setAutoCommit(false);
-                        if(!noteHelper.deleteNotesOfConcept(conn, conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+                        if(!noteHelper.deleteNotesOfConcept(conn, idConcept, selectedTheso.getCurrentIdTheso())) {
                             conn.rollback();
                         } else
                             conn.commit();
                     } catch (Exception e) {
                         error.append("erreur de suppression: ");
-                        error.append(conceptObject.getIdConcept());
+                        error.append(idConcept);
                     }
                     try (Connection conn = connect.getPoolConnexion().getConnection()) {
                         conn.setAutoCommit(false);
@@ -656,11 +680,11 @@ public class ImportFileBean implements Serializable {
                 // note
                 for (CsvReadHelper.Label note : conceptObject.getNote()) {
                     if(!noteHelper.isNoteExistOfConcept(connect.getPoolConnexion(),
-                            conceptObject.getIdConcept(),
+                            idConcept,
                             selectedTheso.getCurrentIdTheso(), note.getLang(),
                             note.getLabel(), "note")) {
                         noteHelper.addConceptNote(connect.getPoolConnexion(), 
-                                conceptObject.getIdConcept(), note.getLang(),
+                                idConcept, note.getLang(),
                                 selectedTheso.getCurrentIdTheso(), note.getLabel(), "note", -1);
                         total++;
                     }
@@ -668,11 +692,11 @@ public class ImportFileBean implements Serializable {
                 // scopeNote
                 for (CsvReadHelper.Label scopeNote : conceptObject.getScopeNotes()) {
                     if(!noteHelper.isNoteExistOfConcept(connect.getPoolConnexion(),
-                            conceptObject.getIdConcept(),
+                            idConcept,
                             selectedTheso.getCurrentIdTheso(), scopeNote.getLang(),
                             scopeNote.getLabel(), "scopeNote")) {
                         noteHelper.addConceptNote(connect.getPoolConnexion(), 
-                                conceptObject.getIdConcept(), scopeNote.getLang(),
+                                idConcept, scopeNote.getLang(),
                                 selectedTheso.getCurrentIdTheso(), scopeNote.getLabel(), "scopeNote", -1);
                         total++;
                     }
@@ -694,7 +718,7 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
-    }    
+    }   
     
     
     /**

@@ -152,7 +152,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeGroup.getId(), nodeGroup.getValue(), "", false, false,
                     true, false, "concept");
 
-            ArrayList<NodeNT> childs = new RelationsHelper().getListNT(connect.getPoolConnexion(), nodeGroup.getId(), idTheso, idLang);
+            ArrayList<NodeNT> childs = new RelationsHelper().getListNT(connect.getPoolConnexion(), nodeGroup.getId(), idTheso, idLang, -1, -1);
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);
             } else {
@@ -167,7 +167,7 @@ public class TreeConcepts implements Serializable {
     private boolean addConceptSpecifique(TreeNode parent) {
 
         ArrayList<NodeNT> ConceptsId = new RelationsHelper().getListNT(connect.getPoolConnexion(),
-                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
+                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
 
         if (ConceptsId == null || ConceptsId.isEmpty()) {
             parent.setType("file");
@@ -179,7 +179,7 @@ public class TreeConcepts implements Serializable {
                     false, true, true,"concept" );
             
             ArrayList<NodeNT> childs = new RelationsHelper().getListNT(connect.getPoolConnexion(), nodeNT.getIdConcept(),
-                    idTheso, idLang);
+                    idTheso, idLang, -1, -1);
 
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);

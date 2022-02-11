@@ -253,7 +253,7 @@ public class ExportTxtHelper {
      * @param indentation
      */
     private void countIndentation(String idConcept, String indentation) {
-        ArrayList<NodeNT> childList = new RelationsHelper().getListNT(ds, idConcept, idTheso, selectedLang);
+        ArrayList<NodeNT> childList = new RelationsHelper().getListNT(ds, idConcept, idTheso, selectedLang, -1, -1);
         if (childList == null) {
             return;
         }
@@ -329,7 +329,7 @@ public class ExportTxtHelper {
      * fonction recursive qui sert a ecrire tout les fils des terms
      */
     private void writeConceptRecursive(String idConcept, String indentation) {
-        ArrayList<NodeNT> childList = new RelationsHelper().getListNT(ds, idConcept, idTheso, selectedLang);
+        ArrayList<NodeNT> childList = new RelationsHelper().getListNT(ds, idConcept, idTheso, selectedLang, -1, -1);
         if (childList == null) {
             return;
         }
@@ -348,7 +348,7 @@ public class ExportTxtHelper {
      */
     private void writeConceptsInfo(String idConcept, String indentation) {
         ConceptHelper conceptHelper = new ConceptHelper();
-        NodeConcept nodeConcept = conceptHelper.getConcept(ds, idConcept, idTheso, selectedLang);
+        NodeConcept nodeConcept = conceptHelper.getConcept(ds, idConcept, idTheso, selectedLang, -1, -1);
         StringPlus stringPlus = new StringPlus();
         boolean first = true;
 

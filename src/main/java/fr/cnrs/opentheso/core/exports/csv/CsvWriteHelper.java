@@ -71,7 +71,7 @@ public class CsvWriteHelper {
                 boolean first = true;
                 for (String idConcept : idConcepts) {
                     try {
-                        nodeConcept = conceptHelper.getConcept(ds, idConcept, idTheso, idLang);
+                        nodeConcept = conceptHelper.getConcept(ds, idConcept, idTheso, idLang, -1, -1);
                         record.add(nodeConcept.getConcept().getIdConcept());
                         record.add(nodeConcept.getConcept().getIdArk());
                         record.add(nodeConcept.getConcept().getIdHandle());
