@@ -247,13 +247,13 @@
                                                title="#{domaine.conceptGroup.idgroup}"
                                                action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
                                                update="containerIndex indexTitle"
-                                               style="color: #FF7979; font-size: 14px;" />
+                                               style="color: #43B572; font-size: 14px;" />
 
                                 <p:commandLink rendered="#{domaine.lexicalValue == ''}"
                                                value="(#{domaine.conceptGroup.idgroup})"
                                                action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
                                                update="containerIndex indexTitle"
-                                               style="color: #FF7979; font-size: 14px;" />                                        
+                                               style="color: #43B572; font-size: 14px;" />                                        
 
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                             </ui:repeat>

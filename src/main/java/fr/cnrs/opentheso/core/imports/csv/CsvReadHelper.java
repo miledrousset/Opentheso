@@ -38,11 +38,47 @@ public class CsvReadHelper {
     
     private ArrayList <NodeAlignmentImport> nodeAlignmentImports;
     private ArrayList<NodeNote> nodeNotes;
+    private ArrayList<NodeIdValue> nodeIdValues;
     
     public CsvReadHelper(char delimiter) {
         this.delimiter = delimiter;
         conceptObjects = new ArrayList<>();
     }
+    
+    
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     * @param in
+     * @return 
+     */
+    public boolean readFileArk(Reader in){
+        try {
+            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            String value;
+            nodeIdValues = new ArrayList<>();
+            for (CSVRecord record : records) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if(value == null) continue;
+                    nodeIdValue.setId(value);
+                } catch (Exception e) {continue; }                
+                // on récupère les uris à supprimer
+                try {
+                    value = record.get("arkId");
+                    if(value == null) continue;
+                    nodeIdValue.setValue(value.trim());
+                } catch (Exception e) {continue;}                  
+                nodeIdValues.add(nodeIdValue);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }    
     
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
@@ -1002,6 +1038,14 @@ public class CsvReadHelper {
 
     public void setNodeNotes(ArrayList<NodeNote> nodeNotes) {
         this.nodeNotes = nodeNotes;
+    }
+
+    public ArrayList<NodeIdValue> getNodeIdValues() {
+        return nodeIdValues;
+    }
+
+    public void setNodeIdValues(ArrayList<NodeIdValue> nodeIdValues) {
+        this.nodeIdValues = nodeIdValues;
     }
 
     

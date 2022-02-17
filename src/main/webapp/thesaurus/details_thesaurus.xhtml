@@ -8,18 +8,18 @@
     <div class="container-fluid" style="height: 100%;">
 
         <div class="d-sm-flex align-items-center justify-content-between mb-4" 
-             style="height: 75px; width: 100%;">
+             style="height: 75px; width: 100%; margin-top: 35px;">
             <div style="position: relative; height: 100%; width: 100%;" >
-                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; margin-top: 20px">
+                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
                     <ui:include src="search.xhtml"/>
                 </div>
-                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;  margin-top: 20px;">
-                    <h1 class="h5 mb-0 text-gray-500">Thésaurus</h1>
+                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; font-size: 12px;">
+                    <h1 class="h5 mb-0 text-gray-500">#{langueBean.getMsg('menu.thesaurus')}</h1>
                 </div>
             </div>
         </div>
 
-        <div class="row" style="margin-left: 15px; margin-right: 15px">
+        <div class="row" style="margin-left: 15px; margin-right: 15px; margin-top: -40px;">
             <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4" style=" height: 100%">
                 <div class="card shadow mb-1" style=" height: 100%">
                     <h:form id="formLeftTab" style=" height: 100%;">
@@ -95,7 +95,7 @@
                                 <ui:include  src="rightBodyView/resultSearch.xhtml"/>
                             </p:tab>              
 
-                            <p:tab title="#{langueBean.getMsg('rightbody.alignement')}" >
+                            <p:tab disabled="true" title="#{langueBean.getMsg('rightbody.alignement')}" >
                                 <f:facet name="anchor">
                                     <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                 </f:facet>

@@ -122,7 +122,9 @@ public class ImportFileBean implements Serializable {
 
     private boolean haveError;
     
-    private boolean clearNoteBefore;
+    private boolean clearBefore;
+    
+    private ArrayList<NodeIdValue> nodeIdValues;
 
     @PreDestroy
     public void destroy() {
@@ -170,7 +172,7 @@ public class ImportFileBean implements Serializable {
         choiceDelimiter = 0;
         delimiterCsv = ',';
         haveError = false;
-        clearNoteBefore = false;
+        clearBefore = false;
         progress = 0;
         progressStep = 0;
         info = "";
@@ -235,6 +237,10 @@ public class ImportFileBean implements Serializable {
         setSelectedIdentifier(selectedIdentifierImportAlign);
     }    
     
+    public void actionToggle() {
+     //   this.clearBefore = clearBefore;
+    }     
+    
     /**
      * permet de charger un fichier de notes en Csv
      *
@@ -285,6 +291,54 @@ public class ImportFileBean implements Serializable {
             PrimeFaces.current().executeScript("PF('waitDialog').hide()");            
         }
     }    
+    
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
+    public void loadFileArkCsv(FileUploadEvent event) {
+        initError();
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+
+                if (!csvReadHelper.readFileArk(reader)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+
+                warning = csvReadHelper.getMessage();
+                nodeIdValues = csvReadHelper.getNodeIdValues();
+                if (nodeIdValues != null) {
+                    if (nodeIdValues.isEmpty()) {
+                        haveError = true;
+                        error.append(System.getProperty("line.separator"));
+                        error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
+                        warning = "";
+                    } else {
+                        total = nodeIdValues.size();
+                        uri = "";//csvReadHelper.getUri();
+                        loadDone = true;
+                        BDDinsertEnable = true;
+                        info = "File correctly loaded";
+                    }
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+        }
+    }     
+    
     
     /**
      * permet de charger un fichier en Csv
@@ -551,6 +605,65 @@ public class ImportFileBean implements Serializable {
      * permet d'ajouter une liste de notes en CSV au thésaurus
      *
      */
+    public void addArkList() {
+        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
+            warning = "pas de thésaurus sélectionné";
+            return;
+        }
+        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+            return;
+        }
+        if (importInProgress) {
+            return;
+        }
+        initError();
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+        ConceptHelper conceptHelper = new ConceptHelper();        
+        try {
+            for (NodeIdValue nodeIdValue : nodeIdValues) {
+                if(nodeIdValue == null) continue;
+                if (nodeIdValue.getId() == null || nodeIdValue.getId().isEmpty()) {
+                    continue;
+                }
+                // controle pour vérifier l'existance de l'Id
+                if(!conceptHelper.isIdExiste(connect.getPoolConnexion(), nodeIdValue.getId(), selectedTheso.getCurrentIdTheso())){
+                    continue;
+                }
+                
+                if(clearBefore) {
+                    if(conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), nodeIdValue.getId(), selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue()))
+                        total++;
+                } else {
+                    if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeIdValue.getId())) {
+                        if(conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), nodeIdValue.getId(), selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue()))
+                            total++;                        
+                    }                    
+                }
+                progressStep++;
+                progress = progressStep / total * 100;
+            }
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            info = "import réussi, Arks importés = " + (int)total;            
+            total = 0; 
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+    }       
+    
+    /**
+     * permet d'ajouter une liste de notes en CSV au thésaurus
+     *
+     */
     public void addNoteList() {
         if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
             warning = "pas de thésaurus sélectionné";
@@ -602,7 +715,7 @@ public class ImportFileBean implements Serializable {
                 if(idTerm == null){
                     continue;
                 }
-                if(clearNoteBefore) {
+                if(clearBefore) {
                     try (Connection conn = connect.getPoolConnexion().getConnection()) {
                         conn.setAutoCommit(false);
                         if(!noteHelper.deleteNotesOfConcept(conn, idConcept, selectedTheso.getCurrentIdTheso())) {
@@ -718,7 +831,7 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
-    }   
+    }    
     
     
     /**
@@ -821,7 +934,6 @@ public class ImportFileBean implements Serializable {
         if (importInProgress) {
             return;
         }
-        PrimeFaces.current().executeScript("PF('waitDialog').show();");        
         initError();
         loadDone = false;
         progressStep = 0;
@@ -836,13 +948,13 @@ public class ImportFileBean implements Serializable {
                 if (conceptObject.getLocalId() == null || conceptObject.getLocalId().isEmpty()) {
                     continue;
                 }
-                if("ark".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                if("ark".equalsIgnoreCase(selectedIdentifier)){
                     idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId());
                 }
-                if("handle".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                if("handle".equalsIgnoreCase(selectedIdentifier)){
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getLocalId());
                 } 
-                if("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                if("identifier".equalsIgnoreCase(selectedIdentifier)){
                     idConcept = conceptObject.getLocalId();
                 }  
                 if (idConcept == null || idConcept.isEmpty()) {
@@ -857,7 +969,6 @@ public class ImportFileBean implements Serializable {
                     }
                 }
             }
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");             
             loadDone = false;
             importDone = true;
             BDDinsertEnable = false;
@@ -871,7 +982,6 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
-        PrimeFaces.current().executeScript("PF('waitDialog').hide();");         
     }    
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////Fin Ajout des alignements de Wikidata////////////////////////
@@ -1519,12 +1629,12 @@ public class ImportFileBean implements Serializable {
         this.haveError = haveError;
     }
 
-    public boolean isClearNoteBefore() {
-        return clearNoteBefore;
+    public boolean isClearBefore() {
+        return clearBefore;
     }
 
-    public void setClearNoteBefore(boolean clearNoteBefore) {
-        this.clearNoteBefore = clearNoteBefore;
+    public void setClearBefore(boolean clearBefore) {
+        this.clearBefore = clearBefore;
     }
 
     public String getSelectedIdentifierImportAlign() {

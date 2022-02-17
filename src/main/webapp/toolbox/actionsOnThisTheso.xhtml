@@ -5,12 +5,14 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     
-    <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" value=" Actions sur le thésaurus en cours"  /> 
+    <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" value=" Actions sur le thésaurus en cours"  
+                  style="font-size: 14px;"/> 
     <br/>
     <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
 
         <!--Pour importer des alignements -->
-        <p:menuButton value="Actions"  style="box-shadow: 0 0 0px; background: none; background-color: transparent; color: transparent;  font-size: 12px;" >
+        <p:menuButton value="Actions"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;
+                      color: transparent;  font-size: 12px" >
             <p:menuitem value="Importer des alignements" 
                         title="Importer des alignements d'après un tableau CSV"
                         oncomplete="PF('listAlignmentCsv').show();"
@@ -30,6 +32,11 @@
                         oncomplete="PF('listNoteCsv').show();"
                         update="idListNoteCsv listNoteCsvForm"
                         action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
+            <p:menuitem value="Importer des identifiants Ark" 
+                        title="Importer des identifiants Ark d'après un tableau CSV"
+                        oncomplete="PF('listArkCsv').show();"
+                        update="idListArkCsv listArkCsvForm"
+                        action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>               
     
             <p:divider style="font-size: 11px; color: #F47B2A"/> 
         </p:menuButton>
@@ -38,4 +45,5 @@
     <ui:include src="../dialog/import/listAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/import/deleteListAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/import/listNoteCsv.xhtml" />      
+    <ui:include src="/dialog/import/listArkCsv.xhtml" />      
 </ui:fragment>

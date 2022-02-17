@@ -34,7 +34,7 @@
             widgetVar="groupWidget">
 
         <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
-        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formRightTab @this indexTitle"/>
+        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" />
 
         <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 12px; color: blue"/>

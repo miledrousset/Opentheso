@@ -76,10 +76,11 @@
         <script src="resources/js/bootstrap.bundle.min.js"></script>
         <script src="resources/js/jquery.easing.min.js"></script>
         <script src="resources/js/sb-admin-2.js"></script>
-
+        
         <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
-        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false">
-            <p:graphicImage value="resources/img/wait_old.gif" width="150px" />
-        </p:dialog>
+        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" width="95"  closable="false" resizable="false" showHeader="false" position="top" 
+                  style="margin-top: 250px; border: none;">
+            <p:graphicImage value="resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
+        </p:dialog>        
     </h:body>
 </html>
