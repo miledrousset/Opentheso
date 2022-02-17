@@ -328,7 +328,7 @@
         <bootsfaces.version>1.4.2</bootsfaces.version>
         <all.themes.version>1.0.8</all.themes.version>
         <javax.json.version>1.1.4</javax.json.version>
-        <postgresql.version>42.3.2</postgresql.version>
+        <postgresql.version>42.3.3</postgresql.version>
         <font-awesome.version>5.15.1</font-awesome.version>
         <primefaces.version>10.0.0</primefaces.version>
         <javaee-web-api.version>8.0.1</javaee-web-api.version>
