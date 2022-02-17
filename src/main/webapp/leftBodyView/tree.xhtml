@@ -63,7 +63,7 @@
                 <p:ajax event="expand"  listener="#{tree.onNodeExpand}"/>
                 <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
                 <p:ajax event="select" listener="#{tree.onNodeSelect}" update="formRightTab indexTitle formLeftTab:tabTree:treeActions"/>
-                <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree" />
+                <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree messageIndex" />
 
                 <p:treeNode expandedIcon="fa fa-folder-open-o" collapsedIcon="fa fa-folder-o" >
                     <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="font-size: 12px; color: blue"/>

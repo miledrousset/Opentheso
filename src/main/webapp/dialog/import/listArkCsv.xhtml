@@ -5,10 +5,10 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idListNoteCsv" header="Importer des notes" widgetVar="listNoteCsv" 
+    <p:dialog id="idListArkCsv" header="Importer des IdArk" widgetVar="listArkCsv" 
               modal="true" resizable="true" position="top" width="650" style="margin-top: 50px" >         
 
-        <h:panelGroup id="listNoteCsvForm">   
+        <h:panelGroup id="listArkCsvForm">   
             <b:panel style="height: 485px; margin-top: -20px; margin-left: -20px; ">
                 <b:row>                
                     <b:column span="12" >
@@ -18,14 +18,12 @@
                                     <f:facet name="header">
                                         <p:row>
                                             <p:column colspan="1">localId</p:column>
-                                            <p:column colspan="1">skos:definition@fr</p:column>
-                                            <p:column colspan="1">skos:definition@en</p:column>                                     
+                                            <p:column colspan="1">arkId</p:column>
                                         </p:row>
                                     </f:facet>
                                     <p:row>
+                                        <p:column>125645</p:column>
                                         <p:column>26678/crtcg26jeN4R9</p:column>
-                                        <p:column>test de définition##autre définition</p:column>
-                                        <p:column>testing of definition</p:column>
                                     </p:row>
                                 </p:panelGrid>    
                                 <p:spacer/>
@@ -34,13 +32,6 @@
                             <p:outputPanel deferred="true" style="font-size: 12px; margin-left: 30px">
                                 <p>
                                     Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
-                                    Si l'identifiant n'existe pas dans le thésaurus, la note sera rejetée. Le ## sert à combiner plusieurs valeurs<br/>
-                                    Si la note existe, pas de changement (sauf si l'option <b>tout vider avant</b> est active) <br/>
-                                    Deux options sont possibles :
-                                    1- garder les valeurs existantes : permet d'ajouter les notes inexistantes <br/>
-                                    2- supprimer les notes avant : permet de vider toutes les notes de d'identifiant renseigné dans le tableau <br/>
-                                    ensuite, on charge les notes fournies <br/>
-                                    Toutes les notes normalisées sont prises en charge (note, scopeNote, definition, historyNote ...
                                 </p>
                             </p:outputPanel>
                             <p:spacer/>
@@ -58,8 +49,6 @@
                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; font-size: 12px;" title="Choix de l'identifiant pour détecter le concept">
                             <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
-                            <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
-                            <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
                         </p:selectOneMenu>
                     </b:column>
                 </b:row>                   
@@ -82,7 +71,7 @@
                 </b:row>
                 <b:row >
                     <b:column span="3" offset="5">
-                        <h:outputText value="Vider les notes avant? " style="font-size: 12px;" />
+                        <h:outputText value="Remplacer les Id Ark ? " style="font-size: 12px;" />
                     </b:column>                    
                     <b:column span="3" style="margin-left: -15px;">
                         <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px;font-size: 12px;" />                        
@@ -91,15 +80,15 @@
                 <p:spacer/>   
 
 
-                <h:panelGroup id="panelListNoteCsv">
+                <h:panelGroup id="panelListArkCsv">
                     <!-- Choix du fichier -->   
                     <b:row style="margin-left: 30px; margin-right: 30px; ">
                         <b:column span="12" > 
-                            <p:fileUpload listener="#{importFileBean.loadFileNoteCsv}" 
+                            <p:fileUpload listener="#{importFileBean.loadFileArkCsv}" 
                                           label="parcourir" 
                                           mode="advanced" auto="true"
                                           allowTypes="/(\.|\/)(csv|txt)$/"
-                                          update="panelListNoteCsv" disabled="#{importFileBean.loadDone}"
+                                          update="panelListArkCsv" disabled="#{importFileBean.loadDone}"
                                           style="font-size: 12px;" />  
                         </b:column>
                     </b:row> 
@@ -137,17 +126,17 @@
                                              class="btn btn-success"
                                              style="width: 100%; background-color: #FFC107; color: black; border: none; font-size: 12px;"
                                              action="#{importFileBean.init()}"
-                                             update="toolBoxForm:idListNoteCsv"
-                                             oncomplete="PF('listNoteCsv').hide();">
+                                             update="toolBoxForm:idListArkCsv"
+                                             oncomplete="PF('listArkCsv').hide();">
                             </p:commandButton>
                         </b:column>
                         <b:column span="4" offset="2" > 
                             <p:commandButton  class="btn btn-success" widgetVar="buttonImportCsv"
                                              icon="fa fa-check"
-                                             update="panelListNoteCsv"
+                                             update="panelListArkCsv"
 
                                              style="width: 100%; background-color: #5CB85C; border: none; font-size: 12px;"
-                                             actionListener="#{importFileBean.addNoteList()}"
+                                             actionListener="#{importFileBean.addArkList()}"
                                              ajax="true"
                                              value="Importer"
                                              disabled="#{!importFileBean.loadDone}">

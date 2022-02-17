@@ -434,7 +434,12 @@ public class DragAndDrop implements Serializable {
         
         // à corriger pour traiter le déplacement des facettes par Drag and Drop
         if("facet".equalsIgnoreCase(dragNode.getType())){
-        
+            if("facet".equalsIgnoreCase(dropNode.getType())){
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " déplacement non permis !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                isValidPaste = false;
+                return;
+            }
             new FacetHelper().updateFacetParent(connect.getPoolConnexion(),
                     ((TreeNodeData) dropNode.getData()).getNodeId(),//termeParentAssocie.getId(),
                     ((TreeNodeData) dragNode.getData()).getNodeId(),//facetSelected.getIdFacet(),

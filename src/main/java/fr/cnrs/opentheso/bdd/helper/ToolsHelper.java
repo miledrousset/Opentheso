@@ -72,7 +72,9 @@ public class ToolsHelper {
             conn.setAutoCommit(false);
             for (String idConcept : tabIdConcept) {
                 idBT = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
+
                 idConcept1WhereIsNT = relationsHelper.getListIdWhichHaveNt(ds, idConcept, idThesaurus);
+               
                 if (idBT.isEmpty() && idConcept1WhereIsNT.isEmpty()) {
                     if (!conceptHelper.isTopConcept(ds, idConcept, idThesaurus)) {
                         // le concept est orphelin
@@ -96,7 +98,7 @@ public class ToolsHelper {
                         //il manque des NT pour certain idBT
                         ArrayList<String> NTmiss = new ArrayList<>(idBT);
                         NTmiss.removeAll(idConcept1WhereIsNT);
-                        //on jaoute la différence
+                        //on ajoute la différence
                         for (String miss : NTmiss) {
                             if (!relationsHelper.insertHierarchicalRelation(conn, miss, idThesaurus, "NT", idConcept)) {
                                 conn.rollback();

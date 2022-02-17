@@ -1929,8 +1929,8 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where " + "id_concept = '"
-                        + idConcept + "' and id_thesaurus = '" + idTheso + "'");
+                stmt.executeQuery("select id_concept from concept where " + "lower(id_concept) = lower('"
+                        + idConcept + "') and id_thesaurus = '" + idTheso + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         existe = resultSet.getRow() != 0;
@@ -2189,9 +2189,9 @@ public class ConceptHelper {
         RelationsHelper relationsHelper = new RelationsHelper();
 
         // controle si le Concept a des fils avant de le supprimer
-        if (relationsHelper.isRelationNTExist(ds, idConcept, idTheso)) {
+  /*      if (relationsHelper.isRelationNTExist(ds, idConcept, idTheso)) {
             return false;
-        }
+        }*/
         TermHelper termHelper = new TermHelper();
         NoteHelper noteHelper = new NoteHelper();
         AlignmentHelper alignmentHelper = new AlignmentHelper();         
@@ -4856,8 +4856,8 @@ public class ConceptHelper {
         boolean status = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set id_ark='" + idArk + "' WHERE id_concept ='" + idConcept
-                        + "' AND id_thesaurus='" + idTheso + "'");
+                stmt.executeUpdate("UPDATE concept set id_ark='" + idArk + "' WHERE lower(id_concept) = lower('" + idConcept
+                        + "') AND id_thesaurus='" + idTheso + "'");
                 status = true;
             }
         } catch (SQLException sqle) {

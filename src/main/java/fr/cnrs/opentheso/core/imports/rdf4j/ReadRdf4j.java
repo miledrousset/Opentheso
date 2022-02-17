@@ -91,9 +91,18 @@ public class ReadRdf4j {
         boolean validProperty;
         //pour le debug : 
         ArrayList<String> nonReco = new ArrayList<>();
+        String currentObject = null;
 
         for (Statement st : model) {
-
+            if(currentObject == null) {
+                currentObject = st.getSubject().stringValue();
+            } else {
+                if(!currentObject.equalsIgnoreCase(st.getSubject().stringValue())){
+                    readStruct.resource = new SKOSResource();
+                    currentObject = st.getSubject().stringValue();
+                }
+            }
+    //        st.getContext(); st.getObject();st.getPredicate();st.getSubject();
             readStruct.value = st.getObject();
             readStruct.property = st.getPredicate();
 
@@ -134,7 +143,14 @@ public class ReadRdf4j {
                     }
                     if(validProperty) {
                         String uri = st.getSubject().stringValue();
-                        readStruct.resource = new SKOSResource(uri, prop);
+                        if(readStruct.resource == null)
+                            readStruct.resource = new SKOSResource();
+                        if(readStruct.resource != null){
+                            readStruct.resource.setProperty(prop);
+                            readStruct.resource.setUri(uri);
+                        } 
+                            
+                    //    readStruct.resource = new SKOSResource(uri, prop);
                         if (prop == SKOSProperty.ConceptScheme) {
                             sKOSXmlDocument.setConceptScheme(readStruct.resource);
                         } else if (prop == SKOSProperty.FACET) {

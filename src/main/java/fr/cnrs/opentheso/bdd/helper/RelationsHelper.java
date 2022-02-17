@@ -1948,9 +1948,6 @@ public class RelationsHelper {
                     if (resultSet != null) {
                         listIdBT = new ArrayList<>();
                         while (resultSet.next()) {
-                            if(idConcept.equalsIgnoreCase(resultSet.getString("id_concept2"))){
-                                return null; // détection d'une relation en boucle (2 BT 2) ou (3 NT 3)
-                            }
                             listIdBT.add(resultSet.getString("id_concept2"));
                         }
                     }
@@ -1964,6 +1961,14 @@ public class RelationsHelper {
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while getting Liste ID of BT Concept : " + idConcept, sqle);
+        }
+        if(listIdBT != null) {
+            if(listIdBT.contains(idConcept)) {
+                /// relation en boucle à supprimer
+                deleteThisRelation(ds, idConcept, idThesaurus, "BT", idConcept);
+                deleteThisRelation(ds, idConcept, idThesaurus, "NT", idConcept);
+                getListBT(ds, idConcept, idThesaurus);
+            }
         }
         return listIdBT;
     }
