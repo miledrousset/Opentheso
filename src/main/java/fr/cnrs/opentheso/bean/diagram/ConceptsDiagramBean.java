@@ -96,7 +96,7 @@ public class ConceptsDiagramBean implements Serializable {
     public void init(String conceptId, String idTheso, String idLang) {
         if(conceptHelper == null) 
             conceptHelper = new ConceptHelper();
-        nodeConceptSelected = conceptHelper.getConcept(connect.getPoolConnexion(), conceptId, idTheso, idLang);
+        nodeConceptSelected = conceptHelper.getConcept(connect.getPoolConnexion(), conceptId, idTheso, idLang, -1, -1);
         elementSelected = nodeConceptSelected.getTerm().getLexical_value();
         TextInBox root = new TextInBox(nodeConceptSelected.getTerm().getLexical_value(),
                 WIDTH_ELEMENT, HEIGHT_ELEMENT);
@@ -354,7 +354,7 @@ public class ConceptsDiagramBean implements Serializable {
                     selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
             
             nodeConceptSelected = conceptHelper.getConcept(connect.getPoolConnexion(), 
-                    idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
+                    idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), -1, -1);
 
             List<TextInBox> temp = defaultTreeForTreeLayout.getChildrenList(parentElement);
             if (!CollectionUtils.isEmpty(temp)) {

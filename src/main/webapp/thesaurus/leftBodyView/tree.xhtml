@@ -4,20 +4,21 @@
              xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup id="treeActions">
-        <div class="row" style="margin-top: -15px;">
-            <div class="col-6">
+        <div align="write" class="row" style="margin-top: -15px; ">
+            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-8">
                 <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
                               title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
                               style="color: red; font-style: italic; background-color: yellow;  font-size: 12px;"/>
             </div>
-            <div class="col-6" style="text-align: right;">
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                 <p:link id="graph" href="#{request.contextPath}/graph/index.xhtml"
-                        target="_blank" disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
+                        target="_blank"  disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
                         style="color: #F47B2A; float: right; margin-top: 2px;">
                     <i class="pi pi-share-alt" style="font-size: 1rem" />
                 </p:link>
-
-                <p:menuButton style="margin-right: 10px; background-color: transparent" icon="pi pi-align-justify" >
+            </div>
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                <p:menuButton style="background-color: transparent" icon="pi pi-align-justify" >
 
                     <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
                                 actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
@@ -65,7 +66,7 @@
                     <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
                     <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
                     <p:ajax event="select" listener="#{tree.onNodeSelect}"/>
-                    <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree" />
+                    <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree messageIndex" />
 
                     <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
                         <h:outputText title="#{nodetree.nodeId}" value="#{nodetree.notation} " style="color: blue; font-size: 12px"/>

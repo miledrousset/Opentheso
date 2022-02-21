@@ -125,7 +125,7 @@ public class EditFacet implements Serializable {
         concepParent = new ConceptHelper().getConcept(connect.getPoolConnexion(),
                 facetSelected.getIdConceptParent(),
                 idTheso,
-                idLang);
+                idLang, 21, 0);
 
         conceptParentTerme = concepParent.getTerm().getLexical_value();
 
@@ -429,7 +429,7 @@ public class EditFacet implements Serializable {
         concepParent = new ConceptHelper().getConcept(connect.getPoolConnexion(),
                 termeParentAssocie.getId(),
                 selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang());
+                selectedTheso.getCurrentLang(), 21, 0);
 
         conceptParentTerme = concepParent.getTerm().getLexical_value();
 

@@ -23,11 +23,15 @@
 
         .search-form {
             width: 80%;
-            height: 38px;
+            height: 33px;
             margin: 0 auto;
             margin-top: 1rem;
         }
-
+        .ui-selectonemenu.form-control {
+            border-color: transparent !important;
+            border: transparent !important;
+            height: 33px;
+        }
         .search-form input {
             height: 100%;
             background: transparent;
@@ -35,7 +39,7 @@
             display: block;
             width: 100%;
             padding: 1rem;
-            height: 38px;
+            height: 33px;
             font-size: 1rem;
         }
 
@@ -44,7 +48,7 @@
             border: 0;
             padding: 2rem;
             font-size: 12px;
-            height: 38px;
+            height: 33px;
             padding: 3px;
         }
 
@@ -53,7 +57,7 @@
         }
 
         .search-form button {
-            height: 38px;
+            height: 33px;
             width: 100%;
             font-size: 1rem;
         }
@@ -93,21 +97,21 @@
             <div class="col-lg-12 card-margin">
                 <div class="card search-form">
                     <div class="card-body p-0">
-                        <div class="row" style="height: 45px">
+                        <div class="row" >
                             <div class="col-12">
-                                <div class="row no-gutters">
-                                    <div class="col-3">
+                                <div class="row no-gutters" >
+                                    <div class="col-3" >
                                         <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}"
                                                          class="form-control" title="#{langueBean.getMsg('search.change_thesaurus_language')}"
-                                                         style="background: transparent; border-color: transparent; background-color: transparent; font-size: 14px;
-                                                         padding-left: 10px; padding-top: 5px">
+                                                         style="background: transparent; border-color: transparent; background-color: transparent; font-size: 12px;
+                                                         padding-top: 5px; width: 100%; padding-left: 5px;">
                                             <p:ajax event="valueChange" update="containerIndex" listener="#{selectedTheso.changeLang()}" />
                                             <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
                                             <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all"/>
                                         </p:selectOneMenu>
                                     </div>
                                     <div class="col-8">
-                                        <p:autoComplete value="#{searchBean.searchSelected}" var="values" placeholder="Rechercher..." 
+                                        <p:autoComplete class="form-control" value="#{searchBean.searchSelected}" var="values" placeholder="Rechercher..." 
                                                         completeMethod="#{searchBean.completTermFullText}" minQueryLength="1" itemLabel="#{values.prefLabel}" 
                                                         itemValue="#{values}" converter="searchConverter" scrollHeight="600"
                                                         inputStyle="font-size: 14px; width: 100%; height: 100%; box-shadow: none; padding-top: 10px"
@@ -138,7 +142,7 @@
         </div>
     </div>
 
-    <div class="row" style="width: 100%; margin-top: -20px;">
+    <div class="row" style="width: 100%; margin-top: -25px;">
         <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center;" >
             <h:panelGroup id="choixPanel">
                 <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 

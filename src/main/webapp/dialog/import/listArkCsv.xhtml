@@ -4,47 +4,32 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idListNoteCsv" header="Importer des notes" widgetVar="listNoteCsv"  
+    <p:dialog id="idListArkCsv" header="Importer des IdArk" widgetVar="listArkCsv"  
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="listNoteCsvForm">              
+        <h:form id="listArkCsvForm">              
 
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px">
                 <div class="row" style="margin-top: 5px;">
                     <div class="col-5" offset="5">
-                        <h:outputText value="Local ID :" style="color: #000; " />
+                        <h:outputText value="localId" style="color: #000; " />
                     </div>
                     <div class="col-7">
-                        <h:outputLabel value="26678/crtcg26jeN4R9" style="color: #000; " />
+                        <h:outputLabel value="arkId" style="color: #000; " />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-5" offset="5">
-                        <h:outputText value="skos:definition@fr :"  style="color: #000; " />
+                        <h:outputText value="152645"  style="color: #000; " />
                     </div>
                     <div class="col-7">
-                        <h:outputLabel value="test de définition##autre définition"  style="color: #000; " />
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="skos:definition@en :" style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="testing of definition" style="color: #000; " />
+                        <h:outputLabel value="26678/crtcg26jeN4R9"  style="color: #000; " />
                     </div>
                 </div>
             </p:panel>
 
             <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
                 Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
-                Si l'identifiant n'existe pas dans le thésaurus, la note sera rejetée. Le ## sert à combiner plusieurs valeurs<br/>
-                Si la note existe, pas de changement (sauf si l'option <b>tout vider avant</b> est active) <br/>
-                Deux options sont possibles :
-                1- garder les valeurs existantes : permet d'ajouter les notes inexistantes <br/>
-                2- supprimer les notes avant : permet de vider toutes les notes de d'identifiant renseigné dans le tableau <br/>
-                ensuite, on charge les notes fournies <br/>
-                Toutes les notes normalisées sont prises en charge (note, scopeNote, definition, historyNote ...
             </p:outputPanel>
 
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
@@ -58,9 +43,6 @@
                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; font-size: 12px;" title="Choix de l'identifiant pour détecter le concept">
                             <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
-                            <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
-                            <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
-                            <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />                            
                         </p:selectOneMenu>
                     </div>
                 </div>     
@@ -84,29 +66,32 @@
 
                 <div class="row">
                     <div class="col-5" offset="5">
-                        <h:outputText value="Vider les notes avant? " style="color: #000"  />
+                        <h:outputText value="Remplacer les Id Ark ? " style="color: #000"  />
                     </div>                    
                     <div class="col-7" style="margin-left: -15px;">
-                        <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px;" />                        
+                        <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px;" >
+                            <p:ajax listener="#{importFileBean.actionToggle()}"/>
+                        </p:toggleSwitch>                        
+                       
                     </div>                
                 </div>   
 
             </p:panel>
 
-            <h:panelGroup id="panelListNoteCsv">
+            <h:panelGroup id="panelListArkCsv">
                 <!-- Choix du fichier -->   
                 <div class="row" style="margin-left: 30px; margin-right: 30px; margin-top: 10px">
                     <div class="col-12" > 
-                        <p:fileUpload listener="#{importFileBean.loadFileNoteCsv}" 
+                        <p:fileUpload listener="#{importFileBean.loadFileArkCsv}" 
                                       label="parcourir" 
                                       mode="advanced" auto="true"
                                       allowTypes="/(\.|\/)(csv|txt)$/"
-                                      update="panelListNoteCsv_result" disabled="#{importFileBean.loadDone}"
+                                      update="panelListArkCsv_result" disabled="#{importFileBean.loadDone}"
                                       style="font-size: 12px;" />  
                     </div>
                 </div> 
             </h:panelGroup>                
-            <h:panelGroup id="panelListNoteCsv_result">
+            <h:panelGroup id="panelListArkCsv_result">
                 <h:panelGroup rendered="#{importFileBean.loadDone}" style="margin-top: 10px" >
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-5">
@@ -125,14 +110,14 @@
                 <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                     <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                      actionListener="#{importFileBean.init()}"
-                                     oncomplete="PF('listNoteCsv').hide();"
-                                     update="listNoteCsvForm"/>
+                                     oncomplete="PF('listArkCsv').hide();"
+                                     update="listArkCsvForm"/>
 
                     <p:commandButton class="btn btn-danger" title="Importer" process="@this"
                                      
-                                     update="messageIndex listNoteCsvForm"
+                                     update="messageIndex listArkCsvForm"
                                      disabled="#{!importFileBean.loadDone}"
-                                     actionListener="#{importFileBean.addNoteList()}" />
+                                     actionListener="#{importFileBean.addArkList()}" />
                 </div> 
             </h:panelGroup>
         </h:form>

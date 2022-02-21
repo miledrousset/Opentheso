@@ -121,7 +121,7 @@ public class RestRDFHelper {
             String idConcept,
             String idLang) {
         ConceptHelper conceptHelper = new ConceptHelper();
-        NodeConcept nodeConcept = conceptHelper.getConcept(ds, idConcept, idTheso, idLang);
+        NodeConcept nodeConcept = conceptHelper.getConcept(ds, idConcept, idTheso, idLang, -1, -1);
         if(nodeConcept == null) return null;
         
         JsonObjectBuilder job = Json.createObjectBuilder();

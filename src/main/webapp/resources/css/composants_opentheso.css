@@ -189,6 +189,15 @@ body .ui-messages > div {
 
 
 /** SELECTONE MENU **/
+
+body .ui-selectonemenu .ui-selectonemenu-trigger .ui-icon {
+    font-size: 12px;
+}
+body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item {
+    font-size: 12px;
+    padding: 0.2rem 0.5rem;
+}
+
 .ui-selectonemenu .ui-selectonemenu-label {
     width: 100%;
     border: none;
@@ -234,11 +243,21 @@ body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-s
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items {
     font-size: 12px;
+    padding: 0.2rem 0.5rem;
 }
 
 .ui-selectonemenu .ui-selectonemenu-label.ui-inputfield.ui-corner-all {
     margin-top: 1px;
 }
+body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-hover {
+    background: #ecf8f1;
+    color: #43B572;
+}
+
+
+
+
+
 
 
 
@@ -407,12 +426,16 @@ body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
     font-size: 12px;
 }
 
-body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-hover {
-    background: #ecf8f1;
-    color: #43B572;
+
+
+
+body .ui-button.ui-button-text-icon-left .ui-button-text {
+  font-size: 14px;
 }
 
-
+body .ui-button.ui-button-text-icon-left .ui-icon {
+  font-size: 14px;
+}
 
 body .ui-button.ui-button-icon-only .ui-button-text {
     padding: 0px;

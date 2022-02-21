@@ -48,11 +48,24 @@ public class RelationsHelper {
     ////////////////////////////////////////////////////////////////////        
     /**
      * permet de retourner la liste des termes spécifiques avec le libellé
+     *  ##MR ajout de limitNT, si = -1, pas de limit
+     *  pour gérer la récupération par saut (offset 42 fetch next 21 rows only)
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @param step
+     * @param offset
+     * @return 
      */
-    public ArrayList<NodeNT> getListNT(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+    public ArrayList<NodeNT> getListNT(HikariDataSource ds, String idConcept, String idThesaurus, String idLang, int step, int offset) {
 
         ArrayList<NodeNT> nodeListNT = new ArrayList<>();
-
+        String limit = ""; 
+        if(step != -1) {
+            limit = " offset " +  offset + " fetch next " + step + " rows only";
+        }
+        
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept2, role from hierarchical_relationship, concept"
@@ -61,7 +74,8 @@ public class RelationsHelper {
                         + " and hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
                         + " and id_concept1 = '" + idConcept + "'"
                         + " and role LIKE 'NT%'"
-                        + " and concept.status != 'CA'");
+                        + " and concept.status != 'CA'" + limit
+                );
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeNT nodeNT = new NodeNT();
@@ -1942,38 +1956,58 @@ public class RelationsHelper {
     }
 
     /**
-     * Cette fonction permet de rÃ©cupÃ©rer la liste des Id des termes
-     * gÃ©nÃ©riques d'un concept
+     * Cette fonction permet de récupérer la liste des Id des termes
+     * génériques d'un concept
      *
      * @param ds
      * @param idConcept
      * @param idThesaurus
      * @return Objet class Concept
      */
-    public ArrayList<String> getListIdBT(HikariDataSource ds, String idConcept, String idThesaurus) {
+    public ArrayList<String> getListIdBT(HikariDataSource ds,
+            String idConcept, String idThesaurus) {
 
+        Connection conn;
+        Statement stmt;
         ResultSet resultSet = null;
         ArrayList<String> listIdBT = null;
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept2,role from hierarchical_relationship"
-                        + " where id_thesaurus = '" + idThesaurus + "' and id_concept1 = '" 
-                        + idConcept + "' and role LIKE 'BT%'");
-                resultSet = stmt.getResultSet();
-                if (resultSet != null) {
-                    listIdBT = new ArrayList<>();
-                    while (resultSet.next()) {
-                        if (idConcept.equalsIgnoreCase(resultSet.getString("id_concept2"))) {
-                            return null; // détection d'une relation en boucle (2 BT 2) ou (3 NT 3)
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select id_concept2,role from hierarchical_relationship"
+                            + " where id_thesaurus = '" + idThesaurus + "'"
+                            + " and id_concept1 = '" + idConcept + "'"
+                            + " and role LIKE 'BT%'";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet != null) {
+                        listIdBT = new ArrayList<>();
+                        while (resultSet.next()) {
+                            listIdBT.add(resultSet.getString("id_concept2"));
                         }
-                        listIdBT.add(resultSet.getString("id_concept2"));
                     }
+                } finally {
+                    if (resultSet != null) resultSet.close();
+                    stmt.close();
                 }
+            } finally {
+                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while getting Liste ID of BT Concept : " + idConcept, sqle);
+        }
+        if(listIdBT != null) {
+            if(listIdBT.contains(idConcept)) {
+                /// relation en boucle à supprimer
+                deleteThisRelation(ds, idConcept, idThesaurus, "BT", idConcept);
+                deleteThisRelation(ds, idConcept, idThesaurus, "NT", idConcept);
+                getListBT(ds, idConcept, idThesaurus);
+            }
         }
         return listIdBT;
     }

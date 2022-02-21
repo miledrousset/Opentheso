@@ -1548,10 +1548,12 @@ public class SearchHelper {
                             + " FROM concept WHERE "
                             + " concept.id_thesaurus = '" + idTheso + "'"
                             + " and status != 'CA'"
-                            + " and (concept.id_concept = '" + value + "'"
-                            + " or concept.id_ark = '" + value + "'"
-                            + " or concept.id_handle = '" + value + "'"
-                            + " or concept.notation = '" + value + "')";
+                            + " and ("
+                            + " lower(concept.id_concept) = lower('" + value + "')"
+                            + " or lower(concept.id_ark) = lower('" + value + "')"
+                            + " or lower(concept.id_handle) = lower('" + value + "')"
+                            + " or lower(concept.notation) = lower('" + value + "')"
+                            + ")";
 
                     resultSet = stmt.executeQuery(query);
                     idConcepts = new ArrayList<>();

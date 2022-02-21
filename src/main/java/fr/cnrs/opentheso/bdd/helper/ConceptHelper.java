@@ -693,7 +693,7 @@ public class ConceptHelper {
         nodeConceptSerach.setNodeBT(relationsHelper.getListBT(ds, idConcept, idThesaurus, idLang));
 
         //récupération des termes spécifiques
-        nodeConceptSerach.setNodeNT(relationsHelper.getListNT(ds, idConcept, idThesaurus, idLang));
+        nodeConceptSerach.setNodeNT(relationsHelper.getListNT(ds, idConcept, idThesaurus, idLang, 21, 0));
 
         //récupération des termes associés
         nodeConceptSerach.setNodeRT(relationsHelper.getListRT(ds, idConcept, idThesaurus, idLang));
@@ -782,7 +782,7 @@ public class ConceptHelper {
             nodeConceptSearch.setNodeBT(relationsHelper.getListBT(ds, conceptId, idThesaurus, idLang));
 
             //récupération des termes spécifiques
-            nodeConceptSearch.setNodeNT(relationsHelper.getListNT(ds, conceptId, idThesaurus, idLang));
+            nodeConceptSearch.setNodeNT(relationsHelper.getListNT(ds, conceptId, idThesaurus, idLang, 21, 0));
 
             //récupération des termes associés
             nodeConceptSearch.setNodeRT(relationsHelper.getListRT(ds, conceptId, idThesaurus, idLang));
@@ -1815,7 +1815,7 @@ public class ConceptHelper {
     private NodeMetaData getNodeMetaData(HikariDataSource ds,
             String idConcept, String idLang, String idTheso) {
         NodeConcept nodeConcept;
-        nodeConcept = getConcept(ds, idConcept, idTheso, idLang);
+        nodeConcept = getConcept(ds, idConcept, idTheso, idLang, 21, 0);
         if (nodeConcept == null) {
             return null;
         }
@@ -1929,8 +1929,8 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where " + "id_concept = '"
-                        + idConcept + "' and id_thesaurus = '" + idTheso + "'");
+                stmt.executeQuery("select id_concept from concept where " + "lower(id_concept) = lower('"
+                        + idConcept + "') and id_thesaurus = '" + idTheso + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         existe = resultSet.getRow() != 0;
@@ -2187,11 +2187,6 @@ public class ConceptHelper {
             String idConcept, String idTheso, int idUser) {
 
         RelationsHelper relationsHelper = new RelationsHelper();
-
-        // controle si le Concept a des fils avant de le supprimer
-        if (relationsHelper.isRelationNTExist(ds, idConcept, idTheso)) {
-            return false;
-        }
         TermHelper termHelper = new TermHelper();
         NoteHelper noteHelper = new NoteHelper();
         AlignmentHelper alignmentHelper = new AlignmentHelper();         
@@ -4543,15 +4538,19 @@ public class ConceptHelper {
      *
      * Cette fonction permet de récupérer toutes les informations concernant un
      * Concept par son id et son thésaurus et la langue
-     *
+     * ##MR ajout de limit NT qui permet de définir la taille maxi des NT à récupérer, si = -1, pas de limit
+     * offset 42 fetch next 21 rows only
+     * 
      * @param ds
      * @param idConcept
      * @param idThesaurus
      * @param idLang
+     * @param step
+     * @param offset
      * @return 
      */
     public NodeConcept getConcept(HikariDataSource ds,
-            String idConcept, String idThesaurus, String idLang) {
+            String idConcept, String idThesaurus, String idLang, int step, int offset) {
         NodeConcept nodeConcept = new NodeConcept();
 
         // récupération des BT
@@ -4575,7 +4574,7 @@ public class ConceptHelper {
         nodeConcept.setTerm(term);
 
         //récupération des termes spécifiques
-        nodeConcept.setNodeNT(relationsHelper.getListNT(ds, idConcept, idThesaurus, idLang));
+        nodeConcept.setNodeNT(relationsHelper.getListNT(ds, idConcept, idThesaurus, idLang, step, offset));
 
         //récupération des termes associés
         nodeConcept.setNodeRT(relationsHelper.getListRT(ds, idConcept, idThesaurus, idLang));
@@ -4856,8 +4855,8 @@ public class ConceptHelper {
         boolean status = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE concept set id_ark='" + idArk + "' WHERE id_concept ='" + idConcept
-                        + "' AND id_thesaurus='" + idTheso + "'");
+                stmt.executeUpdate("UPDATE concept set id_ark='" + idArk + "' WHERE lower(id_concept) = lower('" + idConcept
+                        + "') AND id_thesaurus='" + idTheso + "'");
                 status = true;
             }
         } catch (SQLException sqle) {

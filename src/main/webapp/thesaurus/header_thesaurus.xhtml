@@ -6,7 +6,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <div>
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" style="height: 60px">
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" style="height: 40px; ">
 
             <!-- Sidebar Toggle (Topbar) -->
             <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -14,39 +14,39 @@
             </button>
 
             <!-- liste des thésaurus -->
-            <p:selectOneMenu value="#{selectedTheso.selectedIdTheso}" style="color: #000">
+            <p:selectOneMenu value="#{selectedTheso.selectedIdTheso}" style="color: #000; height: 28px;  ">
                 <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" update="containerIndex menuBar" />
                 <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
                 <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
             </p:selectOneMenu>
 
             <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" update="containerIndex menuBar" >
-                <i class="fas fa-refresh" style=" color: #43B572; margin-left: 15px" />
+                <i class="fas fa-refresh" style=" color: #43B572; margin-left: 15px; font-size: 12px;" />
             </p:commandLink>
 
             <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" rendered="#{currentUser.nodeUser != null}" >
-                <i class="fas fa-broom" style="color: #43B572; margin-left: 15px" />
-                <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" style="color: #C63632;" />
+                <i class="fas fa-broom" style="color: #C63632; margin-left: 15px; font-size: 12px; color: #C63632; " />
+                <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
             </p:commandLink>
 
             <!-- Topbar Navbar -->
             <ul class="navbar-nav ml-auto">
 
                 <li class="nav-item dropdown no-arrow mx-1">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" style="margin-top: 5px"
+                    <a class="nav-link dropdown-toggle" href="#" role="button" style="margin-top: 5px; font-size: 12px;"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-bell fa-refresh"></i>
+                        <i class="fas fa-bell fa-refresh" ></i>
                     </a>
                 </li>
 
                 <!-- Nav Item - Alerts -->
                 <li class="nav-item dropdown no-arrow mx-1">
                     <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 5px">
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 5px; font-size: 12px;">
                         <i class="fas fa-bell fa-flag"></i>
                     </a>
                     <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                         aria-labelledby="alertsDropdown">
+                         aria-labelledby="alertsDropdown" style="font-size: 12px;">
                         <h6 class="dropdown-header" style="font-size: 12px;">
                             Les langues disponibles
                         </h6>
@@ -89,7 +89,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px;">
-                                <h:outputText value="#{currentUser.nodeUser.name}" />
+                                <h:outputText value="#{currentUser.nodeUser.name}" style="font-size: 12px;" />
                             </span>
                             <img class="img-profile rounded-circle" src="resources/img/undraw_profile.svg" />
                         </a>
