@@ -2,11 +2,20 @@ package fr.cnrs.opentheso.bean.alignment;
 
 public class AlignementElement {
 
+    private int idAlignment;
     private String idConceptOrig;
     private String labelConceptOrig;
     private String tradConceptOrig;
     private String typeAlignement;
     private String labelConceptCible;
+
+    public int getIdAlignment() {
+        return idAlignment;
+    }
+
+    public void setIdAlignment(int idAlignment) {
+        this.idAlignment = idAlignment;
+    }
 
     public String getIdConceptOrig() {
         return idConceptOrig;

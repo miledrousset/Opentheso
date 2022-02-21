@@ -36,6 +36,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -70,7 +71,7 @@ public class Tree implements Serializable {
 
     @Inject
     private EditFacet editFacet;
-    
+
     @Inject
     private AlignmentBean alignmentBean;
 
@@ -186,7 +187,7 @@ public class Tree implements Serializable {
 
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
 
-        if (parent.getChildCount() == 1 && ((TreeNode)parent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
+        if (parent.getChildCount() == 1 && ((TreeNode) parent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             parent.getChildren().remove(0);
             idConceptParent = ((TreeNodeData) parent.getData()).getNodeId();
             FacetHelper facetHelper = new FacetHelper();
@@ -419,16 +420,16 @@ public class Tree implements Serializable {
             indexSetting.setIsFacetSelected(false);
             idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
 
-        /*    if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
+            /*    if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
                 rightBodySetting.setShowConceptToOn();
                 conceptBean.getConceptForTree(idTheso,
                         ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
             }
             if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {*/
-                rightBodySetting.setShowConceptToOn();
-                conceptBean.getConceptForTree(idTheso,
-                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-      //     }
+            rightBodySetting.setShowConceptToOn();
+            conceptBean.getConceptForTree(idTheso,
+                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+            //     }
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             rightBodySetting.setIndex("0");
@@ -436,20 +437,30 @@ public class Tree implements Serializable {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
         }
-    
+
         /*
         Il ne faut pas charger le tableau d'alignement ici, mais plutôt au moment où l'utilisateur clique sur l'onglet alignement (voir après avoir sélectionné la source d'alignement)
         
         Désactivé pat MR, ca prend trop de temps quand on a 40.000 concepts dans la branche
-        */
+         */
         ////alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
         ////alignmentBean.nextTenRecresive(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
         /////// 
-        
-        
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("indexTitle");
-        PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");          
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");
+    }
+
+    public void onTabChange(TabChangeEvent event) {
+
+        if (event.getTab().getId().equals("viewTabAlignement")) {
+
+            alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getSelectedLang());
+            
+            alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        }
     }
 
     public String getIdConceptSelected() {
@@ -563,12 +574,12 @@ public class Tree implements Serializable {
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
-        PrimeFaces.current().executeScript("srollToSelected();");        
+        PrimeFaces.current().executeScript("srollToSelected();");
     }
 
     // deselectionner et fermer toutes les noeds de l'arbres
     private void initialiserEtatNoeuds(TreeNode nodeRoot) {
-        for (TreeNode node :  nodeRoot.getChildren()) {
+        for (TreeNode node : nodeRoot.getChildren()) {
             try {
                 TreeNodeData treeNodeData = (TreeNodeData) node.getData();
                 node.setExpanded(false);
@@ -648,7 +659,7 @@ public class Tree implements Serializable {
     private TreeNode selectChildNode(TreeNode treeNodeParent, String idConceptChildToFind) {
         // test si les fils ne sont pas construits
         FacetHelper facetHelper = new FacetHelper();
-        if (treeNodeParent.getChildCount() == 1 && ((TreeNode)treeNodeParent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
+        if (treeNodeParent.getChildCount() == 1 && ((TreeNode) treeNodeParent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             treeNodeParent.getChildren().remove(0);
 
             if ("facet".equals(treeNodeParent.getType())) {
@@ -672,7 +683,7 @@ public class Tree implements Serializable {
                     if (facetHelper.isFacetHaveThisMember(connect.getPoolConnexion(),
                             ((TreeNodeData) treeNode.getData()).getNodeId(),
                             idConceptChildToFind, idTheso)) {
-                        if (treeNode.getChildCount() == 1 && ((TreeNode)treeNode.getChildren().get(0)).getData().toString().equals("DUMMY")) {
+                        if (treeNode.getChildCount() == 1 && ((TreeNode) treeNode.getChildren().get(0)).getData().toString().equals("DUMMY")) {
                             treeNode.getChildren().remove(0);
                             addMembersOfFacet(treeNode);
                         }
@@ -778,7 +789,7 @@ public class Tree implements Serializable {
     }
 
     private void expandedAllRecursively(TreeNode node, boolean expanded) {
-        if (node.getChildCount() == 1 && ((TreeNode)node.getChildren().get(0)).getData().toString().equals("DUMMY")) {
+        if (node.getChildCount() == 1 && ((TreeNode) node.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             node.getChildren().remove(0);
             addConceptsChild(node);
         }

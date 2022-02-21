@@ -34,7 +34,6 @@
     </h:head>
 
     <h:body id="page-top" onload="closeMenu()">
-        
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>

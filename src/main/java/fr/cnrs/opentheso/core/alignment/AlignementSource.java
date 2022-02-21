@@ -5,6 +5,8 @@
  */
 package fr.cnrs.opentheso.core.alignment;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  *
  * @author antonio.perez
@@ -13,7 +15,7 @@ public class AlignementSource {
     private String source;
     
     // pour définir le mode de filtrage ex : Opentheso, Wikidata, Gemet ....
-    private String source_filter;    
+    private String source_filter = "";    
         
     private String requete;
     private String typeRequete;
@@ -87,6 +89,7 @@ public class AlignementSource {
     }
 
     public String getSource_filter() {
+        if(StringUtils.isEmpty(source_filter)) return "";
         return source_filter;
     }
 

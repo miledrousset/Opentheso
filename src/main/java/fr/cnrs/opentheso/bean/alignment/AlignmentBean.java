@@ -19,7 +19,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -43,6 +42,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -52,26 +52,31 @@ import org.primefaces.PrimeFaces;
 @Named(value = "alignmentBean")
 @SessionScoped
 public class AlignmentBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptView;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private AlignmentManualBean alignmentManualBean;       
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private ConceptView conceptView;
+    @Inject
+    private SelectedTheso selectedTheso;
+    @Inject
+    private AlignmentManualBean alignmentManualBean;
 
     private boolean withLang;
     private boolean withNote;
     private boolean withImage;
-    
+
     private boolean isViewResult = true;
     private boolean isViewSelection = false;
-    
+
     private boolean viewSetting = false;
-    private boolean viewAddNewSource = false;    
+    private boolean viewAddNewSource = false;
 
     private ArrayList<AlignementSource> alignementSources;
     private String selectedAlignement;
     private AlignementSource selectedAlignementSource;
     private ArrayList<NodeAlignment> listAlignValues;
+    private ArrayList<AlignementElement> allignementsList;
     private NodeAlignment selectedNodeAlignment;
     private ArrayList<Map.Entry<String, String>> alignmentTypes;
     private int selectedAlignementType;
@@ -79,6 +84,7 @@ public class AlignmentBean implements Serializable {
     private String nom;
     private String prenom;
     private boolean isNameAlignment = false; // pour afficher les nom et prénom
+    private AlignementElement alignementElementSelected;
 
     private ArrayList<String> thesaurusUsedLanguageWithoutCurrentLang;
     private ArrayList<String> thesaurusUsedLanguage;
@@ -116,90 +122,111 @@ public class AlignmentBean implements Serializable {
     private boolean error;
 
     private String alertWikidata;
-    
+
     //les alignements existants
-    private ArrayList <NodeAlignment> existingAlignments;    
-    
-    
+    private ArrayList<NodeAlignment> existingAlignments;
+
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }    
-    
+    }
+
+    public void deleteAlignemen() {
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+        alignmentHelper.deleteAlignment(connect.getPoolConnexion(),
+                alignementElementSelected.getIdAlignment(),
+                selectedTheso.getCurrentIdTheso());
+        
+        getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Erreur !", "Alignement supprimé avec succès !");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+        }
+    }
+
+    public void setAlignementElementSelected(AlignementElement alignementElementSelected) {
+        this.alignementElementSelected = alignementElementSelected;
+    }
+
+    public AlignementElement getAlignementElementSelected() {
+        return alignementElementSelected;
+    }
+
     public void clear() {
-        if(alignementSources!= null){
+        if (alignementSources != null) {
             alignementSources.clear();
             alignementSources = null;
         }
         selectedAlignement = null;
         selectedAlignementSource = null;
-        if(listAlignValues!= null){
+        if (listAlignValues != null) {
             listAlignValues.clear();
             listAlignValues = null;
-        }        
+        }
         selectedNodeAlignment = null;
-        if(alignmentTypes!= null){
+        if (alignmentTypes != null) {
             alignmentTypes.clear();
             alignmentTypes = null;
-        }         
+        }
         nom = null;
         prenom = null;
-        if(thesaurusUsedLanguageWithoutCurrentLang!= null){
+        if (thesaurusUsedLanguageWithoutCurrentLang != null) {
             thesaurusUsedLanguageWithoutCurrentLang.clear();
             thesaurusUsedLanguageWithoutCurrentLang = null;
-        }         
-        if(thesaurusUsedLanguage!= null){
+        }
+        if (thesaurusUsedLanguage != null) {
             thesaurusUsedLanguage.clear();
             thesaurusUsedLanguage = null;
-        }  
-        if(allIdsOfBranch!= null){
+        }
+        if (allIdsOfBranch != null) {
             allIdsOfBranch.clear();
             allIdsOfBranch = null;
-        }  
-        if(idsAndValues!= null){
+        }
+        if (idsAndValues != null) {
             idsAndValues.clear();
             idsAndValues = null;
-        }    
-        if(idsToGet!= null){
+        }
+        if (idsToGet != null) {
             idsToGet.clear();
             idsToGet = null;
-        }             
+        }
         idConceptSelectedForAlignment = null;
         conceptValueForAlignment = null;
-        if(nodeTermTraductions!= null){
+        if (nodeTermTraductions != null) {
             nodeTermTraductions.clear();
             nodeTermTraductions = null;
-        } 
-        if(nodeNotes!= null){
+        }
+        if (nodeNotes != null) {
             nodeNotes.clear();
             nodeNotes = null;
-        } 
-        if(nodeImages!= null){
+        }
+        if (nodeImages != null) {
             nodeImages.clear();
             nodeImages = null;
-        } 
-        if(traductionsOfAlignment!= null){
+        }
+        if (traductionsOfAlignment != null) {
             traductionsOfAlignment.clear();
             traductionsOfAlignment = null;
-        }         
-        if(descriptionsOfAlignment!= null){
+        }
+        if (descriptionsOfAlignment != null) {
             descriptionsOfAlignment.clear();
             descriptionsOfAlignment = null;
-        }    
-        if(imagesOfAlignment!= null){
+        }
+        if (imagesOfAlignment != null) {
             imagesOfAlignment.clear();
             imagesOfAlignment = null;
-        }  
-        if(nodeAlignmentSmall!= null){
+        }
+        if (nodeAlignmentSmall != null) {
             nodeAlignmentSmall.clear();
             nodeAlignmentSmall = null;
-        }         
-    }    
-    
+        }
+    }
+
     public AlignmentBean() {
     }
-    
-    
 
     /////// gestion de la pagination pour le traitement par lot ///////
     /**
@@ -230,7 +257,7 @@ public class AlignmentBean implements Serializable {
         }
         getIdsAndValues(idLang, idTheso);
     }
-    
+
     public void nextTenRecresive(String idLang, String idTheso) {
 
         if (allIdsOfBranch == null) {
@@ -334,6 +361,41 @@ public class AlignmentBean implements Serializable {
                 idLang,
                 idTheso);
         selectConceptForAlignment(idConceptSelectedForAlignment);
+
+        allignementsList = new ArrayList<>();
+
+        for (NodeIdValue idsAndValue : idsAndValues) {
+
+            ArrayList<NodeAlignment> alignements = new AlignmentHelper()
+                    .getAllAlignmentOfConcept(connect.getPoolConnexion(), idsAndValue.getId(), idTheso);
+            if (!CollectionUtils.isEmpty(alignements)) {
+                for (NodeAlignment alignement : alignements) {
+                    AlignementElement element = new AlignementElement();
+                    element.setIdConceptOrig(idsAndValue.getId());
+                    element.setLabelConceptOrig(idsAndValue.getValue());
+
+                    if (!CollectionUtils.isEmpty(alignement.getTraduction())) {
+                        element.setTradConceptOrig(alignement.getTraduction().get(0));
+                    }
+
+                    element.setIdAlignment(alignement.getId_alignement());
+                    element.setTypeAlignement(alignement.getAlignmentLabelType());
+                    element.setLabelConceptCible(alignement.getConcept_target());
+                    allignementsList.add(element);
+                }
+            } else {
+                AlignementElement element = new AlignementElement();
+                element.setIdConceptOrig(idsAndValue.getId());
+                element.setLabelConceptOrig(idsAndValue.getValue());
+                element.setTradConceptOrig(idsAndValue.getNotation());
+                allignementsList.add(element);
+            }
+        }
+
+    }
+
+    public ArrayList<AlignementElement> getAllignementsList() {
+        return allignementsList;
     }
 
     // quand on sélectionne un concept, on récupére sa valeur du vecteur
@@ -354,13 +416,13 @@ public class AlignmentBean implements Serializable {
 //        conceptValueForAlignment = idsAndValues.get(idConceptSelectedForAlignment);
     }
 
-    private void setExistingAlignment(String idConcept, String idTheso){
+    private void setExistingAlignment(String idConcept, String idTheso) {
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         existingAlignments = alignmentHelper.getAllAlignmentOfConcept(
                 connect.getPoolConnexion(),
                 idConcept, idTheso);
-    } 
-    
+    }
+
     private void prepareValuesForIdRef() {
         if (isNameAlignment) { // alignement de type Autorités
             /// récupération du nom et prénom
@@ -468,15 +530,14 @@ public class AlignmentBean implements Serializable {
         thesaurusUsedLanguageWithoutCurrentLang = thesaurusHelper.getIsoLanguagesOfThesaurus(connect.getPoolConnexion(), idTheso);
         thesaurusUsedLanguageWithoutCurrentLang.remove(currentLang);
 
-/*        selectedOptions = new ArrayList<>();
+        /*        selectedOptions = new ArrayList<>();
         selectedOptions.add("langues");
         selectedOptions.add("images");
         selectedOptions.add("notes");*/
-        
         withLang = true;
         withNote = true;
-        withImage = true;        
-        
+        withImage = true;
+
         traductionsOfAlignment = new ArrayList<>();
         descriptionsOfAlignment = new ArrayList<>();
         imagesOfAlignment = new ArrayList<>();
@@ -519,7 +580,7 @@ public class AlignmentBean implements Serializable {
         isSelectedAllLang = true;
         isViewResult = true;
         isViewSelection = false;
-        
+
     }
 
     private void resetVariables() {
@@ -647,9 +708,7 @@ public class AlignmentBean implements Serializable {
                     idConcept,
                     lexicalValue,
                     idLang);
-        }        
-        
-        
+        }
 
         // ici  IdRef pour les sujets
         if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefSujets")) {
@@ -739,7 +798,7 @@ public class AlignmentBean implements Serializable {
                     lexicalValue,
                     idLang);
         }
-        
+
         // ici pour un alignement de type GeoNames
         if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("GeoNames")) {
             getAlignmentGeoNames(
@@ -749,10 +808,10 @@ public class AlignmentBean implements Serializable {
                     lexicalValue,
                     idLang);
         }
-       // System.out.println("fin");
-        
-        if(listAlignValues != null) {
-            if(listAlignValues.isEmpty()){
+        // System.out.println("fin");
+
+        if (listAlignValues != null) {
+            if (listAlignValues.isEmpty()) {
                 alignmentManualBean.reset();
                 alignmentManualBean.setManualAlignmentSource(selectedAlignementSource.getSource());
             }
@@ -792,6 +851,7 @@ public class AlignmentBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", wikidataHelper.getMessages()));
         }
     }
+
     /**
      * Cette fonction permet de récupérer les concepts à aligner de la source
      * juste la liste des concepts avec une note pour distinguer les concepts/
@@ -825,9 +885,7 @@ public class AlignmentBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", wikidataHelper.getMessages()));
         }
     }
-    
-    
-    
+
     /**
      * Cette fonction permet de récupérer les concepts à aligner de la source
      * juste la liste des concepts avec une note pour distinguer les concepts/
@@ -1103,7 +1161,7 @@ public class AlignmentBean implements Serializable {
                     agrovocHelper.getMessages()));
         }
     }
-    
+
     /**
      * Cette fonction permet de récupérer les concepts à aligner de la source
      * juste la liste des concepts avec une note pour distinguer les concepts/
@@ -1137,7 +1195,7 @@ public class AlignmentBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected",
                     geoNamesHelper.getMessages()));
         }
-    }    
+    }
 
     /**
      * Cette fonction permet de récupérer les concepts à aligner de la source
@@ -1202,16 +1260,22 @@ public class AlignmentBean implements Serializable {
     public void getUriAndOptions(NodeAlignment selectedNodeAlignment,
             String idTheso, String idConcept) {
         alignmentInProgress = true;
-        
+
         isViewResult = false;
         isViewSelection = true;
-        
+
         resetAlignmentResult();
         ArrayList<String> selectedOptions = new ArrayList<>();
-        if(withLang) selectedOptions.add("langues");
-        if(withNote) selectedOptions.add("notes");
-        if(withImage) selectedOptions.add("images");        
-        
+        if (withLang) {
+            selectedOptions.add("langues");
+        }
+        if (withNote) {
+            selectedOptions.add("notes");
+        }
+        if (withImage) {
+            selectedOptions.add("images");
+        }
+
         this.selectedNodeAlignment = selectedNodeAlignment;
         // initialisation des valeurs du concept local pour comparaison avec le concept à aligner
         getValuesOfLocalConcept(idTheso, idConcept);
@@ -1266,7 +1330,7 @@ public class AlignmentBean implements Serializable {
             setObjectDefinitions(agrovocHelper.getResourceDefinitions());
             setObjectImages(agrovocHelper.getResourceImages());
         }
-        
+
         // si l'alignement est de type GeoNames       
         if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("GeoNames")) {
             GeoNamesHelper geoNamesHelper = new GeoNamesHelper();
@@ -1279,7 +1343,7 @@ public class AlignmentBean implements Serializable {
             setObjectTraductions(geoNamesHelper.getResourceTraductions());
             setObjectDefinitions(geoNamesHelper.getResourceDefinitions());
             setObjectImages(geoNamesHelper.getResourceImages());
-        }        
+        }
 
     }
 
@@ -1295,7 +1359,9 @@ public class AlignmentBean implements Serializable {
     private void setObjectTraductions(ArrayList<SelectedResource> traductionsoOfAlignmentTemp) {
         boolean added;
 
-        if(traductionsoOfAlignmentTemp == null) return;
+        if (traductionsoOfAlignmentTemp == null) {
+            return;
+        }
         // la liste des traductions de Wikidata
         for (SelectedResource selectedResource : traductionsoOfAlignmentTemp) {
             added = false;
@@ -1334,7 +1400,9 @@ public class AlignmentBean implements Serializable {
     private void setObjectDefinitions(ArrayList<SelectedResource> descriptionsOfAlignmentTemp) {
         boolean added;
 
-        if(descriptionsOfAlignmentTemp == null) return;
+        if (descriptionsOfAlignmentTemp == null) {
+            return;
+        }
         // la liste des traductions de Wikidata
         for (SelectedResource selectedResource : descriptionsOfAlignmentTemp) {
             added = false;
@@ -1370,7 +1438,9 @@ public class AlignmentBean implements Serializable {
     private void setObjectImages(ArrayList<SelectedResource> imagesOfAlignmentTemp) {
         boolean added;
 
-        if(imagesOfAlignmentTemp == null) return;
+        if (imagesOfAlignmentTemp == null) {
+            return;
+        }
         // la liste des traductions de Wikidata
         for (SelectedResource selectedResource : imagesOfAlignmentTemp) {
             added = false;
@@ -1406,9 +1476,9 @@ public class AlignmentBean implements Serializable {
         if (selectedNodeAlignment == null) {
             return;
         }
-        
+
         FacesMessage msg;
-       
+
         AlignmentHelper alignmentHelper = new AlignmentHelper();
 
         // ajout de l'alignement séléctionné
@@ -1421,61 +1491,56 @@ public class AlignmentBean implements Serializable {
         // ajout des traductions 
         if (!addTraductions__(idTheso, idConcept, idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout des tradutcions a achoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
         // ajout des définitions 
         if (!addDefinitions__(idTheso, idConcept, idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout des notes a achoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
         // ajout des images
         if (!addImages__(idTheso, idConcept, idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout des images a achoué !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         // ajout des coordonnées GPS
-        if(selectedNodeAlignment.getThesaurus_target().equalsIgnoreCase("GeoNames")) {
+        if (selectedNodeAlignment.getThesaurus_target().equalsIgnoreCase("GeoNames")) {
             if (!addGps__(idTheso, idConcept, idUser)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout des coordonnées GPS a achoué !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);            
+                FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
-            }        
+            }
         }
 
         alignementResult = alignementResult + alignmentHelper.getMessage();
         selectedNodeAlignment = null;
         alignmentInProgress = false;
-        conceptView.getConcept(idTheso, idConcept, conceptView.getSelectedLang());
+        //conceptView.getConcept(idTheso, idConcept, conceptView.getSelectedLang());
         ConceptHelper conceptHelper = new ConceptHelper();
-                
+
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                idTheso, 
+                idTheso,
                 idConcept, idUser);
 
-        PrimeFaces pf = PrimeFaces.current();         
+        PrimeFaces pf = PrimeFaces.current();
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);        
-        
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptAlignment");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptTraductions");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptImages");
-            pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idConceptGps");
-        }         
-        
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
         isViewResult = true;
         isViewSelection = false;
         setExistingAlignment(idConcept, idTheso);
-        
+
+        getIdsAndValues(selectedTheso.getCurrentLang(), idTheso);
+
         resetVariables();
     }
-    
+
     /**
      * Permet d'ajouter les coordonnées GPS pour les lieux
      *
@@ -1486,14 +1551,14 @@ public class AlignmentBean implements Serializable {
      */
     private boolean addGps__(String idTheso, String idConcept, int idUser) {
         GpsHelper gpsHelper = new GpsHelper();
-        
+
         // ajout de l'alignement séléctionné
         if (!gpsHelper.insertCoordonees(
                 connect.getPoolConnexion(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedNodeAlignment.getLat(),
-                selectedNodeAlignment.getLng())){
+                selectedNodeAlignment.getLng())) {
 
             alignementResult = "Erreur pendant l'ajout des coordonnées GPS : ";
             alignmentInProgress = false;
@@ -1503,7 +1568,7 @@ public class AlignmentBean implements Serializable {
         }
         alignementResult = "Alignement ajouté ##";
         return true;
-    }    
+    }
 
     /**
      * Permet d'ajouter l'alignement choisi dans la base de données
@@ -1629,22 +1694,22 @@ public class AlignmentBean implements Serializable {
     public void cancelAlignment() {
         isViewResult = true;
         isViewSelection = false;
-        
+
         selectedNodeAlignment = null;
         alignmentInProgress = false;
         resetVariables();
     }
-    
+
     public void cancelManualAlignment() {
         isViewResult = false;
         isViewSelection = false;
-        
+
         selectedNodeAlignment = null;
         alignmentInProgress = false;
         listAlignValues = null;
         resetVariables();
     }
-    
+
     public void validManualAlignment() {
         isViewResult = false;
         isViewSelection = false;
@@ -1656,7 +1721,6 @@ public class AlignmentBean implements Serializable {
         listAlignValues = null;
         resetVariables();
     }
-    
 
     public ArrayList<Map.Entry<String, String>> getAlignmentTypes() {
         return alignmentTypes;
@@ -1698,8 +1762,6 @@ public class AlignmentBean implements Serializable {
         this.withImage = withImage;
     }
 
-    
-
     public String getSelectedAlignement() {
         return selectedAlignement;
     }
@@ -1716,14 +1778,14 @@ public class AlignmentBean implements Serializable {
         } else {
             isNameAlignment = false;
         }
-        if(selectedAlignement.equalsIgnoreCase("wikidata")) {
+        if (selectedAlignement.equalsIgnoreCase("wikidata")) {
             alertWikidata = "!!! Attention à la casse !!!!";
-            PrimeFaces pf = PrimeFaces.current();         
+            PrimeFaces pf = PrimeFaces.current();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "!!! Attention respectez la casse !!!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);      
-        }
-        else
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } else {
             alertWikidata = "";
+        }
     }
 
     public void setSelectedAlignement(String selectedAlignement) {
@@ -1937,7 +1999,5 @@ public class AlignmentBean implements Serializable {
     public void setAlertWikidata(String alertWikidata) {
         this.alertWikidata = alertWikidata;
     }
-    
-    
 
 }

@@ -10,6 +10,11 @@
 
 */
 
+.ui-orderlist .ui-orderlist-list {
+    width: 100%;
+    height: 500px;
+}
+
 
 /*** MenuButton ***/
 .ui-menubutton .ui-widget {

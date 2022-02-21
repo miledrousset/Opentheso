@@ -10,6 +10,7 @@ import connexion.ConnexionTest;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import java.util.ArrayList;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -25,6 +26,7 @@ public class CorrectRolesOnConceptTest {
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
+    @Ignore
     @Test
     public void switchRolesFromTermToConcept() {
         
