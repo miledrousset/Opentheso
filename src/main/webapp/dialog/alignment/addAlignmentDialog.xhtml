@@ -1,0 +1,284 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="saerchAlignementID" widgetVar="saerchAlignement" width="650" minHeight="400" showEffect="fade" modal="true" 
+              header="#{langueBean.getMsg('rightbody.conceptdialog.alignment_with_external_thesauri')}" 
+              resizable="false" position="top" style="margin-top: 30px" >
+
+        <p:outputPanel id="searchAlignementForm" class="ui-fluid">
+
+            <h:form>
+                <div class="row" style="margin-top: 5px">
+                    <h:panelGroup rendered="#{!alignmentBean.isNameAlignment}">
+                        <div class="col-6" style="margin-top: 3px">
+                            <p:inputText value="#{alignmentBean.conceptValueForAlignment}"/>
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- nom et prénom pour IdRef -->
+                    <h:panelGroup rendered="#{alignmentBean.isNameAlignment}" >
+                        <div class="col-3" style="margin-top: 3px">
+                            <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.name')}"
+                                         value="#{alignmentBean.nom}" />
+                        </div>
+                        <div class="col-3">
+                            <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.first_name')}"
+                                         value="#{alignmentBean.prenom}"/>
+                        </div>
+                    </h:panelGroup>
+
+                    <div class="col-5" style="margin-top: 3px">
+                        <p:selectOneMenu value="#{alignmentBean.selectedAlignement}" style="width: 100%; background: white; border-color: #43B572"
+                                         title="#{alignmentBean.alertWikidata}">
+                            <f:selectItems value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>                    
+                            <p:ajax event="change" listener="#{alignmentBean.actionChoix()}" update=":containerIndex:searchAlignementForm messageIndex"/>
+                        </p:selectOneMenu> 
+                    </div>
+
+                    <div class="col-1">
+                        <p:commandButton icon="pi pi-pencil" process="@this"
+                                         actionListener="#{alignmentBean.searchAlignments(
+                                                           selectedTheso.selectedIdTheso, 
+                                                           alignmentBean.idConceptSelectedForAlignment,
+                                                           alignmentBean.conceptValueForAlignment,
+                                                           conceptView.selectedLang)}"
+                                         update=":containerIndex:searchAlignementForm messageIndex"
+                                         styleClass="edit-button rounded-button ui-button-success" />
+                    </div>
+                </div>
+            </h:form>
+
+            <p:separator/>
+
+            <h:panelGroup id="columnRightPanelResult" rendered="#{alignmentBean.isViewResult}">
+                <!-- Ajout d'alignement manuel -->
+                <p:panel rendered="#{(alignmentBean.listAlignValues.size() == 0)}" style="border: solid 1px; padding: 20px">
+                    <div class="row">
+                        <div class="col-12" style="color: #000;">
+                            <strong style="color: red"> Pas de résultat!</strong> aucun résultat trouvé pour ce label.
+                            <br/>
+                            Vous pouvez ajouter l'alignement manuellement ci-dessous :
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-12">
+                            <p:outputLabel value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #43B572;"/>  
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-6">
+                            <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')}" style="color: #000;"/>  
+                        </div>
+                        <div class="col-6">
+                            <p:selectOneMenu value="#{alignmentManualBean.manualAlignmentType}" style="margin-right: 10px">
+                                <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
+                                               itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
+                            </p:selectOneMenu> 
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-6">
+                            <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')}" style="color: #000;"/>  
+                        </div>
+                        <div class="col-6">
+                            <p:inputText value="#{alignmentManualBean.manualAlignmentUri}"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-6">
+                            <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}"  style="color: #000;"/>  
+                        </div>
+                        <div class="col-6">
+                            <p:inputText value="#{alignmentManualBean.manualAlignmentSource}" /> 
+                        </div>
+                    </div>
+
+                    <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                        <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px"
+                                         process="@this" ajax="true" update=":containerIndex:searchAlignementForm"
+                                         actionListener="#{alignmentBean.cancelManualAlignment()}"/>
+
+                        <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update=":containerIndex:searchAlignementForm messageIndex" process="@this" ajax="true"
+                                         class="btn btn-primary" actionListener="#{alignmentManualBean.addManualAlignement()}"
+                                         action="#{alignmentBean.validManualAlignment()}" />
+                    </div>
+                </p:panel>
+                <!-- Fin Ajout d'alignement manuel -->
+
+                <h:panelGroup id="alignementChoiceConfStep" rendered="#{alignmentBean.alignementSources == null || alignmentBean.alignementSources.size() == 0}">
+                    <div class="row">
+                        <div class="col-12">
+                            <p:outputLabel value="#{langueBean.getMsg('alig.NeedToParameter')}"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <ui:repeat rendered="#{alignmentBean.listAlignValues != null}" value="#{alignmentBean.listAlignValues}" var='nodeAlign'>
+                    <div class="row">
+                        <div class="col-10">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h:outputText value="#{nodeAlign.concept_target}: " style="font-weight: bold; font-size: 12px"/> 
+                                </div>
+                            </div>
+                            <h:panelGroup rendered="#{nodeAlign.concept_target_alt.trim() != null and nodeAlign.concept_target_alt.trim() != ''}"> 
+                                <div class="row">
+                                    <div class="col-12" >
+                                        <h:outputText value="#{langueBean.getMsg('indexview.synonym')} : #{nodeAlign.concept_target_alt}&lt;br/&gt;" escape="false" /> 
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <h:outputText value="#{nodeAlign.def_target}&lt;br/&gt;" escape="false" />
+                                </div>
+                            </h:panelGroup>                                      
+                            <div class="row">
+                                <div class="col-12">
+                                    <h:outputLink value="#{nodeAlign.uri_target}" target="_blank" >
+                                        <h:outputText value="#{nodeAlign.uri_target}" />
+                                    </h:outputLink>
+                                    <br/>
+                                </div>
+                            </div>                                          
+                        </div>
+
+                        <div class="col-1">
+                            <p:commandLink actionListener="#{alignmentBean.getUriAndOptions(nodeAlign, selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept)}"
+                                           update=":containerIndex:searchAlignementForm">
+                                <i class="pi pi-cloud-download" style="color: #f47b2a;"/>
+                            </p:commandLink>
+                        </div>
+                    </div> 
+                    <p:separator styleClass="separator" style="margin-top: 2px"/>
+                </ui:repeat>
+            </h:panelGroup>
+
+            <!-- panel de validation d'un alignement avec les options-->
+            <h:panelGroup rendered="#{alignmentBean.isViewSelection}">
+
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-4">
+                        <h:outputText value="#{alignmentBean.conceptValueForAlignment}" 
+                                      style="font-size: 12px; color: #43B572"/>
+                    </div>
+
+                    <div class="col-4">
+                        <p:selectOneMenu value="#{alignmentBean.selectedAlignementType}"
+                                         title="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
+                                         style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
+                                         panelStyle="font-size: 12px; background: none; border: none; box-shadow: none;">
+                            <f:selectItems value="#{alignmentBean.alignmentTypes}" var="type" itemLabel="#{type.value}" itemValue="#{type.key}" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="col-4">
+                        <h:outputText value=" #{alignmentBean.selectedNodeAlignment.concept_target} (#{alignmentBean.selectedAlignement})"
+                                      title="#{alignmentBean.selectedNodeAlignment.uri_target}" style="font-size: 12px; color: #43B572"/>
+                    </div>                                        
+                </div>
+
+                <p:separator/>
+
+                <h:panelGroup id="listOptions" style="font-size: 12px;"> 
+
+                    <!-- langues externes -->
+                    <h:panelGroup rendered="#{(alignmentBean.traductionsOfAlignment != null) and (alignmentBean.traductionsOfAlignment.size() != 0)}">
+                        <div class="row">
+                            <div class="col-12">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.translations_of')} #{alignmentBean.selectedAlignement}" />
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <ui:repeat rendered="#{(alignmentBean.traductionsOfAlignment != null) and (alignmentBean.traductionsOfAlignment.size() != 0)}"
+                               value="#{alignmentBean.traductionsOfAlignment}" var='externalTraductions'>
+                        <div class="row">
+                            <div class="col-3">
+                                <p:inputText value="#{externalTraductions.idLang}" disabled="true" style="height: 25px;"/>
+                            </div>
+                            <div class="col-4">
+                                <p:inputText value="#{externalTraductions.localValue}" disabled="true" style="height: 25px;"/>
+                            </div>
+                            <div class="col-4">
+                                <p:inputText value="#{externalTraductions.gettedValue}" style="height: 25px;"/>
+                            </div>                                                            
+                            <div class="col-1" >
+                                <p:selectBooleanCheckbox value="#{externalTraductions.selected}" />
+                            </div>                                                                 
+                        </div>
+                    </ui:repeat>
+
+                    <!-- Notes externes -->
+                    <h:panelGroup rendered="#{(alignmentBean.descriptionsOfAlignment != null) and (alignmentBean.descriptionsOfAlignment.size() != 0)}">
+                        <div class="row">
+                            <div class="col-12">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.definition_of')} #{alignmentBean.selectedAlignement}" />
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <ui:repeat rendered="#{(alignmentBean.descriptionsOfAlignment != null) and (alignmentBean.descriptionsOfAlignment.size() != 0)}"
+                               value="#{alignmentBean.descriptionsOfAlignment}" var='notes'>
+                        <div class="row">
+                            <div class="col-3">
+                                <p:inputText value="#{notes.idLang}" disabled="true" style="height: 25px;"/>
+                            </div>
+                            <div class="col-8">
+                                <p:inputTextarea value="#{notes.gettedValue}" style="height: 50px;"/>
+                            </div>                                                            
+                            <div class="col-1" >
+                                <p:selectBooleanCheckbox value="#{notes.selected}" />
+                            </div>                                                                 
+                        </div>
+                    </ui:repeat> 
+
+
+                    <!-- images externes -->
+                    <h:panelGroup rendered="#{(alignmentBean.imagesOfAlignment != null) and (alignmentBean.imagesOfAlignment.size() != 0)}">
+                        <div class="row">
+                            <div class="col-12">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.images_of')} #{alignmentBean.selectedAlignement}"  />
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <ui:repeat value="#{alignmentBean.imagesOfAlignment}" var='images'>
+                        <div class="row">
+                            <div class="col-6">
+                                <p:inputText value="#{images.gettedValue}"  style="height: 25px;"/>
+                            </div>
+                            <div class="col-5">
+                                <p:graphicImage value="#{images.gettedValue}" style="height: 50px;"/>
+                            </div>                                                            
+                            <div class="col-1" >
+                                <p:selectBooleanCheckbox value="#{images.selected}" />
+                            </div>                                                                 
+                        </div>
+                    </ui:repeat>
+
+                    <div style="width: 100%; text-align: right; margin-top: 10px; margin-bottom: 5px;">
+
+                        <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px"
+                                         actionListener="PF('saerchAlignement').hide();" update="saerchAlignementID"/>
+
+                        <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update=":containerIndex:searchAlignementForm containerIndex:formRightTab messageIndex"
+                                         class="btn btn-primary" oncomplete="PF('saerchAlignement').hide();"
+                                         actionListener="#{alignmentBean.addAlignment(
+                                                           selectedTheso.selectedIdTheso, 
+                                                           alignmentBean.idConceptSelectedForAlignment,
+                                                           currentUser.nodeUser.idUser)}"/>
+                    </div>
+
+                </h:panelGroup> 
+            </h:panelGroup>
+        </p:outputPanel>
+    </p:dialog>
+
+</ui:fragment>

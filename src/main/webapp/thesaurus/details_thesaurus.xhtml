@@ -74,6 +74,9 @@
                     <p:panel id="formRightTab">
                         <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
                                    style="border-style: none; height: 100%">
+                            
+                            <p:ajax event="tabChange" listener="#{tree.onTabChange}" update="containerIndex:formRightTab" />
+                            
                             <p:tab id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
                                 <f:facet name="anchor">
                                     <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
@@ -95,7 +98,7 @@
                                 <ui:include  src="rightBodyView/resultSearch.xhtml"/>
                             </p:tab>              
 
-                            <p:tab title="#{langueBean.getMsg('rightbody.alignement')}" >
+                            <p:tab id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
                                 <f:facet name="anchor">
                                     <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                 </f:facet>
@@ -119,4 +122,8 @@
     <ui:include src="../dialog/group/addGroup.xhtml" />
     <ui:include src="../dialog/group/addSubGroup.xhtml" />
     <ui:include src="../dialog/group/deleteGroup.xhtml" />
+        
+    <ui:include src="../dialog/alignment/addAlignmentDialog.xhtml" />
+    <ui:include src="../dialog/alignment/confirmDeleteAlignment.xhtml" />
+
 </ui:composition>
