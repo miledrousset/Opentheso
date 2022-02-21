@@ -46,10 +46,9 @@
         .search-form select {
             background: transparent;
             border: 0;
-            padding: 2rem;
+
             font-size: 12px;
             height: 33px;
-            padding: 3px;
         }
 
         .search-form select:focus {
@@ -128,7 +127,7 @@
                                             <p:ajax event="itemSelect" listener="#{searchBean.onSelect()}" update="containerIndex messageIndex"/>
                                         </p:autoComplete>
                                     </div>
-                                    <div class="col-1" style="text-align: right; padding-top: -2px ">
+                                    <div class="col-1" style="text-align: right; ">
                                         <p:commandLink class="btn btn-base" actionListener="#{searchBean.applySearch()}" >
                                             <i class="fas fa-search fa-1x" style="color: #f47b2a; font-size: 14px;"/>
                                         </p:commandLink>
