@@ -8,35 +8,25 @@
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form id="listNoteCsvForm">              
-
-            <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px">
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="Local ID :" style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="26678/crtcg26jeN4R9" style="color: #000; " />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="skos:definition@fr :"  style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="test de définition##autre définition"  style="color: #000; " />
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="skos:definition@en :" style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="testing of definition" style="color: #000; " />
-                    </div>
-                </div>
-            </p:panel>
-
-            <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
+            <p:scrollPanel mode="native" >
+                <p:panelGrid style="font-size: 12px;">
+                    <f:facet name="header">
+                        <p:row style="font-size: 12px;">
+                            <p:column colspan="1">localId</p:column>
+                            <p:column colspan="1">skos:definition@fr</p:column>
+                            <p:column colspan="1">skos:definition@en</p:column>
+                        </p:row>
+                    </f:facet>
+                    <p:row style="font-size: 12px;">
+                        <p:column colspan="1">26678/crtcg26jeN4R9</p:column>
+                        <p:column colspan="1">test de définition##autre définition</p:column>
+                        <p:column colspan="1">testing of definition</p:column>
+                    </p:row>
+                </p:panelGrid>    
+                <p:spacer/>
+            </p:scrollPanel>  
+            
+            <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px;">
                 Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
                 Si l'identifiant n'existe pas dans le thésaurus, la note sera rejetée. Le ## sert à combiner plusieurs valeurs<br/>
                 Si la note existe, pas de changement (sauf si l'option <b>tout vider avant</b> est active) <br/>
@@ -49,31 +39,31 @@
 
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
                 <!-- choix du l'identifiant Ark ou Id ou Handle -->
-                <div class="row">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="L'identifiant est de type:" style="color: #000" />
+                <div class="row" style="margin-top: 10px; font-size: 14px; color: #000" >
+                    <div class="col-5">
+                        <h:outputText value="L'identifiant est de type:" />
                     </div>
                     <div class="col-7">
-                        <p:selectOneMenu disabled="true" value="#{importFileBean.selectedIdentifierImportAlign}" 
-                                         styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 100%; background: none;  box-shadow: none; font-size: 12px;" title="Choix de l'identifiant pour détecter le concept">
+                        <p:selectOneMenu value="#{importFileBean.selectedIdentifierImportAlign}" 
+                                         styleClass="selectOneMenu_custom" 
+                                         panelStyleClass="selectOneMenu_panelStyle_custom" style="width: 100%;"
+                                         title="Choix de l'identifiant pour détecter le concept">
                             <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
                             <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
                             <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
-                            <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />                            
+                            <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />
                         </p:selectOneMenu>
                     </div>
                 </div>     
 
                 <!-- délimiteur CSV -->
-                <div class="row">
+                <div class="row" style="font-size: 14px; color: #000" >
                     <div class="col-5" offset="5">
-                        <h:outputText value="Délimiteur Csv :" style="color: #000"  />
+                        <h:outputText value="Délimiteur Csv :" />
                     </div>
                     <div class="col-7">
-                        <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" 
-                                         styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 100%; background: none;  box-shadow: none;">
+                        <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" styleClass="selectOneMenu_custom" 
+                                         panelStyleClass="selectOneMenu_panelStyle_custom" style="width: 100%;">
                             <f:selectItem itemLabel="," itemValue="0" />
                             <f:selectItem itemLabel=";" itemValue="1" />
                             <f:selectItem itemLabel="\t" itemValue="2" />
@@ -81,16 +71,17 @@
                         </p:selectOneMenu>
                     </div>
                 </div>             
-
                 <div class="row">
                     <div class="col-5" offset="5">
-                        <h:outputText value="Vider les notes avant? " style="color: #000"  />
+                        <h:outputText value="Vider les notes avant? " style="color: #000; font-size: 14px;"  />
                     </div>                    
                     <div class="col-7" style="margin-left: -15px;">
-                        <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px;" />                        
+                        <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px;" >
+                            <p:ajax listener="#{importFileBean.actionToggle()}"/>
+                        </p:toggleSwitch>                        
+                       
                     </div>                
                 </div>   
-
             </p:panel>
 
             <h:panelGroup id="panelListNoteCsv">
@@ -105,7 +96,8 @@
                                       style="font-size: 12px;" />  
                     </div>
                 </div> 
-            </h:panelGroup>                
+            </h:panelGroup>    
+            
             <h:panelGroup id="panelListNoteCsv_result">
                 <h:panelGroup rendered="#{importFileBean.loadDone}" style="margin-top: 10px" >
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
@@ -128,7 +120,7 @@
                                      oncomplete="PF('listNoteCsv').hide();"
                                      update="listNoteCsvForm"/>
 
-                    <p:commandButton class="btn btn-danger" title="Importer" process="@this"
+                    <p:commandButton class="btn btn-success" title="Importer" process="@this"
                                      
                                      update="messageIndex listNoteCsvForm"
                                      disabled="#{!importFileBean.loadDone}"

@@ -330,6 +330,10 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
  /*   display: ruby-text;*/
 }
 
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
+    margin: -3px;
+    padding: 0;
+}
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-hover {
    /*background-color: #43B572;
     color: #FFF;*/
@@ -354,13 +358,13 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-s:before {
     font-size: x-small;
-    margin-right: -8px;
+    margin-right: -15px;
 
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
     font-size: x-small;
-    margin-right: -8px;
+    margin-right: -15px;
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon {
     width: 2rem;

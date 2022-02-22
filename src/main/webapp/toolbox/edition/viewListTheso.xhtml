@@ -10,6 +10,13 @@
                 <p:toolbar rendered="#{currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin}"
                            style="margin-left: 20px; margin-right: 20px">
                     <p:toolbarGroup align="left">
+                        <p:commandButton value="Nouveau" icon="fas fa-plus-circle"
+                                         title="Créer un nouveau thésaurus"
+                                         actionListener="#{newThesoBean.init()}"
+                                         action="#{viewEditionBean.setIsViewNewTheso(true)}"
+                                         update="containerIndex" />
+                    </p:toolbarGroup>                    
+                    <p:toolbarGroup align="right">
                         <p:menuButton icon="fas fa-download" value="Importer"  >
                             <p:menuitem value="Format SKOS" icon="fas fa-download" actionListener="#{importFileBean.init()}"
                                         action="#{viewEditionBean.setIsViewImportSkos(true)}" ajax="true" process="@this"
@@ -20,23 +27,18 @@
                                         update="containerIndex" />
                         </p:menuButton>
                     </p:toolbarGroup>
-                    <p:toolbarGroup align="right">
-                        <p:commandButton value="Nouveau" icon="fas fa-plus-circle"
-                                         actionListener="#{newThesoBean.init()}"
-                                         action="#{viewEditionBean.setIsViewNewTheso(true)}"
-                                         update="containerIndex" />
-                    </p:toolbarGroup>
+
                 </p:toolbar>
 
-                <p:scrollPanel id="listThesoDatas" mode="native" style="min-height: 300px; max-height: 600px; border: #FAFAFA; background-color: #FFFFFF;">
-                    <div class="row" style="margin-left: 20px; margin-right: 20px;">
+                <p:scrollPanel id="listThesoDatas" mode="native" style="min-height: 300px; max-height: 600px; border: #FAFAFA; background-color: #FFFFFF; ">
+                    <div class="row" style="margin-left: 20px; margin-right: 20px; font-size: 14px">
                         <div class="col-12">
 
                             <p:dataTable value="#{roleOnTheso.nodeListThesoAsAdmin}" var="listTheso" scrollable="true"
-                                         resizableColumns="true" scrollHeight="450" reflow="true">
+                                         resizableColumns="true" scrollHeight="450" reflow="true" >
 
                                 <p:column width="60" headerText="Nom du thésaurus">
-                                    <h:outputText value="#{listTheso.value} (#{listTheso.id})"/>
+                                    <h:outputText value="#{listTheso.value} (#{listTheso.id})" style="font-size: 14px"/>
                                 </p:column>
 
                                 <p:column width="10" headerText="Public/Privé">
@@ -75,7 +77,7 @@
                                     <p:commandButton icon="pi pi-pencil" update="containerIndex" process="@this"
                                                      actionListener="#{editThesoBean.init(listTheso)}"
                                                      action="#{viewEditionBean.setIsViewModifyTheso(true)}"
-                                                     styleClass="edit-button rounded-button ui-button-success" />
+                                                     styleClass="edit-button rounded-button ui-button-success"/>
                                 </p:column>
 
                                 <p:column width="10" headerText="Supprimer">
@@ -85,7 +87,9 @@
                                 </p:column>
 
                                 <f:facet name="footer">
-                                    <span class="p-text-bold">Nombre total des thésaurus: #{roleOnTheso.nodeListThesoAsAdmin.size()}</span>
+                                    <span class="p-text-bold">
+                                        <h:outputText value="Nombre total des thésaurus: #{roleOnTheso.nodeListThesoAsAdmin.size()}" style="font-size: 14px;"/>
+                                    </span>
                                 </f:facet>
                             </p:dataTable>
                         </div>
