@@ -28,7 +28,7 @@
                 </p:selectOneMenu>
             </div>
         </div>
-        
+
         <div class="row" style="margin-top: 5px">
             <div class="col-5">
                 <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')} : " />
@@ -38,7 +38,7 @@
                              style="color: #43B572; font-size: 12px; width: 100%" />
             </div>
         </div>
-        
+
         <div class="row" style="margin-top: 5px">
             <div class="col-5">
                 <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.source_name')} : " />
@@ -49,16 +49,14 @@
             </div>
         </div>
 
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addManualAlignment').hide();" update="idAddManualAlignment"/>
+            <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                             actionListener="PF('addManualAlignment').hide();" update="idAddManualAlignment"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addManualAlignment').hide();"
-                                 actionListener="#{alignmentManualBean.addManualAlignement()}" style="color: white;"/>
-            </div>
-        </f:facet>        
+            <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                             class="btn btn-primary" oncomplete="PF('addManualAlignment').hide();" ajax="true" process="@this"
+                             actionListener="#{alignmentManualBean.addManualAlignement()}" style="color: white;"/>
+        </div>       
     </p:dialog> 
 </ui:fragment>

@@ -200,7 +200,7 @@ public class SetAlignmentSourceBean implements Serializable {
     }
 
     public void updateSelectedAlignment() {
-        if (nodeSelectedAlignmentsAll == null) {
+        if (selectedAlignments == null) {
             return;
         }
 

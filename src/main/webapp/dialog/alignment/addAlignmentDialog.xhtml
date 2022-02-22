@@ -165,118 +165,120 @@
 
                 <div class="row" style="margin-top: 10px">
                     <div class="col-4">
-                        <h:outputText value="#{alignmentBean.conceptValueForAlignment}" 
-                                      style="font-size: 12px; color: #43B572"/>
+                        <h:outputText value="#{alignmentBean.conceptValueForAlignment}" style="color: #43B572"/>
                     </div>
 
                     <div class="col-4">
                         <p:selectOneMenu value="#{alignmentBean.selectedAlignementType}"
                                          title="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
-                                         style="font-size: 12px; width: 100%; background: white; border-color: #43B572"
-                                         panelStyle="font-size: 12px; background: none; border: none; box-shadow: none;">
+                                         style="width: 100%; background: white; border-color: #43B572">
                             <f:selectItems value="#{alignmentBean.alignmentTypes}" var="type" itemLabel="#{type.value}" itemValue="#{type.key}" />
                         </p:selectOneMenu>
                     </div>
 
                     <div class="col-4">
                         <h:outputText value=" #{alignmentBean.selectedNodeAlignment.concept_target} (#{alignmentBean.selectedAlignement})"
-                                      title="#{alignmentBean.selectedNodeAlignment.uri_target}" style="font-size: 12px; color: #43B572"/>
+                                      title="#{alignmentBean.selectedNodeAlignment.uri_target}" style="color: #43B572"/>
                     </div>                                        
                 </div>
 
                 <p:separator/>
 
-                <h:panelGroup id="listOptions" style="font-size: 12px;"> 
-
+                <p:scrollPanel style="width:100%; height:400px">
                     <!-- langues externes -->
                     <h:panelGroup rendered="#{(alignmentBean.traductionsOfAlignment != null) and (alignmentBean.traductionsOfAlignment.size() != 0)}">
-                        <div class="row">
-                            <div class="col-12">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.translations_of')} #{alignmentBean.selectedAlignement}" />
-                            </div>
-                        </div>
-                    </h:panelGroup>
+                        <p:dataTable var="externalTraductions" value="#{alignmentBean.traductionsOfAlignment}"
+                                     resizableColumns="true" showGridlines="true" size="small" scrollable="true" scrollHeight="350">
 
-                    <ui:repeat rendered="#{(alignmentBean.traductionsOfAlignment != null) and (alignmentBean.traductionsOfAlignment.size() != 0)}"
-                               value="#{alignmentBean.traductionsOfAlignment}" var='externalTraductions'>
-                        <div class="row">
-                            <div class="col-3">
-                                <p:inputText value="#{externalTraductions.idLang}" disabled="true" style="height: 25px;"/>
-                            </div>
-                            <div class="col-4">
-                                <p:inputText value="#{externalTraductions.localValue}" disabled="true" style="height: 25px;"/>
-                            </div>
-                            <div class="col-4">
-                                <p:inputText value="#{externalTraductions.gettedValue}" style="height: 25px;"/>
-                            </div>                                                            
-                            <div class="col-1" >
+                            <f:facet name="header">
+                                <div class="p-d-flex p-jc-between p-ai-center">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.translations_of')} #{alignmentBean.selectedAlignement}" />
+                                </div>
+                            </f:facet>
+
+                            <p:column>
                                 <p:selectBooleanCheckbox value="#{externalTraductions.selected}" />
-                            </div>                                                                 
-                        </div>
-                    </ui:repeat>
+                            </p:column>
+
+                            <p:column headerText="ID lang">
+                                <p:outputLabel value="#{externalTraductions.idLang}" />
+                            </p:column>
+
+                            <p:column headerText="Nom">
+                                <h:outputText value="#{externalTraductions.localValue}" />
+                            </p:column>
+
+                            <p:column>
+                                <h:outputText value="#{externalTraductions.gettedValue}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
 
                     <!-- Notes externes -->
-                    <h:panelGroup rendered="#{(alignmentBean.descriptionsOfAlignment != null) and (alignmentBean.descriptionsOfAlignment.size() != 0)}">
-                        <div class="row">
-                            <div class="col-12">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.definition_of')} #{alignmentBean.selectedAlignement}" />
-                            </div>
-                        </div>
-                    </h:panelGroup>
+                    <h:panelGroup rendered="#{(alignmentBean.descriptionsOfAlignment != null) and (alignmentBean.descriptionsOfAlignment.size() != 0)}"
+                                  style="margin-top: 10px">
+                        <p:dataTable var="notes" value="#{alignmentBean.descriptionsOfAlignment}"
+                                     resizableColumns="true" showGridlines="true" size="small" scrollable="true" scrollHeight="350">
 
-                    <ui:repeat rendered="#{(alignmentBean.descriptionsOfAlignment != null) and (alignmentBean.descriptionsOfAlignment.size() != 0)}"
-                               value="#{alignmentBean.descriptionsOfAlignment}" var='notes'>
-                        <div class="row">
-                            <div class="col-3">
-                                <p:inputText value="#{notes.idLang}" disabled="true" style="height: 25px;"/>
-                            </div>
-                            <div class="col-8">
-                                <p:inputTextarea value="#{notes.gettedValue}" style="height: 50px;"/>
-                            </div>                                                            
-                            <div class="col-1" >
+                            <f:facet name="header">
+                                <div class="p-d-flex p-jc-between p-ai-center">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.definition_of')} #{alignmentBean.selectedAlignement}" />
+                                </div>
+                            </f:facet>
+
+                            <p:column>
                                 <p:selectBooleanCheckbox value="#{notes.selected}" />
-                            </div>                                                                 
-                        </div>
-                    </ui:repeat> 
+                            </p:column>
 
+                            <p:column headerText="ID Lang">
+                                <p:outputLabel value="#{notes.idLang}" />
+                            </p:column>
+
+                            <p:column headerText="Nom">
+                                <h:outputText value="#{notes.gettedValue}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
 
                     <!-- images externes -->
-                    <h:panelGroup rendered="#{(alignmentBean.imagesOfAlignment != null) and (alignmentBean.imagesOfAlignment.size() != 0)}">
-                        <div class="row">
-                            <div class="col-12">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.images_of')} #{alignmentBean.selectedAlignement}"  />
-                            </div>
-                        </div>
-                    </h:panelGroup>
+                    <h:panelGroup rendered="#{(alignmentBean.imagesOfAlignment != null) and (alignmentBean.imagesOfAlignment.size() != 0)}"
+                                  style="margin-top: 10px">
+                        <p:dataTable var="images" value="#{alignmentBean.imagesOfAlignment}"
+                                     resizableColumns="true" showGridlines="true" size="small" scrollable="true" scrollHeight="350">
 
-                    <ui:repeat value="#{alignmentBean.imagesOfAlignment}" var='images'>
-                        <div class="row">
-                            <div class="col-6">
-                                <p:inputText value="#{images.gettedValue}"  style="height: 25px;"/>
-                            </div>
-                            <div class="col-5">
-                                <p:graphicImage value="#{images.gettedValue}" style="height: 50px;"/>
-                            </div>                                                            
-                            <div class="col-1" >
+                            <f:facet name="header">
+                                <div class="p-d-flex p-jc-between p-ai-center">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.images_of')} #{alignmentBean.selectedAlignement}"  />
+                                </div>
+                            </f:facet>
+
+                            <p:column>
                                 <p:selectBooleanCheckbox value="#{images.selected}" />
-                            </div>                                                                 
-                        </div>
-                    </ui:repeat>
+                            </p:column>
 
-                    <div style="width: 100%; text-align: right; margin-top: 10px; margin-bottom: 5px;">
+                            <p:column headerText="Nom">
+                                <p:outputLabel value="#{images.gettedValue}" />
+                            </p:column>
 
-                        <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px"
-                                         actionListener="PF('saerchAlignement').hide();" update="saerchAlignementID"/>
+                            <p:column headerText="Images">
+                                <p:graphicImage value="#{images.gettedValue}" style="height: 50px;"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                </p:scrollPanel>
 
-                        <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update=":containerIndex:searchAlignementForm containerIndex:formRightTab messageIndex"
-                                         class="btn btn-primary" oncomplete="PF('saerchAlignement').hide();"
-                                         actionListener="#{alignmentBean.addAlignment(
-                                                           selectedTheso.selectedIdTheso, 
-                                                           alignmentBean.idConceptSelectedForAlignment,
-                                                           currentUser.nodeUser.idUser)}"/>
-                    </div>
+                <div style="width: 100%; text-align: right; margin-top: 10px; margin-bottom: 5px;">
 
-                </h:panelGroup> 
+                    <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px"
+                                     actionListener="PF('saerchAlignement').hide();" update="saerchAlignementID"/>
+
+                    <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update=":containerIndex:searchAlignementForm containerIndex:formRightTab messageIndex"
+                                     class="btn btn-primary" oncomplete="PF('saerchAlignement').hide();"
+                                     actionListener="#{alignmentBean.addAlignment(
+                                                       selectedTheso.selectedIdTheso, 
+                                                       alignmentBean.idConceptSelectedForAlignment,
+                                                       currentUser.nodeUser.idUser)}"/>
+                </div> 
             </h:panelGroup>
         </p:outputPanel>
     </p:dialog>

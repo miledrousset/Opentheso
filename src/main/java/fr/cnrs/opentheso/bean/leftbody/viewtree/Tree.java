@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
+import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -74,6 +75,9 @@ public class Tree implements Serializable {
 
     @Inject
     private AlignmentBean alignmentBean;
+
+    @Inject
+    private AlignmentManualBean alignmentManualBean;
 
     private DataService dataService;
     private TreeNode selectedNode; // le neoud sélectionné par clique
@@ -412,6 +416,9 @@ public class Tree implements Serializable {
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
+        
+        alignmentManualBean.reset();
+        
         leftBodySetting.setIndex("0");
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();

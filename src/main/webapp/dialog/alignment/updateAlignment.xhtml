@@ -18,8 +18,8 @@
         <ui:repeat var="alignment" value="#{conceptView.nodeConcept.nodeAlignments}" >
             <div class="row">
                 <div class="col-1" style="margin-top: 4px">
-                    <p:commandLink style="color: #F7A269;" action="#{alignmentManualBean.updateAlignement(alignment)}"
-                                   update="containerIndex:formRightTab">
+                    <p:commandLink style="color: #F7A269;" actionListener="#{alignmentManualBean.updateAlignement(alignment)}"
+                                   update="containerIndex:formRightTab" process="@this" ajax="true">
                         <i class="pi pi-check-circle" />
                     </p:commandLink>
                 </div>
