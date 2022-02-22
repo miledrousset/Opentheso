@@ -1,0 +1,42 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idUpdateSingleAlignment" header="#{langueBean.getMsg('rightbody.concept.edit_alignment')}" widgetVar="updateSingleAlignment" 
+              width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <div class="row">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('rightbody.facetdialog.parent_concept')} : "
+                              style="font-weight: bold"/>  
+                <h:outputText value="#{alignmentBean.alignementElementSelected.labelConceptOrig}"/>
+            </div>
+        </div>   
+
+        <div class="row" style="margin-top: 10px">
+            <div class="col-8">
+                <p:inputText value="#{alignmentBean.alignementElementSelected.targetUri}" style="color: #43B572; width: 100%"/> 
+            </div>
+
+            <div class="col-4">
+                <p:selectOneMenu id="relationType" value="#{alignmentBean.alignementElementSelected.typeAlignement}" 
+                                 style="width: 100%; background: white; border-color: #43B572">
+                    <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
+                                   itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.label}"/>
+                </p:selectOneMenu>
+            </div>
+        </div>
+
+        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+            <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                             actionListener="PF('updateSingleAlignment').hide();" update="idUpdateSingleAlignment"/>
+
+            <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}"
+                             update="containerIndex:formRightTab messageIndex idUpdateSingleAlignment" oncomplete="PF('updateSingleAlignment').hide();"
+                             actionListener="#{alignmentManualBean.updateAlignement(alignment)}" />
+        </div>
+    </p:dialog>
+</ui:fragment>

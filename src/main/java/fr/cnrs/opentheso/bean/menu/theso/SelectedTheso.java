@@ -207,27 +207,6 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsThesoActive(true);
 
         menuBean.redirectToThesaurus();
-
-        listAlignementElement = new ArrayList<>();
-        AlignementElement alignementElement = new AlignementElement();
-        alignementElement.setIdConceptOrig("https://www.google.fr");
-        alignementElement.setLabelConceptCible("Amphore");
-        alignementElement.setTradConceptOrig("FR");
-        alignementElement.setTypeAlignement("Corespondance");
-        alignementElement.setLabelConceptCible("Amphore (storage vessels)");
-        listAlignementElement.add(alignementElement);
-
-
-        resultAlignementList = new ArrayList<>();
-        ResultatAlignement resultatAlignement = new ResultatAlignement();
-        resultatAlignement.setHierarchy("hierarchy");
-        resultatAlignement.setBroarder(Arrays.asList(new String[]{"Broarder 1", "Broarder 2"}));
-        resultatAlignement.setNarrowers(Arrays.asList(new String[]{"Narrower 1", "Narrower 2"}));
-        resultatAlignement.setTerms(Arrays.asList(new String[]{"Term 1", "Term 2"}));
-        resultatAlignement.setTitle("Title 1");
-        resultatAlignement.setUrl("http://www.google.fr");
-        resultatAlignement.setNote("It just a note for test");
-        resultAlignementList.add(resultatAlignement);
     }
 
     public List<AlignementElement> getListAlignementElement() {

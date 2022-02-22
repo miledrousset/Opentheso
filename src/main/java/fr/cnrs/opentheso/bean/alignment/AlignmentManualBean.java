@@ -32,7 +32,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AlignmentManualBean implements Serializable {
     @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
+    @Inject private AlignmentBean alignmentBean;
     @Inject private ConceptView conceptView;
     @Inject private SelectedTheso selectedTheso;
     @Inject private CurrentUser currentUser;     
@@ -103,6 +103,44 @@ public class AlignmentManualBean implements Serializable {
             pf.ajax().update("containerIndex:formRightTab");
         }
 
+    }
+
+    public void updateAlignement(){
+        if(alignmentBean.getAlignementElementSelected() == null) return;
+        
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+
+        FacesMessage msg;
+
+        if(!alignmentHelper.updateAlignment(connect.getPoolConnexion(),
+                alignmentBean.getAlignementElementSelected().getIdAlignment(),
+                alignmentBean.getAlignementElementSelected().getConceptTarget(),
+                alignmentBean.getAlignementElementSelected().getThesaurus_target(),
+                alignmentBean.getAlignementElementSelected().getTargetUri(),
+                alignmentBean.getAlignementElementSelected().getAlignement_id_type(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                alignmentBean.getAlignementElementSelected().getIdSource())) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }
+
+        conceptView.getConcept(
+                selectedTheso.getCurrentIdTheso(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang());
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "alignement modifié avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        
+        alignmentBean.getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+        }
     }
 
     public void updateAlignement(NodeAlignment nodeAlignment){

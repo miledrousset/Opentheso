@@ -61,6 +61,8 @@ public class AlignmentBean implements Serializable {
     private SelectedTheso selectedTheso;
     @Inject
     private AlignmentManualBean alignmentManualBean;
+    @Inject
+    private SetAlignmentSourceBean setAlignmentSourceBean;
 
     private boolean withLang;
     private boolean withNote;
@@ -84,7 +86,7 @@ public class AlignmentBean implements Serializable {
     private String nom;
     private String prenom;
     private boolean isNameAlignment = false; // pour afficher les nom et prénom
-    private AlignementElement alignementElementSelected;
+    private AlignementElement alignementElementSelected = new AlignementElement();
 
     private ArrayList<String> thesaurusUsedLanguageWithoutCurrentLang;
     private ArrayList<String> thesaurusUsedLanguage;
@@ -136,7 +138,7 @@ public class AlignmentBean implements Serializable {
         alignmentHelper.deleteAlignment(connect.getPoolConnexion(),
                 alignementElementSelected.getIdAlignment(),
                 selectedTheso.getCurrentIdTheso());
-        
+
         getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Erreur !", "Alignement supprimé avec succès !");
@@ -353,7 +355,7 @@ public class AlignmentBean implements Serializable {
         counter = 0;
     }
 
-    private void getIdsAndValues(String idLang, String idTheso) {
+    public void getIdsAndValues(String idLang, String idTheso) {
         ConceptHelper conceptHelper = new ConceptHelper();
         idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(
                 connect.getPoolConnexion(),
@@ -368,28 +370,29 @@ public class AlignmentBean implements Serializable {
 
             ArrayList<NodeAlignment> alignements = new AlignmentHelper()
                     .getAllAlignmentOfConcept(connect.getPoolConnexion(), idsAndValue.getId(), idTheso);
+            
             if (!CollectionUtils.isEmpty(alignements)) {
                 for (NodeAlignment alignement : alignements) {
                     AlignementElement element = new AlignementElement();
                     element.setIdConceptOrig(idsAndValue.getId());
                     element.setLabelConceptOrig(idsAndValue.getValue());
 
-                    if (!CollectionUtils.isEmpty(alignement.getTraduction())) {
-                        element.setTradConceptOrig(alignement.getTraduction().get(0));
-                    }
-
                     element.setIdAlignment(alignement.getId_alignement());
                     element.setTypeAlignement(alignement.getAlignmentLabelType());
                     element.setLabelConceptCible(alignement.getConcept_target());
+                    element.setTargetUri(alignement.getUri_target());
+                    element.setThesaurus_target(alignement.getThesaurus_target());
+                    element.setAlignement_id_type(alignement.getAlignement_id_type());
+                    element.setIdSource(alignement.getId_source());
+                    element.setConceptTarget(alignement.getConcept_target());
                     allignementsList.add(element);
                 }
-            } else {
-                AlignementElement element = new AlignementElement();
-                element.setIdConceptOrig(idsAndValue.getId());
-                element.setLabelConceptOrig(idsAndValue.getValue());
-                element.setTradConceptOrig(idsAndValue.getNotation());
-                allignementsList.add(element);
             }
+
+            AlignementElement element = new AlignementElement();
+            element.setIdConceptOrig(idsAndValue.getId());
+            element.setLabelConceptOrig(idsAndValue.getValue());
+            allignementsList.add(element);
         }
 
     }
@@ -414,6 +417,20 @@ public class AlignmentBean implements Serializable {
         }
         listAlignValues = null;
 //        conceptValueForAlignment = idsAndValues.get(idConceptSelectedForAlignment);
+    }
+    
+    public void openEditAlignementWindow(AlignementElement alignement) {
+        if (CollectionUtils.isEmpty(setAlignmentSourceBean.getSelectedAlignments())) {
+            PrimeFaces pf = PrimeFaces.current();
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Vous devez choisir au moins une source !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+        } else {
+            selectConceptForAlignment(alignement.getIdConceptOrig());
+            PrimeFaces.current().executeScript("PF('saerchAlignement').show();");
+        }
     }
 
     private void setExistingAlignment(String idConcept, String idTheso) {
