@@ -31,7 +31,7 @@
                     <p:column rowspan="2" headerText="Concept cible" sortBy="#{alignement.typeAlignement}" width="14%" />
                     <p:column rowspan="2" headerText="Type d'Alignement" sortBy="#{alignement.labelConceptCible}" width="15%" />
                     <p:column rowspan="2" headerText="Target URI" sortBy="#{alignement.targetUri}" width="25%"/>
-                    <p:column rowspan="2" headerText="Action" width="6%" />
+                    <p:column rowspan="2" headerText="Actions" width="6%" />
                 </p:row>
                 <p:row>
                     <p:column headerText="Identifiant" sortBy="#{alignement.idConceptOrig}" sortOrder="asc" width="25%" />
@@ -110,7 +110,7 @@
                 </div>
 
                 <div class="col-6">
-                    <p:selectOneMenu id="relationType"  value="#{alignment.alignement_id_type}" 
+                    <p:selectOneMenu id="relationType" value="#{alignment.alignement_id_type}" 
                                      style="width: 100%; background: white; border-color: #43B572">
                         <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
                                        itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
@@ -128,26 +128,19 @@
             <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" />
         </h5>
 
-        <p:dataTable var="surce" value="#{setAlignmentSourceBean.nodeSelectedAlignmentsAll}"
-                     resizableColumns="true" showGridlines="true" size="small" scrollable="true" scrollHeight="350"
-                     selection="#{setAlignmentSourceBean.selectedAlignments}" rowKey="#{surce.idAlignmnetSource}">
-
-            <f:facet name="header">
-                <div class="p-d-flex p-jc-between p-ai-center">
-                    Liste des sources disponibles
+        <p:panel style="height: 400px; margin-top: 10px; overflow-y:scroll">
+            <ui:repeat var="alignmentSource" value="#{setAlignmentSourceBean.nodeSelectedAlignmentsAll}" >
+                <div class="row" style="margin-top: 5px">
+                    <div class="col-1">
+                        <p:selectBooleanCheckbox value="#{alignmentSource.isSelected}" />
+                    </div>
+                    <div class="col-11">
+                        <h:outputLabel value="#{alignmentSource.sourceLabel}" style="color: #000" />
+                        <h:outputLabel value="#{alignmentSource.sourceLabel}" style="color: #43B572; margin-left: 10px"/>  
+                    </div>
                 </div>
-            </f:facet>
-
-            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
-
-            <p:column headerText="Label">
-                <h:outputText value="#{surce.sourceLabel}" />
-            </p:column>
-
-            <p:column headerText="Description">
-                <h:outputText value="#{surce.sourceDescription}" />
-            </p:column>
-        </p:dataTable>
+            </ui:repeat>
+        </p:panel>
 
         <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
             <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px"

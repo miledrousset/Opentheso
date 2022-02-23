@@ -55,7 +55,7 @@
                              actionListener="PF('addManualAlignment').hide();" update="idAddManualAlignment"/>
 
             <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                             class="btn btn-primary" oncomplete="PF('addManualAlignment').hide();" ajax="true" process="@this"
+                             class="btn btn-primary" oncomplete="PF('addManualAlignment').hide();"
                              actionListener="#{alignmentManualBean.addManualAlignement()}" style="color: white;"/>
         </div>       
     </p:dialog> 

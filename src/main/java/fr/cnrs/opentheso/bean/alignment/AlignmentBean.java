@@ -43,6 +43,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -370,7 +372,7 @@ public class AlignmentBean implements Serializable {
 
             ArrayList<NodeAlignment> alignements = new AlignmentHelper()
                     .getAllAlignmentOfConcept(connect.getPoolConnexion(), idsAndValue.getId(), idTheso);
-            
+
             if (!CollectionUtils.isEmpty(alignements)) {
                 for (NodeAlignment alignement : alignements) {
                     AlignementElement element = new AlignementElement();
@@ -418,9 +420,10 @@ public class AlignmentBean implements Serializable {
         listAlignValues = null;
 //        conceptValueForAlignment = idsAndValues.get(idConceptSelectedForAlignment);
     }
-    
+
     public void openEditAlignementWindow(AlignementElement alignement) {
-        if (CollectionUtils.isEmpty(setAlignmentSourceBean.getSelectedAlignments())) {
+        /*if (setAlignmentSourceBean.getSelectedAlignments() == null
+                || setAlignmentSourceBean.getSelectedAlignments().isEmpty()) {
             PrimeFaces pf = PrimeFaces.current();
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Vous devez choisir au moins une source !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -430,7 +433,9 @@ public class AlignmentBean implements Serializable {
         } else {
             selectConceptForAlignment(alignement.getIdConceptOrig());
             PrimeFaces.current().executeScript("PF('saerchAlignement').show();");
-        }
+        }*/
+        selectConceptForAlignment(alignement.getIdConceptOrig());
+        PrimeFaces.current().executeScript("PF('saerchAlignement').show();");
     }
 
     private void setExistingAlignment(String idConcept, String idTheso) {
@@ -709,123 +714,126 @@ public class AlignmentBean implements Serializable {
                 break;
             }
         }
-        // si l'alignement est de type Wikidata, on récupère la liste des concepts pour préparer le choix de l'utilisateur
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_sparql")) {
-            getAlignmentWikidata_sparql(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_rest")) {
-            getAlignmentWikidata_rest(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
 
-        // ici  IdRef pour les sujets
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefSujets")) {
-            getAlignmentIdRefSubject(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
+        if (!ObjectUtils.isEmpty(selectedAlignementSource)) {
+            // si l'alignement est de type Wikidata, on récupère la liste des concepts pour préparer le choix de l'utilisateur
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_sparql")) {
+                getAlignmentWikidata_sparql(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("wikidata_rest")) {
+                getAlignmentWikidata_rest(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
 
-        // ici  IdRef pour les noms de personnes
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefPersonnes")) {
-            getAlignmentIdRefPerson(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
+            // ici  IdRef pour les sujets
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefSujets")) {
+                getAlignmentIdRefSubject(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
 
-        // ici  IdRef pour les auteurs
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefAuteurs")) {
-            getAlignmentIdRefNames(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    idLang);
-        }
+            // ici  IdRef pour les noms de personnes
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefPersonnes")) {
+                getAlignmentIdRefPerson(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
 
-        // ici  IdRef pour les Lieux
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefLieux")) {
-            getAlignmentIdRefLieux(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
+            // ici  IdRef pour les auteurs
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefAuteurs")) {
+                getAlignmentIdRefNames(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        idLang);
+            }
 
-        // ici  IdRef pour les Titres Uniformes
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("IdRefTitreUniforme")) {
-            getAlignmentIdRefUniformtitle(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
+            // ici  IdRef pour les Lieux
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("idRefLieux")) {
+                getAlignmentIdRefLieux(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
 
-        // ici  AAT du Getty
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Getty_AAT")) {
-            getAlignmentGettyAAT(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
+            // ici  IdRef pour les Titres Uniformes
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("IdRefTitreUniforme")) {
+                getAlignmentIdRefUniformtitle(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
 
-        // ici pour un alignement de type Opentheso
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Opentheso")) {
-            getAlignmentOpentheso(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
+            // ici  AAT du Getty
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Getty_AAT")) {
+                getAlignmentGettyAAT(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
 
-        // ici pour un alignement de type Gemet
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Gemet")) {
-            getAlignmentGemet(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
+            // ici pour un alignement de type Opentheso
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Opentheso")) {
+                getAlignmentOpentheso(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
 
-        // ici pour un alignement de type Agrovoc
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Agrovoc")) {
-            getAlignmentAgrovoc(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
-        }
+            // ici pour un alignement de type Gemet
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Gemet")) {
+                getAlignmentGemet(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
 
-        // ici pour un alignement de type GeoNames
-        if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("GeoNames")) {
-            getAlignmentGeoNames(
-                    selectedAlignementSource,
-                    idTheso,
-                    idConcept,
-                    lexicalValue,
-                    idLang);
+            // ici pour un alignement de type Agrovoc
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Agrovoc")) {
+                getAlignmentAgrovoc(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
+
+            // ici pour un alignement de type GeoNames
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("GeoNames")) {
+                getAlignmentGeoNames(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue,
+                        idLang);
+            }
+            // System.out.println("fin");
         }
-        // System.out.println("fin");
 
         if (listAlignValues != null) {
             if (listAlignValues.isEmpty()) {

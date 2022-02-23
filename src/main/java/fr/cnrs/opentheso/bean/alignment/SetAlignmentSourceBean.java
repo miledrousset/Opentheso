@@ -16,6 +16,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -40,7 +41,7 @@ public class SetAlignmentSourceBean implements Serializable {
     private AlignmentBean alignmentBean;
 
     private ArrayList<AlignementSource> allAlignementSources;
-    private ArrayList<NodeSelectedAlignment> selectedAlignments = new ArrayList<>();
+    private List<NodeSelectedAlignment> selectedAlignments = new ArrayList<>();
     private ArrayList<NodeSelectedAlignment> selectedAlignmentsOfTheso;
 
     private ArrayList<NodeSelectedAlignment> nodeSelectedAlignmentsAll;
@@ -173,7 +174,6 @@ public class SetAlignmentSourceBean implements Serializable {
         AlignementSource alignementSource = new AlignementSource();
         alignementSource.setAlignement_format("skos");
         alignementSource.setDescription(description);
-//        alignementSource.setId(id);
         alignementSource.setRequete(requete);
         alignementSource.setSource(sourceName);
         alignementSource.setTypeRequete("REST");
@@ -223,18 +223,20 @@ public class SetAlignmentSourceBean implements Serializable {
         }
 
         // Add selected Sources
-        for (NodeSelectedAlignment nodeSelectedAlignment : selectedAlignments) {
-            if (!alignmentHelper.addSourceAlignementToTheso(
-                    connect.getPoolConnexion(),
-                    selectedTheso.getCurrentIdTheso(),
-                    nodeSelectedAlignment.getIdAlignmnetSource())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendnat l'ajout de la source au thésaurus !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                alignmentBean.setViewSetting(false);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("panelManagement");
+        for (NodeSelectedAlignment nodeSelectedAlignment : nodeSelectedAlignmentsAll) {
+            if (nodeSelectedAlignment.isIsSelected()) {
+                if (!alignmentHelper.addSourceAlignementToTheso(
+                        connect.getPoolConnexion(),
+                        selectedTheso.getCurrentIdTheso(),
+                        nodeSelectedAlignment.getIdAlignmnetSource())) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendnat l'ajout de la source au thésaurus !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    alignmentBean.setViewSetting(false);
+                    if (pf.isAjaxRequest()) {
+                        pf.ajax().update("panelManagement");
+                    }
+                    return;
                 }
-                return;
             }
         }
 
@@ -312,7 +314,7 @@ public class SetAlignmentSourceBean implements Serializable {
         this.description = description;
     }
 
-    public ArrayList<NodeSelectedAlignment> getSelectedAlignments() {
+    public List<NodeSelectedAlignment> getSelectedAlignments() {
         return selectedAlignments;
     }
 
