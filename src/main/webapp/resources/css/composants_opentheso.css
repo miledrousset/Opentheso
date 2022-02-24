@@ -697,3 +697,6 @@ body .ui-datalist .ui-datalist-content {
 }
 
 
+body .ui-datatable.ui-datatable-sm .ui-datatable-data > tr > td {
+    padding: none !important;
+}

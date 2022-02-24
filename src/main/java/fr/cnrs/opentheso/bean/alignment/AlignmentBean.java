@@ -44,7 +44,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -63,8 +62,6 @@ public class AlignmentBean implements Serializable {
     private SelectedTheso selectedTheso;
     @Inject
     private AlignmentManualBean alignmentManualBean;
-    @Inject
-    private SetAlignmentSourceBean setAlignmentSourceBean;
 
     private boolean withLang;
     private boolean withNote;
@@ -397,6 +394,34 @@ public class AlignmentBean implements Serializable {
             allignementsList.add(element);
         }
 
+        sortDatatableAlignementByColor();
+    }
+    
+    public void sortDatatableAlignementByColor() {
+        
+        if (allignementsList.size() > 1) {
+        
+            allignementsList.get(0).setCodeColor(0);
+            int pos = 1;
+            while (pos < allignementsList.size()) {
+                
+                if (allignementsList.get(pos-1).getIdConceptOrig()
+                        .equals(allignementsList.get(pos).getIdConceptOrig())) {
+                    
+                    allignementsList.get(pos)
+                            .setCodeColor(allignementsList.get(pos-1).getCodeColor());
+                } else {
+                    if (allignementsList.get(pos-1).getCodeColor() == 0) {
+                        allignementsList.get(pos).setCodeColor(1);
+                    } else {
+                        allignementsList.get(pos).setCodeColor(0);
+                    }
+                }
+                pos++;
+            }
+            
+        }
+        
     }
 
     public ArrayList<AlignementElement> getAllignementsList() {

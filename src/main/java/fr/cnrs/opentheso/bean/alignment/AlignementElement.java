@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.alignment;
 
 public class AlignementElement {
 
+    private int codeColor;
     private int idAlignment;
     private String idConceptOrig;
     private String labelConceptOrig;
@@ -13,6 +14,13 @@ public class AlignementElement {
     private int alignement_id_type;
     private int idSource;
 
+    public int getCodeColor() {
+        return codeColor;
+    }
+
+    public void setCodeColor(int codeColor) {
+        this.codeColor = codeColor;
+    }
     
     public String getConceptTarget() {
         return conceptTarget;
