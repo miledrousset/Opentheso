@@ -239,11 +239,17 @@
                     </div>
 
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px; ">
-                        <p:commandLink actionListener="#{conceptView.countTheTotalOfBranch()}"
+                        <p:commandLink rendered="#{(currentUser.nodeUser != null)}" actionListener="#{conceptView.countTheTotalOfBranch()}"
+                                       title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
+                                       update="containerIndex:formRightTab" style="margin-left: 12px;">
+                            <i class="fas fa-calculator" style="color: #F7A269; font-size: 14px;" />
+                        </p:commandLink>  
+                        <p:commandLink rendered="#{(currentUser.nodeUser == null)}" actionListener="#{conceptView.countTheTotalOfBranch()}"
                                        title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
                                        update="containerIndex:formRightTab">
                             <i class="fas fa-calculator" style="color: #F7A269; font-size: 14px;" />
-                        </p:commandLink>  
+                        </p:commandLink>                         
+                        
                         <h:outputText rendered="#{conceptView.countOfBranch != 0}" value="#{conceptView.countOfBranch} concept(s)" 
                                       title="#{langueBean.getMsg('rightbody.concept.clic_branch_count')}"
                                       style="font-size: 14px; padding-left: 10px;" />

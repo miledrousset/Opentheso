@@ -43,14 +43,22 @@
             </div>
         </div>
         
+        <div class="row">
+            <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                <p:messages id="addTradMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                    <p:autoUpdate/>
+                </p:messages>
+            </div>
+        </div>           
+        
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('addTraduction').hide();" update="idAddTraduction"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab containerIndex:formLeftTab messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addTraduction').hide();"
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" 
+                                 class="btn btn-primary"
                                  actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
         </f:facet>

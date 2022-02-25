@@ -4,7 +4,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idDeleteTraduction" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_translation')}" widgetVar="deleteTraduction" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
@@ -15,23 +15,29 @@
             </div>
         </div>
 
-        <p:panel id="listTraductions">
-            <h:outputText value="Liste des traduction spécifique : " class="dialog-titre" /> 
-            <ui:repeat var="traductions" value="#{traductionBean.nodeTermTraductions}" >
-                <div class="row" style="margin-top: 5px">
-                    <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #FF7979" action="#{traductionBean.deleteTraduction(traductions, currentUser.nodeUser.idUser)}"
-                                       update="containerIndex:formRightTab messageIndex">
-                            <i class="pi pi-trash" />
-                        </p:commandLink>
-                    </div>
-                    <div class="col-11">
-                        <h:outputText value="#{traductions.lexicalValue} (#{traductions.lang})"
-                                      style="color: #43B572"/> 
-                    </div>
-                </div>
-            </ui:repeat>
+        <p:panel id="listTraductions" style="max-height: 350px;">
+            <p:dataTable var="traductions" value="#{traductionBean.nodeTermTraductions}" style="font-size: 12px;">
+                <p:column headerText="label">
+                    <h:outputText value="#{traductions.lexicalValue}" style="color: #43B572"/>
+                </p:column>    
+                <p:column width="60" headerText="lang">
+                    <h:outputText value="#{traductions.lang}" style="color: #43B572; text-align: center"/>
+                </p:column>     
+                <p:column width="60" headerText="action">
+                    <p:commandLink style="color: #FF7979; text-align: center" action="#{traductionBean.deleteTraduction(traductions, currentUser.nodeUser.idUser)}">
+                        <i class="pi pi-trash" />
+                    </p:commandLink>
+                </p:column>                    
+            </p:dataTable>
         </p:panel>
+        <div class="row" style="font-size: 12px;">
+            <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                <p:messages id="deleteTradMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                    <p:autoUpdate/>
+                </p:messages>
+            </div>
+        </div>          
+        <p:spacer/>
 
     </p:dialog> 
 </ui:fragment>

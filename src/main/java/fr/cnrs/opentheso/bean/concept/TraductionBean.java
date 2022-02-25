@@ -82,7 +82,7 @@ public class TraductionBean implements Serializable {
 
         selectedLang = null;
         traductionValue = "";
-        setLangWithNoTraduction();
+
     }
 
     public void setLangWithNoTraduction() {
@@ -160,9 +160,12 @@ public class TraductionBean implements Serializable {
         setLangWithNoTraduction();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formLeftTab");
-            pf.ajax().update("containerIndex:formRightTab");
+//            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:rightTab:idAddTraduction");
+            pf.executeScript("PF('addTraduction').show();");
+ //           pf.ajax().update("containerIndex:formLeftTab");
+//            pf.ajax().update("containerIndex:formLeftTab");            
+//            pf.ajax().update("containerIndex:formRightTab");
         }
     }
 
@@ -214,7 +217,9 @@ public class TraductionBean implements Serializable {
         reset();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("containerIndex:rightTab:idRenameTraduction");
+            pf.executeScript("PF('renameTraduction').show();");            
+       //     pf.ajax().update("containerIndex:formRightTab");
         }
     }
 
@@ -269,8 +274,8 @@ public class TraductionBean implements Serializable {
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formLeftTab");
-            pf.ajax().update("containerIndex:formRightTab");
+            pf.ajax().update("containerIndex:rightTab:idRenameTraduction");
+            pf.executeScript("PF('renameTraduction').show();");
         }
     }
 
@@ -317,8 +322,8 @@ public class TraductionBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("conceptForm:listTraductions");
+            pf.ajax().update("containerIndex:rightTab:idDeleteTraduction");
+            pf.executeScript("PF('deleteTraduction').show();");               
         }
     }
 

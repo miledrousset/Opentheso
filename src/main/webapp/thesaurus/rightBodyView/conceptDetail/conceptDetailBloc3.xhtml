@@ -17,7 +17,7 @@
                     <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
                         <div class="row" style="padding: 2px">
                             <div class="col-3" style="margin-left: 10px">
-                                <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                                <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
                                               style="font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
@@ -35,33 +35,39 @@
                 </h:panelGroup>                
 
                 <h:panelGroup id="idConceptNotes" style="margin-top: 5px;" rendered="#{(conceptView.notes.size() != 0 || conceptView.changeNotes.size() != 0 || conceptView.definitions.size() != 0
-                                                                   || conceptView.editorialNotes.size() != 0 || conceptView.examples.size() != 0 || conceptView.historyNotes.size() != 0
-                                                                   || conceptView.scopeNotes.size() != 0)}">
+                                                                                       || conceptView.editorialNotes.size() != 0 || conceptView.examples.size() != 0 || conceptView.historyNotes.size() != 0
+                                                                                       || conceptView.scopeNotes.size() != 0)}">
 
                     <h:panelGroup rendered="#{conceptView.notes.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-top: 3px;">
-                                <div class="col-3" style="text-align: right;">
+                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.note')}"
-                                                  style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
-
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
-                                                    actionListener="#{noteBean.reset()}" action="#{noteBean.setSelectedTypeNote('note')}"
-                                                    update="idDeleteNote" oncomplete="PF('deleteNote').show();" icon="fas fa-plus"/>
-
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNote').show();"
-                                                    update="idEditNote" icon="fas fa-edit" />
-                                    </p:menuButton>
+                                                  style="font-size: 14px; font-weight: bold;"/>
                                 </div>
-                                <div class="col-9" style="margin-left: -10px">
-                                    <ui:repeat var="note" value="#{conceptView.notes}" >
-                                        <h:outputText value="#{note.lexicalvalue}" escape="false"/>
-                                        <br/>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                    <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                        actionListener="#{noteBean.reset()}" action="#{noteBean.setSelectedTypeNote('note')}"
+                                                        update="idDeleteNote" oncomplete="PF('deleteNote').show();" icon="fas fa-plus"/>
+
+                                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.reset()}"
+                                                        action = "#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNote').show();"
+                                                        update="idEditNote" icon="fas fa-edit" />
+                                        </p:menuButton>
+                                    </h:panelGroup>                                        
+                                    <ui:repeat var="note" value="#{conceptView.notes}" varStatus="status">
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                            <h:outputText rendered="#{status.first}" value="#{note.lexicalvalue}" escape="false" />
+                                            <h:outputText rendered="#{!status.first}" value="#{note.lexicalvalue}" escape="false" style="margin-left: 38px;"/>
+                                            <br/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
+                                            <h:outputText value="#{note.lexicalvalue}" escape="false" />
+                                            <br/>                                            
+                                        </h:panelGroup>
                                     </ui:repeat>
                                 </div>
                             </div>
@@ -70,12 +76,13 @@
 
                     <h:panelGroup rendered="#{conceptView.changeNotes.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-top: 2px;">
-                                <div class="col-3" style="text-align: right">
+                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.change_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;"/>
-
+                                                  style="font-size: 14px; font-weight: bold;"/>
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                                
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                               or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                                   icon="fas fa-cog" style="color: #F7A269; background: none; border: none; 
@@ -90,11 +97,16 @@
                                                     oncomplete="PF('editNote').show();"
                                                     update="idEditNote" icon="fas fa-edit" />
                                     </p:menuButton>
-                                </div>
-                                <div class="col-9" style="margin-left: -10px">
-                                    <ui:repeat var="changeNote" value="#{conceptView.changeNotes}" >
-                                        <h:outputText value="#{changeNote.lexicalvalue}" escape="false" />
-                                        <br/>
+                                    <ui:repeat var="changeNote" value="#{conceptView.changeNotes}" varStatus="status">
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                            <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalvalue}" escape="false" />
+                                            <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="margin-left: 38px;"/>
+                                            <br/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
+                                            <h:outputText value="#{changeNote.lexicalvalue}" escape="false" />
+                                            <br/>                                            
+                                        </h:panelGroup>
                                     </ui:repeat>
                                 </div>
                             </div>
@@ -103,12 +115,13 @@
 
                     <h:panelGroup rendered="#{conceptView.definitions.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-top: 2px;">
-                                <div class="col-3" style="text-align: right;">
+                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.definition')}"
                                                   style="font-size: 14px; margin-right: 10px; font-weight: bold;"/>
-
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                               or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" icon="fas fa-cog" 
                                                   style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
@@ -124,11 +137,16 @@
                                                     update="idEditNote" icon="fas fa-edit"/>
 
                                     </p:menuButton>
-                                </div>
-                                <div class="col-9" style="margin-left: -10px">
-                                    <ui:repeat var="def" value="#{conceptView.definitions}" >
-                                        <h:outputText value="#{def.lexicalvalue}" escape="false" />
-                                        <br/>
+                                    <ui:repeat var="def" value="#{conceptView.definitions}" varStatus="status">
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                            <h:outputText rendered="#{status.first}" value="#{def.lexicalvalue}" escape="false" />
+                                            <h:outputText rendered="#{!status.first}" value="#{def.lexicalvalue}" escape="false" style="margin-left: 38px;"/>
+                                            <br/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
+                                            <h:outputText value="#{def.lexicalvalue}" escape="false" />
+                                            <br/>                                            
+                                        </h:panelGroup>
                                     </ui:repeat>
                                 </div>
                             </div>
@@ -137,12 +155,13 @@
 
                     <h:panelGroup rendered="#{conceptView.editorialNotes.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-top: 2px;">
-                                <div class="col-3" style="text-align: right">
+                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
                                                   style="font-size: 14px; margin-right: 10px; font-weight: bold;"/>
-
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                               or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                                   icon="fas fa-cog" style="color: #F7A269; background: none; border: none; 
@@ -159,11 +178,16 @@
                                                     oncomplete="PF('editNote').show();"
                                                     update="idEditNote" icon="fas fa-edit" />
                                     </p:menuButton> 
-                                </div>
-                                <div class="col-9" style="margin-left: -10px">
-                                    <ui:repeat var="editorialNote" value="#{conceptView.editorialNotes}" >
-                                        <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" />
-                                        <br/>
+                                    <ui:repeat var="editorialNote" value="#{conceptView.editorialNotes}" varStatus="status">
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                            <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalvalue}" escape="false" />
+                                            <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="margin-left: 38px;"/>
+                                            <br/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
+                                            <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" />
+                                            <br/>                                            
+                                        </h:panelGroup>
                                     </ui:repeat>
                                 </div>
                             </div>
@@ -172,12 +196,13 @@
 
                     <h:panelGroup rendered="#{conceptView.examples.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-top: 2px;">
-                                <div class="col-3" style="text-align: right">
+                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.example')}" 
                                                   style="font-size: 14px; margin-right: 10px; font-weight: bold;"/>
-
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                               or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                                   icon="fas fa-cog" style="color: #F7A269; background: none; border: none; 
@@ -195,11 +220,16 @@
                                                     oncomplete="PF('editNote').show();"
                                                     update="idEditNote" icon="fas fa-edit" />
                                     </p:menuButton> 
-                                </div>
-                                <div class="col-9" style="margin-left: -10px">
-                                    <ui:repeat var="example" value="#{conceptView.examples}" >
-                                        <h:outputText value="#{example.lexicalvalue}" escape="false" />
-                                        <br/>
+                                    <ui:repeat var="example" value="#{conceptView.examples}" varStatus="status">
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                            <h:outputText rendered="#{status.first}" value="#{example.lexicalvalue}" escape="false" />
+                                            <h:outputText rendered="#{!status.first}" value="#{example.lexicalvalue}" escape="false" style="margin-left: 38px;"/>
+                                            <br/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
+                                            <h:outputText value="#{example.lexicalvalue}" escape="false" />
+                                            <br/>                                            
+                                        </h:panelGroup>
                                     </ui:repeat>
                                 </div>
                             </div>
@@ -208,12 +238,13 @@
 
                     <h:panelGroup rendered="#{conceptView.historyNotes.size() != 0}">
                         <div class="list-group-item list-group-item-action" >                        
-                            <div class="row" style="margin-top: 2px;">
-                                <div class="col-3" style="text-align: right">
+                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.history_note')}"
                                                   style="font-size: 14px; margin-right: 10px; font-weight: bold;"/>
-
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                               or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                                   icon="fas fa-cog" style="color: #F7A269; background: none; border: none; 
@@ -232,11 +263,16 @@
                                                     update="idEditNote" icon="fas fa-edit" />
 
                                     </p:menuButton> 
-                                </div>
-                                <div class="col-9" style="margin-left: -10px">
-                                    <ui:repeat var="historyNote" value="#{conceptView.historyNotes}" >
-                                        <h:outputText value="#{historyNote.lexicalvalue}" escape="false" />
-                                        <br/>
+                                    <ui:repeat var="historyNote" value="#{conceptView.historyNotes}" varStatus="status">
+                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                            <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalvalue}" escape="false" />
+                                            <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="margin-left: 38px;"/>
+                                            <br/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
+                                            <h:outputText value="#{historyNote.lexicalvalue}" escape="false" />
+                                            <br/>                                            
+                                        </h:panelGroup>
                                     </ui:repeat>
                                 </div>
                             </div>
@@ -245,12 +281,13 @@
 
                     <h:panelGroup rendered="#{conceptView.scopeNotes.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-top: 2px;">
-                                <div class="col-3" style="text-align: right">
+                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
                                                   style="font-size: 14px; margin-right: 10px; font-weight: bold;"/>
-
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                               or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                                   icon="fas fa-cog" style="color: #F7A269; background: none; border: none; 
@@ -269,11 +306,16 @@
                                                     update="idEditNote" icon="fas fa-edit" />
 
                                     </p:menuButton> 
-                                </div>
-                                <div class="col-9" style="margin-left: -10px">
-                                    <ui:repeat var="scopeNote" value="#{conceptView.scopeNotes}" >
-                                        <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" />
-                                        <br/>
+                                    <ui:repeat var="scopeNote" value="#{conceptView.scopeNotes}" varStatus="status">
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                            <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalvalue}" escape="false" />
+                                            <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="margin-left: 38px;"/>
+                                            <br/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
+                                            <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" />
+                                            <br/>                                            
+                                        </h:panelGroup>
                                     </ui:repeat>
                                 </div>
                             </div>

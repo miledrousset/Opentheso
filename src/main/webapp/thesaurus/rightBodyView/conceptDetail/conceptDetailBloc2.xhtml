@@ -192,67 +192,67 @@
         </div>
     </div>
 
-        <!-- ligne Traductions -->  
-        <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
-            <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
-                <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
-                    <div class="row" style="padding: 2px;">
-                        <div class="col-3" style="text-align: right;">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
-                                          style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+    <!-- ligne Traductions -->  
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
+        <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
+            <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
+                <div class="row" style="margin-left: 0px;">
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
+                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
 
-                            <i class="fa fa-language" style="color: #f47b2a; margin-right: 10px" rendered="#{(currentUser.nodeUser != null)}" />
 
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                          icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;">
+                    </div>
+                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: end"> 
+                        <i class="fa fa-language" style="color: #78261f; margin-right: 10px" />
+                    </div>  
+                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                    
+                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                      icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;">
 
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" actionListener="#{traductionBean.reset()}"
-                                            oncomplete="PF('addTraduction').show();" update="idAddTraduction" icon="fas fa-plus" />
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" actionListener="#{traductionBean.reset()}"
+                                        action="#{traductionBean.setLangWithNoTraduction()}"
+                                        oncomplete="PF('addTraduction').show();" update="idAddTraduction" icon="fas fa-plus" />
 
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" actionListener="#{traductionBean.reset()}"
-                                            oncomplete="PF('renameTraduction').show();" update="idRenameTraduction"
-                                            icon="fas fa-edit" disabled="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}"/>
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" actionListener="#{traductionBean.reset()}"
+                                        oncomplete="PF('renameTraduction').show();" update="idRenameTraduction"
+                                        icon="fas fa-edit" disabled="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}"/>
 
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" actionListener="#{traductionBean.reset()}"
-                                            oncomplete="PF('deleteTraduction').show();" update="idDeleteTraduction"
-                                            icon="fas fa-minus" disabled="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}"/>
-                            </p:menuButton>
-                        </div>
-
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" actionListener="#{traductionBean.reset()}"
+                                        oncomplete="PF('deleteTraduction').show();" update="idDeleteTraduction"
+                                        icon="fas fa-minus" disabled="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}"/>
+                        </p:menuButton>
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}" >            
-                            <div class="col-9" style="margin-left: -10px">
-                                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
-                            </div> 
+                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}"> 
-                            <div class="col-9" style="margin-left: -10px">
-                                <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
-                                    <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})" title="#{conceptView.nodeConcept.concept.idConcept}"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                                   update="containerIndex indexTitle" style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>  
-                                    <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
-                                </ui:repeat>
-                            </div>
+                            <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
+                                <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})" title="#{conceptView.nodeConcept.concept.idConcept}"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
+                                               update="containerIndex indexTitle" style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>  
+                                <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
+                            </ui:repeat>
                         </h:panelGroup>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <ui:include src="../../../dialog/broader/addBroaderLink.xhtml" />
-        <ui:include src="../../../dialog/broader/deleteBroaderLink.xhtml" />
+    <ui:include src="../../../dialog/broader/addBroaderLink.xhtml" />
+    <ui:include src="../../../dialog/broader/deleteBroaderLink.xhtml" />
 
-        <ui:include src="../../../dialog/narrower/addNarrowerLink.xhtml" />
-        <ui:include src="../../../dialog/narrower/deleteNarrowerLink.xhtml" />
-        <ui:include src="../../../dialog/narrower/changeRelation.xhtml" />
+    <ui:include src="../../../dialog/narrower/addNarrowerLink.xhtml" />
+    <ui:include src="../../../dialog/narrower/deleteNarrowerLink.xhtml" />
+    <ui:include src="../../../dialog/narrower/changeRelation.xhtml" />
 
-        <ui:include src="../../../dialog/related/addRelatedLink.xhtml" />
-        <ui:include src="../../../dialog/related/deleteRelatedLink.xhtml" />
+    <ui:include src="../../../dialog/related/addRelatedLink.xhtml" />
+    <ui:include src="../../../dialog/related/deleteRelatedLink.xhtml" />
 
-        <ui:include src="../../../dialog/traduction/addTraduction.xhtml" />
-        <ui:include src="../../../dialog/traduction/deleteTraduction.xhtml" />
-        <ui:include src="../../../dialog/traduction/renameTraduction.xhtml" />
+    <ui:include src="../../../dialog/traduction/addTraduction.xhtml" />
+    <ui:include src="../../../dialog/traduction/deleteTraduction.xhtml" />
+    <ui:include src="../../../dialog/traduction/renameTraduction.xhtml" />
 
 </ui:fragment>
