@@ -27,7 +27,7 @@
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_alignment')}" 
                                                 action="#{alignmentManualBean.reset()}" oncomplete="PF('updateAlignment').show();"
-                                                icon="fas fa-edit" update="idUpdateAlignment"
+                                                icon="fas fa-edit" update="containerIndex:idUpdateAlignment"
                                                 disabled="#{conceptView.nodeConcept.nodeAlignments.size() == 0}"/>
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_alignment')}" 
@@ -267,6 +267,5 @@
     </div>
     <ui:include src="../../../dialog/alignment/addManualAlignment.xhtml" />
     <ui:include src="../../../dialog/alignment/deleteAlignment.xhtml" />
-    <ui:include src="../../../dialog/alignment/updateAlignment.xhtml" />
     <ui:include src="../../../dialog/concept/setNotation.xhtml" /> 
 </ui:fragment>

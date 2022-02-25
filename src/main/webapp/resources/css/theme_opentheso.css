@@ -5233,11 +5233,12 @@ a.badge-dark:focus, a.badge-dark.focus {
     vertical-align: central;
 }
 
+/* Thème ligne selectionnée*/
 .list-group-item-action:hover, .list-group-item-action:focus {
     z-index: 1;
-    color: #226b40;
+    color: #143a1e;
     text-decoration: none;
-    background-color: #ecf8f1;
+    background-color: #efefef;
     vertical-align: central;
     border-color: transparent;
 }

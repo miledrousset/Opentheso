@@ -36,7 +36,7 @@
 
             <p:columnGroup type="header">
                 <p:row>
-                    <p:column colspan="2" headerText="Concept d'orgine" />
+                    <p:column colspan="2" headerText="Concept d'orgine" filterBy="#{alignement.labelConceptOrig}" />
                     <p:column rowspan="2" headerText="Concept cible" sortBy="#{alignement.typeAlignement}" width="14%" />
                     <p:column rowspan="2" headerText="Type d'Alignement" sortBy="#{alignement.labelConceptCible}" width="15%" />
                     <p:column rowspan="2" headerText="Target URI" sortBy="#{alignement.targetUri}" width="25%"/>
@@ -66,32 +66,34 @@
 
             <p:column>
                 <h:outputLink value="#{alignement.targetUri}" target="_blank" >
-                    <h:outputText value="#{alignement.targetUri}" />
+                    <h:outputText rendered="#{alignement.targetUri != null}" value="#{alignement.targetUri}" />
+
+                    <p:commandButton process="@this" rendered="#{alignement.targetUri == null}"
+                                     update=":containerIndex:searchAlignementForm"
+                                     actionListener="#{alignmentBean.openEditAlignementWindow(alignement)}"
+                                     icon="pi pi-search" styleClass="rounded-button ui-button-raised"
+                                     style="height: 30px; width: 30px" >
+                        <p:resetInput target=":containerIndex:searchAlignementForm"/>
+                    </p:commandButton>
                 </h:outputLink>
             </p:column>
 
             <p:column>
+                
                 <p:commandButton process="@this" rendered="#{alignement.targetUri != null}" 
-                                 action="#{alignmentManualBean.reset()}" icon="pi pi-check"
+                                 action="#{alignmentManualBean.reset()}" icon="pi pi-pencil"
                                  actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
                                  update=":containerIndex:idUpdateSingleAlignment"
                                  oncomplete="PF('updateSingleAlignment').show();"
-                                 styleClass="rounded-button ui-button-raised"
-                                 style="height: 30px; width: 30px" />
-
-                <p:commandButton process="@this" rendered="#{alignement.targetUri == null}"
-                                 update=":containerIndex:searchAlignementForm"
-                                 actionListener="#{alignmentBean.openEditAlignementWindow(alignement)}"
-                                 icon="pi pi-search" styleClass="rounded-button ui-button-success"
-                                 style="height: 30px; width: 30px" >
-                    <p:resetInput target=":containerIndex:searchAlignementForm"/>
-                </p:commandButton>
+                                 styleClass="edit-button rounded-button ui-button-success"
+                                 style="height: 30px; width: 30px;" />
 
                 <p:commandButton icon="pi pi-trash" process="@this" ajax="true"
                                  update=":containerIndex:idConfirmDeleteAlignement"
                                  oncomplete="PF('confirmDeleteAlignement').show()"
                                  actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
                                  class="ui-button-danger rounded-button"
+                                 rendered="#{alignement.targetUri != null}" 
                                  style="height: 30px; width: 30px; margin-left: 5px" />
             </p:column>
         </p:dataTable>

@@ -207,7 +207,6 @@
                             <ui:repeat var="domaine" value="#{conceptView.nodeConcept.nodeConceptGroup}" varStatus="status">
                                 <p:commandLink id="testToolTip" rendered="#{domaine.lexicalValue != ''}"
                                                value="#{domaine.lexicalValue}"
-                                               
                                                action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
                                                update="containerIndex indexTitle"
                                                style="color: #43B572; font-size: 14px;" />
