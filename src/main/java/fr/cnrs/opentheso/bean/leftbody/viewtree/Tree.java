@@ -585,8 +585,8 @@ public class Tree implements Serializable {
     }
 
     // deselectionner et fermer toutes les noeds de l'arbres
-    private void initialiserEtatNoeuds(TreeNode nodeRoot) {
-        for (TreeNode node : nodeRoot.getChildren()) {
+ /*   private void initialiserEtatNoeuds(TreeNode nodeRoot) {
+        for (TreeNode node :  List<TreeNode<TreeNode>> nodeRoot.getChildren()) {
             try {
                 TreeNodeData treeNodeData = (TreeNodeData) node.getData();
                 node.setExpanded(false);
@@ -599,7 +599,7 @@ public class Tree implements Serializable {
 
             }
         }
-    }
+    }*/
 
     /**
      * permet de déplier l'arbre suivant le Path ou les paths en paramètre On
@@ -800,12 +800,12 @@ public class Tree implements Serializable {
             node.getChildren().remove(0);
             addConceptsChild(node);
         }
-        for (TreeNode child : node.getChildren()) {
+/*        for (TreeNode child : node.getChildren()) {
 
 //            addConceptsChild(node);
             expandedAllRecursively(child, expanded);
         }
-        node.setExpanded(expanded);
+        node.setExpanded(expanded);*/
     }
 
 //////////////////////////////////////////////////////////////////////////////////////

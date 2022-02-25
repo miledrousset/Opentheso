@@ -166,17 +166,18 @@ public class NoteBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
-
+        
+        noteValue = "";
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note ajoutée avec succès");
-
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().executeScript("PF('addNote').hide();");
 
-        reset();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        //     PrimeFaces.current().executeScript("PF('addNote').hide();");
+
+     //   reset();
+  /*      if (pf.isAjaxRequest()) {
+            pf.ajax().update("addnoteMessages");
+     //       pf.ajax().update("containerIndex:formRightTab");
+        }*/
     }
 
     public void updateNote(NodeNote nodeNote, int idUser) {
@@ -221,14 +222,17 @@ public class NoteBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().executeScript("PF('addNote').hide();");
-        //      reset();
-        PrimeFaces pf = PrimeFaces.current();
+       // PrimeFaces.current().executeScript("PF('addNote').hide();");
+         //     reset();
+ /*       PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("conceptForm:idEditNote");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+          //  pf.ajax().update("messageIndex");
+            pf.ajax().update("noteMessages");
+           // pf.ajax().update("containerIndex:rightTab:idConceptNotes");
+          
+        //  pf.ajax().update("conceptForm:idEditNote");
+        //    pf.ajax().update("containerIndex:formRightTab");
+        }*/
     }
 
     public ArrayList<NodeNote> nodeToEdit() {
@@ -293,12 +297,12 @@ public class NoteBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         //    PrimeFaces.current().executeScript("PF('addNote').hide();");
-        //      reset();
+        reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("conceptForm:idDeleteNote");
-            pf.ajax().update("containerIndex:formRightTab");
+        //    pf.ajax().update("messageIndex");
+         //   pf.ajax().update("conceptForm:idDeleteNote");
+        //    pf.ajax().update("containerIndex:formRightTab");
         }
     }
 

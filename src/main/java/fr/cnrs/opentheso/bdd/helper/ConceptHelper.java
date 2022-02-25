@@ -291,6 +291,8 @@ public class ConceptHelper {
         }
         return nodeConceptTree;
     }
+    
+   
 
     /**
      * Cas où le concept_père a des facettes :
@@ -4606,6 +4608,10 @@ public class ConceptHelper {
         ImagesHelper imagesHelper = new ImagesHelper();
         nodeConcept.setNodeimages(imagesHelper.getExternalImages(ds, idConcept, idThesaurus));
 
+        //gestion des ressources externes
+        ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();
+        nodeConcept.setNodeExternalResources(externalResourcesHelper.getExternalResources(ds, idConcept, idThesaurus));
+        
         // concepts qui remplacent un concept déprécié
         DeprecateHelper deprecatedHelper = new DeprecateHelper();
         nodeConcept.setReplacedBy(deprecatedHelper.getAllReplacedBy(ds, idThesaurus, idConcept, idLang));

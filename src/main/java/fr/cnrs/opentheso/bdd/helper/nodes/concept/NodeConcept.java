@@ -43,6 +43,10 @@ public class NodeConcept {
 
     //images (permet de gérer plusieurs images
     private ArrayList<NodeImage> nodeimages;
+    
+    //Ressources externes
+    private ArrayList<NodeImage> nodeExternalResources;
+    
 
     //pour la liste des domaines du Concept
     private ArrayList<NodeGroup> nodeConceptGroup;
@@ -187,6 +191,14 @@ public class NodeConcept {
         this.replaces = replaces;
     }
 
+    public ArrayList<NodeImage> getNodeExternalResources() {
+        return nodeExternalResources;
+    }
+
+    public void setNodeExternalResources(ArrayList<NodeImage> nodeExternalResources) {
+        this.nodeExternalResources = nodeExternalResources;
+    }
+
 
     public void clear(){
         if(nodeBT != null) nodeBT.clear();
@@ -204,6 +216,7 @@ public class NodeConcept {
         nodeGps = null;
         if(replacedBy != null) replacedBy.clear();    
         if(replaces != null) replaces.clear();    
+        if(nodeExternalResources != null) nodeExternalResources.clear();  
     }
     
 }

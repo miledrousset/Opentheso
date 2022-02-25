@@ -69,10 +69,19 @@
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
                                  actionListener="PF('addNote').hide();" update="idAddNote"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addNote').hide();"
+                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="messageIndex"
+                                 class="btn btn-primary" oncomplete="PF('addNote').show();"
                                  actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
             </div>
         </f:facet>
+        
+        <div class="row">
+            <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                <p:messages id="addnoteMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                    <p:autoUpdate/>
+                </p:messages>
+            </div>
+        </div>        
+        
     </p:dialog>   
 </ui:fragment>

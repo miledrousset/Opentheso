@@ -4,45 +4,94 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
-    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0) 
+    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0) or (conceptView.nodeConcept.nodeExternalResources.size() !=0)
                               or (conceptView.nodeConcept.nodeGps != null)}"> 
-        <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
+        <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px;">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
-                <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
-                    <!-- ligne images --> 
+
+                <!-- ligne ressources externes -->
+                <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeExternalResources.size() !=0)}"> 
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.externalResources')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.externalResources')}"
+                                              style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+                            </div>
+                            <h:panelGroup  rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="margin-left: -10px">
+                                    <p:menuButton 
+                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addExternalResource')}" 
+                                                    actionListener="#{externalResources.reset()}" 
+                                                    update="idAddExternalResource" oncomplete="PF('addExternalResource').show();" icon="fas fa-plus"/>
+
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.modifyExternalResource')}" 
+                                                    action="#{externalResources.reset()}"
+                                                    update="idUpdateExternalResource"
+                                                    ajax="true"
+                                                    oncomplete="PF('updateExternalResource').show();"
+                                                    icon="fas fa-edit" />
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.deleteExternalResource')}"
+                                                    actionListener="#{externalResources.reset()}"
+                                                    oncomplete="PF('deleteExternalResource').show();"
+                                                    update="idDeleteExternalResource" icon="fas fa-edit" />                                    
+                                    </p:menuButton>   
+                                </div> 
+                            </h:panelGroup>                                    
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px; font-size: 13px; margin-top: 5px;">
+                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeExternalResources == null or conceptView.nodeConcept.nodeExternalResources.size() == 0}">
+                                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
+                                                   style="font-size: 12px; color: grey; font-style: italic " />
+                                </h:panelGroup>                                
+                                <ui:repeat var="resources" value="#{conceptView.nodeConcept.nodeExternalResources}" >
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 12px;"/>
+                                            <p:link href="#{resources.uri}"
+                                                    value="#{resources.uri}"
+                                                    target="_blank" style="font-size: 12px; color: #43B572;" >
+                                                <i class="pi pi-link" />
+                                            </p:link>
+                                            <h:outputText rendered="#{resources.imageName != ''}" value=" (#{resources.imageName})"  style="font-size: 12px;"/>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>               
+                </h:panelGroup>
+                
+                
+                <!-- ligne images --> 
+                <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                     <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0)}">               
-                        <div class="row" style="padding-top: 3px;">
+                        <div class="row" style="margin-left: 0px;">
                             <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
-                                <div class="col-3" style="text-align: right;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                                     <h:outputText value=" #{langueBean.getMsg('rightbody.concept.image')}"
                                                   style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
-
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_image')}" 
-                                                    actionListener="#{imageBean.reset()}" oncomplete="PF('addImage').show();"
-                                                    icon="fas fa-plus" />
-                                    
-                                    </p:menuButton> 
                                 </div>
                             </h:panelGroup>
                             <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
-                                <div class="col-3" style="text-align: right;">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                                     <h:outputText value=" #{langueBean.getMsg('rightbody.concept.image')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.image')}"
-                                                  style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+                                                  style="font-size: 14px; font-weight: bold;"/>
 
                                     <h:outputText value="( #{conceptView.nodeConcept.nodeimages.size()} )" 
                                                   style="color: #43B572; margin-right: 10px"/>
-
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                                  title="#{langueBean.getMsg('rightbody.concept.tooltip_image')}"
-                                                  icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                </div>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="margin-left: -10px">
+                                    <p:menuButton 
+                                        title="#{langueBean.getMsg('rightbody.concept.tooltip_image')}"
+                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_image')}" 
                                                     actionListener="#{imageBean.reset()}" oncomplete="PF('addImage').show();"
                                                     icon="fas fa-plus" />
-
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_image')}" 
                                                     actionListener="#{imageBean.reset()}"                  
                                                     oncomplete="PF('updateImage').show();" update="idUpdateImage"
@@ -51,26 +100,23 @@
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_image')}" 
                                                     actionListener="#{imageBean.reset()}" oncomplete="PF('deleteImage').show();"
                                                     update="idDeleteImage" icon="fas fa-minus" />
-                                    </p:menuButton> 
+                                    </p:menuButton>     
                                 </div>
                             </h:panelGroup>
 
-                            <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
-                                <div class="col-9" style="margin-left: -10px">
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
+                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
                                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                                    style="font-size: 12px; color: grey; font-style: italic " />
-                                </div>
-                            </h:panelGroup>
-
-                            <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
-                                <div class="col-9" style="margin-left: -10px">
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
                                     <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="images" 
-                                                panelWidth="450" panelHeight="110" autoPlay="false" showCaption="false">
+                                                panelHeight="110" style="text-align: left; " autoPlay="true" showCaption="false" >
                                         <p:graphicImage value="#{images.uri}" title="#{images.copyRight}" url="#{images.uri}"
                                                         alt="#{images.uri}" height="100" style="cursor: pointer;"/>
                                     </p:galleria>
-                                </div>
-                            </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
                         </div>
                     </h:panelGroup>                  
                 </div>
@@ -80,35 +126,35 @@
                 <h:panelGroup id="idConceptGps" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
                     <p:spacer rendered="#{conceptView.nodeConcept.nodeimages.size() !=0}" />                
                     <div class="list-group-item list-group-item-action" style="margin-bottom: -5px">
-                        <div class="row" style="padding-top: 3px; padding-bottom: 5px;">
-                            <div class="col-3" style="text-align: right;">
+                        <div class="row" style="padding-top: 3px; padding-bottom: 5px;margin-left: 0px; ">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}" 
                                               title="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}"
                                               style="font-size: 14px; font-weight: bold; margin-right: 10px"/>
+                            </div>
+                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="margin-left: -10px">
+                                    <p:menuButton 
+                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                              icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_gps_coordinates')}" 
+                                                    actionListener="#{gpsBean.reset()}" oncomplete="PF('setGps').show();"
+                                                    update="idSetGps" icon="fas fa-plus" />
 
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_gps_coordinates')}" 
-                                                actionListener="#{gpsBean.reset()}" oncomplete="PF('setGps').show();"
-                                                update="idSetGps" icon="fas fa-plus" />
-
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}" 
-                                                actionListener="#{gpsBean.reset()}" oncomplete="PF('deleteGps').show();"
-                                                update="idDeleteGps" icon="fas fa-minus"
-                                                disabled="#{conceptView.nodeConcept.nodeGps == null}"/>
-                                </p:menuButton>
-                            </div> 
-
-                            <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps == null}">
-                                <div class="col-9" style="margin-left: -10px">
-                                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
-                                                   style="font-size: 12px; color: grey; font-style: italic " />
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}" 
+                                                    actionListener="#{gpsBean.reset()}" oncomplete="PF('deleteGps').show();"
+                                                    update="idDeleteGps" icon="fas fa-minus"
+                                                    disabled="#{conceptView.nodeConcept.nodeGps == null}"/>
+                                    </p:menuButton>
                                 </div>
                             </h:panelGroup>
 
-                            <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps != null}">
-                                <div class="col-9" style="margin-left: -10px">
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
+                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps == null}">
+                                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
+                                                   style="font-size: 12px; color: grey; font-style: italic " />
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps != null}">
                                     <div class="row">
                                         <div class="col-12">
                                             <h:outputText value="Latitude:" style="font-size: 12px; font-weight: bold; margin-right: 10px"/>
@@ -123,8 +169,8 @@
                                             <leaf:mapAdvanced map="#{conceptView.mapModel}" />
                                         </div>
                                     </div>
-                                </div>
-                            </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
                         </div>
                     </div>
                 </h:panelGroup>
@@ -134,6 +180,11 @@
     <ui:include src="../../../dialog/image/addImage.xhtml" />
     <ui:include src="../../../dialog/image/updateImage.xhtml" />
     <ui:include src="../../../dialog/image/deleteImage.xhtml" /> 
+    
+    <ui:include src="../../../dialog/externalResources/addExternalResource.xhtml" />    
+    <ui:include src="../../../dialog/externalResources/deleteExternalResource.xhtml" />    
+    <ui:include src="../../../dialog/externalResources/updateExternalResource.xhtml" />      
+    
 
     <ui:include src="../../../dialog/gps/setGps.xhtml" />      
     <ui:include src="../../../dialog/gps/deleteGps.xhtml" />
