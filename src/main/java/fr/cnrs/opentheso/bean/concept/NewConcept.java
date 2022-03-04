@@ -451,28 +451,28 @@ public class NewConcept implements Serializable {
         }        
         
         PrimeFaces pf = PrimeFaces.current();
-        if (tree.getSelectedNode() == null) {
-            return;
-        }
-        // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-        if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
-            tree.expandTreeToPath(idConceptParent, idTheso, idLang);
-        }
+        if (tree.getSelectedNode() != null) {
 
-        // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-        
-        /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
-        // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
-        if(tree.getSelectedNode().getChildCount() == 0) {
-            tree.getSelectedNode().setType("concept");
-        }
-        if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
-            tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("formLeftTab:tabTree:tree");
-                pf.executeScript("srollToSelected()");
+            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
+                tree.expandTreeToPath(idConceptParent, idTheso, idLang);
             }
-            tree.getSelectedNode().setExpanded(true);
+
+            // cas où l'arbre est déjà déplié ou c'est un concept sans fils
+
+            /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
+            // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
+            if(tree.getSelectedNode().getChildCount() == 0) {
+                tree.getSelectedNode().setType("concept");
+            }
+            if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
+                tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("formLeftTab:tabTree:tree");
+                    pf.executeScript("srollToSelected()");
+                }
+                tree.getSelectedNode().setExpanded(true);
+            }
         }
         conceptBean.getConcept(idTheso, idConceptParent, idLang);
         isCreated = true;

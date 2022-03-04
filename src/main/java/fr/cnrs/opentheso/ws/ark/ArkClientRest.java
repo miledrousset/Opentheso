@@ -88,7 +88,7 @@ public final class ArkClientRest {
             client.close();
         }          
         getTokenFromString(tokenString);
-        return true;
+        return token != null;
     }       
     
     private void getTokenFromString(String tokenString){
