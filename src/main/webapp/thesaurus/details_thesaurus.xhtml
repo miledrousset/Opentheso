@@ -25,9 +25,9 @@
                     <h:form id="formLeftTab" style=" height: 100%;">
                         <div class="row" style="border-style: none; width: 100%;">
                             <p:tabView id="tabTree" activeIndex="#{leftBodySetting.index}" style="border-style: none; width: 100%;" >
-
+                                <p:ajax event="tabChange" listener="#{tree.onTabTreeChange}" update="containerIndex:formRightTab" />
                                 <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style="height: 100%;">
-                                    <p:tab>
+                                    <p:tab id="viewTabTree">
                                         <f:facet name="title">
                                             <i class="pi pi-sitemap" />
                                             <h:outputText value=" #{langueBean.getMsg('leftbody.concept')}"/>
@@ -36,7 +36,7 @@
                                     </p:tab>                                            
                                 </div>
                                 <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
-                                    <p:tab>
+                                    <p:tab id="viewTabList">
                                         <f:facet name="title">
                                             <i class="pi pi-list" />
                                             <h:outputText value=" #{langueBean.getMsg('leftbody.index')}"/>
@@ -45,7 +45,7 @@
                                     </p:tab>                                            
                                 </div>
                                 <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
-                                    <p:tab>
+                                    <p:tab id="viewTabGroups">
                                         <f:facet name="title">
                                             <i class="pi pi-folder-open" />
                                             <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}"/>
@@ -54,7 +54,7 @@
                                     </p:tab>                                            
                                 </div>
                                 <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
-                                    <p:tab>
+                                    <p:tab id="viewTabConceptTree">
                                         <f:facet name="title">
                                             <i class="pi pi-sitemap" />
                                             <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
@@ -75,7 +75,7 @@
                         <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
                                    style="border-style: none; height: 100%">
 
-                            <p:ajax event="tabChange" listener="#{tree.onTabChange}" update="containerIndex:formRightTab" />
+                            <p:ajax event="tabChange" listener="#{tree.onTabConceptChange}" update="containerIndex:formRightTab" />
 
                             <p:tab id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
                                 <f:facet name="anchor">
@@ -98,7 +98,8 @@
                                 <ui:include  src="rightBodyView/resultSearch.xhtml"/>
                             </p:tab>              
 
-                            <p:tab id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
+                            <p:tab rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
                                 <f:facet name="anchor">
                                     <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                 </f:facet>
@@ -125,6 +126,11 @@
 
     <ui:include src="../dialog/alignment/addAlignmentDialog.xhtml" />
     <ui:include src="../dialog/alignment/updateSingleAlignment.xhtml" />
-    <ui:include src="../dialog/alignment/confirmDeleteAlignment.xhtml" /> 
+
+<!-- Provoque une erreur de deploiement sous Linux -->
+<!--    <ui:include src="../dialog/alignment/confirmDeleteAlignment.xhtml" /> -->
+    <ui:include src="../dialog/alignment/updateAlignment.xhtml" />
+ 
+    
 
 </ui:composition>

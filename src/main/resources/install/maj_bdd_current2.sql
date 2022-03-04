@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS concept_facet
     CONSTRAINT concept_facettes_pkey PRIMARY KEY (id_facet, id_thesaurus, id_concept)
 );
 
+
 create or replace function delete_table_thesaurus_array() returns void as $$
 begin
     IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='thesaurus_array' AND column_name='id_facet') THEN
@@ -354,6 +355,17 @@ begin
 end
 $$language plpgsql;
 
+-- pour la gestion des ressources externes
+--
+CREATE TABLE IF NOT EXISTS external_resources
+(
+    id_concept character varying COLLATE pg_catalog."default" NOT NULL,
+    id_thesaurus character varying COLLATE pg_catalog."default" NOT NULL,
+    description character varying COLLATE pg_catalog."default",
+    id_user integer,
+    external_uri character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
+    CONSTRAINT external_resources_pkey PRIMARY KEY (id_concept, id_thesaurus, external_uri)
+);
 
 ----------------------------------------------------------------------------
 -- exécution des fonctions

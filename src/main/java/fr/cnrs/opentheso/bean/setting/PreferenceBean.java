@@ -88,6 +88,7 @@ public class PreferenceBean implements Serializable {
 
     public String getGoogleAnalytics() {
         PreferencesHelper preferencesHelper = new PreferencesHelper();
+        if(connect == null || connect.getPoolConnexion() == null) return "";
         return preferencesHelper.getCodeGoogleAnalytics(
                 connect.getPoolConnexion());
     }

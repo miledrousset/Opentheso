@@ -1,0 +1,48 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idLogin" header="#{langueBean.getMsg('menu.login')}" widgetVar="login" 
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 50px; font-size: 12px;" >
+        <h:form id="loginForm" class="user">
+            <p:defaultCommand target="validateLogin" />
+            <div class="form-group">
+                <p:inputText class="form-control form-control-user" value="#{currentUser.username}" />
+            </div>
+            <div class="form-group">
+                <p:inputText class="form-control form-control-user" type="password" value="#{currentUser.password}"/>
+            </div>
+            <div class="form-group">
+
+                <h:panelGroup rendered="#{selectedTheso.currentIdTheso == 'tetetete'}">
+                    <div class="custom-control custom-checkbox small">
+                        <input type="checkbox" class="custom-control-input" id="customCheck" />
+                        <label class="custom-control-label" for="customCheck">Connexion LDAP</label>
+                    </div>
+                </h:panelGroup>
+            </div>
+
+            <hr/>
+            <div class="form-group">
+                <p:commandButton id="validateLogin" value="#{langueBean.getMsg('menu.login')}" 
+                                 class="btn btn-primary btn-user btn-block"
+                                 ajax="true" process="@form"
+                                 action="#{currentUser.login()}" update="messageIndex "/>
+            </div>
+
+            <div class="form-group">
+                <a href="index.xhtml" class="btn btn-secondary btn-user btn-block">
+                    #{langueBean.getMsg('btnBack')}
+                </a>
+            </div>
+
+            <hr/>
+
+            <div class="text-center">
+                <p:commandLink value="#{langueBean.getMsg('menu.forgotten_pass')}" />
+            </div>
+        </h:form>
+    </p:dialog>   
+</ui:fragment>

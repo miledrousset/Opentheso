@@ -18,10 +18,12 @@
         <ui:repeat var="alignment" value="#{conceptView.nodeConcept.nodeAlignments}" >
             <div class="row">
                 <div class="col-1" style="margin-top: 4px">
-                    <p:commandLink style="color: #F7A269;" actionListener="#{alignmentManualBean.updateAlignement(alignment)}"
-                                   update="containerIndex:formRightTab">
-                        <i class="pi pi-check-circle" />
-                    </p:commandLink>
+                    <p:commandButton update="containerIndex:formRightTab"
+                                     action="#{alignmentManualBean.reset()}" icon="pi pi-check"
+                                     actionListener="#{alignmentManualBean.updateAlignement(alignment)}"
+                                     oncomplete="PF('updateAlignment').hide();"
+                                     styleClass="rounded-button ui-button-raised"
+                                     style="height: 25px; width: 25px" />
                 </div>
 
                 <div class="col-5">

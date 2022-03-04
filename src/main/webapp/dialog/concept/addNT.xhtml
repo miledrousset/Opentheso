@@ -6,7 +6,8 @@
 
     <p:dialog id="idAddNT" header="#{langueBean.getMsg('rightbody.conceptdialog.add_specific_concept')}" widgetVar="addNT" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px; font-size: 12px;" >
-
+        <h:form id="addNTForm">
+            <p:defaultCommand target="validate" />
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')} : " 
@@ -25,11 +26,12 @@
             <div class="row" style="margin-top: 3px">
                 <div class="col-5" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.new_concept')} : " 
-                                  style="font-weight: bold;"/>  
+                                  style="font-weight: bold;" />
                 </div>
                 <div class="col-7">
                     <p:inputText id="inputId" value="#{addConcept.prefLabel}" 
-                                 style="width: 100%; border-color: #43B572; color: #000" />
+                                 style="width: 100%; border-color: #43B572; color: #000"/>
+                    <p:focus for="inputId"/>
                 </div>
             </div>
 
@@ -84,49 +86,37 @@
                 </div>
             </div>
 
-            <div class="row" style="margin-top: 3px">
-                <div class="col-6" style="margin-top: 3px">
-                    <p:commandButton rendered="#{addConcept.duplicate}" id="buttonRenameForced" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" 
-                                     update="messageIndex" class="btn btn-primary"
-                                     action="#{addConcept.addNewConceptForced(conceptView.nodeConcept.concept.idConcept, selectedTheso.currentLang,
-                                               'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}" 
-                                     style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
-                </div>
-                <div class="col-6">
-                    <p:commandButton rendered="#{addConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" update="messageIndex"
-                                     class="btn btn-primary" action="#{addConcept.cancel()}" icon="pi pi-undo" 
-                                     style="color: white; background: #FF7979; width:100%; font-size: 12px;"/>
-                </div>
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:separator/>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                        <p:messages id="addNTMessage" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                            <p:autoUpdate/>
+                        </p:messages>
+                    </div>
+                </div>                        
+                <p:commandButton rendered="#{!addConcept.duplicate}" value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('addNT').hide();" update="containerIndex:rightTab:idAddNT"
+                                 ajax="true" process="@form"/>
+
+                <p:commandButton id="validate" rendered="#{!addConcept.duplicate}" styleClass="ui-button-primary" value="#{langueBean.getMsg('btnAdd')}"
+                                 update="@form" oncomplete="PF('addNT').show();"
+                                 ajax="true" process="@form"
+                                 action="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
+                                                   selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>                    
+
+
+                <!-- concept duppliqué, forcer la création ou annuler -->
+                <p:commandButton rendered="#{addConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="#{addConcept.setDuplicate(false)}" update="containerIndex:rightTab:idAddNT" oncomplete="PF('addNT').show();"
+                                 ajax="true" process="@form"/>
+
+                <p:commandButton rendered="#{addConcept.duplicate}" styleClass="ui-button-danger" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
+                                 update="messageIndex" oncomplete="PF('addNT').show();"
+                                 ajax="true" process="@form"
+                                 action="#{addConcept.addNewConceptForced(conceptView.nodeConcept.concept.idConcept,
+                                                   selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>   
             </div>
-
-            <f:facet name="footer">
-                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                    <h:panelGroup rendered="#{!newConcept.duplicate}" >
-                        <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                         actionListener="PF('addNT').hide();" update="idAddNT"/>
-
-                        <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
-                                         update="messageIndex idAddNT" oncomplete="PF('addNT').show();"
-                                         actionListener="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
-                                                           selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>                    
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{newConcept.duplicate}" >
-                        <div class="row">
-                            <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                                <p:messages id="addNTMessage" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
-                                    <p:autoUpdate/>
-                                </p:messages>
-                            </div>
-                        </div>                        
-                        <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px"
-                                         actionListener="PF('addNT').hide();" update="idAddNT"/>
-
-                        <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
-                                         update="messageIndex"
-                                         actionListener="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
-                                                           selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>                    
-                    </h:panelGroup>                
-                </div>
-            </f:facet>
+        </h:form>
     </p:dialog>   
 </ui:fragment>

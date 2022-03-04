@@ -3,7 +3,7 @@
       xmlns:p="http://primefaces.org/ui">
 
     <head>
-        <title>Se connecter</title>
+        <title>#{langueBean.getMsg('menu.login')}</title>
         <link href="resources/images/icon_opentheso2.png" rel="icon" />
 
         <link rel="stylesheet" type="text/css" href="resources/css/all.css" />
@@ -25,11 +25,10 @@
                                     <div class="p-5">
 
                                         <div class="text-center">
-                                            <h1 class="h4 text-gray-900 mb-4">Connexion</h1>
+                                            <h1 class="h4 text-gray-900 mb-4">#{langueBean.getMsg('menu.login')}</h1>
                                         </div>
 
-                                        <h:form id="containerIndex" class="user">
-                                            
+                                        <h:form id="loginForm" class="user">
                                             
                                             <p:growl id="growl" showDetail="true" />                                   
                                             
@@ -48,24 +47,27 @@
                                                     </div>
                                                 </h:panelGroup>
                                             </div>
+                                            
+                                        
 
                                             <hr/>
                                             <div class="form-group">
                                                 <p:commandButton value="#{langueBean.getMsg('menu.login')}" 
                                                                  class="btn btn-primary btn-user btn-block"
-                                                                 action="#{currentUser.login()}" update="growl"/>
+                                                                 ajax="true" process="@form"
+                                                                 action="#{currentUser.login()}" update="loginForm growl"/>
                                             </div>
 
                                             <div class="form-group">
                                                 <a href="index.xhtml" class="btn btn-secondary btn-user btn-block">
-                                                    Retour
+                                                    #{langueBean.getMsg('btnBack')}
                                                 </a>
                                             </div>
 
                                             <hr/>
 
                                             <div class="text-center">
-                                                <p:commandLink value="Mot de passe oublié ?" />
+                                                <p:commandLink value="#{langueBean.getMsg('menu.forgotten_pass')}" />
                                             </div>
 
                                                 <!--<ui:include src="dialog/login/forgetPass.xhtml" />-->

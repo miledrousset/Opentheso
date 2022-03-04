@@ -269,8 +269,8 @@ public class ConceptView implements Serializable {
                         idTheso,
                         idLang);
                 if (pf.isAjaxRequest()) {
-                    pf.ajax().update("formLeftTab:tabTree:tree");
-                    pf.ajax().update("formSearch:languageSelect");
+                    pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+                    pf.ajax().update("containerIndex:languageSelect");
                 }
                 selectedTheso.actionFromConceptToOn();
             }
@@ -279,6 +279,7 @@ public class ConceptView implements Serializable {
        if (pf.isAjaxRequest()) {
             pf.ajax().update("indexTitle");
             pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
             pf.ajax().update("containerIndex:formLeftTab");
             pf.ajax().update("containerIndex:formRightTab");
         }

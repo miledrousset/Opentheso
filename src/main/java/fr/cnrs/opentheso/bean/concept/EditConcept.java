@@ -132,9 +132,10 @@ public class EditConcept implements Serializable {
 
         if (prefLabel == null || prefLabel.isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Le label est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
+                PrimeFaces.current().ajax().update("containerIndex:rightTab:idRenameConcept");                
             }
             return;
         }
@@ -150,19 +151,23 @@ public class EditConcept implements Serializable {
         if (idTerm != null) {
             String label = termHelper.getLexicalValue(connect.getPoolConnexion(), idTerm, idTheso, idLang);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", label + " : existe déjà ! voulez-vous continuer ?");
-            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             duplicate = true;
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
+                PrimeFaces.current().ajax().update("containerIndex:renameConceptMessage");
+                PrimeFaces.current().executeScript("PF('renameConcept').show();");
             }
             return;
         }
         if (termHelper.isAltLabelExist(connect.getPoolConnexion(), idTerm, idTheso, idLang)) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " un synonyme existe déjà ! voulez-vous continuer ?");
-            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             duplicate = true;
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
+                PrimeFaces.current().ajax().update("containerIndex:renameConceptMessage");
+                PrimeFaces.current().executeScript("PF('renameConcept').show();");
             }
             return;
         }
@@ -202,7 +207,7 @@ public class EditConcept implements Serializable {
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso);
         if (idTerm == null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
             }
@@ -214,7 +219,7 @@ public class EditConcept implements Serializable {
             if (!termHelper.updateTraduction(connect.getPoolConnexion(),
                     prefLabel, idTerm, idLang, idTheso, idUser)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-                FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("messageIndex");
                 }
@@ -224,7 +229,7 @@ public class EditConcept implements Serializable {
             if (!termHelper.addTraduction(connect.getPoolConnexion(),
                     prefLabel, idTerm, idLang, "", "", idTheso, idUser)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
-                FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:renameForm:newPrefLabel", msg);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("messageIndex");
                 }
@@ -240,12 +245,15 @@ public class EditConcept implements Serializable {
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été modifié");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().executeScript("PF('renameConcept').hide();");
-
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+            PrimeFaces.current().ajax().update("containerIndex::idRenameConcept");                
+            PrimeFaces.current().executeScript("PF('renameConcept').hide();");
+        }        
+
+
+
+
 
         if (tree.getSelectedNode() != null) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
@@ -255,10 +263,9 @@ public class EditConcept implements Serializable {
             }
             ((TreeNodeData) tree.getSelectedNode().getData()).setName(prefLabel);
             if (pf.isAjaxRequest()) {
-                pf.ajax().update("formLeftTab:tabTree:tree");
+                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
             }
         }
-
         reset("");
     }
 

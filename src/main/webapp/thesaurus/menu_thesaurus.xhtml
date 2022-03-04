@@ -21,7 +21,7 @@
                 <span class="nav-link">
                     <i class="fas fa-fw fa-tachometer-alt" />
                     <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
-                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">Thésaurus</p:commandLink>
+                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">#{langueBean.getMsg('menu.thesaurus')}</p:commandLink>
                 </span>
             </li>
 
@@ -30,7 +30,7 @@
                     <span class="nav-link">
                         <i class="fas fa-fw fa-cog"></i>
                         <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
-                                       style="font-size: 12px; color: #FFF; margin-left: 5px;text-decoration: none;">Candidat</p:commandLink>
+                                       style="font-size: 12px; color: #FFF; margin-left: 5px;text-decoration: none;">#{langueBean.getMsg('candidat.titre')}</p:commandLink>
                     </span>
                 </li>
             </h:panelGroup>
@@ -40,7 +40,7 @@
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                        aria-expanded="true" aria-controls="collapseTwo">
                         <i class="fas fa-fw fa-user"></i>
-                        <span style="font-size: 12px;">Profil</span>
+                        <span style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;">#{langueBean.getMsg('menu.profile')}</span>
                     </a>
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
@@ -68,7 +68,7 @@
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                        aria-expanded="true" aria-controls="collapseUtilities">
                         <i class="fas fa-fw fa-briefcase"></i>
-                        <span style="font-size: 12px;">Boite à outils</span>
+                        <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.toolbox')}</span>
                     </a>
                     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
@@ -93,7 +93,7 @@
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
                        aria-expanded="true" aria-controls="collapseParams">
                         <i class="fas fa-fw fa-wrench"></i>
-                        <span style="font-size: 12px;">Paramètres</span>
+                        <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.setting')}</span>
                     </a>
                     <div id="collapseParams" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">

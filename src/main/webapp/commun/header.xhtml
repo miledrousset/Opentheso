@@ -75,7 +75,7 @@
             <p:panel rendered="#{currentUser.nodeUser == null}" style="padding: 0; border: none; background: none;">
                 <li class="nav-item dropdown no-arrow">
                     <h:link class="nav-link dropdown-toggle" outcome="login">
-                        <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px;">Se connecter</span>
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px;">#{langueBean.getMsg('menu.login')}</span>
                         <img class="img-profile rounded-circle" src="../resources/img/logout.png" />
                     </h:link>
                 </li>

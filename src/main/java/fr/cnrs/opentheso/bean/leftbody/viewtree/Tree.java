@@ -458,18 +458,47 @@ public class Tree implements Serializable {
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");
     }
 
-    public void onTabChange(TabChangeEvent event) {
-
+    public void onTabConceptChange(TabChangeEvent event) {
         if (event.getTab().getId().equals("viewTabAlignement")) {
-
+            rightBodySetting.setIndex("3");
+            indexSetting.setIsValueSelected(true);            
+            
             alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     conceptBean.getSelectedLang());
             
             alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
         }
+        if (event.getTab().getId().equals("viewTabSearch")) {
+            rightBodySetting.setIndex("2");
+            indexSetting.setIsValueSelected(true);            
+        }    
+        if (event.getTab().getId().equals("viewTabGroup")) {
+            rightBodySetting.setIndex("1");
+            indexSetting.setIsValueSelected(true);            
+        }         
+        if (event.getTab().getId().equals("viewTabConcept")) {
+            rightBodySetting.setIndex("0");
+            indexSetting.setIsValueSelected(true);            
+        }          
     }
-
+    public void onTabTreeChange(TabChangeEvent event) {
+        if (event.getTab().getId().equals("viewTabTree")) {
+            leftBodySetting.setIndex("0");
+        }
+        if (event.getTab().getId().equals("viewTabList")) {
+            leftBodySetting.setIndex("1");
+        }
+        if (event.getTab().getId().equals("viewTabGroups")) {
+            leftBodySetting.setIndex("2");
+        }       
+        if (event.getTab().getId().equals("viewTabConceptTree")) {
+            leftBodySetting.setIndex("3");
+        }        
+    }
+    
+    
+    
     public String getIdConceptSelected() {
         return idConceptSelected;
     }
@@ -532,7 +561,7 @@ public class Tree implements Serializable {
             selectedNode = treeNodeParent;
             treeNodeParent = root;
         }
-        leftBodySetting.setIndex("0");
+    //    leftBodySetting.setIndex("0");
         PrimeFaces.current().executeScript("srollToSelected();");
     }
 

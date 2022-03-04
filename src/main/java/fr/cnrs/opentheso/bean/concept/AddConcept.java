@@ -99,6 +99,10 @@ public class AddConcept implements Serializable {
             duplicate = true;
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un prefLabel existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (PrimeFaces.current().isAjaxRequest()) {
+                PrimeFaces.current().ajax().update("containerIndex:rightTab:addNTMessage");
+                PrimeFaces.current().ajax().update("containerIndex:rightTab:idAddNT");
+            }            
             return;
         }
         // verification dans les altLabels
@@ -109,7 +113,12 @@ public class AddConcept implements Serializable {
             duplicate = true;
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un synonyme existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
+
+            if (PrimeFaces.current().isAjaxRequest()) {
+                PrimeFaces.current().ajax().update("containerIndex:rightTab:addNTMessage");
+                PrimeFaces.current().ajax().update("containerIndex:rightTab:idAddNT");
+            }
+            return;        
         }
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
@@ -226,7 +235,6 @@ public class AddConcept implements Serializable {
             PrimeFaces pf = PrimeFaces.current();
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
-                pf.ajax().update("containerIndex:formLeftTab");
             }
             FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concept ajouté avec succès !");
             FacesContext.getCurrentInstance().addMessage(null, msg2);
@@ -235,34 +243,32 @@ public class AddConcept implements Serializable {
         }
 
         PrimeFaces pf = PrimeFaces.current();
-        if (tree.getSelectedNode() == null) {
-            return;
-        }
-        // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-        if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
-            tree.expandTreeToPath(idConceptParent, idTheso, idLang);
-        }
-
-        // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-        /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
-        // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
-        if (tree.getSelectedNode().getChildCount() == 0) {
-            tree.getSelectedNode().setType("concept");
-        }
-        if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
-            tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:formLeftTab");
-                pf.executeScript("srollToSelected()");
+        if (tree.getSelectedNode() != null) {
+            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
+                tree.expandTreeToPath(idConceptParent, idTheso, idLang);
             }
-            tree.getSelectedNode().setExpanded(true);
+
+            // cas où l'arbre est déjà déplié ou c'est un concept sans fils
+            /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
+            // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
+            if (tree.getSelectedNode().getChildCount() == 0) {
+                tree.getSelectedNode().setType("concept");
+            }
+            if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
+                tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
+                if (pf.isAjaxRequest()) {
+                    pf.executeScript("srollToSelected()");
+                }
+                tree.getSelectedNode().setExpanded(true);
+            }
         }
         conceptBean.getConcept(idTheso, idConceptParent, idLang);
         isCreated = true;
 
-        if (pf.isAjaxRequest()) {
+   /*     if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex:formRightTab");
-        }
+        }*/
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);

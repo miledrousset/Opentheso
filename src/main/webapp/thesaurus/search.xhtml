@@ -104,7 +104,7 @@
                                                          class="form-control" title="#{langueBean.getMsg('search.change_thesaurus_language')}"
                                                          style="background: transparent; border-color: transparent; background-color: transparent; font-size: 12px;
                                                          padding-top: 5px; width: 100%; padding-left: 5px;">
-                                            <p:ajax event="valueChange" update="containerIndex" listener="#{selectedTheso.changeLang()}" />
+                                            <p:ajax event="valueChange"  update="containerIndex" listener="#{selectedTheso.changeLang()}" />
                                             <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
                                             <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all"/>
                                         </p:selectOneMenu>

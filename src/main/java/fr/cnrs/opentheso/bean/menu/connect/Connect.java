@@ -129,6 +129,12 @@ public class Connect implements Serializable{
         return poolConnexion != null;
     }
 
+    public String status(){
+        if(poolConnexion != null) return "OK! Connected";
+        else
+            return "!! Failed !!";
+    }    
+    
     public void closeConnexion() {
         if(poolConnexion != null)
             poolConnexion.close();

@@ -4,6 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
+    
     <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
         <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
 
@@ -13,7 +14,7 @@
                     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.broader')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.broader')}"
-                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
+                                      style="font-size: 14px; font-weight: bold;color: #8f8f8f; margin-right: 7px"/>
                     </div>
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: end"> 
                         <i class="fas fa-level-up-alt" style="color: #78261f; margin-right: 10px"/>
@@ -44,16 +45,14 @@
                                 <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
                                                title="#{value.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"
-                                               style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
+                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"/>
 
                                 <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"
-                                               style="color: #FF7979; font-size: 14px;" styleClass="textOpentheso"/>  
+                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"/>  
 
-                                <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/> 
+                                <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/> 
                             </ui:repeat>
                         </h:panelGroup>
                     </div>
@@ -66,7 +65,7 @@
                     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.narrower')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.narrower')}"
-                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
+                                      style="font-size: 14px; font-weight: bold;color: #8f8f8f; margin-right: 7px"/>
                     </div>
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: end">
                         <i class="fas fa-level-down-alt" style="color: #78261f; margin-right: 10px"/>
@@ -103,14 +102,12 @@
                                 <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
                                                title="#{value.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
+                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
                                 <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #FF7979; font-size: 14px;" styleClass="textOpentheso"/> 
-                                <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979"/>    
+                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/> 
+                                <h:outputText rendered="#{!status1.last}" value=", " style="color: #FF7979"/>    
                             </ui:repeat>
 
                             <!-- plus de 20 NT -->
@@ -120,16 +117,14 @@
                                                title="#{value.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" 
-                                               update="containerIndex:formRightTab indexTitle"
-                                               style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>
+                                               update="containerIndex:formRightTab indexTitle"/>
 
                                 <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})" 
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                style="color: #FF7979; font-size: 14px;"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab"
-                                               styleClass="textOpentheso"/>  
-                                <h:outputText value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab"/>  
+                                <h:outputText value=", " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
 
                             <p:commandLink rendered="#{conceptView.haveNext}"
@@ -149,7 +144,7 @@
                     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.related')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.related')}"
-                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
+                                      style="font-size: 14px; font-weight: bold;color: #8f8f8f; margin-right: 7px"/>
                     </div>
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: end"> 
                         <i class="fas fa-arrows-alt-h" style="color: #78261f; margin-right: 10px"/>
@@ -174,16 +169,14 @@
                                 <p:commandLink rendered="#{rt.title != ''}" value="#{rt.title}"
                                                title="#{rt.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #43B572;background: none; box-shadow: none; border: none; font-size: 14px;" styleClass="textOpentheso"/>
+                                                         rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
 
                                 <p:commandLink rendered="#{rt.title == ''}" value="(#{rt.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"
-                                               style="color: #FF7979; background: none; box-shadow: none; border: none; font-size: 14px;" styleClass="textOpentheso"/> 
+                                                         rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/> 
 
-                                <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
+                                <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
                             </ui:repeat>             
                         </h:panelGroup>
                     </div>
@@ -199,7 +192,7 @@
                 <div class="row" style="margin-left: 0px;">
                     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
-                                      style="font-size: 14px; font-weight: bold; margin-right: 7px"/>
+                                      style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 7px"/>
 
 
                     </div>
@@ -231,7 +224,7 @@
                             <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
                                 <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})" title="#{conceptView.nodeConcept.concept.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                               update="containerIndex indexTitle" style="color: #43B572; font-size: 14px;" styleClass="textOpentheso"/>  
+                                               update="containerIndex indexTitle"/>  
                                 <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
                             </ui:repeat>
                         </h:panelGroup>

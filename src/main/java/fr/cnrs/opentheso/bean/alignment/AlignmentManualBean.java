@@ -8,7 +8,6 @@ package fr.cnrs.opentheso.bean.alignment;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentType;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -35,7 +34,7 @@ public class AlignmentManualBean implements Serializable {
     @Inject private AlignmentBean alignmentBean;
     @Inject private ConceptView conceptView;
     @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;     
+    @Inject private CurrentUser currentUser;
     
     private ArrayList<NodeAlignmentType> nodeAlignmentTypes;
     
@@ -216,6 +215,8 @@ public class AlignmentManualBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "alignement ajouté avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+        
+        alignmentBean.getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
