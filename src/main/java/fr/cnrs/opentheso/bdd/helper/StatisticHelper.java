@@ -260,7 +260,7 @@ public class StatisticHelper {
         Statement stmt;
         ResultSet resultSet;
         List<ConceptStatisticData> conceptStatisticDatas = new ArrayList<>();
-        String groupFilter = "";
+        String groupFilter = null;
         if(idGroup!= null && !idGroup.isEmpty()) {
             groupFilter = " and concept_group_concept.idgroup = '" + idGroup + "'";
         }
@@ -270,33 +270,58 @@ public class StatisticHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT concept.id_concept, term.lexical_value, concept.created, concept.modified, users.username"
-                            + " from concept, concept_group_concept, preferred_term, term, users"
-                            + " where "
-                            + " concept.id_concept = concept_group_concept.idconcept"
-                            + " and"
-                            + " concept.id_thesaurus = concept_group_concept.idthesaurus"
-                            + " and"                            
-                            + " concept.id_concept = preferred_term.id_concept"
-                            + " and"
-                            + " concept.id_thesaurus = preferred_term.id_thesaurus"
-                            + " and"
-                            + " preferred_term.id_thesaurus = term.id_thesaurus"
-                            + " and"
-                            + " preferred_term.id_term = term.id_term"
-                            + " and"
-                            + " term.contributor = users.id_user"
-                            + " and"
-                            + " term.id_thesaurus = '" + idThesaurus + "'"
-                            + " and"
-                            + " term.lang = '" + idLang + "'"
-                            + " and"
-                            + " concept.modified <= '" + datefin + "'"
-                            + " and"
-                            + " concept.modified >= '" + dateDebut + "'"
-                            + groupFilter
-                            
-                            + " ORDER BY concept.modified DESC LIMIT " + limit;                    
+                    String query = "";
+                    if(groupFilter == null) {
+                        query = "SELECT concept.id_concept, term.lexical_value, concept.created, concept.modified, users.username"
+                               + " from concept, preferred_term, term, users"
+                               + " where "
+                               + " concept.id_concept = preferred_term.id_concept"
+                               + " and"
+                               + " concept.id_thesaurus = preferred_term.id_thesaurus"
+                               + " and"
+                               + " preferred_term.id_thesaurus = term.id_thesaurus"
+                               + " and"
+                               + " preferred_term.id_term = term.id_term"
+                               + " and"
+                               + " term.contributor = users.id_user"
+                               + " and"
+                               + " term.id_thesaurus = '" + idThesaurus + "'"
+                               + " and"
+                               + " term.lang = '" + idLang + "'"
+                               + " and"
+                               + " concept.modified BETWEEN '" + dateDebut + "'"
+                               + " and"
+                               + " '" + datefin + "'"
+                               + " ORDER BY concept.modified DESC LIMIT " + limit;                         
+                    } else {
+                        query = "SELECT concept.id_concept, term.lexical_value, concept.created, concept.modified, users.username"
+                               + " from concept, concept_group_concept, preferred_term, term, users"
+                               + " where "
+                               + " concept.id_concept = concept_group_concept.idconcept"
+                               + " and"
+                               + " concept.id_thesaurus = concept_group_concept.idthesaurus"
+                               + " and"                            
+                               + " concept.id_concept = preferred_term.id_concept"
+                               + " and"
+                               + " concept.id_thesaurus = preferred_term.id_thesaurus"
+                               + " and"
+                               + " preferred_term.id_thesaurus = term.id_thesaurus"
+                               + " and"
+                               + " preferred_term.id_term = term.id_term"
+                               + " and"
+                               + " term.contributor = users.id_user"
+                               + " and"
+                               + " term.id_thesaurus = '" + idThesaurus + "'"
+                               + " and"
+                               + " term.lang = '" + idLang + "'"
+                               + " and"
+                               + " concept.modified BETWEEN '" + dateDebut + "'"
+                               + " and"
+                               + " '" + datefin + "'"
+                               + groupFilter
+
+                               + " ORDER BY concept.modified DESC LIMIT " + limit;  
+                    }
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                      while (resultSet.next()) {
@@ -320,7 +345,7 @@ public class StatisticHelper {
             log.error("Error while getting List statistic of Concept in thesaurus : " + idThesaurus, sqle);
         }
         return conceptStatisticDatas;
-    }      
+    }    
 
     
     

@@ -1605,8 +1605,8 @@ public class AlignmentBean implements Serializable {
         // ajout de l'alignement séléctionné
         if (!gpsHelper.insertCoordonees(
                 connect.getPoolConnexion(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
+                idConcept,
+                idTheso,
                 selectedNodeAlignment.getLat(),
                 selectedNodeAlignment.getLng())) {
 

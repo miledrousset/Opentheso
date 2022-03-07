@@ -52,22 +52,25 @@ public class FusionService implements Serializable {
 
         fusionDone = false;
         fusionBtnEnable = true;
-        if(conceptsModifies == null)
+        if (conceptsModifies == null) {
             conceptsModifies = new ArrayList<>();
-        else
+        } else {
             conceptsModifies.clear();
-        if(conceptsAjoutes == null)
+        }
+        if (conceptsAjoutes == null) {
             conceptsAjoutes = new ArrayList<>();
-        else
-            conceptsAjoutes.clear();        
-        if(conceptsExists == null)
+        } else {
+            conceptsAjoutes.clear();
+        }
+        if (conceptsExists == null) {
             conceptsExists = new ArrayList<>();
-        else
-            conceptsExists.clear(); 
-        
+        } else {
+            conceptsExists.clear();
+        }
+
         ArrayList<NodeNote> nodeNotesLocal;
         ArrayList<NodeEM> nodeEMsLocal;
-        
+
         ConceptHelper conceptHelper = new ConceptHelper();
         ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
         importRdf4jHelper.setDs(connect.getPoolConnexion());
@@ -76,9 +79,7 @@ public class FusionService implements Serializable {
         NoteHelper noteHelper = new NoteHelper();
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         String workLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), thesoSelected.getId());
-        
-        
-        
+
         for (SKOSResource conceptSource : sourceSkos.getConceptList()) {
             if (!StringUtils.isEmpty(conceptSource.getIdentifier())) {
 
@@ -86,22 +87,23 @@ public class FusionService implements Serializable {
                 importRdf4jHelper.setRdf4jThesaurus(sourceSkos);
                 AddConceptsStruct acs = new AddConceptsStruct();
                 importRdf4jHelper.initAddConceptsStruct(acs, conceptSource, thesoSelected.getId(), false);
-                importRdf4jHelper.addRelation(acs, thesoSelected.getId());  
-                 
+                importRdf4jHelper.addRelation(acs, thesoSelected.getId());
+
                 // récupération du concept Local
                 NodeConcept conceptFound = conceptHelper.getConcept(connect.getPoolConnexion(),
                         conceptSource.getIdentifier(),
                         thesoSelected.getId(),
                         workLang, -1, -1);
 
-                
                 if (conceptFound == null && !conceptSource.getLabelsList().isEmpty()) {
                     importRdf4jHelper.addConceptToBdd(acs, thesoSelected.getId(), false);
                     conceptsAjoutes.add(acs.concept.getIdConcept() + " - " + conceptSource.getLabelsList().get(0).getLabel());
                 } else {
-                    if(conceptFound == null) return;
+                    if (conceptFound == null) {
+                        return;
+                    }
                     boolean isUpdated = false;
-                    
+
                     // Traduction OK validée #MR
                     //alignment
                     if (!CollectionUtils.isEmpty(acs.nodeAlignments)) {
@@ -120,7 +122,7 @@ public class FusionService implements Serializable {
                             }
                         }
                     }
-                    
+
                     // Traduction OK validée #MR
                     // Synonymes : NonPreferredTerms
                     if (!CollectionUtils.isEmpty(acs.nodeEMList)) {
@@ -128,8 +130,8 @@ public class FusionService implements Serializable {
                         for (NodeEM nodeEM : acs.nodeEMList) {
                             if (!isSynonymeExist(nodeEM, nodeEMsLocal)) {
                                 Term term = new Term();
-                                term.setId_term(acs.nodeTerm.getIdTerm());
-                                term.setId_concept(conceptSource.getIdentifier());
+                                term.setId_term(conceptFound.getTerm().getId_term());
+                                term.setId_concept(conceptFound.getConcept().getIdConcept());
                                 term.setLexical_value(nodeEM.getLexical_value());
                                 term.setLang(nodeEM.getLang());
                                 term.setId_thesaurus(conceptFound.getConcept().getIdThesaurus());
@@ -148,15 +150,17 @@ public class FusionService implements Serializable {
                         for (NodeTermTraduction nodeTermTraduction : acs.nodeTermTraductionList) {
                             if (!isTraductionExist(nodeTermTraduction, conceptFound)) {
                                 Term term = new Term();
-                                term.setId_term(acs.nodeTerm.getIdTerm());
-                                term.setId_concept(conceptSource.getIdentifier());
+                                term.setId_term(conceptFound.getTerm().getId_term());
+                                term.setId_concept(conceptFound.getConcept().getIdConcept());
                                 term.setLexical_value(nodeTermTraduction.getLexicalValue());
                                 term.setLang(nodeTermTraduction.getLang());
                                 term.setId_thesaurus(conceptFound.getConcept().getIdThesaurus());
-                                if(isExistLang(nodeTermTraduction.getLang(), conceptFound.getNodeTermTraductions()) ){
+                                if (termHelper.isTermExistInThisLang(connect.getPoolConnexion(),
+                                                term.getId_term(), nodeTermTraduction.getLang(),
+                                                term.getId_thesaurus())) {
                                     termHelper.updateTermTraduction(connect.getPoolConnexion(),
                                             term,
-                                            currentUser.getNodeUser().getIdUser());  
+                                            currentUser.getNodeUser().getIdUser());
                                 } else {
                                     termHelper.addTraduction(connect.getPoolConnexion(),
                                             nodeTermTraduction.getLexicalValue(),
@@ -165,7 +169,7 @@ public class FusionService implements Serializable {
                                             "fusion",
                                             "",
                                             conceptFound.getConcept().getIdThesaurus(),
-                                            currentUser.getNodeUser().getIdUser());                                        
+                                            currentUser.getNodeUser().getIdUser());
                                 }
                                 isUpdated = true;
                             }
@@ -178,18 +182,20 @@ public class FusionService implements Serializable {
                         nodeNotesLocal = noteHelper.getListNotesTermAllLang(connect.getPoolConnexion(), acs.nodeTerm.getIdTerm(), conceptFound.getConcept().getIdThesaurus());
                         for (NodeNote nodeNote : acs.nodeNotes) {
                             /// détecter le type de note avant 
-                            if(nodeNote.getNotetypecode().equalsIgnoreCase("definition")) {
-                                if(!isDefinitionExist(nodeNote, nodeNotesLocal)) {
+                            if (nodeNote.getNotetypecode().equalsIgnoreCase("definition")) {
+                                if (!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(),
+                                        conceptFound.getTerm().getId_term(), 
+                                        conceptFound.getConcept().getIdThesaurus(),
+                                        nodeNote.getLang(), nodeNote.getLexicalvalue(), "definition")) {
                                     noteHelper.addTermNote(connect.getPoolConnexion(),
-                                            acs.nodeTerm.getIdTerm(),
+                                            conceptFound.getTerm().getId_term(),
                                             nodeNote.getLang(),
                                             conceptFound.getConcept().getIdThesaurus(),
                                             nodeNote.getLexicalvalue(),
                                             nodeNote.getNotetypecode(),
                                             nodeNote.getIdUser());
-                                    isUpdated = true;                                    
+                                    isUpdated = true;
                                 }
-                         
                             }
                         }
                     }

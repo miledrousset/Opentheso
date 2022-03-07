@@ -113,10 +113,6 @@ public class StatistiqueService {
         if (dateDebut != null && dateFin == null) {
             dateFin = new Date();
         }
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-        String debut = dateDebut == null ? null : formatter.format(dateDebut); 
-        String fin = dateFin == null ? null : formatter.format(dateFin); 
         int limit;
         try {
             limit = Integer.parseInt(nbrResultat);
@@ -132,33 +128,8 @@ public class StatistiqueService {
         } else {
             result = new StatisticHelper().getStatConceptByDateAndCollection(
                     connect.getPoolConnexion(), idTheso, collectionId, idLang,
-                    debut, fin, limit);
+                    dateDebut.toString(), dateFin.toString(), limit);
         }
-       
-        
-            // désactivé par Miled, la focntion ne renvoie pas le bon résultat 
-   /*         result = new ConceptHelper().searchAllCondidats(connect.getPoolConnexion(), idTheso, 
-                    idLang, debut, fin, collectionId, nbrResultat);*/
-
-
-
-        /*    TermHelper termHelper = new TermHelper();
-
-            result.forEach(concept -> {
-                
-                String label = termHelper.getThisTerm(connect.getPoolConnexion(), concept.getIdConcept(),
-                        idTheso, idLang).getLexical_value();
-                
-                concept.setLabel(label);
-
-                if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), label, idTheso, idLang)) {
-                    concept.setType("skos:prefLabel");
-                } else {
-                    concept.setType("skos:altLabel");
-                }
-            });*/
-
-
         return result;
     }
 
