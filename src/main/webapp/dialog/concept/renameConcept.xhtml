@@ -42,7 +42,7 @@
                 </div>                  
 
                 <p:commandButton rendered="#{editConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="#{editConcept.setDuplicate(false)}" update="containerIndex:rightTab:idRenameConcept" oncomplete="PF('renameConcept').show();"
+                                 actionListener="#{editConcept.setDuplicate(false)}" update="containerIndex:idRenameConcept" oncomplete="PF('renameConcept').show();"
                                  ajax="true" process="@form"/>
 
                 <p:commandButton rendered="#{editConcept.duplicate}" styleClass="ui-button-danger" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
@@ -58,11 +58,11 @@
 
                 <p:commandButton rendered="#{!editConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  ajax="true" process="@form"
-                                 actionListener="PF('renameConcept').hide();" update="containerIndex:rightTab:idRenameConcept"/>
+                                 actionListener="PF('renameConcept').hide();" update="containerIndex:idRenameConcept"/>
 
                 <p:commandButton rendered="#{!editConcept.duplicate}" id="renameConceptSubmit" 
                                  styleClass="ui-button-primary" value="#{langueBean.getMsg('btnValidate')}"
-                                 update="messageIndex containerIndex:rightTab:idRenameConcept"  ajax="true" process="@form" 
+                                 update="messageIndex containerIndex:idRenameConcept"  ajax="true" process="@form" 
                                  action="#{editConcept.updateLabel(selectedTheso.currentIdTheso, 
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
             </div>

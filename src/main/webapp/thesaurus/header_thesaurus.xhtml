@@ -48,7 +48,7 @@
                     <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                          aria-labelledby="alertsDropdown" style="font-size: 12px;">
                         <h6 class="dropdown-header" style="font-size: 12px;">
-                            Les langues disponibles
+                            #{langueBean.getMsg('menu.availableLanguages')}
                         </h6>
                         
                         <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('fr')}"
@@ -57,7 +57,7 @@
                                 <img src="resources/img/fr.png" width="30px" />
                             </div>
                             <div>
-                                <span class="font-weight-bold" style="font-size: 12px;">Français</span>
+                                <span class="font-weight-bold" style="font-size: 12px;">#{langueBean.getMsg('menu.french')}</span>
                             </div>
                         </p:commandLink>
                         <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('en')}"
@@ -66,7 +66,7 @@
                                 <img src="resources/img/en.png" width="30px" />
                             </div>
                             <div>
-                                <span class="font-weight-bold" style="font-size: 12px;">Anglais</span>
+                                <span class="font-weight-bold" style="font-size: 12px;">#{langueBean.getMsg('menu.english')}</span>
                             </div>
                         </p:commandLink>
                     </div>
@@ -77,7 +77,7 @@
                 <!-- Nav Item - User Information -->
                 <p:panel rendered="#{currentUser.nodeUser == null}" style="padding: 0;  border: none; background: none;">
                     <li class="nav-item dropdown no-arrow">
-                        <p:commandLink class="nav-link dropdown-toggle" update="containerIndex:idLogin" oncomplete="PF('login').show();" >
+                        <p:commandLink class="nav-link dropdown-toggle" update="idLogin" oncomplete="PF('login').show();" >
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px; margin-top: 20px;">#{langueBean.getMsg('menu.login')}</span>
                             <img class="img-profile rounded-circle" src="resources/img/logout.png" style="margin-top: 20px;" />
                         </p:commandLink>>
@@ -94,14 +94,15 @@
                             <img class="img-profile rounded-circle" src="resources/img/undraw_profile.svg" style="margin-top: 15px;" />
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#" style="font-size: 12px;">
-                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Profile
-                            </a>
+                            <p:commandLink class="dropdown-item" actionListener="#{menuBean.redirectToMyProfilePage()}" style="font-size: 12px; text-decoration:none; color: #818183">
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"> </i>
+                                #{langueBean.getMsg('menu.profile')}
+                            </p:commandLink>
+                            
                             <div class="dropdown-divider"></div>
-                            <p:link class="dropdown-item" href="#" onclick="PF('logout').show();" style="font-size: 12px;">
+                            <p:link class="dropdown-item" href="#" onclick="PF('logout').show();" style="font-size: 12px; color: #818183">
                                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Logout
+                                #{langueBean.getMsg('menu.logout')}
                             </p:link>
                         </div>
                     </li>
@@ -109,12 +110,12 @@
             </ul>
         </nav>
 
-        <p:dialog id="logoutID" header="Déconnexion" widgetVar="logout" 
+        <p:dialog id="logoutID" header="#{langueBean.getMsg('menu.logout')}" widgetVar="logout" 
                   width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
             <div class="row">
                 <div class="col-12">
-                    <h:outputText value="Voullez vous vraiment vous déconnecter ?" />  
+                    <h:outputText value="#{langueBean.getMsg('menu.validateLogout')}" />  
                 </div>
             </div>
 
@@ -132,7 +133,7 @@
         </p:dialog>
 
         <ui:include src="../dialog/session/clearSession.xhtml" />
-        <ui:include src="../dialog/login/login.xhtml" />        
+     
     </div>
     <!-- FIN HEADER -->
 

@@ -100,8 +100,8 @@ public class AddConcept implements Serializable {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un prefLabel existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (PrimeFaces.current().isAjaxRequest()) {
-                PrimeFaces.current().ajax().update("containerIndex:rightTab:addNTMessage");
-                PrimeFaces.current().ajax().update("containerIndex:rightTab:idAddNT");
+                PrimeFaces.current().ajax().update("containerIndex:addNTMessage");
+                PrimeFaces.current().ajax().update("containerIndex:idAddNT");
             }            
             return;
         }
@@ -115,8 +115,8 @@ public class AddConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
 
             if (PrimeFaces.current().isAjaxRequest()) {
-                PrimeFaces.current().ajax().update("containerIndex:rightTab:addNTMessage");
-                PrimeFaces.current().ajax().update("containerIndex:rightTab:idAddNT");
+                PrimeFaces.current().ajax().update("containerIndex:addNTMessage");
+                PrimeFaces.current().ajax().update("containerIndex:idAddNT");
             }
             return;        
         }
@@ -239,6 +239,7 @@ public class AddConcept implements Serializable {
             FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concept ajouté avec succès !");
             FacesContext.getCurrentInstance().addMessage(null, msg2);
             init();
+            update();
             return;
         }
 
@@ -277,11 +278,16 @@ public class AddConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg2);
         }
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }
-
         init();
+        update();
+    }
+    private void update(){
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");            
+            PrimeFaces.current().ajax().update("containerIndex:addNTMessage");
+            PrimeFaces.current().ajax().update("containerIndex:idAddNT");
+            PrimeFaces.current().ajax().update("containerIndex:addNTForm");            
+        }
     }
 
     public void reset() {
@@ -305,7 +311,7 @@ public class AddConcept implements Serializable {
     private void init() {
         duplicate = false;
         idNewConcept = null;
-        prefLabel = "";
+        setPrefLabel("");
     }
 
     public void cancel() {

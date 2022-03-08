@@ -5,118 +5,118 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddNT" header="#{langueBean.getMsg('rightbody.conceptdialog.add_specific_concept')}" widgetVar="addNT" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px; font-size: 12px;" >
-        <h:form id="addNTForm">
-            <p:defaultCommand target="validate" />
-            <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')} : " 
-                                  style="font-weight: bold;" /> 
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-                    <p:commandLink style="color: #FF7979" action="#{addConcept.infos}" update="messageIndex">
-                        <i class="pi pi-exclamation-circle" />
-                    </p:commandLink>   
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="margin-left: 10px; color: black; margin-left: 5px" /> 
-                </div>
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')} : " 
+                              style="font-weight: bold;" /> 
+
+                <p:commandLink style="color: #FF7979" action="#{addConcept.infos}" update="messageIndex">
+                    <i class="pi pi-exclamation-circle" />
+                </p:commandLink>   
             </div>
-
-            <div class="row" style="margin-top: 3px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.new_concept')} : " 
-                                  style="font-weight: bold;" />
-                </div>
-                <div class="col-7">
-                    <p:inputText id="inputId" value="#{addConcept.prefLabel}" 
-                                 style="width: 100%; border-color: #43B572; color: #000"/>
-                    <p:focus for="inputId"/>
-                </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                              style="margin-left: 10px; color: black; margin-left: 5px" /> 
             </div>
+        </div>
 
-            <div class="row" style="margin-top: 3px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.relationship')}" 
-                                  style="font-weight: bold;"/>  
-                </div>
-                <div class="col-7">
-                    <p:selectOneMenu id="relationTypeNT" value="#{addConcept.relationType}" 
-                                     style="width: 100%; background: white; border-color: #43B572; color: #000">
-                        <f:selectItems value="#{addConcept.typesRelationsNT}" var="typesNT"
-                                       itemLabel="#{typesNT.description_fr} (#{typesNT.relationType})" itemValue="#{typesNT.relationType}"/>
-                    </p:selectOneMenu> 
-                </div>
+        <div class="row" style="margin-top: 3px">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.new_concept')} : " 
+                              style="font-weight: bold;"/>  
             </div>
-
-            <div class="row" style="margin-top: 3px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.collection')} : " 
-                                  style="font-weight: bold;"/>
-                </div>
-                <div class="col-7">
-                    <p:selectOneMenu label="" id="collection" value="#{addConcept.idGroup}" 
-                                     style="width: 100%; background: white; border-color: #43B572; color: #000">
-                        <f:selectItem itemLabel="..." itemValue="" />
-                        <f:selectItems value="#{addConcept.nodeGroups}" var="nodeGroup"
-                                       itemLabel="#{nodeGroup.lexicalValue}" itemValue="#{nodeGroup.conceptGroup.idgroup}"/>
-                    </p:selectOneMenu> 
-                </div>
+            <div class="col-7">
+                <p:inputText id="inputId" value="#{addConcept.prefLabel}" 
+                             style="width: 100%; border-color: #43B572; color: #000" />
             </div>
+        </div>
 
-            <div class="row" style="margin-top: 3px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.notation')} : " style="font-weight: bold;"/> 
-                </div>
-                <div class="col-7">
-                    <p:inputText placeholder="#{langueBean.getMsg('rightbody.concept.notation')}..."
-                                 value="#{addConcept.notation}" autocomplete="false" 
-                                 style="width: 100%; border-color: #43B572; color: #000" /> 
-                </div>
+        <div class="row" style="margin-top: 3px">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.relationship')}" 
+                              style="font-weight: bold;"/>  
             </div>
-
-            <div class="row" style="margin-top: 3px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.optional_identifier')} : " 
-                                  style="font-weight: bold;"/> 
-                </div>
-                <div class="col-7">
-                    <p:inputText id="Id" value="#{addConcept.idNewConcept}" autocomplete="false" 
-                                 style="width: 100%; border-color: #43B572; color: #000" /> 
-                </div>
+            <div class="col-7">
+                <p:selectOneMenu id="relationTypeNT" value="#{addConcept.relationType}" 
+                                 style="width: 100%; background: white; border-color: #43B572; color: #000">
+                    <f:selectItems value="#{addConcept.typesRelationsNT}" var="typesNT"
+                                   itemLabel="#{typesNT.description_fr} (#{typesNT.relationType})" itemValue="#{typesNT.relationType}"/>
+                </p:selectOneMenu> 
             </div>
+        </div>
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:separator/>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                        <p:messages id="addNTMessage" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
-                            <p:autoUpdate/>
-                        </p:messages>
-                    </div>
-                </div>                        
-                <p:commandButton rendered="#{!addConcept.duplicate}" value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addNT').hide();" update="containerIndex:rightTab:idAddNT"
-                                 ajax="true" process="@form"/>
-
-                <p:commandButton id="validate" rendered="#{!addConcept.duplicate}" styleClass="ui-button-primary" value="#{langueBean.getMsg('btnAdd')}"
-                                 update="@form" oncomplete="PF('addNT').show();"
-                                 ajax="true" process="@form"
-                                 action="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
-                                                   selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>                    
-
-
-                <!-- concept duppliqué, forcer la création ou annuler -->
-                <p:commandButton rendered="#{addConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="#{addConcept.setDuplicate(false)}" update="containerIndex:rightTab:idAddNT" oncomplete="PF('addNT').show();"
-                                 ajax="true" process="@form"/>
-
-                <p:commandButton rendered="#{addConcept.duplicate}" styleClass="ui-button-danger" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
-                                 update="messageIndex" oncomplete="PF('addNT').show();"
-                                 ajax="true" process="@form"
-                                 action="#{addConcept.addNewConceptForced(conceptView.nodeConcept.concept.idConcept,
-                                                   selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>   
+        <div class="row" style="margin-top: 3px">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.collection')} : " 
+                              style="font-weight: bold;"/>
             </div>
-        </h:form>
+            <div class="col-7">
+                <p:selectOneMenu label="" id="collection" value="#{addConcept.idGroup}" 
+                                 style="width: 100%; background: white; border-color: #43B572; color: #000">
+                    <f:selectItem itemLabel="..." itemValue="" />
+                    <f:selectItems value="#{addConcept.nodeGroups}" var="nodeGroup"
+                                   itemLabel="#{nodeGroup.lexicalValue}" itemValue="#{nodeGroup.conceptGroup.idgroup}"/>
+                </p:selectOneMenu> 
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 3px">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.notation')} : " style="font-weight: bold;"/> 
+            </div>
+            <div class="col-7">
+                <p:inputText placeholder="#{langueBean.getMsg('rightbody.concept.notation')}..."
+                             value="#{addConcept.notation}" autocomplete="false" 
+                             style="width: 100%; border-color: #43B572; color: #000" /> 
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 3px">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.optional_identifier')} : " 
+                              style="font-weight: bold;"/> 
+            </div>
+            <div class="col-7">
+                <p:inputText id="Id" value="#{addConcept.idNewConcept}" autocomplete="false" 
+                             style="width: 100%; border-color: #43B572; color: #000" /> 
+            </div>
+        </div>
+
+
+        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <p:separator/>
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                    <p:messages id="addNTMessage" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                        <p:autoUpdate/>
+                    </p:messages>
+                </div>
+            </div>                        
+            <p:commandButton rendered="#{!addConcept.duplicate}" value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                             actionListener="PF('addNT').hide();" update="idAddNT"
+                             ajax="true" process="@form"/>
+
+            <p:commandButton id="validate" rendered="#{!addConcept.duplicate}" styleClass="ui-button-primary" value="#{langueBean.getMsg('btnAdd')}"
+                             update="messageIndex idAddNT" oncomplete="PF('addNT').show();"
+                             ajax="true" process="@form"
+                             action="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
+                                               selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>                    
+
+
+            <!-- concept duppliqué, forcer la création ou annuler -->
+            <p:commandButton rendered="#{addConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                             actionListener="#{addConcept.setDuplicate(false)}" update="idAddNT" oncomplete="PF('addNT').show();"
+                             ajax="true" process="@form"/>
+
+            <p:commandButton rendered="#{addConcept.duplicate}" styleClass="ui-button-danger" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
+                             update="messageIndex idAddNT" oncomplete="PF('addNT').show();"
+                             ajax="true" process="@form"
+                             action="#{addConcept.addNewConceptForced(conceptView.nodeConcept.concept.idConcept,
+                                               selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>   
+        </div>
+        
+        
     </p:dialog>   
 </ui:fragment>
