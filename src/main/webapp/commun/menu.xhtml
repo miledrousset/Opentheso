@@ -47,14 +47,18 @@
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" 
                                            process="@this" style="font-size: 12px;">Mon compte</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
+                            <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                           class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
                                            style="font-size: 12px;" process="@this">Mes projets/utilisateurs</p:commandLink>
                             <hr class="sidebar-divider">
-                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                    class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
                                                style="font-size: 12px;" process="@this">Tous les utilisateurs</p:commandLink>
-                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                    class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
                                                style="font-size: 12px;" process="@this">Tous les projets</p:commandLink>
-                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                    class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
                                                style="font-size: 12px;" process="@this">Tous les thésaurus</p:commandLink>
                             </hr>
                         </div>

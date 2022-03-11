@@ -264,7 +264,7 @@ body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-s
 
 body .ui-panel .ui-panel-content {
     background: transparent;
-    color: transparent;
+ /*   color: transparent;*/
     padding: 0rem;
     border: none;
 }
@@ -607,8 +607,13 @@ body .ui-accordion .ui-accordion-content {
 
 /*  DATATABLE */
 
+
 body .ui-datatable .ui-datatable-data > tr > td {
-    padding: 5px 5px;;
+    padding: 5px 5px;
+}
+
+body .ui-datatable.ui-datatable-sm .ui-datatable-data > tr > td {
+    padding: 5px 5px;
 }
 
 body .ui-datatable thead th {
@@ -618,7 +623,7 @@ body .ui-datatable thead th {
     border: 1px solid #f47b2a;
     border-width: 0 0 1px 0;
     text-align: left;
-    font-size: 14px;
+    font-size: 13px;
     box-sizing: content-box;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
@@ -675,6 +680,9 @@ body .ui-datatable thead th.ui-state-highlight{
     color: #43B572;
 }
 
+
+
+
 /* Toolbar */
 body .ui-toolbar {
     border: 1px solid #43B572;
@@ -703,7 +711,4 @@ body .ui-datalist .ui-datalist-content {
 }
 
 
-body .ui-datatable.ui-datatable-sm .ui-datatable-data > tr > td {
-    padding: none !important;
-}
 

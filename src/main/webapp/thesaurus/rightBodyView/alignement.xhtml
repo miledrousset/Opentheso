@@ -25,26 +25,27 @@
         </p:toolbarGroup>
     </p:toolbar>
 
-    <p:panel id="alignementPanel" style="margin-top: 10px">
-        <p:dataTable var="alignement" value="#{alignmentBean.allignementsList}"
+
+    <p:dataTable id="tableauAlignement" var="alignement" value="#{alignmentBean.allignementsList}"
                      rows="10" paginator="true" resizableColumns="true" showGridlines="true" size="small"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} alignement"
                      rowsPerPageTemplate="5,10,{ShowAll|'All'}" paginatorPosition="bottom"
                      rowStyleClass="#{alignement.targetUri == null ? 'alignementVide' : null}"  
-                     scrollHeight="69%" styleClass=".ui-datatable-hor-scroll">
+                     scrollHeight="69%" styleClass=".ui-datatable-hor-scroll" style="font-size: 13px;">
 
             <p:columnGroup type="header">
-                <p:row>
-                    <p:column colspan="2" headerText="Concept d'orgine" filterBy="#{alignement.labelConceptOrig}" />
-                    <p:column rowspan="2" headerText="Concept cible" sortBy="#{alignement.typeAlignement}" width="14%" />
-                    <p:column rowspan="2" headerText="Type d'Alignement" sortBy="#{alignement.labelConceptCible}" width="15%" />
-                    <p:column rowspan="2" headerText="Target URI" sortBy="#{alignement.targetUri}" width="25%"/>
-                    <p:column rowspan="2" headerText="Actions" width="6%" />
+                <p:row class="col-12">
+                    <p:column filterBy="#{alignement.idConceptOrig}"   />
+                    <p:column filterBy="#{alignement.labelConceptOrig}"  />                    
+                    <p:column headerText="Concept cible" sortBy="#{alignement.typeAlignement}"  />
+                    <p:column headerText="Type d'Alignement" sortBy="#{alignement.labelConceptCible}"  />
+                    <p:column headerText="Target URI" sortBy="#{alignement.targetUri}" />
+                    <p:column headerText="Actions" />
                 </p:row>
                 <p:row>
-                    <p:column headerText="Identifiant" sortBy="#{alignement.idConceptOrig}" width="25%" />
-                    <p:column headerText="Etiquette" sortBy="#{alignement.labelConceptOrig}" width="15%" />
+                    <p:column headerText="Identifiant" sortBy="#{alignement.idConceptOrig}" />
+                    <p:column headerText="Etiquette" sortBy="#{alignement.labelConceptOrig}"  />
                 </p:row>
             </p:columnGroup>
 
@@ -97,7 +98,7 @@
                                  style="height: 30px; width: 30px; margin-left: 5px" />
             </p:column>
         </p:dataTable>
-    </p:panel>
+
 
     <p:dialog id="idUpdateSingleAlignment" header="#{langueBean.getMsg('rightbody.concept.edit_alignment')}" widgetVar="updateSingleAlignment" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
@@ -139,18 +140,17 @@
               modal="true" resizable="true" position="top" width="500" style="margin-top: 50px" >
 
         <h5>
-            <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" />
+            <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" style="font-size: 14px;" />
         </h5>
 
-        <p:panel style="height: 400px; margin-top: 10px; overflow-y:scroll">
-            <ui:repeat var="alignmentSource" value="#{setAlignmentSourceBean.nodeSelectedAlignmentsAll}" >
-                <div class="row" style="margin-top: 5px">
+        <p:panel style="max-height: 500px; margin-top: 10px; padding-left: 40px; overflow-y:scroll">
+            <ui:repeat var="alignmentSource" value="#{setAlignmentSourceBean.nodeSelectedAlignmentsAll}">
+                <div class="row" style="margin-top: 5px; font-size: 14px;">
                     <div class="col-1">
                         <p:selectBooleanCheckbox value="#{alignmentSource.isSelected}" />
                     </div>
                     <div class="col-11">
                         <h:outputLabel value="#{alignmentSource.sourceLabel}" style="color: #000" />
-                        <h:outputLabel value="#{alignmentSource.sourceLabel}" style="color: #43B572; margin-left: 10px"/>  
                     </div>
                 </div>
             </ui:repeat>
@@ -169,40 +169,48 @@
     <p:dialog id="addSourceID" header="#{langueBean.getMsg('rightbody.conceptdialog.add_source')}" widgetVar="addSource" 
               modal="true" resizable="true" position="top" width="500" style="margin-top: 50px" >
 
+        
+        <div class="row" style="margin-bottom: 20px;">
+            <div class="col-11 ">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.tooltip_add_source')}" style="font-size: 14px; font-weight: bold "/>
+            </div> 
+        </div>         
+        
         <div class="row">
             <div class="col-4">
-                <h:outputText value="#{langueBean.getMsg('statistique.label')}" />
+                <h:outputText value="#{langueBean.getMsg('statistique.label')}" style="font-size: 14px;"/>
             </div> 
             <div class="col-8">
-                <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}" style="width: 100%" value="#{setAlignmentSourceBean.sourceName}"/>
+                <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}"
+                             style="width: 100%; font-size: 14px;" value="#{setAlignmentSourceBean.sourceName}"/>
             </div>                                
         </div> 
 
         <div class="row" style="padding-top: 7px">
             <div class="col-4">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri')}"/>
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri')}" style="font-size: 14px;"/>
             </div> 
             <div class="col-8">
-                <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.uri')}" style="width: 100%" value="#{setAlignmentSourceBean.sourceUri}" />
+                <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.uri')}" style="width: 100%; font-size: 14px;" value="#{setAlignmentSourceBean.sourceUri}"/>
             </div>             
         </div>  
 
         <div class="row" style="padding-top: 7px">
             <div class="col-4">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}"/>
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}" style="font-size: 14px;"/>
             </div> 
             <div class="col-8">
-                <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}" style="width: 100%" 
+                <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}" style="width: 100%; font-size: 14px;"
                              value="#{setAlignmentSourceBean.sourceIdTheso}" />
             </div>                   
         </div>      
 
         <div class="row" style="padding-top: 7px">
             <div class="col-4">
-                <h:outputText value="Description" />
+                <h:outputText value="Description" style="font-size: 14px;"/>
             </div> 
             <div class="col-8">
-                <p:inputText placeholder="note" style="width: 100%" value="#{setAlignmentSourceBean.description}"/>
+                <p:inputText placeholder="note" style="width: 100; font-size: 14px;" value="#{setAlignmentSourceBean.description}"/>
             </div> 
         </div>
 
