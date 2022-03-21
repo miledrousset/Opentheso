@@ -7,60 +7,65 @@
     <p:dialog id="idAddTraduction" header="#{langueBean.getMsg('rightbody.conceptdialog.add_translation')}" widgetVar="addTraduction" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
+        <h:form id="addTraductionForm" >
+            <p:defaultCommand target="validateAddTraduction" />            
+            <div class="row">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
 
-                <p:commandLink action="#{noteBean.infos}" update="messageIndex" style="font-size: 17px; color: #FF7979">
-                    <i class="pi pi-exclamation-circle" />
-                </p:commandLink>
+                    <p:commandLink action="#{noteBean.infos}" update="messageIndex" style="font-size: 17px; color: #FF7979">
+                        <i class="pi pi-exclamation-circle" />
+                    </p:commandLink>
+                </div>
+                <div class="col-7">
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/>
+                </div>
             </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/>
-            </div>
-        </div>
 
-        <div class="row" style="margin-top: 5px">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Langue : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionBean.selectedLang}"
-                                 style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
-                    <f:selectItems value="#{traductionBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                </p:selectOneMenu>     
-            </div>
-        </div>
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Traduction : " class="dialog-titre" /> 
+                </div>
+                <div class="col-7">
+                    <p:inputText label="#{langueBean.getMsg('candidat.traduction')}" style="color: #000; border-color: #43B572;"
+                                 placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."     
+                                 value="#{traductionBean.traductionValue}" styleClass="input-dialog"/>   
+                </div>
+            </div>        
 
-        <div class="row" style="margin-top: 5px">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Traduction : " class="dialog-titre" /> 
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Langue : " class="dialog-titre" /> 
+                </div>
+                <div class="col-7">
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionBean.selectedLang}"
+                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
+                        <f:selectItems value="#{traductionBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                    </p:selectOneMenu>     
+                </div>
             </div>
-            <div class="col-7">
-                <p:inputText label="#{langueBean.getMsg('candidat.traduction')}" style="color: #000; border-color: #43B572;"
-                             placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."     
-                             value="#{traductionBean.traductionValue}" styleClass="input-dialog"/>   
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                <p:messages id="addTradMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
-                    <p:autoUpdate/>
-                </p:messages>
-            </div>
-        </div>           
-        
-        <f:facet name="footer">
+
+
+
+            <div class="row">
+                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                    <p:messages id="addTradMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                        <p:autoUpdate/>
+                    </p:messages>
+                </div>
+            </div>           
+
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addTraduction').hide();" update="idAddTraduction"/>
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('addTraduction').hide();" update="containerIndex:idAddTraduction"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" 
-                                 class="btn btn-primary"
+                <p:commandButton id="validateAddTraduction"
+                                 value="#{langueBean.getMsg('btnValidate')}" 
+                                 styleClass="ui-button-primary"
+                                 ajax="true" process="@form"
                                  actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
-        </f:facet>
+        </h:form>            
     </p:dialog>   
 </ui:fragment>

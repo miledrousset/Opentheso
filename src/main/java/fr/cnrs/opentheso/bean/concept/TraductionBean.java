@@ -44,6 +44,8 @@ public class TraductionBean implements Serializable {
     private ArrayList<NodeLangTheso> nodeLangs;
     private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits
     private ArrayList<NodeTermTraduction> nodeTermTraductions;
+    private ArrayList<NodeTermTraduction> nodeTermTraductionsForEdit;
+
     private String traductionValue;
 
     @PreDestroy
@@ -82,7 +84,21 @@ public class TraductionBean implements Serializable {
 
         selectedLang = null;
         traductionValue = "";
+    }
 
+    public void setTraductionsForEdit() {
+        if (nodeTermTraductionsForEdit == null) {
+            nodeTermTraductionsForEdit = new ArrayList<>();
+        } else {
+            nodeTermTraductionsForEdit.clear();
+        }
+
+        for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
+            NodeTermTraduction nodeTermTraduction1 = new NodeTermTraduction();
+            nodeTermTraduction1.setLexicalValue(nodeTermTraduction.getLexicalValue());
+            nodeTermTraduction1.setLang(nodeTermTraduction.getLang());
+            nodeTermTraductionsForEdit.add(nodeTermTraduction1);
+        }
     }
 
     public void setLangWithNoTraduction() {
@@ -134,6 +150,15 @@ public class TraductionBean implements Serializable {
             return;
         }
         TermHelper termHelper = new TermHelper();
+        if (termHelper.isTermExistIgnoreCase(
+                connect.getPoolConnexion(),
+                traductionValue,
+                selectedTheso.getCurrentIdTheso(),
+                selectedLang)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
         if (!termHelper.addTraduction(connect.getPoolConnexion(),
                 traductionValue,
                 conceptBean.getNodeConcept().getTerm().getId_term(),
@@ -150,7 +175,7 @@ public class TraductionBean implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction ajoutée avec succès");
@@ -163,7 +188,7 @@ public class TraductionBean implements Serializable {
 //            pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:rightTab:idAddTraduction");
             pf.executeScript("PF('addTraduction').show();");
- //           pf.ajax().update("containerIndex:formLeftTab");
+            //           pf.ajax().update("containerIndex:formLeftTab");
 //            pf.ajax().update("containerIndex:formLeftTab");            
 //            pf.ajax().update("containerIndex:formRightTab");
         }
@@ -187,8 +212,17 @@ public class TraductionBean implements Serializable {
             }
             return;
         }
-
         TermHelper termHelper = new TermHelper();
+        if (termHelper.isTermExistIgnoreCase(
+                connect.getPoolConnexion(),
+                nodeTermTraduction.getLexicalValue(),
+                selectedTheso.getCurrentIdTheso(),
+                nodeTermTraduction.getLang())) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
         if (!termHelper.updateTraduction(connect.getPoolConnexion(),
                 nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getId_term(),
                 nodeTermTraduction.getLang(),
@@ -208,7 +242,7 @@ public class TraductionBean implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
@@ -218,8 +252,8 @@ public class TraductionBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:rightTab:idRenameTraduction");
-            pf.executeScript("PF('renameTraduction').show();");            
-       //     pf.ajax().update("containerIndex:formRightTab");
+            pf.executeScript("PF('renameTraduction').show();");
+            //     pf.ajax().update("containerIndex:formRightTab");
         }
     }
 
@@ -232,7 +266,7 @@ public class TraductionBean implements Serializable {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
-        if (nodeTermTraductions == null || nodeTermTraductions.isEmpty()) {
+        if (nodeTermTraductionsForEdit == null || nodeTermTraductionsForEdit.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " veuillez saisir une valeur !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -242,40 +276,67 @@ public class TraductionBean implements Serializable {
         }
 
         TermHelper termHelper = new TermHelper();
+        boolean toModify;
+        boolean isModified = false;
 
-        for (NodeTermTraduction nodeTermTraduction : nodeTermTraductions) {
-            if (!termHelper.updateTraduction(connect.getPoolConnexion(),
-                    nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getId_term(),
-                    nodeTermTraduction.getLang(),
-                    selectedTheso.getCurrentIdTheso(), idUser)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
+        for (NodeTermTraduction nodeTermTraduction : nodeTermTraductionsForEdit) {
+            toModify = false;
+            isModified = false;
+            /// pour vérifier si le terme a changé
+            for (NodeTermTraduction nodeTermTraductionOld : nodeTermTraductions) {
+                if (nodeTermTraduction.getLang().equalsIgnoreCase(nodeTermTraductionOld.getLang())) {
+                    toModify = !nodeTermTraduction.getLexicalValue().equalsIgnoreCase(nodeTermTraductionOld.getLexicalValue());
+                    break;
                 }
-                return;
+            }
+            if (toModify) {
+                if (termHelper.isTermExistIgnoreCase(
+                        connect.getPoolConnexion(),
+                        nodeTermTraduction.getLexicalValue(),
+                        selectedTheso.getCurrentIdTheso(),
+                        nodeTermTraduction.getLang())) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue : " + nodeTermTraduction.getLang());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    continue;
+                }
+
+                if (!termHelper.updateTraduction(connect.getPoolConnexion(),
+                        nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getId_term(),
+                        nodeTermTraduction.getLang(),
+                        selectedTheso.getCurrentIdTheso(), idUser)) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    if (pf.isAjaxRequest()) {
+                        pf.ajax().update("messageIndex");
+                    }
+                    return;
+                }
+                isModified = true;
             }
         }
+        if (isModified) {
+            conceptBean.getConcept(
+                    selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getSelectedLang());
 
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
+            ConceptHelper conceptHelper = new ConceptHelper();
+            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                    selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            reset();
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().executeScript("PF('renameTraduction').hide();");
-        reset();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:rightTab:idRenameTraduction");
-            pf.executeScript("PF('renameTraduction').show();");
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+                pf.ajax().update("containerIndex:rightTab:idRenameTraduction");
+                pf.executeScript("PF('renameTraduction').show();");
+            }
+        } else {
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Aucune modification à faire");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
     }
 
@@ -323,7 +384,7 @@ public class TraductionBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:rightTab:idDeleteTraduction");
-            pf.executeScript("PF('deleteTraduction').show();");               
+            pf.executeScript("PF('deleteTraduction').show();");
         }
     }
 
@@ -357,6 +418,14 @@ public class TraductionBean implements Serializable {
 
     public void setNodeTermTraductions(ArrayList<NodeTermTraduction> nodeTermTraductions) {
         this.nodeTermTraductions = nodeTermTraductions;
+    }
+
+    public ArrayList<NodeTermTraduction> getNodeTermTraductionsForEdit() {
+        return nodeTermTraductionsForEdit;
+    }
+
+    public void setNodeTermTraductionsForEdit(ArrayList<NodeTermTraduction> nodeTermTraductionsForEdit) {
+        this.nodeTermTraductionsForEdit = nodeTermTraductionsForEdit;
     }
 
 }

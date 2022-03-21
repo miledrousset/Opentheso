@@ -5,7 +5,7 @@
 
     <p:dialog id="idDeleteNote" header="#{langueBean.getMsg('rightbody.concept.delete_note')}" widgetVar="deleteNote" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >  
-        <h:panelGroup id="deleteNoteForm" >
+        <h:form id="deleteNoteForm" >
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
                     <h:outputText value="Nom du concept : " class="dialog-titre" /> 
@@ -25,7 +25,8 @@
                     </div>
                     <div class="col-1" style="margin-top: 3px">
                         <p:commandLink style="color: #FF7979" oncomplete="PF('deleteNote').show();"
-                                       update="containerIndex:rightTab:deleteNoteForm"
+                                       update="containerIndex:idDeleteNote"
+                                       ajax="true" process="@form"
                                 action="#{noteBean.deleteNote(noteToDelete, currentUser.nodeUser.idUser)}" >
                             <i class="pi pi-trash" />
                         </p:commandLink>
@@ -38,7 +39,12 @@
                         <p:autoUpdate/>
                     </p:messages>
                 </div>
-            </div>     
-        </h:panelGroup>            
+            </div> 
+            <p:spacer height="10px;" />
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                     actionListener="PF('deleteNote').hide();" update="containerIndex:idDeleteNote"/>
+            </div>
+        </h:form>            
     </p:dialog> 
 </ui:fragment>

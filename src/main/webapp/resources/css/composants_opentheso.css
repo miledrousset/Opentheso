@@ -527,7 +527,7 @@ body .ui-commandlink, body .ui-link:hover {
 
 /* #MR pour définir la couleur des liens hypertextes */
 body .ui-commandlink, body .ui-link:active {
-    color: #1B74E3;
+    color: #601e18;
     text-decoration: none;
     font-size: 14px;
 }

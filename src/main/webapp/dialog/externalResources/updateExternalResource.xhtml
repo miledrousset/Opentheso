@@ -5,7 +5,7 @@
 
     <p:dialog id="idUpdateExternalResource" header="#{langueBean.getMsg('rightbody.concept.modifyExternalResource')}" widgetVar="updateExternalResource" 
               width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >      
-        <!--<h:form id="updateExternalResourceForm"> -->
+        <h:form id="updateExternalResourceForm">
             <div class="row">
                 <div class="col-5">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
@@ -31,14 +31,20 @@
                             <p:inputText value="#{resources.imageName}" style="width: 100%; color: #000"/>
                         </div>
                         <div class="col-1">
-                            <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex" process="@this"
+                            <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex" ajax="true" process="@form"
                                            action="#{externalResources.updateExternalResource(resources, currentUser.nodeUser.idUser)}" >
                                 <i class="pi pi-check-circle" />
                             </p:commandLink>
                         </div>
                     </div>
                 </ui:repeat>
-            </p:panel>       
-      <!--  </h:form> -->
+            </p:panel>  
+            <p:spacer height="10px;" />
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('updateExternalResource').hide();" update="containerIndex:idUpdateExternalResource"/>  
+            </div>            
+        </h:form>
     </p:dialog> 
 </ui:fragment>

@@ -4,38 +4,35 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idDeleteReplaceBy" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_replaceby')}" widgetVar="deleteReplaceBy" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >         
+              modal="true" resizable="true" position="top" width="550" style="margin-top: 50px" >         
 
         <h:form id="deleteReplaceByForm">   
             <div class="row" >
-                <div>
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.deprecated_concept')}: " style="font-size: 14px; color: black;"/>                    
-                    <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 14px; color: #C63632;"/>
-                </div>
-
-                <p:spacer/>
-
-                <div>
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.is_replaced_by')}:" style="font-size: 12px; color: black;"/>
-                </div>
-
-                <div>
-                    <ui:repeat var="replaceBy" value="#{editConcept.nodeReplaceBy}" >
-                        <div class="col-9" offset="1" style="background: #FAFAFA">
-                            <h:outputText value="#{replaceBy.value} (#{replaceBy.id})" style="color: #43B572"/>
-                        </div>
-                        <div class="col-3" style="background: #FAFAFA">
-                            <p:commandLink style="color: #FF7979"
-                                           action="#{editConcept.deleteReplacedBy(conceptView.nodeConcept.concept.idConcept,
-                                               selectedTheso.currentIdTheso, replaceBy.id, currentUser.nodeUser.idUser)}"
-                                           update="containerIndex:formRightTab">
-                                <i class="pi pi-trash" />
-                            </p:commandLink>
-                        </div>
-                        <p:spacer height="20" />
-                    </ui:repeat>
-                </div>
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.deprecated_concept')} : " style="font-size: 14px; color: black;"/>                    
+                    <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 14px; color: #C63632;"/>       
+                    <h:outputText value=" #{langueBean.getMsg('rightbody.conceptdialog.is_replaced_by')} :" style="font-size: 12px; color: black;"/>                        
+                </div>                
             </div>
+            <p:spacer height="20px"/>
+            <ui:repeat var="replaceBy" value="#{editConcept.nodeReplaceBy}" >
+                <div class="row" style="color: #43B572; background: #FAFAFA; font-size: 14px;">                    
+                    <div class="col-10" style="margin-left: 5px;margin-top: 3px">
+                        <h:outputText value="#{replaceBy.value} (#{replaceBy.id})" />
+                    </div>
+                    <div class="col-1" style="margin-top: 3px">
+                        <p:commandLink style="color: #FF7979"
+                                       ajax="true" process="@form"
+                                       action="#{editConcept.deleteReplacedBy(conceptView.nodeConcept.concept.idConcept,
+                                                 selectedTheso.currentIdTheso, replaceBy.id, currentUser.nodeUser.idUser)}"
+                                       update="messageIndex">
+                            <i class="pi pi-trash" />
+                        </p:commandLink>              
+                    </div>
+                </div>
+            </ui:repeat>                       
+
+            <p:spacer/>
         </h:form>
     </p:dialog> 
 </ui:fragment>

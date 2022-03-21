@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -89,7 +90,13 @@ public class ExternalResources implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-
+        StringPlus stringPlus = new StringPlus();
+        if(!stringPlus.urlValidator(uri)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL n'est pas valide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }
+        
         ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();
         if(!externalResourcesHelper.addExternalResource(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -135,13 +142,22 @@ public class ExternalResources implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        StringPlus stringPlus = new StringPlus();
+        if(!stringPlus.urlValidator(nodeImage.getUri())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL n'est pas valide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }        
 
         ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();
         if(!externalResourcesHelper.setExternalResourceUri(
                 connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),                
+                selectedTheso.getCurrentIdTheso(),               
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                nodeImage.getUri())) {
+                nodeImage.getOldUri(),
+                nodeImage.getUri(),
+                nodeImage.getImageName(),
+                idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendant la modification de l'URI !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;

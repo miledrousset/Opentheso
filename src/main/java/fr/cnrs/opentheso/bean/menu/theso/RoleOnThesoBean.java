@@ -54,6 +54,8 @@ public class RoleOnThesoBean implements Serializable {
     
     // la liste des thésaurus autorisés pour l'utilisateur où il est admin pour avoir le droit de les exporter
     private ArrayList<NodeIdValue> nodeListThesoAsAdmin;    
+    
+    private ArrayList<NodeIdValue> nodeListThesoAsAdminFiltered;       
 
     //thesaurus à gérer
     private Thesaurus thesoInfos;
@@ -618,6 +620,14 @@ public class RoleOnThesoBean implements Serializable {
 
     public void setNodeListThesoAsAdmin(ArrayList<NodeIdValue> nodeListThesoAsAdmin) {
         this.nodeListThesoAsAdmin = nodeListThesoAsAdmin;
+    }
+
+    public ArrayList<NodeIdValue> getNodeListThesoAsAdminFiltered() {
+        return nodeListThesoAsAdminFiltered;
+    }
+
+    public void setNodeListThesoAsAdminFiltered(ArrayList<NodeIdValue> nodeListThesoAsAdminFiltered) {
+        this.nodeListThesoAsAdminFiltered = nodeListThesoAsAdminFiltered;
     }
 
 }

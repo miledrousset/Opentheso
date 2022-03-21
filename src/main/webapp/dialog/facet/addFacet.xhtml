@@ -6,39 +6,43 @@
 
     <p:dialog id="idAddFacet" header="#{langueBean.getMsg('rightbody.facetdialog.add_new_facet')}" widgetVar="addFacet" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        
-        <div class="row">
-            <div class="col-5">
-                <h:outputText value="#{langueBean.getMsg('rightbody.facetdialog.parent_concept')} : "
-                              style="font-weight: bold"/>  
+        <h:form id="addFacetForm">
+            <p:defaultCommand target="validateNewFacet" />
+            <div class="row">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.facetdialog.parent_concept')} : "
+                                  style="font-weight: bold"/>  
+                </div>
+                <div class="col-7">   
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                                  style="margin-left: 10px; color: black; margin-left: 5px"/>          
+                </div>
             </div>
-            <div class="col-7">   
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                              style="margin-left: 10px; color: black; margin-left: 5px"/>          
-            </div>
-        </div>
 
-        <div class="row" style="margin-top: 10px">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Nom de la facette : " style="font-weight: bold"/>  
+            <div class="row" style="margin-top: 10px">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Nom de la facette : " style="font-weight: bold"/>  
+                </div>
+                <div class="col-7">
+                    <p:inputText label="#{langueBean.getMsg('rightbody.facetdialog.facet_name')}" 
+                                 value="#{editFacet.newFacetName}" 
+                                 style="font-size: 12px; width: 100%; border-color: #43B572; color: #000"/>            
+                </div>
             </div>
-            <div class="col-7">
-                <p:inputText label="#{langueBean.getMsg('rightbody.facetdialog.facet_name')}" 
-                             value="#{editFacet.newFacetName}" 
-                             style="font-size: 12px; width: 100%; border-color: #43B572; color: #000"/>            
-            </div>
-        </div>
+            
+            <p:separator />
 
-        <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addFacet').hide();" update="idAddFacet"/>
-                
-                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}" 
+                                 actionListener="PF('addFacet').hide();" update="containerIndex:idAddFacet"/>
+
+                <p:commandButton id="validateNewFacet"
+                                 class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}" 
                                  update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex" 
                                  style="color: white;"
+                                 ajax="true" process="@form"
                                  actionListener="#{editFacet.addNewFacet()}"/>
             </div>
-        </f:facet>
+        </h:form>        
     </p:dialog>
 </ui:fragment>

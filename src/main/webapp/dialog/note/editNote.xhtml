@@ -5,7 +5,7 @@
 
     <p:dialog id="idEditNote" header="#{langueBean.getMsg('rightbody.concept.edit_note')}" widgetVar="editNote" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >       
-        <h:panelGroup id="editNoteForm" >
+        <h:form id="editNoteForm" >
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
                     <h:outputText value="Nom du concept : " class="dialog-titre" /> 
@@ -23,6 +23,7 @@
                     </div>
                     <div class="col-1" style="margin-top: 3px">
                         <p:commandLink style="color: #F7A269;" oncomplete="PF('editNote').show();"
+                                       ajax="true" process="@form"
                                        action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-check-circle" />
                         </p:commandLink>
@@ -37,6 +38,6 @@
                     </p:messages>
                 </div>
             </div>
-        </h:panelGroup>
+        </h:form>
     </p:dialog> 
 </ui:fragment>

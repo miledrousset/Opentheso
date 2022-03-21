@@ -5,10 +5,10 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idListImportCsv" header="Importer une liste tabulée" widgetVar="listImportCsv" 
-              width="auto" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="auto" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >
 
         <h:panelGroup id="listImportCsvForm">   
-            <p:panel style="height: 450px; margin-top: -20px; margin-left: -20px">
+            <p:panel style="height: 550px; margin-top: -20px;">
                 <div class="row">
                     <div class="col-6" >
                         <h:outputText value="importer sous :" style="font-size: 13px; margin-left: 10px; color: black;" />
@@ -17,12 +17,12 @@
                     </div>
                 </div>
 
-                <div class="row">                
+                <div class="row" >                
                     <div class="col-12">
                         <fieldset>
                             <p:panelGrid>
                                 <f:facet name="header">
-                                    <p:row>
+                                    <p:row style="font-size: 12px;">
                                         <p:column colspan="1">URI</p:column>
                                         <p:column colspan="1">skos:prefLabel@fr</p:column>
                                         <p:column colspan="1">skos:prefLabel@en</p:column>
@@ -31,7 +31,7 @@
                                         <p:column colspan="1">skos:broader</p:column>
                                     </p:row>
                                 </f:facet>
-                                <p:row>
+                                <p:row style="font-size: 12px;">
                                     <p:column>100</p:column>
                                     <p:column>France</p:column>
                                     <p:column>France_en</p:column>
@@ -40,7 +40,7 @@
                                     <p:column></p:column>
 
                                 </p:row>
-                                <p:row>
+                                <p:row style="font-size: 12px;">
                                     <p:column>101</p:column>
                                     <p:column>Lyon</p:column>
                                     <p:column>Lyon_en</p:column>
@@ -48,7 +48,7 @@
                                     <p:column>Ville de la gastronomie</p:column>
                                     <p:column>100</p:column>
                                 </p:row>  
-                                <p:row>
+                                <p:row style="font-size: 12px;">
                                     <p:column>102</p:column>
                                     <p:column>Vaise</p:column>
                                     <p:column>Vaise_en</p:column>
@@ -58,7 +58,7 @@
                                 </p:row>                  
                             </p:panelGrid>     
                             <br/>
-                            <p:outputPanel deferred="true">
+                            <p:outputPanel deferred="true" style="font-size: 12px;">
                                 <p>
                                     Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
                                     Pour les champs qui autorisent les valeurs multiples, il faut les séparer par (##) ex : (deux##2).<br/>
@@ -117,25 +117,26 @@
                         </div>
                     </h:panelGroup>
 
-                    <div class="row">
-                        <div class="col-4"> 
-                            <p:commandButton id="cancelCsv"
-                                             title="#{langueBean.getMsg('btnBack')}"
-                                             class="btn btn-secondary"
-                                             style="width: 100%; background-color: #FFC107; color: black; border: none;"
-                                             action="#{importFileBean.init()}"
-                                             update="idListImportCsv"
-                                             oncomplete="PF('listImportCsv').hide();" />
+                    <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-4"> 
+                                <p:commandButton id="cancelCsv"
+                                                 value="#{langueBean.getMsg('btnBack')}"
+                                                 styleClass="ui-button-secondary" style="margin-right: 10px"
+                                                 action="#{importFileBean.init()}"
+                                                 update="idListImportCsv"
+                                                 oncomplete="PF('listImportCsv').hide();" />
+                            </div>
+                            <div class="col-4" > 
+                                <p:commandButton id="buttonImportCsv" widgetVar="buttonImportCsv"
+                                                 update="panelListCsv"
+                                                 styleClass="ui-button-primary"
+                                                 actionListener="#{importFileBean.addListCsvToConcept(conceptView.nodeConcept)}"
+                                                 ajax="true"
+                                                 value="Importer"
+                                                 disabled="#{!importFileBean.loadDone}" />
+                            </div>                             
                         </div>
-                        <div class="col-4" > 
-                            <p:commandButton id="buttonImportCsv" class="btn btn-primary" widgetVar="buttonImportCsv"
-                                             update="panelListCsv"
-                                             style="width: 100%; background-color: #5CB85C; border: none;"
-                                             actionListener="#{importFileBean.addListCsvToConcept(conceptView.nodeConcept)}"
-                                             ajax="true"
-                                             title="Importer"
-                                             disabled="#{!importFileBean.loadDone}" />
-                        </div> 
                     </div>
 
                     <p:spacer/>

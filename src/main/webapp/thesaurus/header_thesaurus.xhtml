@@ -79,7 +79,7 @@
                     <li class="nav-item dropdown no-arrow">
                         <p:commandLink class="nav-link dropdown-toggle" update="idLogin" oncomplete="PF('login').show();" >
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px; margin-top: 20px;">#{langueBean.getMsg('menu.login')}</span>
-                            <img class="img-profile rounded-circle" src="resources/img/logout.png" style="margin-top: 20px;" />
+                            <img class="img-profile rounded-circle" src="resources/img/logout.png" style="margin-top: 10px; font-size: 12px;" />
                         </p:commandLink>
                     </li>
                 </p:panel>
@@ -91,7 +91,7 @@
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px; margin-top: 20px;">
                                 <h:outputText value="#{currentUser.nodeUser.name}" style="font-size: 12px; " />
                             </span>
-                            <img class="img-profile rounded-circle" src="resources/img/undraw_profile.svg" style="margin-top: 15px;" />
+                            <img class="img-profile rounded-circle" src="resources/img/undraw_profile.svg" style="margin-top: 10px;font-size: 12px;" />
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                             <p:commandLink class="dropdown-item" actionListener="#{menuBean.redirectToMyProfilePage()}" style="font-size: 12px; text-decoration:none; color: #818183">

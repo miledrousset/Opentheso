@@ -6,43 +6,51 @@
 
     <p:dialog id="idAddFacetTraduction" header="Ajouter une traduction" widgetVar="addFacetTraduction"
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " style="font-size: 12px;"/>
-                <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
-                <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
-                    <i class="pi pi-exclamation-circle" />
-                </p:commandLink>
+        <h:form id="addFacetTraductionForm">
+            <p:defaultCommand target="validateAddFacetTraduction" />     
+            <div class="row">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " style="font-size: 12px;"/>
+                    <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
+                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
+                        <i class="pi pi-exclamation-circle" />
+                    </p:commandLink>
+                </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <p:selectOneMenu label="Langue" value="#{editFacet.selectedLang}"
-                                 style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
-                    <f:selectItems  value="#{editFacet.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                </p:selectOneMenu>
+            <div class="row">
+                <div class="col-12" style="margin-top: 3px">
+                    <p:focus for="inputLabelAddTrad"/>
+                    <p:inputText id="inputLabelAddTrad" label="traduction" placeholder="tapez votre traduction ..."
+                                 value="#{editFacet.traductionValue}" style="width: 100%" >
+                        
+                    </p:inputText>
+                </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <p:inputText label="traduction" placeholder="tapez votre traduction ..."
-                             value="#{editFacet.traductionValue}" style="width: 100%"/>
+            <p:spacer/>
+            <div class="row">
+                <div class="col-12" style="margin-top: 3px">
+                    <p:selectOneMenu label="Langue" value="#{editFacet.selectedLang}"
+                                     style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
+                        <f:selectItems  value="#{editFacet.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                    </p:selectOneMenu>
+                </div>
             </div>
-        </div>
 
-        <f:facet name="footer">
+
+            <p:spacer />
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addFacetTraduction').hide();" update="idAddFacetTraduction"/>
+                                 actionListener="PF('addFacetTraduction').hide();" update="containerIndex:idAddFacetTraduction"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addFacetTraduction').hide();"
+                <p:commandButton id="validateAddFacetTraduction"
+                                 title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:idAddFacetTraduction containerIndex:formRightTab messageIndex"
+                                 class="btn btn-primary" 
+                                 ajax="true" process="@form"
+                                 
                                  actionListener="#{editFacet.addNewTraduction()}"/>
             </div>
-        </f:facet>
+        </h:form>
     </p:dialog>
 </ui:fragment>

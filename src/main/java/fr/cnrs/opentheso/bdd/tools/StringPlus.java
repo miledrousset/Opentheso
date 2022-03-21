@@ -1,12 +1,27 @@
 package fr.cnrs.opentheso.bdd.tools;
 
 import java.text.Normalizer;
+import org.apache.commons.validator.routines.UrlValidator;
+
 
 public class StringPlus {
 
 public StringPlus() {
 
     }
+    
+
+    /**
+     * Permet de vérifier si une URL est valide
+     * @param url
+     * @return 
+     */
+    public boolean urlValidator(String url)
+    {
+        UrlValidator defaultValidator = new UrlValidator();
+        return defaultValidator.isValid(url);
+    }
+    
     
     /**
      * Permet de supprimer les accents d'un String

@@ -6,88 +6,97 @@
 
     <p:dialog id="idRenameSynonym" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_synonym')}" widgetVar="renameSynonym" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Nom du concept : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                              style="margin-left: 10px; color: black; margin-left: 5px" />
-            </div>
-        </div>
-
-        <div class="row" style="margin-top: 5px; overflow-y:scroll">
-            <div class="col-5" >
-                <h:outputText value="#{langueBean.getMsg('indexview.synonym')}" style="color: black;font-size: 13px;"/>                    
-            </div>
-
-            <div class="col-2" >
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" style="color: black;font-size: 13px;"/> 
-            </div>
-
-            <div class="col-3" >
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')} ?" style="color: black;font-size: 13px;"/>                         
-            </div>                             
-
-            <div class="col-2">
-                <h:outputText value="#{langueBean.getMsg('btnValidate')}" style="color: black;font-size: 13px;"/>
-            </div>
-        </div>
-
-        <ui:repeat var="synonymToEdit" value="#{synonymBean.nodeEMsForEdit}" >
-            <div class="row" style="margin-top: 5px;">
-                <div class="col-5" style="background: #FAFAFA">
-                    <p:inputText  value="#{synonymToEdit.lexical_value}"
-                                  style="font-size: 12px; height: 25px; color: #000"/> 
+        <h:form id="renameSynonymForm">
+            <p:defaultCommand target="renameSynonymValidate" />
+            <div class="row">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Nom du concept : " class="dialog-titre" /> 
                 </div>
-                
-                <div class="col-2" style="background: #FAFAFA">
-                    <h:outputText value="#{synonymToEdit.lang}"
-                                  style=" font-size: 14px;"/>
+                <div class="col-7">
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                                  style="margin-left: 10px; color: black; margin-left: 5px" />
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 5px; overflow-y:scroll">
+                <div class="col-5" >
+                    <h:outputText value="#{langueBean.getMsg('indexview.synonym')}" style="color: black;font-size: 13px;"/>                    
                 </div>
 
-                <div class="col-3" style="font-size: 12px;" >
-                    <p:toggleSwitch value="#{synonymToEdit.hiden}" style="font-size: 10px" />                            
+                <div class="col-2" >
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" style="color: black;font-size: 13px;"/> 
+                </div>
+
+                <div class="col-3" >
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')} ?" style="color: black;font-size: 13px;"/>                         
                 </div>                             
 
-                <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex"
-                                      action="#{synonymBean.updateSynonym(synonymToEdit,currentUser.nodeUser.idUser)}">
-                        <i class="pi pi-check-circle" />
-                    </p:commandLink>
+                <div class="col-2">
+                    <h:outputText value="#{langueBean.getMsg('btnValidate')}" style="color: black;font-size: 13px;"/>
                 </div>
-            </div>                            
-        </ui:repeat>
-        
-        <div class="row">
-            <div class="col-6" style="margin-top: 3px">
-                    <p:commandButton rendered="#{synonymBean.duplicate}" 
-                                     value="#{langueBean.getMsg('rightbody.conceptdialog.force')}" 
-                                     update="containerIndex:formRightTab"
-                                     class="btn btn-primary"
-                                     action="#{synonymBean.updateSynonymForced(currentUser.nodeUser.idUser)}" 
-                                     style="width:100%; font-size: 12px;color: white; background: #43B572;"/>
             </div>
-            <div class="col-6">
-                    <p:commandButton rendered="#{synonymBean.duplicate}" value="#{langueBean.getMsg('btnCancel')}"
-                                     update="containerIndex:formRightTab"
-                                     class="btn btn-primary"
-                                     action="#{synonymBean.cancel()}"
-                                     style="color: white; background: #FF7979; width:100%; font-size: 12px;"/>
-            </div>
-        </div>
-        
-        <f:facet name="footer">
+
+            <ui:repeat var="synonymToEdit" value="#{synonymBean.nodeEMsForEdit}" >
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5" style="background: #FAFAFA">
+                        <p:inputText  value="#{synonymToEdit.lexical_value}"
+                                      style="font-size: 12px; height: 25px; color: #000"/> 
+                    </div>
+
+                    <div class="col-2" style="background: #FAFAFA">
+                        <h:outputText value="#{synonymToEdit.lang}"
+                                      style=" font-size: 14px;"/>
+                    </div>
+
+                    <div class="col-3" style="font-size: 12px;" >
+                        <p:toggleSwitch value="#{synonymToEdit.hiden}" style="font-size: 10px" />                            
+                    </div>                             
+
+                    <div class="col-2" style="background: #FAFAFA">
+                        <p:commandLink style="color: #F7A269;" update="containerIndex:idRenameSynonym messageIndex"
+                                       ajax="true" process="@form"
+                                       oncomplete="PF('renameSynonym').show();"
+                                       action="#{synonymBean.updateSynonym(synonymToEdit,currentUser.nodeUser.idUser)}">
+                            <i class="pi pi-check-circle" />
+                        </p:commandLink>
+                    </div>
+                </div>                            
+            </ui:repeat>
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:separator/>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                        <p:messages id="renameSynMessage" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                            <p:autoUpdate/>
+                        </p:messages>
+                    </div>
+                </div>  
+                <p:commandButton rendered="#{!synonymBean.duplicate}" 
+                                 value="#{langueBean.getMsg('btnCancel')}"
+                                 ajax="true" process="@form"
+                                 styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('renameSynonym').hide();" update="messageIndex containerIndex:idRenameSynonym"/>
+                <p:commandButton rendered="#{!synonymBean.duplicate}" 
+                                 id="renameSynonymValidate"
+                                 value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}"
+                                 update="containerIndex:idRenameSynonym messageIndex"
+                                 styleClass="ui-button-primary" oncomplete="PF('renameSynonym').show();" 
+                                 ajax="true" process="@form"
+                                 actionListener="#{synonymBean.updateAllSynonyms(currentUser.nodeUser.idUser)}" />
+                
+                <!-- concept duppliqué, forcer la création ou annuler -->
+                <p:commandButton rendered="#{synonymBean.duplicate}" value="#{langueBean.getMsg('btnCancel')}" 
+                                 styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="#{synonymBean.resetRenameEMAfterCancel()}"
+                                 action="#{synonymBean.cancel()}"
+                                 update="containerIndex:idRenameSynonym" oncomplete="PF('renameSynonym').show();"
+                                 ajax="true" process="@form"/>
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('renameSynonym').hide();" update="idRenameSynonym"/>
-
-                <p:commandButton title="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('renameSynonym').hide();" rendered="#{!synonymBean.duplicate}"
-                                 actionListener="#{synonymBean.updateAllSynonyms(currentUser.nodeUser.idUser)}" style="color: white;"/>
+                <p:commandButton rendered="#{synonymBean.duplicate}" styleClass="ui-button-danger" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
+                                 update="messageIndex containerIndex:idRenameSynonym" oncomplete="PF('renameSynonym').show();"
+                                 ajax="true" process="@form"
+                                 action="#{synonymBean.updateSynonymForced(currentUser.nodeUser.idUser)}" />                   
             </div>
-        </f:facet>
+        </h:form>            
     </p:dialog> 
 </ui:fragment>

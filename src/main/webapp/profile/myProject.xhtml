@@ -135,7 +135,8 @@
                                                                                  actionListener="#{modifyUSerBean.selectUser(listUser.idUser)}"
                                                                                  icon="fas fa-user-edit" update="idModifyUser"
                                                                                  oncomplete="PF('modifyUser').show()" process="@this"
-                                                                                 styleClass="edit-button rounded-button ui-button-success" />
+                                                                                 styleClass="edit-button rounded-button ui-button-success" 
+                                                                                 style="background-color: #f47b2a; color: #FFFFFF; border-color: #f47b2a"/>
                                                             </p:column>
 
                                                             <p:column headerText="Modifier rôle">
@@ -143,7 +144,8 @@
                                                                                  actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
                                                                                  icon="fas fa-users" update="idModifyRole"
                                                                                  oncomplete="PF('modifyRole').show()" process="@this"
-                                                                                 styleClass="edit-button rounded-button ui-button-success" />
+                                                                                 styleClass="edit-button rounded-button ui-button-success"
+                                                                                 style="background-color: #f47b2a; color: #FFFFFF; border-color: #f47b2a"/>
                                                             </p:column>
 
                                                             <p:column headerText="Supprimer">
@@ -181,7 +183,8 @@
                                                                                  actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
                                                                                  icon="fas fa-people-carry" update="idMoveThesoToAnotherProject"
                                                                                  oncomplete="PF('moveThesoToAnotherProject').show();" process="@this"
-                                                                                 styleClass="edit-button rounded-button ui-button-success" />
+                                                                                 styleClass="edit-button rounded-button ui-button-success" 
+                                                                                 style="background-color: #f47b2a; color: #FFFFFF; border-color: #f47b2a"/>
                                                             </p:column>                                            
                                                         </p:dataTable>
                                                     </div>
