@@ -10,9 +10,9 @@
             <p:toolbar>
                 <p:toolbarGroup align="left">
                     <p:commandButton title="#{langueBean.getMsg('candidat.add')}" class="btn btn-primary" process="@this"
-                                     actionListener="#{candidatBean.initialNewCandidat()}" update="tabViewCandidat"/>
+                                     actionListener="#{candidatBean.initialNewCandidat()}" update="tabViewCandidat" style="font-size: 13px;"/>
                 </p:toolbarGroup>
-                <p:toolbarGroup align="right">
+                <p:toolbarGroup align="right" style="font-size: 13px;">
                     <p:menuButton  value="#{langueBean.getMsg('candidat.import_export_candidates')}" icon="fas fa-download"
                                    style="background: none; border: none; box-shadow: none; margin-left: 10px"  >
 
@@ -32,7 +32,7 @@
                 </p:toolbarGroup>
             </p:toolbar>
 
-            <div class="row" style="margin-top: 20px">
+            <div class="row" style="margin-top: 10px; font-size: 13px;">
                 <div class="col-6">
                     <p:selectBooleanCheckbox value="#{candidatBean.myCandidatsSelected1}">
                         <p:ajax update="tabViewCandidat" listener="#{candidatBean.selectMyCandidats()}" />
@@ -50,7 +50,7 @@
 
             <!-- tableau des candidats -->
             <p:dataTable id="listCandidats" var="listCandidats" value="#{candidatBean.candidatList}" paginator="true" rows="15"
-                         selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
+                         selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}" style="font-size: 13px;"
                          emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}">
 
                 <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="tabViewCandidat:panelCandidateList"  />
@@ -59,10 +59,10 @@
 
                 <p:column rendered="#{(currentUser.nodeUser != null) and 
                                       (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                          selectionMode="multiple" style="width:16px;text-align:center"/>
+                          selectionMode="multiple" style="width:16px;text-align:center; vertical-align: central; font-size: 13px;"/>
 
                 <p:column  width="20" headerText="id">
-                    <h:outputText value="#{listCandidats.idConcepte}" />
+                    <h:outputText value="#{listCandidats.idConcepte}" style="font-size: 13px;" />
                 </p:column>                    
 
                 <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
@@ -71,25 +71,25 @@
                 </p:column>
 
                 <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
-                    <p:commandLink value="#{listCandidats.nomPref}" ajax="true" update="tabViewCandidat" style="color: #43B572;"
+                    <p:commandLink value="#{listCandidats.nomPref}" ajax="true" update="tabViewCandidat" style="color: #43B572; font-size: 13px;"
                                    process="@this" actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
                 </p:column>
 
                 <p:column width="30" headerText="#{langueBean.getMsg('rightbody.concept.createdBy')}">
-                    <h:outputText value="#{listCandidats.user}" />
+                    <h:outputText value="#{listCandidats.user}" style="font-size: 13px;"/>
                 </p:column>
 
                 <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
-                    <h:outputText value="#{listCandidats.creationDate}" />
+                    <h:outputText value="#{listCandidats.creationDate}" style="font-size: 13px;" />
                 </p:column>  
                 <p:column width="20" headerText="Votes">
-                    <h:outputText value="#{listCandidats.nbrVote}" />
+                    <h:outputText value="#{listCandidats.nbrVote}" style="font-size: 13px;" />
                 </p:column>   
                 <p:column width="20" headerText="Votes Note">
-                    <h:outputText value="#{listCandidats.nbrNoteVote}" />
+                    <h:outputText value="#{listCandidats.nbrNoteVote}" style="font-size: 13px;"/>
                 </p:column>      
                 <p:column width="20" headerText="Messages">
-                    <h:outputText value="#{listCandidats.nbrParticipant}" />
+                    <h:outputText value="#{listCandidats.nbrParticipant}" style="font-size: 13px;"/>
                 </p:column>  
             </p:dataTable>   
 

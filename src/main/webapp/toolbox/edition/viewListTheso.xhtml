@@ -34,11 +34,17 @@
                     <div class="row" style="margin-left: 20px; margin-right: 20px; font-size: 14px">
                         <div class="col-12">
 
-                            <p:dataTable value="#{roleOnTheso.nodeListThesoAsAdmin}" var="listTheso" scrollable="true"
-                                         resizableColumns="true" scrollHeight="450" reflow="true" >
+                            <p:dataTable value="#{roleOnTheso.nodeListThesoAsAdmin}" var="listTheso" scrollable="true" 
+                                         filteredValue="#{roleOnTheso.nodeListThesoAsAdminFiltered}"
+                                         widgetVar="listThesoTable"
+                                         resizableColumns="true" scrollHeight="450" reflow="true" 
+                                         emptyMessage="Pas de résultat">
 
-                                <p:column width="60" headerText="Nom du thésaurus">
-                                    <h:outputText value="#{listTheso.value} (#{listTheso.id})" style="font-size: 14px"/>
+                                <p:column width="10" headerText="Id" filterBy="#{listTheso.id}" sortOrder="descending" sortBy="#{listTheso.id}">
+                                    <h:outputText value="#{listTheso.id}" style="font-size: 14px"/>
+                                </p:column>                                
+                                <p:column width="60" headerText="Nom du thésaurus" filterBy="#{listTheso.value}" sortBy="#{listTheso.value}">
+                                    <h:outputText value="#{listTheso.value}" style="font-size: 14px"/>
                                 </p:column>
 
                                 <p:column width="10" headerText="Public/Privé">
@@ -46,7 +52,7 @@
                                 </p:column>
 
                                 <p:column width="10" headerText="Exporter">
-                                    <p:menuButton icon="fas fa-upload" >
+                                    <p:menuButton icon="fas fa-upload" style="background-color: #FFFFFF;" value="Export" >
                                         <p:menuitem value="Format Skos" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
                                                     action="#{viewEditionBean.setIsViewExportSkos(true)}" icon="fas fa-upload"
                                                     title="Exporter le thésaurus au format Skos" update="containerIndex" />
@@ -74,7 +80,7 @@
                                 </p:column>
 
                                 <p:column width="10" headerText="Modifier" >
-                                    <p:commandButton icon="pi pi-pencil" update="containerIndex" process="@this"
+                                    <p:commandButton icon="pi pi-pencil" style="background-color: #F47B2A; color: #FFFFFF; border-color: #F47B2A" update="containerIndex" process="@this"
                                                      actionListener="#{editThesoBean.init(listTheso)}"
                                                      action="#{viewEditionBean.setIsViewModifyTheso(true)}"
                                                      styleClass="edit-button rounded-button ui-button-success"/>

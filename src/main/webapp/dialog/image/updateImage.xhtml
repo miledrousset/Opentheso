@@ -38,6 +38,12 @@
                     </div>
                 </div>
             </ui:repeat>
-        </p:panel>       
+        </p:panel>      
+        <p:spacer height="20px;" />
+        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                             actionListener="PF('updateImage').hide();" update="idUpdateImage"/>
+        </div>
     </p:dialog> 
 </ui:fragment>

@@ -78,6 +78,8 @@ public class AlignmentBean implements Serializable {
     private AlignementSource selectedAlignementSource;
     private ArrayList<NodeAlignment> listAlignValues;
     private ArrayList<AlignementElement> allignementsList;
+    
+    
     private NodeAlignment selectedNodeAlignment;
     private ArrayList<Map.Entry<String, String>> alignmentTypes;
     private int selectedAlignementType;

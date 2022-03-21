@@ -50,13 +50,12 @@
         </div>
 
         <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-            <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                              actionListener="PF('addManualAlignment').hide();" update="idAddManualAlignment"/>
 
-            <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                             class="btn btn-primary" oncomplete="PF('addManualAlignment').hide();"
-                             actionListener="#{alignmentManualBean.addManualAlignement()}" style="color: white;"/>
+            <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 styleClass="ui-button-primary" oncomplete="PF('addManualAlignment').hide();"
+                             actionListener="#{alignmentManualBean.addManualAlignement()}" />
         </div>       
     </p:dialog> 
 </ui:fragment>

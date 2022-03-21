@@ -125,20 +125,30 @@ public class ExternalResourcesHelper {
      * @param ds
      * @param idTheso
      * @param idConcept
-     * @param uri
+     * @param oldUri
+     * @param newUri
+     * @param description
+     * @param idUser
      * @return 
      */
-    public boolean setExternalResourceUri(HikariDataSource ds, String idTheso, String idConcept, String uri){
+    public boolean setExternalResourceUri(HikariDataSource ds,
+            String idTheso, String idConcept,
+            String oldUri, String newUri, String description, int idUser){
         boolean status = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("update external_resources SET external_uri = '" + uri
-                        + "' WHERE id_concept = '" + idConcept + "' AND id_thesaurus = '" + idTheso + "'");
+                stmt.executeUpdate("update external_resources SET external_uri = '" + newUri + "'"
+                        + ", id_user = " + idUser
+                        + ", description = '" + description + "'"
+                        + " WHERE id_concept = '" + idConcept + "'"
+                        + " AND id_thesaurus = '" + idTheso + "'"
+                        + " AND external_uri = '" + oldUri + "'"
+                        );
                 status = true;
             }
         } catch (SQLException sqle) {
             // Log exception
-            log.error("Error while deleting external resource of Concept : " + idConcept, sqle);
+            log.error("Error while updating external resource of Concept : " + idConcept, sqle);
         }
         return status;        
     }    

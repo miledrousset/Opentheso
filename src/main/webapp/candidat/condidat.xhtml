@@ -47,13 +47,13 @@
 
                 <div class="container-fluid">
 
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">Candidat</span></h1>
+                    <div class="col-12" style="margin-top: -10px; margin-bottom: 10px; font-size: 15px; font-weight: bold">
+                        <div class="col-12" >
+                            <h:outputText value="Candidat" style="color: #f47b2a; margin-left: -20px; " />
+                        </div>
                     </div>
 
-
                     <div class="col-12" style="height: 100%">
-                        <div class="card shadow mb-4" style="height: 100%; margin: 20px; padding: 20px; color: #000">
                             <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
                                        style="background-color: #FAFAFA;">
                                 <p:tab id="tab1" title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
@@ -123,7 +123,7 @@
                                     </h:panelGroup>
                                 </p:tab>
                             </p:tabView>
-                        </div>
+
                     </div>
 
                 </div>

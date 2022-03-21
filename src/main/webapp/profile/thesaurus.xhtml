@@ -81,14 +81,15 @@
                                                     <h:outputText value="#{listTheso.groupName}"/>
                                                 </p:column>
 
-                                                <p:column headerText="Action">
-                                                    <p:commandLink rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
-                                                                   actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName,  listTheso.idGroup)}"
-                                                                   update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();">
-                                                        <i class="fas fa-share-alt" style="color: #f47b2a;" />
-                                                    </p:commandLink>                             
+                                                <p:column headerText="Action"> 
+                                                    <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
+                                                                     actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName,  listTheso.idGroup)}"
+                                                                     update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();"
+                                                                     icon="fas fa-people-carry"
+                                                                     styleClass="edit-button rounded-button ui-button-success" 
+                                                                     style="background-color: #f47b2a; color: #FFFFFF; border-color: #f47b2a"/>                                                    
                                                 </p:column>
-                                                
+
                                                 <f:facet name="footer">
                                                     <span class="p-text-bold">Nombre total des thésaurus : #{superAdminBean.allThesoProject.size()}</span>
                                                 </f:facet>

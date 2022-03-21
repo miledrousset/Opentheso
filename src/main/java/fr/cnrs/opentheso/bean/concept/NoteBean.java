@@ -297,7 +297,7 @@ public class NoteBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         //    PrimeFaces.current().executeScript("PF('addNote').hide();");
-        reset();
+     //   reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
         //    pf.ajax().update("messageIndex");
@@ -332,6 +332,19 @@ public class NoteBean implements Serializable {
 
     private boolean addConceptNote(int idUser) {
         NoteHelper noteHelper = new NoteHelper();
+        if(noteHelper.isNoteExistOfConcept(
+                connect.getPoolConnexion(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedLang,
+                noteValue,
+                selectedTypeNote)){
+                
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Cette note existe déjà !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return false;            
+        }
+
         return noteHelper.addConceptNote(
                 connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -343,6 +356,19 @@ public class NoteBean implements Serializable {
 
     private boolean addtermNote(int idUser) {
         NoteHelper noteHelper = new NoteHelper();
+        if(noteHelper.isNoteExistOfTerm(
+                connect.getPoolConnexion(),
+                conceptBean.getNodeConcept().getTerm().getId_term(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedLang,
+                noteValue,
+                selectedTypeNote)){
+                
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Cette note existe déjà !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return false;            
+        }        
+        
         return noteHelper.addTermNote(
                 connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getTerm().getId_term(),

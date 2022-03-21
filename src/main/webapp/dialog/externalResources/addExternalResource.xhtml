@@ -7,46 +7,50 @@
     <p:dialog id="idAddExternalResource" header="#{langueBean.getMsg('rightbody.concept.externalResources')}" widgetVar="addExternalResource" 
               width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <div class="row">
-            <div class="col-4" style="text-align: right">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')}" class="dialog-titre" /> 
+        <h:form id="addExternalResourceForm" >
+
+
+            <div class="row">
+                <div class="col-4" style="text-align: right">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')}" class="dialog-titre" /> 
+                </div>
+                <div class="col-8">
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
+                                  style=" color: black;" />
+                </div>
             </div>
-            <div class="col-8">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                              style=" color: black;" />
+
+            <div class="row" style="margin-top: 10px; text-align: right">
+                <div class="col-4" >
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri_externalresource')}" class="dialog-titre" />              
+                </div>
+                <div class="col-8">
+                    <p:inputText id="idResource" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.uri_externalresource')} ..."  
+                                 value="#{externalResources.uri}" style="font-size: 12px; color: #000; width: 100%; border-color: #43B572"/> 
+                </div>
             </div>
-        </div>
-        
-        <div class="row" style="margin-top: 10px; text-align: right">
-            <div class="col-4" >
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri_externalresource')}" class="dialog-titre" />              
+
+            <div class="row" style="margin-top: 10px; text-align: right">
+                <div class="col-4" >
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.description')}" class="dialog-titre" />
+                </div>
+                <div class="col-8">
+                    <p:inputText id="idDescription" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.description')} ..."  
+                                 value="#{externalResources.description}" style="font-size: 12px; color: #000; width: 100%; border-color: #43B572"/>
+                </div>
             </div>
-            <div class="col-8">
-                <p:inputText id="idResource" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.uri_externalresource')} ..."  
-                             value="#{externalResources.uri}" style="font-size: 12px; color: #000; width: 100%; border-color: #43B572"/> 
-            </div>
-        </div>
-        
-        <div class="row" style="margin-top: 10px; text-align: right">
-            <div class="col-4" >
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.description')}" class="dialog-titre" />
-            </div>
-            <div class="col-8">
-                <p:inputText id="idDescription" placeholder="#{langueBean.getMsg('rightbody.conceptdialog.description')} ..."  
-                             value="#{externalResources.description}" style="font-size: 12px; color: #000; width: 100%; border-color: #43B572"/>
-            </div>
-        </div>
-        
-        <f:facet name="footer">
+
+            <p:spacer height="10px;" />
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addExternalResource').hide();" update="idAddExternalResource"/>
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('addExternalResource').hide();" update="containerIndex:idAddExternalResource"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addExternalResource').hide();"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                                 styleClass="ui-button-primary" oncomplete="PF('addExternalResource').hide();"
+                                 ajax="true" process="@form"
                                  actionListener="#{externalResources.addNewExternalResource(currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
-        </f:facet>
+        </h:form>            
     </p:dialog>   
 </ui:fragment>

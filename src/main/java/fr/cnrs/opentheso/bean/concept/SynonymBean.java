@@ -82,6 +82,7 @@ public class SynonymBean implements Serializable {
         nodeLangs = selectedTheso.getNodeLangs();
         isHidden = false;
         selectedLang = conceptBean.getSelectedLang();
+
         nodeEMs = conceptBean.getNodeConcept().getNodeEM();
         value = "";
         duplicate = false;
@@ -225,15 +226,15 @@ public class SynonymBean implements Serializable {
     /**
      * permet de modifier un synonyme
      *
-     * @param nodeEM
+     * @param nodeEMLocal
      * @param idUser
      */
-    public void updateSynonym(NodeEM nodeEM, int idUser) {
+    public void updateSynonym(NodeEM nodeEMLocal, int idUser) {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
         TermHelper termHelper = new TermHelper();
 
-        if (nodeEM == null) {
+        if (nodeEMLocal == null) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
@@ -243,13 +244,13 @@ public class SynonymBean implements Serializable {
         }
 
         // save de la valeur pour une modification forcée
-        this.nodeEM = nodeEM;
+        this.nodeEM = nodeEMLocal;
 
-        if (!nodeEM.getOldValue().equals(nodeEM.getLexical_value())) {
+        if (!nodeEMLocal.getOldValue().equals(nodeEMLocal.getLexical_value())) {
             if (termHelper.isTermExist(connect.getPoolConnexion(),
-                    nodeEM.getLexical_value(),
+                    nodeEMLocal.getLexical_value(),
                     selectedTheso.getCurrentIdTheso(),
-                    nodeEM.getLang())) {
+                    nodeEMLocal.getLang())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 duplicate = true;
@@ -259,9 +260,9 @@ public class SynonymBean implements Serializable {
                 return;
             }
             if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
-                    nodeEM.getLexical_value(),
+                    nodeEMLocal.getLexical_value(),
                     selectedTheso.getCurrentIdTheso(),
-                    nodeEM.getLang())) {
+                    nodeEMLocal.getLang())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 duplicate = true;
@@ -272,8 +273,8 @@ public class SynonymBean implements Serializable {
             }
             updateSynonymForced(idUser);
         } else {
-            if (nodeEM.isOldHiden() != nodeEM.isHiden()) {
-                updateStatus(nodeEM, idUser);
+            if (nodeEMLocal.isOldHiden() != nodeEMLocal.isHiden()) {
+                updateStatus(nodeEMLocal, idUser);
             }
         }
         reset();
@@ -282,6 +283,18 @@ public class SynonymBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
+        }
+    }
+    
+    public void resetRenameEMAfterCancel(){
+        if(nodeEMsForEdit == null)
+            nodeEMsForEdit = new ArrayList<>();
+        else
+            nodeEMsForEdit.clear();
+        for (NodeEM nodeEM1 : nodeEMs) {
+            nodeEM1.setLexical_value(nodeEM1.getOldValue());
+            nodeEM1.setHiden(nodeEM1.isOldHiden());
+            nodeEMsForEdit.add(nodeEM1);
         }
     }
 
@@ -294,7 +307,7 @@ public class SynonymBean implements Serializable {
         FacesMessage msg;
         TermHelper termHelper = new TermHelper();
         PrimeFaces pf = PrimeFaces.current();
-
+        duplicate = false;
         if (!termHelper.updateTermSynonyme(connect.getPoolConnexion(),
                 nodeEM.getOldValue(), nodeEM.getLexical_value(),
                 conceptBean.getNodeConcept().getTerm().getId_term(),

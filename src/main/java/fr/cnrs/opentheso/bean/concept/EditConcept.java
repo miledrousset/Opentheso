@@ -482,7 +482,7 @@ public class EditConcept implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         if (PrimeFaces.current().isAjaxRequest()) {
-            PrimeFaces.current().ajax().update("containerIndex:formRightTab:viewTabConcept:idDeprecatedLabel");
+            PrimeFaces.current().ajax().update("containerIndex:idDeleteReplaceBy");
         }
         reset("");
 

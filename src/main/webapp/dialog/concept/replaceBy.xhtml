@@ -5,17 +5,20 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idReplaceBy" header="#{langueBean.getMsg('rightbody.conceptdialog.replace_by')}" widgetVar="replaceBy" 
-              modal="true" resizable="true" position="top" width="400" style="margin-top: 50px" >        
+              modal="true" resizable="true" position="top" width="450" style="margin-top: 50px" >      
+        <h:form id="replaceByForm">
+            <p:defaultCommand target="validateReplaceBy" />
             <div class="row">
-                <div>
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.replace_concept')} " style="font-size: 14px;"/>  
-                    <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value} " style="font-size: 14px; color: #C63632;"/>
+                <div class="col-12" >
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.replace_concept')} : " style="font-size: 14px;"/>  
+                    <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value} " style="font-size: 14px; color: #C63632;"/>                    
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-2">
                     <h:outputText value=" #{langueBean.getMsg('rightbody.conceptdialog.by')} :" style="font-size: 14px;"/> 
                 </div>
-
-                <p:spacer/>
-
-                <div>
+                <div class="col-10">
                     <p:autoComplete id="autoReplaceBy" value="#{editConcept.searchSelected}"
                                     var="values" active="true"
                                     forceSelection="true"
@@ -32,28 +35,28 @@
                         <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
                             <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
                         </p:column>
+                    </p:autoComplete>                    
+                </div>                
+            </div>
 
-                    </p:autoComplete>
-                </div>
+            <p:spacer/>
 
-                <p:spacer/>
+            <div style="width: 100%; text-align: right;">
 
-                <f:facet name="footer">
-                    <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('replaceBy').hide();" update="containerIndex:idReplaceBy"/>
 
-                        <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                         actionListener="PF('replaceBy').hide();" update="idReplaceBy"/>
-
-                        <p:commandButton title="#{langueBean.getMsg('btnAdd')}" 
-                                         update="messageIndex"
-                                         class="btn btn-primary" oncomplete="PF('replaceBy').hide();"
-                                         actionListener="#{editConcept.addReplacedBy(
-                                               conceptView.nodeConcept.concept.idConcept,
-                                               selectedTheso.currentIdTheso,
-                                               currentUser.nodeUser.idUser)}"
-                                         style="color: white;"/>
-                    </div>
-                </f:facet>                
-            </div> 
+                <p:commandButton id="validateReplaceBy"
+                                 title="#{langueBean.getMsg('btnAdd')}" 
+                                 update="messageIndex"
+                                 ajax="true" process="@form"
+                                 class="btn btn-primary" oncomplete="PF('replaceBy').hide();"
+                                 actionListener="#{editConcept.addReplacedBy(
+                                                   conceptView.nodeConcept.concept.idConcept,
+                                                   selectedTheso.currentIdTheso,
+                                                   currentUser.nodeUser.idUser)}"
+                                 style="color: white;"/>
+            </div>
+        </h:form>            
     </p:dialog>   
 </ui:fragment>

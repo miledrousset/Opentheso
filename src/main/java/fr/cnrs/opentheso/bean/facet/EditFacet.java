@@ -240,7 +240,8 @@ public class EditFacet implements Serializable {
                 selectedLang);
 
         initDataAfterAction();
-        PrimeFaces.current().executeScript("PF('addFacetTraduction').hide();");
+        setLangListForTraduction();
+//        PrimeFaces.current().executeScript("PF('addFacetTraduction').hide();");
         showMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec sucée !");
 
         traductionValue = "";

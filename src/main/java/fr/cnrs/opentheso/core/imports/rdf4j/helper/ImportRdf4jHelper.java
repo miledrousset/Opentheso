@@ -724,10 +724,12 @@ public class ImportRdf4jHelper {
         }
 
         if (acs.nodeGps.getLatitude() != null && acs.nodeGps.getLongitude() != null) {
-            // insertion des données GPS
-            acs.gpsHelper.insertCoordonees(ds, acs.concept.getIdConcept(),
-                    idTheso,//thesaurus.getId_thesaurus(),
-                    acs.nodeGps.getLatitude(), acs.nodeGps.getLongitude());
+            if (acs.nodeGps.getLatitude() != 0.0 && acs.nodeGps.getLongitude() != 0.0) {
+                // insertion des données GPS
+                acs.gpsHelper.insertCoordonees(ds, acs.concept.getIdConcept(),
+                        idTheso,//thesaurus.getId_thesaurus(),
+                        acs.nodeGps.getLatitude(), acs.nodeGps.getLongitude());
+            }
         }
 
         if(acs.isTopConcept) {
