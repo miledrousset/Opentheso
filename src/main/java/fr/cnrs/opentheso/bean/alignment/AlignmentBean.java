@@ -77,7 +77,8 @@ public class AlignmentBean implements Serializable {
     private String selectedAlignement;
     private AlignementSource selectedAlignementSource;
     private ArrayList<NodeAlignment> listAlignValues;
-    private ArrayList<AlignementElement> allignementsList;
+    private ArrayList<AlignementElement> allignementsList, filteredAlignement;
+    private AlignementElement selectedLastPositionReportDtos;
     
     
     private NodeAlignment selectedNodeAlignment;
@@ -2052,4 +2053,20 @@ public class AlignmentBean implements Serializable {
         this.alertWikidata = alertWikidata;
     }
 
+    public ArrayList<AlignementElement> getFilteredAlignement() {
+        return filteredAlignement;
+    }
+
+    public void setFilteredAlignement(ArrayList<AlignementElement> filteredAlignement) {
+        this.filteredAlignement = filteredAlignement;
+    }
+
+    public AlignementElement getSelectedLastPositionReportDtos() {
+        return selectedLastPositionReportDtos;
+    }
+
+    public void setSelectedLastPositionReportDtos(AlignementElement selectedLastPositionReportDtos) {
+        this.selectedLastPositionReportDtos = selectedLastPositionReportDtos;
+    }
+    
 }

@@ -337,8 +337,6 @@ public class ConceptView implements Serializable {
 
         String titre = nodeConcept.getTerm() != null ? nodeConcept.getTerm().getLexical_value() : "";
         titre = titre.replaceAll("'", "_");
-        mapModel = null;
-        //Configure Map
         mapModel = new Map();
         mapModel.setWidth("100%");
         mapModel.setHeight("250px");
@@ -349,18 +347,7 @@ public class ConceptView implements Serializable {
         mapModel.setLayerControl(false);
         mapModel.setDraggingEnabled(true);
         mapModel.setZoomEnabled(true);
-
-        /* code pour superposer un polygone sur la carte */
- /*        Layer placesLayer = (new Layer()).setLabel("Places");
-		placesLayer.addMarker(new Marker(new LatLong("42.120000","-72.540000"),"<b>Krusty Burger</b><br>Phone: 555-5555"));
-		placesLayer.addMarker(new Marker(new LatLong("42.114556","-72.526309"),"<b>Elementary School</b><br>Skinner&#39;s Phone: 555-5555"));
-		placesLayer.addMarker(new Marker(new LatLong("42.120286","-72.547488"),"<b>Hospital</b><br>Dr. Hibbert lol"));
-		
-                Layer polycircleLayer = (new Layer()).setLabel("Polyline/Circle");
-		polycircleLayer.addPolyline((new Polyline()).addPoint(new LatLong("42.114556","-72.526309")).addPoint(new LatLong("42.120000","-72.540000")));
-                mapModel.setWidth("350px").setHeight("250px").setCenter(new LatLong("42.111707","-72.541008")).setZoom(13);
-                mapModel.addLayer(placesLayer).addLayer(polycircleLayer);
-         */
+        mapModel.setUrlTemplate("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png");
         mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
     }
 

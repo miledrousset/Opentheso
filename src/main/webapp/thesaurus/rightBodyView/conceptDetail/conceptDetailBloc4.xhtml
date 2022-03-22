@@ -62,8 +62,8 @@
                         </div>
                     </div>               
                 </h:panelGroup>
-                
-                
+
+
                 <!-- ligne images --> 
                 <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                     <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0)}">               
@@ -71,7 +71,7 @@
                             <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                                     <h:outputText value=" #{langueBean.getMsg('rightbody.concept.image')}"
-                                                 style="font-size: 14px; font-weight: bold; margin-right: 10px; color: #8f8f8f"/>
+                                                  style="font-size: 14px; font-weight: bold; margin-right: 10px; color: #8f8f8f"/>
                                 </div>
                             </h:panelGroup>
                             <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
@@ -203,11 +203,11 @@
             </div>
         </div>
     </h:panelGroup>
-                                            
+
     <ui:include src="../../../dialog/image/addImage.xhtml" />
     <ui:include src="../../../dialog/image/updateImage.xhtml" />
     <ui:include src="../../../dialog/image/deleteImage.xhtml" /> 
-    
+
 
     <ui:include src="../../../dialog/gps/setGps.xhtml" />      
     <ui:include src="../../../dialog/gps/deleteGps.xhtml" />

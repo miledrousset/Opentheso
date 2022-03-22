@@ -11,7 +11,7 @@
         }
     </style>
 
-    <p:toolbar style="margin-top: 10px">
+    <p:toolbar style="margin-top: 10px; margin-bottom: 10px">
         <p:toolbarGroup align="center">
             <p:commandButton value="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" icon="fas fa-plus-circle" 
                              actionListener="#{setAlignmentSourceBean.init()}" process="@this" ajax="true"
@@ -25,47 +25,46 @@
         </p:toolbarGroup>
     </p:toolbar>
 
+    <p:dataTable var="alignement" value="#{alignmentBean.allignementsList}"
+                 editable="true" 
+                 paginator="true"
+                 paginatorPosition="bottom"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 selectionMode="single"
+                 rowKey="#{alignement.idConceptOrig}"
+                 rows="10" 
+                 resizableColumns="true" 
+                 showGridlines="true" 
+                 size="small"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} alignement"
+                 rowsPerPageTemplate="5,10,{ShowAll|'All'}" 
+                 rowStyleClass="#{alignement.targetUri == null ? 'alignementVide' : null}"  
+                 scrollHeight="69%" 
+                 styleClass=".ui-datatable-hor-scroll" 
+                 style="font-size: 13px;"
+                 allowUnsorting="true" 
+                 sortMode="single" 
+                 widgetVar="datatable"
+                 filteredValue="#{alignmentBean.filteredAlignement}"
+                 selection="#{alignmentBean.selectedLastPositionReportDtos}">
 
-    <p:dataTable id="tableauAlignement" var="alignement" value="#{alignmentBean.allignementsList}"
-                     rows="10" paginator="true" resizableColumns="true" showGridlines="true" size="small"
-                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} alignement"
-                     rowsPerPageTemplate="5,10,{ShowAll|'All'}" paginatorPosition="bottom"
-                     rowStyleClass="#{alignement.targetUri == null ? 'alignementVide' : null}"  
-                     scrollHeight="69%" styleClass=".ui-datatable-hor-scroll" style="font-size: 13px;">
-
-            <p:columnGroup type="header">
-                <p:row class="col-12">
-                    <p:column filterBy="#{alignement.idConceptOrig}"   />
-                    <p:column filterBy="#{alignement.labelConceptOrig}"  />                    
-                    <p:column headerText="Concept cible" sortBy="#{alignement.typeAlignement}"  />
-                    <p:column headerText="Type d'Alignement" sortBy="#{alignement.labelConceptCible}"  />
-                    <p:column headerText="Target URI" sortBy="#{alignement.targetUri}" />
-                    <p:column headerText="Actions" />
-                </p:row>
-                <p:row>
-                    <p:column headerText="Identifiant" sortBy="#{alignement.idConceptOrig}" />
-                    <p:column headerText="Etiquette" sortBy="#{alignement.labelConceptOrig}"  />
-                </p:row>
-            </p:columnGroup>
-
-            <p:column>
+            <p:column headerText="Identifiant" filterBy="#{alignement.idConceptOrig}" sortBy="#{alignement.idConceptOrig}">
                 <h:outputText value="#{alignement.idConceptOrig}" />
             </p:column>
 
-            <p:column >
+            <p:column headerText="Etiquette" filterBy="#{alignement.labelConceptOrig}" sortBy="#{alignement.labelConceptOrig}">
                 <h:outputText value="#{alignement.labelConceptOrig}" />
             </p:column>
 
-            <p:column>
+            <p:column headerText="Type d'Alignement" sortBy="#{alignement.labelConceptCible}">
                 <h:outputText value="#{alignement.labelConceptCible}" />
             </p:column>
 
-            <p:column>
+            <p:column headerText="Concept cible">
                 <h:outputText value="#{alignement.typeAlignement}" />
             </p:column>
 
-            <p:column>
+            <p:column headerText="Target URI" sortBy="#{alignement.targetUri}">
                 <h:outputLink value="#{alignement.targetUri}" target="_blank" >
                     <h:outputText rendered="#{alignement.targetUri != null}" value="#{alignement.targetUri}" />
 
@@ -79,7 +78,7 @@
                 </h:outputLink>
             </p:column>
 
-            <p:column>
+            <p:column headerText="Actions">
                 
                 <p:commandButton process="@this" rendered="#{alignement.targetUri != null}" 
                                  action="#{alignmentManualBean.reset()}" icon="pi pi-pencil"
