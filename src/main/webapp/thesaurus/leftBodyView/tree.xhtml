@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup id="treeActions">
-        <div align="write" class="row" style="margin-top: -15px; ">
+        <div align="write" class="row" style=" height: 28px; margin-top: -15px; margin-bottom: -20px;">
             <div class="col-xl-9 col-lg-8 col-md-6 col-sm-8">
                 <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
                               title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
@@ -32,7 +32,7 @@
                                 disabled="#{selectedTheso.sortByNotation}" icon="fas fa-sort-numeric-down"
                                 process="@this" update="containerIndex:formLeftTab" />
 
-                    <p:menuitem value="Add top concept" onclick="#{newConcept.reset()}" icon="fas fa-folder-plus"
+                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addTopTerm')}" onclick="#{newConcept.reset()}" icon="fas fa-folder-plus"
                                 oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
                                 rendered="#{(currentUser.nodeUser != null) and 
                                             (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
@@ -53,6 +53,7 @@
             </div>
         </div>
     </h:panelGroup>
+    <p:separator style="color: #F47B2A"/>
     <h:panelGroup>
         
 

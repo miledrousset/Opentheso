@@ -62,59 +62,6 @@
                         </div>
                     </div>
                 </h:panelGroup>
-
-                <!-- ligne Corpus liés --> 
-                <h:panelGroup rendered="#{conceptView.nodeCorpuses != null and conceptView.haveCorpus}">
-                    <div class="list-group-item list-group-item-action" style=" margin-bottom: -5px">
-                        <div class="row" style="margin-top: 3px">
-                            <div class="col-3" style="text-align: right;">
-                                <h:outputText value=" #{langueBean.getMsg('rightbody.concept.linked_corpus')}" 
-                                              title="#{langueBean.getMsg('rightbody.concept.linked_corpus')}"
-                                              style="font-size: 14px; font-weight: bold; margin-right: 10px; color: #8f8f8f"/>
-
-                                <p:commandButton rendered="#{user.nodeUser != null}" icon="fas fa-cog fa-xs" 
-                                                 style="color: #F7A269; font-size: 13px; margin-left: 6px; margin-right: 6px" />
-                            </div>
-
-                            <h:panelGroup rendered="#{conceptView.nodeCorpuses.size() == 0}">
-                                <div class="col-9" style="margin-left: -10px">
-                                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
-                                                   style="font-size: 13px; color: grey; font-style: italic " />
-                                </div>
-                            </h:panelGroup>
-
-                            <div class= "col-9" style="margin-left: -10px">
-                                <h:panelGroup rendered="#{conceptView.nodeCorpuses.size() != 0}">
-                                    <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
-                                        <h:panelGroup rendered="#{(corpus.count != 0 and corpus.count!= -1) or (corpus.isOnlyUriLink)}">
-                                            <div class="row">
-                                                <h:panelGroup rendered="#{!corpus.isOnlyUriLink}">
-                                                    <div class="col-6">
-                                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                                        <p:link href="#{corpus.uriLink}"
-                                                                value="#{corpus.corpusName} (#{corpus.count} #{langueBean.getMsg('rightbody.concept.notices')})"
-                                                                target="_blank" style="font-size: 13px; color: #43B572;">
-                                                        </p:link>
-                                                    </div>
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{corpus.isOnlyUriLink}">
-                                                    <div class="col-6">
-                                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>                                                    
-                                                        <p:link href="#{corpus.uriLink}" value="#{corpus.corpusName}" target="_blank"
-                                                                style="font-size: 13px; color: #43B572;">
-                                                        </p:link>
-                                                    </div>
-                                                </h:panelGroup>                                            
-                                            </div>
-                                        </h:panelGroup> 
-                                    </ui:repeat>
-
-
-                                </h:panelGroup> 
-                            </div>
-                        </div>
-                    </div>
-                </h:panelGroup>
             </div>
         </div>
     </h:panelGroup>

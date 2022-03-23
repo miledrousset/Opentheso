@@ -232,7 +232,24 @@ public class SelectedTheso implements Serializable {
     }
 
     /**
+     * permet de recharger l'arbre des collections 
+     */
+    public void reloadGroups(){
+        treeGroups.reset();
+        treeGroups.initialise(selectedIdTheso, selectedLang);        
+    }
+    
+    /**
+     * permet de recharger l'arbre des collections 
+     */
+    public void reloadConceptTree(){
+        treeConcepts.reset();
+        treeConcepts.initialise(selectedIdTheso, selectedLang);        
+    }    
+    
+    /**
      * Permet de Re-charger le thésaurus sélectionné, pour activer des mises à jour non prises en compte
+     * @throws java.io.IOException
      */
     public void reloadSelectedTheso() throws IOException {
         searchBean.reset();

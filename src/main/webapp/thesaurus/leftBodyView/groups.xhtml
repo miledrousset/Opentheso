@@ -3,9 +3,16 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <div style="width: 100%; display: flex;">
+    <div style="width: 100%; display: flex;height: 28px; margin-top: -15px; margin-bottom: -20px;">
         <div style="width: 50%;" />
-        <div style="width: 50%; text-align: right;">
+
+        <div style="width: 75%; text-align: right;">
+            <p:commandLink action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar containerIndex:formLeftTab:tabTree:treeGroups" 
+                           ajax="true" process="@form"
+                           title="Recharger l'arbre">
+                <i class="fas fa-refresh" style=" color: #F47B2A; margin-right: 20px; font-size: 14px; " />
+            </p:commandLink>            
+            
             <!-- ajout des collections et sous collections -->
             <p:menuButton icon="fas fa-plus-circle"
                           rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null) 
@@ -28,7 +35,7 @@
             </p:menuButton>
         </div>
     </div>
-
+    <p:separator style="color: #F47B2A"/>
     <p:tree id="treeGroups" value="#{treeGroups.root}" dynamic="true" var="node" selectionMode="single" selection="#{treeGroups.selectedNode}"
             style="width: auto; border: none; font-size: 12px; min-height: 700px; max-height: 800px; overflow-y:scroll;"
             widgetVar="groupWidget">

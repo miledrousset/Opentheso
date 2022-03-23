@@ -4,29 +4,47 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idRenameTraductionGroup" header="modifier une traduction groupe" widgetVar="renameTraductionGroup" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        <h:form id="renameTraductionGroupForm" >
 
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{groupView.nodeGroup.lexicalValue}" style="font-size: 13px; color: black;" />
-            </div>
-        </div>
 
-        <ui:repeat var="traductionToEdit" value="#{traductionGroupBean.nodeGroupTraductionses}" >
-            <div class="row"  style="margin-top: 8px">
-                <div class="col-9">
-                    <p:inputText value="#{traductionToEdit.title}" style="color: #43B572; width: 100%"/>   
-                </div>
-                <div class="col-2">
-                    <h:outputText value="#{traductionToEdit.idLang}" style="color: #43B572;"/>                    
-                </div>
-                <div class="col-1">
-                    <p:commandLink action="#{traductionGroupBean.updateTraduction(traductionToEdit, currentUser.nodeUser.idUser)}"
-                                   style="color: #F7A269;" update="containerIndex:formRightTab">
-                        <i class="pi pi-check-circle" style="color: #F7A269;" />
-                    </p:commandLink>
+            <div class="row" style="font-size: 14px;">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('statistique.label')} : " /> 
+                    <h:outputText value=" #{groupView.nodeGroup.lexicalValue}" style="font-weight: bold"/>
                 </div>
             </div>
-        </ui:repeat>
+
+            <ui:repeat var="traductionToEdit" value="#{traductionGroupBean.nodeGroupTraductionses}" >
+                <div class="row"  style="margin-top: 8px; margin-left: 10px;">
+                    <div class="col-9">
+                        <p:inputText value="#{traductionToEdit.title}" style=" width: 100%"/>   
+                    </div>
+                    <div class="col-1" style="padding-top: 5px">
+                        <h:outputText value="#{traductionToEdit.idLang}" style="color: #43B572; font-weight: bold; "/>                    
+                    </div>
+                    <div class="col-1">
+                        <p:commandLink action="#{traductionGroupBean.updateTraduction(traductionToEdit, currentUser.nodeUser.idUser)}"
+                                       style="color: #F7A269;" update="containerIndex:formRightTab"
+                                       ajax="true" process="@form">
+                            <i class="pi pi-check-circle" style="font-size: 1.5rem; padding-top: 5px; color: #F7A269;" />
+                        </p:commandLink>
+                    </div>
+                </div>
+            </ui:repeat>
+            
+            <p:spacer height="10px"/>
+            <div class="row">
+                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                    <p:messages id="addTradMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                        <p:autoUpdate/>
+                    </p:messages>
+                </div>
+            </div>  
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('renameTraductionGroup').hide();" update="containerIndex:idRenameTraductionGroup"/>       
+            </div>            
+        </h:form>            
     </p:dialog> 
 </ui:fragment>

@@ -40,10 +40,10 @@
                                          resizableColumns="true" scrollHeight="450" reflow="true" 
                                          emptyMessage="Pas de résultat">
 
-                                <p:column width="10" headerText="Id" filterBy="#{listTheso.id}" sortOrder="descending" sortBy="#{listTheso.id}">
+                                <p:column width="10" headerText="Id"  sortOrder="descending" sortBy="#{listTheso.id}">
                                     <h:outputText value="#{listTheso.id}" style="font-size: 14px"/>
                                 </p:column>                                
-                                <p:column width="60" headerText="Nom du thésaurus" filterBy="#{listTheso.value}" sortBy="#{listTheso.value}">
+                                <p:column width="60" headerText="Nom du thésaurus"  sortBy="#{listTheso.value}">
                                     <h:outputText value="#{listTheso.value}" style="font-size: 14px"/>
                                 </p:column>
 
@@ -88,7 +88,7 @@
 
                                 <p:column width="10" headerText="Supprimer">
                                     <p:commandButton icon="pi pi-trash" update="idConfirmDelete" process="@this" ajax="true"
-                                                     actionListener="#{deleteThesoBean.setThesaurusBeforRemove(listTheso.id, listTheso.value)}"
+                                                     actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
                                                      oncomplete="PF('confirmDelete').show();" class="ui-button-danger rounded-button" />
                                 </p:column>
 

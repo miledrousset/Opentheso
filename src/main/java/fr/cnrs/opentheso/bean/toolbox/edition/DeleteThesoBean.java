@@ -73,8 +73,6 @@ public class DeleteThesoBean implements Serializable {
         
         // récupération de l'idTheso en cours
         this.currentIdTheso = cucurrentIdTheso;
-        
-        deleteTheso();
     }
     
     /**

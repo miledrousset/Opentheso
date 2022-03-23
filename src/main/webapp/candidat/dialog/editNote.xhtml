@@ -7,22 +7,23 @@
                width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
 
         <h:form id="editNoteForm">
-            
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
                     <h:outputText value="Texte" style="font-weight: bold;"/>
                 </div>
-                <div class="col-7">
+            </div>
+            <div class="row">
+                <div class="col-12">
                     <p:inputTextarea value="#{noteBeanCandidat.selectedNodeNote.lexicalvalue}" required="true"
                              style="width: 100%; resize: none; font-size: 13px; background: white;"/>
                 </div>
             </div>
             
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  actionListener="PF('editNote').hide();" update="idEditNote"/>
 
-                <p:commandButton class="btn btn-primary" title="Modifier" oncomplete="PF('editNote').hide();"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" oncomplete="PF('editNote').hide();"
                                  update="tabViewCandidat messageIndex"
                                  actionListener="#{noteBeanCandidat.updateNote(currentUser.nodeUser.idUser)}"/>
             </div>

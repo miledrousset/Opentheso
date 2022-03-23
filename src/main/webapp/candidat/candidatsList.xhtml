@@ -61,8 +61,8 @@
                                       (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                           selectionMode="multiple" style="width:16px;text-align:center; vertical-align: central; font-size: 13px;"/>
 
-                <p:column  width="20" headerText="id">
-                    <h:outputText value="#{listCandidats.idConcepte}" style="font-size: 13px;" />
+                <p:column  width="20" headerText="id" sortBy="#{listCandidats.idConcepte}">
+                    <h:outputText value="#{listCandidats.idConcepte}" style="font-size: 13px;"/>
                 </p:column>                    
 
                 <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
@@ -70,7 +70,7 @@
                                    actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
                 </p:column>
 
-                <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
+                <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}" sortBy="#{listCandidats.nomPref}">
                     <p:commandLink value="#{listCandidats.nomPref}" ajax="true" update="tabViewCandidat" style="color: #43B572; font-size: 13px;"
                                    process="@this" actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
                 </p:column>
@@ -79,16 +79,16 @@
                     <h:outputText value="#{listCandidats.user}" style="font-size: 13px;"/>
                 </p:column>
 
-                <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
+                <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}" sortBy="#{listCandidats.creationDate}">
                     <h:outputText value="#{listCandidats.creationDate}" style="font-size: 13px;" />
                 </p:column>  
-                <p:column width="20" headerText="Votes">
+                <p:column width="20" headerText="Votes" sortBy="#{listCandidats.nbrVote}">
                     <h:outputText value="#{listCandidats.nbrVote}" style="font-size: 13px;" />
                 </p:column>   
                 <p:column width="20" headerText="Votes Note">
                     <h:outputText value="#{listCandidats.nbrNoteVote}" style="font-size: 13px;"/>
                 </p:column>      
-                <p:column width="20" headerText="Messages">
+                <p:column width="20" headerText="Messages" sortBy="#{listCandidats.nbrParticipant}">
                     <h:outputText value="#{listCandidats.nbrParticipant}" style="font-size: 13px;"/>
                 </p:column>  
             </p:dataTable>   

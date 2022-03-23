@@ -6,48 +6,54 @@
 
     <p:dialog id="idAddGroup" header="Ajouter un groupe/collection" widgetVar="addGroup" 
               modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Nom :" style="font-weight: bold;"/>
-                <p:commandLink style="font-size: 17px; color: #FF7979" action="#{addGroupBean.infos}" update="messageIndex">
-                    <i class="pi pi-info-circle"></i>
-                </p:commandLink>
-            </div>
-            <div class="col-7">
-                <p:inputText placeholder="Nouveau groupe..." value="#{addGroupBean.titleGroup}"
-                             style="width: 100%; background: white; border-color: #43B572"/>
-            </div>
-        </div>
+        <h:form id="addGroupForm" >
 
-        <div class="row" style="margin-top: 7px">
-            <div class="col-5">
-                <h:outputText value="Type :" style="font-weight: bold;"/>
-            </div>
-            <div class="col-7">
-                <p:selectOneMenu value="#{addGroupBean.selectedGroupType}" 
-                                 style="width: 100%; background: white; border-color: #43B572">
-                    <f:selectItems value="#{addGroupBean.listGroupType}" var="groupType" itemLabel="#{groupType}" itemValue="#{groupType}"/>
-                </p:selectOneMenu>  
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-5">
-                <h:outputText value="Notation :" style="font-weight: bold;"/>
-            </div>
-            <div class="col-7">
-                <p:inputText placeholder="Notation..." value="#{addGroupBean.notation}" autocomplete="false" style="width: 100%" />
-            </div>
-        </div>
 
-        <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
-            <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                             actionListener="PF('addGroup').hide();" update="idAddGroup"/>
+            <div class="row">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Nom :" style="font-weight: bold;"/>
+                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{addGroupBean.infos}" update="messageIndex">
+                        <i class="pi pi-info-circle"></i>
+                    </p:commandLink>
+                </div>
+                <div class="col-7">
+                    <p:inputText placeholder="Nouveau groupe..." value="#{addGroupBean.titleGroup}"
+                                 style="width: 100%; background: white; border-color: #43B572"/>
+                </div>
+            </div>
 
-            <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}"
-                             update="containerIndex messageIndex" oncomplete="PF('addGroup').hide();"
-                             actionListener="#{addGroupBean.addGroup(selectedTheso.currentIdTheso,
-                                               selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
-        </div>
+            <div class="row" style="margin-top: 7px">
+                <div class="col-5">
+                    <h:outputText value="Type :" style="font-weight: bold;"/>
+                </div>
+                <div class="col-7">
+                    <p:selectOneMenu value="#{addGroupBean.selectedGroupType}" 
+                                     style="width: 100%; background: white; border-color: #43B572">
+                        <f:selectItems value="#{addGroupBean.listGroupType}" var="groupType" itemLabel="#{groupType}" itemValue="#{groupType}"/>
+                    </p:selectOneMenu>  
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-5">
+                    <h:outputText value="Notation :" style="font-weight: bold;"/>
+                </div>
+                <div class="col-7">
+                    <p:inputText placeholder="Notation..." value="#{addGroupBean.notation}" autocomplete="false" style="width: 100%" />
+                </div>
+            </div>
+
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                                 actionListener="PF('addGroup').hide();" update="containerIndex:idAddGroup"/>
+
+                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}"
+                                 update="containerIndex messageIndex" oncomplete="PF('addGroup').hide();"
+                                 ajax="true" process="@form"
+                                 actionListener="#{addGroupBean.addGroup(selectedTheso.currentIdTheso,
+                                                   selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
+            </div>
+        </h:form>
     </p:dialog>   
 </ui:fragment>

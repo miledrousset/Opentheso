@@ -15,8 +15,8 @@
                 </p:commandLink> 
             </div>
             <div class="col-7">
-                <p:inputText placeholder="New top concept..." value="#{newConcept.prefLabel}" 
-                             style="width: 100%; background: white; border-color: #43B572"/>
+                <p:inputText placeholder="#{langueBean.getMsg('rightbody.concept.addTopTerm')}" value="#{newConcept.prefLabel}" 
+                             style="width: 100%; background: white; border-color: #43B572; font-size: 14px;"/>
             </div>
         </div>
 
@@ -26,7 +26,7 @@
             </div>
             <div class="col-7">
                 <p:selectOneMenu value="#{newConcept.idGroup}" 
-                                 style="width: 100%; background: white; border-color: #43B572">
+                                 style="width: 100%; background: white; border-color: #43B572; font-size: 14px;">
                     <f:selectItem itemLabel="..." itemValue="" />
                     <f:selectItems value="#{newConcept.nodeGroups}" var="nodeGroup"
                                    itemLabel="#{nodeGroup.lexicalValue}" itemValue="#{nodeGroup.conceptGroup.idgroup}"/>

@@ -16,19 +16,19 @@
                 </div>
             </div>
 
-            <p:panel id="listTraductions" style="max-height: 350px;">
+            <p:panel id="listTraductions" style="max-height: 350px; margin-top: 20px;">
                 <p:dataTable var="traductions" value="#{traductionBean.nodeTermTraductions}" style="font-size: 12px;">
                     <p:column headerText="label">
-                        <h:outputText value="#{traductions.lexicalValue}" style="color: #43B572"/>
+                        <h:outputText value="#{traductions.lexicalValue}" style="color: #43B572; font-size: 14px;"/>
                     </p:column>    
                     <p:column width="60" headerText="lang">
-                        <h:outputText value="#{traductions.lang}" style="color: #43B572; text-align: center"/>
+                        <h:outputText value="#{traductions.lang}" style="color: #43B572; text-align: center; font-size: 14px;"/>
                     </p:column>     
                     <p:column width="60" headerText="action">
                         <p:commandLink style="color: #FF7979; text-align: center"
                                        ajax="true" process="@form"
                                        action="#{traductionBean.deleteTraduction(traductions, currentUser.nodeUser.idUser)}">
-                            <i class="pi pi-trash" />
+                            <i class="pi pi-trash" style="font-size: 1.2rem; padding-top: 5px; color: #C63632;" />
                         </p:commandLink>
                     </p:column>                    
                 </p:dataTable>

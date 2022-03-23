@@ -75,9 +75,9 @@ public class ModifyGroupBean implements Serializable {
         selectedGroupType = groupView.getNodeGroup().getConceptGroup().getIdtypecode();
 
         listGroupType = new GroupHelper().getAllGroupType(connect.getPoolConnexion());
-        if (!listGroupType.isEmpty()) {
+     /*   if (!listGroupType.isEmpty()) {
             selectedGroupType = listGroupType.get(0).getLabel();
-        }
+        }*/
     }
 
     public void infos() {
@@ -245,7 +245,7 @@ public class ModifyGroupBean implements Serializable {
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " Notation modifiée avec succès !");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " groupe modifié avec succès !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         if (pf.isAjaxRequest()) {

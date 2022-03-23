@@ -140,7 +140,7 @@
 
         <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}">
             <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
-                <div class="row" style="height: 35px; padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
+                <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
                      tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}" tooltip-delay-show="500">
                     <div class="col-6" >
                         <h:outputText value="#{note.lexicalvalue}" escape="false" />

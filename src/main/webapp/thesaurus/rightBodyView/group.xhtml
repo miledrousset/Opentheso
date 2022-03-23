@@ -11,20 +11,23 @@
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                 <div class="list-group-item list-group-item-action">
                     <!-- ligne Label du groupe -->
-                    <div class="row">
-                        <div class="col-3" style="text-align: right;">
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
                             <h:outputText value="Label" title="Label de la collection"
-                                          style="font-size: 14px; font-weight: bold;"/>
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
 
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                          icon="pi pi-cog"
-                                          style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                <p:menuitem value="Modifier" action="#{modifyGroupBean.init()}" oncomplete="PF('modifyGroup').show();"
-                                            update="idModifyGroup" icon="fas fa-pen"/>
-                            </p:menuButton>
                         </div>
-
-                        <div class="col-9">
+                        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">                            
+                                <p:menuButton
+                                    icon="pi pi-cog"
+                                    style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="Modifier" action="#{modifyGroupBean.init()}" oncomplete="PF('modifyGroup').show();"
+                                                update="containerIndex:idModifyGroup" icon="fas fa-pen"/>
+                                </p:menuButton>
+                            </h:panelGroup>                            
+                        </div>
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                             <h:outputText value="#{groupView.nodeGroup.lexicalValue}" title="#{groupView.nodeGroup.lexicalValue}" 
                                           style="font-size: 14px; color: #000;" />
                         </div>
@@ -33,12 +36,13 @@
 
                 <div class="list-group-item list-group-item-action">
                     <!-- ligne Type de groupe -->    
-                    <div class="row">
-                        <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Type" title="Type de la collection" style="font-size: 14px; font-weight: bold;"/>
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                            <h:outputText value="Type" title="Type de la collection" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
-
-                        <div class="col-9">
+                        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                        </div>
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                             <h:outputText value="#{groupView.nodeGroupType.skosLabel}" title="#{groupView.nodeGroupType.label}" 
                                           style="font-size: 14px; color: #000;" />
                         </div>
@@ -48,79 +52,54 @@
                 <!-- ligne Membres -->   
                 <div class="list-group-item list-group-item-action">
                     <!-- ligne Type de groupe -->    
-                    <div class="row">
-                        <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Membres" title="Membres de la collection" style="font-size: 14px; font-weight: bold;"/>
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                            <h:outputText value="Membres" title="Membres de la collection" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
-
-                        <div class="col-9">
+                        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                        </div>
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                             <h:outputText value="#{groupView.count}" title="Nombre de concepts inclus dans la collection/groupe"
                                           style="font-size: 14px; color: #000;" />
                         </div>
                     </div>
                 </div>
 
-                <!-- ligne Notation -->
-                <div class="list-group-item list-group-item-action">
-                    <!-- ligne Type de groupe -->    
-                    <div class="row">
-                        <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Notation" title="Notation de la collection" style="font-size: 14px; font-weight: bold;"/>
-                        </div>
-
-                        <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
-                                                  or (groupView.nodeGroup.conceptGroup.notation== '')}">
-                            <div class="col-9">
-                                <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
-                            </div>
-                        </h:panelGroup>
-
-                        <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation != null) 
-                                                  and (groupView.nodeGroup.conceptGroup.notation != '')}">
-                            <div class="col-9">
-                                <h:outputText value="#{groupView.nodeGroup.conceptGroup.notation}" style="font-size: 14px; color: #000;" />
-                            </div>
-                        </h:panelGroup>
-                    </div>
-                </div>
-
                 <!-- ligne Traductions -->
                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (groupView.nodeGroupTraductions.size() !=0)}">
                     <div class="list-group-item list-group-item-action">   
-                        <div class="row">
-                            <div class="col-3" style="text-align: right;">
-                                <h:outputText value="Traduction" title="Traduction de la collection" style="font-size: 14px; font-weight: bold;"/>
-
+                        <div class="row" style="margin-left: 0px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                <h:outputText value="Traduction" title="Traduction de la collection" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    
+
                                     <p:menuitem value="Ajouter une traduction" icon="fas fa-plus"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 action = "#{traductionGroupBean.setLangWithNoTraduction()}"
                                                 oncomplete="PF('addTraductionGroup').show();"
-                                                update="idAddTraductionGroup"  />
-                                    
+                                                update="containerIndex:idAddTraductionGroup"  />
+
                                     <p:menuitem value="Modifier une traduction" icon="fas fa-pen"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 oncomplete="PF('renameTraductionGroup').show();"
                                                 disabled="#{groupView.nodeGroupTraductions.size() == 0}"
-                                                update="idRenameTraductionGroup" />
-                                    
+                                                update="containerIndex:idRenameTraductionGroup" />
+
                                     <p:menuitem value="Supprimer une traduction" icon="fas fa-trash-alt"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 oncomplete="PF('deleteTraductionGroup').show();"
                                                 disabled="#{groupView.nodeGroupTraductions.size() == 0}"
-                                                update="idDeleteTraductionGroup" />
-                                </p:menuButton> 
+                                                update="containerIndex:idDeleteTraductionGroup" />
+                                </p:menuButton>                             
                             </div>
-
-                            <h:panelGroup rendered="#{groupView.nodeGroupTraductions.size() == 0}">
-                                <div class="col-9">
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px"> 
+                                <h:panelGroup rendered="#{groupView.nodeGroupTraductions.size() == 0}">
                                     <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
-                                </div>
-                            </h:panelGroup>
-                            <h:panelGroup rendered="#{groupView.nodeGroupTraductions.size() != 0}">
-                                <div class="col-9" >
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{groupView.nodeGroupTraductions.size() != 0}">
                                     <ui:repeat var="trad" value="#{groupView.nodeGroupTraductions}" >
                                         <div class="row">
                                             <div class="col-12">
@@ -128,8 +107,9 @@
                                             </div> 
                                         </div> 
                                     </ui:repeat>
-                                </div>
-                            </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+
                         </div>
                     </div>
                 </h:panelGroup>
@@ -137,46 +117,45 @@
                 <!-- ligne Notation -->
                 <div class="list-group-item list-group-item-action">
                     <!-- ligne Type de groupe -->    
-                    <div class="row">
-                        <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Notation" title="Notation de la collection" style="font-size: 14px; font-weight: bold;"/>
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                            <h:outputText value="Notation" title="Notation de la collection" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
+                        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                        </div>
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px"> 
+                            <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
+                                                      or (groupView.nodeGroup.conceptGroup.notation== '')}">
 
-                        <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
-                                                  or (groupView.nodeGroup.conceptGroup.notation== '')}">
-                            <div class="col-9">
                                 <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
-                            </div>
-                        </h:panelGroup>
+                            </h:panelGroup>
 
-                        <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation != null) 
-                                                  and (groupView.nodeGroup.conceptGroup.notation != '')}">
-                            <div class="col-9">
+                            <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation != null) 
+                                                      and (groupView.nodeGroup.conceptGroup.notation != '')}">
                                 <h:outputText value="#{groupView.nodeGroup.conceptGroup.notation}" style="font-size: 14px; color: #000;" />
-                            </div>
-                        </h:panelGroup>
-                    </div>
-                </div>
-
-                <!-- ligne URI -->
-                <div class="list-group-item list-group-item-action">  
-                    <div class="row">
-                        <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Identifiant / Lien permament" 
-                                          style="font-size: 14px; font-weight: bold;"/>
+                            </h:panelGroup>
                         </div>
                     </div>
                 </div>
 
                 <!-- ligne URI -->
                 <div class="list-group-item list-group-item-action">  
-                    <div class="row">
-                        <div class="col-4" style="text-align: right; margin-right: 10px; background-color: #43B572">
-                            <h:outputText value="Id interne" style="font-size: 14px; font-weight: bold;"/>
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                            <h:outputText value="Identifiant / Lien permament" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
-                        <div class="col-9">
+                    </div>
+                </div>
+
+                <!-- id interne -->
+                <div class="list-group-item list-group-item-action">  
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
+                            <h:outputText value="Id interne" style="font-size: 14px;"/>
+                        </div>
+                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -20px">
                             <p:link href="#{request.contextPath}/?idg=#{groupView.nodeGroup.conceptGroup.idgroup}&amp;idt=#{groupView.nodeGroup.conceptGroup.idthesaurus}"
-                                    value="#{groupView.nodeGroup.conceptGroup.idgroup}" >
+                                    value="#{groupView.nodeGroup.conceptGroup.idgroup}" style="font-size: 14px;">
                                 <i class="pi pi-link" style="color: #43B572;" />
                             </p:link>
                         </div>
@@ -185,14 +164,14 @@
 
                 <h:panelGroup rendered="#{groupView.nodeGroup.conceptGroup.idARk != ''}">
                     <div class="list-group-item list-group-item-action"> 
-                        <div class="row">
-                            <div class="col-3" style="text-align: right;">
-                                <h:outputText value="IdArk" style="font-size: 14px; font-weight: bold;"/>
+                        <div class="row" style="margin-left: 0px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
+                                <h:outputText value="IdArk" style="font-size: 14px;"/>
                             </div>
-                            <div class="col-9">
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -20px">
                                 <p:link href="#{roleOnTheso.nodePreference.uriArk}#{groupView.nodeGroup.conceptGroup.idARk}"
                                         value="#{roleOnTheso.nodePreference.uriArk}#{groupView.nodeGroup.conceptGroup.idARk}"
-                                        target="_blank" style="color: #43B572;" >
+                                        target="_blank" style="color: #43B572; font-size: 14px;" >
                                     <i class="pi pi-link" />
                                 </p:link>
                             </div>
@@ -201,14 +180,14 @@
                 </h:panelGroup>
 
                 <h:panelGroup rendered="#{groupView.nodeGroup.conceptGroup.idHandle != ''}">
-                    <div class="row">
-                        <div class="col-3" style="text-align: right;">
-                            <h:outputText value="IdHandle" style="font-size: 14px; font-weight: bold;"/>
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
+                            <h:outputText value="IdHandle" style="font-size: 14px;"/>
                         </div>
-                        <div class="col-9">
+                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -20px">
                             <p:link href="https://hdl.handle.net/#{groupView.nodeGroup.conceptGroup.idHandle}"
                                     value="https://hdl.handle.net/#{groupView.nodeGroup.conceptGroup.idHandle}"
-                                    target="_blank" style="color: #43B572;" >
+                                    target="_blank" style="color: #43B572; font-size: 14px;" >
                                 <i class="pi pi-link" />
                             </p:link>
                         </div>
@@ -230,9 +209,7 @@
         </div>        
     </h:panelGroup>
 
-    <ui:include src="../../dialog/group/modifyGroup.xhtml" />
-    <ui:include src="../../dialog/group/addTraductionGroup.xhtml" />
-    <ui:include src="../../dialog/group/deleteTraductionGroup.xhtml" />
-    <ui:include src="../../dialog/group/renameTraductionGroup.xhtml" />
+
+
 
 </ui:fragment>

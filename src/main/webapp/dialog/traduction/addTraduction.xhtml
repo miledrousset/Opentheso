@@ -61,10 +61,9 @@
                                  actionListener="PF('addTraduction').hide();" update="containerIndex:idAddTraduction"/>
 
                 <p:commandButton id="validateAddTraduction"
-                                 value="#{langueBean.getMsg('btnValidate')}" 
-                                 styleClass="ui-button-primary"
+                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
                                  ajax="true" process="@form"
-                                 actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" style="color: white;"/>
+                                 actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" />
             </div>
         </h:form>            
     </p:dialog>   

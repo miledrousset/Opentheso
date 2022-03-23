@@ -7,54 +7,69 @@
     <p:dialog id="idAddTraductionGroup" header="Ajouter une traduction groupe" widgetVar="addTraductionGroup" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <div class="row">
-            <div class="col-4" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />  
-            </div>
-            <div class="col-8" style="margin-top: 3px">
-                <h:outputText value="#{groupView.nodeGroup.lexicalValue}"
-                              style="width: 100%; color: #f47b2a; margin-left: 10px;"/>
-
-                <p:commandLink style="font-size: 17px; color: #FF7979" action="#{traductionGroupBean.infos}" update="messageIndex">
-                    <i class="pi pi-exclamation-circle" style="color: #F7A269;" />
-                </p:commandLink>
-            </div>
-        </div>
-
-        <!-- Langues du thésaurus -->
-        <h:panelGroup rendered="#{traductionGroupBean.nodeLangsFiltered.size() != 0}">
-            <div class="row" style="margin-top: 5px">
-                <div class="col-4">
-                    <h:outputText value="Langue : " />  
+        <h:form id="addTraductionGroupForm" >
+            <p:defaultCommand target="validateAddTraductionGroup" /> 
+            <div class="row">
+                <div class="col-4" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />  
                 </div>
-                <div class="col-8">
-                    <p:selectOneMenu label="Langue" value="#{traductionGroupBean.selectedLang}" 
-                                     style="width: 100%; background: white; border-color: #43B572">
-                        <f:selectItems  value="#{traductionGroupBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
-                    </p:selectOneMenu> 
+                <div class="col-8" style="margin-top: 3px">
+                    <h:outputText value="#{groupView.nodeGroup.lexicalValue}"
+                                  style="width: 100%; color: #f47b2a; margin-left: 10px;"/>
+
+                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{traductionGroupBean.infos}" update="messageIndex">
+                        <i class="pi pi-exclamation-circle" style="color: #F7A269;" />
+                    </p:commandLink>
                 </div>
             </div>
-        </h:panelGroup>
 
-        <h:panelGroup rendered="#{traductionGroupBean.nodeLangsFiltered.size() != 0}">
-            <div class="row" style="margin-top: 5px">
-                <div class="col-4">
-                    <h:outputText value="Traduction : "/>  
+            <h:panelGroup rendered="#{traductionGroupBean.nodeLangsFiltered.size() != 0}">
+                <div class="row" style="margin-top: 5px">
+                    <div class="col-4">
+                        <h:outputText value="Traduction : "/>  
+                    </div>
+                    <div class="col-8">
+                        <p:inputText id="idTraductionValue" label="traduction" placeholder="tapez votre traduction ..."  
+                                     value="#{traductionGroupBean.traductionValue}" style="width: 100%"/>
+                    </div>
                 </div>
-                <div class="col-8">
-                    <p:inputText id="idTraductionValue" label="traduction" placeholder="tapez votre traduction ..."  
-                                 value="#{traductionGroupBean.traductionValue}" style="width: 100%"/>
+            </h:panelGroup>            
+            <!-- Langues du thésaurus -->
+            <h:panelGroup rendered="#{traductionGroupBean.nodeLangsFiltered.size() != 0}">
+                <div class="row" style="margin-top: 5px">
+                    <div class="col-4">
+                        <h:outputText value="Langue : " />  
+                    </div>
+                    <div class="col-8">
+                        <p:selectOneMenu label="Langue" value="#{traductionGroupBean.selectedLang}" 
+                                         style="width: 100%; background: white; border-color: #43B572">
+                            <f:selectItems  value="#{traductionGroupBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                        </p:selectOneMenu> 
+                    </div>
                 </div>
+            </h:panelGroup>
+
+
+            <p:spacer height="10px;" />
+
+            <div class="row">
+                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                    <p:messages id="addTradMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
+                        <p:autoUpdate/>
+                    </p:messages>
+                </div>
+            </div>               
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 2px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('addTraductionGroup').hide();" update="containerIndex:idAddTraductionGroup"/>
+
+                <p:commandButton id="validateAddTraductionGroup" 
+                                 value="#{langueBean.getMsg('btnValidate')}" 
+                                 update="containerIndex:idAddTraductionGroup containerIndex:formRightTab messageIndex"
+                                 styleClass="ui-button-primary" oncomplete="PF('addTraductionGroup').show();"
+                                 ajax="true" process="@form"
+                                 actionListener="#{traductionGroupBean.addNewTraduction(currentUser.nodeUser.idUser)}"/>
             </div>
-        </h:panelGroup>
-
-        <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 2px;">
-            <p:commandButton title="Fermer"  class="btn btn-secondary"  style="margin-right: 10px"
-                             actionListener="PF('addTraductionGroup').hide();" update="idAddTraductionGroup"/>
-
-            <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                             class="btn btn-primary" oncomplete="PF('addTraductionGroup').hide();"
-                             actionListener="#{traductionGroupBean.addNewTraduction(currentUser.nodeUser.idUser)}" style="color: white;"/>
-        </div>
+        </h:form>        
     </p:dialog>   
 </ui:fragment>

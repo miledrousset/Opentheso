@@ -149,6 +149,10 @@ public class CurrentUser implements Serializable {
         setInfos();
         indexSetting.setIsThesoActive(true);
         
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("containerIndex");
+        }        
         FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
     }
 
