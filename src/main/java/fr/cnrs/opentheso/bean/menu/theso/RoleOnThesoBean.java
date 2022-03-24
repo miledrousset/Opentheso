@@ -199,7 +199,6 @@ public class RoleOnThesoBean implements Serializable {
         }
         addAuthorizedThesoToHM();
         initAuthorizedThesoAsAdmin();
-        
         // permet de définir le role de l'utilisateur sur le group
         if (authorizedTheso.isEmpty()) {
             setUserRoleGroup();
@@ -208,6 +207,22 @@ public class RoleOnThesoBean implements Serializable {
         }
     }
 
+    /**
+     * Permet de vérifier après une connexion, si le thésaurus actuel est dans la liste des thésaurus authorisés pour modification
+     * sinon, on nettoie l'interface et le thésaurus. 
+     */
+    public void redirectAndCleanTheso(){
+        if(!authorizedTheso.contains(selectedTheso.getCurrentIdTheso())){
+            selectedTheso.setCurrentIdTheso(null);
+            selectedTheso.setSelectedIdTheso(null);
+            selectedTheso.setCurrentLang(null);
+            selectedTheso.setSelectedLang(null);
+            try {
+                selectedTheso.setSelectedTheso();
+            } catch (Exception e) {
+            }
+        }    
+    }
     
     // on ajoute les thésaurus où l'utilisateur a le droit admin dessus
     private void initAuthorizedThesoAsAdmin() {

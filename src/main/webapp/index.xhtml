@@ -47,13 +47,13 @@
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <div id="wrapper" style="height: 100%">
-            <ui:include src="thesaurus/menu_thesaurus.xhtml" />
+            <ui:include src="commun/menu.xhtml" />
 
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex">
                     
-                    <ui:include src="thesaurus/header_thesaurus.xhtml" />
+                    <ui:include src="commun/header.xhtml" />
 
                     <div id="thesorusContent" style="margin-top: -20px; ">
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
@@ -66,21 +66,8 @@
                 </h:form>
             </div>
         </div>
-        <!-- Scroll to Top Button-->
-        <a class="scroll-to-top rounded" href="#page-top">
-            <i class="pi pi-angle-up" />
-        </a>
-
-        <script src="resources/js/bootstrap.bundle.min.js"></script>
-        <script src="resources/js/jquery.easing.min.js"></script>
-        <script src="resources/js/sb-admin-2.js"></script>
+        <ui:include src="commun/footer.xhtml" />          
         
-        <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
-        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" width="95"  closable="false" resizable="false" showHeader="false" position="top" 
-                  style="margin-top: 250px; border: none;">
-            <p:graphicImage value="resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
-        </p:dialog>  
-        
-        <ui:include src="dialog/login/login.xhtml" />           
+        <ui:include src="dialog/login/login.xhtml" />      
     </h:body>
 </html>

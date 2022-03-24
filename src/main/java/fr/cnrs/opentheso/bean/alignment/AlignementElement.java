@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.bean.alignment;
 
-public class AlignementElement {
+import java.io.Serializable;
+
+public class AlignementElement implements Serializable {
 
     private int codeColor;
     private int idAlignment;

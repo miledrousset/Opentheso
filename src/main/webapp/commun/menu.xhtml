@@ -5,13 +5,16 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
 
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" >
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion bg-gradient-primary toggled" id="accordionSidebar" >
+        
 
+    
+    
         <h:panelGroup id="menuBar">
             <a class="sidebar-brand d-flex align-items-center justify-content-center" style="height: 60px" href="#">
-                <img src="../resources/img/icon_opentheso.png" style="width:40px" />
+                <img src="#{request.contextPath}/resources/img/icon_opentheso.png" style="width:40px" />
                 <div class="sidebar-brand-text mx-3">
-                    <img src="../resources/img/logo_Opentheso.png" style="height: 35px" />
+                    <img src="#{request.contextPath}/resources/img/logo_Opentheso.png" style="height: 35px" />
                 </div>
             </a>
 
@@ -21,7 +24,7 @@
                 <span class="nav-link">
                     <i class="fas fa-fw fa-tachometer-alt" />
                     <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
-                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">Thésaurus</p:commandLink>
+                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">#{langueBean.getMsg('menu.thesaurus')}</p:commandLink>
                 </span>
             </li>
 
@@ -30,7 +33,7 @@
                     <span class="nav-link">
                         <i class="fas fa-fw fa-cog"></i>
                         <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
-                                       style="font-size: 12px; color: #FFF; margin-left: 5px;text-decoration: none;">Candidat</p:commandLink>
+                                       style="font-size: 12px; color: #FFF; margin-left: 5px;text-decoration: none;">#{langueBean.getMsg('candidat.titre')}</p:commandLink>
                     </span>
                 </li>
             </h:panelGroup>
@@ -40,25 +43,23 @@
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                        aria-expanded="true" aria-controls="collapseTwo">
                         <i class="fas fa-fw fa-user"></i>
-                        <span style="font-size: 12px;">Profil</span>
+                        <span style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;">#{langueBean.getMsg('menu.profile')}</span>
                     </a>
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" 
                                            process="@this" style="font-size: 12px;">Mon compte</p:commandLink>
-                            <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                           class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
                                            style="font-size: 12px;" process="@this">Mes projets/utilisateurs</p:commandLink>
                             <hr class="sidebar-divider">
-                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                <p:commandLink 
+                                    rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isSuperAdmin)}"
                                     class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
-                                               style="font-size: 12px;" process="@this">Tous les utilisateurs</p:commandLink>
-                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                    class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
+                                               style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.tooltip_all_users')}</p:commandLink>
+                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
                                                style="font-size: 12px;" process="@this">Tous les projets</p:commandLink>
-                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                    class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
+                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
                                                style="font-size: 12px;" process="@this">Tous les thésaurus</p:commandLink>
                             </hr>
                         </div>
@@ -72,7 +73,7 @@
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                        aria-expanded="true" aria-controls="collapseUtilities">
                         <i class="fas fa-fw fa-briefcase"></i>
-                        <span style="font-size: 12px;">Boite à outils</span>
+                        <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.toolbox')}</span>
                     </a>
                     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
@@ -97,7 +98,7 @@
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
                        aria-expanded="true" aria-controls="collapseParams">
                         <i class="fas fa-fw fa-wrench"></i>
-                        <span style="font-size: 12px;">Paramètres</span>
+                        <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.setting')}</span>
                     </a>
                     <div id="collapseParams" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
@@ -123,7 +124,7 @@
         <div class="text-center d-none d-md-inline" style="height: 100%; width: 100%; position: relative; ">
             <div style="position: absolute; bottom: 0; left: 0; align-content: center; 
                  width: 100%; margin-bottom: 30px; margin-left: -10px">
-                <img src="../resources/img/logo1.png" style="width:80px;" />
+                <img src="#{request.contextPath}/resources/img/logo1.png" style="width:50px;" />
             </div>
         </div>
 

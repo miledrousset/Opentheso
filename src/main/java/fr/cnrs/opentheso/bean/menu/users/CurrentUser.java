@@ -177,6 +177,10 @@ public class CurrentUser implements Serializable {
         }
         roleOnThesoBean.showListTheso();
         initAllAuthorizedProjectAsAdmin();
+        
+        /// Permet de vérifier après une connexion, si le thésaurus actuel est dans la liste des thésaurus authorisés pour modification
+        // sinon, on nettoie l'interface et le thésaurus. 
+        roleOnThesoBean.redirectAndCleanTheso();      
     }
 
     /**
