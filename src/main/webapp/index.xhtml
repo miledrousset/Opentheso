@@ -66,8 +66,31 @@
                 </h:form>
             </div>
         </div>
-        <ui:include src="commun/footer.xhtml" />          
         
-        <ui:include src="dialog/login/login.xhtml" />      
+        <footer class="sticky-footer bg-white" style="width: 100%;">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <center>
+                        <h:outputText value="Copyright ©CNRS _ version: #{connect.getOpenthesoVersionFromWar()}" style="font-size: 12px;"/>
+                    </center>
+                </div>
+            </div>
+        </footer>        
+        <!-- Scroll to Top Button-->
+        <a class="scroll-to-top rounded" href="#page-top">
+            <i class="pi pi-angle-up" />
+        </a>
+
+        <script src="resources/js/bootstrap.bundle.min.js"></script>
+        <script src="resources/js/jquery.easing.min.js"></script>
+        <script src="resources/js/sb-admin-2.js"></script>
+        
+        <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
+        <p:dialog widgetVar="waitDialog" modal="false" draggable="false" width="80"  closable="false" resizable="false" showHeader="false" position="top" 
+                  style="margin-top: 250px; border: none;">
+            <p:graphicImage value="resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
+        </p:dialog>  
+        
+        <ui:include src="dialog/login/login.xhtml" />           
     </h:body>
 </html>

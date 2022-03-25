@@ -5,11 +5,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
 
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion bg-gradient-primary toggled" id="accordionSidebar" >
-        
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" >
 
-    
-    
         <h:panelGroup id="menuBar">
             <a class="sidebar-brand d-flex align-items-center justify-content-center" style="height: 60px" href="#">
                 <img src="#{request.contextPath}/resources/img/icon_opentheso.png" style="width:40px" />
@@ -50,16 +47,17 @@
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" 
                                            process="@this" style="font-size: 12px;">Mon compte</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
+                            <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                           class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
                                            style="font-size: 12px;" process="@this">Mes projets/utilisateurs</p:commandLink>
                             <hr class="sidebar-divider">
-                                <p:commandLink 
-                                    rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isSuperAdmin)}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                     class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
                                                style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.tooltip_all_users')}</p:commandLink>
                                 <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
                                                style="font-size: 12px;" process="@this">Tous les projets</p:commandLink>
-                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                    class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
                                                style="font-size: 12px;" process="@this">Tous les thésaurus</p:commandLink>
                             </hr>
                         </div>
