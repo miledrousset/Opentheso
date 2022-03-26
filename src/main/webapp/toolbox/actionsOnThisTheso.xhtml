@@ -8,7 +8,7 @@
     <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" value=" Actions sur le thésaurus en cours"  
                   style="font-size: 14px;"/> 
     <br/>
-    <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+    <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" style="margin-top: -20px">
 
         <!--Pour importer des alignements -->
         <p:menuButton value="Actions"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;

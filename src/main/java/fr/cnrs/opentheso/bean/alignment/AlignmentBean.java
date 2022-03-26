@@ -1308,12 +1308,12 @@ public class AlignmentBean implements Serializable {
      *
      * @param selectedNodeAlignment
      * @param idTheso
-     * @param idConcept
      */
     public void getUriAndOptions(NodeAlignment selectedNodeAlignment,
-            String idTheso, String idConcept) {
+            String idTheso) {
         alignmentInProgress = true;
 
+        if(idConceptSelectedForAlignment == null) return;
         isViewResult = false;
         isViewSelection = true;
 
@@ -1331,7 +1331,7 @@ public class AlignmentBean implements Serializable {
 
         this.selectedNodeAlignment = selectedNodeAlignment;
         // initialisation des valeurs du concept local pour comparaison avec le concept à aligner
-        getValuesOfLocalConcept(idTheso, idConcept);
+        getValuesOfLocalConcept(idTheso, idConceptSelectedForAlignment);
 
         /**
          * ici on filtre les données par rapport à la source d'alignement on
@@ -1767,7 +1767,7 @@ public class AlignmentBean implements Serializable {
         isViewResult = false;
         isViewSelection = false;
         setExistingAlignment(
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                idConceptSelectedForAlignment,
                 selectedTheso.getCurrentIdTheso());
         selectedNodeAlignment = null;
         alignmentInProgress = false;

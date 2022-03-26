@@ -55,7 +55,7 @@
 
             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
                                  styleClass="ui-button-primary" oncomplete="PF('addManualAlignment').hide();"
-                             actionListener="#{alignmentManualBean.addManualAlignement()}" />
+                                 actionListener="#{alignmentManualBean.addManualAlignement(conceptView.nodeConcept.concept.idConcept)}" />
         </div>       
     </p:dialog> 
 </ui:fragment>

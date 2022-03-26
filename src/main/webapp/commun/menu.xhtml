@@ -24,8 +24,7 @@
                                    style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">#{langueBean.getMsg('menu.thesaurus')}</p:commandLink>
                 </span>
             </li>
-
-            <h:panelGroup rendered="#{currentUser.nodeUser != null and (selectedTheso.currentIdTheso != null)}" > 
+            <h:panelGroup rendered="#{currentUser.nodeUser != null and selectedTheso.currentIdTheso != null and (roleOnTheso.isContributorOnThisTheso or roleOnTheso.isManagerOnThisTheso or currentUser.nodeUser.isSuperAdmin)}" > 
                 <li class="nav-item">
                     <span class="nav-link">
                         <i class="fas fa-fw fa-cog"></i>
@@ -46,19 +45,24 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" 
-                                           process="@this" style="font-size: 12px;">Mon compte</p:commandLink>
-                            <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                           process="@this" style="font-size: 12px;">Mon compte
+                            </p:commandLink>
+                            <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin)}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
-                                           style="font-size: 12px;" process="@this">Mes projets/utilisateurs</p:commandLink>
+                                           style="font-size: 12px;" process="@this">Mes projets/utilisateurs
+                            </p:commandLink>
                             <hr class="sidebar-divider">
-                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
                                     class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
-                                               style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.tooltip_all_users')}</p:commandLink>
-                                <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
+                                               style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.tooltip_all_users')}
+                                </p:commandLink>
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
+                                    class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
                                                style="font-size: 12px;" process="@this">Tous les projets</p:commandLink>
-                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
                                     class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
-                                               style="font-size: 12px;" process="@this">Tous les thésaurus</p:commandLink>
+                                               style="font-size: 12px;" process="@this">Tous les thésaurus
+                                </p:commandLink>
                             </hr>
                         </div>
                     </div>

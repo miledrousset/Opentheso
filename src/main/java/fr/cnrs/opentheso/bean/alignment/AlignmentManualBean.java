@@ -178,7 +178,7 @@ public class AlignmentManualBean implements Serializable {
         }
     }
     
-    public void addManualAlignement(){
+    public void addManualAlignement(String idConcept){
         FacesMessage msg;
         if(manualAlignmentSource == null || manualAlignmentSource.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Veuillez saisir une valeur !");
@@ -200,7 +200,7 @@ public class AlignmentManualBean implements Serializable {
                 manualAlignmentSource,
                 manualAlignmentUri,
                 manualAlignmentType,
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                idConcept,
                 selectedTheso.getCurrentIdTheso(),
                 0)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");

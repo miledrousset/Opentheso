@@ -84,7 +84,7 @@ public class MenuBean implements Serializable {
     public void redirectToCandidatPage() throws IOException {
         candidatBean.initCandidatModule();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(context.getRequestContextPath() + "/candidat/condidat.xhtml");
+        context.redirect(context.getRequestContextPath() + "/candidat/candidat.xhtml");
     }
     
     // MENU Profile
