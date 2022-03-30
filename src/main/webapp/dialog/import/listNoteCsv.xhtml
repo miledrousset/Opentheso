@@ -115,12 +115,12 @@
                 </h:panelGroup>
 
                 <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                    <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                      actionListener="#{importFileBean.init()}"
                                      oncomplete="PF('listNoteCsv').hide();"
                                      update="listNoteCsvForm"/>
 
-                    <p:commandButton class="btn btn-success" title="Importer" process="@this"
+                    <p:commandButton  value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-primary" process="@this"
                                      
                                      update="messageIndex listNoteCsvForm"
                                      disabled="#{!importFileBean.loadDone}"

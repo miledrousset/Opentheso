@@ -133,12 +133,14 @@
               
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12" style="text-align: right"> 
-                        <p:commandButton title="#{langueBean.getMsg('btnBack')}" actionListener="#{importFileBean.init()}" style="margin-right: 10px"
-                                         class="btn btn-secondary" update="listAlignmentCsvForm" oncomplete="PF('listAlignmentCsv').hide();"/>
+                        <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" 
+                                         actionListener="#{importFileBean.init()}" style="margin-right: 10px"
+                                         update="listAlignmentCsvForm" oncomplete="PF('listAlignmentCsv').hide();"/>
 
-                        <p:commandButton  class="btn btn-primary" widgetVar="buttonImportCsv"
+                        <p:commandButton  value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-primary"
+                                          widgetVar="buttonImportCsv"
                                           update="listAlignmentCsvForm" actionListener="#{importFileBean.addAlignmentList()}"
-                                          title="Importer" process="@this" disabled="#{!importFileBean.loadDone}" />   
+                                          process="@this" disabled="#{!importFileBean.loadDone}" />   
                     </div>
                 </div>
             </h:panelGroup>

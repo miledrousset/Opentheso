@@ -347,7 +347,7 @@ public class ConceptView implements Serializable {
         mapModel.setLayerControl(false);
         mapModel.setDraggingEnabled(true);
         mapModel.setZoomEnabled(true);
-        mapModel.setUrlTemplate("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png");
+  //      mapModel.setUrlTemplate("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png");
     //    mapModel.setUrlTemplate("http://b.tile.osm.org/13/4334/2723.png");
 
         mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));

@@ -19,17 +19,21 @@
 
             <li class="nav-item">
                 <span class="nav-link">
-                    <i class="fas fa-fw fa-tachometer-alt" />
                     <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
-                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">#{langueBean.getMsg('menu.thesaurus')}</p:commandLink>
+                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">
+                        <i class="fas fa-fw fa-tachometer-alt" />
+                        #{langueBean.getMsg('menu.thesaurus')}</p:commandLink>
                 </span>
             </li>
-            <h:panelGroup rendered="#{currentUser.nodeUser != null and selectedTheso.currentIdTheso != null and (roleOnTheso.isContributorOnThisTheso or roleOnTheso.isManagerOnThisTheso or currentUser.nodeUser.isSuperAdmin)}" > 
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null and selectedTheso.currentIdTheso != null) and
+                                      (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isManagerOnThisTheso or roleOnTheso.isContributorOnThisTheso or currentUser.nodeUser.isSuperAdmin)}" > 
                 <li class="nav-item">
                     <span class="nav-link">
-                        <i class="fas fa-fw fa-cog"></i>
                         <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
-                                       style="font-size: 12px; color: #FFF; margin-left: 5px;text-decoration: none;">#{langueBean.getMsg('candidat.titre')}</p:commandLink>
+                                       style="font-size: 12px;  color: #FFF; margin-left: 5px;text-decoration: none;">
+                            <i class="fas fa-fw fa-cog" style="text-align: left"></i>
+                            #{langueBean.getMsg('candidat.titre')}
+                        </p:commandLink>
                     </span>
                 </li>
             </h:panelGroup>
@@ -53,14 +57,14 @@
                             </p:commandLink>
                             <hr class="sidebar-divider">
                                 <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
-                                    class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
+                                               class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
                                                style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.tooltip_all_users')}
                                 </p:commandLink>
                                 <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
-                                    class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
+                                               class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
                                                style="font-size: 12px;" process="@this">Tous les projets</p:commandLink>
                                 <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
-                                    class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
+                                               class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
                                                style="font-size: 12px;" process="@this">Tous les thésaurus
                                 </p:commandLink>
                             </hr>

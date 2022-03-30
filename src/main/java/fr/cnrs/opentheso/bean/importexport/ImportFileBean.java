@@ -948,18 +948,22 @@ public class ImportFileBean implements Serializable {
                 if (conceptObject.getLocalId() == null || conceptObject.getLocalId().isEmpty()) {
                     continue;
                 }
-                if("ark".equalsIgnoreCase(selectedIdentifier)){
+                if("ark".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId());
                 }
-                if("handle".equalsIgnoreCase(selectedIdentifier)){
+                if("handle".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getLocalId());
                 } 
-                if("identifier".equalsIgnoreCase(selectedIdentifier)){
+                if("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = conceptObject.getLocalId();
                 }  
                 if (idConcept == null || idConcept.isEmpty()) {
                     continue;
                 }
+                // controle pour vérifier l'existance de l'Id
+                if(!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())){
+                    continue;
+                }                
                 for (NodeIdValue nodeIdValue : conceptObject.getAlignments()) {
                     if(alignmentHelper.deleteAlignmentByUri(connect.getPoolConnexion(),
                             nodeIdValue.getValue().trim(),

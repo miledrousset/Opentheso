@@ -106,12 +106,14 @@
               
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12" style="text-align: right"> 
-                        <p:commandButton title="#{langueBean.getMsg('btnBack')}" actionListener="#{importFileBean.init()}" style="margin-right: 10px"
-                                         class="btn btn-secondary" update="deleteListAlignmentCsvForm" oncomplete="PF('deleteListAlignmentCsv').hide();"/>
+                        <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" 
+                                         actionListener="#{importFileBean.init()}" style="margin-right: 10px"
+                                         update="deleteListAlignmentCsvForm" oncomplete="PF('deleteListAlignmentCsv').hide();"/>
 
-                        <p:commandButton  class="btn btn-primary" widgetVar="buttonImportCsv"
+                        <p:commandButton  value="#{langueBean.getMsg('candidat.remove')}" styleClass="ui-button-primary"
+                                          widgetVar="buttonImportCsv"
                                           update="deleteListAlignmentCsvForm" actionListener="#{importFileBean.deleteAlignmentFromCsv()}"
-                                          title="Supprimer" process="@this" disabled="#{!importFileBean.loadDone}" />   
+                                          process="@this" disabled="#{!importFileBean.loadDone}" />   
                     </div>
                 </div>
             </h:panelGroup>
