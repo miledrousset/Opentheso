@@ -144,27 +144,32 @@
     <div class="row" style="width: 100%; margin-top: -25px;">
         <div class="col-12" style="display:flex; flex-direction: row; justify-content: center; align-items: center;" >
             <h:panelGroup id="choixPanel">
-                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
+                <p:selectBooleanCheckbox id="select1" itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
                                          style="color: #000; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateIndexMatch()}" update="choixPanel"/>
+                    <p:tooltip for="select1" value="#{langueBean.getMsg('search.tooltip_startWith')}" showDelay="1000" position="bottom"/>
                 </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
+                <p:selectBooleanCheckbox id="select2" itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
                                          style="color: #000; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateExactMatch()}" update="choixPanel"/>
+                    <p:tooltip for="select2" value="#{langueBean.getMsg('search.search_exact_word')}" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
+                <p:selectBooleanCheckbox id="select3" itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
                                          style="color: #000; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateWithNote()}" update="choixPanel"/>
+                    <p:tooltip for="select3" value="#{langueBean.getMsg('search.search_only_note')}" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
-                <p:selectBooleanCheckbox itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
+                <p:selectBooleanCheckbox id="select4" itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
                                          style="color: #000; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateWithId()}"  update="choixPanel"/>
+                    <p:tooltip for="select4" value="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
-                <p:menuButton style="font-size: 12px;" title="Recherche pré-programmée" icon="pi pi-align-justify">
+                <p:menuButton id="searchProgrammed" style="font-size: 12px;" icon="pi pi-align-justify">
+                    
                     <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" 
                                 update="containerIndex:formRightTab" 
                                 title="Rechercher les concepts polyhiérarchiques"/>
@@ -185,6 +190,7 @@
                                 update="containerIndex:formRightTab"
                                 title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
                 </p:menuButton>
+                <p:tooltip for="searchProgrammed" value="#{langueBean.getMsg('search.preprogrammedSearch')}" showDelay="1000" position="bottom"/>
             </h:panelGroup>
         </div>
     </div>

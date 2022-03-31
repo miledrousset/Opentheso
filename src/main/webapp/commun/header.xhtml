@@ -13,7 +13,7 @@
         </button>
 
         <!-- liste des thésaurus -->
-        <p:selectOneMenu value="#{selectedTheso.selectedIdTheso}" style="color: #000; height: 28px;">
+        <p:selectOneMenu value="#{selectedTheso.selectedIdTheso}" style="color: #000; height: 28px;" filter="true" filterMatchMode="contains">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
@@ -44,7 +44,7 @@
                 <li class="nav-item dropdown no-arrow mx-1">
                     <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 10px; font-size: 12px;">
-                        <i class="fas fa-bell fa-flag"></i>
+                        <i class="fas fa-bell fa-flag" style="color: #F47B2A"></i>
                     </a>
                     <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                          aria-labelledby="alertsDropdown" style="font-size: 12px;">

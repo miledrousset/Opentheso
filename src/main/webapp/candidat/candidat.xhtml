@@ -19,7 +19,7 @@
     </h:head>
 
 
-    <h:body id="page-top" onload="closeMenu()">
+    <h:body id="page-top">
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
@@ -48,7 +48,7 @@
 
                     <div class="col-12" style="margin-top: -10px; margin-bottom: 10px; font-size: 15px; font-weight: bold">
                         <div class="col-12" >
-                            <h:outputText value="Candidat" style="color: #f47b2a; margin-left: -20px; " />
+                            <h:outputText value="#{langueBean.getMsg('candidat.titre')}" style="color: #f47b2a; margin-left: -20px; " />
                         </div>
                     </div>
 

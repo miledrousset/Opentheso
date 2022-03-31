@@ -9,7 +9,8 @@
         </div>
         <div class="col-6" style="text-align: right;">
             <p:commandButton actionListener="#{discussionService.reloadMessage()}"
-                             icon="fas fa-sync" class="btn btn-primary"
+                             icon="fas fa-sync" styleClass="rounded-button ui-button-secondary"
+                             style="background-color: #F47B2A; border-color: #F47B2A"
                              update="tabViewCandidat messageIndex" />       
         </div>        
     </div>
@@ -68,7 +69,7 @@
                              actionListener="#{discussionService.getParticipantsInConversation()}" />
         </div>
         <div class="col-6" style="text-align: right">
-            <p:commandButton title="#{langueBean.getMsg('candidat.send_invitation')}"
+            <p:commandButton disabled="true" title="#{langueBean.getMsg('candidat.send_invitation')}"
                              update="idSendChatInvitation" ajax="true"
                              class="btn btn-primary" oncomplete="PF('sendChatInvitation').show();" />
         </div>

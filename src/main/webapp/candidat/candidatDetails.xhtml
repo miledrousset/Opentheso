@@ -29,11 +29,13 @@
             <div class="col-1">
                 <p:commandButton rendered="#{candidatBean.candidatSelected.voted}"
                                  actionListener="#{candidatBean.addVote()}"  update="votePanel"
-                                 icon="fas fa-thumbs-up" style="background-color: #f47b2a; border-color: #f47b2a; height: 35px"/>
+                                 styleClass="rounded-button"
+                                 icon="fas fa-thumbs-up" style="background-color: #f47b2a; border-color: #C8EAD6"/>
 
                 <p:commandButton rendered="#{!candidatBean.candidatSelected.voted}"
                                  actionListener="#{candidatBean.addVote()}" update="votePanel"
-                                 icon="fas fa-thumbs-up" style="background-color: #666666; border-color: #666666; height: 35px"/>
+                                 styleClass="rounded-button"
+                                 icon="fas fa-thumbs-up" style="background-color: #EEF4FF; color: #000"/>
             </div>
         </h:panelGroup>
     </div>
@@ -122,7 +124,7 @@
         <!-- gestion des notes -->
         <div class="row">
             <div class="col-12">
-                <p:commandLink value="Ajouter une nouvelle note" actionListener="#{noteBeanCandidat.reset()}" 
+                <p:commandLink value="#{langueBean.getMsg('rightbody.concept.add_note')}" actionListener="#{noteBeanCandidat.reset()}" 
                                oncomplete="PF('newNote').show();" update="idNewNote" ajax="true" process="@this">
                     <a class="fas fa-plus-circle" style="color: #f47b2a"  />
                 </p:commandLink>
@@ -138,38 +140,39 @@
             </div>
         </h:panelGroup>
 
-        <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}">
+        <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}" >
             <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
                 <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
                      tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}" tooltip-delay-show="500">
                     <div class="col-6" >
-                        <h:outputText value="#{note.lexicalvalue}" escape="false" />
+                        <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                     </div>
                     <div class="col-2" >
-                        <h:outputText value="#{note.notetypecode}" escape="false" />
+                        <h:outputText value="#{note.notetypecode}" escape="false" style="font-size: 14px;"/>
                     </div>
                     <div class="col-1" >
-                        <h:outputText value="#{note.lang}" />
+                        <h:outputText value="#{note.lang}" style="font-size: 14px;"/>
                     </div>
-                    <div class="col-1">                        
-                        <p:commandButton class="ui-button-success rounded-button" icon="fas fa-pen" process="@this" style="width: 25px; height: 25px"
+                    <div class="col-1" style="margin-top: -2px;">                        
+                        <p:commandButton class="ui-button-success rounded-button" icon="fas fa-pen" process="@this"
                                          actionListener="#{noteBeanCandidat.resetEditNode(note)}" update="editNoteForm"
                                          oncomplete="PF('editNote').show();"/>
                         
                     </div>
-                    <div class="col-1">
-                        <p:commandButton class="ui-button-danger rounded-button" icon="fas fa-trash" process="@this" style="width: 25px; height: 25px"
-                                         actionListener="#{noteBeanCandidat.setSelectedNodeNote(note)}" update="deleteNoteForm"
-                                         oncomplete="PF('deleteNote').show();"/>
+                    <div class="col-1" style="margin-top: -2px;">
+                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger" process="@this" ajax="true"
+                                         actionListener="#{noteBeanCandidat.setSelectedNodeNote(note)}" update="idDeleteNote"
+                                         oncomplete="PF('deleteNote').show();" />
                     </div>
-                    <div class="col-1">
+                    <div class="col-1" style="margin-top: -2px;">
                         <p:commandButton rendered="#{note.voted}" actionListener="#{candidatBean.addNoteVote(note)}"
-                                         update="tabViewCandidat messageIndex" ajax="true" process="@this"
-                                         icon="fas fa-thumbs-up" style="background-color: #f47b2a; border-color: #f47b2a; height: 25px"/>
+                                         update="tabViewCandidat messageIndex" ajax="true" process="@this" styleClass="rounded-button"
+                                         icon="fas fa-thumbs-up" style="background-color: #f47b2a;"/>
 
                         <p:commandButton rendered="#{!note.voted}" update="tabViewCandidat messageIndex"
+                                         icon="fa fa-thumbs-up fa-xs" styleClass="rounded-button ui-button-secondary"
                                          actionListener="#{candidatBean.addNoteVote(note)}" ajax="true" process="@this"
-                                         icon="fas fa-thumbs-up" style="background-color: #666666; border-color: #666666; height: 25px"/>
+                                         style="background-color: #EEF4FF; color: #000"/>
                     </div>
                 </div>
             </ui:repeat>
@@ -178,7 +181,7 @@
         <!-- gestion des traductions -->
         <div class="row" style="margin-top: 20px">
             <div class="col-12">
-                <p:commandLink value="Ajouter une nouvelle traduction" update="idNewTraduction newTraductionForm"
+                <p:commandLink value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" update="idNewTraduction newTraductionForm"
                                oncomplete="PF('newTraduction').show();" actionListener="#{traductionService.init()}">
                     <a class="fas fa-plus-circle" style="color: #f47b2a" />
                 </p:commandLink>
@@ -195,7 +198,7 @@
 
         <h:panelGroup rendered="#{candidatBean.candidatSelected.traductions.size() > 0}" style="margin-top: 10px">
             <div class="row" style="font-size: 12px; color: #666666">
-                <div class="col-4">
+                <div class="col-4" style="margin-top: -2px;">
                     <h:outputText value="#{langueBean.getMsg('candidat.language')}"/>
                 </div>
                 <div class="col-4">
@@ -211,16 +214,17 @@
 
             <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
                 <div class="row" style="background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.traductions.indexOf(traduction))};
-                     padding-top: 5px">
-                    <div class="col-4" >
-                        <h:outputText value="#{traduction.langue}"/>
+                     padding-top: 5px" >
+                    <div class="col-4" style="margin-top: -2px;">
+                        <h:outputText value="#{traduction.langue}" style="font-size: 14px;"/>
                     </div>
-                    <div class="col-4" >
-                        <h:outputText value="#{traduction.traduction}"/>
+                    <div class="col-4" style="margin-top: -2px;">
+                        <h:outputText value="#{traduction.traduction}" style="font-size: 14px;"/>
                     </div>
-                    <div class="col-2">
-                        <p:commandButton icon="pi pi-pencil" update=":manage-traduction-content"
-                                         oncomplete="PF('editTraduction').show();" style="width: 25px; height: 25px;"
+                    <div class="col-2" style="margin-top: -2px;">
+                        <p:commandButton class="ui-button-success rounded-button" icon="fas fa-pen"
+                                         update=":manage-traduction-content"
+                                         oncomplete="PF('editTraduction').show();" 
                                          actionListener="#{traductionService.init(traduction)}" process="@this"
                                          styleClass="edit-button rounded-button ui-button-success">
                             <p:resetInput target=":manage-traduction-content"/>
@@ -228,7 +232,7 @@
                     </div>
 
                     <div class="col-2">
-                        <p:commandButton class="ui-button-danger rounded-button" icon="fas fa-trash" process="@this" style="width: 25px; height: 25px;"
+                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger"
                                          actionListener="#{traductionService.init(traduction)}" update="confirmDeleteForm"
                                          oncomplete="PF('confirmDeleteTraduction').show();" />
                     </div>

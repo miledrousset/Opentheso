@@ -16,7 +16,6 @@
     height: 500px;
 }
 
-
 /*** MenuButton ***/
 .ui-menubutton .ui-widget {
     background: transparent !important; 
@@ -198,6 +197,13 @@ body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item {
     font-size: 12px;
     padding: 0.2rem 0.5rem;
 }
+body .ui-selectonemenu-panel .ui-selectonemenu-filter-container .ui-selectonemenu-filter.ui-inputfield{
+    height: 30px;
+}
+
+body .ui-icon {
+    font-size: 0.8rem;
+}
 
 .ui-selectonemenu .ui-selectonemenu-label {
     width: 100%;
@@ -300,7 +306,7 @@ body .ui-tree {
     padding: 0.1rem;
     margin-left: -1rem;
     margin-right: -1.8rem;    
-    margin-top: -0.1rem;
+    margin-top: -0.8rem;
    /* display: ruby-text;*/
 
 }
@@ -334,7 +340,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
     margin: -3px;
-    padding: 0;
+    padding: 1px;
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-hover {
    /*background-color: #43B572;
@@ -451,6 +457,16 @@ body .ui-button.ui-button-icon-only .ui-button-text {
     padding: 0px;
 }
 
+/** Icons et boutons ronds **/
+body .ui-button.ui-button-icon-only .ui-icon {
+    margin-top: -0.43rem;
+    margin-left: -0.4rem;
+}
+body .ui-button.rounded-button.ui-button-icon-only {
+    height: 1.8rem;
+    width: 1.8rem;
+}
+
 
 /** Checkbox**/
 body .ui-chkbox .ui-chkbox-box.ui-state-active {
@@ -523,7 +539,11 @@ body .ui-commandlink, body .ui-link:hover {
     text-decoration: none;
 }
 
-
+body .ui-tooltip .ui-tooltip-text {
+    background-color: #0f6848;
+    color: #fff;
+    font-size: 12px;
+}
 
 /* #MR pour définir la couleur des liens hypertextes */
 body .ui-commandlink, body .ui-link:active {

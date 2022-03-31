@@ -41,19 +41,25 @@
                         </h:panelGroup>  
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeBT.size() != 0}">   
-                            <ui:repeat var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
-                                <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
-                                               title="#{value.idConcept}"
+                            <ui:repeat  var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
+                                <p:tooltip style="font-size: 12px;" position="bottom"/>
+                                <p:commandLink id="toolTipBT1" rendered="#{value.title != ''}" value="#{value.title}"
+                                               
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"/>
+                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex">
+                                    
+                                </p:commandLink>    
 
-                                <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
+                                <p:commandLink id="toolTipBT2" rendered="#{value.title == ''}" value="(#{value.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"/>  
 
                                 <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/> 
+                                <p:tooltip for="toolTipBT1" value="#{value.idConcept}" style="font-size: 12px;" position="bottom" showDelay="500" />
+                                <p:tooltip for="toolTipBT2" value="#{value.idConcept}" style="font-size: 12px;" position="bottom" showDelay="500"/>
                             </ui:repeat>
+
                         </h:panelGroup>
                     </div>
                 </div>

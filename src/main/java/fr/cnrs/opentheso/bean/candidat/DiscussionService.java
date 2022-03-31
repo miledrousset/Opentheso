@@ -24,43 +24,49 @@ import javax.mail.internet.*;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
-
 @Named(value = "discussionService")
 @SessionScoped
 public class DiscussionService implements Serializable {
-    @Inject private CandidatBean candidatBean;
-    @Inject private LanguageBean langueBean;
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
+
+    @Inject
+    private CandidatBean candidatBean;
+    @Inject
+    private LanguageBean langueBean;
+    @Inject
+    private Connect connect;
+    @Inject
+    private LanguageBean languageBean;
 
     private String email;
     private List<String> participants;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         clear();
-    }  
-    public void clear(){
-        if(participants!= null){
+    }
+
+    public void clear() {
+        if (participants != null) {
             participants.clear();
             participants = null;
-        } 
+        }
         email = null;
-    }       
+    }
 
     public List<String> getParticipantsInConversation() {
-        
+
         participants = new MessageDao().getParticipantsByCandidat(
-                connect.getPoolConnexion(), 
+                connect.getPoolConnexion(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());
-        
+
         if (CollectionUtils.isEmpty(participants)) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg8"));
             return new ArrayList<>();
@@ -78,57 +84,80 @@ public class DiscussionService implements Serializable {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg7"));
             return;
         }
-        
+
         if (StringUtils.isEmpty(candidatBean.getMessage())) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg1"));
             return;
         }
-        
+
         MessageDto messageDto = new MessageDto();
         messageDto.setDate(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
         messageDto.setNom(candidatBean.getCurrentUser().getUsername().toUpperCase());
         messageDto.setMsg(candidatBean.getMessage());
-        
+
         MessageDao messageDao = new MessageDao();
-        messageDao.addNewMessage(connect.getPoolConnexion(), 
-                candidatBean.getMessage(), 
-                candidatBean.getCurrentUser().getNodeUser().getIdUser(), 
-                candidatBean.getCandidatSelected().getIdConcepte(), 
+        messageDao.addNewMessage(connect.getPoolConnexion(),
+                candidatBean.getMessage(),
+                candidatBean.getCurrentUser().getNodeUser().getIdUser(),
+                candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());
 
         reloadMessage();
-      
+
         candidatBean.setMessage("");
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, langueBean.getMsg("candidat.send_message.msg2"));
     }
-    
-    public void reloadMessage(){
+
+    public void reloadMessage() {
         candidatBean.getCandidatSelected().setMessages(new MessageDao().getAllMessagesByCandidat(
-                connect.getPoolConnexion(), 
-                candidatBean.getCandidatSelected().getIdConcepte(), 
-                candidatBean.getCandidatSelected().getIdThesaurus(), 
-                candidatBean.getCurrentUser().getNodeUser().getIdUser()));   
+                connect.getPoolConnexion(),
+                candidatBean.getCandidatSelected().getIdConcepte(),
+                candidatBean.getCandidatSelected().getIdThesaurus(),
+                candidatBean.getCurrentUser().getNodeUser().getIdUser()));
+    }
+
+    private Properties getPrefMail() {
+        Properties props;
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
+            props = new Properties();
+            props.setProperty("mail.transport.protocol", bundlePref.getString("protocolMail"));
+            props.setProperty("mail.smtp.host", bundlePref.getString("hostMail"));
+            props.setProperty("mail.smtp.port", bundlePref.getString("portMail"));
+            props.setProperty("mail.smtp.auth", bundlePref.getString("authMail"));
+            props.setProperty("mailFrom", bundlePref.getString("mailFrom"));
+            props.setProperty("transportMail", bundlePref.getString("transportMail"));
+
+            return props;
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     public void sendInvitation() {
-
+        Properties props = getPrefMail();
+        if (props == null) {
+            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, "Absence des préférences pour le serveur Mail");
+            return;
+        }
         if (StringUtils.isEmpty(email)) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg3"));
         } else if (!EmailUtils.isValidEmailAddress(email)) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg4"));
         } else {
 
-            String from = "opentheso@mom.fr";
-            String host = "smtp.mom.fr";
+//            String from = "opentheso@mom.fr";
+//            String host = "smtp.mom.fr";
 
             Properties properties = System.getProperties();
-            properties.setProperty("mail.smtp.host", host);
+            properties.setProperty("mail.smtp.host", props.getProperty("hostMail"));
 
             Session session = Session.getDefaultInstance(properties);
 
             try {
                 MimeMessage message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(from));
+                message.setFrom(new InternetAddress(props.getProperty("mailFrom")));
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
                 message.setSubject("Invitation à une conversation !");
                 message.setText("C'est le body du message");

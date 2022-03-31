@@ -46,14 +46,14 @@
                                     <ui:repeat var="align" value="#{conceptView.nodeConcept.nodeAlignments}" >
                                         <div class="row">
                                             <div class="col-12">
-                                                <h:outputText value=" #{align.alignmentLabelType} :  " style="font-size: 12px;"/>
-                                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 12px;"/>
+                                                <h:outputText value=" #{align.alignmentLabelType} :  " style="font-size: 14px;"/>
+                                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
                                                 <p:link href="#{align.uri_target}"
                                                         value="#{align.uri_target}"
-                                                        target="_blank" style="font-size: 12px; color: #43B572;" >
+                                                        target="_blank" style="font-size: 14px; color: #43B572;" >
                                                     <i class="pi pi-link" />
                                                 </p:link>
-                                                <h:outputText rendered="#{align.thesaurus_target != ''}" value=" (#{align.thesaurus_target})"  style="font-size: 12px;"/>
+                                                <h:outputText rendered="#{align.thesaurus_target != ''}" value=" (#{align.thesaurus_target})"  style="font-size: 14px;"/>
                                             </div>
                                         </div>
                                     </ui:repeat>

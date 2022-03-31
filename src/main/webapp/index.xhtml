@@ -33,7 +33,7 @@
 
     </h:head>
 
-    <h:body id="page-top" onload="closeMenu()">
+    <h:body id="page-top" >
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>

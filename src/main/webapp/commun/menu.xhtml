@@ -5,7 +5,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
 
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" >
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar" >
 
         <h:panelGroup id="menuBar">
             <a class="sidebar-brand d-flex align-items-center justify-content-center" style="height: 60px" href="#">
@@ -49,11 +49,11 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" 
-                                           process="@this" style="font-size: 12px;">Mon compte
+                                           process="@this" style="font-size: 12px;">#{langueBean.getMsg('profile.my_account')}
                             </p:commandLink>
                             <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin)}"
                                            class="collapse-item" actionListener="#{menuBean.redirectToMesProjectsPage()}"
-                                           style="font-size: 12px;" process="@this">Mes projets/utilisateurs
+                                           style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.my_projects_users')}
                             </p:commandLink>
                             <hr class="sidebar-divider">
                                 <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
@@ -62,10 +62,10 @@
                                 </p:commandLink>
                                 <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
                                                class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
-                                               style="font-size: 12px;" process="@this">Tous les projets</p:commandLink>
+                                               style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.all_projects')}</p:commandLink>
                                 <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}"
                                                class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
-                                               style="font-size: 12px;" process="@this">Tous les thésaurus
+                                               style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.all_thesauri')}
                                 </p:commandLink>
                             </hr>
                         </div>
@@ -86,13 +86,13 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToEditionPage()}" 
-                                           style="font-size: 12px;" process="@this">Edition</p:commandLink>
+                                           style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.edition')}</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}" 
-                                           style="font-size: 12px;" process="@this">Atelier thésaurus</p:commandLink>
+                                           style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.thesaurusWorkshop')}</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" 
-                                           style="font-size: 12px;"  process="@this">Maintenance</p:commandLink>
+                                           style="font-size: 12px;"  process="@this">#{langueBean.getMsg('menu.service')}</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" 
-                                           style="font-size: 12px;"  process="@this">Statistique</p:commandLink>
+                                           style="font-size: 12px;"  process="@this">#{langueBean.getMsg('statistique.statistic')}</p:commandLink>
                         </div>
                     </div>
                 </li>
@@ -111,11 +111,11 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToPreferencePage()}" 
-                                           style="font-size: 12px;" process="@this">Préférence</p:commandLink>
+                                           style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.preference')}</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToIdetifiantPage()}" 
-                                           style="font-size: 12px;" process="@this">Identifiant</p:commandLink>
+                                           style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.identifier')}</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCorpusPage()}" 
-                                           style="font-size: 12px;" process="@this">Corpus</p:commandLink>
+                                           style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.corpus')}</p:commandLink>
                         </div>
                     </div>
                 </li>

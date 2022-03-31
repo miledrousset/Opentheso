@@ -156,19 +156,19 @@
                 <h:panelGroup rendered="#{path.isStartOfPath}">
                     <i class="fas fa-home" size="xs" style="color: #f47b2a;"/>
                 </h:panelGroup>
-                <p:commandLink rendered="#{path.isIsStartOfPath()}" style="color:#43B572; background: none; border: none; box-shadow: none; font-size: 12px"
+                <p:commandLink rendered="#{path.isIsStartOfPath()}" style="color:#43B572; background: none; border: none; box-shadow: none; font-size: 13px"
                                value=" #{path.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                          path.idConcept, selectedTheso.currentLang)}" update="containerIndex" /> 
-                <p:commandLink rendered="#{!path.isStartOfPath}" style="color:#43B572; background: none; border: none; box-shadow: none; font-size: 12px"
+                <p:commandLink rendered="#{!path.isStartOfPath}" style="color:#43B572; background: none; border: none; box-shadow: none; font-size: 13px"
                                value="#{path.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, path.idConcept, selectedTheso.currentLang)}"
                                update="containerIndex"/>                     
-                <h:outputText value=" > " style="font-size: 12px; font-weight: bold"/>
+                <h:outputText value=" > " style="font-size: 13px; font-weight: bold"/>
             </ui:repeat>
 
             <i rendered="#{conceptView.nodeConcept.concept.topConcept}" value="fas fa-home" size="xs" style="color: #f47b2a;"/>
-            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value != ''}" value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 12px;"/>
-            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value == ''}" value=" (#{conceptView.nodeConcept.concept.idConcept})" style="font-size: 12px;"/>                
-            <h:outputText value=" > " style="font-size: 12px; font-weight: bold"/>
+            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value != ''}" value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 13px;"/>
+            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value == ''}" value=" (#{conceptView.nodeConcept.concept.idConcept})" style="font-size: 13px;"/>                
+            <h:outputText value=" > " style="font-size: 13px; font-weight: bold"/>
         </div>
     </div>
 

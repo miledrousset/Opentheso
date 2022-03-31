@@ -48,7 +48,7 @@
                     <div class="container-fluid">
 
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800">Boite à outils / <span style="color: #f47b2a">Maintenance</span></h1>
+                            <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.toolbox')} / <span style="color: #f47b2a">#{langueBean.getMsg('menu.service')}</span></h1>
                         </div>
 
                         <div class="card shadow mb-4" style="height: 100%;"> 
@@ -57,7 +57,7 @@
 
                                     <div class="row">
                                         <div class="col-12">
-                                            <h:outputText style="font-size: 16px;" value="Thesaurus séléctionné : #{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
+                                            <h:outputText style="font-size: 16px;" value="#{langueBean.getMsg('service.selectedThesaurus')}: #{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
                                         </div>
                                     </div>
 
@@ -78,7 +78,7 @@
 
                                             <div class="row" style="margin-top: 10px; margin-bottom: 10px">
                                                 <div class="col-12">
-                                                    <p:commandButton value="Lancer la correction" icon="pi pi-check" iconPos="right"
+                                                    <p:commandButton value="#{langueBean.getMsg('service.launchCorrection')}" icon="pi pi-check" iconPos="right"
                                                                      action="#{restoreTheso.reorganizing(selectedTheso.currentIdTheso)}"
                                                                      update="containerIndex messageIndex"/>           
                                                 </div>
@@ -99,7 +99,7 @@
 
                                                 <div class="row" style="margin-top: 10px; margin-bottom: 10px">
                                                     <div class="col-12">
-                                                        <p:commandButton value="Lancer la correction" icon="pi pi-check" iconPos="right"
+                                                        <p:commandButton value="#{langueBean.getMsg('service.launchCorrection')}" icon="pi pi-check" iconPos="right"
                                                                          action="#{restoreTheso.switchRolesFromTermToConcept(selectedTheso.currentIdTheso)}"
                                                                          update="containerIndex messageIndex"/>        
                                                     </div>
@@ -133,7 +133,7 @@
                                                 <p:spacer/>
                                                 <div class="row">
                                                     <div class="col-12">
-                                                        <p:commandButton value="Générer" icon="pi pi-check" iconPos="right"
+                                                        <p:commandButton value="#{langueBean.getMsg('service.generate')}" icon="pi pi-check" iconPos="right"
                                                                          action="#{restoreTheso.generateArkFromConceptId(selectedTheso.currentIdTheso)}"
                                                                          update="containerIndex messageIndex"/>        
                                                     </div>
