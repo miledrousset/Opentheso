@@ -433,6 +433,9 @@ public class DragAndDrop implements Serializable {
         dragNode = (TreeNode) event.getDragNode();
         dropNode = (TreeNode) event.getDropNode();
         
+ //       TreeNode[] dragNodes = (TreeNode[]) event.getDragNodes();
+        
+        
         FacesMessage msg;   
         
         // à corriger pour traiter le déplacement des facettes par Drag and Drop
