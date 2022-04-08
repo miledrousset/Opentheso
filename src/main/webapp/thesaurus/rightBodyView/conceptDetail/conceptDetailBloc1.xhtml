@@ -25,14 +25,15 @@
                             </p:menuButton>
                         </h:panelGroup>                        
         
-                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
-                                      title="#{conceptView.nodeConcept.concept.idConcept}" style="
+                        <h:outputText id="textPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
+                                       style="
                                             font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
                                             font-size: 1.1rem;
                                             letter-spacing: .2px;
                                             color: #666666;
                                             font-weight: bold;
                                             text-shadow: none;" />
+                        <p:tooltip for="textPrefLabel" value="#{conceptView.nodeConcept.concept.idConcept}" showDelay="1000" />
 
                         <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
@@ -210,7 +211,7 @@
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() != 0}" > 
                             <ui:repeat var="domaine" value="#{conceptView.nodeConcept.nodeConceptGroup}" varStatus="status">
-                                <p:commandLink id="testToolTip" rendered="#{domaine.lexicalValue != ''}"
+                                <p:commandLink id="commandCollection" rendered="#{domaine.lexicalValue != ''}"
                                                value="#{domaine.lexicalValue}"
                                                action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
                                                update="containerIndex indexTitle"/>
@@ -220,8 +221,7 @@
                                                update="containerIndex indexTitle" />                                        
                                 <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
                                 <p:tooltip id="uploaderCancelButtonToolTip"
-                                    position="bottom"
-
+                                    for="commandCollection"
                                     value="#{domaine.conceptGroup.idgroup}"
                                     showDelay="500" style="font-size: 12px;" />                                
                             </ui:repeat>

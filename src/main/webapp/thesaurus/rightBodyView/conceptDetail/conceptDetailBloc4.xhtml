@@ -51,7 +51,7 @@
                                             <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
                                             <p:link href="#{resources.uri}"
                                                     value="#{resources.uri}"
-                                                    target="_blank" style="font-size: 14px; color: #43B572;" >
+                                                    target="_blank" style="font-size: 14px; color: #164A78;" >
                                                 <i class="pi pi-link" />
                                             </p:link>
                                             <h:outputText rendered="#{resources.imageName != ''}" value=" (#{resources.imageName})"  style="font-size: 14px;"/>
@@ -113,7 +113,7 @@
                                     <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="images" 
                                                 panelHeight="110" style="text-align: left; " autoPlay="true" showCaption="false" >
                                         <p:graphicImage value="#{images.uri}" title="#{images.copyRight}" url="#{images.uri}"
-                                                        alt="#{images.uri}" height="100" style="cursor: pointer;"/>
+                                                        alt="#{images.uri}" height="100" style="cursor: pointer; font-size: 11px;"/>
                                     </p:galleria>
                                 </h:panelGroup>
                             </div>

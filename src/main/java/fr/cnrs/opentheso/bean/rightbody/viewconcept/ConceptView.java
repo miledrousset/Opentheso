@@ -242,7 +242,6 @@ public class ConceptView implements Serializable {
             initMap();
         }
 
-        pathOfConcept(idTheso, idConcept, idLang);
         setNotes();
 
         selectedLang = idLang;
@@ -263,6 +262,9 @@ public class ConceptView implements Serializable {
 
         // deployement de l'arbre si l'option est true
         if (roleOnThesoBean.getNodePreference() != null) {
+            if(roleOnThesoBean.getNodePreference().isBreadcrumb())
+                pathOfConcept(idTheso, idConcept, idLang);
+            
             if (roleOnThesoBean.getNodePreference().isAuto_expand_tree()) {
                 tree.expandTreeToPath(
                         idConcept,
@@ -300,7 +302,8 @@ public class ConceptView implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
         if (nodeConcept != null) {
-            pathOfConcept(idTheso, idConcept, idLang);
+            if(roleOnThesoBean.getNodePreference().isBreadcrumb())
+                pathOfConcept(idTheso, idConcept, idLang);
             setNotes();
             setOffset();
         }

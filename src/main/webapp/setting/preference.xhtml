@@ -197,6 +197,19 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        
+                                        <!-- Activer/ désactiver le fil d'ariane Breadcrumb -->
+                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                            <div class="row" style="padding-top: 3px;">
+                                                <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="Activer le fil d'ariane"
+                                                                  style="font-size: 14px; font-weight: bold;"/>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p:toggleSwitch value="#{preferenceBean.nodePreference.breadcrumb}" style="font-size: 12px;" />
+                                                </div>
+                                            </div>
+                                        </div>                                        
 
                                         <div class="row" style="padding-top: 5px;">
                                             <div class="col-3" />

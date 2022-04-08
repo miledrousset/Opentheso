@@ -6,92 +6,89 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <div class="container-fluid">
-
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Thésaurus</h1>
-        </div>
-
         <div class="row">
             <div class="col-xl-12 col-lg-12">
                 <div class="card shadow mb-4">
-
-                    <div class="card-header py-3" style="width: 100%; display: flex;">
-                        <div style="width: 50%; text-align: right;">
-                            <p:column style="text-align: right">
-                                <p:selectOneMenu value="#{selectedTheso.optionThesoSelected}" style="color: #000;"
-                                                 rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}">
-                                    <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedOptionTheso()}" update="containerIndex" />
-                                    <f:selectItem itemLabel="Page d'accueil" itemValue="Option1"/>
-                                    <f:selectItem itemLabel="Modifier la page d'accueil" itemValue="Option2"/>
-                                    <f:selectItem itemLabel="Code Google Analytics" itemValue="Option3"/>
-                                </p:selectOneMenu> 
-                            </p:column>
+                    <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}">
+                        <div class="card-header py-3" style="width: 100%; display: flex;">
+                            <div style="width: 50%; text-align: right;">
+                                <p:column style="text-align: right">
+                                    <p:selectOneMenu value="#{selectedTheso.optionThesoSelected}" style="color: #000;">
+                                        <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedOptionTheso()}" update="containerIndex" />
+                                        <f:selectItem itemLabel="Actions ..." itemValue="Option1"/>
+                                        <f:selectItem itemLabel="Modifier la page d'accueil" itemValue="Option2"/>
+                                        <f:selectItem itemLabel="Code Google Analytics" itemValue="Option3"/>
+                                    </p:selectOneMenu> 
+                                </p:column>
+                            </div>
                         </div>
-                    </div>
+                    </h:panelGroup>
 
                     <div class="card-body">
                         <!-- vue Page d'accueil -->
-                            <h:panelGrid>
-                                <h:outputText rendered="#{viewEditorHomeBean.isTextVisisble()}" 
-                                              style="font-size: 14px;"
-                                              value="#{viewEditorHomeBean.getHomePage(connect.workLanguage)}" escape="false"/>              
-                            </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText rendered="#{viewEditorHomeBean.isTextVisisble()}" 
+                                          style="font-size: 14px;"
+                                          value="#{viewEditorHomeBean.getHomePage(connect.workLanguage)}" escape="false"/>              
+                        </h:panelGrid>
 
-                            <!-- vue connectée pour Google Analytics -->
-                            <h:panelGroup id="homePageEditionAnalytics" rendered="#{(viewEditorHomeBean.isInEditingGoogleAnalytics)}" >
+                        <!-- vue connectée pour Google Analytics -->
+                        <h:panelGroup id="homePageEditionAnalytics" rendered="#{(viewEditorHomeBean.isInEditingGoogleAnalytics)}" >
 
-                                <p:inputTextarea value="#{viewEditorHomeBean.codeGoogleAnalitics}" style="width: 100%; min-height: 300px;"/>
+                            <p:inputTextarea value="#{viewEditorHomeBean.codeGoogleAnalitics}" style="width: 100%; min-height: 300px;"/>
 
-                                <div style="width: 100%; display: flex;">
-                                    <div style="width: 50%;" />
-                                    <div style="width: 50%; text-align: right;">
-                                       <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" update="containerIndex"
-                                                         style="width: 200px; margin-right: 20px" actionListener="#{viewEditorHomeBean.reset()}"/>
-                                       
-                                        <p:commandButton title="Enregistrer" update="containerIndex" class="btn btn-primary"
-                                                         style="width: 200px;" actionListener="#{viewEditorHomeBean.updateGoogleAnalytics()}" />
-                                    </div>
+                            <div style="width: 100%; display: flex;">
+                                <div style="width: 50%;" />
+                                <div style="width: 50%; text-align: right;">
+                                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary"
+                                                     update="containerIndex"
+                                                     style="font-size: 14px; margin-right: 20px" actionListener="#{viewEditorHomeBean.reset()}"/>
+
+                                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex" styleClass="ui-button-primary"
+                                                     style="font-size: 14px;" actionListener="#{viewEditorHomeBean.updateGoogleAnalytics()}" />
                                 </div>
+                            </div>
 
-                            </h:panelGroup>
+                        </h:panelGroup>
 
-                            <!-- vue connectée pour édition -->
-                            <h:panelGroup id="homePageEdition" rendered="#{(viewEditorHomeBean.isInEditingHomePage)}" >
-                                
-                                <div style="width: 100%; display: flex; margin-bottom: 10px">
-                                    <div style="width: 50%;">
-                                        <p:commandButton value="Vue HTML interprété" update="containerIndex" class="btn"
+                        <!-- vue connectée pour édition -->
+                        <h:panelGroup id="homePageEdition" rendered="#{(viewEditorHomeBean.isInEditingHomePage)}" >
+
+                            <div style="width: 100%; display: flex; margin-bottom: 10px">
+                                <div style="width: 50%;">
+                                    <p:commandButton value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
+                                                     update="containerIndex" styleClass="ui-button-primary"
                                                      action="#{viewEditorHomeBean.setViewPlainTextTo(false)}"
-                                                     style="width:200px; font-size: 12px; background: #{viewEditorHomeBean.colorOfHtmlButton}"/>
-                                    </div>
-                                    <div style="width: 50%; text-align: right;">
-                                        <p:commandButton value="Vue HTML brut"  class="btn" update="containerIndex"
+                                                     style="font-size: 12px;"/>
+                                </div>
+                                <div style="width: 50%; text-align: right;">
+                                    <p:commandButton value="#{langueBean.getMsg('thesohome.rawHTMLView')}" 
+                                                     styleClass="ui-button-primary" update="containerIndex"
                                                      action="#{viewEditorHomeBean.setViewPlainTextTo(true)}"
-                                                     style="width:200px; font-size: 12px; background: #{viewEditorHomeBean.colorOfTextButton}"/>
-                                    </div>
+                                                     style="font-size: 12px;"/>
                                 </div>
+                            </div>
 
-                                <h:panelGroup id="viewEditor" rendered="#{!viewEditorHomeBean.isViewPlainText}">                               
-                                    <p:textEditor widgetVar="editor1" value="#{viewEditorHomeBean.text}" secure="false" height="600" 
-                                                  style="margin-bottom:5px; margin-right: 5px"/>
-                                </h:panelGroup>
-
-                                <h:panelGroup id="viewPlainText" rendered="#{viewEditorHomeBean.isViewPlainText}">
-                                    <p:inputTextarea value="#{viewEditorHomeBean.text}" style="min-height: 600px;"/>
-                                </h:panelGroup>
-                                
-                                <div style="width: 100%; display: flex;">
-                                    <div style="width: 50%;">
-                                        <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary"
-                                                         update="containerIndex" style="width: 200px; background: #8C8C8C" 
-                                                         actionListener="#{viewEditorHomeBean.reset()}"/>    
-                                    </div>
-                                    <div style="width: 50%; text-align: right;">
-                                        <p:commandButton title="Enregistrer" update="containerIndex" class="btn btn-primary"
-                                                     style="width: 200px;" actionListener="#{viewEditorHomeBean.updateHomePage()}" />
-                                    </div>
-                                </div>
+                            <h:panelGroup id="viewEditor" rendered="#{!viewEditorHomeBean.isViewPlainText}">                               
+                                <p:textEditor widgetVar="editor1" value="#{viewEditorHomeBean.text}" secure="false" height="600" 
+                                              style="margin-bottom:5px; margin-right: 5px"/>
                             </h:panelGroup>
+
+                            <h:panelGroup id="viewPlainText" rendered="#{viewEditorHomeBean.isViewPlainText}">
+                                <p:inputTextarea value="#{viewEditorHomeBean.text}" style="width: 100%; min-height: 600px;"/>
+                            </h:panelGroup>
+
+                            <div class="row" >
+                                <div class="col-4 offset-8" style="text-align: right">
+                                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary"
+                                                     update="containerIndex" style="font-size: 14px; margin-right: 20px;" 
+                                                     actionListener="#{viewEditorHomeBean.reset()}"/>                                         
+                                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}"
+                                                     update="containerIndex" styleClass="ui-button-primary"
+                                                     style="font-size: 14px; margin-right: 10px;" actionListener="#{viewEditorHomeBean.updateHomePage()}" />                                        
+                                </div>
+                            </div>
+                        </h:panelGroup>
                     </div>
                 </div>
             </div>

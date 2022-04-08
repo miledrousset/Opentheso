@@ -9,6 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
@@ -32,7 +33,9 @@ public class ViewEditorHomeBean implements Serializable {
     private Connect connect;
     @Inject
     private LanguageBean languageBean;
-
+    @Inject
+    private SelectedTheso selectedTheso;
+    
     @PostConstruct
     public void postInit() {
     }
@@ -71,6 +74,7 @@ public class ViewEditorHomeBean implements Serializable {
         codeGoogleAnalitics = null;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = false;
+        selectedTheso.setOptionThesoSelected("Option1");
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -103,6 +107,7 @@ public class ViewEditorHomeBean implements Serializable {
         isViewPlainText = false;
         isInEditingGoogleAnalytics = true;
         isInEditingHomePage = false;
+
     }
 
     public void updateGoogleAnalytics() {
@@ -114,6 +119,7 @@ public class ViewEditorHomeBean implements Serializable {
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = false;
+        reset();
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -163,7 +169,7 @@ public class ViewEditorHomeBean implements Serializable {
         isViewPlainText = false;
         isInEditingHomePage = false;
         isInEditingGoogleAnalytics = false;
-
+        reset();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");

@@ -60,6 +60,8 @@ public class NodePreference {
     private String naanArkLocal;
     private String prefixArkLocal;
     private int sizeIdArkLocal;
+    
+    private boolean breadcrumb;
 
             
     public String getSourceLang() {
@@ -412,6 +414,14 @@ public class NodePreference {
 
     public void setSizeIdArkLocal(int sizeIdArkLocal) {
         this.sizeIdArkLocal = sizeIdArkLocal;
+    }
+
+    public boolean isBreadcrumb() {
+        return breadcrumb;
+    }
+
+    public void setBreadcrumb(boolean breadcrumb) {
+        this.breadcrumb = breadcrumb;
     }
 
 

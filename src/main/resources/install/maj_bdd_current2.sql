@@ -367,6 +367,16 @@ CREATE TABLE IF NOT EXISTS external_resources
     CONSTRAINT external_resources_pkey PRIMARY KEY (id_concept, id_thesaurus, external_uri)
 );
 
+-- Préférences : ajout de l'option activation ou non du fil d'ariane
+--
+create or replace function update_table_preferences_breadcrumb() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='breadcrumb') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN breadcrumb boolean DEFAULT true;';
+    END IF;
+end
+$$language plpgsql;
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -388,6 +398,7 @@ SELECT update_table_corpus_link();
 SELECT update_table_languages();
 SELECT update_table_concept_role();
 SELECT update_table_preferences_ark_local();
+SELECT update_table_preferences_breadcrumb();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -410,6 +421,7 @@ SELECT delete_fonction('update_table_corpus_link','');
 SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_concept_role','');
 SELECT delete_fonction('update_table_preferences_ark_local','');
+SELECT delete_fonction('update_table_preferences_breadcrumb','');
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');
