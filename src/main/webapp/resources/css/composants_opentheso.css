@@ -18,7 +18,7 @@
 
 /*** MenuButton ***/
 .ui-menubutton .ui-widget {
-    background: transparent !important; 
+    background: transparent !important;
     border: transparent !important;
     color: #f47b2a !important;
     box-shadow: none !important;
@@ -101,10 +101,10 @@ body .ui-inputfiled.ui-state-hover {
 
 
 .input-dialog {
-    width: 100%; 
-    font-size: 12px; 
-    background: white; 
-    border-color: #43B572; 
+    width: 100%;
+    font-size: 12px;
+    background: white;
+    border-color: #43B572;
     color: #000;
     border-color: #43B572;
 }
@@ -214,7 +214,7 @@ body .ui-icon {
     overflow: hidden;
     margin-bottom: 0px;
     white-space: nowrap;
-    font-weight: normal;    
+    font-weight: normal;
 }
 
 .ui-selectonemenu .ui-selectonemenu-label {
@@ -235,7 +235,7 @@ body .ui-icon {
 
 .ui-selectonemenu-label {
     margin-top: -5px;
-     font-size: 12px;
+    font-size: 12px;
 }
 
 .ui-selectonemenu {
@@ -270,7 +270,7 @@ body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-s
 
 body .ui-panel .ui-panel-content {
     background: transparent;
- /*   color: transparent;*/
+    /*   color: transparent;*/
     padding: 0rem;
     border: none;
 }
@@ -305,9 +305,9 @@ body .ui-tree {
     border-collapse: collapse;
     padding: 0.1rem;
     margin-left: -1rem;
-    margin-right: -1.8rem;    
+    margin-right: -1.8rem;
     margin-top: -0.8rem;
-   /* display: ruby-text;*/
+    /* display: ruby-text;*/
 
 }
 
@@ -318,9 +318,9 @@ body .ui-tree {
 
 body .ui-tree .ui-tree-container {
     margin: 0;
-   /* padding: 9px !important;
-    margin-left: -12px;*/
-    border-collapse: collapse; 
+    /* padding: 9px !important;
+     margin-left: -12px;*/
+    border-collapse: collapse;
     display: table;
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode {
@@ -335,7 +335,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode 
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
     margin: -4px;
- /*   display: ruby-text;*/
+    /*   display: ruby-text;*/
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label {
@@ -343,8 +343,8 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     padding: 1px;
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-hover {
-   /*background-color: #43B572;
-    color: #FFF;*/
+    /*background-color: #43B572;
+     color: #FFF;*/
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
     background: #f47b2a;
@@ -442,11 +442,11 @@ body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
 
 
 body .ui-button.ui-button-text-icon-left .ui-button-text {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 body .ui-button.ui-button-text-icon-left .ui-icon {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 body .ui-button.ui-button-icon-only .ui-button-text {
@@ -730,5 +730,29 @@ body .ui-datalist .ui-datalist-content {
     font-size: 14px;
 }
 
+/** Gallery  **/
+body .custom-indicator-galleria .ui-galleria-indicators {
+    padding: 1rem .25rem 1rem 0;
+}
 
+body .custom-indicator-galleria .ui-galleria-indicator {
+    width: 100%;
+    text-align: right;
+    font-weight: bold;
+    padding: .357rem .75rem .357rem .75rem;
+    margin-bottom: 0 !important;
+}
 
+body .custom-indicator-galleria .ui-galleria-indicator {
+    color: #e9ecef;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+body .custom-indicator-galleria .ui-galleria-indicator.ui-state-highlight {
+    background-color: var(--primary-color);
+    color: var(--primary-color-text);
+}

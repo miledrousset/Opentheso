@@ -4,6 +4,18 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
+    <style type="text/css">
+        .ui-state-highlight, .ui-widget-content .ui-state-highlight {
+            background: none;
+            border-color: none;
+        }
+        
+        body .ui-galleria.ui-galleria-indicator-onitem .ui-galleria-indicators .ui-galleria-indicator.ui-state-highlight button {
+            background: #f47b2a;
+            color: #495057;
+        }
+    </style>
+
     <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0) or (conceptView.nodeConcept.nodeExternalResources.size() !=0)
                               or (conceptView.nodeConcept.nodeGps != null)}"> 
         <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px;">
@@ -110,10 +122,11 @@
                                                    style="font-size: 12px; color: grey; font-style: italic " />
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
-                                    <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="images" 
-                                                panelHeight="110" style="text-align: left; " autoPlay="true" showCaption="false" >
-                                        <p:graphicImage value="#{images.uri}" title="#{images.copyRight}" url="#{images.uri}"
-                                                        alt="#{images.uri}" height="100" style="cursor: pointer; font-size: 11px;"/>
+                                    <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="photo" numVisible="5" 
+                                                responsiveOptions="#{conceptView.responsiveOptions}"
+                                                showThumbnails="false" showIndicators="true" changeItemOnIndicatorHover="true" 
+                                                showIndicatorsOnItem="true" style="max-width: 640px">
+                                        <p:graphicImage alt="#{photo.oldUri}" url="#{photo.uri}" style="width: 100%; display: block;" />
                                     </p:galleria>
                                 </h:panelGroup>
                             </div>

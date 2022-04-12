@@ -47,6 +47,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -63,6 +64,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.ResponsiveOption;
 
 /**
  *
@@ -114,6 +116,8 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> editorialNotes;
     private ArrayList<NodeNote> examples;
     private ArrayList<NodeNote> historyNotes;
+    
+    private List<ResponsiveOption> responsiveOptions;
 
 
     @PostConstruct
@@ -219,6 +223,11 @@ public class ConceptView implements Serializable {
         if (mapModel == null) {
             mapModel = new Map();
         }
+        
+        responsiveOptions = new ArrayList<>();
+        responsiveOptions.add(new ResponsiveOption("1024px", 5));
+        responsiveOptions.add(new ResponsiveOption("768px", 3));
+        responsiveOptions.add(new ResponsiveOption("560px", 1));
     }
 
     /**
@@ -809,6 +818,10 @@ public class ConceptView implements Serializable {
 
     public void setHaveNext(boolean haveNext) {
         this.haveNext = haveNext;
+    }
+
+    public List<ResponsiveOption> getResponsiveOptions() {
+        return responsiveOptions;
     }
 
 }
