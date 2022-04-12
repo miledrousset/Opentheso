@@ -52,7 +52,8 @@
                             #{langueBean.getMsg('menu.availableLanguages')}
                         </h6>
                         
-                        <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('fr')}">
+                        <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('fr')}" 
+                                       update="containerIndex menuBar">
                             <div class="mr-3">
                                 <img src="#{request.contextPath}/resources/img/fr.png" width="30px" />
                             </div>
@@ -60,7 +61,8 @@
                                 <span class="font-weight-bold" style="font-size: 12px;">#{langueBean.getMsg('menu.french')}</span>
                             </div>
                         </p:commandLink>
-                        <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('en')}">
+                        <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('en')}" 
+                                       update="containerIndex menuBar">
                             <div class="mr-3">
                                 <img src="#{request.contextPath}/resources/img/en.png" width="30px" />
                             </div>
