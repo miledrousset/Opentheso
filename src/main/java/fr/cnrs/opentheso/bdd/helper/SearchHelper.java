@@ -1614,7 +1614,7 @@ public class SearchHelper {
         }
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT preferred_term.id_concept, term.lexical_value, term.id_term "
+                stmt.executeQuery("SELECT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status "
                         + " FROM term, preferred_term, concept "
                         + " WHERE "
                         + " concept.id_concept = preferred_term.id_concept"
@@ -1633,7 +1633,10 @@ public class SearchHelper {
                         nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
-                        nodeSearchMini.setIsAltLabel(false);
+                        if(resultSet.getString("status").equalsIgnoreCase("DEP")) {
+                            nodeSearchMini.setIsDeprecated(true);
+                        } else
+                            nodeSearchMini.setIsConcept(true);
                         if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
                             nodeSearchMinis.add(0, nodeSearchMini);
                         } else {
@@ -1687,10 +1690,96 @@ public class SearchHelper {
                     }
                 }
             }
+            //// rechercher les collections
+            nodeSearchMinis = searchCollections(conn, idThesaurus, value, idLang, nodeSearchMinis);
+            
+            /// rechercher les Facettes
+            nodeSearchMinis = serachFacets(conn, idThesaurus, value, idLang, nodeSearchMinis);
 
         } catch (SQLException sqle) {
             log.error("Error searchFullTextElastic of theso : " + idThesaurus, sqle);
         }
+        return nodeSearchMinis;
+    }
+    
+    private ArrayList<NodeSearchMini> searchCollections(Connection conn,
+            String idTheso, String value, String idLang,
+            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException{
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select idGroup, lexicalvalue from concept_group_label"
+                        + " where idthesaurus = '" + idTheso + "'" 
+                        + " and ("
+                        + " unaccent(lower(lexicalvalue)) like unaccent(lower('" + value +"%'))"
+                        + " or"
+                        + " unaccent(lower(lexicalvalue)) like unaccent(lower('% " + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexicalvalue)) like unaccent(lower('% "+ value + "-%'))"	
+                        + " or"
+                        + " unaccent(lower(lexicalvalue)) like unaccent(lower('%-" + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexicalvalue)) like unaccent(lower('%(" + value + "%')) "
+                        + " or"
+                        + " unaccent(lower(lexicalvalue)) like unaccent(lower('%\\_" + value + "%'))"	
+                        + " or"
+                        + " unaccent(lower(lexicalvalue)) like unaccent(lower('%''" + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexicalvalue)) like unaccent(lower('%ʿ" + value + "%'))"
+                        + "	)"
+                        + " and lang = '" + idLang + "'");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                        nodeSearchMini.setIdConcept(resultSet.getString("idGroup"));
+                        nodeSearchMini.setIdTerm("");
+                        nodeSearchMini.setAltLabel("");
+                        nodeSearchMini.setPrefLabel(resultSet.getString("lexicalvalue"));
+                        nodeSearchMini.setIsGroup(true);
+                        nodeSearchMinis.add(nodeSearchMini);
+                    }
+                }
+            }        
+        return nodeSearchMinis;
+    }
+    
+    private ArrayList<NodeSearchMini> serachFacets(Connection conn,
+            String idTheso, String value, String idLang,
+            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException{
+        /// rechercher les Facettes
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeQuery("select id_facet, lexical_value from node_label"
+                    + " where id_thesaurus = '" + idTheso + "'" 
+                    + " and ("
+                    + " unaccent(lower(lexical_value)) like unaccent(lower('" + value +"%'))"
+                    + " or"
+                    + " unaccent(lower(lexical_value)) like unaccent(lower('% " + value + "%'))"
+                    + " or"
+                    + " unaccent(lower(lexical_value)) like unaccent(lower('% "+ value + "-%'))"	
+                    + " or"
+                    + " unaccent(lower(lexical_value)) like unaccent(lower('%-" + value + "%'))"
+                    + " or"
+                    + " unaccent(lower(lexical_value)) like unaccent(lower('%(" + value + "%')) "
+                    + " or"
+                    + " unaccent(lower(lexical_value)) like unaccent(lower('%\\_" + value + "%'))"	
+                    + " or"
+                    + " unaccent(lower(lexical_value)) like unaccent(lower('%''" + value + "%'))"
+                    + " or"
+                    + " unaccent(lower(lexical_value)) like unaccent(lower('%ʿ" + value + "%'))"
+                    + "	)"
+                    + " and lang = '" + idLang + "'");
+
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                while (resultSet.next()) {
+                    NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                    nodeSearchMini.setIdConcept(resultSet.getString("id_facet"));
+                    nodeSearchMini.setIdTerm("");
+                    nodeSearchMini.setAltLabel("");
+                    nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
+                    nodeSearchMini.setIsFacet(true);
+                    nodeSearchMinis.add(nodeSearchMini);
+                }
+            }
+        } 
         return nodeSearchMinis;
     }
 

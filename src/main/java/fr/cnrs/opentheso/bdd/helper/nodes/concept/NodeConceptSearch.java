@@ -11,6 +11,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 public class NodeConceptSearch {
     private String idConcept;
     private String prefLabel;
+    private boolean isDeprecated;
+    
     private ArrayList <NodeTermTraduction> nodeTermTraductions;
     private ArrayList <NodeBT> nodeBT;
     private ArrayList <NodeNT> nodeNT;
@@ -103,6 +105,14 @@ public class NodeConceptSearch {
 
     public void setNodeConceptGroup(ArrayList<NodeGroup> nodeConceptGroup) {
         this.nodeConceptGroup = nodeConceptGroup;
+    }
+
+    public boolean isIsDeprecated() {
+        return isDeprecated;
+    }
+
+    public void setIsDeprecated(boolean isDeprecated) {
+        this.isDeprecated = isDeprecated;
     }
 
     

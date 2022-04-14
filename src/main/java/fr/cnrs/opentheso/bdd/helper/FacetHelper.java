@@ -16,6 +16,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,22 +32,20 @@ public class FacetHelper {
     public FacetHelper() {
     }
 
-    
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 ///////////////////// Nouvelles méthodes MR //////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////    
-
     public ArrayList<NodeIdValue> searchFacet(HikariDataSource ds,
-                                              String name, String lang, String idThesaurus) {
+            String name, String lang, String idThesaurus) {
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '"+ lang
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '" + lang
                         + "' AND lexical_value like unaccent(lower('%" + name + "%'))" + " AND id_thesaurus = '" + idThesaurus + "' order by lexical_value");
-                try (ResultSet resultSet = stmt.getResultSet()){
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();
                         nodeIdValue.setId(resultSet.getString("id_facet"));
@@ -64,15 +63,15 @@ public class FacetHelper {
     }
 
     /**
-     * permet de retourner la liste des id et valeur des facettes qui 
-     * appartiennent à ce concept, ceci est pour les noeuds dans l'arbre
-     * si le concept est traduit, on a le label, sinon, on a une chaine vide
+     * permet de retourner la liste des id et valeur des facettes qui
+     * appartiennent à ce concept, ceci est pour les noeuds dans l'arbre si le
+     * concept est traduit, on a le label, sinon, on a une chaine vide
+     *
      * @param ds
      * @param idConcept
      * @param idThesaurus
      * @param idLang
-     * @return 
-     * #MR
+     * @return #MR
      */
     public List<NodeIdValue> getAllIdValueFacetsOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus, String idLang) {
@@ -87,26 +86,27 @@ public class FacetHelper {
         }
         return nodeIdValues;
     }
-    
+
     /**
-     * permet de retourner la liste des id facettes qui appartiennent à ce concept
+     * permet de retourner la liste des id facettes qui appartiennent à ce
+     * concept
+     *
      * @param ds
      * @param idConcept
      * @param idThesaurus
-     * @return 
-     * #MR
+     * @return #MR
      */
     public List<String> getAllIdFacetsOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
         List<String> listIdFacets = new ArrayList<>();
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("SELECT thesaurus_array.id_facet" +
-                        " FROM thesaurus_array " +
-                        " WHERE thesaurus_array.id_thesaurus = '" + idThesaurus + "'" +
-                        " AND thesaurus_array.id_concept_parent = '" + idConcept + "'");
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT thesaurus_array.id_facet"
+                        + " FROM thesaurus_array "
+                        + " WHERE thesaurus_array.id_thesaurus = '" + idThesaurus + "'"
+                        + " AND thesaurus_array.id_concept_parent = '" + idConcept + "'");
 
-                try (ResultSet resultSet = stmt.getResultSet()) {
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         listIdFacets.add(resultSet.getString("id_facet"));
                     }
@@ -116,17 +116,18 @@ public class FacetHelper {
             log.error("Error while getting All id facets of concept : " + idConcept, sqle);
         }
         return listIdFacets;
-    }       
-    
+    }
 
     /**
-     * permet de retourner un NodeFacet avec l'id, le label et le conceptParent de la facette
-     * si le label n'est pas traduit, il est remplacé par une chaine vide
+     * permet de retourner un NodeFacet avec l'id, le label et le conceptParent
+     * de la facette si le label n'est pas traduit, il est remplacé par une
+     * chaine vide
+     *
      * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param lang
-     * @return 
+     * @return
      */
     public NodeFacet getThisFacet(HikariDataSource ds, String idFacet, String idThesaurus, String lang) {
         Connection conn;
@@ -135,28 +136,30 @@ public class FacetHelper {
 
         try {
             conn = ds.getConnection();
-            try (Statement stmt = conn.createStatement()){
+            try ( Statement stmt = conn.createStatement()) {
                 try {
-                        String query = "SELECT node_label.id_facet, thesaurus_array.id_concept_parent" +
-                                " FROM node_label, thesaurus_array" +
-                                " WHERE" +
-                                " node_label.id_facet=thesaurus_array.id_facet" +
-                                " and" +
-                                " node_label.id_thesaurus = thesaurus_array.id_thesaurus" +
-                                " and node_label.id_facet ='" + idFacet +"'" +
-                                " and node_label.id_thesaurus = '" + idThesaurus + "'";                        
-                        
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
-                        if(resultSet.next()) {
-                            nodeFacet.setIdFacet(resultSet.getString("id_facet"));
-                            nodeFacet.setIdThesaurus(idThesaurus);
-                            nodeFacet.setIdConceptParent(resultSet.getString("id_concept_parent"));
-                            nodeFacet.setLexicalValue(getLabelOfFacet(ds, idFacet, idThesaurus, lang));
-                            nodeFacet.setLang(lang);
-                        }
+                    String query = "SELECT node_label.id_facet, thesaurus_array.id_concept_parent"
+                            + " FROM node_label, thesaurus_array"
+                            + " WHERE"
+                            + " node_label.id_facet=thesaurus_array.id_facet"
+                            + " and"
+                            + " node_label.id_thesaurus = thesaurus_array.id_thesaurus"
+                            + " and node_label.id_facet ='" + idFacet + "'"
+                            + " and node_label.id_thesaurus = '" + idThesaurus + "'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    if (resultSet.next()) {
+                        nodeFacet.setIdFacet(resultSet.getString("id_facet"));
+                        nodeFacet.setIdThesaurus(idThesaurus);
+                        nodeFacet.setIdConceptParent(resultSet.getString("id_concept_parent"));
+                        nodeFacet.setLexicalValue(getLabelOfFacet(ds, idFacet, idThesaurus, lang));
+                        nodeFacet.setLang(lang);
+                    }
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                 }
             } finally {
                 conn.close();
@@ -167,24 +170,17 @@ public class FacetHelper {
         }
 
         return nodeFacet;
-    }    
-    
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 ///////////////////// fin nouvelles méthodes MR //////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////     
-    
-    
-    
-    
-    
-    
-    
     /**
-     * Cette fonction permet d'ajouter une nouvelle Facette 
-     * si l'indentifiant est fourni, on l'ajoute, sinon, on génère un nouveau
-     * 
+     * Cette fonction permet d'ajouter une nouvelle Facette si l'indentifiant
+     * est fourni, on l'ajoute, sinon, on génère un nouveau
+     *
      * @param ds
      * @param idFacet
      * @param idThesaurus
@@ -203,13 +199,13 @@ public class FacetHelper {
         Statement stmt;
         StringPlus stringPlus = new StringPlus();
         lexicalValue = stringPlus.convertString(lexicalValue);
-        
-        if(idFacet == null || idFacet.isEmpty()) {
+
+        if (idFacet == null || idFacet.isEmpty()) {
             idFacet = getNewId(ds);
             // si le nouveau Id existe, on l'incrémente
             while (isIdFacetExist(ds, idFacet)) {
                 idFacet = getNewId(ds);
-            }            
+            }
         }
         try {
             // Get connection from pool
@@ -219,10 +215,10 @@ public class FacetHelper {
                 try {
                     stmt.executeUpdate("INSERT INTO node_label(id_facet, id_thesaurus, lexical_value, created, modified, lang) VALUES ("
                             + "'" + idFacet + "', "
-                            + "'" + idThesaurus + "', '"+lexicalValue+"', now(), now(), '"+idLang+"');");
+                            + "'" + idThesaurus + "', '" + lexicalValue + "', now(), now(), '" + idLang + "');");
 
-                    stmt.executeUpdate("INSERT INTO thesaurus_array(id_thesaurus, id_concept_parent, id_facet) VALUES ('"+
-                            idThesaurus+"', '"+idConceptParent+"', '"+idFacet+"');");
+                    stmt.executeUpdate("INSERT INTO thesaurus_array(id_thesaurus, id_concept_parent, id_facet) VALUES ('"
+                            + idThesaurus + "', '" + idConceptParent + "', '" + idFacet + "');");
                 } finally {
                     stmt.close();
                 }
@@ -238,12 +234,12 @@ public class FacetHelper {
         }
         return idFacet;
     }
-    
+
     private String getNewId(HikariDataSource ds) {
         String idFacet = null;
         ResultSet resultSet = null;
-        try (Connection conn = ds.getConnection()){
-            try (Statement stmt = conn.createStatement()) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select nextval('thesaurus_array_facet_id_seq') from thesaurus_array_facet_id_seq");
                 resultSet = stmt.getResultSet();
                 if (resultSet.next()) {
@@ -251,7 +247,9 @@ public class FacetHelper {
                     idFacet = "F" + (idNumerique);
                 }
             } finally {
-                if (resultSet != null) resultSet.close();
+                if (resultSet != null) {
+                    resultSet.close();
+                }
                 conn.close();
             }
         } catch (SQLException ex) {
@@ -259,16 +257,16 @@ public class FacetHelper {
         }
 
         return idFacet;
-    }    
-    
+    }
+
     /**
-     * Cette fonction permet d'ajouter un concept dans une Facette 
-     * 
+     * Cette fonction permet d'ajouter un concept dans une Facette
+     *
      * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param idConcept
-     * @return 
+     * @return
      */
     public boolean addConceptToFacet(HikariDataSource ds,
             String idFacet,
@@ -285,7 +283,7 @@ public class FacetHelper {
                 stmt = conn.createStatement();
                 try {
                     stmt.executeUpdate("INSERT INTO concept_facet(id_facet, id_thesaurus, id_concept) VALUES ("
-                            + "'" + idFacet +"', '"+idThesaurus+"', '"+idConcept+"');");
+                            + "'" + idFacet + "', '" + idThesaurus + "', '" + idConcept + "');");
                     status = true;
                 } finally {
                     stmt.close();
@@ -300,34 +298,34 @@ public class FacetHelper {
             }
         }
         return status;
-    }    
-    
+    }
+
     /**
-     *  Cette fonction permet de rajouter une traduction à une facette existante.
+     * Cette fonction permet de rajouter une traduction à une facette existante.
+     *
      * @param ds
      * @param idFacet
      * @param idThesaurus
-     * @param lexicalValue 
-     * @param idLang 
-     * @return  
+     * @param lexicalValue
+     * @param idLang
+     * @return
      */
-    
     public boolean addFacetTraduction(HikariDataSource ds,
             String idFacet,
             String idThesaurus,
             String lexicalValue, String idLang) {
         boolean status = false;
         lexicalValue = new StringPlus().convertString(lexicalValue);
-        try(Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into node_label "
-                            + "(id_facet, id_thesaurus, lexical_value, lang)"
-                            + " values ("
-                            + "'" + idFacet + "'"
-                            + ",'" + idThesaurus + "'"
-                            + ",'" + lexicalValue + "'"
-                            + ",'" + idLang + "')");
-                 status = true;
+                        + "(id_facet, id_thesaurus, lexical_value, lang)"
+                        + " values ("
+                        + "'" + idFacet + "'"
+                        + ",'" + idThesaurus + "'"
+                        + ",'" + lexicalValue + "'"
+                        + ",'" + idLang + "')");
+                status = true;
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -337,7 +335,7 @@ public class FacetHelper {
         }
         return status;
     }
- 
+
     /**
      * Cette fonction permet de mettre à jour une facette
      *
@@ -355,9 +353,9 @@ public class FacetHelper {
             String lexicalValue) {
         boolean status = false;
         lexicalValue = new StringPlus().convertString(lexicalValue);
-        
-        try (Connection conn = ds.getConnection()){
-            try (Statement stmt = conn.createStatement()) {
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE node_label set"
                         + " lexical_value = '" + lexicalValue + "'"
                         + " WHERE id_facet = '" + idFacet + "'"
@@ -371,10 +369,10 @@ public class FacetHelper {
         }
         return status;
     }
-    
+
     /**
-     * Cette fonction permet de savoir s'il a une traduction dans cette langue 
-     * 
+     * Cette fonction permet de savoir s'il a une traduction dans cette langue
+     *
      * @param ds
      * @param idFacet
      * @param idThesaurus
@@ -413,7 +411,9 @@ public class FacetHelper {
                     }
 
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -424,19 +424,19 @@ public class FacetHelper {
             log.error("Error while asking if Traduction of Facet exist : " + idFacet, sqle);
         }
         return existe;
-    }    
+    }
 
-    
-    
     /**
-     * permet de retourner le label de la facette, si la facette n'est pas traduite, elle retourne chaine vide
+     * permet de retourner le label de la facette, si la facette n'est pas
+     * traduite, elle retourne chaine vide
+     *
      * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param lang
-     * @return 
+     * @return
      */
-    public String getLabelOfFacet(HikariDataSource ds, String idFacet, 
+    public String getLabelOfFacet(HikariDataSource ds, String idFacet,
             String idThesaurus, String lang) {
         Connection conn;
         Statement stmt;
@@ -449,13 +449,15 @@ public class FacetHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    stmt.executeQuery("SELECT lexical_value FROM node_label WHERE id_facet = '" + idFacet + "' AND id_thesaurus = '" + idThesaurus + "' AND lang = '"+lang+"'");
+                    stmt.executeQuery("SELECT lexical_value FROM node_label WHERE id_facet = '" + idFacet + "' AND id_thesaurus = '" + idThesaurus + "' AND lang = '" + lang + "'");
                     resultSet = stmt.getResultSet();
-                    if(resultSet.next()) {
+                    if (resultSet.next()) {
                         label = resultSet.getString("lexical_value");
                     }
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -466,9 +468,9 @@ public class FacetHelper {
             log.error("Error while getting label of Facet : " + idFacet, sqle);
         }
         return label;
-    }    
-    
-    public List<NodeFacet> getAllTraductionsFacet(HikariDataSource ds, String idFacet, 
+    }
+
+    public List<NodeFacet> getAllTraductionsFacet(HikariDataSource ds, String idFacet,
             String idThesaurus, String lang) {
         Connection conn;
         Statement stmt;
@@ -481,9 +483,9 @@ public class FacetHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    stmt.executeQuery("SELECT * FROM node_label WHERE id_facet = '" + idFacet + "' AND id_thesaurus = '" + idThesaurus + "' AND lang != '"+lang+"'");
+                    stmt.executeQuery("SELECT * FROM node_label WHERE id_facet = '" + idFacet + "' AND id_thesaurus = '" + idThesaurus + "' AND lang != '" + lang + "'");
                     resultSet = stmt.getResultSet();
-                    while(resultSet.next()) {
+                    while (resultSet.next()) {
                         NodeFacet facet = new NodeFacet();
                         facet.setIdFacet(resultSet.getString("id_facet"));
                         facet.setIdThesaurus(resultSet.getString("id_thesaurus"));
@@ -492,7 +494,9 @@ public class FacetHelper {
                         facetLists.add(facet);
                     }
                 } finally {
-                    if (resultSet != null) resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                     stmt.close();
                 }
             } finally {
@@ -505,15 +509,16 @@ public class FacetHelper {
 
         return facetLists;
     }
-    
+
     /**
      * Cette fonction permet de supprimer une Facette avec ses relations
+     *
      * @param ds
      * @param idFacet
      * @param idThesaurus
-     * @return 
+     * @return
      */
-    public boolean deleteFacet(HikariDataSource ds, String idFacet, String idThesaurus){
+    public boolean deleteFacet(HikariDataSource ds, String idFacet, String idThesaurus) {
         Connection conn;
         Statement stmt;
         boolean status = false;
@@ -527,17 +532,17 @@ public class FacetHelper {
                             + " id_thesaurus = '" + idThesaurus + "'"
                             + " and id_facet  = '" + idFacet + "'";
                     stmt.executeUpdate(query);
-                    
+
                     query = "delete from concept_facet where"
                             + " id_thesaurus = '" + idThesaurus + "'"
                             + " and id_facet  = '" + idFacet + "'";
                     stmt.executeUpdate(query);
-                    
+
                     query = "delete from node_label where"
                             + " id_thesaurus = '" + idThesaurus + "'"
                             + " and id_facet = '" + idFacet + "'";
                     stmt.executeUpdate(query);
-                    
+
                     status = true;
 
                 } finally {
@@ -550,20 +555,21 @@ public class FacetHelper {
             // Log exception
             log.error("Error while deleting Facet : " + idFacet, sqle);
         }
-        
+
         return status;
     }
-    
+
     /**
      * Cette fonction permet de supprimer une traduction à une Facette
+     *
      * @param ds
      * @param idFacet
      * @param idThesaurus
      * @param idLang
-     * @return 
+     * @return
      */
-    public boolean deleteTraductionFacet(HikariDataSource ds, String idFacet, String idThesaurus, 
-            String idLang){
+    public boolean deleteTraductionFacet(HikariDataSource ds, String idFacet, String idThesaurus,
+            String idLang) {
         Connection conn;
         Statement stmt;
         boolean status = false;
@@ -578,7 +584,7 @@ public class FacetHelper {
                             + " and lang = '" + idLang + "'"
                             + " and id_facet = '" + idFacet + "'";
                     stmt.executeUpdate(query);
-                    
+
                     status = true;
 
                 } finally {
@@ -591,20 +597,21 @@ public class FacetHelper {
             // Log exception
             log.error("Error while deleting Traduction of Facet : " + idFacet, sqle);
         }
-        
+
         return status;
-    }    
-    
+    }
+
     /**
      * Cette fonction permet de supprimer un concept de la Facette
+     *
      * @param ds
      * @param idFacet
      * @param idConcept
      * @param idThesaurus
-     * @return 
+     * @return
      */
     public boolean deleteConceptFromFacet(HikariDataSource ds,
-            String idFacet, String idConcept, String idThesaurus){
+            String idFacet, String idConcept, String idThesaurus) {
         Connection conn;
         Statement stmt;
         boolean status = false;
@@ -619,7 +626,7 @@ public class FacetHelper {
                             + " and id_concept = '" + idConcept + "'"
                             + " and id_facet  = '" + idFacet + "'";
                     stmt.executeUpdate(query);
-                    
+
                     status = true;
 
                 } finally {
@@ -632,12 +639,13 @@ public class FacetHelper {
             // Log exception
             log.error("Error while deleting Concept from Facet : " + idFacet, sqle);
         }
-        
+
         return status;
     }
-    
+
     /**
-     * Cette fonction permet de récupérer les Id des Concepts Parents qui continennent des Facettes
+     * Cette fonction permet de récupérer les Id des Concepts Parents qui
+     * continennent des Facettes
      *
      * @param ds
      * @param idThesaurus
@@ -659,7 +667,7 @@ public class FacetHelper {
                 try {
                     String query = "SELECT DISTINCT id_concept_parent"
                             + " FROM thesaurus_array WHERE"
-                            + " id_thesaurus = '" + idThesaurus + "'"; 
+                            + " id_thesaurus = '" + idThesaurus + "'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -668,13 +676,13 @@ public class FacetHelper {
                         listIdC.add(resultSet.getString("id_concept_parent"));
                     }
                     for (String idC : listIdC) {
-                        query = "SELECT term.lexical_value FROM term, preferred_term" 
+                        query = "SELECT term.lexical_value FROM term, preferred_term"
                                 + " WHERE preferred_term.id_term = term.id_term"
-                                + " and preferred_term.id_concept ='" + idC +"'"
+                                + " and preferred_term.id_concept ='" + idC + "'"
                                 + " and term.lang = '" + lang + "'"
                                 + " and term.id_thesaurus = '" + idThesaurus + "'"
-                                + " order by lexical_value DESC";                        
-                        
+                                + " order by lexical_value DESC";
+
                         stmt.executeQuery(query);
                         resultSet = stmt.getResultSet();
                         resultSet.next();
@@ -702,8 +710,7 @@ public class FacetHelper {
 
         return tabIdConcept;
     }
-    
-   
+
     /**
      * Cette fonction permet de retourner toutes les Facettes d'un thésaurus
      * sous forme de NodeFacet
@@ -721,7 +728,7 @@ public class FacetHelper {
         ResultSet resultSet;
 
         ArrayList<NodeFacet> nodeFacetlist = new ArrayList();
-        
+
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -734,14 +741,14 @@ public class FacetHelper {
                             + " thesaurus_array.id_facet = node_label.id_facet AND"
                             + " thesaurus_array.id_thesaurus = node_label.id_thesaurus"
                             + " and node_label.id_thesaurus = '" + idThesaurus + "'";
-                    
+
                     if (idLang != null) {
                         query = query + " and node_label.lang = '" + idLang + "'";
                     }
-                    
+
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
-                    while (resultSet.next()){
+                    while (resultSet.next()) {
                         NodeFacet nodeFacet = new NodeFacet();
                         nodeFacet.setIdFacet(resultSet.getString("id_facet"));
                         nodeFacet.setLexicalValue(resultSet.getString("lexical_value"));
@@ -760,8 +767,8 @@ public class FacetHelper {
             log.error("Error while getting All Facet of Thesaurus : " + idThesaurus, sqle);
         }
         return nodeFacetlist;
-    }  
-    
+    }
+
     /**
      * Cette fonction permet de retourner toutes les Facettes d'un thésaurus
      * sous forme de NodeFacet
@@ -786,16 +793,16 @@ public class FacetHelper {
                 try {
                     /*stmt.executeQuery("SELECT * FROM node_label WHERE node_label.id_thesaurus = '"+
                             idThesaurus+"'");*/
-                    stmt.executeQuery("SELECT node_label.*, thesaurus_array.id_concept_parent FROM node_label, thesaurus_array " +
-                            " WHERE" +
-                            " node_label.id_thesaurus = thesaurus_array.id_thesaurus" +
-                            " and" +
-                            " node_label.id_facet = thesaurus_array.id_facet" +
-                            " and" +
-                            " node_label.id_thesaurus = '" + idThesaurus + "'");
-                    
+                    stmt.executeQuery("SELECT node_label.*, thesaurus_array.id_concept_parent FROM node_label, thesaurus_array "
+                            + " WHERE"
+                            + " node_label.id_thesaurus = thesaurus_array.id_thesaurus"
+                            + " and"
+                            + " node_label.id_facet = thesaurus_array.id_facet"
+                            + " and"
+                            + " node_label.id_thesaurus = '" + idThesaurus + "'");
+
                     resultSet = stmt.getResultSet();
-                    while (resultSet.next()){
+                    while (resultSet.next()) {
                         NodeFacet nodeFacet = new NodeFacet();
                         nodeFacet.setIdConceptParent(resultSet.getString("id_concept_parent"));
                         nodeFacet.setIdFacet(resultSet.getString("id_facet"));
@@ -804,14 +811,14 @@ public class FacetHelper {
                         nodeFacet.setCreated(resultSet.getString("created"));
                         nodeFacet.setModified(resultSet.getString("modified"));
                         nodeFacet.setLang(resultSet.getString("lang"));
-                        
+
                         //infos pour la constructions des Uris
                         NodeUri nodeUri = new NodeUri();
                         nodeUri.setIdArk(conceptHelper.getIdArkOfConcept(ds, nodeFacet.getIdConceptParent(), idThesaurus));
                         nodeUri.setIdHandle(conceptHelper.getIdHandleOfConcept(ds, nodeFacet.getIdConceptParent(), idThesaurus));
                         nodeUri.setIdConcept(nodeFacet.getIdConceptParent());
                         nodeFacet.setNodeUri(nodeUri);
-                        
+
                         nodeFacetlist.add(nodeFacet);
                     }
                 } finally {
@@ -827,7 +834,7 @@ public class FacetHelper {
         return nodeFacetlist;
     }
 
-    public boolean checkExistanceFacetByNameAndLangAndThesau(HikariDataSource ds, 
+    public boolean checkExistanceFacetByNameAndLangAndThesau(HikariDataSource ds,
             String name, String lang, String idThesaurus) {
 
         Connection conn;
@@ -841,7 +848,7 @@ public class FacetHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    stmt.executeQuery("SELECT id_facet FROM node_label WHERE lang = '"+ lang 
+                    stmt.executeQuery("SELECT id_facet FROM node_label WHERE lang = '" + lang
                             + "' AND lexical_value = '" + name + "' AND id_thesaurus = '" + idThesaurus + "'");
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
@@ -859,17 +866,18 @@ public class FacetHelper {
         }
         return isFound;
     }
-    
+
     /**
-     *  déprécié par Miled
-     * permet de retourner la liste des facettes qui appartiennent à ce concept
+     * déprécié par Miled permet de retourner la liste des facettes qui
+     * appartiennent à ce concept
+     *
      * @param ds
      * @param idConcept
      * @param idThesaurus
      * @param lang
-     * @return 
+     * @return
      */
-/*    public List<NodeFacet> getAllFacetsOfConcept(HikariDataSource ds,
+    /*    public List<NodeFacet> getAllFacetsOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus, String lang) {
 
         Connection conn;
@@ -911,20 +919,71 @@ public class FacetHelper {
         }
         return nodeFacets;
     }
-    */
-  
-    
+     */
     /**
      * permet de retourner la liste des concepts membres de la facette triés
+     *
      * @param ds
      * @param idFacet
      * @param idLang
      * @param idTheso
-     * @return
-     * #MR
+     * @return #MR
      */
-    public List<String> getAllMembersOfFacetSorted(HikariDataSource ds,
-            String idFacet, String idLang, String idTheso){
+    public ArrayList<NodeIdValue> getAllMembersOfFacetSorted(HikariDataSource ds,
+            String idFacet, String idLang, String idTheso) {
+
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                    stmt.executeQuery("SELECT concept_facet.id_concept "
+                            + " FROM concept_facet" 
+                            + " WHERE  concept_facet.id_thesaurus = '" + idTheso + "'"
+                            + " and concept_facet.id_facet = '" + idFacet + "'");
+                    try (ResultSet resultSet = stmt.getResultSet()) {
+                        while (resultSet.next()) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setId(resultSet.getString("id_concept"));
+                            nodeIdValues.add(nodeIdValue);
+                        }
+                    }
+
+                    for (NodeIdValue nodeIdValue : nodeIdValues) {
+                        stmt.executeQuery("SELECT term.lexical_value, concept.status"
+                                + " FROM concept, preferred_term, term"
+                                + " WHERE concept.id_concept = preferred_term.id_concept AND"
+                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
+                                + " preferred_term.id_term = term.id_term AND"
+                                + " preferred_term.id_thesaurus = term.id_thesaurus AND"
+                                + " concept.id_concept = '" + nodeIdValue.getId() + "' AND"
+                                + " term.lang = '" + idLang + "' AND"
+                                + " term.id_thesaurus = '" + idTheso + "';");
+                        try ( ResultSet resultSet = stmt.getResultSet()) {
+                            if ((resultSet.next())) {
+                                nodeIdValue.setValue(resultSet.getString("lexical_value"));
+                            } else {
+                                nodeIdValue.setValue("");
+                            }
+                        }
+                    }
+                }
+            } catch (SQLException sqle) {
+                // Log exception
+                log.error("Error while getting concepts members of Facet : " + idFacet, sqle);
+            }
+            Collections.sort(nodeIdValues);
+            return nodeIdValues;
+        }
+        /**
+         * permet de retourner la liste des concepts membres de la facette
+         *
+         * @param ds
+         * @param idFacet
+         * @param idTheso
+         * @return #MR
+         */
+    public List<String> getAllMembersOfFacet(HikariDataSource ds,
+            String idFacet, String idTheso) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -936,22 +995,12 @@ public class FacetHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    stmt.executeQuery("SELECT concept_facet.id_concept FROM concept_facet, preferred_term, term " +
-                            " WHERE " +
-                            " concept_facet.id_concept = preferred_term.id_concept" +
-                            " and" +
-                            " concept_facet.id_thesaurus = preferred_term.id_thesaurus" +
-                            " and" +
-                            " term.id_term = preferred_term.id_term" +
-                            " and" +
-                            " term.id_thesaurus = preferred_term.id_thesaurus" +
-                            " and" +
-                            " concept_facet.id_thesaurus = '" + idTheso + "'" +
-                            " and" +
-                            " concept_facet.id_facet = '" + idFacet + "'" +
-                            " and" +
-                            " term.lang = '" + idLang + "'" +
-                            " order by term.lexical_value");
+                    stmt.executeQuery("SELECT concept_facet.id_concept "
+                            + " FROM concept_facet "
+                            + " WHERE"
+                            + " concept_facet.id_thesaurus = '" + idTheso + "'"
+                            + " and"
+                            + " concept_facet.id_facet = '" + idFacet + "'");
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
                         members.add(resultSet.getString("id_concept"));
@@ -969,51 +1018,6 @@ public class FacetHelper {
         return members;
     }
 
-    
-    /**
-     * permet de retourner la liste des concepts membres de la facette
-     * @param ds
-     * @param idFacet
-     * @param idTheso
-     * @return 
-     * #MR
-     */
-    public List<String> getAllMembersOfFacet(HikariDataSource ds,
-            String idFacet, String idTheso){
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
-        List<String> members = new ArrayList<>();
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    stmt.executeQuery("SELECT concept_facet.id_concept " +
-                                " FROM concept_facet " +
-                                " WHERE" +
-                                " concept_facet.id_thesaurus = '" + idTheso + "'" +
-                                " and" +
-                                " concept_facet.id_facet = '" + idFacet + "'");
-                    resultSet = stmt.getResultSet();
-                    while (resultSet.next()) {
-                        members.add(resultSet.getString("id_concept"));
-                    }
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting concepts members of Facet : " + idFacet, sqle);
-        }
-        return members;        
-    }
-    
     /* déprécié par Miled
     public List<String> getConceptAssocietedToFacette(HikariDataSource ds,
             String facetteName, String idThesaurus, String lang, String idConceptParent) {
@@ -1052,7 +1056,6 @@ public class FacetHelper {
         }
         return listConceptsTerme;
     }*/
-
     public boolean isConceptParentInFacet(HikariDataSource ds, String idFacet, String idConcept) {
         boolean isExist = false;
         try {
@@ -1060,8 +1063,8 @@ public class FacetHelper {
             try {
                 Statement stmt = conn.createStatement();
                 try {
-                    stmt.executeQuery("SELECT id_facet FROM thesaurus_array WHERE id_concept_parent = '"+
-                            idConcept+"' AND id_facet = '" + idFacet + "'");
+                    stmt.executeQuery("SELECT id_facet FROM thesaurus_array WHERE id_concept_parent = '"
+                            + idConcept + "' AND id_facet = '" + idFacet + "'");
                     ResultSet resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
                         isExist = true;
@@ -1072,17 +1075,18 @@ public class FacetHelper {
             } finally {
                 conn.close();
             }
-        } catch (SQLException sqle) {}
+        } catch (SQLException sqle) {
+        }
         return isExist;
     }
-    
+
     public boolean updateLabelFacet(HikariDataSource ds, String newLabel, String idFacet, String idThes, String lang) {
         boolean status = false;
         newLabel = (new StringPlus().convertString(newLabel));
-        try (Connection conn = ds.getConnection()){
-            try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate("UPDATE node_label SET lexical_value='"+newLabel+"' WHERE id_facet = '"
-                        +idFacet+"' AND lang = '"+lang+"' AND id_thesaurus = '"+idThes+"'");
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE node_label SET lexical_value='" + newLabel + "' WHERE id_facet = '"
+                        + idFacet + "' AND lang = '" + lang + "' AND id_thesaurus = '" + idThes + "'");
                 status = true;
             }
         } catch (SQLException sqle) {
@@ -1097,16 +1101,17 @@ public class FacetHelper {
             try {
                 Statement stmt = conn.createStatement();
                 try {
-                    stmt.executeUpdate("UPDATE thesaurus_array SET id_concept_parent = '"+idConceptParent+"' WHERE id_facet='"+idFacet+"' AND id_thesaurus='"+idThes+"'");
+                    stmt.executeUpdate("UPDATE thesaurus_array SET id_concept_parent = '" + idConceptParent + "' WHERE id_facet='" + idFacet + "' AND id_thesaurus='" + idThes + "'");
                 } finally {
                     stmt.close();
                 }
             } finally {
                 conn.close();
             }
-        } catch (SQLException sqle) {}
+        } catch (SQLException sqle) {
+        }
     }
-    
+
     public void deleteAllConceptAssocietedToFacet(HikariDataSource ds, String idFacet, String idThes) {
         try {
             Connection conn = ds.getConnection();
@@ -1120,16 +1125,18 @@ public class FacetHelper {
             } finally {
                 conn.close();
             }
-        } catch (SQLException sqle) {}
+        } catch (SQLException sqle) {
+        }
     }
-    
+
     /**
-     * Permet de savoir si la facette a ce concept en particulier 
+     * Permet de savoir si la facette a ce concept en particulier
+     *
      * @param ds
      * @param idFacet
      * @param idCocnept
      * @param idTheso
-     * @return 
+     * @return
      */
     public boolean isFacetHaveThisMember(HikariDataSource ds,
             String idFacet, String idCocnept, String idTheso) {
@@ -1162,14 +1169,15 @@ public class FacetHelper {
             // Log exception
             log.error("Error while asking if Facet have this member : " + idFacet + ":" + idCocnept, sqle);
         }
-        return existe;        
-    }     
-    
+        return existe;
+    }
+
     /**
-     * Permet de savoir si la facette a des concepts membres 
+     * Permet de savoir si la facette a des concepts membres
+     *
      * @param ds
      * @param idFacet
-     * @return 
+     * @return
      */
     public boolean isIdFacetExist(HikariDataSource ds, String idFacet) {
         Statement stmt;
@@ -1199,15 +1207,16 @@ public class FacetHelper {
             // Log exception
             log.error("Error while asking if idFacet exist : " + idFacet, sqle);
         }
-        return existe;        
-    }        
-    
+        return existe;
+    }
+
     /**
-     * Permet de savoir si la facette a des concepts membres 
+     * Permet de savoir si la facette a des concepts membres
+     *
      * @param ds
      * @param idFacet
      * @param idTheso
-     * @return 
+     * @return
      */
     public boolean isFacetHaveMembers(HikariDataSource ds, String idFacet, String idTheso) {
         Statement stmt;
@@ -1238,23 +1247,24 @@ public class FacetHelper {
             // Log exception
             log.error("Error while asking if Facet have members : " + idFacet, sqle);
         }
-        return existe;        
-    }    
-    
+        return existe;
+    }
+
     /**
-     * Permet de savoir si le concept a des facettes 
+     * Permet de savoir si le concept a des facettes
+     *
      * @param ds
      * @param idConcept
      * @param idTheso
-     * @return 
+     * @return
      */
     public boolean isConceptHaveFacet(HikariDataSource ds, String idConcept, String idTheso) {
         boolean existe = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select count(id_facet) from thesaurus_array where "
-                            + " id_thesaurus = '" + idTheso + "'"
-                            + " and id_concept_parent ='" + idConcept + "'");
+                        + " id_thesaurus = '" + idTheso + "'"
+                        + " and id_concept_parent ='" + idConcept + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         if (resultSet.getInt(1) != 0) {
@@ -1265,7 +1275,7 @@ public class FacetHelper {
             }
         } catch (SQLException sqle) {
             log.error("Error while asking if Concept have Facets : " + idConcept, sqle);
-        }        
-        return existe;        
+        }
+        return existe;
     }
 }

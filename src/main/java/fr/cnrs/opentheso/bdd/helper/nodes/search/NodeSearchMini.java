@@ -14,9 +14,12 @@ public class NodeSearchMini {
     private String idConcept;
     private String idTerm;
     private String prefLabel;
-    private String altLabel;    
+    private String altLabel;
+    private boolean isConcept;
     private boolean isAltLabel;
     private boolean isGroup;
+    private boolean isFacet;
+    private boolean isDeprecated;
 
     
     public NodeSearchMini() {
@@ -68,6 +71,30 @@ public class NodeSearchMini {
 
     public void setIdTerm(String idTerm) {
         this.idTerm = idTerm;
+    }
+
+    public boolean isIsFacet() {
+        return isFacet;
+    }
+
+    public void setIsFacet(boolean isFacet) {
+        this.isFacet = isFacet;
+    }
+
+    public boolean isIsConcept() {
+        return isConcept;
+    }
+
+    public void setIsConcept(boolean isConcept) {
+        this.isConcept = isConcept;
+    }
+
+    public boolean isIsDeprecated() {
+        return isDeprecated;
+    }
+
+    public void setIsDeprecated(boolean isDeprecated) {
+        this.isDeprecated = isDeprecated;
     }
 
 

@@ -172,20 +172,15 @@ public class EditFacet implements Serializable {
     private void setListConceptsAssocie() {
 
         FacetHelper facetHelper = new FacetHelper();
-        ConceptHelper termHelper = new ConceptHelper();
 
-        List<String> concepts = facetHelper.getAllMembersOfFacetSorted(
+        ArrayList<NodeIdValue> nodeIdValues = facetHelper.getAllMembersOfFacetSorted(
                 connect.getPoolConnexion(),
                 facetSelected.getIdFacet(),
                 selectedTheso.getCurrentLang(),
                 selectedTheso.getCurrentIdTheso());
 
         conceptList = new ArrayList<>();
-        for (String idConcept : concepts) {
-            NodeIdValue nodeIdValue = new NodeIdValue();
-            nodeIdValue.setId(idConcept);
-            nodeIdValue.setValue(termHelper.getLexicalValueOfConcept(connect.getPoolConnexion(),
-                    idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
+        for (NodeIdValue nodeIdValue : nodeIdValues) {
             conceptList.add(nodeIdValue);
         }
     }

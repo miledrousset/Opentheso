@@ -23,6 +23,7 @@ public class NodeConceptTree implements Comparable {
         private boolean isSubGroup = false;
         private boolean isTopTerm =false;
         private boolean isTerm =false;
+        private boolean isDeprecated = false;
 
     public boolean isIsTopTerm() {
         return isTopTerm;
@@ -84,6 +85,14 @@ public class NodeConceptTree implements Comparable {
 
     public void setHaveChildren(boolean haveChildren) {
         this.haveChildren = haveChildren;
+    }
+
+    public boolean isIsDeprecated() {
+        return isDeprecated;
+    }
+
+    public void setIsDeprecated(boolean isDeprecated) {
+        this.isDeprecated = isDeprecated;
     }
 
     @Override

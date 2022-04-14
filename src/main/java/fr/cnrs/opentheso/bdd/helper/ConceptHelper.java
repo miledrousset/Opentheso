@@ -303,6 +303,13 @@ public class ConceptHelper {
      *
      * En ignorant les concepts qui sont rangés dans les facettes du
      * Concept-Père, on les récupère à la suite quand on clique sur les facettes
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @param isSortByNotation
+     * @return 
      */
     public ArrayList<NodeConceptTree> getListConceptsIgnoreConceptsInFacets(HikariDataSource ds,
             String idConcept, String idThesaurus, String idLang, boolean isSortByNotation) {
@@ -684,7 +691,8 @@ public class ConceptHelper {
         GroupHelper groupHelper = new GroupHelper();
 
         nodeConceptSerach.setIdConcept(idConcept);
-
+        nodeConceptSerach.setIsDeprecated(isDeprecated(ds, idConcept, idThesaurus));
+        
         //récupération du PrefLabel
         nodeConceptSerach.setPrefLabel(getLexicalValueOfConcept(ds, idConcept, idThesaurus, idLang));
 
@@ -773,7 +781,8 @@ public class ConceptHelper {
             NodeConceptSearch nodeConceptSearch = new NodeConceptSearch();
                     
             nodeConceptSearch.setIdConcept(conceptId);
-
+            nodeConceptSearch.setIsDeprecated(isDeprecated(ds, conceptId, idThesaurus));
+            
             //récupération du PrefLabel
             nodeConceptSearch.setPrefLabel(getLexicalValueOfConcept(ds, conceptId, idThesaurus, idLang));
 
@@ -896,6 +905,12 @@ public class ConceptHelper {
     /**
      * permet de retourner la liste des concepts pour un group donné retour au
      * format de NodeConceptTree (informations pour construire l'arbre
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @param idGroup
+     * @param isSortByNotation
+     * @return 
      */
     public ArrayList<NodeIdValue> getListConceptsOfGroup(HikariDataSource ds,
             String idThesaurus, String idLang, String idGroup, boolean isSortByNotation) {
@@ -4152,6 +4167,32 @@ public class ConceptHelper {
         return false;
     }      
     
+    /**
+     * Cette fonction permet de savoir si le Concept est déprécié
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
+     */
+    public boolean isDeprecated(HikariDataSource ds, String idConcept, String idThesaurus) {
+        boolean existe = false;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select status from concept where id_concept = '"
+                        + idConcept + "' and id_thesaurus = '" + idThesaurus + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        if(resultSet.getString("status").equalsIgnoreCase("dep"))
+                            existe = true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while Asking if TopConcept : " + idConcept, sqle);
+        }
+        return existe;
+    }
     
     /**
      * Cette fonction permet de savoir si le Concept est un TopConcept

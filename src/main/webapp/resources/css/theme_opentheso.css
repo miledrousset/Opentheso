@@ -11294,6 +11294,11 @@ body.sidebar-toggled footer.sticky-footer {
     color: #C63632 !important;
     font-size: 0.8rem !important;
 }
+.fa_custom_ban {
+    color: #C63632 !important;
+    font-size: 0.8rem !important;    
+}
+
 
 /*Tree Groups */
 .fa_custom_open {

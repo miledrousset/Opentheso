@@ -25,6 +25,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
 
 /**
  *
@@ -40,7 +41,9 @@ public class SearchBean implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private IndexSetting indexSetting;
     
-    private NodeSearchMini searchSelected;
+    private NodeSearchMini searchSelected;   
+    
+    
     private ArrayList<NodeSearchMini> listResultAutoComplete;    
     private ArrayList<NodeConceptSearch> nodeConceptSearchs;
     private String searchValue;
@@ -74,6 +77,7 @@ public class SearchBean implements Serializable {
         searchHelper = null;
         conceptHelper = null;
     }     
+
     
     
     public void activateIndexMatch(){
@@ -159,7 +163,8 @@ public class SearchBean implements Serializable {
         return listResultAutoComplete;
     }    
 
-    public void onSelect(){
+    public void onSelect(SelectEvent<String> event){
+        event.getObject();
         if(nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
         } else 
@@ -221,7 +226,7 @@ public class SearchBean implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
             }
-            if(nodeConceptSearchs.size() > 0) {
+            if(!nodeConceptSearchs.isEmpty()) {
                 onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
             }
         }
@@ -240,7 +245,7 @@ public class SearchBean implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
             }
-            if(nodeConceptSearchs.size() > 0) {
+            if(!nodeConceptSearchs.isEmpty()) {
                 onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
             }            
         }
@@ -258,7 +263,7 @@ public class SearchBean implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang()));
             }
-            if(nodeConceptSearchs.size() > 0) {
+            if(!nodeConceptSearchs.isEmpty()) {
                 onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
             }
         }
@@ -278,7 +283,7 @@ public class SearchBean implements Serializable {
                         selectedTheso.getCurrentLang())
                 );
             }
-            if(nodeConceptSearchs.size() > 0) {
+            if(!nodeConceptSearchs.isEmpty()) {
                 onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
             }
         }
@@ -334,7 +339,7 @@ public class SearchBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang()));
         }
-        if(nodeConceptSearchs.size() > 0) {
+        if(!nodeConceptSearchs.isEmpty()) {
             onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
         }
         if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
@@ -374,7 +379,7 @@ public class SearchBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang()));
         }
-        if(nodeConceptSearchs.size() > 0) {
+        if(!nodeConceptSearchs.isEmpty()) {
             onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
         }
         if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
@@ -414,7 +419,7 @@ public class SearchBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang()));
         }
-        if(nodeConceptSearchs.size() > 0) {
+        if(!nodeConceptSearchs.isEmpty()) {
             onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
         }
         if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
@@ -455,7 +460,7 @@ public class SearchBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang()));
         }
-        if(nodeConceptSearchs.size() > 0) {
+        if(!nodeConceptSearchs.isEmpty()) {
             onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
         }
         if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
@@ -503,7 +508,7 @@ public class SearchBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang()));
         }
-        if(nodeConceptSearchs.size() > 0) {
+        if(!nodeConceptSearchs.isEmpty()) {
             onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
         }
         if(nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
