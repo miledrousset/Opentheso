@@ -4,6 +4,12 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <style>
+        body .ui-datatable .ui-datatable-data > tr > td {
+            padding-top: 0.9rem;
+            padding-bottom: 0.2rem;
+        }
+    </style>
     <p:panel rendered="#{candidatBean.isListCandidatsActivate()}">
 
         <h:form id="panelCandidateList">
@@ -86,7 +92,12 @@
                     <h:outputText value="#{listCandidats.nbrVote}" style="font-size: 13px;" />
                 </p:column>   
                 <p:column width="20" headerText="Votes Note">
-                    <h:outputText value="#{listCandidats.nbrNoteVote}" style="font-size: 13px;"/>
+                    <p:badge rendered="#{listCandidats.nbrNoteVote > 0}" value="#{listCandidats.nbrNoteVote}" severity="danger" styleClass="p-mr-2">
+                        <p:commandButton icon="pi pi-bell" styleClass="rounded-button ui-button-warning" update="idShowVoteNote"
+                                         actionListener="#{noteBeanCandidat.prepareVoteNote(listCandidats)}" 
+                                         oncomplete="PF('showVoteNote').show();"
+                                         process="@this" ajax="true"/>
+                    </p:badge>
                 </p:column>      
                 <p:column width="20" headerText="Messages" sortBy="#{listCandidats.nbrParticipant}">
                     <h:outputText value="#{listCandidats.nbrParticipant}" style="font-size: 13px;"/>

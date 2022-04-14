@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.candidat;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;
@@ -79,6 +80,20 @@ public class NoteBeanCandidat implements Serializable {
         noteValue = "";
         selectedTypeNote = null;
         isEditMode = false;
+    }
+    
+    /**
+     * permet de préparer la vue pour les votes sur les notes pour un candidat
+     * 
+     * @param selectedCandidate
+     */
+    public void prepareVoteNote(CandidatDto selectedCandidate){
+        String idCandidate = selectedCandidate.getIdConcepte();
+        int createdBy = selectedCandidate.getUserId();
+        
+        
+        
+        
     }
     
     public void resetEditNode(NodeNote selectedNodeNote) {
