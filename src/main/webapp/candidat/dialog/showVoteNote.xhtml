@@ -4,30 +4,54 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idShowVoteNote" header="Votes pour les notes" widgetVar="showVoteNote"
-               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
+              width="850" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
 
         <h:form id="showVoteNoteForm">
             <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Texte" style="font-weight: bold;"/>
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="Candidat: " style="font-size: 12px;"/>
+                    <h:outputText value="#{showVoteNote.candidat}" style="font-size: 12px; font-weight: bold;"/>
                 </div>
             </div>
-            dsds
             <div class="row">
-                <div class="col-12">
-                    <p:inputTextarea value="#{noteBeanCandidat.selectedNodeNote.lexicalvalue}" required="true"
-                             style="width: 100%; resize: none; font-size: 13px; background: white;"/>
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="Créé par: " style="font-size: 12px;"/>
+                    <h:outputText value="#{showVoteNote.userName}" style="font-size: 12px; font-weight: bold;"/>                    
                 </div>
-            </div>
-            
+            </div>            
+
+            <p:scrollPanel id="listVotesDatas" mode="native" style="min-height: 300px; max-height: 600px; border: #FAFAFA; background-color: #FFFFFF; ">           
+                <div class="row">
+                    <div class="col-12">
+                        <!-- tableau des votes -->
+                        <p:dataTable id="listVotes" var="listVotes" value="#{showVoteNote.nodeTabVotes}" 
+                                     style="font-size: 13px; width: 100%" rows="10" >
+
+                            <p:column  headerText="name">
+                                <i class="pi pi-user" style="font-size: 0.8rem"/>                         
+                                <h:outputText value=" #{listVotes.userName}" style="font-size: 13px;"/>
+                            </p:column>
+
+                            <p:column   headerText="noteType">
+                                <h:outputText value="#{listVotes.typeNote}" style="font-size: 13px;"/>
+                            </p:column>
+
+                            <p:column   headerText="value">
+                                <h:outputText value="#{listVotes.noteValue}" style="font-size: 13px;"/>
+                            </p:column>
+                            <p:column  headerText="value">
+                                <p:tag styleClass="p-mr-2" severity="success" value="voté" rounded="true"></p:tag>
+                            </p:column>                        
+
+                        </p:dataTable>  
+                    </div>
+                </div>
+            </p:scrollPanel>                 
+
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px; font-size: 12px;"
                                  actionListener="PF('showVoteNote').hide();" update="idShowVoteNote tabViewCandidat messageIndex"
                                  process="@this" ajax="true"/>
-
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" oncomplete="PF('showVoteNote').hide();"
-                                 update="tabViewCandidat messageIndex"
-                                 actionListener="#{noteBeanCandidat.updateNote(currentUser.nodeUser.idUser)}"/>
             </div>
         </h:form>
     </p:dialog>

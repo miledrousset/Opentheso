@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.candidat.dao;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeVote;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
@@ -18,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class CandidatDao {
@@ -112,7 +115,7 @@ public class CandidatDao {
                         candidatDto.setIdConcepte(resultSet.getString("id_concept"));
                         candidatDto.setCreationDate(resultSet.getDate("created"));
                         candidatDto.setStatut("" + etat);
-                        candidatDto.setUserId(resultSet.getInt("id_user"));
+                        candidatDto.setCreatedById(resultSet.getInt("id_user"));
                         candidatDto.setIdThesaurus(idTheso);
                         candidatDtos.add(candidatDto);
                     }
@@ -121,7 +124,7 @@ public class CandidatDao {
         }
         UserHelper userHelper = new UserHelper();
         candidatDtos.forEach(candidatDto -> {
-            candidatDto.setUser(userHelper.getNameUser(hikariDataSource, candidatDto.getUserId()));
+            candidatDto.setCreatedBy(userHelper.getNameUser(hikariDataSource, candidatDto.getCreatedById()));
         });
     }
     
@@ -385,6 +388,38 @@ public class CandidatDao {
 
         return true;
     }    
+    
+    /**
+     * Permet de trouver tous les votes pour les notes par candidat
+     * @param hikariDataSource
+     * @param idConcept
+     * @param idTheso
+     * @return
+     * #MR
+     */
+    public ArrayList<NodeVote> getAllVoteNotes(HikariDataSource hikariDataSource,
+            String idConcept, String idTheso) {
+        ArrayList<NodeVote> nodeVotes = new ArrayList<>();
+        try (Connection conn = hikariDataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select id_user, id_note from candidat_vote where" +
+                        " id_concept = '" + idConcept + "'" +
+                        " and id_thesaurus = '" + idTheso + "'"+
+                        " and type_vote = 'NT'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeVote nodeVote = new NodeVote();
+                        nodeVote.setIdUser(resultSet.getInt("id_user"));
+                        nodeVote.setIdNote(resultSet.getString("id_note"));
+                        nodeVotes.add(nodeVote);
+                    }             
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CandidatDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeVotes;
+    }
     
     public boolean getVote(HikariDataSource hikariDataSource, int userId, String idConcept,
                     String idTheso, String idNote, String typeVote) throws SQLException {

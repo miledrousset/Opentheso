@@ -82,7 +82,7 @@
                 </p:column>
 
                 <p:column width="30" headerText="#{langueBean.getMsg('rightbody.concept.createdBy')}">
-                    <h:outputText value="#{listCandidats.user}" style="font-size: 13px;"/>
+                    <h:outputText value="#{listCandidats.createdBy}" style="font-size: 13px;"/>
                 </p:column>
 
                 <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}" sortBy="#{listCandidats.creationDate}">
@@ -94,7 +94,7 @@
                 <p:column width="20" headerText="Votes Note">
                     <p:badge rendered="#{listCandidats.nbrNoteVote > 0}" value="#{listCandidats.nbrNoteVote}" severity="danger" styleClass="p-mr-2">
                         <p:commandButton icon="pi pi-bell" styleClass="rounded-button ui-button-warning" update="idShowVoteNote"
-                                         actionListener="#{noteBeanCandidat.prepareVoteNote(listCandidats)}" 
+                                         actionListener="#{showVoteNote.prepareVoteNote(listCandidats)}" 
                                          oncomplete="PF('showVoteNote').show();"
                                          process="@this" ajax="true"/>
                     </p:badge>

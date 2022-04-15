@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
+import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
@@ -25,7 +26,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
 
 /**
  *
@@ -40,6 +40,7 @@ public class SearchBean implements Serializable {
     @Inject private LeftBodySetting leftBodySetting;
     @Inject private ConceptView conceptBean;
     @Inject private IndexSetting indexSetting;
+    @Inject private TreeGroups treeGroups;
     
     private NodeSearchMini searchSelected;   
     
@@ -163,24 +164,39 @@ public class SearchBean implements Serializable {
         return listResultAutoComplete;
     }    
 
-    public void onSelect(SelectEvent<String> event){
-        event.getObject();
-        if(nodeConceptSearchs == null) {
-            nodeConceptSearchs = new ArrayList<>();
-        } else 
-            nodeConceptSearchs.clear();        
-        if(conceptHelper == null) 
-            conceptHelper = new ConceptHelper();
-        nodeConceptSearchs.add(
-                    conceptHelper.getConceptForSearch(
-                    connect.getPoolConnexion(),
-                    searchSelected.getIdConcept(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang())
-            );
-        setViewsSerach();
-        if(nodeConceptSearchs.size() == 1) {
-            onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+    public void onSelect(){
+        if(searchSelected == null) return;        
+        String[] values = searchSelected.getIdConcept().split("####");
+        if(values == null) return;
+        String idConcept;
+        if(values.length > 1) {
+            idConcept = values[0];
+            
+            //action group
+            if(values[1].equalsIgnoreCase("isGroup")) {
+                treeGroups.selectThisGroup(idConcept);
+            }
+      
+        } else {
+            idConcept = searchSelected.getIdConcept();
+
+            if(nodeConceptSearchs == null) {
+                nodeConceptSearchs = new ArrayList<>();
+            } else 
+                nodeConceptSearchs.clear();        
+            if(conceptHelper == null) 
+                conceptHelper = new ConceptHelper();
+            nodeConceptSearchs.add(
+                        conceptHelper.getConceptForSearch(
+                        connect.getPoolConnexion(),
+                        idConcept,
+                        selectedTheso.getCurrentIdTheso(),
+                        selectedTheso.getCurrentLang())
+                );
+            setViewsSerach();
+            if(nodeConceptSearchs.size() == 1) {
+                onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+            }
         }
         isSelectedItem = true;
         

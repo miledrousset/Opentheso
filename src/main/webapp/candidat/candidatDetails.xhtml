@@ -3,15 +3,23 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
-
-    <h:form id="panelCandidate">
-
-    </h:form> 
+    <style>
+        body .ui-button.rounded-button.ui-button-icon-only {
+            height: 1.5rem;
+            width: 1.5rem;
+        }
+        body .ui-button.ui-button-icon-only .ui-icon {
+            margin-top: -0.43rem;
+            margin-left: -0.4rem;
+            font-size: 0.7rem;
+        }        
+    </style>
 
     <div class="row">
         <div class="col-12">
             <h:outputText style="font-weight: bold;margin-top: 10px;" value="#{langueBean.getMsg('candidat.file')} "/>
-            <h:outputText style="font-size: 12px; color: #f47b2a;" value=" (#{candidatBean.candidatSelected.user})"/>
+            <h:outputText style="font-size: 14px; color: #f47b2a;" value=" (#{candidatBean.candidatSelected.createdBy})" 
+                          title="#{langueBean.getMsg('rightbody.concept.createdBy')} #{candidatBean.candidatSelected.createdBy}"/>
         </div>
     </div>
 
@@ -23,14 +31,17 @@
     </div>
     <div class="row" id="vote">
         <div class="col-8">
-            <p:inputText value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" />
+            <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate()}"
+                         value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" >
+            </p:inputText>
+            <p:tooltip for="inputTextCandidate" value="Ne peut être modifié que par le créateur" showDelay="1000" position="top"/>
         </div>
         <h:panelGroup id="votePanel" rendered="#{!candidatBean.isNewCandidatActivate()}">
-            <div class="col-1">
+            <div class="col-1" style="margin-top: 8px">
                 <p:commandButton rendered="#{candidatBean.candidatSelected.voted}"
                                  actionListener="#{candidatBean.addVote()}"  update="votePanel"
-                                 styleClass="rounded-button"
-                                 icon="fas fa-thumbs-up" style="background-color: #f47b2a; border-color: #C8EAD6"/>
+                                 styleClass="rounded-button col-lg-5"
+                                 icon="fas fa-thumbs-up" style="background-color: #f47b2a; border-color: #C8EAD6;"/>
 
                 <p:commandButton rendered="#{!candidatBean.candidatSelected.voted}"
                                  actionListener="#{candidatBean.addVote()}" update="votePanel"
@@ -121,6 +132,8 @@
 
     <!-- pour les 2 sections ci-dessous, l'enregistrement des données est automatique -->
     <h:panelGroup id="candidateInfos" rendered="#{!candidatBean.isNewCandidatActivate()}" style="margin: 10px;" >
+        
+        
         <!-- gestion des notes -->
         <div class="row">
             <div class="col-12">
@@ -144,9 +157,12 @@
             <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
                 <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
                      tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}" tooltip-delay-show="500">
-                    <div class="col-6" >
+                    <div class="col-4" >
                         <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                     </div>
+                    <div class="col-2" >
+                        <h:outputText value="#{candidatBean.getUserName(note.idUser)}" escape="false" style="font-size: 14px;"/>
+                    </div>                    
                     <div class="col-2" >
                         <h:outputText value="#{note.notetypecode}" escape="false" style="font-size: 14px;"/>
                     </div>
@@ -154,13 +170,13 @@
                         <h:outputText value="#{note.lang}" style="font-size: 14px;"/>
                     </div>
                     <div class="col-1" style="margin-top: -2px;">                        
-                        <p:commandButton class="ui-button-success rounded-button" icon="fas fa-pen" process="@this"
+                        <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" class="ui-button-success rounded-button" icon="fas fa-pen" process="@this"
                                          actionListener="#{noteBeanCandidat.resetEditNode(note)}" update="editNoteForm"
                                          oncomplete="PF('editNote').show();"/>
                         
                     </div>
                     <div class="col-1" style="margin-top: -2px;">
-                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger" process="@this" ajax="true"
+                        <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" icon="pi pi-trash" styleClass="rounded-button ui-button-danger" process="@this" ajax="true"
                                          actionListener="#{noteBeanCandidat.setSelectedNodeNote(note)}" update="idDeleteNote"
                                          oncomplete="PF('deleteNote').show();" />
                     </div>

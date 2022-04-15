@@ -14,6 +14,10 @@ public class CandidatDto implements Serializable {
     private String idConcepte;
     private String idThesaurus;
     private String lang;
+    
+    private String createdBy;
+    private int createdById;
+    
     private String user;
     private int userId;
 
@@ -302,6 +306,22 @@ public class CandidatDto implements Serializable {
 
     public void setNbrNoteVote(int nbrNoteVote) {
         this.nbrNoteVote = nbrNoteVote;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public int getCreatedById() {
+        return createdById;
+    }
+
+    public void setCreatedById(int createdById) {
+        this.createdById = createdById;
     }
     
 }

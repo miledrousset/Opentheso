@@ -202,6 +202,14 @@ public class CandidatBean implements Serializable {
     }
 
     /**
+     * permet de savoir si l'identifiant actuel est propriétaire du candidat 
+     * @return 
+     */
+    public boolean isMyCandidate() {
+        return candidatSelected.getCreatedById() == candidatSelected.getUserId();
+    }
+    
+    /**
      * permet de déctercter la langue préférée d'un thésaurus
      *
      * @return
