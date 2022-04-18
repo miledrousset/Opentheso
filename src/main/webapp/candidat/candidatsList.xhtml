@@ -9,6 +9,15 @@
             padding-top: 0.9rem;
             padding-bottom: 0.2rem;
         }
+        body .ui-badge {
+            background: #2196F3;
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            line-height: 1.4rem;
+            height: 1.4rem;
+        }        
+        
     </style>
     <p:panel rendered="#{candidatBean.isListCandidatsActivate()}">
 
@@ -89,8 +98,9 @@
                     <h:outputText value="#{listCandidats.creationDate}" style="font-size: 13px;" />
                 </p:column>  
                 <p:column width="20" headerText="Votes" sortBy="#{listCandidats.nbrVote}">
-                    <h:outputText value="#{listCandidats.nbrVote}" style="font-size: 13px;" />
-                </p:column>   
+                    <p:badge rendered="#{listCandidats.nbrVote > 0}" severity="danger" value="#{listCandidats.nbrVote}" styleClass="p-mr-2"></p:badge>
+                </p:column>
+                
                 <p:column width="20" headerText="Votes Note">
                     <p:badge rendered="#{listCandidats.nbrNoteVote > 0}" value="#{listCandidats.nbrNoteVote}" severity="danger" styleClass="p-mr-2">
                         <p:commandButton icon="pi pi-bell" styleClass="rounded-button ui-button-warning" update="idShowVoteNote"
