@@ -27,7 +27,7 @@
                         <p:dataTable id="listVotes" var="listVotes" value="#{showVoteNote.nodeTabVotes}" 
                                      style="font-size: 13px; width: 100%" rows="10" >
 
-                            <p:column  headerText="name">
+                            <p:column  headerText="User">
                                 <i class="pi pi-user" style="font-size: 0.8rem"/>                         
                                 <h:outputText value=" #{listVotes.userName}" style="font-size: 13px;"/>
                             </p:column>
@@ -36,10 +36,10 @@
                                 <h:outputText value="#{listVotes.typeNote}" style="font-size: 13px;"/>
                             </p:column>
 
-                            <p:column   headerText="value">
+                            <p:column   headerText="Value">
                                 <h:outputText value="#{listVotes.noteValue}" style="font-size: 13px;"/>
                             </p:column>
-                            <p:column  headerText="value">
+                            <p:column  headerText="Status">
                                 <p:tag styleClass="p-mr-2" severity="success" value="voté" rounded="true"></p:tag>
                             </p:column>                        
 

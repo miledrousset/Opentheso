@@ -63,8 +63,9 @@ public class showVoteNote implements Serializable {
         NoteHelper noteHelper = new NoteHelper();
         NodeNote nodeNote;
         
-        int createdBy = selectedCandidate.getUserId();
-        userName = userHelper.getNameUser(connect.getPoolConnexion(), createdBy);
+ //       int createdBy = selectedCandidate.getCreatedById();
+ //       userName = userHelper.getNameUser(connect.getPoolConnexion(), createdBy);
+        userName = selectedCandidate.getCreatedBy();
         candidat = selectedCandidate.getNomPref();
         
         CandidatDao candidatDao = new CandidatDao();
