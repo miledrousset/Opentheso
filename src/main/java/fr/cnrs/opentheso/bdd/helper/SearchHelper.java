@@ -791,6 +791,11 @@ public class SearchHelper {
                     }
                 }
             }
+            //// rechercher les collections
+            nodeSearchMinis = searchCollections(conn, idTheso, value, idLang, nodeSearchMinis);
+            
+            /// rechercher les Facettes
+            nodeSearchMinis = serachFacets(conn, idTheso, value, idLang, nodeSearchMinis);            
         } catch (SQLException sqle) {
             log.error("Error while search excat of value  : " + value, sqle);
         }
@@ -860,6 +865,7 @@ public class SearchHelper {
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
                         nodeSearchMini.setIsAltLabel(false);
+                        nodeSearchMini.setIsConcept(true);
 
                         if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
                             nodeSearchMinis.add(0, nodeSearchMini);
@@ -925,6 +931,11 @@ public class SearchHelper {
                     }
                 }
             }
+            //// rechercher les collections
+            nodeSearchMinis = searchCollections(conn, idTheso, value, idLang, nodeSearchMinis);
+            
+            /// rechercher les Facettes
+            nodeSearchMinis = serachFacets(conn, idTheso, value, idLang, nodeSearchMinis);            
         } catch (SQLException sqle) {
             log.error("Error while search excat of value  : " + value, sqle);
         }
