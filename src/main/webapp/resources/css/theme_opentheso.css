@@ -10051,9 +10051,10 @@ a:focus {
     border-bottom: 0.25rem solid #858796 !important;
 }
 
+/*
 .border-left-success {
     border-left: 0.25rem solid #1cc88a !important;
-}
+}*/
 
 .border-bottom-success {
     border-bottom: 0.25rem solid #1cc88a !important;

@@ -139,10 +139,10 @@
                 </div>
 
                 <!-- ligne URI -->
-                <div class="list-group-item list-group-item-action">  
+                <div class="list-group-item list-group-item-action" style="margin-top: 10px;">  
                     <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="Identifiant / Lien permament" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="Identifiant / Lien permament" style="font-size: 14px; font-weight: bold;color: #8f8f8f; font-style: italic"/>
                         </div>
                     </div>
                 </div>
@@ -153,7 +153,9 @@
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
                             <h:outputText value="Id interne" style="font-size: 14px;"/>
                         </div>
-                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -20px">
+                        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                        </div>
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                             <p:link href="#{request.contextPath}/?idg=#{groupView.nodeGroup.conceptGroup.idgroup}&amp;idt=#{groupView.nodeGroup.conceptGroup.idthesaurus}"
                                     value="#{groupView.nodeGroup.conceptGroup.idgroup}" style="font-size: 14px;">
                                 <i class="pi pi-link" style="color: #43B572;" />
@@ -168,7 +170,9 @@
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
                                 <h:outputText value="IdArk" style="font-size: 14px;"/>
                             </div>
-                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -20px">
+                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                            </div>
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <p:link href="#{roleOnTheso.nodePreference.uriArk}#{groupView.nodeGroup.conceptGroup.idARk}"
                                         value="#{roleOnTheso.nodePreference.uriArk}#{groupView.nodeGroup.conceptGroup.idARk}"
                                         target="_blank" style="color: #43B572; font-size: 14px;" >
@@ -184,7 +188,9 @@
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
                             <h:outputText value="IdHandle" style="font-size: 14px;"/>
                         </div>
-                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -20px">
+                        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                        </div>
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                             <p:link href="https://hdl.handle.net/#{groupView.nodeGroup.conceptGroup.idHandle}"
                                     value="https://hdl.handle.net/#{groupView.nodeGroup.conceptGroup.idHandle}"
                                     target="_blank" style="color: #43B572; font-size: 14px;" >
@@ -198,15 +204,27 @@
 
         <p:spacer height="20" />
 
-        <!-- ligne dates -->        
-        <div class="row">   
-            <div class="col-12" style="text-align: right; font-size: 12px; color: grey; font-style: italic ">
-                <h:outputText value="Created: " />
-                <h:outputText value="#{groupView.nodeGroup.created}" style="color: #666666"/>
-                <h:outputText value="  last modified: "/>
-                <h:outputText value="#{groupView.nodeGroup.modified}" style="color: #666666"/>
+        
+    <!-- ligne dates --> 
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+            <div class="row" style="padding-left: 20px">  
+                <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: " />
+                    <h:outputText value="#{groupView.nodeGroup.created} " style="color: #43B572"/>
+                </div>
             </div>
-        </div>        
+            <div class="row" style="padding-left: 20px">  
+                <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
+                    <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')}: "/>
+                    <h:outputText value="#{groupView.nodeGroup.modified} " style="color: #43B572"/>                
+                </div>
+            </div>
+        </div>
+    </div>        
+        
+        
+        
     </h:panelGroup>
 
 

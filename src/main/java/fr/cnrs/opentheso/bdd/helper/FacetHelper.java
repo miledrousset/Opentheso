@@ -44,7 +44,7 @@ public class FacetHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '" + lang
-                        + "' AND lexical_value like unaccent(lower('%" + name + "%'))" + " AND id_thesaurus = '" + idThesaurus + "' order by lexical_value");
+                        + "' AND unaccent(lower(lexical_value)) like unaccent(lower('%" + name + "%'))" + " AND id_thesaurus = '" + idThesaurus + "' order by lexical_value");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();

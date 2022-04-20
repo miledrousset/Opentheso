@@ -674,7 +674,7 @@ public class SearchHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term from term, preferred_term, concept where"
+                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status from term, preferred_term, concept where"
                         + " concept.id_concept = preferred_term.id_concept"
                         + " and concept.id_thesaurus = preferred_term.id_thesaurus"
                         + " and"
@@ -720,7 +720,10 @@ public class SearchHelper {
                         nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
-                        nodeSearchMini.setIsAltLabel(false);
+                        
+                        nodeSearchMini.setIsConcept(true);
+                        if(resultSet.getString("status").equalsIgnoreCase("DEP"))
+                            nodeSearchMini.setIsDeprecated(true);                        
 
                         if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
                             nodeSearchMinis.add(0, nodeSearchMini);
@@ -733,7 +736,7 @@ public class SearchHelper {
 
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select preferred_term.id_concept, term.id_term,"
-                        + " non_preferred_term.lexical_value as npt, term.lexical_value as pt"
+                        + " non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status"
                         + " from non_preferred_term, term, preferred_term, concept where"
                         + " concept.id_concept = preferred_term.id_concept"
                         + " and concept.id_thesaurus = preferred_term.id_thesaurus"
@@ -782,7 +785,11 @@ public class SearchHelper {
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setAltLabel(resultSet.getString("npt"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
+                        
                         nodeSearchMini.setIsAltLabel(true);
+                        if(resultSet.getString("status").equalsIgnoreCase("DEP"))
+                            nodeSearchMini.setIsDeprecated(true);
+                        
                         if (value.trim().equalsIgnoreCase(resultSet.getString("npt"))) {
                             nodeSearchMinis.add(0, nodeSearchMini);
                         } else {
@@ -795,7 +802,7 @@ public class SearchHelper {
             nodeSearchMinis = searchCollections(conn, idTheso, value, idLang, nodeSearchMinis);
             
             /// rechercher les Facettes
-            nodeSearchMinis = serachFacets(conn, idTheso, value, idLang, nodeSearchMinis);            
+            nodeSearchMinis = searchFacets(conn, idTheso, value, idLang, nodeSearchMinis);            
         } catch (SQLException sqle) {
             log.error("Error while search excat of value  : " + value, sqle);
         }
@@ -827,7 +834,7 @@ public class SearchHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term from term, preferred_term, concept where"
+                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status from term, preferred_term, concept where"
                         + " concept.id_concept = preferred_term.id_concept"
                         + " and concept.id_thesaurus = preferred_term.id_thesaurus"
                         + " and"
@@ -864,8 +871,10 @@ public class SearchHelper {
                         nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
-                        nodeSearchMini.setIsAltLabel(false);
-                        nodeSearchMini.setIsConcept(true);
+                        nodeSearchMini.setIsConcept(true);                        
+                        
+                        if(resultSet.getString("status").equalsIgnoreCase("DEP"))
+                            nodeSearchMini.setIsDeprecated(true);
 
                         if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
                             nodeSearchMinis.add(0, nodeSearchMini);
@@ -878,7 +887,7 @@ public class SearchHelper {
 
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select preferred_term.id_concept, term.id_term,"
-                        + " non_preferred_term.lexical_value as npt, term.lexical_value as pt"
+                        + " non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status"
                         + " from non_preferred_term, term, preferred_term, concept where"
                         + " concept.id_concept = preferred_term.id_concept"
                         + " and concept.id_thesaurus = preferred_term.id_thesaurus"
@@ -923,6 +932,9 @@ public class SearchHelper {
                         nodeSearchMini.setAltLabel(resultSet.getString("npt"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
                         nodeSearchMini.setIsAltLabel(true);
+                        if(resultSet.getString("status").equalsIgnoreCase("DEP"))
+                            nodeSearchMini.setIsDeprecated(true);                        
+                        
                         if (value.trim().equalsIgnoreCase(resultSet.getString("npt"))) {
                             nodeSearchMinis.add(0, nodeSearchMini);
                         } else {
@@ -935,7 +947,7 @@ public class SearchHelper {
             nodeSearchMinis = searchCollections(conn, idTheso, value, idLang, nodeSearchMinis);
             
             /// rechercher les Facettes
-            nodeSearchMinis = serachFacets(conn, idTheso, value, idLang, nodeSearchMinis);            
+            nodeSearchMinis = searchFacets(conn, idTheso, value, idLang, nodeSearchMinis);            
         } catch (SQLException sqle) {
             log.error("Error while search excat of value  : " + value, sqle);
         }
@@ -1644,10 +1656,10 @@ public class SearchHelper {
                         nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
-                        if(resultSet.getString("status").equalsIgnoreCase("DEP")) {
+                        nodeSearchMini.setIsConcept(true);                        
+                        if(resultSet.getString("status").equalsIgnoreCase("DEP")) 
                             nodeSearchMini.setIsDeprecated(true);
-                        } else
-                            nodeSearchMini.setIsConcept(true);
+
                         if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
                             nodeSearchMinis.add(0, nodeSearchMini);
                         } else {
@@ -1659,7 +1671,7 @@ public class SearchHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT preferred_term.id_concept, term.id_term, "
                         + " non_preferred_term.lexical_value as npt,"
-                        + " term.lexical_value as pt"
+                        + " term.lexical_value as pt, concept.status"
                         + " FROM"
                         + " non_preferred_term, term, preferred_term, concept"
                         + " WHERE"
@@ -1684,7 +1696,11 @@ public class SearchHelper {
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setAltLabel(resultSet.getString("npt"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
+                        
                         nodeSearchMini.setIsAltLabel(true);
+                        if(resultSet.getString("status").equalsIgnoreCase("DEP"))
+                            nodeSearchMini.setIsDeprecated(true);
+                        
                         if (value.trim().equalsIgnoreCase(resultSet.getString("npt"))) {
                             if (nodeSearchMinis.isEmpty()) {
                                 nodeSearchMinis.add(0, nodeSearchMini);
@@ -1705,7 +1721,7 @@ public class SearchHelper {
             nodeSearchMinis = searchCollections(conn, idThesaurus, value, idLang, nodeSearchMinis);
             
             /// rechercher les Facettes
-            nodeSearchMinis = serachFacets(conn, idThesaurus, value, idLang, nodeSearchMinis);
+            nodeSearchMinis = searchFacets(conn, idThesaurus, value, idLang, nodeSearchMinis);
 
         } catch (SQLException sqle) {
             log.error("Error searchFullTextElastic of theso : " + idThesaurus, sqle);
@@ -1753,7 +1769,7 @@ public class SearchHelper {
         return nodeSearchMinis;
     }
     
-    private ArrayList<NodeSearchMini> serachFacets(Connection conn,
+    private ArrayList<NodeSearchMini> searchFacets(Connection conn,
             String idTheso, String value, String idLang,
             ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException{
         /// rechercher les Facettes
