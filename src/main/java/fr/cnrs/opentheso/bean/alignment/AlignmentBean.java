@@ -358,6 +358,7 @@ public class AlignmentBean implements Serializable {
     }
 
     public void getIdsAndValues(String idLang, String idTheso) {
+        if(idsToGet == null) return;
         ConceptHelper conceptHelper = new ConceptHelper();
         idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(
                 connect.getPoolConnexion(),
