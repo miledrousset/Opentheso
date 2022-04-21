@@ -82,17 +82,15 @@ public class Rest_new {
      */
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
-/*
-    //Pour tester
-    @Path("/add")
-    @PUT
-    @Consumes("application/json;charset=UTF-8")
-    @Produces("application/json;charset=UTF-8")
-    public String testPut(String content) {
-        return content;
-    }
 
-     */
+
+    @Path("/ping")
+    @GET
+    @Produces("text/text;charset=UTF-8")
+    public String testWS(){
+        return "pong";
+    }
+     
     /**
      * pour produire du RDF-SKOS
      *
