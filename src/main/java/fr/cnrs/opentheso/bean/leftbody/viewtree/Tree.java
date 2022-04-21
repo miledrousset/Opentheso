@@ -453,7 +453,16 @@ public class Tree implements Serializable {
             //     }
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
-            rightBodySetting.setIndex("0");
+            if(rightBodySetting.getIndex().equalsIgnoreCase("3")){
+                indexSetting.setIsValueSelected(true);            
+
+                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                        conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                        conceptBean.getSelectedLang());
+
+                alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());           
+            } else
+                rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);

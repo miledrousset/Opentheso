@@ -377,6 +377,19 @@ begin
 end
 $$language plpgsql;
 
+
+-- fonction pour le tri naturel
+CREATE OR REPLACE FUNCTION naturalsort(
+	text)
+    RETURNS bytea
+    LANGUAGE 'sql'
+    COST 100
+    IMMUTABLE STRICT PARALLEL UNSAFE
+AS $BODY$
+    select string_agg(convert_to(coalesce(r[2], length(length(r[1])::text) || length(r[1])::text || r[1]), 'SQL_ASCII'),'\x00')
+    from regexp_matches($1, '0*([0-9]+)|([^0-9]+)', 'g') r;
+$BODY$;
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------

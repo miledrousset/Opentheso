@@ -118,19 +118,23 @@
 
                                             <!-- Type prefLabel -->
                                             <p:column rendered="#{values.isConcept}">
-                                                <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}"  style="font-size: 12px;"/>
+                                                <h:panelGroup rendered="#{values.isDeprecated}">
+                                                    <i class="fa fa-solid fa-ban fa_custom_ban"></i>
+                                                    <h:outputText title="#{values.idConcept}" value=" #{values.prefLabel}"  style="font-size: 12px;color: #C63632; font-weight: bold; font-style: italic"/>                                                    
+                                                </h:panelGroup>
+                                                <h:outputText rendered="#{!values.isDeprecated}" title="#{values.idConcept}" value="#{values.prefLabel}"  style="font-size: 12px;"/>
                                             </p:column>        
                                             
-                                            <!-- Type ceoncept déprécié -->
-                                            <p:column rendered="#{values.isDeprecated}">
-                                                <i class="fa fa-solid fa-ban fa_custom_ban"></i>
-                                                <h:outputText title="#{values.idConcept}" value=" #{values.prefLabel}"  style="font-size: 12px;color: #C63632; font-weight: bold; font-style: italic"/>
-                                            </p:column>    
+ 
                                             
                                             <!-- Type altLabel -->
                                             <p:column rendered="#{values.isAltLabel}">
-                                                <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"  style="font-style: italic;font-size: 12px;color: blue;" />
-                                                <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="font-size: 12px;" />                                        
+                                                <h:outputText title="#{values.idConcept}" value="#{values.altLabel} -> "  style="font-style: italic;font-size: 12px;color: blue;" />
+                                                <h:panelGroup rendered="#{values.isDeprecated}">
+                                                    <i class="fa fa-solid fa-ban fa_custom_ban"></i>
+                                                    <h:outputText title="#{values.idConcept}" value=" #{values.prefLabel}"  style="font-size: 12px;color: #C63632; font-weight: bold; font-style: italic"/>                                                    
+                                                </h:panelGroup>                                                
+                                                <h:outputText rendered="#{!values.isDeprecated}" title="#{values.idConcept}" value="#{values.prefLabel}" style="font-size: 12px;" />                                        
                                             </p:column>
 
                                             <!-- Type Collection -->

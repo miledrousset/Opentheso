@@ -12,11 +12,43 @@
 
     <dependencies>
 
+        <!-- for QrCode --> 
+        <!-- à nettoyer -->
         <dependency>
             <groupId>net.glxn</groupId>
             <artifactId>qrgen</artifactId>
             <version>1.4</version>
+            <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.1</version>
+        </dependency>        
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.barcode4j</groupId>
+            <artifactId>barcode4j-light</artifactId>
+            <version>2.1</version>
+        </dependency>        
+        <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>2.0.2</version>
+        </dependency>        
+      
+        <!-- fin QrCode--> 
+      
+      
+      
+      
+      
+      
+      
 
         <!-- ne marche pas au delà de cette version 2.25 pour java 8-->
         <!-- ne marche pas au delà de cette version 2.33 pour java 11-->        
@@ -320,7 +352,7 @@
         <all.themes.version>1.0.8</all.themes.version>
         <javax.json.version>1.1.4</javax.json.version>
         <postgresql.version>42.3.3</postgresql.version>
-        <font-awesome.version>5.15.1</font-awesome.version>
+        <font-awesome.version>6.1.0</font-awesome.version>
         <primefaces.version>11.0.0</primefaces.version>
         <javaee-web-api.version>8.0.1</javaee-web-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>
