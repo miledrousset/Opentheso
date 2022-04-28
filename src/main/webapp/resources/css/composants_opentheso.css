@@ -756,3 +756,84 @@ body .custom-indicator-galleria .ui-galleria-indicator.ui-state-highlight {
     background-color: var(--primary-color);
     color: var(--primary-color-text);
 }
+
+
+/** Checkbox select multiple **/
+
+body .ui-selectcheckboxmenu .ui-selectcheckboxmenu-label-container {
+    padding: 0rem;
+    padding-right: 2.357rem;
+    display: block;
+    background: transparent;
+    border-radius: 4px;
+}
+
+body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item {
+    padding: 0rem 1rem;
+    margin: 0;
+    outline: 0 none;
+    background: transparent;
+    color: #495057;
+    border-radius: 0;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items {
+    padding: 0rem 0;
+}
+
+body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-selectcheckboxmenu-filter-container .ui-inputfield {
+    padding: 0.1rem 0.1rem;
+    width: 100%;
+    padding-left: 2rem;
+}
+
+body .ui-selectcheckboxmenu .ui-selectcheckboxmenu-label-container {
+    padding: 0rem;
+    padding-right: 2.357rem;
+    display: block;
+    background: transparent;
+    border-radius: 4px;
+    padding-left: 0.5rem;
+    padding-top: 0.2rem;
+    padding-bottom: -3px;
+}
+
+body .ui-chkbox .ui-chkbox-box {
+    margin-top: 5px;
+}
+
+body .ui-selectcheckboxmenu {
+    height: 25px;
+}
+
+
+/** Paneau du resultat de recherche **/
+
+body .ui-sidebar.ui-sidebar-active {
+    width: 25%;
+}
+
+body .ui-scrollpanel {
+    border: 0px;
+    padding: 0px;
+    padding-right: 25px;
+    padding-bottom: 30px;
+}
+
+body .ui-scrolltop {
+    width: 2rem;
+    height: 2rem;
+}
+
+body .ui-scrolltop .ui-scrolltop-icon {
+    font-size: 1.0rem;
+}
+
+
+
+/** TAG **/
+body .ui-tag {
+    padding: 0.1rem 0.4rem;
+}
+

@@ -55,7 +55,9 @@ public class RoleOnThesoBean implements Serializable {
     // la liste des thésaurus autorisés pour l'utilisateur où il est admin pour avoir le droit de les exporter
     private ArrayList<NodeIdValue> nodeListThesoAsAdmin;    
     
-    private ArrayList<NodeIdValue> nodeListThesoAsAdminFiltered;       
+    private ArrayList<NodeIdValue> nodeListThesoAsAdminFiltered;
+    
+    private String[] selectedThesoForSearch;
 
     //thesaurus à gérer
     private Thesaurus thesoInfos;
@@ -218,7 +220,7 @@ public class RoleOnThesoBean implements Serializable {
             selectedTheso.setCurrentLang(null);
             selectedTheso.setSelectedLang(null);
             try {
-                selectedTheso.setSelectedTheso();
+                selectedTheso.setSelectedTheso(true);
             } catch (Exception e) {
             }
         }    
@@ -309,6 +311,12 @@ public class RoleOnThesoBean implements Serializable {
 
                 
         this.listTheso = authorizedThesoHM;
+        
+        selectedThesoForSearch = new String[listTheso.keySet().size()];
+        int index = 0;
+        for (String str : listTheso.keySet()) {
+            selectedThesoForSearch[index++] = listTheso.get(str);
+        }
     }
 
     /**
@@ -437,7 +445,7 @@ public class RoleOnThesoBean implements Serializable {
         if(!authorizedTheso.contains(selectedTheso.getCurrentIdTheso())) {
             selectedTheso.setSelectedIdTheso(null);
             selectedTheso.setSelectedLang(null);
-            selectedTheso.setSelectedTheso();
+            selectedTheso.setSelectedTheso(true);
         }
     }
     
@@ -645,4 +653,12 @@ public class RoleOnThesoBean implements Serializable {
         this.nodeListThesoAsAdminFiltered = nodeListThesoAsAdminFiltered;
     }
 
+    public String[] getSelectedThesoForSearch() {
+        return selectedThesoForSearch;
+    }
+
+    public void setSelectedThesoForSearch(String[] selectedThesoForSearch) {
+        this.selectedThesoForSearch = selectedThesoForSearch;
+    }
+    
 }

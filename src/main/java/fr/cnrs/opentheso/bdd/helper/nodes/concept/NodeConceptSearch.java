@@ -9,6 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 
 public class NodeConceptSearch {
+    private String thesoName;
     private String idConcept;
     private String prefLabel;
     private boolean isDeprecated;
@@ -115,5 +116,12 @@ public class NodeConceptSearch {
         this.isDeprecated = isDeprecated;
     }
 
+    public String getThesoName() {
+        return thesoName;
+    }
+
+    public void setThesoName(String thesoName) {
+        this.thesoName = thesoName;
+    }
     
 }

@@ -19,7 +19,6 @@ import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
@@ -30,7 +29,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import javax.faces.application.FacesMessage;
-import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 
 
@@ -161,7 +159,7 @@ public class SelectedTheso implements Serializable {
      * l'application
      */
 //    public void setSelectedTheso() throws IOException {
-    public void setSelectedTheso() throws IOException {
+    public void setSelectedTheso(boolean redirectPage) throws IOException {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
         connect.setLocalUri(localUri);
@@ -171,7 +169,9 @@ public class SelectedTheso implements Serializable {
         viewEditorHomeBean.reset();
         if (isUriRequest) {
             isUriRequest = false;
-            menuBean.redirectToThesaurus();
+            if (redirectPage) {
+                menuBean.redirectToThesaurus();
+            }
             return;
         }
 
@@ -185,8 +185,16 @@ public class SelectedTheso implements Serializable {
             conceptBean.init();
             init();
             indexSetting.setIsSelectedTheso(false);            
+            if (redirectPage) {
+                menuBean.redirectToThesaurus();
+            }
             
-            menuBean.redirectToThesaurus();
+            String[] thesos = new String[roleOnThesoBean.getListTheso().keySet().size()];
+            int index = 0;
+            for (String str : roleOnThesoBean.getListTheso().keySet())
+                thesos[index++] = roleOnThesoBean.getListTheso().get(str);
+            roleOnThesoBean.setSelectedThesoForSearch(thesos);
+            
             return;
         }
 
@@ -195,7 +203,9 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
-            menuBean.redirectToThesaurus();
+            if (redirectPage) {
+                menuBean.redirectToThesaurus();
+            }
             return;
         }
 
@@ -206,7 +216,17 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsHomeSelected(true);
         indexSetting.setIsThesoActive(true);
 
-        menuBean.redirectToThesaurus();
+        if (redirectPage) {
+            menuBean.redirectToThesaurus();
+        }
+        
+        roleOnThesoBean.setSelectedThesoForSearch(new String[] {selectedIdTheso});
+        /*
+        if (redirectPage) {
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
+            PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
+        }*/
     }
 
     public List<AlignementElement> getListAlignementElement() {

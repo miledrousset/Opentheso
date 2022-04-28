@@ -47,35 +47,55 @@
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <div id="wrapper" style="height: 100%">
+            
             <ui:include src="commun/menu.xhtml" />
 
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex">
-                    
+
+                    <p:sidebar widgetVar="resultatRecherche" modal="false" position="right">
+                        <h3>Résultat de la recherche</h3>
+                        <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml"/>
+                    </p:sidebar>
+
                     <ui:include src="commun/header.xhtml" />
 
-                    <div id="thesorusContent" style="margin-top: -20px; ">
+                    <p:panel id="searchBar">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 75px; width: 100%; margin: 25px;">
+                            <div style="position: relative; height: 100%; width: 100%;" >
+                                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
+                                    <ui:include src="thesaurus/search.xhtml"/>
+                                </div>
+                                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; font-size: 12px;">
+                                    <h1 class="h5 mb-0 text-gray-500">#{langueBean.getMsg('menu.thesaurus')}</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </p:panel>
+
+                    <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; margin-top: -40px;">
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>
                         <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/details_thesaurus.xhtml" />
                         </h:panelGroup>
-                    </div>
+                    </p:panel> 
                 </h:form>
+
+                <footer class="sticky-footer bg-white" style="width: 100%;">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <center>
+                                <h:outputText value="Copyright ©CNRS Opentheso V#{connect.getOpenthesoVersionFromWar()}" style="font-size: 12px;"/>
+                            </center>
+                        </div>
+                    </div>
+                </footer> 
             </div>
         </div>
-        
-        <footer class="sticky-footer bg-white" style="width: 100%;">
-            <div class="container my-auto">
-                <div class="copyright text-center my-auto">
-                    <center>
-                        <h:outputText value="Copyright ©CNRS Opentheso V#{connect.getOpenthesoVersionFromWar()}" style="font-size: 12px;"/>
-                    </center>
-                </div>
-            </div>
-        </footer>        
+
         <!-- Scroll to Top Button-->
         <a class="scroll-to-top rounded" href="#page-top">
             <i class="pi pi-angle-up" />
@@ -84,13 +104,13 @@
         <script src="resources/js/bootstrap.bundle.min.js"></script>
         <script src="resources/js/jquery.easing.min.js"></script>
         <script src="resources/js/sb-admin-2.js"></script>
-        
+
         <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
         <p:dialog widgetVar="waitDialog" modal="false" draggable="false" width="80"  closable="false" resizable="false" showHeader="false" position="top" 
                   style="margin-top: 250px; border: none;">
             <p:graphicImage value="resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
         </p:dialog>  
-        
-        <ui:include src="dialog/login/login.xhtml" />           
+
+        <ui:include src="dialog/login/login.xhtml" />    
     </h:body>
 </html>

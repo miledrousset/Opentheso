@@ -3,33 +3,36 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGroup rendered="#{searchBean.nodeConceptSearchs != null}">
-
-        <h:panelGroup rendered="#{!searchBean.isSelectedItem}">
-            <div class="row">
-                <div class="col-12" style="background-color: #ecf8f1; height: 25px">
-                    <h:outputText value="#{searchBean.nodeConceptSearchs.size()}" style="color: #8C8C8C; font-style: italic; font-weight: bold;"/>
-                    <h:outputText value=" résultat(s) pour '#{searchBean.searchValue}'" style="color: #8C8C8C; font-style: italic;"/>
-                </div>
+    <h:panelGroup rendered="#{!searchBean.isSelectedItem}">
+        <div class="row">
+            <div class="col-12" style="background-color: #ecf8f1; height: 25px">
+                <h:outputText value="#{searchBean.nodeConceptSearchs.size()}" style="color: #8C8C8C; font-style: italic; font-weight: bold;"/>
+                <h:outputText value=" résultat(s) pour '#{searchBean.searchValue}'" style="color: #8C8C8C; font-style: italic;"/>
             </div>
-        </h:panelGroup>
+        </div>
+    </h:panelGroup>
 
+    <p:scrollTop />
+
+    <p:scrollPanel style="width: 100%; height: 100%; overflow: overlay;" mode="native">
         <ui:repeat var="result" value="#{searchBean.nodeConceptSearchs}" >
             <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin-top: 15px">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
+
                     <div class="row">
                         <div class="col-12">
+                            <p:tag styleClass="p-mr-2" severity="success" value="#{result.thesoName}" rounded="true" />
                             <h:panelGroup rendered="#{result.isDeprecated}">
-                                 <i class="fa fa-solid fa-ban" style="font-size: 12px; color: #C63632"></i>
+                                <i class="fa fa-solid fa-ban" style="font-size: 12px; color: #C63632"></i>
                                 <p:commandLink rendered="#{result.isDeprecated}" value=" #{result.prefLabel}" 
-                                               style="color: #C63632; font-weight: bold; font-style: italic"
-                                               actionListener="#{searchBean.onSelectConcept(result.idConcept)}"
+                                               style="color: #C63632; font-weight: bold; font-style: italic" ajax="true"
+                                               actionListener="#{searchBean.onSelectConcept(result.idConcept, result.thesoName, true)}"
                                                update="containerIndex:formRightTab" />                                 
                             </h:panelGroup>
                             <h:panelGroup rendered="#{!result.isDeprecated}">                            
                                 <p:commandLink rendered="#{!result.isDeprecated}" value="#{result.prefLabel}" 
-                                               style="color: #43B572; font-size: 12px; font-weight: bold;"
-                                               actionListener="#{searchBean.onSelectConcept(result.idConcept)}"
+                                               style="color: #43B572; font-size: 12px; font-weight: bold;" ajax="true"
+                                               actionListener="#{searchBean.onSelectConcept(result.idConcept, result.thesoName, true)}"
                                                update="containerIndex:formRightTab" />    
                             </h:panelGroup>
                         </div>
@@ -97,5 +100,8 @@
                 </div>
             </div>
         </ui:repeat>
-    </h:panelGroup>
+        
+        <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="pi pi-arrow-up" />
+    </p:scrollPanel>
+
 </ui:fragment>

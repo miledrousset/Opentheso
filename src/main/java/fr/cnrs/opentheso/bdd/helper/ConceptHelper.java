@@ -715,6 +715,8 @@ public class ConceptHelper {
             nodeConceptSerach.setNodeEM(termHelper.getNonPreferredTerms(ds, idTerm, idThesaurus, idLang));
         }
         nodeConceptSerach.setNodeConceptGroup(groupHelper.getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));
+        
+        nodeConceptSerach.setThesoName(idThesaurus);
 
         return nodeConceptSerach;
     }

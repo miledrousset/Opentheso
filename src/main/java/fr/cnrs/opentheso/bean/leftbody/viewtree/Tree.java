@@ -440,17 +440,10 @@ public class Tree implements Serializable {
         if (!"facet".equals(parent.getType())) {
             indexSetting.setIsFacetSelected(false);
             idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
-
-            /*    if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
-                rightBodySetting.setShowConceptToOn();
-                conceptBean.getConceptForTree(idTheso,
-                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-            }
-            if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {*/
+            
             rightBodySetting.setShowConceptToOn();
             conceptBean.getConceptForTree(idTheso,
                     ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-            //     }
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             rightBodySetting.setIndex("0");
@@ -458,15 +451,7 @@ public class Tree implements Serializable {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
         }
-
-        /*
-        Il ne faut pas charger le tableau d'alignement ici, mais plutôt au moment où l'utilisateur clique sur l'onglet alignement (voir après avoir sélectionné la source d'alignement)
         
-        Désactivé pat MR, ca prend trop de temps quand on a 40.000 concepts dans la branche
-         */
-        ////alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
-        ////alignmentBean.nextTenRecresive(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-        /////// 
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("indexTitle");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");

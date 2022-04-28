@@ -5,7 +5,6 @@
  */
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import com.jsf2leaf.model.Polyline;
 import com.jsf2leaf.model.LatLong;
 import com.jsf2leaf.model.Layer;
 import com.jsf2leaf.model.Map;
@@ -30,6 +29,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.ws.RestRDFHelper;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -63,6 +63,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
 
@@ -88,6 +89,8 @@ public class ConceptView implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
     private SelectedTheso selectedTheso;
+    @Inject
+    private SearchBean searchBean;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -286,12 +289,10 @@ public class ConceptView implements Serializable {
                 selectedTheso.actionFromConceptToOn();
             }
         }
+        
+        searchBean.setSearchResultVisible(true);
 
-       if (pf.isAjaxRequest()) {
-            pf.ajax().update("indexTitle");
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-            pf.ajax().update("containerIndex:formLeftTab");
+        if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex:formRightTab");
         }
 
@@ -667,13 +668,34 @@ public class ConceptView implements Serializable {
 /////////////////////////////////
 /////////////////////////////////
     private void setNotes() {
-        notes.clear();
-        scopeNotes.clear();
-        changeNotes.clear();
-        definitions.clear();
-        editorialNotes.clear();
-        examples.clear();
-        historyNotes.clear();
+        /*
+        if (!CollectionUtils.isEmpty(notes)) {
+            notes.clear();
+        }
+        
+        if (!CollectionUtils.isEmpty(scopeNotes)) {
+            scopeNotes.clear();
+        }
+        
+        if (!CollectionUtils.isEmpty(changeNotes)) {
+            changeNotes.clear();
+        }
+        
+        if (!CollectionUtils.isEmpty(definitions)) {
+            definitions.clear();
+        }
+        
+        if (!CollectionUtils.isEmpty(editorialNotes)) {
+            editorialNotes.clear();
+        }
+        
+        if (!CollectionUtils.isEmpty(examples)) {
+            examples.clear();
+        }
+        
+        if (!CollectionUtils.isEmpty(historyNotes)) {
+            historyNotes.clear();
+        }*/
 
         for (NodeNote nodeNote : nodeConcept.getNodeNotesConcept()) {
             switch (nodeNote.getNotetypecode()) {
@@ -691,6 +713,9 @@ public class ConceptView implements Serializable {
                     changeNotes.add(nodeNote);
                     break;
                 case "definition":
+                    if (CollectionUtils.isEmpty(definitions)) {
+                        definitions = new ArrayList<>();
+                    }
                     definitions.add(nodeNote);
                     break;
                 case "editorialNote":

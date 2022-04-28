@@ -13,8 +13,8 @@
         </button>
 
         <!-- liste des thésaurus -->
-        <p:selectOneMenu value="#{selectedTheso.selectedIdTheso}" style="color: #000; height: 28px;" filter="true" filterMatchMode="contains">
-            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
+        <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" style="color: #000; height: 28px;" filter="true" filterMatchMode="contains">
+            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso(true)}" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
         </p:selectOneMenu>
@@ -33,7 +33,7 @@
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
 
-            <li class="nav-item dropdown no-arrow mx-1">
+            <li class="nav-item dropdown no-arrow mx-1" style=" margin-top: -6px">
                     <a class="nav-link dropdown-toggle" href="#" role="button" style="margin-top: 10px; font-size: 12px;"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-bell fa-refresh"></i>
@@ -41,7 +41,7 @@
             </li>
 
                 <!-- Nav Item - Alerts -->
-                <li class="nav-item dropdown no-arrow mx-1">
+                <li class="nav-item dropdown no-arrow mx-1" style=" margin-top: -6px">
                     <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 10px; font-size: 12px;">
                         <img src="#{request.contextPath}/resources/img/#{langueBean.idLangue}.png" width="20px" />
@@ -77,7 +77,7 @@
 
             <!-- Nav Item - User Information -->
             <p:panel rendered="#{currentUser.nodeUser == null}" style="padding: 0; border: none; background: none;">
-                <li class="nav-item dropdown no-arrow">
+                <li class="nav-item dropdown no-arrow" style="margin-top: -5px">
                     <p:commandLink class="nav-link dropdown-toggle" update="idLogin" oncomplete="PF('login').show();" >
                         <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px; margin-top: 20px;">#{langueBean.getMsg('menu.login')}</span>
                         <img class="img-profile rounded-circle" src="#{request.contextPath}/resources/img/logout.png" style="margin-top: 10px; font-size: 12px;" />
@@ -85,12 +85,12 @@
                 </li>
             </p:panel>
 
-            <p:panel rendered="#{currentUser.nodeUser != null}" style="padding: 0; border: none; background: none; font-size: 12px;">
+            <p:panel rendered="#{currentUser.nodeUser != null}" style="padding: 0; border: none; background: none; font-size: 12px; margin-top: -5px">
                 <li class="nav-item dropdown no-arrow">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px; margin-top: 20px;">
-                                <h:outputText value="#{currentUser.nodeUser.name}" style="font-size: 12px; " />
+                                <h:outputText value="#{currentUser.nodeUser.name}" style="font-size: 12px;" />
                             </span>
                         <img class="img-profile rounded-circle" src="#{request.contextPath}/resources/img/undraw_profile.svg" style="margin-top: 10px;font-size: 12px;" />
                     </a>

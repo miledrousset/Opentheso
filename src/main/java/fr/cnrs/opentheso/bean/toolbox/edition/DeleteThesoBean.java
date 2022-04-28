@@ -119,7 +119,7 @@ public class DeleteThesoBean implements Serializable {
         if(idThesoToDelete.equalsIgnoreCase(currentIdTheso)) {
             selectedTheso.setSelectedIdTheso(null);
             selectedTheso.setSelectedLang(null);
-            selectedTheso.setSelectedTheso();
+            selectedTheso.setSelectedTheso(true);
         }
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Thesaurus supprimé avec succès");
