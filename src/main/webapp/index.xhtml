@@ -52,7 +52,7 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex">
-                    
+
                     <ui:include src="commun/header.xhtml" />
 
                     <div id="thesorusContent" style="margin-top: -20px; ">
@@ -66,7 +66,7 @@
                 </h:form>
             </div>
         </div>
-        
+
         <footer class="sticky-footer bg-white" style="width: 100%;">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
@@ -84,13 +84,13 @@
         <script src="resources/js/bootstrap.bundle.min.js"></script>
         <script src="resources/js/jquery.easing.min.js"></script>
         <script src="resources/js/sb-admin-2.js"></script>
-        
+
         <p:ajaxStatus onstart="PF('waitDialog').show()" onsuccess="PF('waitDialog').hide()"/>
         <p:dialog widgetVar="waitDialog" modal="false" draggable="false" width="80"  closable="false" resizable="false" showHeader="false" position="top" 
                   style="margin-top: 250px; border: none;">
             <p:graphicImage value="resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
         </p:dialog>  
-        
+
         <ui:include src="dialog/login/login.xhtml" />           
     </h:body>
 </html>
