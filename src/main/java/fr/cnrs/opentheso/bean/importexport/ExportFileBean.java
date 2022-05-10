@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -189,18 +190,32 @@ public class ExportFileBean implements Serializable {
         }
     }
 
-    private List<NodeTree> parcourirArbre(String parentId) {
+    private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
 
+
+        /** Methode 1**/
         ConceptHelper conceptHelper = new ConceptHelper();
-
         List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(
-                connect.getPoolConnexion(), parentId, selectedTheso.getCurrentLang(),
-                selectedTheso.getSelectedIdTheso());
+                connect.getPoolConnexion(), parentId, langId, thesoId);
 
         for (NodeTree concept : concepts) {
             concept.setIdParent(parentId);
-            concept.setChildrens(parcourirArbre(concept.getIdConcept()));
+            concept.setPreferredTerm(StringUtils.isEmpty(concept.getPreferredTerm()) ? "(" + concept.getIdConcept()+ ")" : concept.getPreferredTerm());
+            concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
+            concept.getChildrens().addAll(new Tree().searchFacettesForTree(connect.getPoolConnexion(), 
+                parentId, thesoId, langId));
         }
+        /*** Fin Methode 1***/
+        
+        /** Methode 2**/
+        /*
+        List<NodeTree> concepts = new Tree().searchAllConceptChilds(connect.getPoolConnexion(), 
+                parentId, thesoId, langId);
+        for (NodeTree concept : concepts) {
+            concept.setIdParent(parentId);
+            concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
+        }*/
+        /*** Fin methode 2 ***/
 
         return concepts;
     }
@@ -240,10 +255,14 @@ public class ExportFileBean implements Serializable {
         if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
             ConceptHelper conceptHelper = new ConceptHelper();
             List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
-                    selectedTheso.getCurrentIdTheso());
+                    viewExportBean.getNodeIdValueOfTheso().getId());
 
             for (NodeTree topConcept : topConcepts) {
-                topConcept.setChildrens(parcourirArbre(topConcept.getIdConcept()));
+                topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm()) ? 
+                        "(" + topConcept.getIdConcept()+ ")" : topConcept.getPreferredTerm());
+                topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(),
+                        topConcept.getIdConcept()));
             }
 
             String[][] tab = new String[150][15];
@@ -258,7 +277,7 @@ public class ExportFileBean implements Serializable {
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent.builder().contentType("text/csv")
-                        .name(selectedTheso.getThesoName() + ".csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
