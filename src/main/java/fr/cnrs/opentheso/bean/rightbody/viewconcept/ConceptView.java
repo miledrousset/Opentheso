@@ -13,10 +13,12 @@ import com.jsf2leaf.model.Marker;
 import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
+import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
@@ -94,6 +96,7 @@ public class ConceptView implements Serializable {
     private String selectedLang;
     private ArrayList<NodeCorpus> nodeCorpuses;
     private ArrayList<NodePath> pathLabel;
+    private ArrayList<NodeIdValue> nodeFacets;
 
     /// pagination
     private int offset;
@@ -170,6 +173,11 @@ public class ConceptView implements Serializable {
             nodeConcept.clear();
             nodeConcept = null;
         }
+        if (nodeFacets != null) {
+            nodeFacets.clear();
+            nodeFacets = null;
+        }        
+        
         selectedLang = null;
         mapModel = null;
     }
@@ -210,6 +218,9 @@ public class ConceptView implements Serializable {
         if (historyNotes == null) {
             historyNotes = new ArrayList<>();
         }
+        if (nodeFacets == null) {
+            nodeFacets = new ArrayList<>();
+        }        
 
         offset = 0;
         step = 20;
@@ -266,6 +277,7 @@ public class ConceptView implements Serializable {
         if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
+        setFacetsOfConcept(idConcept, idTheso, idLang);        
 
         PrimeFaces pf = PrimeFaces.current();
 
@@ -327,11 +339,28 @@ public class ConceptView implements Serializable {
             initMap();
         }
 
+        setFacetsOfConcept(idConcept, idTheso, idLang);
+
         selectedLang = idLang;
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
         countOfBranch = 0;
+    }
+    
+    private void setFacetsOfConcept(String idConcept, String idTheso, String idLang){
+        FacetHelper facetHelper = new FacetHelper();
+        List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(connect.getPoolConnexion(), idConcept, idTheso);
+        if(nodeFacets == null)
+            nodeFacets = new ArrayList<>();
+        else
+            nodeFacets.clear();
+        for (String facetId : facetIds) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setId(facetId);
+            nodeIdValue.setValue(facetHelper.getLabelOfFacet(connect.getPoolConnexion(), facetId, idTheso, idLang));
+            nodeFacets.add(nodeIdValue);
+        }
     }
 
     public void countTheTotalOfBranch() {
@@ -822,6 +851,14 @@ public class ConceptView implements Serializable {
 
     public List<ResponsiveOption> getResponsiveOptions() {
         return responsiveOptions;
+    }
+
+    public ArrayList<NodeIdValue> getNodeFacets() {
+        return nodeFacets;
+    }
+
+    public void setNodeFacets(ArrayList<NodeIdValue> nodeFacets) {
+        this.nodeFacets = nodeFacets;
     }
 
 }

@@ -20,6 +20,8 @@ public class NodePreference {
     private String passArk;
     private boolean generateHandle;
     
+    // pour acitver l'onglet ConceptTree(le dernnier)
+    private boolean useConceptTree;
     
     // paramètres Handle
     private boolean useHandle;
@@ -422,6 +424,14 @@ public class NodePreference {
 
     public void setBreadcrumb(boolean breadcrumb) {
         this.breadcrumb = breadcrumb;
+    }
+
+    public boolean isUseConceptTree() {
+        return useConceptTree;
+    }
+
+    public void setUseConceptTree(boolean useConceptTree) {
+        this.useConceptTree = useConceptTree;
     }
 
 

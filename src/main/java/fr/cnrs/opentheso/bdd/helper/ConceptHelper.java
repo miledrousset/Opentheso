@@ -469,6 +469,56 @@ public class ConceptHelper {
     }
 
     /**
+     * Cettte fonction permet de retourner la liste des types de concepts
+     * @param ds
+     * @return 
+     */
+    public ArrayList<String> getAllTypeConcept(HikariDataSource ds) {
+
+        ArrayList<String> allTypeConcept = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT concept_type.code FROM concept_type");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        allTypeConcept.add(resultSet.getString("code"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting all types : ", sqle);
+        }
+        return allTypeConcept;
+    }    
+    
+    
+    /**
+     * Cette fonction permet de mettre à jour le type de concept
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @param type
+     * @return 
+     */
+    public boolean updateTypeOfConcept(HikariDataSource ds, String idConcept, String idTheso, String type) {
+        boolean status = false;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("update concept set concept_type = '" + type + "'"
+                        + " WHERE idthesaurus='" + idTheso + "'"
+                        + " AND idconcept='" + idConcept + "'");
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while testing if haveChildren of Concept : " + idConcept, sqle);
+        }
+        return status;
+    }      
+    
+    
+    /**
      * Cette fonction permet de déplacer une Branche
      */
     public boolean moveBranchFromConceptToConcept(HikariDataSource ds, String idConcept, ArrayList<String> idOldBTsToDelete,
@@ -3132,6 +3182,7 @@ public class ConceptHelper {
                         concept.setCreator(resultSet.getInt("creator"));
                         concept.setContributor(resultSet.getInt("contributor"));                        
                         concept.setIdGroup("");//resultSet.getString("idgroup"));
+                        concept.setConceptType(resultSet.getString("concept_type"));
                     }
                 }
                 UserHelper userHelper = new UserHelper();
@@ -4995,6 +5046,7 @@ public class ConceptHelper {
         }
         return status;
     }
+
 
     public boolean haveThisGroup(HikariDataSource ds, String idConcept, String idDomaine, String idTheso) {
         boolean group = false;

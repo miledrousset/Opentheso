@@ -318,7 +318,8 @@ public class Tree implements Serializable {
 
     private boolean addConceptsChildWithFacets(TreeNode parent) {
         ConceptHelper conceptHelper = new ConceptHelper();
-
+        addFacettes(parent);
+        
         ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConceptsIgnoreConceptsInFacets(
                 connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
@@ -357,7 +358,7 @@ public class Tree implements Serializable {
             }
         }
 
-        addFacettes(parent);
+
 
         return true;
     }

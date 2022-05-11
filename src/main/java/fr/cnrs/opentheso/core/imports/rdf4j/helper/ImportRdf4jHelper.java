@@ -413,6 +413,12 @@ public class ImportRdf4jHelper {
     }
 
     public void addConcept(SKOSResource conceptResource, String idTheso, boolean isCandidatImport) {
+        if(isCandidatImport) {
+            if(new ConceptHelper().isIdExiste(ds, conceptResource.getIdentifier())) {
+                return;
+            }
+        }
+        
         AddConceptsStruct acs = new AddConceptsStruct();
         acs.conceptHelper = new ConceptHelper();
         initAddConceptsStruct(acs, conceptResource, idTheso, isCandidatImport);

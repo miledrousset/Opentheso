@@ -31,10 +31,17 @@
     </div>
     <div class="row" id="vote">
         <div class="col-8">
-            <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate()}"
-                         value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" >
-            </p:inputText>
-            <p:tooltip for="inputTextCandidate" value="Ne peut être modifié que par le créateur" showDelay="1000" position="top"/>
+            <h:panelGroup id="candidateLabel" rendered="#{!candidatBean.isNewCandidatActivate()}">
+                <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate() }"
+                             value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" >
+                </p:inputText>
+                <p:tooltip for="inputTextCandidate" value="Ne peut être modifié que par le créateur" showDelay="1000" position="top"/>
+            </h:panelGroup>
+            <h:panelGroup id="candidateLabel2" rendered="#{candidatBean.isNewCandidatActivate()}">
+                <p:inputText
+                             value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" >
+                </p:inputText>
+            </h:panelGroup>              
         </div>
         <h:panelGroup id="votePanel" rendered="#{!candidatBean.isNewCandidatActivate()}">
             <div class="col-1" style="margin-top: 8px">

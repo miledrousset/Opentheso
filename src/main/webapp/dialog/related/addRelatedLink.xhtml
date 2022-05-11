@@ -6,59 +6,59 @@
 
     <p:dialog id="idAddRelatedLink" header="#{langueBean.getMsg('rightbody.conceptdialog.add_association_relationship')}" widgetVar="addRelatedLink" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        <h:form rendered="#{conceptView.nodeConcept != null}" id="addRelatedLinkForm" >
+            <div class="row">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
+                </div>
+                <div class="col-7">
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+                </div>
+            </div>  
 
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="Concept associé : " class="dialog-titre" /> 
+                </div>
+                <div class="col-7">
+                    <p:autoComplete value="#{relatedBean.searchSelected}"
+                                    var="values"
+                                    forceSelection="true"
+                                    completeMethod="#{relatedBean.getAutoComplet}"                                  
+                                    minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
+                                    scrollHeight="600" inputStyle="font-size: 12px;min-width: 180px; height: 28px;box-shadow: none;border-color: #43B572; color: #000; width: 100%"
+                                    style="font-size: 12px; color: #000; width: 100%">
+                        <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
+                            <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
+                                          style="font-style: italic;" />
+                            <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
+                        </p:column>
+
+                        <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
+                            <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
+                        </p:column>
+
+                    </p:autoComplete>  
+                </div>
             </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+
+            <div class="row" style="margin-top: 5px">
+                <div class="col-12" style="margin-top: 3px">
+                    <p:selectBooleanCheckbox value="#{relatedBean.tagPrefLabel}"  itemLabel="taguer le prefLabel" 
+                                             title="Permet d'ajouter le label du terme associé au prefLabel en ajoutant des parenthèses !! exp: si on associe roche à pierre, le prefLabel devient = roche (pierre)"/> 
+                </div>
             </div>
-        </div>  
-
-        <div class="row" style="margin-top: 5px">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Concept associé : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <p:autoComplete value="#{relatedBean.searchSelected}"
-                                var="values"
-                                forceSelection="true"
-                                completeMethod="#{relatedBean.getAutoComplet}"                                  
-                                minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
-                                scrollHeight="600" inputStyle="font-size: 12px;min-width: 180px; height: 28px;box-shadow: none;border-color: #43B572; color: #000; width: 100%"
-                                style="font-size: 12px; color: #000; width: 100%">
-                    <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
-                        <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
-                                      style="font-style: italic;" />
-                        <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
-                    </p:column>
-
-                    <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
-                        <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
-                    </p:column>
-
-                </p:autoComplete>  
-            </div>
-        </div>
-
-        <div class="row" style="margin-top: 5px">
-            <div class="col-12" style="margin-top: 3px">
-                <p:selectBooleanCheckbox value="#{relatedBean.tagPrefLabel}"  itemLabel="taguer le prefLabel" 
-                                         title="Permet d'ajouter le label du terme associé au prefLabel en ajoutant des parenthèses !! exp: si on associe roche à pierre, le prefLabel devient = roche (pierre)"/> 
-            </div>
-        </div>
-
-        <f:facet name="footer">
+            <p:spacer height="20px;" />
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addRelatedLink').hide();" update="idAddRelatedLink"/>
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('addRelatedLink').hide();" update="containerIndex:idAddRelatedLink"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab containerIndex:formLeftTab messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addRelatedLink').hide();"
-                                 actionListener="#{relatedBean.addNewRelatedLink(currentUser.nodeUser.idUser)}" style="color: white;"/>
-            </div>
-        </f:facet>
+                <p:commandButton id="validateAddTraduction"
+                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                                 ajax="true" process="@form"
+                                 actionListener="#{relatedBean.addNewRelatedLink(currentUser.nodeUser.idUser)}" />
+            </div>            
+        </h:form>            
     </p:dialog>   
 </ui:fragment>

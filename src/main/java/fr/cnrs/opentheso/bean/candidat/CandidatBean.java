@@ -202,6 +202,24 @@ public class CandidatBean implements Serializable {
     }
 
     /**
+     * permet de supprimer les candidats sélectionnés
+     * @param idUser 
+     */
+    public void deleteSelectedCandidate(int idUser){
+        if(selectedCandidates == null) return;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        for (CandidatDto selectedCandidate : selectedCandidates) {
+            if(!conceptHelper.deleteConcept(connect.getPoolConnexion(), selectedCandidate.getIdConcepte(), 
+                    selectedCandidate.getIdThesaurus(), idUser)){
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression");
+                return;
+            }
+        }
+        getAllCandidatsByThesoAndLangue();
+        showMessage(FacesMessage.SEVERITY_INFO, "Candidats supprimés");
+    }
+    
+    /**
      * permet de savoir si l'identifiant actuel est propriétaire du candidat 
      * @return 
      */

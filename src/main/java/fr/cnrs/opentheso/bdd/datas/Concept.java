@@ -20,6 +20,9 @@ public class Concept {
     private String lang;
     private boolean isDeprecated;
     
+    // type de concept (concept, place, people, period ...)
+    private String conceptType;
+    
     private int creator;
     private int contributor;
     private String creatorName;
@@ -192,6 +195,14 @@ public class Concept {
 
     public void setContributorName(String contributorName) {
         this.contributorName = contributorName;
+    }
+
+    public String getConceptType() {
+        return conceptType;
+    }
+
+    public void setConceptType(String conceptType) {
+        this.conceptType = conceptType;
     }
     
     

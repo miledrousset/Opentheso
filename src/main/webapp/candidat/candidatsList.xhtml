@@ -37,11 +37,11 @@
 
                         <p:menuitem value="#{langueBean.getMsg('candidat.export_in_SKOS')}"                              
                                     disabled="#{candidatBean.candidatList.size() == 0}"
-                                    icon="fas fa-download" update="tabViewCandidat messageIndex" process="@this"
+                                    icon="fas fa-upload" update="tabViewCandidat messageIndex" process="@this"
                                     actionListener="#{candidatBean.setExportViewActivate(true)}" />
 
                         <p:menuitem value="#{langueBean.getMsg('candidat.import_in_SKOS_format')}"
-                                    icon="fas fa-upload" update="tabViewCandidat messageIndex" process="@this"
+                                    icon="fas fa-download" update="tabViewCandidat messageIndex" process="@this"
                                     action="#{candidatBean.setImportViewActivate(true)}" />
                     </p:menuButton>
                 </p:toolbarGroup>
@@ -117,10 +117,19 @@
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) 
                                       and (candidatBean.isListSelected())}">
                 <div class="row" >
-                    <div class="col-12" style="text-align: right; margin-top: 20px">
-                        <p:commandButton title="#{langueBean.getMsg('candidat.submitList')}" ajax="true" process="@this"
-                                         update="idProcessCandidateList processCandidateListForm" class="btn btn-primary"
-                                         oncomplete="PF('processCandidateList').show();" /> 
+                    <div class="col-2 offset-1" style="text-align: right; margin-top: 20px;">
+                        <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" ajax="true" process="@this"
+                                         styleClass="ui-button-danger"
+                                         style="font-size: 12px; width: 100%"
+                                         update="idDeleteCandidate"
+                                         oncomplete="PF('deleteCandidate').show();" 
+                                         /> 
+                    </div> 
+                    
+                    <div class="col-2 offset-6" style="text-align: right; margin-top: 20px;">
+                        <p:commandButton value="#{langueBean.getMsg('candidat.submitList')}" ajax="true" process="@this"
+                                         update="idProcessCandidateList processCandidateListForm" styleClass="ui-button-primary"
+                                         oncomplete="PF('processCandidateList').show();" style="font-size: 12px; width: 100%"/> 
                     </div>
                 </div>
             </h:panelGroup>  
