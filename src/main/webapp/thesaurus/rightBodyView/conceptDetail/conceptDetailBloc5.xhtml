@@ -221,10 +221,10 @@
                         </h:panelGroup>                        
 
                     </div>
+                    
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: left; margin-left: -5px;">
                         <!-- QrCode-->                
                         <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idArk != ''}" style="width: 100%;">
-                            
                             <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" 
                                        type="qr" height="75px;"/>
                         </h:panelGroup> 

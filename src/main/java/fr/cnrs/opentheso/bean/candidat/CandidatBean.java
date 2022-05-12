@@ -243,7 +243,7 @@ public class CandidatBean implements Serializable {
     public void selectMyCandidats() {
         if (myCandidatsSelected1) {
             candidatList = candidatList.stream()
-                    .filter(candidat -> candidat.getUserId() == currentUser.getNodeUser().getIdUser())
+                    .filter(candidat -> candidat.getCreatedById() == currentUser.getNodeUser().getIdUser())
                     .collect(Collectors.toList());
         } else {
             getAllCandidatsByThesoAndLangue();
