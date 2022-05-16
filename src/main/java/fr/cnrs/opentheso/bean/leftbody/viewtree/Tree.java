@@ -318,6 +318,7 @@ public class Tree implements Serializable {
 
     private boolean addConceptsChildWithFacets(TreeNode parent) {
         ConceptHelper conceptHelper = new ConceptHelper();
+        addFacettes(parent);
 
         ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConceptsIgnoreConceptsInFacets(
                 connect.getPoolConnexion(),
@@ -357,7 +358,6 @@ public class Tree implements Serializable {
             }
         }
 
-        addFacettes(parent);
 
         return true;
     }
@@ -453,6 +453,15 @@ public class Tree implements Serializable {
             //     }
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
+            if(rightBodySetting.getIndex().equalsIgnoreCase("3")){
+                indexSetting.setIsValueSelected(true);            
+
+                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                        conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                        conceptBean.getSelectedLang());
+                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+                //alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());           
+            } else
             rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
@@ -481,7 +490,8 @@ public class Tree implements Serializable {
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     conceptBean.getSelectedLang());
             
-            alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+            alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+         //   alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
         }
         if (event.getTab().getId().equals("viewTabSearch")) {
             rightBodySetting.setIndex("2");
