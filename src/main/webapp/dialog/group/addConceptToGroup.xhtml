@@ -9,7 +9,7 @@
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
             </div>
             <div class="col-7">
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" 
@@ -19,7 +19,7 @@
 
         <div class="row" style="margin-top: 5px">
             <div class="col-5">
-                <h:outputText value="Groupe : " class="dialog-titre"/> 
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.group')} : " class="dialog-titre"/> 
             </div>
             <div class="col-7">
                 <p:autoComplete id="addConceptToCollection"
@@ -45,12 +45,12 @@
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addConceptToGroup').hide();" update="idAddConceptToGroup"/>
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 oncomplete="PF('addConceptToGroup').hide();" update="idAddConceptToGroup"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addConceptToGroup').hide();"
-                                 actionListener="#{addConceptToGroupBean.addConceptToGroup(currentUser.nodeUser.idUser)}" style="color: white;"/>
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
+                                 styleClass="ui-button-primary" oncomplete="PF('addConceptToGroup').hide();"
+                                 actionListener="#{addConceptToGroupBean.addConceptToGroup(currentUser.nodeUser.idUser)}" />
             </div>
         </f:facet>
     </p:dialog> 

@@ -9,12 +9,12 @@
         
         <div class="row">
             <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="Terme : " class="dialog-titre" /> 
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
             </div>
         </div> 
 
-        <div class="row" style="margin-top: 5 px">
+        <div class="row" style="margin-top: 5px">
             <div class="col-6">
                 <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.has_relationship')}" 
                               style="font-size: 12px; font-weight: bold; color: #F49F66;"/> 

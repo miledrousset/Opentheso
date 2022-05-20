@@ -3389,12 +3389,18 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT DISTINCT concept.id_concept"
-                        + " FROM concept, concept_group_concept WHERE"
-                        + " concept.id_concept = concept_group_concept.idconcept AND"
-                        + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                        + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                        + " concept_group_concept.idgroup = '" + idGroup + "';");
+                stmt.executeQuery("SELECT concept.id_concept " +
+                    " FROM concept, concept_group_concept " +
+                    " WHERE " +
+                    " concept.id_concept = concept_group_concept.idconcept" +
+                    " AND" +
+                    " concept.id_thesaurus = concept_group_concept.idthesaurus " +
+                    " AND" +
+                    " concept.id_thesaurus = '" + idThesaurus + "' " +
+                    " AND" +
+                    " concept.status != 'CA' " +
+                    " AND" +
+                    " concept_group_concept.idgroup = '" + idGroup + "'");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {

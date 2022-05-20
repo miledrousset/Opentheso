@@ -377,6 +377,54 @@ begin
 end
 $$language plpgsql;
 
+-- Préférences : ajout de l'option activation ou non du fil d'ariane
+--
+create or replace function update_table_preferences_useConceptTree() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='useconcepttree') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN useconcepttree boolean DEFAULT false;';
+    END IF;
+end
+$$language plpgsql;
+
+
+-- fonction pour le tri naturel
+CREATE OR REPLACE FUNCTION naturalsort(
+	text)
+    RETURNS bytea
+    LANGUAGE 'sql'
+    COST 100
+    IMMUTABLE STRICT PARALLEL UNSAFE
+AS $BODY$
+    select string_agg(convert_to(coalesce(r[2], length(length(r[1])::text) || length(r[1])::text || r[1]), 'SQL_ASCII'),'\x00')
+    from regexp_matches($1, '0*([0-9]+)|([^0-9]+)', 'g') r;
+$BODY$;
+
+
+-- table pour typer les concepts 
+CREATE TABLE IF NOT EXISTS concept_type
+(
+    code text COLLATE pg_catalog."default" NOT NULL,
+    label_fr text COLLATE pg_catalog."default" NOT NULL,
+    label_en text COLLATE pg_catalog."default",
+    CONSTRAINT concept_type_pkey PRIMARY KEY (code)
+);
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'concept', 'concept', 'concept' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'concept');
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'people', 'personne', 'people' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'people');
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'period', 'période', 'period' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'period');
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'place', 'lieu', 'place' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'place');
+
+
+-- Modification de la table Concept pour gérer le type de concept (Personne, Lieu, période ...)
+--
+create or replace function update_table_concept_type() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept' AND column_name='concept_type') THEN
+        execute 'ALTER TABLE concept ADD COLUMN concept_type text DEFAULT ''concept''::text;';
+    END IF;
+end
+$$language plpgsql;
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -399,6 +447,8 @@ SELECT update_table_languages();
 SELECT update_table_concept_role();
 SELECT update_table_preferences_ark_local();
 SELECT update_table_preferences_breadcrumb();
+SELECT update_table_concept_type();
+SELECT update_table_preferences_useConceptTree();
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -422,6 +472,8 @@ SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_concept_role','');
 SELECT delete_fonction('update_table_preferences_ark_local','');
 SELECT delete_fonction('update_table_preferences_breadcrumb','');
+SELECT delete_fonction('update_table_concept_type','');
+SELECT delete_fonction('update_table_preferences_useConceptTree', '');
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');
