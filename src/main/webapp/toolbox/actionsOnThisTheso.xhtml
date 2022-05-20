@@ -4,44 +4,52 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    
-    <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" value=" Actions sur le thésaurus en cours"  
-                  style="font-size: 14px;"/> 
-    <br/>
-    <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" style="margin-top: -20px">
 
-        <!--Pour importer des alignements -->
-        <p:menuButton value="Actions"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;
-                      color: transparent;  font-size: 12px" >
-            <p:menuitem value="Importer des alignements" 
-                        title="Importer des alignements d'après un tableau CSV"
-                        oncomplete="PF('listAlignmentCsv').show();"
-                        update="idListAlignmentCsv listAlignmentCsvForm"
-                        action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
-            
-            <p:menuitem value="Supprimer des alignements" 
-                        title="Supprimer des alignements d'après un tableau CSV"
-                        oncomplete="PF('deleteListAlignmentCsv').show();"
-                        update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
-                        action="#{importFileBean.init()}" icon="pi pi-times" style="font-size: 12px; "/>      
-            
-            <p:divider style="font-size: 11px; color: #F47B2A"/>   
-            
-            <p:menuitem value="Importer des notes" 
-                        title="Importer des notes d'après un tableau CSV"
-                        oncomplete="PF('listNoteCsv').show();"
-                        update="idListNoteCsv listNoteCsvForm"
-                        action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
-            <p:menuitem value="Importer des identifiants Ark" 
-                        title="Importer des identifiants Ark d'après un tableau CSV"
-                        oncomplete="PF('listArkCsv').show();"
-                        update="idListArkCsv listArkCsvForm"
-                        action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>               
-    
-            <p:divider style="font-size: 11px; color: #F47B2A"/> 
-        </p:menuButton>
-    </p:panel>
-    
+    <div class="row">
+        <div class="col-12">
+            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                          value=" Actions sur le thésaurus en cours"  
+                          style="font-size: 14px;"/>             
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
+                <!--Pour importer des alignements -->
+                <p:menuButton value="Actions"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;
+                              color: transparent;  font-size: 12px" >
+                    <p:menuitem value="Importer des alignements" 
+                                title="Importer des alignements d'après un tableau CSV"
+                                oncomplete="PF('listAlignmentCsv').show();"
+                                update="idListAlignmentCsv listAlignmentCsvForm"
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
+
+                    <p:menuitem value="Supprimer des alignements" 
+                                title="Supprimer des alignements d'après un tableau CSV"
+                                oncomplete="PF('deleteListAlignmentCsv').show();"
+                                update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
+                                action="#{importFileBean.init()}" icon="pi pi-times" style="font-size: 12px; "/>      
+
+                    <p:divider style="font-size: 11px; color: #F47B2A"/>   
+
+                    <p:menuitem value="Importer des notes" 
+                                title="Importer des notes d'après un tableau CSV"
+                                oncomplete="PF('listNoteCsv').show();"
+                                update="idListNoteCsv listNoteCsvForm"
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
+                    <p:menuitem value="Importer des identifiants Ark" 
+                                title="Importer des identifiants Ark d'après un tableau CSV"
+                                oncomplete="PF('listArkCsv').show();"
+                                update="idListArkCsv listArkCsvForm"
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>               
+
+                    <p:divider style="font-size: 11px; color: #F47B2A"/> 
+                </p:menuButton>
+            </p:panel>           
+        </div>
+    </div>
+
     <ui:include src="../dialog/import/listAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/import/deleteListAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/import/listNoteCsv.xhtml" />      
