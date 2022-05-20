@@ -7,14 +7,14 @@
               widgetVar="deleteRelatedLink" width="550" showEffect="fade" modal="true" position="top" resizable="false" style="margin-top: 30px">   
 
         <h:form rendered="#{conceptView.nodeConcept != null}" id="deleteRelatedLinkForm" >
-            <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Nom du concept : " class="dialog-titre" /> 
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-                </div>
-            </div>           
+        <div class="row">
+            <div class="col-5" style="margin-top: 3px">
+                <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+            </div>
+            <div class="col-7">
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+            </div>
+        </div>           
 
             <p:panel id="listConceptSpecAssocies" style="max-height: 350px; margin-top: 20px;">
 
@@ -37,7 +37,7 @@
 
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  actionListener="PF('deleteRelatedLink').hide();" update="containerIndex:idDeleteRelatedLink"/>
-            </div>            
+                    </div>
 
         </h:form>
     </p:dialog> 

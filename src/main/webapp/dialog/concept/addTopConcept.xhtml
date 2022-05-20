@@ -4,12 +4,12 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddTopConcept" header="Ajouter un top concept" widgetVar="addTopConcept" 
+    <p:dialog id="idAddTopConcept" header="#{langueBean.getMsg('rightbody.concept.addTopConcept')}" widgetVar="addTopConcept" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Nom top concept :" style="font-weight: bold;"/>
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.topConceptName')}:" style="font-weight: bold;"/>
                 <p:commandLink style="color: #FF7979" action="#{newConcept.infosTopConcept}" update="messageIndex">
                     <i class="pi pi-info-circle"></i>
                 </p:commandLink> 
@@ -22,7 +22,7 @@
 
         <div class="row" style="margin-top: 10px">
             <div class="col-5">
-                <h:outputText value="Collection :" style="font-weight: bold; margin-top: 3px"/>
+                <h:outputText value="Collection:" style="font-weight: bold; margin-top: 3px"/>
             </div>
             <div class="col-7">
                 <p:selectOneMenu value="#{newConcept.idGroup}" 

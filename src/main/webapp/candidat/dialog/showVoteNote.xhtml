@@ -22,7 +22,7 @@
 
             <p:scrollPanel id="listVotesDatas" mode="native" style="min-height: 300px; max-height: 600px; border: #FAFAFA; background-color: #FFFFFF; ">           
                 <div class="row">
-                    <div class="col-12">
+                <div class="col-12">
                         <!-- tableau des votes -->
                         <p:dataTable id="listVotes" var="listVotes" value="#{showVoteNote.nodeTabVotes}" 
                                      style="font-size: 13px; width: 100%" rows="10" >
@@ -44,14 +44,18 @@
                             </p:column>                        
 
                         </p:dataTable>  
-                    </div>
                 </div>
+            </div>
             </p:scrollPanel>                 
-
+            
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px; font-size: 12px;"
                                  actionListener="PF('showVoteNote').hide();" update="idShowVoteNote tabViewCandidat messageIndex"
                                  process="@this" ajax="true"/>
+
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" oncomplete="PF('showVoteNote').hide();"
+                                 update="tabViewCandidat messageIndex"
+                                 actionListener="#{noteBeanCandidat.updateNote(currentUser.nodeUser.idUser)}"/>
             </div>
         </h:form>
     </p:dialog>

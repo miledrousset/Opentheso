@@ -319,7 +319,7 @@ public class Tree implements Serializable {
     private boolean addConceptsChildWithFacets(TreeNode parent) {
         ConceptHelper conceptHelper = new ConceptHelper();
         addFacettes(parent);
-        
+
         ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConceptsIgnoreConceptsInFacets(
                 connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
@@ -357,7 +357,6 @@ public class Tree implements Serializable {
                     dataService.addNodeWithoutChild("file", data, parent);
             }
         }
-
 
 
         return true;
@@ -460,10 +459,10 @@ public class Tree implements Serializable {
                 alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                         conceptBean.getNodeConcept().getConcept().getIdConcept(),
                         conceptBean.getSelectedLang());
-
-                alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());           
+                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+                //alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());           
             } else
-                rightBodySetting.setIndex("0");
+            rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
@@ -491,7 +490,8 @@ public class Tree implements Serializable {
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     conceptBean.getSelectedLang());
             
-            alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+            alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+         //   alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
         }
         if (event.getTab().getId().equals("viewTabSearch")) {
             rightBodySetting.setIndex("2");

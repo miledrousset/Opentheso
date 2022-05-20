@@ -720,7 +720,7 @@ public class SearchHelper {
                         nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
-                        
+
                         nodeSearchMini.setIsConcept(true);
                         if(resultSet.getString("status").equalsIgnoreCase("DEP"))
                             nodeSearchMini.setIsDeprecated(true);                        
@@ -872,7 +872,7 @@ public class SearchHelper {
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
                         nodeSearchMini.setIsConcept(true);                        
-                        
+
                         if(resultSet.getString("status").equalsIgnoreCase("DEP"))
                             nodeSearchMini.setIsDeprecated(true);
 

@@ -13,8 +13,8 @@
                 <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
                     <ui:include src="search.xhtml"/>
                 </div>
+                </div>
             </div>
-        </div>
 
         <div class="row" style="margin-left: 10px; margin-right: 10px; margin-top: -40px;">
             <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4" style=" height: 100%">
@@ -50,7 +50,6 @@
                                         <ui:include src="leftBodyView/groups.xhtml"/>
                                     </p:tab>                                            
                                 </div>
-
                                 <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
                                     <p:tab rendered="#{roleOnTheso.nodePreference.useConceptTree}" id="viewTabConceptTree">
                                         <f:facet name="title">
@@ -59,7 +58,7 @@
                                         </f:facet>
                                         <ui:include src="leftBodyView/conceptsTree.xhtml" />       
                                     </p:tab>                                     
-                                </div>   
+                                </div>                                        
                             </p:tabView>
                         </div>
                         <ui:include src="../dialog/dragAndDrop/dragAndDrop.xhtml" />
@@ -97,7 +96,7 @@
                             </p:tab>              
 
                             <p:tab rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                   id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
+                                id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
                                 <f:facet name="anchor">
                                     <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                 </f:facet>
@@ -118,8 +117,8 @@
         </div>
     </div>
     <ui:include src="../dialog/concept/addTopConcept.xhtml" />
-
-
+    
+    
     <ui:include src="../dialog/group/addGroup.xhtml" />
     <ui:include src="../dialog/group/addSubGroup.xhtml" />
     <ui:include src="../dialog/group/deleteGroup.xhtml" />
@@ -128,39 +127,39 @@
     <ui:include src="../dialog/group/deleteTraductionGroup.xhtml" />
     <ui:include src="../dialog/group/renameTraductionGroup.xhtml" />    
 
-
+    
     <ui:include src="../dialog/alignment/addAlignmentDialog.xhtml" />
     <ui:include src="../dialog/alignment/updateSingleAlignment.xhtml" />
 
-    <!-- Provoque une erreur de deploiement sous Linux -->
-    <!--    <ui:include src="../dialog/alignment/confirmDeleteAlignment.xhtml" /> -->
+<!-- Provoque une erreur de deploiement sous Linux -->
+<!--    <ui:include src="../dialog/alignment/confirmDeleteAlignment.xhtml" /> -->
     <ui:include src="../dialog/alignment/updateAlignment.xhtml" />
-
+ 
     <!-- déplacements des dialogs #MR --> 
     <ui:include src="../dialog/concept/renameConcept.xhtml" />    
     <ui:include src="../dialog/concept/addNT.xhtml" /> 
     <ui:include src="../dialog/facet/addFacet.xhtml" />   
-
+    
     <ui:include src="../dialog/synonym/addSynonym.xhtml" />
     <ui:include src="../dialog/synonym/renameSynonym.xhtml" />    
-
+    
     <ui:include src="../dialog/facet/renameFacet.xhtml" />   
     <ui:include src="../dialog/facet/addFacetTraduction.xhtml" />    
 
     <ui:include src="../dialog/concept/replaceBy.xhtml" />
     <ui:include src="../dialog/concept/deleteReplaceBy.xhtml" />    
-
+    
     <ui:include src="../dialog/traduction/addTraduction.xhtml" />    
     <ui:include src="../dialog/traduction/renameTraduction.xhtml" />
     <ui:include src="../dialog/traduction/deleteTraduction.xhtml" />
-
+    
     <ui:include src="../dialog/note/addNote.xhtml" />   
     <ui:include src="../dialog/note/editNote.xhtml" /> 
     <ui:include src="../dialog/note/deleteNote.xhtml" />     
-
+    
     <ui:include src="../dialog/externalResources/addExternalResource.xhtml" /> 
     <ui:include src="../dialog/externalResources/deleteExternalResource.xhtml" />    
-    <ui:include src="../dialog/externalResources/updateExternalResource.xhtml" />    
+    <ui:include src="../dialog/externalResources/updateExternalResource.xhtml" />      
 
     <ui:include src="../dialog/facet/addConceptToFacet.xhtml" />    
     <ui:include src="../dialog/facet/removeConceptFromFracets.xhtml" />  

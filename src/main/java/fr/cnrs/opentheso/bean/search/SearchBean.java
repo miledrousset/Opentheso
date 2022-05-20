@@ -26,6 +26,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
 
 /**
  *
@@ -180,23 +181,23 @@ public class SearchBean implements Serializable {
         } else {
             idConcept = searchSelected.getIdConcept();
 
-            if(nodeConceptSearchs == null) {
-                nodeConceptSearchs = new ArrayList<>();
-            } else 
-                nodeConceptSearchs.clear();        
-            if(conceptHelper == null) 
-                conceptHelper = new ConceptHelper();
-            nodeConceptSearchs.add(
-                        conceptHelper.getConceptForSearch(
-                        connect.getPoolConnexion(),
+        if(nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else 
+            nodeConceptSearchs.clear();        
+        if(conceptHelper == null) 
+            conceptHelper = new ConceptHelper();
+        nodeConceptSearchs.add(
+                    conceptHelper.getConceptForSearch(
+                    connect.getPoolConnexion(),
                         idConcept,
-                        selectedTheso.getCurrentIdTheso(),
-                        selectedTheso.getCurrentLang())
-                );
-            setViewsSerach();
-            if(nodeConceptSearchs.size() == 1) {
-                onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
-            }
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang())
+            );
+        setViewsSerach();
+        if(nodeConceptSearchs.size() == 1) {
+            onSelectConcept(nodeConceptSearchs.get(0).getIdConcept());
+        }
         }
         isSelectedItem = true;
         

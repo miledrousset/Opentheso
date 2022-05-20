@@ -99,8 +99,7 @@
                 </p:column>  
                 <p:column width="20" headerText="Votes" sortBy="#{listCandidats.nbrVote}">
                     <p:badge rendered="#{listCandidats.nbrVote > 0}" severity="danger" value="#{listCandidats.nbrVote}" styleClass="p-mr-2"></p:badge>
-                </p:column>
-                
+                </p:column>   
                 <p:column width="20" headerText="Votes Note">
                     <p:badge rendered="#{listCandidats.nbrNoteVote > 0}" value="#{listCandidats.nbrNoteVote}" severity="danger" styleClass="p-mr-2">
                         <p:commandButton icon="pi pi-bell" styleClass="rounded-button ui-button-warning" update="idShowVoteNote"
@@ -124,13 +123,13 @@
                                          update="idDeleteCandidate"
                                          oncomplete="PF('deleteCandidate').show();" 
                                          /> 
-                    </div> 
+                    </div>
                     
                     <div class="col-2 offset-6" style="text-align: right; margin-top: 20px;">
                         <p:commandButton value="#{langueBean.getMsg('candidat.submitList')}" ajax="true" process="@this"
                                          update="idProcessCandidateList processCandidateListForm" styleClass="ui-button-primary"
                                          oncomplete="PF('processCandidateList').show();" style="font-size: 12px; width: 100%"/> 
-                    </div>
+                </div>
                 </div>
             </h:panelGroup>  
         </h:form>        

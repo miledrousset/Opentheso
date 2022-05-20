@@ -90,7 +90,7 @@ public class Rest_new {
     public String testWS(){
         return "pong";
     }
-     
+
     /**
      * pour produire du RDF-SKOS
      *

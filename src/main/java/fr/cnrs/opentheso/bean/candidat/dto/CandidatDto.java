@@ -324,4 +324,20 @@ public class CandidatDto implements Serializable {
         this.createdById = createdById;
     }
     
+    public String getCreatedBy() {
+        return createdBy;
+}
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public int getCreatedById() {
+        return createdById;
+    }
+
+    public void setCreatedById(int createdById) {
+        this.createdById = createdById;
+    }
+    
 }

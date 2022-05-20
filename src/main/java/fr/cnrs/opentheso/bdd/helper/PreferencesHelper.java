@@ -26,7 +26,7 @@ public class PreferencesHelper {
     * 
     * @param ds
     * @return 
-    */
+     */
     public String getCodeGoogleAnalytics(HikariDataSource ds) {
         String codeAnalytics = null;
         try (Connection conn = ds.getConnection()) {

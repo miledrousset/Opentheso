@@ -347,7 +347,7 @@ public class ConceptView implements Serializable {
         viewEditorThesoHomeBean.reset();
         countOfBranch = 0;
     }
-    
+
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang){
         FacetHelper facetHelper = new FacetHelper();
         List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(connect.getPoolConnexion(), idConcept, idTheso);
@@ -855,7 +855,7 @@ public class ConceptView implements Serializable {
 
     public ArrayList<NodeIdValue> getNodeFacets() {
         return nodeFacets;
-    }
+}
 
     public void setNodeFacets(ArrayList<NodeIdValue> nodeFacets) {
         this.nodeFacets = nodeFacets;

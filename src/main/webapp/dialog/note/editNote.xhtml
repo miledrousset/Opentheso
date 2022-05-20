@@ -4,7 +4,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idEditNote" header="#{langueBean.getMsg('rightbody.concept.edit_note')}" widgetVar="editNote" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >       
+              width="650" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >       
         <h:form id="editNoteForm" >
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
@@ -14,22 +14,29 @@
                     <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
                 </div>
             </div>     
+            <p:panel style=" max-height: 500px; overflow-y:scroll">
+                <ui:repeat var="noteToEdit" value="#{noteBean.nodeToEdit()}" >
 
-            <ui:repeat var="noteToEdit" value="#{noteBean.nodeToEdit()}" >
-                <div class="row">
-                    <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                        <p:inputTextarea rendered="#{noteToEdit.lexicalvalue != ''}" value="#{noteToEdit.lexicalvalue}"  
-                                         style="width: 100%; font-size: 12px; color: black" />
-                    </div>
-                    <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #F7A269;" oncomplete="PF('editNote').show();"
-                                       ajax="true" process="@form"
-                                       action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}">
-                            <i class="pi pi-check-circle" />
-                        </p:commandLink>
-                    </div>                
-                </div>
-            </ui:repeat>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+
+                            <p:inputTextarea rendered="#{noteToEdit.lexicalvalue != ''}" value="#{noteToEdit.lexicalvalue}"  
+                                             style="width: 100%; font-size: 12px; color: black; max-height: 200px; overflow-y:scroll" />
+
+                        </div>
+
+                        <div class="col-1" style="align-self: center;">
+                            <p:commandLink style="color: #F7A269; align-items: center " oncomplete="PF('editNote').show();"
+                                           ajax="true" process="@form"
+                                           action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}">
+                                <i class="pi pi-check-circle" />
+                            </p:commandLink>
+                        </div>                
+                    </div>                    
+
+                </ui:repeat>
+            </p:panel>
+            <p:spacer height= "20px;"/>
 
             <div class="row">
                 <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
