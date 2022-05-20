@@ -24,17 +24,22 @@
         <p:panel id="imagesToUpdate">
             <ui:repeat var="imageToEdit" value="#{imageBean.nodeImagesForEdit}" >
                 <div class="row" style="margin-top: 10px">
-                    <div class="col-8">
+                    <div class="col-7">
                         <p:inputText value="#{imageToEdit.uri}" style="width: 100%; color: #000"/>  
                     </div>
                     <div class="col-3">
                         <p:inputText value="#{imageToEdit.copyRight}" style="width: 100%; color: #000"/>
                     </div>
-                    <div class="col-1">
-                        <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex"
-                                       action="#{imageBean.updateImage( imageToEdit, currentUser.nodeUser.idUser)}" >
-                            <i class="pi pi-check-circle" />
-                        </p:commandLink>
+                    <div class="col-1" style="margin-top: 4px">
+
+                        <p:commandButton update="containerIndex:formRightTab"
+                                         icon="pi pi-check"
+                                         action="#{imageBean.updateImage( imageToEdit, currentUser.nodeUser.idUser)}"
+                                         oncomplete="PF('updateAlignment').hide();"
+                                         styleClass="rounded-button ui-button-raised"
+                                         style="height: 25px; width: 25px" />                        
+                        
+                        
                     </div>
                 </div>
             </ui:repeat>

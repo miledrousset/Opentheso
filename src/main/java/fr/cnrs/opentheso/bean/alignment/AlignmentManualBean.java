@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.alignment;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentType;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -190,6 +191,13 @@ public class AlignmentManualBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         } 
+        
+        StringPlus stringPlus = new StringPlus();
+        if(!stringPlus.urlValidator(manualAlignmentUri)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL n'est pas valide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }        
         
         AlignmentHelper alignmentHelper = new AlignmentHelper();
 

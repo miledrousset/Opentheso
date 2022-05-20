@@ -921,6 +921,37 @@ public class UserHelper {
     }
 
     /**
+     * permet de retourner la liste de tous les utilisateurs qui sont SuperAdmin
+     *
+     * @param ds
+     * @return
+     */
+    public ArrayList<NodeUserGroupUser> getAllUsersSuperadmin(HikariDataSource ds) {
+        ArrayList<NodeUserGroupUser> nodeUserGroupUsers = new ArrayList<>();
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT id_user, username FROM users where issuperadmin = true order by username");
+                try (ResultSet resultSet = stmt.getResultSet()) { 
+                    NodeUserGroupUser nodeUserGroupUser = new NodeUserGroupUser();
+                    while (resultSet.next()) {
+                        nodeUserGroupUser.setIdUser(resultSet.getString("id_user"));
+                        nodeUserGroupUser.setUserName(resultSet.getString("username"));
+                        nodeUserGroupUser.setIdGroup(-1);
+                        nodeUserGroupUser.setGroupName("");
+                        nodeUserGroupUser.setIdRole(1);
+                        nodeUserGroupUser.setRoleName("SuperAdmin");
+                        nodeUserGroupUsers.add(nodeUserGroupUser);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeUserGroupUsers;
+    }      
+
+    /**
      * permet de créer un groupe ou projet pour regrouper les utilisateurs et
      * les thésaurus
      *

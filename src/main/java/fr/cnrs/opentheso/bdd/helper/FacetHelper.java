@@ -44,7 +44,7 @@ public class FacetHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '" + lang
-                        + "' AND lexical_value like unaccent(lower('%" + name + "%'))" + " AND id_thesaurus = '" + idThesaurus + "' order by lexical_value");
+                        + "' AND unaccent(lower(lexical_value)) like unaccent(lower('%" + name + "%'))" + " AND id_thesaurus = '" + idThesaurus + "' order by lexical_value");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();
@@ -88,8 +88,38 @@ public class FacetHelper {
     }
 
     /**
-     * permet de retourner la liste des id facettes qui appartiennent à ce
-     * concept
+     * permet de retourner la liste des id facettes où ce concept en fait partie
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return #MR
+     */
+    public List<String> getAllIdFacetsConceptIsPartOf(HikariDataSource ds, String idConcept, String idThesaurus) {
+
+        List<String> listIdFacets = new ArrayList<>();
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT concept_facet.id_facet"
+                        + " FROM concept_facet "
+                        + " WHERE id_thesaurus = '" + idThesaurus + "'"
+                        + " AND id_concept = '" + idConcept + "'");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        listIdFacets.add(resultSet.getString("id_facet"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All id facets of concept : " + idConcept, sqle);
+        }
+        return listIdFacets;
+    }    
+    
+    /**
+     * permet de retourner la liste des id facettes qui sont sous ce concept
+     * où ce concept est le parent
      *
      * @param ds
      * @param idConcept

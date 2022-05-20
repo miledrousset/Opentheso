@@ -459,8 +459,8 @@ public class Tree implements Serializable {
                 alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                         conceptBean.getNodeConcept().getConcept().getIdConcept(),
                         conceptBean.getSelectedLang());
-                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-                //alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());           
+
+                alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());           
             } else
             rightBodySetting.setIndex("0");
         } else {
@@ -490,8 +490,7 @@ public class Tree implements Serializable {
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     conceptBean.getSelectedLang());
             
-            alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-         //   alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+            alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
         }
         if (event.getTab().getId().equals("viewTabSearch")) {
             rightBodySetting.setIndex("2");

@@ -259,7 +259,8 @@
                                         <f:facet name="footer">
                                             <span class="p-text-bold">
                                                 <h:outputText value="Graphe : "/>
-                                                <p:commandLink oncomplete="PF('conceptChart').show();" style="color: #f47b2a; margin-left: 10px" update="conceptChartID">
+                                                <p:commandLink process="@this" ajax="true" oncomplete="PF('conceptChart').show();" 
+                                                               style="color: #f47b2a; margin-left: 10px" update="conceptChartID containerIndex">
                                                     <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
                                                 </p:commandLink>
 

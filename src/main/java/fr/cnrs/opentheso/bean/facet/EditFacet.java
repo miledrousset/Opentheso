@@ -355,9 +355,43 @@ public class EditFacet implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
         showMessage(FacesMessage.SEVERITY_INFO, "Concept ajouté à la facette avec succès !");
     }
 
+    
+    /**
+     * permet de supprimer l'appartenance du concept à la facette
+     * @param idConceptToRemove
+     * @param fromIdFacet 
+     */
+    public void removeConceptFromFacet(String idConceptToRemove, String fromIdFacet){
+        FacetHelper facetHelper = new FacetHelper();
+        //      ConceptHelper conceptHelper = new ConceptHelper();
+
+        FacesMessage msg;
+
+        if(idConceptToRemove == null || idConceptToRemove.isEmpty()){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " pas de concept sélectionné !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        if(fromIdFacet == null || fromIdFacet.isEmpty()){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " pas de Facette sélectionnée !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }        
+
+        if(!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                fromIdFacet,
+                idConceptToRemove,
+                selectedTheso.getCurrentIdTheso())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " La suppression a échoué !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), idConceptToRemove, conceptBean.getSelectedLang());
+    }
+    
     /**
      * permet de supprimer un membre de la facette
      * @param idConceptToRemove
