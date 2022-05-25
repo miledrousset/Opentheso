@@ -739,7 +739,9 @@ public class ConceptHelper {
         TermHelper termHelper = new TermHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         GroupHelper groupHelper = new GroupHelper();
-
+        
+        nodeConceptSerach.setIdTheso(idThesaurus);
+        nodeConceptSerach.setCurrentLang(idLang);
         nodeConceptSerach.setIdConcept(idConcept);
         nodeConceptSerach.setIsDeprecated(isDeprecated(ds, idConcept, idThesaurus));
         

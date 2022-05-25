@@ -59,10 +59,19 @@
                     <ui:include src="commun/header.xhtml" />
 
                     <div id="thesorusContent" style="margin-top: -20px; ">
+                        <h:panelGroup >
+                            <ui:include src="thesaurus/search.xhtml" />
+                        </h:panelGroup>
+                        
+                        <p:sidebar widgetVar="resultatRecherche" modal="false" position="right">
+                            <h3>Résultat de la recherche</h3>
+                            <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml"/>
+                        </p:sidebar>                        
+                        
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
+                        <h:panelGroup  rendered="#{indexSetting.isSelectedTheso}">
                             <ui:include src="thesaurus/details_thesaurus.xhtml" />
                         </h:panelGroup>
                     </div>

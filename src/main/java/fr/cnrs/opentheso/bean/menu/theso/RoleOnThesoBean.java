@@ -45,7 +45,7 @@ public class RoleOnThesoBean implements Serializable {
     @Inject private SelectedTheso selectedTheso;
 
     //liste des thesaurus public suivant les droits de l'utilisateur, n'inclus pas les thésaurus privés
-    private Map<String, String> listTheso;
+    private List<ThesoModel> listTheso;    
     //liste des thesaurus For export or management avec droits admin pour l'utilisateur en cours
     private Map<String, String> listThesoAsAdmin;    
     
@@ -56,6 +56,8 @@ public class RoleOnThesoBean implements Serializable {
     private ArrayList<NodeIdValue> nodeListThesoAsAdmin;    
     
     private ArrayList<NodeIdValue> nodeListThesoAsAdminFiltered;       
+
+    private List<String> selectedThesoForSearch;
 
     //thesaurus à gérer
     private Thesaurus thesoInfos;
@@ -73,7 +75,7 @@ public class RoleOnThesoBean implements Serializable {
     private NodePreference nodePreference;
 
     private NodeUserRoleGroup nodeUserRoleGroup;
-
+    
     public RoleOnThesoBean() {
 
     }
@@ -147,6 +149,22 @@ public class RoleOnThesoBean implements Serializable {
         }
         nodePreference = null;
     }
+    public void initNodePref(String idTheso) {
+        if (idTheso == null) {
+            return;
+        }
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        if (connect.getPoolConnexion() != null) {
+            nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
+            if (nodePreference == null) { // cas où il n'y a pas de préférence pour ce thésaurus, il faut les créer 
+                preferencesHelper.initPreferences(connect.getPoolConnexion(),
+                        idTheso, connect.getWorkLanguage());
+                nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
+            }
+            return;
+        }
+        nodePreference = null;
+    }    
 
     /**
      * met à jour les préférences après une modification
@@ -179,7 +197,7 @@ public class RoleOnThesoBean implements Serializable {
      */
     private void setOwnerThesos() {
         if (currentUser.getNodeUser() == null) {
-            this.listTheso = new HashMap();
+            this.listTheso = new ArrayList();
             return;
         }
         if(authorizedTheso == null)
@@ -286,6 +304,9 @@ public class RoleOnThesoBean implements Serializable {
         // pour éviter d'afficher des Id quand on a un mélange des thésaurus avec des langues sources différentes.
         String preferredIdLangOfTheso;
         PreferencesHelper preferencesHelper = new PreferencesHelper();
+        
+        listTheso = new ArrayList<>();
+        
         for (String idTheso1 : authorizedTheso) {
             preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1);
             if (preferredIdLangOfTheso == null) {
@@ -293,11 +314,21 @@ public class RoleOnThesoBean implements Serializable {
             }
 
             title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso1, preferredIdLangOfTheso);
+            
+            ThesoModel thesoModel = new ThesoModel();
+            thesoModel.setId(idTheso1);
+            
             if (title == null) {
-                authorizedThesoHM.put("" + "(" + idTheso1 + ")", idTheso1);
+                thesoModel.setNom("(" + idTheso1 + ")");
+                authorizedThesoHM.put(thesoModel.nom, idTheso1);
             } else {
-                authorizedThesoHM.put(title + " (" + idTheso1 + ")", idTheso1);
+                thesoModel.setNom(title + " (" + idTheso1 + ")");
+                authorizedThesoHM.put(thesoModel.nom, idTheso1);
             }
+            thesoModel.setDefaultLang(preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1));
+            
+            listTheso.add(thesoModel);
+            
             // nouvel objet pour récupérer la liste des thésaurus autorisée pour l'utilisateur en cours
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso1);
@@ -306,10 +337,44 @@ public class RoleOnThesoBean implements Serializable {
             nodeListTheso.add(nodeIdValue);
             
         }
-
-                
-        this.listTheso = authorizedThesoHM;
+        
+        selectedThesoForSearch = new ArrayList<>();
+        for (ThesoModel thesoModel : listTheso) {
+            selectedThesoForSearch.add(thesoModel.getId());
+        }                
     }
+    
+    public class ThesoModel implements Serializable{
+        private String id;
+        private String nom;
+        private String defaultLang;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getNom() {
+            return nom;
+        }
+
+        public void setNom(String nom) {
+            this.nom = nom;
+        }
+
+        public String getDefaultLang() {
+            return defaultLang;
+        }
+
+        public void setDefaultLang(String defaultLang) {
+            this.defaultLang = defaultLang;
+        }
+        
+        
+    }    
 
     /**
      * fonction pour récupérer la liste (sous forme de hashMap ) de thesaurus
@@ -565,13 +630,13 @@ public class RoleOnThesoBean implements Serializable {
         this.isSuperAdmin = isSuperAdmin;
     }
 
-    public Map<String, String> getListTheso() {
+    public List<ThesoModel> getListTheso() {
         return listTheso;
     }
 
-    public void setListTheso(HashMap<String, String> listTheso) {
+    public void setListTheso(List<ThesoModel> listTheso) {
         this.listTheso = listTheso;
-    }
+    }    
 
     public Map<String, String> getListThesoAsAdmin() {
         return listThesoAsAdmin;
@@ -645,4 +710,12 @@ public class RoleOnThesoBean implements Serializable {
         this.nodeListThesoAsAdminFiltered = nodeListThesoAsAdminFiltered;
     }
 
+    public List<String> getSelectedThesoForSearch() {
+        return selectedThesoForSearch;
+    }
+
+    public void setSelectedThesoForSearch(List<String> selectedThesoForSearch) {
+        this.selectedThesoForSearch = selectedThesoForSearch;
+    }
+    
 }

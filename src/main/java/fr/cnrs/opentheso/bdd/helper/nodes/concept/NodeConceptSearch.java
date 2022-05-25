@@ -9,9 +9,12 @@ import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 
 public class NodeConceptSearch {
+    private String thesoName;    
+    private String idTheso;
     private String idConcept;
     private String prefLabel;
     private boolean isDeprecated;
+    private String currentLang;
     
     private ArrayList <NodeTermTraduction> nodeTermTraductions;
     private ArrayList <NodeBT> nodeBT;
@@ -113,6 +116,30 @@ public class NodeConceptSearch {
 
     public void setIsDeprecated(boolean isDeprecated) {
         this.isDeprecated = isDeprecated;
+    }
+
+    public String getIdTheso() {
+        return idTheso;
+    }
+
+    public void setIdTheso(String idTheso) {
+        this.idTheso = idTheso;
+    }
+
+    public String getCurrentLang() {
+        return currentLang;
+    }
+
+    public void setCurrentLang(String currentLang) {
+        this.currentLang = currentLang;
+    }
+
+    public String getThesoName() {
+        return thesoName;
+    }
+
+    public void setThesoName(String thesoName) {
+        this.thesoName = thesoName;
     }
 
     
