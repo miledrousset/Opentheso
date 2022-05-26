@@ -191,9 +191,7 @@ public class ExportFileBean implements Serializable {
     }
 
     private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
-
-
-        /** Methode 1**/
+        
         ConceptHelper conceptHelper = new ConceptHelper();
         List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(
                 connect.getPoolConnexion(), parentId, langId, thesoId);
@@ -205,17 +203,6 @@ public class ExportFileBean implements Serializable {
             concept.getChildrens().addAll(new Tree().searchFacettesForTree(connect.getPoolConnexion(), 
                 parentId, thesoId, langId));
         }
-        /*** Fin Methode 1***/
-        
-        /** Methode 2**/
-        /*
-        List<NodeTree> concepts = new Tree().searchAllConceptChilds(connect.getPoolConnexion(), 
-                parentId, thesoId, langId);
-        for (NodeTree concept : concepts) {
-            concept.setIdParent(parentId);
-            concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
-        }*/
-        /*** Fin methode 2 ***/
 
         return concepts;
     }
@@ -261,11 +248,13 @@ public class ExportFileBean implements Serializable {
                 topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm()) ? 
                         "(" + topConcept.getIdConcept()+ ")" : topConcept.getPreferredTerm());
                 topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(),
-                        topConcept.getIdConcept()));
+                        viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
             }
 
-            String[][] tab = new String[150][15];
+            ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(),
+                    viewExportBean.getNodeIdValueOfTheso().getId());
+            
+            String[][] tab = new String[allConcepts.size()][15];
             posX = 0;
             for (NodeTree topConcept : topConcepts) {
                 posJ = 0;

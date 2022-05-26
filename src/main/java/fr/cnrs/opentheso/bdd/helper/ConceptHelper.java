@@ -477,7 +477,7 @@ public class ConceptHelper {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT con.id_concept, ter.lexical_value FROM concept con, term ter, preferred_term per " +
                         "WHERE ter.id_term =  per.id_term AND con.id_concept = per.id_concept AND con.id_thesaurus = '"+idTheso+"' " +
-                        "AND con.top_concept = true AND con.status !='CA'");
+                        "AND con.top_concept = true AND con.status !='CA' ORDER BY ter.lexical_value");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -506,7 +506,8 @@ public class ConceptHelper {
                     "AND hie.id_concept2 = per.id_concept " +
                     "AND hie.id_thesaurus = '"+idThesaurus+"' " +
                     "AND hie.id_concept1 = '"+idConcept+"' " +
-                    "AND hie.role LIKE 'NT%'");
+                    "AND hie.role LIKE 'NT%' " +
+                    "ORDER BY ter.lexical_value");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
