@@ -79,14 +79,7 @@
                                         <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                                     </f:facet>
                                     <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
-                                </p:tab>              
-
-                                <p:tab id="viewTabSearch" title="#{langueBean.getMsg('rightbody.search_result')}" >
-                                    <f:facet name="anchor">
-                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
-                                    </f:facet>
-                                    <ui:include  src="rightBodyView/resultSearch.xhtml"/>
-                                </p:tab>              
+                                </p:tab>           
 
                                 <p:tab rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                        id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
