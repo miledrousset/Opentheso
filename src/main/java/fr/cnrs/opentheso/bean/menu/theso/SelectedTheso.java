@@ -19,7 +19,6 @@ import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
@@ -29,9 +28,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Arrays;
 import javax.faces.application.FacesMessage;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 
 
@@ -186,7 +185,12 @@ public class SelectedTheso implements Serializable {
             listIndex.reset();
             conceptBean.init();
             init();
-            indexSetting.setIsSelectedTheso(false);            
+            indexSetting.setIsSelectedTheso(false); 
+            
+            roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());
+            for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
+                roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
+            }
             
             menuBean.redirectToThesaurus();
             return;
@@ -207,6 +211,12 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
         indexSetting.setIsThesoActive(true);
+        
+        for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
+            if (selectedIdTheso.equals(thesoModel.getId())) {
+                roleOnThesoBean.setSelectedThesoForSearch(Arrays.asList(selectedIdTheso));
+            }
+        }
 
         menuBean.redirectToThesaurus();
     }
