@@ -7,118 +7,112 @@
 
     <div class="container-fluid" style="height: 100%;">
 
-        <div class="d-sm-flex align-items-center justify-content-between mb-4" 
-             style="height: 75px; width: 100%; margin-top: 35px;">
-            <div style="position: relative; height: 100%; width: 100%;" >
-                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
-                    <ui:include src="search.xhtml"/>
-                </div>
-                </div>
-            </div>
 
-        <div class="row" style="margin-left: 10px; margin-right: 10px; margin-top: -40px;">
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4" style=" height: 100%">
-                <div class="card shadow mb-1" style=" height: 100%">
-                    <h:form id="formLeftTab" style=" height: 100%;">
-                        <div class="row" style="border-style: none; width: 100%;">
-                            <p:tabView id="tabTree" activeIndex="#{leftBodySetting.index}" style="border-style: none; width: 100%;" >
-                                <p:ajax event="tabChange" listener="#{tree.onTabTreeChange}" update="containerIndex:formRightTab" />
-                                <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style="height: 100%;">
-                                    <p:tab id="viewTabTree">
-                                        <f:facet name="title">
-                                            <i class="pi pi-sitemap" />
-                                            <h:outputText value=" #{langueBean.getMsg('leftbody.concept')}"/>
-                                        </f:facet>
-                                        <ui:include src="leftBodyView/tree.xhtml"/>
-                                    </p:tab>                                            
-                                </div>
-                                <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
-                                    <p:tab id="viewTabList">
-                                        <f:facet name="title">
-                                            <i class="pi pi-list" />
-                                            <h:outputText value=" #{langueBean.getMsg('leftbody.index')}"/>
-                                        </f:facet>
-                                        <ui:include src="leftBodyView/list.xhtml"/>
-                                    </p:tab>                                            
-                                </div>
-                                <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
-                                    <p:tab id="viewTabGroups">
-                                        <f:facet name="title">
-                                            <i class="pi pi-folder-open" />
-                                            <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}"/>
-                                        </f:facet>
-                                        <ui:include src="leftBodyView/groups.xhtml"/>
-                                    </p:tab>                                            
-                                </div>
-                                <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
-                                    <p:tab rendered="#{roleOnTheso.nodePreference.useConceptTree}" id="viewTabConceptTree">
-                                        <f:facet name="title">
-                                            <i class="pi pi-sitemap" />
-                                            <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
-                                        </f:facet>
-                                        <ui:include src="leftBodyView/conceptsTree.xhtml" />       
-                                    </p:tab>                                     
-                                </div>                                        
+        <h:panelGroup id="viewDetail" >
+            <div class="row" style="margin-left: 10px; margin-right: 10px; margin-top: 5px;">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4" style=" height: 100%">
+                    <div class="card shadow mb-1" style=" height: 100%">
+                        <h:form id="formLeftTab" style=" height: 100%;">
+                            <div class="row" style="border-style: none; width: 100%;">
+                                <p:tabView id="tabTree" activeIndex="#{leftBodySetting.index}" style="border-style: none; width: 100%;" >
+                                    <p:ajax event="tabChange" listener="#{tree.onTabTreeChange}" update="containerIndex:formRightTab" />
+                                    <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style="height: 100%;">
+                                        <p:tab id="viewTabTree">
+                                            <f:facet name="title">
+                                                <i class="pi pi-sitemap" />
+                                                <h:outputText value=" #{langueBean.getMsg('leftbody.concept')}"/>
+                                            </f:facet>
+                                            <ui:include src="leftBodyView/tree.xhtml"/>
+                                        </p:tab>                                            
+                                    </div>
+                                    <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
+                                        <p:tab id="viewTabList">
+                                            <f:facet name="title">
+                                                <i class="pi pi-list" />
+                                                <h:outputText value=" #{langueBean.getMsg('leftbody.index')}"/>
+                                            </f:facet>
+                                            <ui:include src="leftBodyView/list.xhtml"/>
+                                        </p:tab>                                            
+                                    </div>
+                                    <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
+                                        <p:tab id="viewTabGroups">
+                                            <f:facet name="title">
+                                                <i class="pi pi-folder-open" />
+                                                <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}"/>
+                                            </f:facet>
+                                            <ui:include src="leftBodyView/groups.xhtml"/>
+                                        </p:tab>                                            
+                                    </div>
+                                    <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
+                                        <p:tab rendered="#{roleOnTheso.nodePreference.useConceptTree}" id="viewTabConceptTree">
+                                            <f:facet name="title">
+                                                <i class="pi pi-sitemap" />
+                                                <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
+                                            </f:facet>
+                                            <ui:include src="leftBodyView/conceptsTree.xhtml" />       
+                                        </p:tab>                                     
+                                    </div>                                        
+                                </p:tabView>
+                            </div>
+                            <ui:include src="../dialog/dragAndDrop/dragAndDrop.xhtml" />
+                        </h:form>
+                    </div>
+                </div>
+
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="height: 100%">
+                    <div class="card shadow mb-4" style="height: 100%;">
+                        <p:panel id="formRightTab">
+                            <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
+                                       style="border-style: none; height: 100%">
+
+                                <p:ajax event="tabChange" listener="#{tree.onTabConceptChange}" update="containerIndex:formRightTab" />
+
+                                <p:tab id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
+                                    <f:facet name="anchor">
+                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                    </f:facet>
+                                    <ui:include rendered="#{rightBodySetting.showConcept}" src="rightBodyView/concept.xhtml"/>
+                                </p:tab>
+
+                                <p:tab  id="viewTabGroup" title="#{langueBean.getMsg('leftbody.collection')}" >
+                                    <f:facet name="anchor">
+                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                    </f:facet>
+                                    <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
+                                </p:tab>              
+
+                                <p:tab id="viewTabSearch" title="#{langueBean.getMsg('rightbody.search_result')}" >
+                                    <f:facet name="anchor">
+                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                    </f:facet>
+                                    <ui:include  src="rightBodyView/resultSearch.xhtml"/>
+                                </p:tab>              
+
+                                <p:tab rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                       id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
+                                    <f:facet name="anchor">
+                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                    </f:facet>
+                                    <ui:include src="rightBodyView/alignement.xhtml"/>
+                                </p:tab>
                             </p:tabView>
-                        </div>
-                        <ui:include src="../dialog/dragAndDrop/dragAndDrop.xhtml" />
-                    </h:form>
+
+                            <h:panelGroup rendered="#{indexSetting.isFacetSelected}">
+                                <ui:include src="rightBodyView/facet.xhtml" />
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{indexSetting.isHomeSelected}" >
+                                <ui:include src="rightBodyView/thesoHome.xhtml" />
+                            </h:panelGroup>
+                        </p:panel>
+                    </div>
                 </div>
             </div>
-
-            <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="height: 100%">
-                <div class="card shadow mb-4" style="height: 100%;">
-                    <p:panel id="formRightTab">
-                        <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
-                                   style="border-style: none; height: 100%">
-
-                            <p:ajax event="tabChange" listener="#{tree.onTabConceptChange}" update="containerIndex:formRightTab" />
-
-                            <p:tab id="viewTabConcept" title="#{langueBean.getMsg('leftbody.concept')}" >
-                                <f:facet name="anchor">
-                                    <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
-                                </f:facet>
-                                <ui:include rendered="#{rightBodySetting.showConcept}" src="rightBodyView/concept.xhtml"/>
-                            </p:tab>
-
-                            <p:tab  id="viewTabGroup" title="#{langueBean.getMsg('leftbody.collection')}" >
-                                <f:facet name="anchor">
-                                    <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
-                                </f:facet>
-                                <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
-                            </p:tab>              
-
-                            <p:tab id="viewTabSearch" title="#{langueBean.getMsg('rightbody.search_result')}" >
-                                <f:facet name="anchor">
-                                    <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
-                                </f:facet>
-                                <ui:include  src="rightBodyView/resultSearch.xhtml"/>
-                            </p:tab>              
-
-                            <p:tab rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
-                                <f:facet name="anchor">
-                                    <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
-                                </f:facet>
-                                <ui:include src="rightBodyView/alignement.xhtml"/>
-                            </p:tab>
-                        </p:tabView>
-
-                        <h:panelGroup rendered="#{indexSetting.isFacetSelected}">
-                            <ui:include src="rightBodyView/facet.xhtml" />
-                        </h:panelGroup>
-
-                        <h:panelGroup rendered="#{indexSetting.isHomeSelected}" >
-                            <ui:include src="rightBodyView/thesoHome.xhtml" />
-                        </h:panelGroup>
-                    </p:panel>
-                </div>
-            </div>
-        </div>
+        </h:panelGroup>
     </div>
     <ui:include src="../dialog/concept/addTopConcept.xhtml" />
-    
-    
+
+
     <ui:include src="../dialog/group/addGroup.xhtml" />
     <ui:include src="../dialog/group/addSubGroup.xhtml" />
     <ui:include src="../dialog/group/deleteGroup.xhtml" />
@@ -127,43 +121,43 @@
     <ui:include src="../dialog/group/deleteTraductionGroup.xhtml" />
     <ui:include src="../dialog/group/renameTraductionGroup.xhtml" />    
 
-    
+
     <ui:include src="../dialog/alignment/addAlignmentDialog.xhtml" />
     <ui:include src="../dialog/alignment/updateSingleAlignment.xhtml" />
 
-<!-- Provoque une erreur de deploiement sous Linux -->
-<!--    <ui:include src="../dialog/alignment/confirmDeleteAlignment.xhtml" /> -->
+    <!-- Provoque une erreur de deploiement sous Linux -->
+    <!--    <ui:include src="../dialog/alignment/confirmDeleteAlignment.xhtml" /> -->
     <ui:include src="../dialog/alignment/updateAlignment.xhtml" />
- 
+
     <!-- déplacements des dialogs #MR --> 
     <ui:include src="../dialog/concept/renameConcept.xhtml" />    
     <ui:include src="../dialog/concept/addNT.xhtml" /> 
     <ui:include src="../dialog/facet/addFacet.xhtml" />   
-    
+
     <ui:include src="../dialog/synonym/addSynonym.xhtml" />
     <ui:include src="../dialog/synonym/renameSynonym.xhtml" />    
-    
+
     <ui:include src="../dialog/facet/renameFacet.xhtml" />   
     <ui:include src="../dialog/facet/addFacetTraduction.xhtml" />    
 
     <ui:include src="../dialog/concept/replaceBy.xhtml" />
     <ui:include src="../dialog/concept/deleteReplaceBy.xhtml" />    
-    
+
     <ui:include src="../dialog/traduction/addTraduction.xhtml" />    
     <ui:include src="../dialog/traduction/renameTraduction.xhtml" />
     <ui:include src="../dialog/traduction/deleteTraduction.xhtml" />
-    
+
     <ui:include src="../dialog/note/addNote.xhtml" />   
     <ui:include src="../dialog/note/editNote.xhtml" /> 
     <ui:include src="../dialog/note/deleteNote.xhtml" />     
-    
+
     <ui:include src="../dialog/externalResources/addExternalResource.xhtml" /> 
     <ui:include src="../dialog/externalResources/deleteExternalResource.xhtml" />    
     <ui:include src="../dialog/externalResources/updateExternalResource.xhtml" />      
 
     <ui:include src="../dialog/facet/addConceptToFacet.xhtml" />    
     <ui:include src="../dialog/facet/removeConceptFromFracets.xhtml" />  
-    
+
     <ui:include src="../dialog/related/deleteRelatedLink.xhtml" />   
     <ui:include src="../dialog/related/addRelatedLink.xhtml" />    
 </ui:composition>

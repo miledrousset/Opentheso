@@ -13,10 +13,10 @@
         </button>
 
         <!-- liste des thésaurus -->
-        <p:selectOneMenu value="#{selectedTheso.selectedIdTheso}" style="color: #000; height: 28px;" filter="true" filterMatchMode="contains">
+        <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" style="color: #000; height: 28px;" filter="true" filterMatchMode="contains">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
-            <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{listAccess.key}" itemValue="#{listAccess.value}" />
+            <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
         </p:selectOneMenu>
 
         <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" style="margin-left: 15px;">

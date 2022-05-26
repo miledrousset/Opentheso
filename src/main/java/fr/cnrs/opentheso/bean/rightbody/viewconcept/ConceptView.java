@@ -32,6 +32,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.ws.RestRDFHelper;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -90,6 +91,8 @@ public class ConceptView implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
     private SelectedTheso selectedTheso;
+    @Inject
+    private SearchBean searchBean;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -197,31 +200,12 @@ public class ConceptView implements Serializable {
             nodeConcept.clear();
         }
         selectedLang = null;
-        if (notes == null) {
-            notes = new ArrayList<>();
-        }
-        if (scopeNotes == null) {
-            scopeNotes = new ArrayList<>();
-        }
-        if (changeNotes == null) {
-            changeNotes = new ArrayList<>();
-        }
-        if (definitions == null) {
-            definitions = new ArrayList<>();
-        }
-        if (editorialNotes == null) {
-            editorialNotes = new ArrayList<>();
-        }
-        if (examples == null) {
-            examples = new ArrayList<>();
-        }
-        if (historyNotes == null) {
-            historyNotes = new ArrayList<>();
-        }
+
         if (nodeFacets == null) {
             nodeFacets = new ArrayList<>();
         }        
-
+        clearNotes();
+        
         offset = 0;
         step = 20;
         haveNext = false;
@@ -241,6 +225,43 @@ public class ConceptView implements Serializable {
         responsiveOptions.add(new ResponsiveOption("560px", 1));
     }
 
+    private void clearNotes() {
+        if (notes == null) {
+            notes = new ArrayList<>();
+        } else 
+            notes.clear();
+                    
+        if (scopeNotes == null) {
+            scopeNotes = new ArrayList<>();
+        } else 
+            scopeNotes.clear();
+        
+        if (changeNotes == null) {
+            changeNotes = new ArrayList<>();
+        } else 
+            changeNotes.clear();
+        
+        if (definitions == null) {
+            definitions = new ArrayList<>();
+        } else 
+            definitions.clear();
+        
+        if (editorialNotes == null) {
+            editorialNotes = new ArrayList<>();
+        } else 
+            editorialNotes.clear();
+        
+        if (examples == null) {
+            examples = new ArrayList<>();
+        } else 
+            examples.clear();
+        
+        if (historyNotes == null) {
+            historyNotes = new ArrayList<>();
+        } else 
+            historyNotes.clear();        
+    }
+    
     /**
      * récuparation des informations pour le concept sélectionné c'est pour la
      * navigation entre les concepts dans la vue de droite avec deployement de
@@ -306,7 +327,7 @@ public class ConceptView implements Serializable {
             pf.ajax().update("containerIndex:formLeftTab");
             pf.ajax().update("containerIndex:formRightTab");
         }
-
+        searchBean.setSearchResultVisible(true);
         countOfBranch = 0;
     }
 
@@ -696,13 +717,7 @@ public class ConceptView implements Serializable {
 /////////////////////////////////
 /////////////////////////////////
     private void setNotes() {
-        notes.clear();
-        scopeNotes.clear();
-        changeNotes.clear();
-        definitions.clear();
-        editorialNotes.clear();
-        examples.clear();
-        historyNotes.clear();
+        clearNotes();
 
         for (NodeNote nodeNote : nodeConcept.getNodeNotesConcept()) {
             switch (nodeNote.getNotetypecode()) {

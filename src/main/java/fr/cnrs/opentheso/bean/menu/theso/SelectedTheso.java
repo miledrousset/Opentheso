@@ -30,6 +30,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 
@@ -159,6 +160,7 @@ public class SelectedTheso implements Serializable {
     /**
      * Permet de charger le thésaurus sélectionné C'est le point d'entrée de
      * l'application
+     * @throws java.io.IOException
      */
 //    public void setSelectedTheso() throws IOException {
     public void setSelectedTheso() throws IOException {
@@ -208,6 +210,41 @@ public class SelectedTheso implements Serializable {
 
         menuBean.redirectToThesaurus();
     }
+    
+    
+    /**
+     * Permet de charger le thésaurus sélectionné C'est le point d'entrée de
+     * l'application
+     * @throws java.io.IOException
+     */
+//    public void setSelectedTheso() throws IOException {
+    public void setSelectedThesoForSearch() throws IOException {
+        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
+        connect.setLocalUri(localUri);
+
+        viewEditorThesoHomeBean.reset();
+        viewEditorHomeBean.reset();
+
+        // après un raffraichissement F5
+        if (selectedIdTheso.equalsIgnoreCase(currentIdTheso)) {
+            if (!selectedLang.equalsIgnoreCase(currentLang)) {
+                startNewLang();
+            }
+            menuBean.redirectToThesaurus();
+            return;
+        }
+
+        sortByNotation = false;
+        startNewTheso(null);
+        indexSetting.setIsSelectedTheso(true);
+        indexSetting.setIsValueSelected(true);
+        indexSetting.setIsHomeSelected(false);
+        indexSetting.setIsThesoActive(true);
+
+        menuBean.redirectToThesaurus();
+        PrimeFaces.current().executeScript("PF('resultatRecherche').show();");
+    }    
 
     public List<AlignementElement> getListAlignementElement() {
         return listAlignementElement;

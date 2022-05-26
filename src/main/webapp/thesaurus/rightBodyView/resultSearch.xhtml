@@ -3,8 +3,7 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGroup rendered="#{searchBean.nodeConceptSearchs != null}">
-
+    <h:panelGroup id="sideBarSearch">
         <h:panelGroup rendered="#{!searchBean.isSelectedItem}">
             <div class="row">
                 <div class="col-12" style="background-color: #ecf8f1; height: 25px">
@@ -14,88 +13,98 @@
             </div>
         </h:panelGroup>
 
-        <ui:repeat var="result" value="#{searchBean.nodeConceptSearchs}" >
-            <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin-top: 15px">
-                <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
-                    <div class="row">
-                        <div class="col-12">
-                            <h:panelGroup rendered="#{result.isDeprecated}">
-                                 <i class="fa fa-solid fa-ban" style="font-size: 12px; color: #C63632"></i>
-                                <p:commandLink rendered="#{result.isDeprecated}" value=" #{result.prefLabel}" 
-                                               style="color: #C63632; font-weight: bold; font-style: italic"
-                                               actionListener="#{searchBean.onSelectConcept(result.idConcept)}"
-                                               update="containerIndex:formRightTab" />                                 
-                            </h:panelGroup>
-                            <h:panelGroup rendered="#{!result.isDeprecated}">                            
-                                <p:commandLink rendered="#{!result.isDeprecated}" value="#{result.prefLabel}" 
-                                               style="color: #43B572; font-size: 12px; font-weight: bold;"
-                                               actionListener="#{searchBean.onSelectConcept(result.idConcept)}"
-                                               update="containerIndex:formRightTab" />    
-                            </h:panelGroup>
-                        </div>
-                    </div>
+        <p:scrollTop />
 
-                    <h:panelGroup rendered="#{result.nodeEM.size() != 0}">
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-12">
-                                <h:outputText value="SYN : " title="#{langueBean.getMsg('rightbody.concept.synonym')}" 
-                                              style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
-                                <ui:repeat var="em" value="#{result.nodeEM}" >
-                                    <h:outputText value="#{em.lexical_value}, " style="color: #8C8C8C; font-size: 12px"/>
-                                </ui:repeat>
-                            </div>            
-                        </div>
-                    </h:panelGroup>  
-
-                    <h:panelGroup rendered="#{result.nodeBT.size() != 0}">
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-12">
-                                <h:outputText value="BT : " title="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')}" 
-                                              style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
-                                <ui:repeat var="bt" value="#{result.nodeBT}" >
-                                    <h:outputText value="#{bt.title}, " style="color: #8C8C8C; font-size: 12px"/>
-                                </ui:repeat>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{result.nodeNT.size() != 0}">
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-12">
-                                <h:outputText value="NT : " title="Terme spécifique" 
-                                              style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
-                                <ui:repeat var="nt" value="#{result.nodeNT}" >
-                                    <h:outputText value="#{nt.title}, " style="color: #8C8C8C; font-size: 12px"/>
-                                </ui:repeat>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{result.nodeRT.size() != 0}">
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-12">
-                                <h:outputText value="RT : " title="Terme associé" 
-                                              style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
-                                <ui:repeat var="rt" value="#{result.nodeRT}" >
-                                    <h:outputText value="#{rt.title}, " style="color: #8C8C8C; font-size: 12px"/>
-                                </ui:repeat>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{result.nodeTermTraductions.size() != 0}">
+        <p:scrollPanel style="width: 100%; height: 100%; overflow: overlay;" mode="native">
+            <ui:repeat var="result" value="#{searchBean.nodeConceptSearchs}" >
+                <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin-top: 15px">
+                    <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
+                        <p:tag styleClass="p-mr-2" severity="success" value="#{result.idTheso}" />
                         <div class="row">
-                            <div class="col-12" >
-                                <h:outputText value="Langs: " title="#{langueBean.getMsg('candidat.traductions')}" 
-                                              style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
-                                <ui:repeat var="langs" value="#{result.nodeTermTraductions}" >
-                                    <h:outputText value="#{langs.lexicalValue}(#{langs.lang}), " style="color: #8C8C8C; font-size: 12px"/>
-                                </ui:repeat>
-                            </div>                             
+                            <div class="col-12">
+                                
+                                <h:panelGroup rendered="#{result.isDeprecated}">
+                                    <i class="fa fa-solid fa-ban" style="font-size: 12px; color: #C63632"></i>
+                                    <p:commandLink rendered="#{result.isDeprecated}" value=" #{result.prefLabel}" 
+                                                   style="color: #C63632; font-weight: bold; font-style: italic"
+                                                   actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
+                                                   oncomplete="PF('resultatRecherche').show();"
+                                                   update="containerIndex:formRightTab" />                                 
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{!result.isDeprecated}">                            
+                                    <p:commandLink rendered="#{!result.isDeprecated}" value="#{result.prefLabel}" 
+                                                   style="color: #43B572; font-size: 12px; font-weight: bold;"
+                                                   actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
+                                                   oncomplete="PF('resultatRecherche').show();"
+                                                   update="containerIndex:formRightTab" />    
+                                </h:panelGroup>
+                            </div>
                         </div>
-                    </h:panelGroup>   
+
+                        <h:panelGroup rendered="#{result.nodeEM.size() != 0}">
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-12">
+                                    <h:outputText value="SYN : " title="#{langueBean.getMsg('rightbody.concept.synonym')}" 
+                                                  style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
+                                    <ui:repeat var="em" value="#{result.nodeEM}" >
+                                        <h:outputText value="#{em.lexical_value}, " style="color: #8C8C8C; font-size: 12px"/>
+                                    </ui:repeat>
+                                </div>            
+                            </div>
+                        </h:panelGroup>  
+
+                        <h:panelGroup rendered="#{result.nodeBT.size() != 0}">
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-12">
+                                    <h:outputText value="BT : " title="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')}" 
+                                                  style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
+                                    <ui:repeat var="bt" value="#{result.nodeBT}" >
+                                        <h:outputText value="#{bt.title}, " style="color: #8C8C8C; font-size: 12px"/>
+                                    </ui:repeat>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{result.nodeNT.size() != 0}">
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-12">
+                                    <h:outputText value="NT : " title="Terme spécifique" 
+                                                  style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
+                                    <ui:repeat var="nt" value="#{result.nodeNT}" >
+                                        <h:outputText value="#{nt.title}, " style="color: #8C8C8C; font-size: 12px"/>
+                                    </ui:repeat>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{result.nodeRT.size() != 0}">
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-12">
+                                    <h:outputText value="RT : " title="Terme associé" 
+                                                  style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
+                                    <ui:repeat var="rt" value="#{result.nodeRT}" >
+                                        <h:outputText value="#{rt.title}, " style="color: #8C8C8C; font-size: 12px"/>
+                                    </ui:repeat>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{result.nodeTermTraductions.size() != 0}">
+                            <div class="row">
+                                <div class="col-12" >
+                                    <h:outputText value="Langs: " title="#{langueBean.getMsg('candidat.traductions')}" 
+                                                  style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
+                                    <ui:repeat var="langs" value="#{result.nodeTermTraductions}" >
+                                        <h:outputText value="#{langs.lexicalValue}(#{langs.lang}), " style="color: #8C8C8C; font-size: 12px"/>
+                                    </ui:repeat>
+                                </div>                             
+                            </div>
+                        </h:panelGroup>   
+                    </div>
                 </div>
-            </div>
-        </ui:repeat>
+            </ui:repeat>
+        </p:scrollPanel>
+
+        <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="pi pi-arrow-up" />
     </h:panelGroup>
 </ui:fragment>
