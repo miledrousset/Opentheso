@@ -205,13 +205,4 @@ public class Concept {
         this.conceptType = conceptType;
     }
     
-    public String getConceptType() {
-        return conceptType;
-    }
-    
-    public void setConceptType(String conceptType) {
-        this.conceptType = conceptType;
-}
-    
-    
 }
