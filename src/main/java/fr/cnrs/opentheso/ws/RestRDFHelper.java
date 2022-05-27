@@ -787,17 +787,17 @@ public class RestRDFHelper {
      * @param ds
      * @param idTheso
      * @param lang 
-     * @param group 
+     * @param groups 
      * @param value 
      * @param withNotes 
      * @return  
      */
     public String findAutocompleteConcepts(HikariDataSource ds,
-            String idTheso, String lang, String group,
+            String idTheso, String lang, String[] groups,
             String value, boolean withNotes) {
 
         String datas = findAutocompleteConcepts__(ds,
-                 value, idTheso, lang, group, withNotes);
+                 value, idTheso, lang, groups, withNotes);
         if(datas == null) return null;
         return datas;
     }    
@@ -814,7 +814,7 @@ public class RestRDFHelper {
     private String findAutocompleteConcepts__(
             HikariDataSource ds,
             String value, String idTheso,
-            String lang, String group, boolean withNotes) {
+            String lang, String[] groups, boolean withNotes) {
 
         if(value == null || idTheso == null) {
             return null;
@@ -831,7 +831,7 @@ public class RestRDFHelper {
         
         
         // recherche de toutes les valeurs
-        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(ds, value, lang, group, idTheso, withNotes);
+        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(ds, value, lang, groups, idTheso, withNotes);
         
         if(nodeAutoCompletion == null || nodeAutoCompletion.isEmpty())
             return null;

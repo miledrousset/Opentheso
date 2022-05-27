@@ -40,7 +40,8 @@ public class FacetHelper {
     public ArrayList<NodeIdValue> searchFacet(HikariDataSource ds,
             String name, String lang, String idThesaurus) {
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-
+        StringPlus stringPlus = new StringPlus();
+        name = stringPlus.convertString(name);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '" + lang

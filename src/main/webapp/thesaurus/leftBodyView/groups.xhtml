@@ -20,16 +20,16 @@
                           style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
                           class="dropdown-submenu pull-left">
 
-                <p:menuitem value="Ajouter un groupe/collection" actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
+                <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
                             oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
 
                 <p:menuitem disabled="#{treeGroups.isGroupNode and treeGroups.selectedNode != null}" process="@this"
-                            value="Ajouter un sous-group/collection" actionListener="#{addGroupBean.init()}"
+                            value="#{langueBean.getMsg('leftbody.group.addSubGroup')}" actionListener="#{addGroupBean.init()}"
                             oncomplete="PF('addSubGroup').show();" update="containerIndex:idAddSubGroup" 
                             icon="far fa-object-ungroup"/>
 
                 <p:menuitem disabled="#{treeGroups.isGroupNode and treeGroups.selectedNode != null and !treeGroups.isThisGroupHaveSubGroup}"
-                            value="Supprimer group/collection" actionListener="#{addGroupBean.init()}"  process="@this"
+                            value="#{langueBean.getMsg('leftbody.group.deleteGroup')}" actionListener="#{addGroupBean.init()}"  process="@this"
                             oncomplete="PF('deleteGroup').show();" update="containerIndex:idDeleteGroup"
                             icon="fas fa-minus"/>                  
             </p:menuButton>

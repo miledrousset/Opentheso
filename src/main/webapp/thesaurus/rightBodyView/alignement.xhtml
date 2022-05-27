@@ -47,23 +47,23 @@
                  widgetVar="datatable"
                  filteredValue="#{alignmentBean.filteredAlignement}">
 
-            <p:column headerText="Identifiant" filterBy="#{alignement.idConceptOrig}" sortBy="#{alignement.idConceptOrig}">
+            <p:column headerText="#{langueBean.getMsg('search.identifier')}" filterBy="#{alignement.idConceptOrig}" sortBy="#{alignement.idConceptOrig}">
                 <h:outputText value="#{alignement.idConceptOrig}" />
             </p:column>
 
-            <p:column headerText="Etiquette" filterBy="#{alignement.labelConceptOrig}" sortBy="#{alignement.labelConceptOrig}">
+            <p:column headerText="#{langueBean.getMsg('statistique.label')}" filterBy="#{alignement.labelConceptOrig}" sortBy="#{alignement.labelConceptOrig}">
                 <h:outputText value="#{alignement.labelConceptOrig}" />
             </p:column>
 
-            <p:column headerText="Type d'Alignement" sortBy="#{alignement.labelConceptCible}">
+            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}" sortBy="#{alignement.labelConceptCible}">
                 <h:outputText value="#{alignement.labelConceptCible}" />
             </p:column>
 
-            <p:column headerText="Concept cible">
+            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.conceptTarget')}">
                 <h:outputText value="#{alignement.typeAlignement}" />
             </p:column>
 
-            <p:column headerText="Target URI" sortBy="#{alignement.targetUri}" style="text-align: center">
+            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uriTarget')}" sortBy="#{alignement.targetUri}" style="text-align: center">
                 <h:outputLink value="#{alignement.targetUri}" target="_blank" >
                     <h:outputText rendered="#{alignement.targetUri != null}" value="#{alignement.targetUri}" />
 
@@ -224,12 +224,12 @@
         </div> 
     </p:dialog>
     
-    <p:dialog id="idConfirmDeleteAlignement" header="Confirmer la suppression" widgetVar="confirmDeleteAlignement" 
+    <p:dialog id="idConfirmDeleteAlignement" header="#{langueBean.getMsg('rightbody.conceptdialog.confirmDelete')}" widgetVar="confirmDeleteAlignement" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-12" >
-                <h:outputText value="Voulez-vous supprimer l'alignement " style="font-size: 13px; color: black;"/>                    
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.confirmDeleteAlignment')} " style="font-size: 13px; color: black;"/>                    
             </div>
         </div>
 
@@ -243,11 +243,11 @@
 
         <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-            <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                              actionListener="PF('confirmDeleteAlignement').hide();" update="idConfirmDeleteAlignement"/>
 
-            <p:commandButton title="Supprimer" update="containerIndex:formRightTab messageIndex" oncomplete="PF('confirmDeleteAlignement').hide();"
-                             class="btn btn-primary" style="background-color: #C63632; border-color: #C63632"
+            <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" styleClass="ui-button-danger"
+                             update="containerIndex:formRightTab messageIndex" oncomplete="PF('confirmDeleteAlignement').hide();"
                              actionListener="#{alignmentBean.deleteAlignemen()}" />
         </div>
     </p:dialog>     

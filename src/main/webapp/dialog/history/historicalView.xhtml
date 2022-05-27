@@ -14,7 +14,7 @@
                     <p:dataTable value="#{historyBean.historyLabels}" var="label"
                                  scrollable="true" scrollHeight="250" style="font-size: 12px;">
                         <f:facet name="header">
-                            <h:outputText value="Historique des labels" />
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.labelHistory')}" />
                         </f:facet>
                         <p:column headerText="Valeur" style="font-size: 12px;">
                             <h:outputText value="#{label.value}" />
@@ -40,7 +40,7 @@
                     <p:dataTable value="#{historyBean.historySynonyms}" var="synonym"
                                  scrollable="true" scrollHeight="250" style="font-size: 12px;">
                         <f:facet name="header">
-                            <h:outputText value="Historique des synonymes" />
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.synonymHistory')}" />
                         </f:facet>
                         <p:column headerText="Valeur" style="font-size: 12px;">
                             <h:outputText value="#{synonym.value}" />
@@ -66,7 +66,7 @@
                     <p:dataTable value="#{historyBean.historyNotes}" var="note"
                                  scrollable="true" scrollHeight="250" style="font-size: 12px;">
                         <f:facet name="header" >
-                            <h:outputText value="Historique des notes" />
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.noteHistory')}" />
                         </f:facet>
                         <p:column headerText="Valeur" style="font-size: 12px;">
                             <h:outputText value="#{note.value}" />
@@ -92,7 +92,7 @@
                     <p:dataTable value="#{historyBean.historyRelations}" var="relations"
                                  scrollable="true" scrollHeight="250" style="font-size: 12px;">
                         <f:facet name="header">
-                            <h:outputText value="Historique des relations" />
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.relationshipHistory')}" />
                         </f:facet>
                         <p:column headerText="Action" style="font-size: 12px;">
                             <h:outputText value="#{relations.action}" />
