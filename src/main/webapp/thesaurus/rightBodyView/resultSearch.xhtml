@@ -28,14 +28,12 @@
                                     <p:commandLink rendered="#{result.isDeprecated}" value=" #{result.prefLabel}" 
                                                    style="color: #C63632; font-weight: bold; font-style: italic"
                                                    actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
-                                                   oncomplete="PF('resultatRecherche').show();"
                                                    update="containerIndex:thesorusContent containerIndex:thesoSelect" />                                 
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{!result.isDeprecated}">                            
                                     <p:commandLink rendered="#{!result.isDeprecated}" value="#{result.prefLabel}" 
                                                    style="color: #43B572; font-size: 12px; font-weight: bold;"
                                                    actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
-                                                   oncomplete="PF('resultatRecherche').show();"
                                                    update="containerIndex:thesorusContent containerIndex:thesoSelect" />    
                                 </h:panelGroup>
                             </div>

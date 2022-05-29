@@ -222,12 +222,6 @@ public class SelectedTheso implements Serializable {
     }
     
     
-    /**
-     * Permet de charger le thésaurus sélectionné C'est le point d'entrée de
-     * l'application
-     * @throws java.io.IOException
-     */
-//    public void setSelectedTheso() throws IOException {
     public void setSelectedThesoForSearch() throws IOException {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
@@ -241,7 +235,7 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
-            menuBean.redirectToThesaurus();
+            //menuBean.redirectToThesaurus();
             return;
         }
 
@@ -251,9 +245,6 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsValueSelected(true);
         indexSetting.setIsHomeSelected(false);
         indexSetting.setIsThesoActive(true);
-
-        menuBean.redirectToThesaurus();
-        PrimeFaces.current().executeScript("PF('resultatRecherche').show();");
     }    
 
     public List<AlignementElement> getListAlignementElement() {
