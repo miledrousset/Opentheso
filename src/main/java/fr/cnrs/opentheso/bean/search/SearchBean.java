@@ -29,6 +29,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
@@ -288,8 +289,7 @@ public class SearchBean implements Serializable {
                 isSelectedItem = false;
             }
         } else {
-            FacesMessage msg;
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
 
@@ -346,7 +346,12 @@ public class SearchBean implements Serializable {
     }
 
     public void afficherResultatRecherche() {
-        PrimeFaces.current().executeScript("PF('resultatRecherche').show();");
+        if(CollectionUtils.isEmpty(nodeConceptSearchs)) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut faire une recherche avant !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } else {
+            PrimeFaces.current().executeScript("PF('resultatRecherche').show();");
+        }
     }
 
     /**

@@ -235,7 +235,6 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
-            //menuBean.redirectToThesaurus();
             return;
         }
 
