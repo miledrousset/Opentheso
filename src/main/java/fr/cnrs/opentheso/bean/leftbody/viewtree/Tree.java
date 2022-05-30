@@ -483,7 +483,7 @@ public class Tree implements Serializable {
 
     public void onTabConceptChange(TabChangeEvent event) {
         if (event.getTab().getId().equals("viewTabAlignement")) {
-            rightBodySetting.setIndex("3");
+            rightBodySetting.setIndex("2");
             indexSetting.setIsValueSelected(true);            
             
             alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
@@ -491,11 +491,6 @@ public class Tree implements Serializable {
                     conceptBean.getSelectedLang());
             
             alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-         //   alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-        }
-        if (event.getTab().getId().equals("viewTabSearch")) {
-            rightBodySetting.setIndex("2");
-            indexSetting.setIsValueSelected(true);            
         }    
         if (event.getTab().getId().equals("viewTabGroup")) {
             rightBodySetting.setIndex("1");
