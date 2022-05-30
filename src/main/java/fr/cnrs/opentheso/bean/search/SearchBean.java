@@ -555,19 +555,20 @@ public class SearchBean implements Serializable {
     }    
     
     public void onSelectConcept(String idTheso, String idConcept, String idLang){
-        if(selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty() || !selectedTheso.getCurrentIdTheso().equalsIgnoreCase(idTheso)){
+        if(selectedTheso.getCurrentIdTheso() == null 
+                || selectedTheso.getCurrentIdTheso().isEmpty() 
+                || !selectedTheso.getCurrentIdTheso().equalsIgnoreCase(idTheso)){
             roleOnThesoBean.initNodePref(idTheso);       
             selectedTheso.setSelectedIdTheso(idTheso);
             selectedTheso.setSelectedLang(idLang);               
-             try {
-                 selectedTheso.setSelectedThesoForSearch();
-             } catch (IOException ex) {
-                 Logger.getLogger(SearchBean.class.getName()).log(Level.SEVERE, null, ex);
-             }            
+            try {
+                selectedTheso.setSelectedThesoForSearch();
+            } catch (IOException ex) {
+                Logger.getLogger(SearchBean.class.getName()).log(Level.SEVERE, null, ex);
+            }            
         }
-        conceptBean.getConcept(
-                idTheso,
-                idConcept, idLang);
+        
+        conceptBean.getConcept(idTheso, idConcept, idLang);
         rightBodySetting.setIndex("0");
     }
 

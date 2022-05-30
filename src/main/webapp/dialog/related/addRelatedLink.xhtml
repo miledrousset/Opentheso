@@ -6,20 +6,20 @@
 
     <p:dialog id="idAddRelatedLink" header="#{langueBean.getMsg('rightbody.conceptdialog.add_association_relationship')}" widgetVar="addRelatedLink" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        <h:form rendered="#{conceptView.nodeConcept != null}" id="addRelatedLinkForm" >
+            <div class="row">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
+                </div>
+                <div class="col-7">
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+                </div>
+            </div>  
 
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-            </div>
-        </div>  
-
-        <div class="row" style="margin-top: 5px">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.related')} : " class="dialog-titre" /> 
-            </div>
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.related')} : " class="dialog-titre" /> 
+                </div>
             <div class="col-7">
                 <p:autoComplete value="#{relatedBean.searchSelected}"
                                 var="values"
@@ -40,26 +40,25 @@
 
                 </p:autoComplete>  
             </div>
-        </div>
-
-        <div class="row" style="margin-top: 5px">
-            <div class="col-12" style="margin-top: 3px">
-                <p:selectBooleanCheckbox value="#{relatedBean.tagPrefLabel}"  itemLabel="#{langueBean.getMsg('rightbody.conceptdialog.tagPrefLabel')}" 
-                                         title="#{langueBean.getMsg('rightbody.conceptdialog.tagPrefLabelToolTip')}"/> 
             </div>
-        </div>
 
-        <f:facet name="footer">
+            <div class="row" style="margin-top: 5px">
+                <div class="col-12" style="margin-top: 3px">
+                    <p:selectBooleanCheckbox value="#{relatedBean.tagPrefLabel}" itemLabel="#{langueBean.getMsg('rightbody.conceptdialog.tagPrefLabel')}" 
+                                         title="#{langueBean.getMsg('rightbody.conceptdialog.tagPrefLabelToolTip')}"/> 
+                </div>
+            </div>
+            <p:spacer height="20px;" />
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addRelatedLink').hide();" update="idAddRelatedLink"/>
+                                 actionListener="PF('addRelatedLink').hide();" update="containerIndex:idAddRelatedLink"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
-                                 update="containerIndex:formRightTab containerIndex:formLeftTab messageIndex"
-                                 oncomplete="PF('addRelatedLink').hide();"
-                                 actionListener="#{relatedBean.addNewRelatedLink(currentUser.nodeUser.idUser)}"/>
-            </div>
-        </f:facet>
+                <p:commandButton id="validateAddTraduction"
+                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                                 ajax="true" process="@form"
+                                 actionListener="#{relatedBean.addNewRelatedLink(currentUser.nodeUser.idUser)}" />
+            </div>            
+        </h:form>            
     </p:dialog>   
 </ui:fragment>

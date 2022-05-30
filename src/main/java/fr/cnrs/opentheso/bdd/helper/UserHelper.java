@@ -673,6 +673,8 @@ public class UserHelper {
         }
         return listUsers;
     }
+    
+  
 
     /**
      * cette fonction permet de retourner la liste des thésaurus pour un
@@ -919,7 +921,7 @@ public class UserHelper {
         }
         return nodeUserGroupUsers;
     }
-
+    
     /**
      * permet de retourner la liste de tous les utilisateurs qui sont SuperAdmin
      *
@@ -949,7 +951,7 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nodeUserGroupUsers;
-    }      
+    }    
 
     /**
      * permet de créer un groupe ou projet pour regrouper les utilisateurs et

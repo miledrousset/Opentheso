@@ -136,6 +136,16 @@ public class FacetHelper {
                         + " FROM thesaurus_array "
                         + " WHERE thesaurus_array.id_thesaurus = '" + idThesaurus + "'"
                         + " AND thesaurus_array.id_concept_parent = '" + idConcept + "'");
+            /*    stmt.executeQuery("SELECT thesaurus_array.id_facet " +
+                        " FROM thesaurus_array, node_label  " +
+                        " WHERE" +
+                        " thesaurus_array.id_thesaurus = node_label.id_thesaurus" +
+                        " and" +
+                        " thesaurus_array.id_facet = node_label.id_facet" +
+                        " and" +
+                        " thesaurus_array.id_thesaurus = '" + idThesaurus + "' " +
+                        " AND thesaurus_array.id_concept_parent = '" + idConcept + "'" +
+                        " order by node_label.lexical_value");*/
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {

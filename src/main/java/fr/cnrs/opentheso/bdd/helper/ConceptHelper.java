@@ -5055,6 +5055,7 @@ public class ConceptHelper {
         return status;
     }
 
+
     public boolean haveThisGroup(HikariDataSource ds, String idConcept, String idDomaine, String idTheso) {
         boolean group = false;
         try ( Connection conn = ds.getConnection()) {

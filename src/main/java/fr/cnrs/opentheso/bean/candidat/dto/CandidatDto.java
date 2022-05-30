@@ -307,10 +307,10 @@ public class CandidatDto implements Serializable {
     public void setNbrNoteVote(int nbrNoteVote) {
         this.nbrNoteVote = nbrNoteVote;
     }
-    
+
     public String getCreatedBy() {
         return createdBy;
-}
+    }
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;

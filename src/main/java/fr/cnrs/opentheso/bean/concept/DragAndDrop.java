@@ -221,8 +221,8 @@ public class DragAndDrop implements Serializable {
 
        isdragAndDrop = false;        
        pasteWithTreeControl();
- 
-    }
+     }
+    
     
     private void pasteWithTreeControl(){
         /// préparer le noeud à couper

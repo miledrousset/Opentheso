@@ -85,8 +85,7 @@ public class ImagesHelper {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE external_images set image_copyright = '" + newCopyRight
                         + "', external_uri = '" + newUri + "' WHERE id_concept = '" + idConcept
-                        + "' and id_thesaurus = '" + idThesausus + "' and external_uri = '" + oldUri
-                        + "' and id_user = " + idUser);
+                        + "' and id_thesaurus = '" + idThesausus + "' and external_uri = '" + oldUri + "'");
                 status = true;
             }
         } catch (SQLException sqle) {

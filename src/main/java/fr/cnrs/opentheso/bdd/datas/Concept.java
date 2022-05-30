@@ -196,14 +196,13 @@ public class Concept {
     public void setContributorName(String contributorName) {
         this.contributorName = contributorName;
     }
-    
+
     public String getConceptType() {
         return conceptType;
     }
-    
+
     public void setConceptType(String conceptType) {
         this.conceptType = conceptType;
-}
-    
+    }
     
 }

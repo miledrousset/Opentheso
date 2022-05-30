@@ -95,6 +95,32 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- concept type -->            
+            <div class="list-group-item list-group-item-action" >
+                <div class="row" style="margin-left: 0px;">
+                    <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.type')}" 
+                                      title="#{langueBean.getMsg('rightbody.concept.type')}"
+                                      style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
+                    </div>
+                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                        
+                         <p:menuButton disabled="true" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                      icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 13px;">
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_notation')}" 
+                                        action="#{notationBean.reset()}" update="idSetNotation" icon="fas fa-edit"
+                                        oncomplete="PF('setNotation').show();"  />
+                        </p:menuButton> 
+                        <h:panelGroup rendered="#{(conceptView.nodeConcept.concept.conceptType == null) or (conceptView.nodeConcept.concept.conceptType == '') }">
+                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 13px; color: grey; font-style: italic " />
+                        </h:panelGroup>
+
+                         <h:panelGroup rendered="#{(conceptView.nodeConcept.concept.conceptType != null) and (conceptView.nodeConcept.concept.conceptType != '') }">
+                             <h:outputText value="#{conceptView.nodeConcept.concept.conceptType}" style="font-size: 13px; color: #666666"/>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </div>            
 
             <!-- concept type -->            
             <div class="list-group-item list-group-item-action" >
@@ -221,6 +247,7 @@
                         </h:panelGroup>                        
 
                     </div>
+                    
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: left; margin-left: -5px;">
                         <!-- QrCode-->                
                         <h:panelGroup rendered="#{conceptView.nodeConcept.concept.idArk != ''}" style="width: 100%;">
