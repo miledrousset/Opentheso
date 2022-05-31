@@ -64,23 +64,25 @@
 
                     <ui:include src="commun/header.xhtml" />
 
-                    <p:panel id="searchBar">
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 75px; width: 100%; margin: 25px;">
-                            <div style="position: relative; height: 100%; width: 100%;" >
-                                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
-                                    <ui:include src="thesaurus/search.xhtml"/>
-                                </div>
-                                <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; font-size: 12px;">
-                                    <h1 class="h5 mb-0 text-gray-500">#{langueBean.getMsg('menu.thesaurus')}</h1>
+                    <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px;">
+
+                        <p:panel id="searchBar">
+                            <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px; width: 100%; margin: 25px;">
+                                <div style="position: relative; height: 100%; width: 100%;" >
+                                    <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
+                                        <ui:include src="thesaurus/search.xhtml"/>
+                                    </div>
+                                    <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; font-size: 12px;">
+                                        <h1 class="h5 mb-0 text-gray-500">#{langueBean.getMsg('menu.thesaurus')}</h1>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </p:panel>
-
-                    <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; margin-top: -40px;">
+                        </p:panel>
+                        
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>
+                        
                         <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/details_thesaurus.xhtml" />
                         </h:panelGroup>
