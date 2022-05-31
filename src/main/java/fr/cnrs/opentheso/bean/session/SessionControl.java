@@ -26,7 +26,6 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
-import javax.servlet.http.HttpServletRequest;
 
 
 @Named(value = "sessionControl")
@@ -77,7 +76,7 @@ public class SessionControl implements Serializable {
         System.gc();
         System.runFinalization ();
         
-        //menuBean.redirectToThesaurus();
+        menuBean.redirectToThesaurus();
     }
 
     public void clearComponent() {
