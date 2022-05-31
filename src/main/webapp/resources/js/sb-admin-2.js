@@ -7,6 +7,9 @@
     $(".sidebar").toggleClass("toggled");
     if ($(".sidebar").hasClass("toggled")) {
       $('.sidebar .collapse').collapse('hide');
+      document.getElementById("logoOpenTheso").style.display = "block";
+    } else {
+      document.getElementById("logoOpenTheso").style.display = "none";
     };
   });
 

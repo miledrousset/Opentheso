@@ -26,16 +26,14 @@
                                 <h:panelGroup rendered="#{result.isDeprecated}">
                                     <i class="fa fa-solid fa-ban" style="font-size: 12px; color: #C63632"></i>
                                     <p:commandLink rendered="#{result.isDeprecated}" value=" #{result.prefLabel}" 
-                                                   style="color: #C63632; font-weight: bold; font-style: italic"
+                                                   style="color: #C63632; font-weight: bold; font-style: italic" ajax="true" process="@this"
                                                    actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
-                                                   oncomplete="PF('resultatRecherche').show();"
                                                    update="containerIndex:thesorusContent containerIndex:thesoSelect" />                                 
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{!result.isDeprecated}">                            
                                     <p:commandLink rendered="#{!result.isDeprecated}" value="#{result.prefLabel}" 
-                                                   style="color: #43B572; font-size: 12px; font-weight: bold;"
+                                                   style="color: #43B572; font-size: 12px; font-weight: bold;" ajax="true" process="@this"
                                                    actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
-                                                   oncomplete="PF('resultatRecherche').show();"
                                                    update="containerIndex:thesorusContent containerIndex:thesoSelect" />    
                                 </h:panelGroup>
                             </div>

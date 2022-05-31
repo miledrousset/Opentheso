@@ -4,45 +4,72 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <style type="text/css">
+
+        .formLogin {
+            z-index: 1;
+            background: #FFFFFF;
+            max-width: 360px;
+            padding: 45px;
+            text-align: center;
+        }
+        body .ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-icon {
+            color: #43B572;
+        }
+        .formLogin input {
+            font-family: "Roboto", sans-serif;
+            outline: 0;
+            background: #ecf8f1;
+            width: 100%;
+            border: 0;
+            margin: 0 0 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .formLogin-button {
+            font-family: "Roboto", sans-serif;
+            text-transform: uppercase;
+            outline: 0;
+            background: #4CAF50;
+            width: 100%;
+            border: 0;
+            padding: 15px;
+            color: #FFFFFF;
+            font-size: 14px;
+            -webkit-transition: all 0.3 ease;
+            transition: all 0.3 ease;
+            cursor: pointer;
+        }
+        .formLogin button:hover,.formLogin button:active,.formLogin button:focus {
+            background: #43A047;
+        }
+        .formLogin .message {
+            margin: 15px 0 0;
+            color: #b3b3b3;
+            font-size: 12px;
+        }
+        .formLogin .message a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .formLogin .register-form {
+            display: none;
+        }
+    </style>
+
     <p:dialog id="idLogin" header="#{langueBean.getMsg('menu.login')}" widgetVar="login" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 50px; font-size: 12px;" >
-        <h:form id="loginForm" class="user">
-            <p:defaultCommand target="validateLogin" />
-            <div class="form-group">
-                <p:inputText class="form-control form-control-user" value="#{currentUser.username}" />
-            </div>
-            <div class="form-group">
-                <p:inputText class="form-control form-control-user" type="password" value="#{currentUser.password}"/>
-            </div>
-            <div class="form-group">
+              showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 50px; font-size: 12px;" >
 
-                <h:panelGroup rendered="#{selectedTheso.currentIdTheso == 'tetetete'}">
-                    <div class="custom-control custom-checkbox small">
-                        <input type="checkbox" class="custom-control-input" id="customCheck" />
-                        <label class="custom-control-label" for="customCheck">Connexion LDAP</label>
-                    </div>
-                </h:panelGroup>
-            </div>
-
-            <hr/>
-            <div class="form-group">
-                <p:commandButton id="validateLogin" value="#{langueBean.getMsg('menu.login')}" 
-                                 class="btn btn-primary btn-user btn-block"
+        <div class="formLogin">
+            <h:form class="login-form">
+                <p:inputText placeholder="username" value="#{currentUser.username}" />
+                <p:inputText type="password" placeholder="password" value="#{currentUser.password}"/>
+                <p:commandButton title="Se connecter" class="formLogin-button"
                                  ajax="true" process="@form"
                                  action="#{currentUser.login()}" update="messageIndex "/>
-            </div>
-
-            <div class="form-group">
-                <a href="index.xhtml" class="btn btn-secondary btn-user btn-block">
-                    #{langueBean.getMsg('btnBack')}
-                </a>
-            </div>
-
-            <hr/>
-
-            <div class="text-center">
-                <p:commandLink value="#{langueBean.getMsg('menu.forgotten_pass')}" />
-            </div>
-        </h:form>
+                <p class="message"><a href="#">Mot de passe oublier</a></p>
+            </h:form>
+        </div>
     </p:dialog>   
 </ui:fragment>

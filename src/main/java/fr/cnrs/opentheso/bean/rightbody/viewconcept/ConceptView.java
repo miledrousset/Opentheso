@@ -273,8 +273,7 @@ public class ConceptView implements Serializable {
      */
     public void getConcept(String idTheso, String idConcept, String idLang) {
         offset = 0;
-        ConceptHelper conceptHelper = new ConceptHelper();
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
+        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
         if (nodeConcept == null) {
             return;
         }
@@ -291,16 +290,13 @@ public class ConceptView implements Serializable {
         viewEditorThesoHomeBean.reset();
 
         // récupération des informations sur les corpus liés
-        CorpusHelper corpusHelper = new CorpusHelper();
-
         haveCorpus = false;
-        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
-        setFacetsOfConcept(idConcept, idTheso, idLang);        
-
-        PrimeFaces pf = PrimeFaces.current();
+        
+        setFacetsOfConcept(idConcept, idTheso, idLang);
 
         // deployement de l'arbre si l'option est true
         if (roleOnThesoBean.getNodePreference() != null) {
@@ -312,21 +308,14 @@ public class ConceptView implements Serializable {
                         idConcept,
                         idTheso,
                         idLang);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
-                    pf.ajax().update("containerIndex:languageSelect");
+                if (PrimeFaces.current().isAjaxRequest()) {
+                    PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
+                    PrimeFaces.current().ajax().update("containerIndex:languageSelect");
                 }
                 selectedTheso.actionFromConceptToOn();
             }
         }
-
-       if (pf.isAjaxRequest()) {
-            pf.ajax().update("indexTitle");
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-            pf.ajax().update("containerIndex:formLeftTab");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        
         searchBean.setSearchResultVisible(true);
         countOfBranch = 0;
     }
