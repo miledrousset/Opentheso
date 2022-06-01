@@ -257,7 +257,7 @@ public class SearchBean implements Serializable {
         }
 
         if (roleOnThesoBean.getSelectedThesoForSearch() == null || roleOnThesoBean.getSelectedThesoForSearch().isEmpty()) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut choisir au moins un thesorus !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut choisir au moins un thésaurus !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
             return;
@@ -393,6 +393,17 @@ public class SearchBean implements Serializable {
                 setViewsSearch();
                 isSelectedItem = false;
             }
+        } else {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+        rightBodySetting.setIndex("0");
+        indexSetting.setIsValueSelected(true);
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
         }
     }
 

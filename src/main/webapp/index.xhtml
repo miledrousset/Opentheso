@@ -58,7 +58,7 @@
                 <h:form id="containerIndex">
 
                     <p:sidebar widgetVar="resultatRecherche" modal="false" position="right">
-                        <h3>Résultat de la recherche</h3>
+                        <h:outputText value="#{langueBean.getMsg('rightbody.search_result')}" style="font-size: 18px" />
                         <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml"/>
                     </p:sidebar>
 

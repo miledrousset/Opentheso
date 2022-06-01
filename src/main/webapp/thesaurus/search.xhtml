@@ -120,6 +120,10 @@
             border-radius: 8px;
         }
 
+        body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item {
+            font-size: 12px;
+        }
+        
     </style>
 
     <div class="container" style="margin-top: -25px">
@@ -229,31 +233,33 @@
                     <p:tooltip for="select4" value="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
-                <p:selectCheckboxMenu id="select5" value="#{roleOnTheso.selectedThesoForSearch}" label="Thesorus" style="color: #000; font-size: 12px;"
-                                      panelStyle="width: 15rem" scrollHeight="250" >
+                <p:selectCheckboxMenu 
+                    rendered="#{selectedTheso.currentIdTheso == null}"
+                    id="select5" value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}" style="color: #000; font-size: 12px;"
+                                      panelStyle="width: 15rem; font-size: 1rem" scrollHeight="250" >
                     <f:selectItems value="#{roleOnTheso.listTheso}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
                 </p:selectCheckboxMenu>
 
                 <p:menuButton rendered="#{currentUser.nodeUser != null}" id="searchProgrammed" style="font-size: 12px;" icon="pi pi-align-justify">
 
                     <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" 
-                                update="containerIndex:formRightTab" 
+                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
                                 title="Rechercher les concepts polyhiérarchiques"/>
 
                     <p:menuitem value="Multi-groupes" action="#{searchBean.searchConceptWithMultiGroup()}" 
-                                update="containerIndex:formRightTab"
+                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
                                 title="Rechercher les concepts qui ont plusieurs groupes"/>
 
                     <p:menuitem value="Sans-groupes" action="#{searchBean.searchConceptWithoutGroup()}" 
-                                update="containerIndex:formRightTab"
+                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
                                 title="Rechercher les concepts qui n'ont pas de groupes"/>
 
                     <p:menuitem value="Doublons" action="#{searchBean.searchConceptDuplicated()}" 
-                                update="containerIndex:formRightTab"
+                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
                                 title="Rechercher les concepts qui ont un libellé en doublon"/>
 
                     <p:menuitem value="Relations interdites" action="#{searchBean.searchConceptWithRTandBT()}" 
-                                update="containerIndex:formRightTab"
+                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
                                 title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
                 </p:menuButton>
                 <p:tooltip for="searchProgrammed" value="#{langueBean.getMsg('search.preprogrammedSearch')}" showDelay="1000" position="bottom"/>
