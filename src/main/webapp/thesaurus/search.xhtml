@@ -242,25 +242,25 @@
 
                 <p:menuButton rendered="#{currentUser.nodeUser != null}" id="searchProgrammed" style="font-size: 12px;" icon="pi pi-align-justify">
 
-                    <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" 
+                    <p:menuitem value="#{langueBean.getMsg('search.polyhierarchy')}" action="#{searchBean.getAllPolyierarchy()}" 
                                 update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
-                                title="Rechercher les concepts polyhiérarchiques"/>
+                                title="#{langueBean.getMsg('search.tooltip_polyhierarchy')}"/>
 
-                    <p:menuitem value="Multi-groupes" action="#{searchBean.searchConceptWithMultiGroup()}" 
+                    <p:menuitem value="#{langueBean.getMsg('search.multiGroups')}" action="#{searchBean.searchConceptWithMultiGroup()}" 
                                 update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
-                                title="Rechercher les concepts qui ont plusieurs groupes"/>
+                                title="#{langueBean.getMsg('search.tooltip_multiGroups')}"/>
 
-                    <p:menuitem value="Sans-groupes" action="#{searchBean.searchConceptWithoutGroup()}" 
+                    <p:menuitem value="#{langueBean.getMsg('search.withoutGroups')}" action="#{searchBean.searchConceptWithoutGroup()}" 
                                 update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
-                                title="Rechercher les concepts qui n'ont pas de groupes"/>
+                                title="#{langueBean.getMsg('search.tooltip_withoutGroups')}"/>
 
-                    <p:menuitem value="Doublons" action="#{searchBean.searchConceptDuplicated()}" 
+                    <p:menuitem value="#{langueBean.getMsg('search.duplicates')}" action="#{searchBean.searchConceptDuplicated()}" 
                                 update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
-                                title="Rechercher les concepts qui ont un libellé en doublon"/>
+                                title="#{langueBean.getMsg('search.tooltip_duplicates')}"/>
 
-                    <p:menuitem value="Relations interdites" action="#{searchBean.searchConceptWithRTandBT()}" 
+                    <p:menuitem value="#{langueBean.getMsg('search.forbiddenRelationships')}" action="#{searchBean.searchConceptWithRTandBT()}" 
                                 update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
-                                title="Rechercher les concepts qui ont une relation interdite, à la fois RT et (NT ou BT)"/>
+                                title="#{langueBean.getMsg('search.tooltip_forbiddenRrelationships')}"/>
                 </p:menuButton>
                 <p:tooltip for="searchProgrammed" value="#{langueBean.getMsg('search.preprogrammedSearch')}" showDelay="1000" position="bottom"/>
             </h:panelGroup>
