@@ -453,7 +453,7 @@ public class Tree implements Serializable {
             //     }
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
-            if(rightBodySetting.getIndex().equalsIgnoreCase("3")){
+            if(rightBodySetting.getIndex().equalsIgnoreCase("2")){
                 indexSetting.setIsValueSelected(true);            
 
                 alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),

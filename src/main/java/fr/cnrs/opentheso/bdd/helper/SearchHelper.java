@@ -58,7 +58,7 @@ public class SearchHelper {
      * @return
      */
     public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(HikariDataSource ds,
-            String value, String idLang, String idGroup, String idTheso, boolean withNotes) {
+            String value, String idLang, String[] idGroups, String idTheso, boolean withNotes) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -79,9 +79,16 @@ public class SearchHelper {
         }
 
         // filter by group, c'est très important 
-        if (idGroup != null && !idGroup.isEmpty()) {
-            multiValuesPT += " and concept_group_concept.idgroup = '" + idGroup + "'";
-            multiValuesNPT += " and concept_group_concept.idgroup = '" + idGroup + "'";
+        if (idGroups != null && idGroups.length != 0) {
+            String groupSearch = "";
+            for (String idGroup : idGroups) {
+                if(groupSearch.isEmpty())
+                    groupSearch = "'" + idGroup + "'";
+                else
+                    groupSearch = groupSearch + ",'" + idGroup + "'";
+            }
+            multiValuesPT += " and concept_group_concept.idgroup in (" + groupSearch + ")";
+            multiValuesNPT += " and concept_group_concept.idgroup in (" + groupSearch + ")";
         }
 
         for (String value1 : values) {
@@ -113,7 +120,7 @@ public class SearchHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    if (idGroup != null && !idGroup.isEmpty()) {
+                    if (idGroups != null && idGroups.length != 0) {
                         query = "select term.lexical_value, term.lang, concept.id_concept, concept.id_ark, concept.id_handle "
                                 + " from concept, concept_group_concept, preferred_term, term "
                                 + " where"
@@ -169,7 +176,7 @@ public class SearchHelper {
                     /**
                      * recherche de Synonymes
                      */
-                    if (idGroup != null && !idGroup.isEmpty()) {
+                    if (idGroups != null && idGroups.length != 0) {
                         query = "select non_preferred_term.lexical_value, non_preferred_term.lang, concept.id_concept, concept.id_ark, concept.id_handle "
                                 + " from concept, concept_group_concept, preferred_term, non_preferred_term"
                                 + " where"

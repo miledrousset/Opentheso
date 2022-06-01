@@ -35,7 +35,7 @@
 
             <div class="row" style="margin-top: 5px">
                 <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Langue : " class="dialog-titre" /> 
+                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " class="dialog-titre" /> 
                 </div>
                 <div class="col-7">
                     <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionBean.selectedLang}"

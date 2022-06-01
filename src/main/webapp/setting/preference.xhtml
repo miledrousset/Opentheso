@@ -61,34 +61,38 @@
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
                                                     <h:outputText value="Url du site local" style="font-size: 14px; font-weight: bold;"
-                                                                  title="L'URL local du serveur qui héberge Opentheso, elle sert aussi à générer les identifiants pérennes (exp: https://monsite.fr/opentheso/)"/>
+                                                                  title="L'URL local du serveur qui héberge Opentheso, permet le rebond entre les concepts dans la même instance (exp: https://monsite.fr/opentheso/)"/>
                                                 </div>
                                                 <div class="col-6">
                                                     <p:inputText value="#{preferenceBean.nodePreference.cheminSite}" style="width: 100%;"
-                                                                 title="L'URL local du serveur qui héberge Opentheso, elle sert aussi à générer les identifiants pérennes (exp: https://monsite.fr/opentheso/)"/>
+                                                                 title="L'URL local du serveur qui héberge Opentheso, permet le rebond entre les concepts dans la même instance (exp: https://monsite.fr/opentheso/)"/>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <!-- Uri d'origine -->
-                                        <div class="list-group-item list-group-item-action" style="margin-top: 5px">
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3"  style="text-align: right;  margin-top: 6px">
-                                                    <h:outputText value="Uri d'origine " title="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!"
+                                        <!-- Uri d'export -->
+                                        <div class="list-group-item list-group-item-action" style="margin-top: 20px; margin-bottom: 20px; background-color: #ecf8f1">
+                                            <div class="row" >
+                                                <div class="col-3"  style="text-align: right;  ">
+                                                    <h:outputText value="Uri d'export "
+                                                                  title="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!"
                                                                   style="font-size: 14px; font-weight: bold;"/>
-                                                    <i class="fas fa-info-circle" size="l" style="color: #C63632; margin-left: 5px;" 
-                                                       tooltip="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!
-                                                       C'est ce choix qui va servir à construire l'URI du concept à l'export"
-                                                       tooltip-delay-show="500"/>
+                                                    <p:commandButton id="infoUri" type="button" icon="fas fa-info-circle"  styleClass="rounded-button ui-button-flat"/>
+                                                    
+                                                    <p:tooltip for="infoUri" value="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!
+                                                               C'est ce choix qui va servir à construire l'URI du concept à l'export. 
+                                                               Exemple: pour Ark, choisir: https://ark.mondomaine.fr/ark:  pour Uri classique, choisir: https://mondomaine.fr/opentheso2"
+                                                               showDelay="1000" style="max-width: 300px;"/>
                                                 </div>
                                                 <div class="col-6">
                                                     <p:selectOneRadio id="customRadioUri" value="#{preferenceBean.uriType}"  >
                                                         <f:selectItem itemLabel="Uri classique" itemValue="uri" />
                                                         <f:selectItem itemLabel="Ark" itemValue="ark" />
                                                         <f:selectItem itemLabel="Handle" itemValue="handle" />
-                                                        <f:selectItem itemLabel="Doi" itemValue="doi" />
+                                                        <!-- <f:selectItem itemLabel="Doi" itemValue="doi" itemDisabled="true"/> -->   
                                                     </p:selectOneRadio>
-                                                    <p:inputText value="#{preferenceBean.nodePreference.originalUri}" style="width: 100%;"/> 
+                                                    <p:inputText value="#{preferenceBean.nodePreference.originalUri}" 
+                                                                 style="width: 100%;"/> 
                                                 </div> 
                                             </div>      
                                         </div>
@@ -135,15 +139,12 @@
                                                 <div class="col-6">
                                                     <p:inputText value="#{preferenceBean.nodePreference.preferredName}" style="width: 100%;"/>
                                                 </div>
+                                                <div class="col-3" style="text-align: left; margin-top: 6px;">
+                                                     <a class="fas fa-link" style="font-size: 12px; color: #43B572;" />
+                                                    <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="Testez le lien" style="font-size: 12px; margin-left: 5px; color: #601e18"/>
+                                                </div>                                                
                                             </div>
-                                            <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" />
-                                                <div class="col-6" style="text-align: right; margin-top: 6px">
-                                                    <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="Testez le lien" >
-                                                        <a class="fas fa-link" style="font-size: 12px; color: #43B572;" />
-                                                    </p:link>
-                                                </div>
-                                            </div>
+
                                         </div>
 
                                         <!-- Activer/ désactiver le déployement auto de l'arbre  -->
