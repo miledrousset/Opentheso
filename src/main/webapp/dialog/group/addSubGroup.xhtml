@@ -55,7 +55,7 @@
                              actionListener="PF('addSubGroup').hide();" update="idAddSubGroup"/>
 
             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
-                             update="containerIndex messageIndex" oncomplete="PF('addSubGroup').hide();"
+                             update="messageIndex" oncomplete="PF('addSubGroup').hide();"
                              actionListener="#{addGroupBean.addSubGroup(treeGroups.selectedNodeId,
                                                selectedTheso.currentIdTheso, selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
         </div>

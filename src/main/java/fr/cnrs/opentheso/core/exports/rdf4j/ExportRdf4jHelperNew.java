@@ -638,7 +638,7 @@ public class ExportRdf4jHelperNew {
         if(nodePreference.isOriginalUriIsArk()) {
             if (nodeConceptExport.getConcept().getIdArk() != null) {
                 if (!nodeConceptExport.getConcept().getIdArk().trim().isEmpty()) {
-                    uri = nodePreference.getUriArk()+ nodeConceptExport.getConcept().getIdArk();
+                    uri = nodePreference.getOriginalUri()+ "/" +nodeConceptExport.getConcept().getIdArk();
                     return uri;
                 }
             }
@@ -773,7 +773,7 @@ public class ExportRdf4jHelperNew {
         // URI de type Ark
         if (nodeUri.getIdArk() != null) {
             if (!nodeUri.getIdArk().trim().isEmpty()) {
-                uri = nodePreference.getServeurArk() + nodeUri.getIdArk();
+                uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
                 return uri;
             }
         }
@@ -823,7 +823,7 @@ public class ExportRdf4jHelperNew {
         if(nodePreference.isOriginalUriIsArk()) {
             if (nodeUri.getIdArk() != null) {
                 if (!nodeUri.getIdArk().trim().isEmpty()) {
-                    uri = nodePreference.getUriArk() + nodeUri.getIdArk();
+                    uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
                     return uri;
                 }
             }

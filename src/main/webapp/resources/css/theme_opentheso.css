@@ -11303,13 +11303,14 @@ body.sidebar-toggled footer.sticky-footer {
 
 /*Tree Groups */
 .fa_custom_open {
-    color: #143a1e  !important;
+    color: #169b6b  !important;
     font-size: 0.8rem !important;    
 }
 .fa_custom_collapse {
-    color:  #143a1e !important;
+    color:  #164A78 !important;
     font-size: 0.8rem !important;    
 }
+
 .fa_custom_file{
     color: #164A78 !important;
     font-size: 0.8rem !important;    
