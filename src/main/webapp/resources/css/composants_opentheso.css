@@ -765,3 +765,14 @@ body .ui-sidebar .ui-sidebar-close .ui-icon {
     background: none;
     color: red;
 }
+
+.sidebar.toggled {
+    overflow: visible;
+    width: 5rem !important;
+}
+
+.sidebar.toggled .nav-item .nav-link {
+    text-align: center;
+    padding: 0.75rem 1rem;
+    width: 5rem;
+}
