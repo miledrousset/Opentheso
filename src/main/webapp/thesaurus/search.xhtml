@@ -72,6 +72,7 @@
             padding: 1rem;
             height: 33px;
             font-size: 1rem;
+            margin-top: -3px;
         }
 
         .search-form select {
@@ -240,7 +241,7 @@
                     <f:selectItems value="#{roleOnTheso.listTheso}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
                 </p:selectCheckboxMenu>
 
-                <p:menuButton rendered="#{currentUser.nodeUser != null}" id="searchProgrammed" style="font-size: 12px;" icon="pi pi-align-justify">
+                <p:menuButton rendered="#{currentUser.nodeUser != null}" id="searchProgrammed" style="font-size: 12px;; margin-top: -0.33rem;" icon="pi pi-align-justify">
 
                     <p:menuitem value="Poly-hiérarchie" action="#{searchBean.getAllPolyierarchy()}" 
                                 update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
