@@ -37,7 +37,6 @@ import javax.inject.Named;
  */
 @Named(value = "roleOnTheso")
 @SessionScoped
-
 public class RoleOnThesoBean implements Serializable {
     @Inject private Connect connect;
     @Inject private CurrentUser currentUser;
@@ -341,7 +340,7 @@ public class RoleOnThesoBean implements Serializable {
         selectedThesoForSearch = new ArrayList<>();
         for (ThesoModel thesoModel : listTheso) {
             selectedThesoForSearch.add(thesoModel.getId());
-        }                
+        }
     }
     
     public class ThesoModel implements Serializable{

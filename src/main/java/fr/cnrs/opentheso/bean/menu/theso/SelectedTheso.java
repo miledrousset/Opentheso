@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Arrays;
 import javax.faces.application.FacesMessage;
-import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 
 
