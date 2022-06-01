@@ -831,7 +831,9 @@ public class ConceptHelper {
         ArrayList<String> conceptIds = getIdConceptsFromLabel(ds, idThesaurus, label, idLang);
         for (String conceptId : conceptIds) {
             NodeConceptSearch nodeConceptSearch = new NodeConceptSearch();
-                    
+
+            nodeConceptSearch.setIdTheso(idThesaurus);
+            nodeConceptSearch.setCurrentLang(idLang);                            
             nodeConceptSearch.setIdConcept(conceptId);
             nodeConceptSearch.setIsDeprecated(isDeprecated(ds, conceptId, idThesaurus));
             

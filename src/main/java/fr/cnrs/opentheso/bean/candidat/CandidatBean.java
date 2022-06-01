@@ -215,6 +215,7 @@ public class CandidatBean implements Serializable {
                 return;
             }
         }
+        initCandidatModule();
         getAllCandidatsByThesoAndLangue();
         showMessage(FacesMessage.SEVERITY_INFO, "Candidats supprimés");
     }
