@@ -28,6 +28,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeMetaData;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTT;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
@@ -467,6 +468,61 @@ public class ConceptHelper {
         }
         return NodeUris;
     }
+
+    public List<NodeTree> getTopConceptsWithTermByTheso(HikariDataSource ds, String idTheso) {
+
+        List<NodeTree> nodes = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT con.id_concept, ter.lexical_value FROM concept con, term ter, preferred_term per " +
+                        "WHERE ter.id_term =  per.id_term AND con.id_concept = per.id_concept AND con.id_thesaurus = '"+idTheso+"' " +
+                        "AND con.top_concept = true AND con.status !='CA' ORDER BY ter.lexical_value");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeTree nodeTree = new NodeTree();
+                        nodeTree.setIdConcept(resultSet.getString("id_concept"));
+                        nodeTree.setPreferredTerm(resultSet.getString("lexical_value"));
+                        nodes.add(nodeTree);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Liste of TT of theso : " + idTheso, sqle);
+        }
+        return nodes;
+    }
+    
+    
+    public List<NodeTree> getListChildrenOfConceptWithTerm(HikariDataSource ds, String idConcept, String idLang, String idThesaurus) {
+        List<NodeTree> nodes = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT hie.id_concept2, ter.lexical_value " +
+                    "FROM hierarchical_relationship hie, term ter, preferred_term per " +
+                    "WHERE ter.id_term =  per.id_term " +
+                    "AND hie.id_concept2 = per.id_concept " +
+                    "AND hie.id_thesaurus = '"+idThesaurus+"' " +
+                    "AND hie.id_concept1 = '"+idConcept+"' " +
+                    "AND hie.role LIKE 'NT%' " +
+                    "ORDER BY ter.lexical_value");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeTree nodeTree = new NodeTree();
+                        nodeTree.setIdConcept(resultSet.getString("id_concept2"));
+                        nodeTree.setPreferredTerm(resultSet.getString("lexical_value"));
+                        nodes.add(nodeTree);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Liste of TT of theso : " + idThesaurus, sqle);
+        }
+        return nodes;
+    }  
 
     /**
      * Cettte fonction permet de retourner la liste des types de concepts

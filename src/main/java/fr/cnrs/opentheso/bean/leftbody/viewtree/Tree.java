@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
+import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
@@ -10,6 +11,7 @@ import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
@@ -360,6 +362,63 @@ public class Tree implements Serializable {
 
 
         return true;
+    }
+    
+    public List<NodeTree> searchAllConceptChilds(HikariDataSource connexion, String conceptParentId, String idTheso, String idLang) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        List<NodeTree> enfants = new ArrayList<>();
+
+        ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConceptsIgnoreConceptsInFacets(
+                connexion,
+                conceptParentId,
+                idTheso,
+                idLang,
+                true);
+
+        for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
+            if (nodeConceptTree.getIdConcept() == null) {
+                continue;
+            }
+
+            NodeTree nodeTree = new NodeTree();
+            nodeTree.setIdConcept(nodeConceptTree.getIdConcept());
+            nodeTree.setIdParent(conceptParentId);
+            nodeTree.setPreferredTerm(nodeConceptTree.getTitle().isEmpty() ? "(" + nodeConceptTree.getIdConcept() + ")" : nodeConceptTree.getTitle());
+            enfants.add(nodeTree);
+        }
+
+        enfants.addAll(searchFacettesForTree(connexion, conceptParentId, idTheso, idLang));
+
+        return enfants;
+    }
+    
+    public List<NodeTree> searchFacettesForTree(HikariDataSource connexion, String conceptParentId, String idTheso, String idLang) {
+        List<NodeTree> facaets = new ArrayList<>();
+        List<NodeIdValue> nodeIdValues = new FacetHelper().getAllIdValueFacetsOfConcept(
+                connexion,
+                conceptParentId,
+                idTheso,
+                idLang);
+        nodeIdValues.stream().forEach(facette -> {
+            TreeNodeData data = new TreeNodeData(
+                    facette.getId() + "",
+                    facette.getValue().isEmpty() ? "(" + facette.getId() + ")" : facette.getValue(),
+                    null,
+                    false,
+                    false,
+                    true,
+                    false,
+                    "facet"
+            );
+
+            NodeTree nodeTree = new NodeTree();
+            nodeTree.setIdConcept(data.getNodeId());
+            nodeTree.setIdParent(conceptParentId);
+            nodeTree.setPreferredTerm(data.getName());
+            facaets.add(nodeTree);
+        });
+        return facaets;
     }
 
     /////// pour l'ajout d'un fils supplementaire après un ajout de concept

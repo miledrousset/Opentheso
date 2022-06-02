@@ -4,9 +4,10 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -28,6 +29,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.collections4.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.graph.Triple;
@@ -49,18 +51,28 @@ import virtuoso.jena.driver.VirtuosoUpdateRequest;
 @Named(value = "exportFileBean")
 @SessionScoped
 public class ExportFileBean implements Serializable {
+
     private final static String DATE_FORMAT = "dd-mm-yyyy";
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private Connect connect;
-    @Inject private ViewExportBean viewExportBean;
-    @Inject private CandidatBean candidatBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private ViewEditionBean viewEditionBean;
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+    @Inject
+    private Connect connect;
+    @Inject
+    private ViewExportBean viewExportBean;
+    @Inject
+    private CandidatBean candidatBean;
+    @Inject
+    private SelectedTheso selectedTheso;
+    @Inject
+    private ViewEditionBean viewEditionBean;
 
     // progressBar
     private int sizeOfTheso;
     private float progressBar, progressStep;
 
+    int posJ = 0;
+    int posX = 0;
+    
 
     public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
@@ -152,11 +164,47 @@ public class ExportFileBean implements Serializable {
 
             if (resultat) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                        "Exportation du thésaurus '"+viewExportBean.getNodeIdValueOfTheso().getId()+"' est terminée avec succès"));
+                        "Exportation du thésaurus '" + viewExportBean.getNodeIdValueOfTheso().getId() + "' est terminée avec succès"));
                 PrimeFaces.current().ajax().update("messageIndex");
             }
 
         }
+    }
+    
+    private void createMatrice(String[][] tab, NodeTree concept) {
+        tab[posX][posJ] = concept.getPreferredTerm();
+        if (CollectionUtils.isNotEmpty(concept.getChildrens())) {
+            posJ++;
+            for (NodeTree nodeTree : concept.getChildrens()) {
+                if (CollectionUtils.isNotEmpty(nodeTree.getChildrens())) {
+                    createMatrice(tab, nodeTree);
+                } else {
+                    tab[posX][posJ] = nodeTree.getPreferredTerm();
+                    posX++;
+                    if (posJ > tab.length-1) posJ--;
+                }
+            }
+            posJ--;
+        } else {
+            posX++;
+        }
+    }
+
+    private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
+        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(
+                connect.getPoolConnexion(), parentId, langId, thesoId);
+
+        for (NodeTree concept : concepts) {
+            concept.setIdParent(parentId);
+            concept.setPreferredTerm(StringUtils.isEmpty(concept.getPreferredTerm()) ? "(" + concept.getIdConcept()+ ")" : concept.getPreferredTerm());
+            concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
+            concept.getChildrens().addAll(new Tree().searchFacettesForTree(connect.getPoolConnexion(), 
+                parentId, thesoId, langId));
+        }
+
+        return concepts;
     }
 
     public StreamedContent exportThesorus() {
@@ -164,19 +212,21 @@ public class ExportFileBean implements Serializable {
         if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) {
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
             byte[] datas;
-            if(viewExportBean.isToogleFilterByGroup()) {
+            if (viewExportBean.isToogleFilterByGroup()) {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());                
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
             } else {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null);                    
-            }        
-            if(datas == null) return null;
+                        viewExportBean.getSelectedIdLangTheso(), null);
+            }
+            if (datas == null) {
+                return null;
+            }
 
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");              
-            try (ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
                 return DefaultStreamedContent.builder()
                         .contentType("text/csv")
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
@@ -184,30 +234,67 @@ public class ExportFileBean implements Serializable {
                         .build();
             } catch (IOException ex) {
             }
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");              
-            return new DefaultStreamedContent();                
-        }        
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();
+        }
 
+        ///////////////////////////////////  
+        if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
+            ConceptHelper conceptHelper = new ConceptHelper();
+            List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
+                    viewExportBean.getNodeIdValueOfTheso().getId());
+
+            for (NodeTree topConcept : topConcepts) {
+                topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm()) ? 
+                        "(" + topConcept.getIdConcept()+ ")" : topConcept.getPreferredTerm());
+                topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
+            }
+
+            ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(),
+                    viewExportBean.getNodeIdValueOfTheso().getId());
+            
+            String[][] tab = new String[allConcepts.size()+1][20];
+            posX = 0;
+            for (NodeTree topConcept : topConcepts) {
+                posJ = 0;
+                createMatrice(tab, topConcept);
+            }
+
+            byte[] str = new WriteCSV().importTreeCsv(tab, ';');
+
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return DefaultStreamedContent.builder().contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> flux)
+                        .build();
+            } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return new DefaultStreamedContent();
+            }
+        }
 
         ///////////////////////////////////
-        
         /// export des concepts avec Id, label         
         if ("CSV_id".equalsIgnoreCase(viewExportBean.getFormat())) {
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
             byte[] datas;
-            if(viewExportBean.isToogleFilterByGroup()) {
+            if (viewExportBean.isToogleFilterByGroup()) {
                 datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());                
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
             } else {
                 datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null);                    
-            }        
-            if(datas == null) return null;
-            
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");  
-            try (ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                        viewExportBean.getSelectedIdLangTheso(), null);
+            }
+            if (datas == null) {
+                return null;
+            }
+
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
                 return DefaultStreamedContent.builder()
                         .contentType("text/csv")
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
@@ -215,14 +302,11 @@ public class ExportFileBean implements Serializable {
                         .build();
             } catch (IOException ex) {
             }
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");              
-            return new DefaultStreamedContent();            
-        }        
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();
+        }
         ///////////////////////////////////        
-        
-        
-        
-        
+
         /// autres exports
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                 viewExportBean.getSelectedIdGroups(),
@@ -234,11 +318,11 @@ public class ExportFileBean implements Serializable {
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
-            try (ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
                     viewExportBean.getSelectedLang2_PDF(),
                     viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");  
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent
                         .builder()
                         .contentType("application/pdf")
@@ -246,7 +330,7 @@ public class ExportFileBean implements Serializable {
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");                  
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();
             }
 
@@ -256,18 +340,18 @@ public class ExportFileBean implements Serializable {
 
             byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
 
-            try(ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
 
                 str = null;
                 skosxd = null;
                 System.gc();
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");  
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent.builder().contentType("text/csv")
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");                  
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();
             }
         } else {
@@ -293,7 +377,7 @@ public class ExportFileBean implements Serializable {
                     break;
             }
 
-            try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            try ( ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
                 WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
                 Rio.write(writeRdf4j.getModel(), out, format);
@@ -302,8 +386,8 @@ public class ExportFileBean implements Serializable {
                 skosxd.clear();
                 skosxd = null;
                 System.gc();
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");  
-                try (ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
                     out.close();
                     return DefaultStreamedContent.builder()
                             .contentType("application/xml")
@@ -312,17 +396,17 @@ public class ExportFileBean implements Serializable {
                             .build();
                 }
             } catch (Exception ex) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");                  
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();
             }
         }
     }
 
-    private boolean exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String nomGraphe, String url, String login, String password){
+    private boolean exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String nomGraphe, String url, String login, String password) {
 
         VirtGraph virtGraph = null;
-        try{
-            virtGraph = new VirtGraph (nomGraphe,"jdbc:virtuoso://"+url, login, password);
+        try {
+            virtGraph = new VirtGraph(nomGraphe, "jdbc:virtuoso://" + url, login, password);
 
             VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <" + nomGraphe + ">", virtGraph);
             vur.exec();
@@ -331,26 +415,30 @@ public class ExportFileBean implements Serializable {
             Rio.write(new WriteRdf4j(skosxd).getModel(), out, RDFFormat.RDFXML);
 
             Model model = ModelFactory.createDefaultModel();
-            model.read(new ByteArrayInputStream(out.toByteArray()),null);
+            model.read(new ByteArrayInputStream(out.toByteArray()), null);
             StmtIterator iter = model.listStatements();
-            while(iter.hasNext()){
-                Statement stmt=iter.nextStatement();
-                Resource subject=stmt.getSubject();
-                Property predicate=stmt.getPredicate();
-                RDFNode object=stmt.getObject();
-                Triple tri = new Triple(subject.asNode(),predicate.asNode(),object.asNode());
+            while (iter.hasNext()) {
+                Statement stmt = iter.nextStatement();
+                Resource subject = stmt.getSubject();
+                Property predicate = stmt.getPredicate();
+                RDFNode object = stmt.getObject();
+                Triple tri = new Triple(subject.asNode(), predicate.asNode(), object.asNode());
                 virtGraph.add(tri);
             }
             out.close();
-            if (virtGraph != null) virtGraph.close();
+            if (virtGraph != null) {
+                virtGraph.close();
+            }
             PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Problème de communication avec le serveur Virtuoso !"));
             PrimeFaces pf = PrimeFaces.current();
             pf.ajax().update("messageIndex");
-            if (virtGraph != null) virtGraph.close();
+            if (virtGraph != null) {
+                virtGraph.close();
+            }
             PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             return false;
         }
@@ -367,7 +455,7 @@ public class ExportFileBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         /// permet de filtrer par collection
         ArrayList<String> allConcepts = new ArrayList<>();
-        if(!viewExportBean.isToogleFilterByGroup()){
+        if (!viewExportBean.isToogleFilterByGroup()) {
             allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         } else {
             for (String idGroup : selectedGroups) {
@@ -376,7 +464,9 @@ public class ExportFileBean implements Serializable {
                 allConcepts.addAll(allConceptsTemp);
             }
         }
-        if(allConcepts == null || allConcepts.isEmpty() ) return null;
+        if (allConcepts == null || allConcepts.isEmpty()) {
+            return null;
+        }
 
         sizeOfTheso = allConcepts.size();
         progressStep = (float) 100 / sizeOfTheso;
@@ -385,7 +475,7 @@ public class ExportFileBean implements Serializable {
         exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
 
-        if(!viewExportBean.isToogleFilterByGroup()){
+        if (!viewExportBean.isToogleFilterByGroup()) {
             exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
         } else {
             exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
