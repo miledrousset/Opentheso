@@ -254,7 +254,7 @@ public class ExportFileBean implements Serializable {
             ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(),
                     viewExportBean.getNodeIdValueOfTheso().getId());
             
-            String[][] tab = new String[allConcepts.size()][15];
+            String[][] tab = new String[allConcepts.size()+1][20];
             posX = 0;
             for (NodeTree topConcept : topConcepts) {
                 posJ = 0;
