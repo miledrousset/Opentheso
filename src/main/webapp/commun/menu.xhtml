@@ -19,34 +19,66 @@
 
             <hr class="sidebar-divider my-0"/>
 
-            <li class="nav-item">
+            <!-- Debut Thesorus -->
+            <li class="nav-item" style="margin-top: 20px;">
                 <span class="nav-link">
-                    <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
-                                   style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;" process="@this">
-                        <i class="fas fa-fw fa-tachometer-alt" />
-                        #{langueBean.getMsg('menu.thesaurus')}</p:commandLink>
+                    <div id="thesoButton1" style=" margin-left: 5px">
+                        <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
+                                       style="color: #fff; text-decoration: none; font-size: 14px;" process="@this">
+                            <i class="fa-solid fa-folder-tree" style="font-size: 1.2rem" />
+                            #{langueBean.getMsg('menu.thesaurus')}
+                        </p:commandLink>
+                    </div>
+                    <div id="thesoButton2">
+                        <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
+                                       style="color: #fff; text-decoration: none;" process="@this">
+                            <i class="fa-solid fa-folder-tree" style="font-size: 1.7rem" />
+                        </p:commandLink>
+                    </div>
                 </span>
             </li>
+            <!-- Fin Thesorus -->
+
+            <!-- Debut Candidat -->
             <h:panelGroup rendered="#{(currentUser.nodeUser != null and selectedTheso.currentIdTheso != null) and
                                       (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isManagerOnThisTheso or roleOnTheso.isContributorOnThisTheso or currentUser.nodeUser.isSuperAdmin)}" > 
+
                 <li class="nav-item">
                     <span class="nav-link">
-                        <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
-                                       style="font-size: 12px;  color: #FFF; margin-left: 5px;text-decoration: none;">
-                            <i class="fas fa-fw fa-cog" style="text-align: left"></i>
-                            #{langueBean.getMsg('candidat.titre')}
-                        </p:commandLink>
+                        <div id="candidatButton1" style=" margin-left: 5px">
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
+                                           style="color: #fff; text-decoration: none; font-size: 14px;">
+                                <i class="fa-solid fa-file-circle-check" style="font-size: 1.2rem" />
+                                #{langueBean.getMsg('candidat.titre')}
+                            </p:commandLink>
+                        </div>
+                        <div id="candidatButton2">
+                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}"
+                                           style="color: #fff; text-decoration: none;" process="@this">
+                                <i class="fa-solid fa-file-circle-check" style="font-size: 1.7rem" />
+                            </p:commandLink>
+                        </div>
                     </span>
                 </li>
             </h:panelGroup>
+            <!-- Fin candidat -->
 
+            <!-- Debut profile -->
             <h:panelGroup rendered="#{currentUser.nodeUser != null}" > 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                       aria-expanded="true" aria-controls="collapseTwo">
-                        <i class="fas fa-fw fa-user"></i>
-                        <span style="color: #fff; text-decoration: none; font-size: 12px; margin-left: 5px;">#{langueBean.getMsg('menu.profile')}</span>
-                    </a>
+                    <div id="profileButton1">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                           aria-expanded="true" aria-controls="collapseTwo">
+                            <i class="fas fa-fw fa-user" style="font-size: 1.2rem" />
+                            <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.profile')}</span>
+                        </a>
+                    </div>
+                    <div id="profileButton2">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                           aria-expanded="true" aria-controls="collapseTwo">
+                            <i class="fas fa-fw fa-user" style="font-size: 1.7rem" />
+                        </a>
+                    </div>
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
@@ -74,15 +106,27 @@
                     </div>
                 </li>
             </h:panelGroup>
+            <!-- Fin profil -->
 
+            <!-- Debut boite à outils -->
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and 
                                       (currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin)}" >        
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                       aria-expanded="true" aria-controls="collapseUtilities">
-                        <i class="fas fa-fw fa-briefcase"></i>
-                        <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.toolbox')}</span>
-                    </a>
+                    <div id="toolboxButton1">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                           aria-expanded="true" aria-controls="collapseUtilities">
+                            <i class="fas fa-fw fa-briefcase" style="font-size: 1.2rem" />
+                            <span style="color: #fff; text-decoration: none; font-size: 12px;">
+                                #{langueBean.getMsg('menu.toolbox')}
+                            </span>
+                        </a>
+                    </div>
+                    <div id="toolboxButton2">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                           aria-expanded="true" aria-controls="collapseUtilities">
+                            <i class="fas fa-fw fa-briefcase" style="font-size: 1.7rem" />
+                        </a>
+                    </div>
                     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
@@ -99,15 +143,27 @@
                     </div>
                 </li>
             </h:panelGroup>
+            <!-- Fin boite à outils -->
 
+            <!-- Debut setting -->
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso != null)
                                       and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >        
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
-                       aria-expanded="true" aria-controls="collapseParams">
-                        <i class="fas fa-fw fa-wrench"></i>
-                        <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.setting')}</span>
-                    </a>
+                    <div id="settingButton1">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
+                           aria-expanded="true" aria-controls="collapseParams">
+                            <i class="fas fa-fw fa-wrench" style="font-size: 1.2rem" />
+                            <span style="color: #fff; text-decoration: none; font-size: 12px;">
+                                #{langueBean.getMsg('menu.setting')}
+                            </span>
+                        </a>
+                    </div>
+                    <div id="settingButton2">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
+                           aria-expanded="true" aria-controls="collapseParams">
+                            <i class="fas fa-fw fa-wrench" style="font-size: 1.7rem" />
+                        </a>
+                    </div>
                     <div id="collapseParams" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
@@ -130,8 +186,8 @@
         </div>
 
         <div class="text-center d-none d-md-inline" style="height: 100%; width: 100%; position: relative; ">
-            <div style="position: absolute; bottom: 0; left: 0; align-content: center; 
-                 width: 100%; margin-bottom: 30px; margin-left: -10px">
+            <div style="position: absolute; bottom: 0; left: 0; align-content: center;
+                 width: 100%; margin-bottom: 30px; text-align: center;">
                 <img src="#{request.contextPath}/resources/img/logo1.png" style="width:50px;" />
             </div>
         </div>

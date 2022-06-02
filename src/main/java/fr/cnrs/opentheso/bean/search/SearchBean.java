@@ -265,22 +265,19 @@ public class SearchBean implements Serializable {
 
         // cas où la recherche est sur un thésaurus sélectionné, il faut trouver la langue sélectionnée par l'utilisateur, si all, on cherche sur tous les thésaurus 
         if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
-            for (RoleOnThesoBean.ThesoModel thesoForSearch : roleOnThesoBean.getListTheso()) {
-                List<NodeConceptSearch> concepts = searchInThesaurus(thesoForSearch.getId(), thesoForSearch.getDefaultLang());// languageBean.getIdLangue());
-                nodeConceptSearchs.addAll(concepts);
+            for (String idTheso : roleOnThesoBean.getSelectedThesoForSearch()) {
+                nodeConceptSearchs.addAll(searchInThesaurus(idTheso, searchLangOfTheso(roleOnThesoBean.getListTheso(), idTheso))); // languageBean.getIdLangue());
             }
         } else {
-            String idLang;
-            if (selectedTheso.getSelectedLang().equalsIgnoreCase("all")) {
-                idLang = null;
-            } else {
+            String idLang = null;
+            if (!selectedTheso.getSelectedLang().equalsIgnoreCase("all")) {
                 idLang = selectedTheso.getSelectedLang();
             }
             List<NodeConceptSearch> concepts = searchInThesaurus(selectedTheso.getCurrentIdTheso(), idLang);// languageBean.getIdLangue());
             nodeConceptSearchs.addAll(concepts);
         }
 
-        if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
             if (nodeConceptSearchs.size() == 1) {
                 isSelectedItem = true;
                 setViewsConcept();
@@ -295,12 +292,15 @@ public class SearchBean implements Serializable {
 
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
+    }
+    
+    private String searchLangOfTheso(List<RoleOnThesoBean.ThesoModel> listTheso, String idTheso) {
+        for (RoleOnThesoBean.ThesoModel theso : listTheso) {
+            if (theso.getId().equals(idTheso)) {
+                return theso.getDefaultLang();
+            }
         }
+        return selectedTheso.getSelectedLang();
     }
 
     private List<NodeConceptSearch> searchInThesaurus(String idTheso, String idLang) {

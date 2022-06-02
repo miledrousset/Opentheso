@@ -72,6 +72,7 @@
             padding: 1rem;
             height: 33px;
             font-size: 1rem;
+            margin-top: -3px;
         }
 
         .search-form select {
@@ -233,14 +234,14 @@
                     <p:tooltip for="select4" value="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
-                <p:selectCheckboxMenu 
+                <p:selectCheckboxMenu
                     rendered="#{selectedTheso.currentIdTheso == null}"
                     id="select5" value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}" style="color: #000; font-size: 12px;"
                                       panelStyle="width: 15rem; font-size: 1rem" scrollHeight="250" >
                     <f:selectItems value="#{roleOnTheso.listTheso}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
                 </p:selectCheckboxMenu>
 
-                <p:menuButton rendered="#{currentUser.nodeUser != null}" id="searchProgrammed" style="font-size: 12px;" icon="pi pi-align-justify">
+                <p:menuButton rendered="#{currentUser.nodeUser != null}" id="searchProgrammed" style="font-size: 12px;; margin-top: -0.33rem;" icon="pi pi-align-justify">
 
                     <p:menuitem value="#{langueBean.getMsg('search.polyhierarchy')}" action="#{searchBean.getAllPolyierarchy()}" 
                                 update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"

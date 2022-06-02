@@ -13,20 +13,19 @@
         </button>
 
         <!-- liste des thésaurus -->
-        <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" style="color: #000; height: 28px;" filter="true" filterMatchMode="contains">
+        <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" 
+                         style="color: #000; height: 28px; max-width: 400px" filter="true" filterMatchMode="contains">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
         </p:selectOneMenu>
 
         <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" style="margin-left: 15px;">
-            <i class="fas fa-refresh" style="color: #F47B2A; font-size: 14px;" title="#{langueBean.getMsg('menu.reload_thesaurus')}" />
+            <i class="fas fa-refresh" style="color: #d1d3e2; font-size: 14px;" title="#{langueBean.getMsg('menu.reload_thesaurus')}" />
         </p:commandLink>
 
-        <p:commandLink update="idClearSession"
-                       oncomplete="PF('clearSession').show();" 
-                       style="margin-left: 20px; ">
-            <i class="fas fa-broom" style="color: #C63632;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
+        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 15px; ">
+            <i class="fas fa-broom" style="color: #d1d3e2;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
