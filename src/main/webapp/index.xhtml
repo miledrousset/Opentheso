@@ -15,9 +15,8 @@
 
         <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
 
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/all.css"/> 
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/all.css"/>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
-
 
         <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
 
@@ -78,15 +77,15 @@
                                 </div>
                             </div>
                         </p:panel>
-                        
+
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>
-                        
+
                         <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/details_thesaurus.xhtml" />
                         </h:panelGroup>
-                    </p:panel> 
+                    </p:panel>
                 </h:form>
 
                 <footer class="sticky-footer bg-white" style="width: 100%;">
@@ -97,7 +96,7 @@
                             </center>
                         </div>
                     </div>
-                </footer> 
+                </footer>
             </div>
         </div>
 
@@ -116,6 +115,6 @@
             <p:graphicImage value="resources/img/wait.gif" width="100%" style="margin-top: 15px;" />
         </p:dialog>  
 
-        <ui:include src="dialog/login/login.xhtml" />    
+        <ui:include src="dialog/login/login.xhtml" />
     </h:body>
 </html>

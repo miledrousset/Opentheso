@@ -160,6 +160,21 @@
                     </div>
                 </h:panelGroup>
 
+                <h:panelGroup rendered="#{viewExportBean.isCsvStrucExport()}" >
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-3" style="text-align: right">
+                            <h:outputText value="Langue" style="color: #000" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{viewExportBean.selectedIdLangTheso}"
+                                             styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none;  box-shadow: none; ">
+                                <f:selectItems value="#{viewExportBean.languagesOfTheso}" var="lang"
+                                               itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </h:panelGroup>
 
                 <!-- Export CSV -->
                 <h:panelGroup rendered="#{viewExportBean.isCsvExport()}">

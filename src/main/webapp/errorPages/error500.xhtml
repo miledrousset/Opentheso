@@ -7,12 +7,15 @@
     <h:head>
         <title>Opentheso</title>
 
-        <link href="#{request.contextPath}/resources/img/icon_opentheso2.png" rel="icon" />
+        <link href="../resources/img/icon_opentheso2.png" rel="icon" />
 
-        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/all.css" />
-        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/theme_general.css" />
-        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/theme_opentheso.css" />
-        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/composants_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/all.css"/> 
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
 
         <style>
             /**/
@@ -209,7 +212,7 @@
         </style>
     </h:head>
 
-    <h:body id="page-top" style="font-size: 12px;">
+    <h:body id="page-top" onload="initMenu()">
 
         <div id="wrapper" style="height: 100%">
 
