@@ -8,7 +8,7 @@
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
             </div>
             <div class="col-7">
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
@@ -16,7 +16,7 @@
         </div>
 
         <p:panel id="listSynonimesToDelete">
-            <h:outputText value="Liste des synonymies : " class="dialog-titre" /> 
+            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.listOfSynonyms')} : " class="dialog-titre" /> 
             <ui:repeat var="synonymes" value="#{synonymBean.nodeEMs}" >
                 <div class="row">
                     <div class="col-1" style="margin-top: 3px">

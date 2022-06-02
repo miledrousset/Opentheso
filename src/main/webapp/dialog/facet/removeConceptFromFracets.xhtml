@@ -1,0 +1,34 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="idRemoveConceptFromFracets" header="Supprimer le concept des Facettes" widgetVar="removeConceptFromFracets" 
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
+        <h:form id="removeConceptFromFracetsForm">
+            <div class="row">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="Concept: #{conceptView.nodeConcept.term.lexical_value}"
+                                  style="font-size: 13px; color: black;" />
+                </div>
+            </div>
+          
+            <p:panel id="listFacettes" style="max-height: 350px; margin-top: 20px;">
+                <p:dataTable var="facets" value="#{conceptView.nodeFacets}" style="font-size: 12px;">
+                    <p:column headerText="#{langueBean.getMsg('leftbody.isPartOfFacets')}" style="color: black">
+                        <h:outputText rendered="#{facets.value != ''}" value="#{facets.value}" title="#{facets.id}"/> 
+                        <h:outputText rendered="#{facets.value == ''}" value="(#{facets.id})" style="color: #FF7979"/>                        
+                    </p:column>    
+                    <p:column width="60" headerText="action" style="color: black">
+                        <p:commandLink style="color: #FF7979; text-align: center " 
+                                       action="#{editFacet.removeConceptFromFacet(conceptView.nodeConcept.concept.idConcept, facets.id)}"
+                                       ajax="true" process="@form"
+                                       update="containerIndex messageIndex">
+                            <i class="pi pi-trash" style="font-size: 1rem; padding-top: 5px; color: #C63632;" />
+                        </p:commandLink>                            
+                    </p:column>                        
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+    </p:dialog> 
+</ui:fragment>

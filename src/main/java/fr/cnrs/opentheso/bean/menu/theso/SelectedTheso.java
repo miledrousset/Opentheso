@@ -19,7 +19,6 @@ import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
@@ -29,8 +28,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Arrays;
 import javax.faces.application.FacesMessage;
-import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 
 
@@ -159,6 +158,7 @@ public class SelectedTheso implements Serializable {
     /**
      * Permet de charger le thésaurus sélectionné C'est le point d'entrée de
      * l'application
+     * @throws java.io.IOException
      */
 //    public void setSelectedTheso() throws IOException {
     public void setSelectedTheso() throws IOException {
@@ -184,7 +184,12 @@ public class SelectedTheso implements Serializable {
             listIndex.reset();
             conceptBean.init();
             init();
-            indexSetting.setIsSelectedTheso(false);            
+            indexSetting.setIsSelectedTheso(false); 
+            
+            roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());
+            for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
+                roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
+            }
             
             menuBean.redirectToThesaurus();
             return;
@@ -205,9 +210,40 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
         indexSetting.setIsThesoActive(true);
+        
+        for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
+            if (selectedIdTheso.equals(thesoModel.getId())) {
+                roleOnThesoBean.setSelectedThesoForSearch(Arrays.asList(selectedIdTheso));
+            }
+        }
 
         menuBean.redirectToThesaurus();
     }
+    
+    
+    public void setSelectedThesoForSearch() throws IOException {
+        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
+        connect.setLocalUri(localUri);
+
+        viewEditorThesoHomeBean.reset();
+        viewEditorHomeBean.reset();
+
+        // après un raffraichissement F5
+        if (selectedIdTheso.equalsIgnoreCase(currentIdTheso)) {
+            if (!selectedLang.equalsIgnoreCase(currentLang)) {
+                startNewLang();
+            }
+            return;
+        }
+
+        sortByNotation = false;
+        startNewTheso(null);
+        indexSetting.setIsSelectedTheso(true);
+        indexSetting.setIsValueSelected(true);
+        indexSetting.setIsHomeSelected(false);
+        indexSetting.setIsThesoActive(true);
+    }    
 
     public List<AlignementElement> getListAlignementElement() {
         return listAlignementElement;

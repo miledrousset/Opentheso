@@ -30,6 +30,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
+import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -786,17 +787,17 @@ public class RestRDFHelper {
      * @param ds
      * @param idTheso
      * @param lang 
-     * @param group 
+     * @param groups 
      * @param value 
      * @param withNotes 
      * @return  
      */
     public String findAutocompleteConcepts(HikariDataSource ds,
-            String idTheso, String lang, String group,
+            String idTheso, String lang, String[] groups,
             String value, boolean withNotes) {
 
         String datas = findAutocompleteConcepts__(ds,
-                 value, idTheso, lang, group, withNotes);
+                 value, idTheso, lang, groups, withNotes);
         if(datas == null) return null;
         return datas;
     }    
@@ -813,7 +814,7 @@ public class RestRDFHelper {
     private String findAutocompleteConcepts__(
             HikariDataSource ds,
             String value, String idTheso,
-            String lang, String group, boolean withNotes) {
+            String lang, String[] groups, boolean withNotes) {
 
         if(value == null || idTheso == null) {
             return null;
@@ -830,7 +831,7 @@ public class RestRDFHelper {
         
         
         // recherche de toutes les valeurs
-        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(ds, value, lang, group, idTheso, withNotes);
+        nodeAutoCompletion = searchHelper.searchAutoCompletionWS(ds, value, lang, groups, idTheso, withNotes);
         
         if(nodeAutoCompletion == null || nodeAutoCompletion.isEmpty())
             return null;
@@ -1098,19 +1099,25 @@ public class RestRDFHelper {
             return null;
         }
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+      
+        
+    /*    ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
         exportRdf4jHelper.setNodePreference(nodePreference);
         exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        */
 
 
 
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByGroup(ds, idTheso, idGroup);
         for (String idConcept : branchs) {
-            exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
+            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+            //exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
         }
 
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
         return writeRdf4j;
     }      
     

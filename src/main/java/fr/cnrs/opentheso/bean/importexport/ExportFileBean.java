@@ -552,11 +552,11 @@ public class ExportFileBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
         }
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        exportRdf4jHelper.setInfos(connect.getPoolConnexion(), DATE_FORMAT, false, idTheso, roleOnThesoBean.getNodePreference().getCheminSite());
-        exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference(), DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
+
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, format);

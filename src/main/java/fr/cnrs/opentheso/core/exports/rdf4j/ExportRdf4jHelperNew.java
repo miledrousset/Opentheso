@@ -279,6 +279,9 @@ public class ExportRdf4jHelperNew {
         sKOSResource.setLocalUri(getLocalUri(nodeConcept));
         sKOSResource.setProperty(SKOSProperty.Concept);
 
+        //// définir le status du Concept (CA=candidat, DEP= déprécié, autre= concept)
+        setStatusOfConcept(nodeConcept.getConcept().getStatus(), sKOSResource);
+
         // ajout des concepts de remplacements ReplacedBy et Replaces
         if(nodeConcept.getReplacedBy() != null && !nodeConcept.getReplacedBy().isEmpty()) {
             addReplaces(nodeConcept.getReplacedBy(), sKOSResource, idTheso);
@@ -377,7 +380,20 @@ public class ExportRdf4jHelperNew {
 
         skosXmlDocument.addconcept(sKOSResource);
     }
-
+    private void setStatusOfConcept(String status, SKOSResource sKOSResource){
+        switch (status.toLowerCase()) {
+            case "ca":
+                sKOSResource.setStatus(SKOSProperty.candidate);
+                break;
+            case "dep":
+                sKOSResource.setStatus(SKOSProperty.deprecated);
+                break;
+            default:
+                sKOSResource.setStatus(SKOSProperty.Concept);
+                break;              
+        }
+        
+    }
     private SKOSStatus addStatut(NodeStatus nodeStatus) {
         SKOSStatus skosStatus = new SKOSStatus();
         skosStatus.setDate(nodeStatus.getDate());
@@ -622,7 +638,7 @@ public class ExportRdf4jHelperNew {
         if(nodePreference.isOriginalUriIsArk()) {
             if (nodeConceptExport.getConcept().getIdArk() != null) {
                 if (!nodeConceptExport.getConcept().getIdArk().trim().isEmpty()) {
-                    uri = nodePreference.getUriArk()+ nodeConceptExport.getConcept().getIdArk();
+                    uri = nodePreference.getOriginalUri()+ "/" +nodeConceptExport.getConcept().getIdArk();
                     return uri;
                 }
             }
@@ -660,7 +676,9 @@ public class ExportRdf4jHelperNew {
     }
 
     private String getLocalUri(NodeConceptExport nodeConceptExport){
+
         String uri = "";
+        if(getPath() == null) return uri;        
         if (nodeConceptExport == null) {
             //      System.out.println("nodeConcept = Null");
             return uri;
@@ -755,7 +773,7 @@ public class ExportRdf4jHelperNew {
         // URI de type Ark
         if (nodeUri.getIdArk() != null) {
             if (!nodeUri.getIdArk().trim().isEmpty()) {
-                uri = nodePreference.getServeurArk() + nodeUri.getIdArk();
+                uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
                 return uri;
             }
         }
@@ -805,7 +823,7 @@ public class ExportRdf4jHelperNew {
         if(nodePreference.isOriginalUriIsArk()) {
             if (nodeUri.getIdArk() != null) {
                 if (!nodeUri.getIdArk().trim().isEmpty()) {
-                    uri = nodePreference.getUriArk() + nodeUri.getIdArk();
+                    uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
                     return uri;
                 }
             }
@@ -849,6 +867,7 @@ public class ExportRdf4jHelperNew {
      * @return
      */
     private String getPath(){
+        if(FacesContext.getCurrentInstance() == null) return null;
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
         return path;

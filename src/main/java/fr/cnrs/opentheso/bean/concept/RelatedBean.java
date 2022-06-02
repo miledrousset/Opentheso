@@ -200,6 +200,7 @@ public class RelatedBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex:formLeftTab");
             pf.ajax().update("containerIndex:formRightTab");
+            pf.executeScript("PF('addRelatedLink').show();");             
         }        
     }
     
@@ -245,8 +246,8 @@ public class RelatedBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("conceptForm:listConceptSpecAssocies");
+            pf.executeScript("PF('deleteRelatedLink').show();");            
         }  
     }
     public void addReplacedBy() {

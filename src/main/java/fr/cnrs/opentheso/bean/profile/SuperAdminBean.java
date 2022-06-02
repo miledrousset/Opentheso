@@ -100,6 +100,8 @@ public class SuperAdminBean implements Serializable {
         
         if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
             nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);
+            nodeUserGroupUsers.addAll(userHelper.getAllGroupUserWithoutGroup(connect.getPoolConnexion(), idLang));
+            nodeUserGroupUsers.addAll(userHelper.getAllUsersSuperadmin(connect.getPoolConnexion()));
         } 
     }      
     

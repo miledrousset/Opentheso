@@ -104,7 +104,6 @@ public class StatistiqueBean implements Serializable {
 
         initChamps();
     }
-
     public void clearFilter(){
         dateDebut = null;
         dateFin = null;

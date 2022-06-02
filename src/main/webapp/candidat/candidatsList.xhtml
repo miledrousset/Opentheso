@@ -9,6 +9,15 @@
             padding-top: 0.9rem;
             padding-bottom: 0.2rem;
         }
+        body .ui-badge {
+            background: #2196F3;
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            line-height: 1.4rem;
+            height: 1.4rem;
+        }        
+        
     </style>
     <p:panel rendered="#{candidatBean.isListCandidatsActivate()}">
 
@@ -22,17 +31,19 @@
                     <p:menuButton  value="#{langueBean.getMsg('candidat.import_export_candidates')}" icon="fas fa-download"
                                    style="background: none; border: none; box-shadow: none; margin-left: 10px"  >
 
-                        <p:menuitem value="#{langueBean.getMsg('candidat.retrieve_from_old_version')}"
+                        <!--
+                        <p:menuitem value="# {langueBean.getMsg('candidat.retrieve_from_old_version')}"
                                     icon="fas fa-box" update="tabViewCandidat messageIndex" process="@this"
-                                    actionListener="#{candidatBean.getOldCandidates()}" />
+                                    actionListener="# {candidatBean.getOldCandidates()}" />
+                        -->
 
                         <p:menuitem value="#{langueBean.getMsg('candidat.export_in_SKOS')}"                              
                                     disabled="#{candidatBean.candidatList.size() == 0}"
-                                    icon="fas fa-download" update="tabViewCandidat messageIndex" process="@this"
+                                    icon="fas fa-upload" update="tabViewCandidat messageIndex" process="@this"
                                     actionListener="#{candidatBean.setExportViewActivate(true)}" />
 
                         <p:menuitem value="#{langueBean.getMsg('candidat.import_in_SKOS_format')}"
-                                    icon="fas fa-upload" update="tabViewCandidat messageIndex" process="@this"
+                                    icon="fas fa-download" update="tabViewCandidat messageIndex" process="@this"
                                     action="#{candidatBean.setImportViewActivate(true)}" />
                     </p:menuButton>
                 </p:toolbarGroup>
@@ -82,19 +93,19 @@
                 </p:column>
 
                 <p:column width="30" headerText="#{langueBean.getMsg('rightbody.concept.createdBy')}">
-                    <h:outputText value="#{listCandidats.user}" style="font-size: 13px;"/>
+                    <h:outputText value="#{listCandidats.createdBy}" style="font-size: 13px;"/>
                 </p:column>
 
                 <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}" sortBy="#{listCandidats.creationDate}">
                     <h:outputText value="#{listCandidats.creationDate}" style="font-size: 13px;" />
                 </p:column>  
                 <p:column width="20" headerText="Votes" sortBy="#{listCandidats.nbrVote}">
-                    <h:outputText value="#{listCandidats.nbrVote}" style="font-size: 13px;" />
+                    <p:badge rendered="#{listCandidats.nbrVote > 0}" severity="danger" value="#{listCandidats.nbrVote}" styleClass="p-mr-2"></p:badge>
                 </p:column>   
                 <p:column width="20" headerText="Votes Note">
                     <p:badge rendered="#{listCandidats.nbrNoteVote > 0}" value="#{listCandidats.nbrNoteVote}" severity="danger" styleClass="p-mr-2">
                         <p:commandButton icon="pi pi-bell" styleClass="rounded-button ui-button-warning" update="idShowVoteNote"
-                                         actionListener="#{noteBeanCandidat.prepareVoteNote(listCandidats)}" 
+                                         actionListener="#{showVoteNote.prepareVoteNote(listCandidats)}" 
                                          oncomplete="PF('showVoteNote').show();"
                                          process="@this" ajax="true"/>
                     </p:badge>
@@ -107,11 +118,20 @@
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) 
                                       and (candidatBean.isListSelected())}">
                 <div class="row" >
-                    <div class="col-12" style="text-align: right; margin-top: 20px">
-                        <p:commandButton title="#{langueBean.getMsg('candidat.submitList')}" ajax="true" process="@this"
-                                         update="idProcessCandidateList processCandidateListForm" class="btn btn-primary"
-                                         oncomplete="PF('processCandidateList').show();" /> 
+                    <div class="col-2 offset-1" style="text-align: right; margin-top: 20px;">
+                        <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" ajax="true" process="@this"
+                                         styleClass="ui-button-danger"
+                                         style="font-size: 12px; width: 100%"
+                                         update="idDeleteCandidate"
+                                         oncomplete="PF('deleteCandidate').show();" 
+                                         /> 
                     </div>
+                    
+                    <div class="col-2 offset-6" style="text-align: right; margin-top: 20px;">
+                        <p:commandButton value="#{langueBean.getMsg('candidat.submitList')}" ajax="true" process="@this"
+                                         update="idProcessCandidateList processCandidateListForm" styleClass="ui-button-primary"
+                                         oncomplete="PF('processCandidateList').show();" style="font-size: 12px; width: 100%"/> 
+                </div>
                 </div>
             </h:panelGroup>  
         </h:form>        

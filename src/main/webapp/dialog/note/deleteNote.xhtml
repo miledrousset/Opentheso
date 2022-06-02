@@ -4,35 +4,38 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idDeleteNote" header="#{langueBean.getMsg('rightbody.concept.delete_note')}" widgetVar="deleteNote" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >  
+              width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >  
         <h:form id="deleteNoteForm" >
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
                 </div>
                 <div class="col-7">
                     <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
                 </div>
             </div>   
+            <p:panel style=" max-height: 500px; overflow-y:scroll">
 
-            <ui:repeat var="noteToDelete" value="#{noteBean.nodeToDelete()}" >
-                <div class="row">
-                    <div class="col-11" style="margin-top: 3px">
-                        <p:inputTextarea rendered="#{noteToDelete.lexicalvalue != ''}"
-                                         readonly="true"
-                                         value="#{noteToDelete.lexicalvalue}"  
-                                         style="width: 100%; font-size: 12px; color: black" />
+                <ui:repeat var="noteToDelete" value="#{noteBean.nodeToDelete()}" >
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-11" >
+                            <p:inputTextarea rendered="#{noteToDelete.lexicalvalue != ''}"
+                                             readonly="true"
+                                             value="#{noteToDelete.lexicalvalue}"  
+                                             style="width: 100%; font-size: 12px; color: black; max-height: 200px; overflow-y:scroll" />
+                        </div>
+                        <div class="col-1" style=" align-self: center;">
+                            <p:commandLink style="color: #FF7979" oncomplete="PF('deleteNote').show();"
+                                           update="containerIndex:idDeleteNote"
+                                           ajax="true" process="@form"
+                                           action="#{noteBean.deleteNote(noteToDelete, currentUser.nodeUser.idUser)}" >
+                                <i class="pi pi-trash" />
+                            </p:commandLink>
+                        </div>
                     </div>
-                    <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #FF7979" oncomplete="PF('deleteNote').show();"
-                                       update="containerIndex:idDeleteNote"
-                                       ajax="true" process="@form"
-                                action="#{noteBean.deleteNote(noteToDelete, currentUser.nodeUser.idUser)}" >
-                            <i class="pi pi-trash" />
-                        </p:commandLink>
-                    </div>
-                </div>
-            </ui:repeat>
+                </ui:repeat>
+            </p:panel>
+            <p:spacer height= "20px;"/>                
             <div class="row">
                 <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
                     <p:messages id="deletenoteMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
@@ -43,7 +46,7 @@
             <p:spacer height="10px;" />
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                     actionListener="PF('deleteNote').hide();" update="containerIndex:idDeleteNote"/>
+                                 actionListener="PF('deleteNote').hide();" update="containerIndex:idDeleteNote"/>
             </div>
         </h:form>            
     </p:dialog> 

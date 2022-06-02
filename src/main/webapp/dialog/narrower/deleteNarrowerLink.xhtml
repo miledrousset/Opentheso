@@ -7,7 +7,7 @@
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Terme : " class="dialog-titre" /> 
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
             </div>
             <div class="col-7">
                 <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
@@ -15,7 +15,7 @@
         </div>            
 
         <p:panel id="listNarrowerLink">
-            <h:outputText value="Liste des concepts spécifique : " class="dialog-titre" /> 
+            <h:outputText value="rightbody.concept.NarrowerLists')} : " class="dialog-titre" /> 
             <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >
                 <div class="row">
                     <div class="col-1" style="margin-top: 3px">

@@ -756,3 +756,23 @@ body .custom-indicator-galleria .ui-galleria-indicator.ui-state-highlight {
     background-color: var(--primary-color);
     color: var(--primary-color-text);
 }
+
+body .ui-sidebar .ui-sidebar-close .ui-icon {
+    font-family: "primeicons" !important;
+    font-style: normal;
+    font-weight: normal;
+    display: inline-block;
+    background: none;
+    color: red;
+}
+
+.sidebar.toggled {
+    overflow: visible;
+    width: 4.5rem !important;
+}
+
+.sidebar.toggled .nav-item .nav-link {
+    text-align: center;
+    padding: 0.75rem 1rem;
+    width: 4.5rem;
+}

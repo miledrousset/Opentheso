@@ -15,13 +15,11 @@
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
 
-        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
-
-        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/all.css"/> 
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
     </h:head>
 
-
-    <h:body id="page-top" onload="closeMenu()">
+    <h:body id="page-top" onload="initMenu()">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -58,13 +56,13 @@
                                 <!-- Ark -->
                                 <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
                                     <p:panel style="border-color: transparent">
-                                        <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
+                                        <div class="row" style="height: 32px; background: #FAEDE5 !important; margin-left: 5px; margin-right: 5px">
                                             <div class="col-6" style="padding-top: 3px">
-                                                <h:outputText value="Serveur Ark" style="font-weight: bold;; color: #FFF !important;" />
+                                                <h:outputText value="Serveur Ark" style="font-weight: bold; color: #f47b2a !important;" />
                                             </div>
                                             <div class="col-6" style="text-align: right; padding-top: 3px">
-                                                <p:badge rendered="#{preferenceBean.nodePreference.useArk}" style="background-color:#FFF; color: #f47b2a" value="ON"  />
-                                                <p:badge rendered="#{!preferenceBean.nodePreference.useArk}" style="background-color:#FFF; color: #f47b2a" value="OFF"  />
+                                                <p:badge rendered="#{preferenceBean.nodePreference.useArk}" severity="success"  value="ON" />
+                                                <p:badge rendered="#{!preferenceBean.nodePreference.useArk}" style="background-color:#FFF; color: #818183" value="OFF"  />
                                             </div>
                                         </div>
 
@@ -168,16 +166,17 @@
                                         </div>
                                     </p:panel>
                                 </div>
-
+                                
+                                <!--Serveur Handle-->
                                 <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
                                     <p:panel style="border-color: transparent">
-                                        <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
+                                        <div class="row" style="height: 32px; background: #FAEDE5 !important; margin-left: 5px; margin-right: 5px">
                                             <div class="col-6" style="padding-top: 3px">
-                                                <h:outputText value="Serveur Handle " style="font-size: 14px; font-weight: bold;; color: #FFF !important;" />
+                                                <h:outputText value="Serveur Handle " style="font-size: 14px; font-weight: bold; color:#f47b2a  !important;" />
                                             </div>
                                             <div class="col-6" style="text-align: right; padding-top: 3px">
-                                                <p:badge rendered="#{preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #f47b2a" value="ON"  />
-                                                <p:badge rendered="#{!preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #f47b2a" value="OFF"  />
+                                                <p:badge rendered="#{preferenceBean.nodePreference.useHandle}" severity="success"  value="ON"/>
+                                                <p:badge rendered="#{!preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #818183" value="OFF"  />
                                             </div>
                                         </div>
 
@@ -292,16 +291,17 @@
                                     </p:panel>
                                 </div>
 
+                                <!-- Serveur Ark Local -->
                                 <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
                                     <p:panel style="border-color: transparent">
-                                        <div class="row" style="height: 32px; background: #f47b2a !important; margin-left: 5px; margin-right: 5px">
+                                        <div class="row" style="height: 32px; background: #FAEDE5 !important; margin-left: 5px; margin-right: 5px">
                                             <div class="col-6" style="padding-top: 3px">
-                                                <h:outputText value="Ark en local sans serveur" style="font-size: 14px; font-weight: bold;; color: #FFF !important;"
+                                                <h:outputText value="Ark en local sans serveur" style="font-size: 14px; font-weight: bold; color: #f47b2a !important;"
                                                               title="Permet de générer des identifiants Ark en local sans passer par un serveur"/>
                                             </div>
                                             <div class="col-6" style="text-align: right; padding-top: 3px">
-                                                <p:badge rendered="#{preferenceBean.nodePreference.useArkLocal}" style="background-color:#FFF; color: #f47b2a" value="ON"  />
-                                                <p:badge rendered="#{!preferenceBean.nodePreference.useArkLocal}" style="background-color:#FFF; color: #f47b2a" value="OFF"  />
+                                                <p:badge rendered="#{preferenceBean.nodePreference.useArkLocal}" severity="success"  value="ON"  />
+                                                <p:badge rendered="#{!preferenceBean.nodePreference.useArkLocal}" style="background-color:#FFF; color: #818183" value="OFF"  />
                                             </div>
                                         </div>
 

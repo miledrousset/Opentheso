@@ -45,7 +45,6 @@ import org.apache.commons.logging.LogFactory;
 //general path = /api
 @Path("/")
 public class Rest_new {
-    private final Log log = LogFactory.getLog(Rest_new.class);
     /**
      * Creates a new instance of resources La connexion est faite à chaque
      * question
@@ -82,17 +81,15 @@ public class Rest_new {
      */
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
-/*
-    //Pour tester
-    @Path("/add")
-    @PUT
-    @Consumes("application/json;charset=UTF-8")
-    @Produces("application/json;charset=UTF-8")
-    public String testPut(String content) {
-        return content;
+
+
+    @Path("/ping")
+    @GET
+    @Produces("text/text;charset=UTF-8")
+    public String testWS(){
+        return "pong";
     }
 
-     */
     /**
      * pour produire du RDF-SKOS
      *
@@ -1583,7 +1580,7 @@ public class Rest_new {
     public Response searchAutocomplete(@PathParam("value") String value, @Context UriInfo uri) {
         String idLang = "";
         String idTheso = null;
-        String group = "";
+        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
         String format = null;
 
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
@@ -1595,7 +1592,7 @@ public class Rest_new {
                     idTheso = valeur;
                 }
                 if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
+                    groups = valeur.split(",");
                 }
                 if (e.getKey().equalsIgnoreCase("format")) {
                     format = valeur;
@@ -1611,9 +1608,9 @@ public class Rest_new {
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = getAutocompleteDatas(idTheso, idLang, group, value, true);
+            datas = getAutocompleteDatas(idTheso, idLang, groups, value, true);
         } else {
-            datas = getAutocompleteDatas(idTheso, idLang, group, value, false);
+            datas = getAutocompleteDatas(idTheso, idLang, groups, value, false);
         }
 
         if (datas == null) {
@@ -1646,7 +1643,7 @@ public class Rest_new {
         String idLang = "";
         String value = null;
         String idTheso = null;
-        String group = "";
+        String [] groups = null;
         String format = null;
 
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
@@ -1661,7 +1658,7 @@ public class Rest_new {
                     idTheso = valeur;
                 }
                 if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
+                    groups = valeur.split(",");
                 }
                 if (e.getKey().equalsIgnoreCase("format")) {
                     format = valeur;
@@ -1685,9 +1682,9 @@ public class Rest_new {
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = getAutocompleteDatas(idTheso, idLang, group, value, true);
+            datas = getAutocompleteDatas(idTheso, idLang, groups, value, true);
         } else {
-            datas = getAutocompleteDatas(idTheso, idLang, group, value, false);
+            datas = getAutocompleteDatas(idTheso, idLang, groups, value, false);
         }
 
         if (datas == null) {
@@ -1705,7 +1702,7 @@ public class Rest_new {
     }
 
     private String getAutocompleteDatas(String idTheso,
-                                        String idLang, String group,
+                                        String idLang, String[] groups,
                                         String value, boolean withNotes) {
         HikariDataSource ds = connect();
         if (ds == null) {
@@ -1713,7 +1710,7 @@ public class Rest_new {
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.findAutocompleteConcepts(ds,
-                idTheso, idLang, group, value, withNotes);
+                idTheso, idLang, groups, value, withNotes);
         ds.close();
         if (datas == null) {
             return null;

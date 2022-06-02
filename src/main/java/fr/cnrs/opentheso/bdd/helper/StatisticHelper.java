@@ -726,7 +726,7 @@ public class StatisticHelper {
                         " and" +
                         " term.lang='" + idLang + "'" +
                         " and" +
-                        " concept.id_concept NOT IN (SELECT concept_group_concept.idconcept FROM concept_group_concept WHERE concept_group_concept.idthesaurus = 'TH_1')";
+                        " concept.id_concept NOT IN (SELECT concept_group_concept.idconcept FROM concept_group_concept WHERE concept_group_concept.idthesaurus = '" + idThesaurus + "')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {

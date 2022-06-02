@@ -23,6 +23,9 @@ public class PreferencesHelper {
 
     /**
      * permet de retourner le code JavaScript de GoogleAnalytics
+    * 
+    * @param ds
+    * @return 
      */
     public String getCodeGoogleAnalytics(HikariDataSource ds) {
         String codeAnalytics = null;
@@ -42,6 +45,9 @@ public class PreferencesHelper {
 
     /**
      * Permet de mettre à jour le code javaScript de GoogleAnalytics
+     * @param ds
+     * @param codeJavaScript
+     * @return 
      */
     public boolean setCodeGoogleAnalytics(HikariDataSource ds, String codeJavaScript) {
 
@@ -88,6 +94,7 @@ public class PreferencesHelper {
 
                         np.setSort_by_notation(resultSet.getBoolean("sort_by_notation"));
                         //np.setTree_cache(resultSet.getBoolean("tree_cache"));
+                        np.setUseConceptTree(resultSet.getBoolean("useConceptTree"));
 
                         // Ark
                         np.setUseArk(resultSet.getBoolean("use_ark"));
@@ -146,6 +153,9 @@ public class PreferencesHelper {
 
     /**
      * Permet de retourner la langue de préference pour un thésaurus
+     * @param ds
+     * @param idThesourus
+     * @return 
      */
     public String getWorkLanguageOfTheso(HikariDataSource ds, String idThesourus) {
         String workLanguage = null;
@@ -166,6 +176,11 @@ public class PreferencesHelper {
 
     /**
      * Permet de mettre à jour la langue source pour un thésaurus
+     * 
+     * @param ds
+     * @param idLang
+     * @param idTheso
+     * @return 
      */
     public boolean setWorkLanguageOfTheso(HikariDataSource ds, String idLang, String idTheso) {
 
@@ -202,6 +217,10 @@ public class PreferencesHelper {
 
     /**
      * retourne l'id du thésaurus d'après son nom dans les préferances
+     * 
+     * @param ds
+     * @param thesoName
+     * @return 
      */
     public String getIdThesaurusFromName(HikariDataSource ds, String thesoName) {
         String idTheso = null;
@@ -223,6 +242,10 @@ public class PreferencesHelper {
 
     /**
      * Cette fonction permet d'initialiser les préférences d'un thésaurus
+     * 
+     * @param ds
+     * @param idThesaurus
+     * @param workLanguage 
      */
     public void initPreferences(HikariDataSource ds, String idThesaurus, String workLanguage) {
 
@@ -258,6 +281,8 @@ public class PreferencesHelper {
                         + ", auto_expand_tree='" + np.isAuto_expand_tree() + "'"
                         + ", tree_cache='" + np.isTree_cache() + "'"
                         + ", sort_by_notation='" + np.isSort_by_notation() + "'"
+                        + ", useConceptTree='" + np.isUseConceptTree()+ "'"                        
+                        
                         // Ark
                         + ", use_ark='" + np.isUseArk() + "'"
                         + ", server_ark='" + stringPlus.convertString(np.getServeurArk()) + "'"
@@ -340,7 +365,7 @@ public class PreferencesHelper {
                         + " user_handle, pass_handle, path_key_handle, path_cert_handle,"
                         + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
                         + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
-                        + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb)"
+                        + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb, useConceptTree)"
 
                         + " values('" + idThesaurus + "'"
                         + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
@@ -392,6 +417,7 @@ public class PreferencesHelper {
                         + ",'" + np.getPrefixArkLocal()+ "'"
                         + "," + np.getSizeIdArkLocal()
                         + "," + np.isBreadcrumb()
+                        + "," + np.isUseConceptTree()
                         
 
                         + ")";

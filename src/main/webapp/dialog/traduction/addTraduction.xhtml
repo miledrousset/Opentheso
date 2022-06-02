@@ -35,7 +35,7 @@
 
             <div class="row" style="margin-top: 5px">
                 <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Langue : " class="dialog-titre" /> 
+                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " class="dialog-titre" /> 
                 </div>
                 <div class="col-7">
                     <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionBean.selectedLang}"
@@ -63,6 +63,7 @@
                 <p:commandButton id="validateAddTraduction"
                                  value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
                                  ajax="true" process="@form"
+                                 update="messageIndex containerIndex:idAddTraduction" oncomplete="PF('addTraduction').show();"                               
                                  actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" />
             </div>
         </h:form>            
