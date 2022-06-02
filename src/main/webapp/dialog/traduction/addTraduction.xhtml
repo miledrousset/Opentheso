@@ -63,6 +63,7 @@
                 <p:commandButton id="validateAddTraduction"
                                  value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
                                  ajax="true" process="@form"
+                                 update="messageIndex containerIndex:idAddTraduction" oncomplete="PF('addTraduction').show();"                               
                                  actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" />
             </div>
         </h:form>            
