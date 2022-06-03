@@ -469,15 +469,38 @@ public class ConceptHelper {
         return NodeUris;
     }
 
-    public List<NodeTree> getTopConceptsWithTermByTheso(HikariDataSource ds, String idTheso) {
+    /**
+     * permet de récupérer les tops concepts par langue, cette focntion ne prend pas en compte 
+     * quand le concept n'existe pas dans la langue demandée
+     * @param ds
+     * @param idTheso
+     * @param idLang
+     * @return 
+     */
+    public List<NodeTree> getTopConceptsWithTermByTheso(HikariDataSource ds, String idTheso, String idLang) {
 
         List<NodeTree> nodes = new ArrayList<>();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT con.id_concept, ter.lexical_value FROM concept con, term ter, preferred_term per " +
-                        "WHERE ter.id_term =  per.id_term AND con.id_concept = per.id_concept AND con.id_thesaurus = '"+idTheso+"' " +
-                        "AND con.top_concept = true AND con.status !='CA' ORDER BY ter.lexical_value");
+                stmt.executeQuery("SELECT concept.id_concept, term.lexical_value " +
+                        " FROM concept, term, preferred_term " +
+                        " WHERE " +
+                        " concept.id_concept = preferred_term.id_concept" +
+                        " and" +
+                        " concept.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_thesaurus = term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_term = term.id_term" +
+                        " AND" +
+                        " concept.id_thesaurus = '" + idTheso + "' " +
+                        " AND" +
+                        " concept.top_concept = true " +
+                        " AND" +
+                        " concept.status != 'CA'" +
+                        " and term.lang = '" + idLang + "'" +
+                        " order by unaccent(lower(term.lexical_value))");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -500,14 +523,22 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT hie.id_concept2, ter.lexical_value " +
-                    "FROM hierarchical_relationship hie, term ter, preferred_term per " +
-                    "WHERE ter.id_term =  per.id_term " +
-                    "AND hie.id_concept2 = per.id_concept " +
-                    "AND hie.id_thesaurus = '"+idThesaurus+"' " +
-                    "AND hie.id_concept1 = '"+idConcept+"' " +
-                    "AND hie.role LIKE 'NT%' " +
-                    "ORDER BY ter.lexical_value");
+                stmt.executeQuery("SELECT hierarchical_relationship.id_concept2, term.lexical_value " +
+                        " FROM hierarchical_relationship, term, preferred_term " +
+                        " WHERE" +
+                        " hierarchical_relationship.id_concept2 = preferred_term.id_concept" +
+                        " and" +
+                        " hierarchical_relationship.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_term = term.id_term" +
+                        " and" +
+                        " preferred_term.id_thesaurus = term.id_thesaurus" +
+                        
+                        " AND hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'" +
+                        " AND hierarchical_relationship.id_concept1 = '" + idConcept + "' " +
+                        " AND hierarchical_relationship.role LIKE 'NT%' " +
+                        " and term.lang = '" + idLang + "'" +
+                        " ORDER BY unaccent(lower(term.lexical_value))");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -3489,6 +3520,45 @@ public class ConceptHelper {
         return tabIdConcept;
     }
 
+    /**
+     * Cette fonction permet de récupérer le total des Id concept d'un thésaurus
+     * en filtrant par Domaine/Group
+     */
+    public int  getCountConceptOfThesaurusByLang(HikariDataSource ds,
+            String idThesaurus, String idLang) {
+
+        int count = -1;
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT count(concept.id_concept) " +
+                        " FROM concept, term, preferred_term " +
+                        " WHERE " +
+                        " concept.id_concept = preferred_term.id_concept" +
+                        " and" +
+                        " concept.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_thesaurus = term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_term = term.id_term" +
+                        " AND" +
+                        " concept.id_thesaurus = '" + idThesaurus + "' " +
+                        " AND" +
+                        " concept.status != 'CA'" +
+                        " and term.lang = '" + idLang + "'");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        count = resultSet.getInt("count");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
+        }
+        return count;
+    }    
+    
     /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
      * en filtrant par Domaine/Group

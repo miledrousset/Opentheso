@@ -19,20 +19,20 @@
 
             <hr class="sidebar-divider my-0"/>
 
-            <!-- Debut Thesorus -->
+            <!-- Debut Thesaurus -->
             <li class="nav-item" style="margin-top: 20px;">
                 <span class="nav-link">
                     <div id="thesoButton1" style=" margin-left: 5px">
                         <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
                                        style="color: #fff; text-decoration: none; font-size: 14px;" process="@this">
                             <i class="fa-solid fa-folder-tree" style="font-size: 1.2rem" />
-                            #{langueBean.getMsg('menu.thesaurus')}
+                            <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.thesaurus')}</span>
                         </p:commandLink>
                     </div>
                     <div id="thesoButton2">
                         <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
                                        style="color: #fff; text-decoration: none;" process="@this">
-                            <i class="fa-solid fa-folder-tree" style="font-size: 1.7rem" />
+                            <i class="fa-solid fa-folder-tree" style="font-size: 1.4rem" />
                         </p:commandLink>
                     </div>
                 </span>
@@ -49,13 +49,13 @@
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
                                            style="color: #fff; text-decoration: none; font-size: 14px;">
                                 <i class="fa-solid fa-file-circle-check" style="font-size: 1.2rem" />
-                                #{langueBean.getMsg('candidat.titre')}
+                                <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('candidat.titre')}</span>
                             </p:commandLink>
                         </div>
                         <div id="candidatButton2">
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}"
                                            style="color: #fff; text-decoration: none;" process="@this">
-                                <i class="fa-solid fa-file-circle-check" style="font-size: 1.7rem" />
+                                <i class="fa-solid fa-file-circle-check" style="font-size: 1.4rem" />
                             </p:commandLink>
                         </div>
                     </span>
@@ -76,12 +76,11 @@
                     <div id="profileButton2">
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                            aria-expanded="true" aria-controls="collapseTwo">
-                            <i class="fas fa-fw fa-user" style="font-size: 1.7rem" />
+                            <i class="fas fa-fw fa-user" style="font-size: 1.4rem" />
                         </a>
                     </div>
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" 
                                            process="@this" style="font-size: 12px;">#{langueBean.getMsg('profile.my_account')}
                             </p:commandLink>
@@ -124,13 +123,12 @@
                     <div id="toolboxButton2">
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                            aria-expanded="true" aria-controls="collapseUtilities">
-                            <i class="fas fa-fw fa-briefcase" style="font-size: 1.7rem" />
+                            <i class="fas fa-fw fa-briefcase" style="font-size: 1.4rem" />
                         </a>
                     </div>
                     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToEditionPage()}" 
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.edition')}</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}" 
@@ -161,13 +159,12 @@
                     <div id="settingButton2">
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
                            aria-expanded="true" aria-controls="collapseParams">
-                            <i class="fas fa-fw fa-wrench" style="font-size: 1.7rem" />
+                            <i class="fas fa-fw fa-wrench" style="font-size: 1.4rem" />
                         </a>
                     </div>
                     <div id="collapseParams" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header" style="font-size: 12px;">Menu:</h6>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToPreferencePage()}" 
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.preference')}</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToIdetifiantPage()}" 
