@@ -21,29 +21,31 @@
         </p:selectOneMenu>
 
         <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" style="margin-left: 15px;">
-            <i class="fas fa-refresh" style="color: #d1d3e2; font-size: 14px;" title="#{langueBean.getMsg('menu.reload_thesaurus')}" />
+            <i class="fas fa-refresh" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.reload_thesaurus')}"  />
         </p:commandLink>
 
-        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 15px; ">
-            <i class="fas fa-broom" style="color: #d1d3e2;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
+        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 15px;">
+            <i class="fas fa-broom" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.cleanSession')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
 
-            <li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="#" role="button" style="margin-top: 3px; font-size: 12px;"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-bell fa-refresh"></i>
-                </a>
-            </li>
+            <p:panel rendered="#{currentUser.isAlertVisible()}">
+                <li class="nav-item dropdown no-arrow mx-1">
+                    <p:link class="nav-link dropdown-toggle" onclick="PF('listNotification').show();" 
+                            style="margin-top: 3px; font-size: 12px;" href="#">
+                        <i class="fas fa-bell fa-refresh" style="font-size: 1.1rem" />
+                    </p:link>
+                </li>
+            </p:panel>
 
             <!-- Nav Item - Alerts -->
             <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 3px; font-size: 12px;">
-                    <img src="#{request.contextPath}/resources/img/#{langueBean.idLangue}.png" width="20px" />
+                    <img src="#{request.contextPath}/resources/img/#{langueBean.idLangue}.png" width="30px" />
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                      aria-labelledby="alertsDropdown" style="font-size: 12px;">
@@ -89,7 +91,7 @@
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                         <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px; margin-top: 7px;">
-                            <h:outputText value="#{currentUser.nodeUser.name}" style="font-size: 12px; " />
+                            <h:outputText value="#{currentUser.formatUserName(currentUser.nodeUser.name)}" style="font-size: 12px; font-family: Roboto, sans-serif; font-size: 14px" />
                         </span>
                         <img class="img-profile rounded-circle" src="#{request.contextPath}/resources/img/undraw_profile.svg" style="margin-top: 5px;font-size: 12px;" />
                     </a>

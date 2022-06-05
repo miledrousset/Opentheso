@@ -153,33 +153,15 @@ function closeMenu() {
     $(".sidebar").toggleClass("toggled");
     if ($(".sidebar").hasClass("toggled")) {
         $('.sidebar .collapse').collapse('hide');
-        
-        document.getElementById("thesoButton1").style.display = "none";
-    
-        var candidatButton1 = document.getElementById("candidatButton1");
-        if(candidatButton1 !== null) {
-            candidatButton1.style.display = "none"
-        }
-
-        var profileButton1 = document.getElementById("profileButton1");
-        if(profileButton1 !== null) {
-            profileButton1.style.display = "none"
-        }
-
-        var toolboxButton1 = document.getElementById("toolboxButton1");
-        if(toolboxButton1 !== null) {
-            toolboxButton1.style.display = "none"
-        }
-
-        var settingButton1 = document.getElementById("settingButton1");
-        if(settingButton1 !== null) {
-            settingButton1.style.display = "none"
-        }
     };
 }
 
 function initMenu() {
-    document.getElementById("thesoButton1").style.display = "none";
+    
+    var thesoButton1 = document.getElementById("thesoButton1");
+    if(thesoButton1 !== null) {
+        thesoButton1.style.display = "none"
+    }
     
     var candidatButton1 = document.getElementById("candidatButton1");
     if(candidatButton1 !== null) {

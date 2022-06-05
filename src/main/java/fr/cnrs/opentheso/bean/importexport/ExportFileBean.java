@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
@@ -192,9 +193,17 @@ public class ExportFileBean implements Serializable {
 
     private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
         
-        ConceptHelper conceptHelper = new ConceptHelper();
-        List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(
-                connect.getPoolConnexion(), parentId, langId, thesoId);
+        ArrayList<NodeIdValue> listChilds = new ConceptHelper().getListChildrenOfConceptSorted(connect.getPoolConnexion(), 
+                parentId, langId, thesoId);
+        
+        List<NodeTree> concepts = new ArrayList<>();
+        for (NodeIdValue idValue : listChilds) {
+            NodeTree nodeTree = new NodeTree();
+            nodeTree.setIdConcept(idValue.getId());
+            nodeTree.setIdParent(parentId);
+            nodeTree.setPreferredTerm(idValue.getValue());
+            concepts.add(nodeTree);
+        }
 
         for (NodeTree concept : concepts) {
             concept.setIdParent(parentId);
@@ -241,6 +250,7 @@ public class ExportFileBean implements Serializable {
         ///////////////////////////////////  
         if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
             ConceptHelper conceptHelper = new ConceptHelper();
+            
             List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
                     viewExportBean.getNodeIdValueOfTheso().getId());
 
@@ -254,7 +264,7 @@ public class ExportFileBean implements Serializable {
             ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(),
                     viewExportBean.getNodeIdValueOfTheso().getId());
             
-            String[][] tab = new String[allConcepts.size()+1][20];
+            String[][] tab = new String[allConcepts.size()][20];
             posX = 0;
             for (NodeTree topConcept : topConcepts) {
                 posJ = 0;

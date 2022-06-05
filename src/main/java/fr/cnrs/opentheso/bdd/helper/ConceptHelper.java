@@ -475,9 +475,9 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT con.id_concept, ter.lexical_value FROM concept con, term ter, preferred_term per " +
+                stmt.executeQuery("SELECT distinct(con.id_concept), ter.lexical_value FROM concept con, term ter, preferred_term per " +
                         "WHERE ter.id_term =  per.id_term AND con.id_concept = per.id_concept AND con.id_thesaurus = '"+idTheso+"' " +
-                        "AND con.top_concept = true AND con.status !='CA' ORDER BY ter.lexical_value");
+                        "AND con.top_concept = true AND con.status != 'CA' ORDER BY ter.lexical_value");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {

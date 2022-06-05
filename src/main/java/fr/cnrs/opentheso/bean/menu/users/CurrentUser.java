@@ -21,6 +21,8 @@ import javax.inject.Inject;
 import javax.annotation.PreDestroy;
 
 import fr.cnrs.opentheso.utils.LDAPUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -40,7 +42,7 @@ public class CurrentUser implements Serializable {
     private NodeUser nodeUser;
     private String username;
     private String password;
-    private boolean ldapEnable;
+    private boolean ldapEnable = false;
     
     private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
 
@@ -110,9 +112,6 @@ public class CurrentUser implements Serializable {
      */
     public void login() throws IOException {
         
-    /*    username = "admin";
-        password = "admin";
-      */  
         UserHelper userHelper = new UserHelper();
         
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
@@ -195,6 +194,13 @@ public class CurrentUser implements Serializable {
         }
     }
     
+    public String formatUserName(String userName) {
+        if (StringUtils.isEmpty(userName)) {
+            return "";
+        }
+        return StringUtils.upperCase(userName.charAt(0)+"") + userName.substring(1, userName.length());
+    }
+    
     /**
      * permet de savoir si l'utilisateur est admin au moins sur un projet
      * pour contôler la partie import et export
@@ -218,6 +224,10 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage("loginForm:username", msg);
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Default password: rocks!");
         FacesContext.getCurrentInstance().addMessage("loginForm:password", msg);
+    }
+    
+    public boolean isAlertVisible() {
+        return ObjectUtils.isNotEmpty(nodeUser) && nodeUser.isIsSuperAdmin() && nodeUser.isIsActive();
     }
 
     public NodeUser getNodeUser() {
