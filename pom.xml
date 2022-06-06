@@ -20,13 +20,6 @@
         </dependency>
 
         <!-- fin QrCode--> 
-      
-      
-      
-      
-      
-      
-      
 
         <!-- ne marche pas au delà de cette version 2.25 pour java 8-->
         <!-- ne marche pas au delà de cette version 2.33 pour java 11-->        
