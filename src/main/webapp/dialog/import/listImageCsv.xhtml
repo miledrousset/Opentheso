@@ -4,32 +4,36 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idListArkCsv" header="Importer des IdArk" widgetVar="listArkCsv"  
+    <p:dialog id="idListImageCsv" header="Importer des images" widgetVar="listImageCsv"  
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="listArkCsvForm">              
+        <h:form id="listImageCsvForm">              
 
-            <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px">
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="localId" style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="arkId" style="color: #000; " />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="152645"  style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="26678/crtcg26jeN4R9"  style="color: #000; " />
-                    </div>
-                </div>
-            </p:panel>
-
-            <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
+            <p:scrollPanel mode="native" >
+                <p:panelGrid style="font-size: 12px;">
+                    <f:facet name="header">
+                        <p:row style="font-size: 12px;">
+                            <p:column colspan="1">localId</p:column>
+                            <p:column colspan="1">foaf:image</p:column>
+                        </p:row>
+                    </f:facet>
+                    <p:row style="font-size: 12px;">
+                        <p:column colspan="1">26678/crtcg26jeN4R9</p:column>
+                        <p:column colspan="1">https://nospensees.fr/wp-content/uploads/2017/06/photo1-9.jpg</p:column>
+                    </p:row>
+                </p:panelGrid>    
+                <p:spacer/>
+            </p:scrollPanel>  
+            
+            <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px;">
                 Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
+                Si l'identifiant n'existe pas dans le thésaurus, la ligne sera rejetée. Le ## sert à combiner plusieurs valeurs<br/>
+                Si l'image existe, pas de changement (sauf si l'option <b>tout vider avant</b> est active) <br/>
+                Deux options sont possibles :
+                1- garder les valeurs existantes : permet d'ajouter d'images inexistantes <br/>
+                2- supprimer les images avant : permet de vider toutes les images de d'identifiant renseigné dans le tableau <br/>
+                ensuite, on charge les images fournies <br/>
+                Toutes les URI valides sont prises en charge
             </p:outputPanel>
 
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
@@ -39,7 +43,7 @@
                         <h:outputText value="L'identifiant est de type:" style="color: #000" />
                     </div>
                     <div class="col-7">
-                        <p:selectOneMenu value="#{importFileBean.selectedIdentifierImportAlign}" 
+                        <p:selectOneMenu disabled="true" value="#{importFileBean.selectedIdentifierImportAlign}" 
                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; font-size: 12px;" title="Choix de l'identifiant pour détecter le concept">
                             <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
@@ -66,7 +70,7 @@
 
                 <div class="row">
                     <div class="col-5" offset="5">
-                        <h:outputText value="Remplacer les Id Ark ? " style="color: #000"  />
+                        <h:outputText value="Remplacer les images existantes ? " style="color: #000"  />
                     </div>                    
                     <div class="col-7" style="margin-left: -15px;">
                         <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px;" >
@@ -78,7 +82,7 @@
 
             </p:panel>
 
-            <h:panelGroup id="panelListArkCsv">
+            <h:panelGroup id="panelListImageCsv">
                 <!-- Choix du fichier -->   
                 <div class="row" style="margin-left: 30px; margin-right: 30px; margin-top: 10px">
                     <div class="col-12" > 
@@ -86,12 +90,12 @@
                                       label="parcourir" 
                                       mode="advanced" auto="true"
                                       allowTypes="/(\.|\/)(csv|txt)$/"
-                                      update="panelListArkCsv_result" disabled="#{importFileBean.loadDone}"
+                                      update="panelListImageCsv_result" disabled="#{importFileBean.loadDone}"
                                       style="font-size: 12px;" />  
                     </div>
                 </div> 
             </h:panelGroup>                
-            <h:panelGroup id="panelListArkCsv_result">
+            <h:panelGroup id="panelListImageCsv_result">
                 <h:panelGroup rendered="#{importFileBean.loadDone}" style="margin-top: 10px" >
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-5">
@@ -111,12 +115,12 @@
                     <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary"
                                      style="margin-right: 10px"
                                      actionListener="#{importFileBean.init()}"
-                                     oncomplete="PF('listArkCsv').hide();"
-                                     update="listArkCsvForm"/>
+                                     oncomplete="PF('listImageCsv').hide();"
+                                     update="listImageCsvForm"/>
 
                     <p:commandButton value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-primary"
                                      process="@this"
-                                     update="messageIndex listArkCsvForm"
+                                     update="messageIndex listImageCsvForm"
                                      disabled="#{!importFileBean.loadDone}"
                                      actionListener="#{importFileBean.addArkList()}" />
                 </div> 

@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                          value=" Actions sur le thésaurus en cours"  
+                          value="#{langueBean.getMsg('actions.actionsOnThisTheso')}"  
                           style="font-size: 14px;"/>             
         </div>
     </div>
@@ -17,34 +17,40 @@
         <div class="col-12">
             <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
                 <!--Pour importer des alignements -->
-                <p:menuButton value="Actions"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;
+                <p:menuButton value="#{langueBean.getMsg('actions')}"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;
                               color: transparent;  font-size: 12px" >
-                    <p:menuitem value="Importer des alignements" 
-                                title="Importer des alignements d'après un tableau CSV"
+                    <p:menuitem value="#{langueBean.getMsg('actions.importAlignments')}" 
+                                title="#{langueBean.getMsg('actions.importAlignmentsTooltip')}"
                                 oncomplete="PF('listAlignmentCsv').show();"
                                 update="idListAlignmentCsv listAlignmentCsvForm"
                                 action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
 
-                    <p:menuitem value="Supprimer des alignements" 
-                                title="Supprimer des alignements d'après un tableau CSV"
+                    <p:menuitem value="#{langueBean.getMsg('actions.deleteAlignments')}" 
+                                title="#{langueBean.getMsg('actions.deleteAlignmentsTooltip')}"
                                 oncomplete="PF('deleteListAlignmentCsv').show();"
                                 update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
                                 action="#{importFileBean.init()}" icon="pi pi-times" style="font-size: 12px; "/>      
 
                     <p:divider style="font-size: 11px; color: #F47B2A"/>   
 
-                    <p:menuitem value="Importer des notes" 
-                                title="Importer des notes d'après un tableau CSV"
+                    <p:menuitem value="#{langueBean.getMsg('actions.importNotes')}" 
+                                title="#{langueBean.getMsg('actions.importNotesTooltip')}"
                                 oncomplete="PF('listNoteCsv').show();"
                                 update="idListNoteCsv listNoteCsvForm"
                                 action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
-                    <p:menuitem value="Importer des identifiants Ark" 
-                                title="Importer des identifiants Ark d'après un tableau CSV"
+                    
+                    <p:menuitem value="#{langueBean.getMsg('actions.importArks')}" 
+                                title="#{langueBean.getMsg('actions.importArksTooltip')}"
                                 oncomplete="PF('listArkCsv').show();"
                                 update="idListArkCsv listArkCsvForm"
                                 action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>               
-
                     <p:divider style="font-size: 11px; color: #F47B2A"/> 
+
+                    <p:menuitem disabled="true" value="#{langueBean.getMsg('actions.importImages')}" 
+                                title="#{langueBean.getMsg('actions.importImagesTooltip')}"
+                                oncomplete="PF('listImageCsv').show();"
+                                update="idListImageCsv listImageCsvForm"
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/> 
                 </p:menuButton>
             </p:panel>           
         </div>
@@ -53,5 +59,6 @@
     <ui:include src="../dialog/import/listAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/import/deleteListAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/import/listNoteCsv.xhtml" />      
-    <ui:include src="/dialog/import/listArkCsv.xhtml" />      
+    <ui:include src="../dialog/import/listArkCsv.xhtml" />      
+    <ui:include src="../dialog/import/listImageCsv.xhtml" />      
 </ui:fragment>
