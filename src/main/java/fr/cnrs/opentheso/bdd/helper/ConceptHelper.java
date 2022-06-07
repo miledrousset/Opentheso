@@ -3490,6 +3490,45 @@ public class ConceptHelper {
     }
 
     /**
+     * Cette fonction permet de récupérer le total des Id concept d'un thésaurus
+     * en filtrant par Domaine/Group
+     */
+    public int  getCountConceptOfThesaurusByLang(HikariDataSource ds,
+            String idThesaurus, String idLang) {
+
+        int count = -1;
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT count(concept.id_concept) " +
+                        " FROM concept, term, preferred_term " +
+                        " WHERE " +
+                        " concept.id_concept = preferred_term.id_concept" +
+                        " and" +
+                        " concept.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_thesaurus = term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_term = term.id_term" +
+                        " AND" +
+                        " concept.id_thesaurus = '" + idThesaurus + "' " +
+                        " AND" +
+                        " concept.status != 'CA'" +
+                        " and term.lang = '" + idLang + "'");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        count = resultSet.getInt("count");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
+        }
+        return count;
+    }
+
+    /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
      * en filtrant par Domaine/Group
      */

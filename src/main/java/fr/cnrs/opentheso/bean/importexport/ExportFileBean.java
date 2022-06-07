@@ -17,7 +17,6 @@ import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.exports.csv.WriteCSV;
 import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
-import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
@@ -193,9 +192,9 @@ public class ExportFileBean implements Serializable {
 
     private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
         
-        ArrayList<NodeIdValue> listChilds = new ConceptHelper().getListChildrenOfConceptSorted(connect.getPoolConnexion(), 
+        ArrayList<NodeIdValue> listChilds = new ConceptHelper().getListChildrenOfConceptSorted(connect.getPoolConnexion(),
                 parentId, langId, thesoId);
-        
+
         List<NodeTree> concepts = new ArrayList<>();
         for (NodeIdValue idValue : listChilds) {
             NodeTree nodeTree = new NodeTree();
@@ -246,14 +245,12 @@ public class ExportFileBean implements Serializable {
             PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             return new DefaultStreamedContent();
         }
-
         ///////////////////////////////////  
         if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
             ConceptHelper conceptHelper = new ConceptHelper();
-            
-            List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
-                    viewExportBean.getNodeIdValueOfTheso().getId());
 
+            List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
+                    viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
             for (NodeTree topConcept : topConcepts) {
                 topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm()) ? 
                         "(" + topConcept.getIdConcept()+ ")" : topConcept.getPreferredTerm());
@@ -261,10 +258,13 @@ public class ExportFileBean implements Serializable {
                         viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
             }
 
-            ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(),
-                    viewExportBean.getNodeIdValueOfTheso().getId());
+//            ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(),
+//                    viewExportBean.getNodeIdValueOfTheso().getId());
+            int countOfConcept = conceptHelper.getCountConceptOfThesaurusByLang(connect.getPoolConnexion(),
+                    viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
+            if(countOfConcept == -1) return null;
             
-            String[][] tab = new String[allConcepts.size()][20];
+            String[][] tab = new String[countOfConcept+1][20];
             posX = 0;
             for (NodeTree topConcept : topConcepts) {
                 posJ = 0;
