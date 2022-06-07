@@ -483,24 +483,17 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT concept.id_concept, term.lexical_value " +
+                stmt.executeQuery("SELECT distinct(concept.id_concept), term.lexical_value " +
                         " FROM concept, term, preferred_term " +
-                        " WHERE " +
-                        " concept.id_concept = preferred_term.id_concept" +
-                        " and" +
-                        " concept.id_thesaurus = preferred_term.id_thesaurus" +
-                        " and" +
-                        " preferred_term.id_thesaurus = term.id_thesaurus" +
-                        " and" +
-                        " preferred_term.id_term = term.id_term" +
-                        " AND" +
-                        " concept.id_thesaurus = '" + idTheso + "' " +
-                        " AND" +
-                        " concept.top_concept = true " +
-                        " AND" +
-                        " concept.status != 'CA'" +
-                        " and term.lang = '" + idLang + "'" +
-                        " order by unaccent(lower(term.lexical_value))");
+                        " WHERE concept.id_concept = preferred_term.id_concept" +
+                        " AND concept.id_thesaurus = preferred_term.id_thesaurus" +
+                        " AND preferred_term.id_thesaurus = term.id_thesaurus" +
+                        " AND preferred_term.id_term = term.id_term" +
+                        " AND concept.id_thesaurus = '" + idTheso + "' " +
+                        " AND concept.top_concept = true " +
+                        " AND concept.status != 'CA'" +
+                        " AND term.lang = '" + idLang + "'" +
+                        " order by term.lexical_value");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -523,31 +516,29 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT hierarchical_relationship.id_concept2, term.lexical_value " +
-                        " FROM hierarchical_relationship, term, preferred_term " +
-                        " WHERE" +
-                        " hierarchical_relationship.id_concept2 = preferred_term.id_concept" +
-                        " and" +
-                        " hierarchical_relationship.id_thesaurus = preferred_term.id_thesaurus" +
-                        " and" +
-                        " preferred_term.id_term = term.id_term" +
-                        " and" +
-                        " preferred_term.id_thesaurus = term.id_thesaurus" +
-                        
-                        " AND hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'" +
-                        " AND hierarchical_relationship.id_concept1 = '" + idConcept + "' " +
-                        " AND hierarchical_relationship.role LIKE 'NT%' " +
-                        " and term.lang = '" + idLang + "'" +
-                        " ORDER BY unaccent(lower(term.lexical_value))");
-
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                stmt.executeQuery("SELECT distinct(hierarchical_relationship.id_concept2), term.lexical_value " +
+                    "FROM hierarchical_relationship, term, preferred_term " +
+                    "WHERE hierarchical_relationship.id_concept2 = preferred_term.id_concept " +
+                    "AND hierarchical_relationship.id_thesaurus = preferred_term.id_thesaurus " +
+                    "AND preferred_term.id_term = term.id_term " +
+                    "AND preferred_term.id_thesaurus = term.id_thesaurus " +
+                    "AND hierarchical_relationship.id_thesaurus = '" + idThesaurus + "' " +
+                    "AND hierarchical_relationship.id_concept1 = '" + idConcept + "' " +
+                    "AND hierarchical_relationship.role LIKE 'NT%' " +
+                    "AND term.lang = '" + idLang + "' " +
+                    "ORDER BY term.lexical_value");
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeTree nodeTree = new NodeTree();
                         nodeTree.setIdConcept(resultSet.getString("id_concept2"));
                         nodeTree.setPreferredTerm(resultSet.getString("lexical_value"));
                         nodes.add(nodeTree);
                     }
+                }catch (SQLException sqle) {
+                    log.error("Error while getting Liste of TT of theso : " + idThesaurus, sqle);
                 }
+            }catch (SQLException sqle) {
+                log.error("Error while getting Liste of TT of theso : " + idThesaurus, sqle);
             }
         } catch (SQLException sqle) {
             log.error("Error while getting Liste of TT of theso : " + idThesaurus, sqle);
