@@ -191,7 +191,7 @@ public class ExportFileBean implements Serializable {
     }
 
     private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
-        
+        /*
         ArrayList<NodeIdValue> listChilds = new ConceptHelper().getListChildrenOfConceptSorted(connect.getPoolConnexion(),
                 parentId, langId, thesoId);
 
@@ -210,6 +210,16 @@ public class ExportFileBean implements Serializable {
             concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
             concept.getChildrens().addAll(new Tree().searchFacettesForTree(connect.getPoolConnexion(), 
                 parentId, thesoId, langId));
+        }*/
+        ConceptHelper conceptHelper = new ConceptHelper();
+        List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(
+                connect.getPoolConnexion(), parentId, langId, thesoId);
+        for (NodeTree concept : concepts) {
+            concept.setIdParent(parentId);
+            concept.setPreferredTerm(StringUtils.isEmpty(concept.getPreferredTerm()) ? "(" + concept.getIdConcept()+ ")" : concept.getPreferredTerm());
+            concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
+            concept.getChildrens().addAll(new Tree().searchFacettesForTree(connect.getPoolConnexion(),
+                    parentId, thesoId, langId));
         }
 
         return concepts;
@@ -248,7 +258,6 @@ public class ExportFileBean implements Serializable {
         ///////////////////////////////////  
         if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
             ConceptHelper conceptHelper = new ConceptHelper();
-
             List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
                     viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
             for (NodeTree topConcept : topConcepts) {

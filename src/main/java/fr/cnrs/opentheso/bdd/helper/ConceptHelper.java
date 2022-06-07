@@ -469,15 +469,38 @@ public class ConceptHelper {
         return NodeUris;
     }
 
-    public List<NodeTree> getTopConceptsWithTermByTheso(HikariDataSource ds, String idTheso) {
+    /**
+     * permet de récupérer les tops concepts par langue, cette focntion ne prend pas en compte
+     * quand le concept n'existe pas dans la langue demandée
+     * @param ds
+     * @param idTheso
+     * @param idLang
+     * @return
+     */
+    public List<NodeTree> getTopConceptsWithTermByTheso(HikariDataSource ds, String idTheso, String idLang) {
 
         List<NodeTree> nodes = new ArrayList<>();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT distinct(con.id_concept), ter.lexical_value FROM concept con, term ter, preferred_term per " +
-                        "WHERE ter.id_term =  per.id_term AND con.id_concept = per.id_concept AND con.id_thesaurus = '"+idTheso+"' " +
-                        "AND con.top_concept = true AND con.status != 'CA' ORDER BY ter.lexical_value");
+                stmt.executeQuery("SELECT distinct(concept.id_concept), term.lexical_value " +
+                        " FROM concept, term, preferred_term " +
+                        " WHERE " +
+                        " concept.id_concept = preferred_term.id_concept" +
+                        " and" +
+                        " concept.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_thesaurus = term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_term = term.id_term" +
+                        " AND" +
+                        " concept.id_thesaurus = '" + idTheso + "' " +
+                        " AND" +
+                        " concept.top_concept = true " +
+                        " AND" +
+                        " concept.status != 'CA'" +
+                        " and term.lang = '" + idLang + "'" +
+                        " order by term.lexical_value");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -500,14 +523,22 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT hie.id_concept2, ter.lexical_value " +
-                    "FROM hierarchical_relationship hie, term ter, preferred_term per " +
-                    "WHERE ter.id_term =  per.id_term " +
-                    "AND hie.id_concept2 = per.id_concept " +
-                    "AND hie.id_thesaurus = '"+idThesaurus+"' " +
-                    "AND hie.id_concept1 = '"+idConcept+"' " +
-                    "AND hie.role LIKE 'NT%' " +
-                    "ORDER BY ter.lexical_value");
+                stmt.executeQuery("SELECT hierarchical_relationship.id_concept2, term.lexical_value " +
+                        " FROM hierarchical_relationship, term, preferred_term " +
+                        " WHERE" +
+                        " hierarchical_relationship.id_concept2 = preferred_term.id_concept" +
+                        " and" +
+                        " hierarchical_relationship.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_term = term.id_term" +
+                        " and" +
+                        " preferred_term.id_thesaurus = term.id_thesaurus" +
+
+                        " AND hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'" +
+                        " AND hierarchical_relationship.id_concept1 = '" + idConcept + "' " +
+                        " AND hierarchical_relationship.role LIKE 'NT%' " +
+                        " and term.lang = '" + idLang + "'" +
+                        " ORDER BY unaccent(lower(term.lexical_value))");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
