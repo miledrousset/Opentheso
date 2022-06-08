@@ -31,7 +31,8 @@
                     </div>
                     <div id="thesoButton2">
                         <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
-                                       style="color: #fff; text-decoration: none;" process="@this">
+                                       style="color: #fff; text-decoration: none;" process="@this"
+                                       title="#{langueBean.getMsg('menu.thesaurus')}">
                             <i class="fa-solid fa-folder-tree" style="font-size: 1.4rem" />
                         </p:commandLink>
                     </div>
@@ -54,7 +55,8 @@
                         </div>
                         <div id="candidatButton2">
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}"
-                                           style="color: #fff; text-decoration: none;" process="@this">
+                                           style="color: #fff; text-decoration: none;" process="@this"
+                                           title="#{langueBean.getMsg('candidat.titre')}">
                                 <i class="fa-solid fa-file-circle-check" style="font-size: 1.4rem" />
                             </p:commandLink>
                         </div>
@@ -75,7 +77,7 @@
                     </div>
                     <div id="profileButton2">
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                           aria-expanded="true" aria-controls="collapseTwo">
+                           aria-expanded="true" aria-controls="collapseTwo" title="#{langueBean.getMsg('menu.profile')}">
                             <i class="fas fa-fw fa-user" style="font-size: 1.4rem" />
                         </a>
                     </div>
@@ -122,7 +124,7 @@
                     </div>
                     <div id="toolboxButton2">
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                           aria-expanded="true" aria-controls="collapseUtilities">
+                           aria-expanded="true" aria-controls="collapseUtilities" title="#{langueBean.getMsg('menu.toolbox')}">
                             <i class="fas fa-fw fa-briefcase" style="font-size: 1.4rem" />
                         </a>
                     </div>
@@ -158,7 +160,7 @@
                     </div>
                     <div id="settingButton2">
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
-                           aria-expanded="true" aria-controls="collapseParams">
+                           aria-expanded="true" aria-controls="collapseParams"  title="#{langueBean.getMsg('menu.setting')}">
                             <i class="fas fa-fw fa-wrench" style="font-size: 1.4rem" />
                         </a>
                     </div>

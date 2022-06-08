@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.importexport;
 import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
@@ -23,10 +24,12 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -291,6 +294,51 @@ public class ImportFileBean implements Serializable {
             PrimeFaces.current().executeScript("PF('waitDialog').hide()");            
         }
     }    
+    
+    
+    /**
+     * permet de charger un fichier de notes en Csv
+     *
+     * @param event
+     */
+    public void loadFileImageCsv(FileUploadEvent event) {
+        initError();
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+                if (!csvReadHelper.readFileImage(reader1)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+
+                warning = csvReadHelper.getMessage();
+                conceptObjects = csvReadHelper.getConceptObjects();
+                if (conceptObjects != null) {
+                    if (conceptObjects.isEmpty()) {
+                        haveError = true;
+                        error.append(System.getProperty("line.separator"));
+                        error.append("La lecture a échoué, vérifiez le séparateur des colonnes !!");
+                        warning = "";
+                    } else {
+                        total = conceptObjects.size();
+                        uri = "";//csvReadHelper.getUri();
+                        loadDone = true;
+                        BDDinsertEnable = true;
+                        info = "File correctly loaded";
+                    }
+                }
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");            
+        }
+    }      
     
     /**
      * permet de charger un fichier en Csv
@@ -832,6 +880,95 @@ public class ImportFileBean implements Serializable {
             showError();
         }
     }    
+    
+
+    /**
+     * permet d'ajouter une liste d'alignements en CSV au thésaurus
+     *
+     */
+    public void addImageList() {
+        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
+            warning = "pas de thésaurus sélectionné";
+            return;
+        }
+        if (conceptObjects == null || conceptObjects.isEmpty()) {
+            return;
+        }
+        if (importInProgress) {
+            return;
+        }
+        PrimeFaces.current().executeScript("PF('waitDialog').show();");
+        initError();
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+        String idConcept = null;
+        ConceptHelper conceptHelper = new ConceptHelper();
+
+        StringPlus stringPlus = new StringPlus();
+        ImagesHelper imagesHelper = new ImagesHelper();
+        
+        try {
+            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                if(conceptObject == null) continue;
+                if (conceptObject.getLocalId()== null || conceptObject.getLocalId().isEmpty()) {
+                    continue;
+                }
+                if (conceptObject.getImages() == null || conceptObject.getImages().isEmpty()) {
+                    continue;
+                }                
+                if("ark".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId());
+                }
+                if("handle".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getLocalId());
+                } 
+                if("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = conceptObject.getLocalId();
+                }                
+                
+                if (idConcept == null || idConcept.isEmpty()) {
+                    continue;
+                }
+                // controle pour vérifier l'existance de l'Id
+                if(!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())){
+                    continue;
+                }
+                
+                for (NodeImage nodeImage : conceptObject.getImages()) {
+                    if(nodeImage == null) continue;
+                    if(!stringPlus.urlValidator(nodeImage.getUri())) { 
+                        error.append("URL non valide : ");
+                        error.append(uri);
+                        continue;
+                    }
+                    if(!imagesHelper.addExternalImage(connect.getPoolConnexion(),
+                            idConcept, selectedTheso.getCurrentIdTheso(),
+                            "", nodeImage.getCopyRight(), nodeImage.getUri(), currentUser.getNodeUser().getIdUser())) {
+                        error.append("image non insérée");
+                        error.append(nodeImage.getUri());
+                    }
+                    total++;
+                }
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");            
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            info = "import réussi, images importées = " + (int)total;            
+            total = 0;
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");        
+    }        
+        
     
     
     /**

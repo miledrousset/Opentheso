@@ -15,11 +15,13 @@
                         <p:row style="font-size: 12px;">
                             <p:column colspan="1">localId</p:column>
                             <p:column colspan="1">foaf:image</p:column>
+                            <p:column colspan="1">copyright</p:column>
                         </p:row>
                     </f:facet>
                     <p:row style="font-size: 12px;">
                         <p:column colspan="1">26678/crtcg26jeN4R9</p:column>
-                        <p:column colspan="1">https://nospensees.fr/wp-content/uploads/2017/06/photo1-9.jpg</p:column>
+                        <p:column colspan="1">https://image1.jpg##https://image2.jpg</p:column>
+                        <p:column colspan="1">copyright1##copyright2</p:column>                        
                     </p:row>
                 </p:panelGrid>    
                 <p:spacer/>
@@ -38,23 +40,27 @@
 
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
                 <!-- choix du l'identifiant Ark ou Id ou Handle -->
-                <div class="row">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="L'identifiant est de type:" style="color: #000" />
+                <div class="row" style="margin-top: 10px; font-size: 12px; color: #000" >
+                    <div class="col-5">
+                        <h:outputText value="L'identifiant est de type:" />
                     </div>
                     <div class="col-7">
-                        <p:selectOneMenu disabled="true" value="#{importFileBean.selectedIdentifierImportAlign}" 
-                                         styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 100%; background: none;  box-shadow: none; font-size: 12px;" title="Choix de l'identifiant pour détecter le concept">
+                        <p:selectOneMenu value="#{importFileBean.selectedIdentifierImportAlign}" 
+                                         styleClass="selectOneMenu_custom" 
+                                         panelStyleClass="selectOneMenu_panelStyle_custom" style="width: 100%; font-size: 12px"
+                                         title="Choix de l'identifiant pour détecter le concept">
                             <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
+                            <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
+                            <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
+                            <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />
                         </p:selectOneMenu>
                     </div>
-                </div>     
+                </div>    
 
                 <!-- délimiteur CSV -->
-                <div class="row">
+                <div class="row" style="margin-top: 5px;">
                     <div class="col-5" offset="5">
-                        <h:outputText value="Délimiteur Csv :" style="color: #000"  />
+                        <h:outputText value="Délimiteur Csv :" style="color: #000; font-size: 12px"  />
                     </div>
                     <div class="col-7">
                         <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" 
@@ -68,12 +74,12 @@
                     </div>
                 </div>             
 
-                <div class="row">
+                <div class="row" style="margin-top: 5px;">
                     <div class="col-5" offset="5">
-                        <h:outputText value="Remplacer les images existantes ? " style="color: #000"  />
+                        <h:outputText value="Remplacer les images existantes ? " style="color: #000; font-size: 12px"  />
                     </div>                    
                     <div class="col-7" style="margin-left: -15px;">
-                        <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px;" >
+                        <p:toggleSwitch value="#{importFileBean.clearBefore}" style="color: #f47b2a; margin-left: 15px; font-size: 12px;" >
                             <p:ajax listener="#{importFileBean.actionToggle()}"/>
                         </p:toggleSwitch>                        
                        
@@ -86,7 +92,7 @@
                 <!-- Choix du fichier -->   
                 <div class="row" style="margin-left: 30px; margin-right: 30px; margin-top: 10px">
                     <div class="col-12" > 
-                        <p:fileUpload listener="#{importFileBean.loadFileArkCsv}" 
+                        <p:fileUpload listener="#{importFileBean.loadFileImageCsv}" 
                                       label="parcourir" 
                                       mode="advanced" auto="true"
                                       allowTypes="/(\.|\/)(csv|txt)$/"
@@ -122,7 +128,7 @@
                                      process="@this"
                                      update="messageIndex listImageCsvForm"
                                      disabled="#{!importFileBean.loadDone}"
-                                     actionListener="#{importFileBean.addArkList()}" />
+                                     actionListener="#{importFileBean.addImageList()}" />
                 </div> 
             </h:panelGroup>
         </h:form>
