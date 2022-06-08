@@ -65,7 +65,7 @@
                                                     action="#{viewEditionBean.setIsViewExportCSV(true)}" update="containerIndex"
                                                     title="Exporter le thésaurus au format CSV" icon="fas fa-upload" />
 
-                                        <p:menuitem disabled="true" value="Format CSV Structurée" actionListener="#{viewExportBean.init(listTheso, 'CSV_STRUC')}"
+                                        <p:menuitem value="Format CSV Structurée" actionListener="#{viewExportBean.init(listTheso, 'CSV_STRUC')}"
                                                     action="#{viewEditionBean.setIsViewExportCSVStructure(true)}" update="containerIndex" icon="fas fa-upload"
                                                     title="Exporter les labels avec leurs arborescences au format CSV"/>
 

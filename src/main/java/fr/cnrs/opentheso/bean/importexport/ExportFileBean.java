@@ -21,6 +21,7 @@ import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
@@ -195,6 +196,7 @@ public class ExportFileBean implements Serializable {
         List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(
                 connect.getPoolConnexion(), parentId, langId, thesoId);
         for (NodeTree concept : concepts) {
+            sizeOfTheso++;
             concept.setIdParent(parentId);
             concept.setPreferredTerm(StringUtils.isEmpty(concept.getPreferredTerm()) ? "(" + concept.getIdConcept()+ ")" : concept.getPreferredTerm());
             concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
@@ -205,7 +207,7 @@ public class ExportFileBean implements Serializable {
         return concepts;
     }
 
-    public StreamedContent exportThesorus() {
+    public StreamedContent exportThesorus() throws SQLException {
         /// export des concepts dépréciés 
         if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) {
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
@@ -237,23 +239,19 @@ public class ExportFileBean implements Serializable {
         }
         ///////////////////////////////////  
         if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
+            sizeOfTheso = 0;
             ConceptHelper conceptHelper = new ConceptHelper();
             List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
                     viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
             for (NodeTree topConcept : topConcepts) {
+                sizeOfTheso ++;
                 topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm()) ? 
                         "(" + topConcept.getIdConcept()+ ")" : topConcept.getPreferredTerm());
                 topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
                         viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
             }
-
-//            ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(),
-//                    viewExportBean.getNodeIdValueOfTheso().getId());
-            int countOfConcept = conceptHelper.getCountConceptOfThesaurusByLang(connect.getPoolConnexion(),
-                    viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
-            if(countOfConcept == -1) return null;
             
-            String[][] tab = new String[countOfConcept+1][20];
+            String[][] tab = new String[sizeOfTheso][20];
             posX = 0;
             for (NodeTree topConcept : topConcepts) {
                 posJ = 0;
