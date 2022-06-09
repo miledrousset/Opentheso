@@ -188,7 +188,7 @@ public class ExportFileBean implements Serializable {
         } else {
             posX++;
         }
-    }
+    } 
 
     private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
         
