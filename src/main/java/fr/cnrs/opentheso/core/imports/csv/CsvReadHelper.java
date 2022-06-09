@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.core.imports.csv;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import java.io.IOException;
 import java.io.Reader;
@@ -117,7 +118,38 @@ public class CsvReadHelper {
         return false;
     }
     
-    
+   /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     * @param in
+     * @return 
+     */
+    public boolean readFileImage(Reader in){
+        try {
+            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
+                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            String value;
+            for (CSVRecord record : records) {
+                ConceptObject conceptObject = new ConceptObject();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if(value == null) continue;
+                    conceptObject.setLocalId(value);
+                } catch (Exception e) {continue; }
+                
+                // on récupère les images 
+                conceptObject = getImages(conceptObject, record);
+                
+                if(conceptObject != null) {
+                    conceptObjects.add(conceptObject);
+                }
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }        
    
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
@@ -996,6 +1028,48 @@ public class CsvReadHelper {
         return conceptObject; 
     } 
     
+    private ConceptObject getImages(ConceptObject conceptObject, CSVRecord record){
+        
+        String value;
+        String values[];
+        ArrayList<NodeImage> nodeImages = new ArrayList<>();
+     
+        try {
+            value = record.get("foaf:image");
+            values = value.split("##");
+ 
+            for (String value1 : values) {
+                if(!value1.isEmpty()) {
+                    NodeImage nodeImage = new NodeImage();
+                    nodeImage.setUri(value1);
+                    nodeImage.setCopyRight("");
+                    nodeImages.add(nodeImage);
+                }
+            }
+            try {
+                value = record.get("copyright");
+                values = value.split("##"); 
+                int i = 0;
+                if(nodeImages.size() == values.length) {
+                    for (String value1 : values) {
+                        if(!value1.isEmpty()) {
+                            nodeImages.get(i).setCopyRight(value1);
+                        }
+                        i++;
+                    }
+                }                
+            } catch (Exception e) {
+                //System.err.println("");
+            } 
+            conceptObject.setImages(nodeImages);
+
+        } catch (Exception e) {
+            //System.err.println("");
+        } 
+            
+        return conceptObject; 
+    }     
+    
     public Logger getLog() {
         return log;
     }
@@ -1096,6 +1170,8 @@ public class CsvReadHelper {
         // skos:member, l'appartenance du concept à un groupe ou collection ...
         private ArrayList<String> members;
         
+        private ArrayList<NodeImage> images;          
+        
         // dates 
         //dct:created, dct:modified
         private String created;
@@ -1152,6 +1228,16 @@ public class CsvReadHelper {
             if(members != null) members.clear();  
             if(alignments != null) alignments.clear();
         }        
+
+        public ArrayList<NodeImage> getImages() {
+            return images;
+        }
+
+        public void setImages(ArrayList<NodeImage> images) {
+            this.images = images;
+        }
+
+
 
         public String getIdConcept() {
             return idConcept;

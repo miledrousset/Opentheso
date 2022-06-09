@@ -128,6 +128,7 @@
     </style>
 
     <div class="container" style="margin-top: -25px">
+        <p:defaultCommand target="applySearch" /> 
         <div class="row">
             <div class="col-lg-12 card-margin">
                 <div class="card search-form">
@@ -191,7 +192,7 @@
                                         </p:autoComplete>
                                     </div>
                                     <div class="col-1" style="text-align: right; ">
-                                        <p:commandLink class="btn btn-base" actionListener="#{searchBean.applySearch()}"
+                                        <p:commandLink id="applySearch" class="btn btn-base" actionListener="#{searchBean.applySearch()}"
                                                        update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();">
                                             <i class="fas fa-search fa-1x" style="color: #f47b2a; font-size: 14px;"/>
                                         </p:commandLink>
