@@ -3552,6 +3552,59 @@ public class ConceptHelper {
     
     /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
+     * en filtrant par plusieurs domaines/Groupes
+     * 
+     * @param ds
+     * @param idThesaurus
+     * @param idGroups
+     * @return 
+     */
+    public ArrayList<String> getAllIdConceptOfThesaurusByMultiGroup(HikariDataSource ds,
+            String idThesaurus, String[] idGroups) {
+
+        ArrayList<String> tabIdConcept = new ArrayList<>();
+        String multiValuesGroup = "";
+        // filter by group
+        if (idGroups != null && idGroups.length != 0) {
+            String groupSearch = "";
+            for (String idGroup : idGroups) {
+                if(groupSearch.isEmpty())
+                    groupSearch = "'" + idGroup + "'";
+                else
+                    groupSearch = groupSearch + ",'" + idGroup + "'";
+            }
+            multiValuesGroup = " and concept_group_concept.idgroup in (" + groupSearch + ")";
+        }        
+        
+        
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT concept.id_concept " +
+                    " FROM concept, concept_group_concept " +
+                    " WHERE " +
+                    " concept.id_concept = concept_group_concept.idconcept" +
+                    " AND" +
+                    " concept.id_thesaurus = concept_group_concept.idthesaurus " +
+                    " AND" +
+                    " concept.id_thesaurus = '" + idThesaurus + "' " +
+                    " AND" +
+                    " concept.status != 'CA' " +
+                    multiValuesGroup );
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        tabIdConcept.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus by multiGroups : " + idThesaurus, sqle);
+        }
+        return tabIdConcept;
+    }    
+    
+    /**
+     * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
      * en filtrant par Domaine/Group
      */
     public ArrayList<String> getAllIdConceptOfThesaurusByGroup(HikariDataSource ds,

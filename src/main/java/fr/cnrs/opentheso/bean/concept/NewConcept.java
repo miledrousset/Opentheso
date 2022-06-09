@@ -272,7 +272,7 @@ public class NewConcept implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le top concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
+  //      PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
 
         tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
         tree.expandTreeToPath(idNewConcept, idTheso, idLang);
@@ -281,7 +281,7 @@ public class NewConcept implements Serializable {
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
+            pf.ajax().update("containerIndex:idAddTopConcept");
         }
     }
 
@@ -380,6 +380,14 @@ public class NewConcept implements Serializable {
         } else {
             idNewConcept = null;
         }
+        
+        if ((notation != null) && (!notation.isEmpty())) {
+            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }     
 
         Concept concept = new Concept();
 
@@ -499,6 +507,7 @@ public class NewConcept implements Serializable {
         duplicate = false;
         idNewConcept = null;
         prefLabel = "";
+        notation = "";
     }
 
     public void cancel() {

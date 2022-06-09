@@ -1059,17 +1059,17 @@ public class RestRDFHelper {
      * en partant d'un identifiant d'un group/domaine
      *
      * @param ds
-     * @param idGroup
+     * @param groups
      * @param idTheso
      * @param format
      * @return skos
      */
     public String brancheOfGroup(HikariDataSource ds,
-            String idGroup, String idTheso, String format) {
+            String [] groups, String idTheso, String format) {
 
         RDFFormat rDFFormat = getRDFFormat(format);
         WriteRdf4j writeRdf4j = brancheOfGroup__(ds,
-                 idGroup, idTheso);
+                 groups, idTheso);
         if(writeRdf4j == null) return null;
 
         ByteArrayOutputStream out;
@@ -1089,9 +1089,9 @@ public class RestRDFHelper {
      */
     private WriteRdf4j brancheOfGroup__(
             HikariDataSource ds,
-            String idGroup, String idTheso) {
+            String [] groups, String idTheso) {
 
-        if(idGroup == null || idTheso == null) {
+        if(groups == null || idTheso == null) {
             return null;
         }
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
@@ -1111,7 +1111,7 @@ public class RestRDFHelper {
 
 
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByGroup(ds, idTheso, idGroup);
+        ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(ds, idTheso, groups);
         for (String idConcept : branchs) {
             exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
             //exportRdf4jHelper.addSignleConcept(idTheso, idConcept);

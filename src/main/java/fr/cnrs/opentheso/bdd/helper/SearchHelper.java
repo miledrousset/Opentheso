@@ -52,7 +52,7 @@ public class SearchHelper {
      * @param ds
      * @param value
      * @param idLang
-     * @param idGroup
+     * @param idGroups
      * @param idTheso
      * @param withNotes
      * @return
