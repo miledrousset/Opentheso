@@ -27,14 +27,13 @@
                 <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexical_value == ''}"
                               value="#{Opentheso}"/>
             </title>
-
             <meta name="description" content="#{langueBean.getMsg('index.Opentheso_info')}"/>
         </h:panelGroup>
 
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
 
     </h:head>
-
+    
     <h:body id="page-top" onload="initMenu()">
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
