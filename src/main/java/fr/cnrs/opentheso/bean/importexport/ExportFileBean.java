@@ -72,7 +72,7 @@ public class ExportFileBean implements Serializable {
 
     int posJ = 0;
     int posX = 0;
-    
+
 
     public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
@@ -170,7 +170,7 @@ public class ExportFileBean implements Serializable {
 
         }
     }
-    
+
     private void createMatrice(String[][] tab, NodeTree concept) {
         tab[posX][posJ] = concept.getPreferredTerm();
         if (CollectionUtils.isNotEmpty(concept.getChildrens())) {
@@ -181,27 +181,33 @@ public class ExportFileBean implements Serializable {
                 } else {
                     tab[posX][posJ] = nodeTree.getPreferredTerm();
                     posX++;
-                    if (posJ > tab.length-1) posJ--;
+                    if (posJ > tab.length - 1) {
+                        posJ--;
+                    }
                 }
             }
             posJ--;
         } else {
             posX++;
         }
-    } 
+    }
 
     private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
-        
+
         ConceptHelper conceptHelper = new ConceptHelper();
         List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(
                 connect.getPoolConnexion(), parentId, langId, thesoId);
         for (NodeTree concept : concepts) {
             sizeOfTheso++;
             concept.setIdParent(parentId);
-            concept.setPreferredTerm(StringUtils.isEmpty(concept.getPreferredTerm()) ? "(" + concept.getIdConcept()+ ")" : concept.getPreferredTerm());
+            concept.setPreferredTerm(StringUtils.isEmpty(concept.getPreferredTerm()) ? "(" + concept.getIdConcept() + ")" : concept.getPreferredTerm());
             concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
-            concept.getChildrens().addAll(new Tree().searchFacettesForTree(connect.getPoolConnexion(), 
-                parentId, thesoId, langId));
+
+            List<NodeTree> facettes = new Tree().searchFacettesForTree(connect.getPoolConnexion(), parentId, thesoId, langId);
+            if (CollectionUtils.isNotEmpty(facettes)) {
+                sizeOfTheso += facettes.size();
+                concept.getChildrens().addAll(facettes);
+            }
         }
 
         return concepts;
@@ -243,14 +249,15 @@ public class ExportFileBean implements Serializable {
             ConceptHelper conceptHelper = new ConceptHelper();
             List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
                     viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
+
             for (NodeTree topConcept : topConcepts) {
-                sizeOfTheso ++;
-                topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm()) ? 
-                        "(" + topConcept.getIdConcept()+ ")" : topConcept.getPreferredTerm());
+                sizeOfTheso++;
+                topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm())
+                        ? "(" + topConcept.getIdConcept() + ")" : topConcept.getPreferredTerm());
                 topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
                         viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
             }
-            
+
             String[][] tab = new String[sizeOfTheso][20];
             posX = 0;
             for (NodeTree topConcept : topConcepts) {
