@@ -152,7 +152,7 @@ public class ExportRdf4jHelperNew {
         ArrayList<NodeFacet> facets = facetHelper.getAllFacetsDetailsOfThesaurus(ds, idTheso);
         
         for (NodeFacet facet : facets) {
-            SKOSResource sKOSResource =  new SKOSResource(getPath() + "/" + facet.getIdFacet(), SKOSProperty.FACET);//new SKOSResource("http://www.w3.org/2004/02/skos/core#Facet?idFacet="+facet.getIdFacet(), SKOSProperty.FACET);
+            SKOSResource sKOSResource =  new SKOSResource(getUriForFacette(facet.getIdFacet(), idTheso), SKOSProperty.FACET);
             sKOSResource.addRelation(facet.getIdFacet(), getUriFromNodeUri(facet.getNodeUri(), idTheso), SKOSProperty.superOrdinate);
             sKOSResource.addLabel(facet.getLexicalValue(), facet.getLang(), SKOSProperty.prefLabel);
             sKOSResource.addDate(facet.getCreated(), SKOSProperty.created);
@@ -341,7 +341,7 @@ public class ExportRdf4jHelperNew {
         if(nodeConcept.getListFacetsOfConcept() != null) {
             for (String idFacette : nodeConcept.getListFacetsOfConcept()) {
                 int prop = SKOSProperty.subordinateArray;
-                sKOSResource.addRelation(idFacette, getPath() + "/" + idFacette, prop);
+                sKOSResource.addRelation(idFacette, getUriForFacette(idFacette, idTheso), prop);
             }
         }
 
@@ -674,7 +674,7 @@ public class ExportRdf4jHelperNew {
 
         return uri;
     }
-
+    
     private String getLocalUri(NodeConceptExport nodeConceptExport){
 
         String uri = "";
@@ -861,13 +861,26 @@ public class ExportRdf4jHelperNew {
         return uri;
     }
 
+    
+    private String getUriForFacette(String idFacet, String idTheso){
+        String uri = "";
+        if (idFacet == null) {
+            //      System.out.println("nodeConcept = Null");
+            return uri;
+        }
+        uri = getPath()+ "/?idf=" + idFacet + "&idt=" +idTheso;
+        return uri;
+    }    
+    
     /**
      * permet de retourner le Path de l'application
      * exp:  //http://localhost:8082/opentheso2
      * @return
      */
     private String getPath(){
-        if(FacesContext.getCurrentInstance() == null) return null;
+        if(FacesContext.getCurrentInstance() == null) {
+            return nodePreference.getOriginalUri();
+        }
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
         return path;

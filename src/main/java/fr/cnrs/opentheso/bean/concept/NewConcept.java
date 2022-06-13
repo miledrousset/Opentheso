@@ -212,6 +212,14 @@ public class NewConcept implements Serializable {
             }
             return;
         }
+                
+        if ((notation != null) && (!notation.isEmpty())) {
+            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }          
 
         if ((idNewConcept != null) && (!idNewConcept.isEmpty())) {
             if (conceptHelper.isIdExiste(connect.getPoolConnexion(), idNewConcept, idTheso)) {
@@ -316,7 +324,7 @@ public class NewConcept implements Serializable {
         }
 
         TermHelper termHelper = new TermHelper();
-
+        
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
         if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
@@ -338,6 +346,15 @@ public class NewConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        ConceptHelper conceptHelper = new ConceptHelper();
+                
+        if ((notation != null) && (!notation.isEmpty())) {
+            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }           
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
     }
@@ -381,13 +398,7 @@ public class NewConcept implements Serializable {
             idNewConcept = null;
         }
         
-        if ((notation != null) && (!notation.isEmpty())) {
-            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
-        }     
+  
 
         Concept concept = new Concept();
 

@@ -142,4 +142,67 @@ public class PathHelper {
 
 
     
+    
+    /**
+     * Pour tester 
+     * #MR
+     * 
+     */
+    /**
+     * Fonction récursive pour trouver le chemin complet d'un concept en partant
+     * du Concept lui même pour arriver à la tête TT on peut rencontrer
+     * plusieurs têtes en remontant, alors on construit à chaque fois un chemin
+     * complet.
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param firstPath
+     * @param path
+     * @return Vector Ce vecteur contient tous les Path des BT d'un id_terme
+     * exemple (327,368,100,#,2251,5555,54544,8789,#) ici deux path disponible
+     * il faut trouver le path qui correspond au microthesaurus en cours pour
+     * l'afficher en premier
+     */
+    private ArrayList<Path> getInvertPathOfConcept2(HikariDataSource ds,
+            String idConcept, String idThesaurus,
+            ArrayList<String> firstPath,
+            ArrayList<String> path,
+            ArrayList<Path> allPaths) {
+
+        RelationsHelper relationsHelper = new RelationsHelper();
+
+        ArrayList<String> idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
+        if(idBTs == null) return null;
+        if (idBTs.size() > 1) {
+            for (String idBT1 : path) {
+                if(!firstPath.contains(idBT1))
+                    firstPath.add(idBT1);
+            }
+        }
+
+        if (idBTs.isEmpty()) {
+            ArrayList<String> pathTemp = new ArrayList<>();
+            for (String id2 : firstPath) {
+                pathTemp.add(id2);
+            }
+            for (String id1 : path) {
+                pathTemp.add(id1);
+            }
+            
+            Path path1 = new Path();
+            path1.setPath(pathTemp);
+            allPaths.add(path1);
+            path.clear();
+        }
+
+        for (String idBT : idBTs) {
+            path.add(0,idBT);
+            getInvertPathOfConcept2(ds, idBT, idThesaurus, firstPath, path, allPaths);
+        }
+        
+        return allPaths;
+
+    }    
+    
 }
