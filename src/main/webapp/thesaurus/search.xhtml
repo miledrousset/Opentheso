@@ -242,8 +242,12 @@
                     <f:selectItems value="#{roleOnTheso.listTheso}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
                 </p:selectCheckboxMenu>
 
-                <p:menuButton rendered="#{currentUser.nodeUser != null}" id="searchProgrammed" style="font-size: 12px;; margin-top: -0.33rem;" icon="pi pi-align-justify">
+                <p:menuButton rendered="#{currentUser.nodeUser != null and selectedTheso.currentIdTheso != null}"
+                              id="searchProgrammed" style="font-size: 12px;; margin-top: -0.33rem;" icon="pi pi-align-justify">
 
+                    <p:menuitem value="#{langueBean.getMsg('search.deprecated')}" action="#{searchBean.getAllDeprecatedConcepts()}" 
+                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
+                                title="#{langueBean.getMsg('search.tooltip_deprecated')}"/>                    
                     <p:menuitem value="#{langueBean.getMsg('search.polyhierarchy')}" action="#{searchBean.getAllPolyierarchy()}" 
                                 update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
                                 title="#{langueBean.getMsg('search.tooltip_polyhierarchy')}"/>

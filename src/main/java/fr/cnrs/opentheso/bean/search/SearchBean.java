@@ -22,6 +22,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -278,6 +279,7 @@ public class SearchBean implements Serializable {
         }
 
         if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
+            Collections.sort(nodeConceptSearchs);
             if (nodeConceptSearchs.size() == 1) {
                 isSelectedItem = true;
                 setViewsConcept();
@@ -341,7 +343,7 @@ public class SearchBean implements Serializable {
                         nodeSearchMini, idTheso, idLang));
             }
         }
-
+        Collections.sort(concepts);
         return concepts;
     }
 
@@ -383,6 +385,7 @@ public class SearchBean implements Serializable {
                             selectedTheso.getCurrentLang()));
         }
         if (!nodeConceptSearchs.isEmpty()) {
+            Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
@@ -406,6 +409,60 @@ public class SearchBean implements Serializable {
             pf.ajax().update("containerIndex");
         }
     }
+    
+    /**
+     * permet de retourner la liste des concepts qui ont une poly-hiérarchie
+     */
+    public void getAllDeprecatedConcepts() {
+        if (nodeConceptSearchs == null) {
+            nodeConceptSearchs = new ArrayList<>();
+        } else {
+            nodeConceptSearchs.clear();
+        }
+
+        if (conceptHelper == null) {
+            conceptHelper = new ConceptHelper();
+        }
+        if (searchHelper == null) {
+            searchHelper = new SearchHelper();
+        }
+
+        ArrayList<String> nodeSearchsId = searchHelper.searchAllDeprecatedConcepts(
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+
+        for (String idConcept : nodeSearchsId) {
+            nodeConceptSearchs.add(
+                    conceptHelper.getConceptForSearch(
+                            connect.getPoolConnexion(),
+                            idConcept,
+                            selectedTheso.getCurrentIdTheso(),
+                            selectedTheso.getCurrentLang()));
+        }
+        if (!nodeConceptSearchs.isEmpty()) {
+            onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
+        }
+        if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
+            Collections.sort(nodeConceptSearchs);
+            if (nodeConceptSearchs.size() == 1) {
+                isSelectedItem = true;
+                setViewsConcept();
+            } else {
+                setViewsSearch();
+                isSelectedItem = false;
+            }
+        } else {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+        rightBodySetting.setIndex("0");
+        indexSetting.setIsValueSelected(true);
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex");
+        }
+    }    
 
     /**
      * permet de retourner la liste des concepts qui ont plusieurs Groupes
@@ -436,6 +493,7 @@ public class SearchBean implements Serializable {
                             selectedTheso.getCurrentLang()));
         }
         if (!nodeConceptSearchs.isEmpty()) {
+            Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
@@ -478,6 +536,7 @@ public class SearchBean implements Serializable {
                             selectedTheso.getCurrentLang()));
         }
         if (!nodeConceptSearchs.isEmpty()) {
+            Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
@@ -521,6 +580,7 @@ public class SearchBean implements Serializable {
                             selectedTheso.getCurrentLang()));
         }
         if (!nodeConceptSearchs.isEmpty()) {
+            Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
@@ -571,6 +631,7 @@ public class SearchBean implements Serializable {
                             selectedTheso.getCurrentLang()));
         }
         if (!nodeConceptSearchs.isEmpty()) {
+            Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {

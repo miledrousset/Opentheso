@@ -311,6 +311,10 @@ body .ui-tree {
 
 }
 
+.ui-tree .ui-treenode-children {
+    margin-bottom: 2px;
+}
+
 .ui-tree .ui-treenode {
     margin: -4px;
     min-width: max-content;
@@ -334,7 +338,8 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode 
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
-    margin: -4px;
+    /*margin: -4px;*/
+    margin-top: -8px;
     /*   display: ruby-text;*/
 }
 

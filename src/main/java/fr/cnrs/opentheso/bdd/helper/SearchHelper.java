@@ -961,6 +961,34 @@ public class SearchHelper {
         return nodeSearchMinis;
     }    
     
+ 
+    /**
+     * Permet de chercher les concepts qui ont un status déprécié
+     *
+     * @param ds
+     * @param idTheso
+     * @return #MR
+     */
+    public ArrayList<String> searchAllDeprecatedConcepts(HikariDataSource ds, String idTheso) {
+        ArrayList<String> idConcepts = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept from concept where status = 'DEP'"
+                        + " and id_thesaurus = '" + idTheso + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        idConcepts.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+
+        } catch (SQLException sqle) {
+            log.error("Error while getting deprecateed concept of theso : " + idTheso, sqle);
+        }
+        return idConcepts;
+    }        
+        
     
     /**
      * Permet de chercher les concepts qui ont une poly-hiérérachie
