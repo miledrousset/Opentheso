@@ -76,6 +76,140 @@ public class ExportRdf4jHelperNew {
     ///// - ajout des balises (hasTopConcept) au thésaurus thésaurus
     ///// - export des collections et les membres
     ///// - export des concepts 
+    
+    
+    
+    
+    
+    /**
+     * fonction qui permet de récuperer les concepts avec les labels pour les relations RT BT NT
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @param idLang 
+     * @param showLabels 
+     */
+    public void addSignleConceptByLang(HikariDataSource ds,
+            String idTheso, String idConcept, String idLang, boolean showLabels) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        SKOSResource sKOSResource = new SKOSResource();
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, false, false);
+
+        if (nodeConcept == null) {
+            return;
+        }
+
+    //    concept.setUri(getUriFromId(idConcept));
+        sKOSResource.setUri(getUri(nodeConcept));
+        sKOSResource.setProperty(SKOSProperty.Concept);
+
+        // prefLabel
+        for (NodeTermTraduction traduction : nodeConcept.getNodeTermTraductions()) {
+            if(traduction.getLang().equalsIgnoreCase(idLang))
+                sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.prefLabel);
+        }
+        // altLabel
+        for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
+            if(nodeEM.getLang().equalsIgnoreCase(idLang)) {
+                if(nodeEM.isHiden())
+                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.hiddenLabel);
+                else
+                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.altLabel);   
+            }
+        }
+        ArrayList<NodeNote> nodeNotes = new ArrayList<>();
+        for (NodeNote nodeNote : nodeConcept.getNodeNoteConcept()) {
+            if(nodeNote.getLang().equalsIgnoreCase(idLang))
+                nodeNotes.add(nodeNote);
+        }
+        for (NodeNote nodeNote : nodeConcept.getNodeNoteTerm()) {
+            if(nodeNote.getLang().equalsIgnoreCase(idLang))
+                nodeNotes.add(nodeNote);
+        }        
+        addNoteGiven(nodeNotes, sKOSResource);
+        addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
+        addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
+        
+        if(showLabels) {
+ //           addRelationGivenWithLabel(nodeConcept.getNodeListOfBT(), nodeConcept.getNodeListOfNT(),
+ //               nodeConcept.getNodeListIdsOfRT(), sKOSResource, nodeConcept.getConcept().getIdThesaurus(), idLang);            
+        } else {
+            addRelationGiven(nodeConcept.getNodeListOfBT(), nodeConcept.getNodeListOfNT(),
+                nodeConcept.getNodeListIdsOfRT(), sKOSResource, nodeConcept.getConcept().getIdThesaurus());
+        }
+        String notation = nodeConcept.getConcept().getNotation();
+        String created = nodeConcept.getConcept().getCreated().toString();
+        String modified = nodeConcept.getConcept().getModified().toString();
+
+        if (notation != null && !notation.equals("null")) {
+            sKOSResource.addNotation(notation);
+        }
+        if (created != null) {
+            sKOSResource.addDate(created, SKOSProperty.created);
+        }
+        if (modified != null) {
+            sKOSResource.addDate(modified, SKOSProperty.modified);
+        }
+        sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.inScheme);
+        for (NodeUri nodeUri : nodeConcept.getNodeListIdsOfConceptGroup()) {
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri,idTheso), SKOSProperty.memberOf);
+        }           
+        sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
+        
+
+        ArrayList<String> first = new ArrayList<>();
+        first.add(idConcept);
+        ArrayList<ArrayList<String>> paths = new ArrayList<>();
+            
+        paths = new ConceptHelper().getPathOfConceptWithoutGroup(ds, idConcept, idTheso, first, paths);
+        ArrayList<String> pathFromArray = getPathFromArray(paths);
+        if(!pathFromArray.isEmpty())
+            sKOSResource.setPaths(pathFromArray);
+    //    sKOSResource.setPath("A/B/C/D/"+idConcept);
+        skosXmlDocument.addconcept(sKOSResource);
+    }        
+    
+    public void addSingleGroup(HikariDataSource ds, String idThesaurus, String idGroup) {
+
+        NodeGroupLabel nodeGroupLabel;
+        nodeGroupLabel = new GroupHelper().getNodeGroupLabel(ds, idGroup, idThesaurus);
+        SKOSResource sKOSResource = new SKOSResource();
+        sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
+        sKOSResource.setProperty(SKOSProperty.ConceptGroup);
+
+        for (NodeGroupTraductions traduction : nodeGroupLabel.getNodeGroupTraductionses()) {
+            sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.prefLabel);
+            //dates
+            String created;
+            String modified;
+            created = traduction.getCreated().toString();
+            modified = traduction.getModified().toString();
+            if (created != null) {
+                sKOSResource.addDate(created, SKOSProperty.created);
+            }
+            if (modified != null) {
+                sKOSResource.addDate(modified, SKOSProperty.modified);
+            }
+        }
+        
+        // pour exporter les membres (tous les concepts du group
+
+        ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idGroup, idThesaurus);
+        HashMap<String, String> superGroupHashMapTemp = new HashMap();
+        for (String id : childURI) {
+            sKOSResource.addRelation(id, getUriFromId(id), SKOSProperty.subGroup);
+            superGroupHashMapTemp.put(id, idGroup);
+        }
+        String idSuperGroup = superGroupHashMapTemp.get(idGroup);
+
+        if (idSuperGroup != null) {
+            sKOSResource.addRelation(idSuperGroup, getUriFromId(idSuperGroup), SKOSProperty.superGroup);
+            superGroupHashMapTemp.remove(idGroup);
+        }
+        sKOSResource.addIdentifier(idGroup, SKOSProperty.identifier);
+        skosXmlDocument.addGroup(sKOSResource);
+    }     
+    
     /**
      * permet de récupérer les informations du thésaurus et les TopConcept pour
      * construire SKOSResource #MR

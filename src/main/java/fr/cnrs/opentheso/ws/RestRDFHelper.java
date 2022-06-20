@@ -29,7 +29,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
-import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
+//import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import javax.json.Json;
@@ -417,16 +417,45 @@ public class RestRDFHelper {
         
         NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if(nodePreference == null) return null;
-        
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
 
-        exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+
+        exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;        
+        
     }
 
+    public String getIdConceptFromDate(HikariDataSource ds, 
+            String idTheso, String fromDate, String format) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        ArrayList<String> ids = conceptHelper.getIdConceptFromDate(ds, idTheso, fromDate);
+        if(ids == null || ids.isEmpty()) {
+            return null;
+        }        
+        NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if(nodePreference == null) return null;
+        
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        
+        for (String idConcept : ids) {
+            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+        }
+        
+        RDFFormat rDFFormat = getRDFFormat(format);
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+
+        ByteArrayOutputStream out;
+        out = new ByteArrayOutputStream();
+        Rio.write(writeRdf4j.getModel(), out, rDFFormat);
+        return out.toString();
+    }
+        
+    
     /**
      * Permet de retourner un concept au format défini en passant par un identifiant Ark
      * utilisé pour la négociation de contenu
@@ -463,13 +492,13 @@ public class RestRDFHelper {
         NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if(nodePreference == null) return null;
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
-        exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;
+        exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;              
     }   
     
     
@@ -515,13 +544,13 @@ public class RestRDFHelper {
         NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if(nodePreference == null) return null;
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
-        exportRdf4jHelper.addSignleConceptByLang(idTheso, idConcept, idLang, showLabels);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        exportRdf4jHelperNew.addSignleConceptByLang(ds, idTheso, idConcept, idLang, showLabels);
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
         return writeRdf4j;
+        
     }     
     
     
@@ -557,17 +586,16 @@ public class RestRDFHelper {
         if(doi == null || idTheso == null) {
             return null;
         }
-        
         NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if(nodePreference == null) return null;
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
-        exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;
+        exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;     
     }    
     
     /**
@@ -606,13 +634,13 @@ public class RestRDFHelper {
         NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if(nodePreference == null) return null;
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
-        exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;
+        exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;     
     }
     
     /**
@@ -686,10 +714,6 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-        
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
 
         SearchHelper searchHelper = new SearchHelper();
 
@@ -709,11 +733,14 @@ public class RestRDFHelper {
         // pour enlever les doublons.
         List<String> deDupStringList = idConcepts.stream().distinct().collect(Collectors.toList());
         
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        
         for (String idConcept : deDupStringList) {
-            exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
+            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
         }
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;   
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;    
     }
     
     /**
@@ -760,10 +787,6 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-        
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
 
         SearchHelper searchHelper = new SearchHelper();
 
@@ -773,11 +796,14 @@ public class RestRDFHelper {
             return null;
         }
         
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        
         for (String idConcept : idConcepts) {
-            exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
+            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
         }
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;   
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;    
     }    
     
     /**
@@ -970,10 +996,6 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-        
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
 
         ArrayList<String> path = new ArrayList<>();
         ArrayList<ArrayList<String>> branchs = new ArrayList<>();
@@ -981,12 +1003,18 @@ public class RestRDFHelper {
         ConceptHelper conceptHelper = new ConceptHelper();
         path.add(idConcept);
         branchs = conceptHelper.getPathOfConceptWithoutGroup(ds, idConcept, idTheso, path, branchs);
+        
+        
+        
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        
         for (ArrayList<String> branch : branchs) {
             for (String idc : branch) {
-                exportRdf4jHelper.addSignleConcept(idTheso, idc);                
+                exportRdf4jHelperNew.exportConcept(ds, idTheso, idc, false);               
             }
         }
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
         return writeRdf4j;
     }    
     
@@ -1035,9 +1063,8 @@ public class RestRDFHelper {
             return null;
         }
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
         ArrayList<String> path;// = new ArrayList<>();
     //    ArrayList<ArrayList<String>> branchs = new ArrayList<>();
@@ -1048,10 +1075,10 @@ public class RestRDFHelper {
     //    path.add(idConcept);
         
         for (String idC : path) {
-            exportRdf4jHelper.addSignleConcept(idTheso, idC);                
+            exportRdf4jHelperNew.exportConcept(ds, idTheso, idC, false);                
         }
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;    
     }      
     
     /**
@@ -1101,20 +1128,11 @@ public class RestRDFHelper {
         
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
-      
-        
-    /*    ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
-        */
-
-
 
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(ds, idTheso, groups);
         for (String idConcept : branchs) {
             exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
-            //exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
         }
 
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
@@ -1161,17 +1179,16 @@ public class RestRDFHelper {
             return null;
         }
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
         ConceptHelper conceptHelper = new ConceptHelper();        
         ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);   
         allConcepts.forEach(idConcept -> {
-            exportRdf4jHelper.addSignleConcept(idTheso, idConcept);
+            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
         });
 
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
         return writeRdf4j;
     }      
     
@@ -1235,13 +1252,12 @@ public class RestRDFHelper {
         NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if(nodePreference == null) return null;
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
-        exportRdf4jHelper.addSingleGroup(idTheso, idGroup);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;
+        exportRdf4jHelperNew.addSingleGroup(ds, idTheso, idGroup);
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;       
     }    
     
     private WriteRdf4j getGroupFromId(HikariDataSource ds,
@@ -1253,13 +1269,12 @@ public class RestRDFHelper {
         NodePreference nodePreference =  new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if(nodePreference == null) return null;
         
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setNodePreference(nodePreference);
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, idTheso, nodePreference.getCheminSite());
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
-        exportRdf4jHelper.addSingleGroup(idTheso, idGroup);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelper.getSkosXmlDocument());
-        return writeRdf4j;
+        exportRdf4jHelperNew.addSingleGroup(ds, idTheso, idGroup);
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;  
     }      
     
     /**

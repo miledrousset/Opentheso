@@ -221,6 +221,13 @@
             <artifactId>commons-compress</artifactId>
             <version>1.21</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.9.0</version>
+            <type>jar</type>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.jena</groupId>

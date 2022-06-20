@@ -75,6 +75,37 @@ public class ConceptHelper {
      */
     
     /**
+     * Permet de retourner la liste des concepts à partir d'une date donnée
+     * date de type 2021-02-01
+     * @param ds
+     * @param idTheso
+     * @param date
+     * @return 
+     */
+    public ArrayList<String> getIdConceptFromDate(HikariDataSource ds, String idTheso, String date) {
+        ArrayList<String> ids = new  ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept from concept" +
+                    " where " +
+                    " concept.id_thesaurus = '" + idTheso + "'" +
+                    " and" +
+                    " concept.status != 'CA'" +        
+                    " and" +
+                    " concept.modified BETWEEN '" + date + "' and now();");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        ids.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting concepts from date " , sqle);
+        }
+        return ids;
+    }
+    
+    /**
      * permet de récupérer les concepts dépréciés
      * @param ds
      * @param idTheso
@@ -5465,6 +5496,8 @@ public class ConceptHelper {
         return nbrConcept;
     }
 
+    
+    
     public List<ConceptStatisticData> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus, String lang,
             String dateDebut, String dateFin, String collectionId, String nbrResultat) throws SQLException {
 
