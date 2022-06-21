@@ -9,18 +9,22 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
+import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -39,6 +43,12 @@ public class SynonymBean implements Serializable {
 
     @Inject
     private SelectedTheso selectedTheso;
+
+    @Inject
+    private PropositionBean propositionBean;
+
+    @Inject
+    private CurrentUser currentUser;
 
     private String selectedLang;
     private String selectedValue;
@@ -164,6 +174,54 @@ public class SynonymBean implements Serializable {
     }
 
     /**
+     * permet d'ajouter une nouvelle traduction au concept
+     */
+    public void addPropSynonym() {
+        FacesMessage msg;
+        if (value == null || value.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Une valeur est obligatoire !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+
+        if (selectedLang == null || selectedLang.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Pas de langue choisie !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+
+        TermHelper termHelper = new TermHelper();
+        if (termHelper.isTermExist(connect.getPoolConnexion(), value,
+                selectedTheso.getCurrentIdTheso(), conceptBean.getSelectedLang())) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+
+        if (termHelper.isAltLabelExist(connect.getPoolConnexion(), value,
+                selectedTheso.getCurrentIdTheso(), conceptBean.getSelectedLang())) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
+
+        SynonymPropBean synonymPropBean = new SynonymPropBean();
+        synonymPropBean.setToAdd(true);
+        synonymPropBean.setHiden(isHidden);
+        synonymPropBean.setLang(selectedLang);
+        synonymPropBean.setIdUser(currentUser.getNodeUser().getIdUser() + "");
+        synonymPropBean.setLexical_value(value);
+        if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
+            propositionBean.getProposition().setSynonymsProp(Collections.emptyList());
+        }
+        propositionBean.getProposition().getSynonymsProp().add(synonymPropBean);
+        System.err.println("xxxxx");
+    }
+
+    /**
      * permet d'ajouter un synonyme sans controler le nom en doublon
      *
      * @param idUser
@@ -213,7 +271,6 @@ public class SynonymBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme ajouté avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
         init();
 
         if (pf.isAjaxRequest()) {
@@ -285,12 +342,13 @@ public class SynonymBean implements Serializable {
             pf.ajax().update("containerIndex:formRightTab");
         }
     }
-    
-    public void resetRenameEMAfterCancel(){
-        if(nodeEMsForEdit == null)
+
+    public void resetRenameEMAfterCancel() {
+        if (nodeEMsForEdit == null) {
             nodeEMsForEdit = new ArrayList<>();
-        else
+        } else {
             nodeEMsForEdit.clear();
+        }
         for (NodeEM nodeEM1 : nodeEMs) {
             nodeEM1.setLexical_value(nodeEM1.getOldValue());
             nodeEM1.setHiden(nodeEM1.isOldHiden());
@@ -329,7 +387,7 @@ public class SynonymBean implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
@@ -399,10 +457,88 @@ public class SynonymBean implements Serializable {
         }
         reset();
         prepareNodeEMForEdit();
+    }
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
+    public void updateAllSynonymsProp() {
+
+        if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+
+        for (int i = 0; i < propositionBean.getProposition().getSynonymsProp().size(); i++) {
+            if (!propositionBean.getProposition().getSynonymsProp().get(i).getOldValue()
+                    .equals(propositionBean.getProposition().getSynonymsProp().get(i).getLexical_value())) {
+                if (new TermHelper().isTermExist(connect.getPoolConnexion(),
+                        propositionBean.getProposition().getSynonymsProp().get(i).getLexical_value(),
+                        selectedTheso.getCurrentIdTheso(),
+                        propositionBean.getProposition().getSynonymsProp().get(i).getLang())) {
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    PrimeFaces.current().ajax().update("messageIndex");
+                    return;
+                }
+                if (new TermHelper().isAltLabelExist(connect.getPoolConnexion(),
+                        propositionBean.getProposition().getSynonymsProp().get(i).getLexical_value(),
+                        selectedTheso.getCurrentIdTheso(),
+                        propositionBean.getProposition().getSynonymsProp().get(i).getLang())) {
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    PrimeFaces.current().ajax().update("messageIndex");
+                    return;
+                }
+                if (!propositionBean.getProposition().getSynonymsProp().get(i).isToAdd()) {
+                    propositionBean.getProposition().getSynonymsProp().get(i).setToUpdate(true);
+                }
+            } else {
+                if (propositionBean.getProposition().getSynonymsProp().get(i).isOldHiden() 
+                        != propositionBean.getProposition().getSynonymsProp().get(i).isHiden()) {
+                    if (!propositionBean.getProposition().getSynonymsProp().get(i).isToAdd()) {
+                        propositionBean.getProposition().getSynonymsProp().get(i).setToUpdate(true);
+                    }
+                }
+            }
+        }
+    }
+
+    public void updateSynonymProp(SynonymPropBean synonymPropBean) {
+        if (synonymPropBean == null) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+
+        if (!synonymPropBean.getOldValue().equals(synonymPropBean.getLexical_value())) {
+            if (new TermHelper().isTermExist(connect.getPoolConnexion(),
+                    synonymPropBean.getLexical_value(),
+                    selectedTheso.getCurrentIdTheso(),
+                    synonymPropBean.getLang())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                PrimeFaces.current().ajax().update("messageIndex");
+                return;
+            }
+            if (new TermHelper().isAltLabelExist(connect.getPoolConnexion(),
+                    synonymPropBean.getLexical_value(),
+                    selectedTheso.getCurrentIdTheso(),
+                    synonymPropBean.getLang())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                PrimeFaces.current().ajax().update("messageIndex");
+                return;
+            }
+            if (!synonymPropBean.isToAdd()) {
+                synonymPropBean.setToUpdate(true);
+            }
+        } else {
+            if (synonymPropBean.isOldHiden() != synonymPropBean.isHiden()) {
+                if (!synonymPropBean.isToAdd()) {
+                    synonymPropBean.setToUpdate(true);
+                }
+            }
         }
     }
 
@@ -490,7 +626,7 @@ public class SynonymBean implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(), 
+                selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme supprimé avec succès");
@@ -501,6 +637,31 @@ public class SynonymBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("conceptForm:listSynonimesToDelete");
+        }
+    }
+
+    public void deleteSynonymPropo(SynonymPropBean spb) {
+
+        FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
+
+        if (spb == null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
+        }
+
+        for (int i = 0; i < propositionBean.getProposition().getSynonymsProp().size(); i++) {
+            if (spb.getLexical_value().equals(propositionBean.getProposition().getSynonymsProp().get(i).getLexical_value())) {
+                if (propositionBean.getProposition().getSynonymsProp().get(i).isToAdd()) {
+                    propositionBean.getProposition().getSynonymsProp().remove(i);
+                } else {
+                    propositionBean.getProposition().getSynonymsProp().get(i).setToRemove(true);
+                }
+            }
         }
     }
 

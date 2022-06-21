@@ -87,6 +87,13 @@
                                     </f:facet>
                                     <ui:include src="rightBodyView/alignement.xhtml"/>
                                 </p:tab>
+                                
+                                <p:tab disabled="#{!propositionBean.isRubriqueVisible}" title="#{langueBean.getMsg('rightbody.nouvelle_proposition')}" >
+                                    <f:facet name="anchor">
+                                        <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
+                                    </f:facet>
+                                    <ui:include src="rightBodyView/nouvelleProposition.xhtml"/>
+                                </p:tab>
                             </p:tabView>
 
                             <h:panelGroup rendered="#{indexSetting.isFacetSelected}">

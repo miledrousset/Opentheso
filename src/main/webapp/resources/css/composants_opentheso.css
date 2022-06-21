@@ -776,3 +776,23 @@ body .ui-sidebar .ui-sidebar-close .ui-icon {
     padding: 0.75rem 1rem;
     width: 4.5rem;
 }
+
+.sidebar.toggled .nav-item .collapse {
+    position: absolute;
+    left: calc(5.5rem + 1.5rem / 2);
+    z-index: 1;
+    top: 2px;
+    animation-name: growIn;
+    animation-duration: 200ms;
+    animation-timing-function: transform cubic-bezier(0.18, 1.25, 0.4, 1), opacity cubic-bezier(0, 1, 0.4, 1);
+}
+
+body .ui-badge {
+    background: #ff0000;
+    color: #ffffff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    min-width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+}
