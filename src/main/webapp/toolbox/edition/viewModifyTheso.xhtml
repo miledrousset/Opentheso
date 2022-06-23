@@ -4,6 +4,14 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <style type="text/css">
+        body .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
+            background: #C63632;
+            border-color: #C63632;
+        }
+    </style>    
+
+
     <div class="col-12" style="height: 100%">
         <div class="card shadow mb-4" style="height: 100%;">
             <div class="card mb-4 py-3 border-left-success" style="color: #000; margin: 30px">
@@ -24,7 +32,7 @@
                     <div class="col-5" >
                         <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
                                          panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 500x; background: none;  box-shadow: none; "
+                                         style="width: 500px; background: none;  box-shadow: none; "
                                          panelStyle="border: none; box-shadow: none; max-width: 300px" >
                             <f:selectItems  value="#{editThesoBean.languagesOfTheso}" var="lang" itemLabel="#{lang.value} (#{lang.code})" itemValue="#{lang.code}"/> 
                             <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
