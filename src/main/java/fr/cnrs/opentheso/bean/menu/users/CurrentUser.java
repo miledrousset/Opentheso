@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import java.io.IOException;
 import java.io.Serializable;
@@ -38,6 +39,7 @@ public class CurrentUser implements Serializable {
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private IndexSetting indexSetting;
     @Inject private MenuBean menuBean;
+    @Inject private RightBodySetting rightBodySetting;
 
     private NodeUser nodeUser;
     private String username;
@@ -78,20 +80,18 @@ public class CurrentUser implements Serializable {
     }
 
     public void disconnect(boolean redirectionEnable) throws IOException {
-        FacesMessage facesMessage;
-        facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
+        
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
+        
         nodeUser = null;
         roleOnThesoBean.showListTheso();
+        
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
         indexSetting.setIsThesoActive(true);
-        PrimeFaces pf = PrimeFaces.current();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        rightBodySetting.setIndex("0");
+        
         initHtmlPages();
         
         if (redirectionEnable) {

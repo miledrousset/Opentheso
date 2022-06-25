@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import javax.inject.Named;
@@ -39,6 +40,8 @@ public class ListIndex implements Serializable {
     private LeftBodySetting leftBodySetting;
     @Inject
     private ConceptView conceptBean;
+    @Inject
+    private PropositionBean propositionBean;
 
     private String searchValue;
     private NodeIdValue selectedNode;
@@ -93,6 +96,7 @@ public class ListIndex implements Serializable {
                 ((NodeIdValue) event.getObject()).getId(), selectedTheso.getCurrentLang());
 
         rightBodySetting.setIndex("0");
+        propositionBean.setIsRubriqueVisible(false);
         leftBodySetting.setIndex("1");
         if (PrimeFaces.current().isAjaxRequest()) {
                     PrimeFaces.current().executeScript("srollToSelected();");

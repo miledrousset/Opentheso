@@ -4,11 +4,10 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGroup id="propositionView" styleClass="textOpentheso" style="margin: 20px"> 
+    <h:panelGroup id="propositionView" styleClass="textOpentheso" style="margin: 20px">
 
         <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -5px">
-
                 <!-- ligne PrefLabel -->
                 <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
                     <div class="row" style="margin-left: 0px;">
@@ -18,15 +17,15 @@
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                         </div> 
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                            <p:menuButton 
-                                icon="fas fa-cog" style="margin-top: -4px; font-size: 10px !important;">
+                            <p:menuButton rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}"
+                                          icon="fas fa-cog" style="margin-top: -4px; font-size: 10px !important;">
                                 <p:menuitem value="Proposer un nouveau nom"
                                             actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
                                             oncomplete="PF('nouveauNomConcept').show();" update="containerIndex:rightTab:idNouveauNomConcept" icon="fas fa-edit" />
                             </p:menuButton>                       
 
                             <h:outputText value="#{propositionBean.proposition.nomConcept.lexical_value} (#{propositionBean.proposition.nomConcept.lang})"
-                                          rendered="#{propositionBean.proposition.nomConceptProp == null}"
+                                          rendered="#{propositionBean.proposition.nomConceptProp == null or propositionBean.proposition.nomConceptProp == ''}"
                                           style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
                                           font-size: 1.1rem;
                                           letter-spacing: .2px;
@@ -64,7 +63,8 @@
                                           style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                            <p:menuButton icon="fas fa-cog" style="margin-top: -4px;">
+                            <p:menuButton icon="fas fa-cog" style="margin-top: -4px;"
+                                          rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
                                 <p:menuitem value="Proposez une nouvelle variante" 
                                             actionListener="#{synonymBean.reset()}"
                                             update="containerIndex:rightTab:idAddSynonymProp" icon="fas fa-plus"
@@ -122,7 +122,7 @@
                 <div class="list-group">
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
                         <div class="col-3">
-                            <h:outputText value="Nom : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="Nom* : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-9">
                             <h:inputText value="#{propositionBean.nom}" rendered="#{currentUser.nodeUser == null}" />
@@ -134,7 +134,7 @@
 
                     <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
                         <div class="col-3">
-                            <h:outputText value="E-Mail : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="E-Mail* : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-9">
                             <h:inputText value="#{propositionBean.email}" rendered="#{currentUser.nodeUser.mail == null}" />
@@ -163,42 +163,67 @@
                                      style="margin-right: 10px" ajax="true" process="@this"
                                      update="containerIndex:rightTab" actionListener="#{propositionBean.annulerPropostion()}" />
 
-                    <p:commandButton value="Soumettre la proposition" action="#{propositionBean.envoyerProposition()}" update="containerIndex messageIndex" 
-                                     styleClass="p-mr-2" icon="pi pi-check">
-                        <p:confirm header="Confirmation" message="Est vous sûr de vouloir envoyer la proposition ?" icon="pi pi-exclamation-triangle"/>
-                    </p:commandButton>
 
-                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
-                    </p:confirmDialog>
+                    <p:commandButton icon="pi pi-send" value="Soumettre la proposition"
+                                     actionListener="#{propositionBean.envoyerProposition()}" 
+                                     update="containerIndex messageIndex"/>
                 </div>
             </div>
         </h:panelGroup>
 
         <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}">
+            <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
+                <div class="list-group">
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-3">
+                            <h:outputText value="Nom : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:outputText value="#{propositionBean.nom}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+                    
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-3">
+                            <h:outputText value="E-Mail : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:outputText value="#{propositionBean.email}" 
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-12">
+                            <h:outputText value="Commentaire : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+                    
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-12">
+                            <p:inputTextarea value="#{propositionBean.commentaire}" 
+                                             disabled="true" rows="6" cols="33" style="width: 100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
-                <div class="col-12" style="text-align: right;">
-                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" 
+                <div class="col-3">
+                    <p:commandButton value="Supprimer" styleClass="ui-button-secondary" 
                                      style="margin-right: 10px" ajax="true" process="@this"
-                                     update="containerIndex:rightTab" actionListener="#{propositionBean.annulerPropostion()}" />
-
-                    <p:commandButton value="Refusser la proposition" action="#{propositionBean.envoyerProposition()}" 
+                                     update="containerIndex messageIndex" actionListener="#{propositionBean.supprimerPropostion()}" />
+                </div>
+                <div class="col-9" style="text-align: right;">
+                    <p:commandButton value="Refusser la proposition" actionListener="#{propositionBean.refuserProposition()}"
+                                     rendered="#{propositionBean.showButtonDecision()}"
                                      update="containerIndex messageIndex" style="margin-right: 10px; background-color: red"
-                                     styleClass="p-mr-2" icon="pi pi-check">
-                        <p:confirm header="Confirmation" message="Est vous sûr de refuser la proposition ?" icon="pi pi-exclamation-triangle"/>
-                    </p:commandButton>
+                                     styleClass="p-mr-2" icon="pi pi-check" />
 
-                    <p:commandButton value="Approuver la proposition" action="#{propositionBean.envoyerProposition()}" 
+                    <p:commandButton value="Approuver la proposition" actionListener="#{propositionBean.approuverProposition()}" 
                                      update="containerIndex messageIndex" style="background-color: #43B572; border-color: #43B572;"
-                                     styleClass="p-mr-2" icon="pi pi-check">
-                        <p:confirm header="Confirmation" message="Est vous sûr d'accepter envoyer la proposition ?" icon="pi pi-exclamation-triangle"/>
-                    </p:commandButton>
-
-                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
-                    </p:confirmDialog>
+                                     styleClass="p-mr-2" icon="pi pi-check"
+                                     rendered="#{propositionBean.showButtonDecision()}" />
                 </div>
             </div>
         </h:panelGroup>
@@ -210,41 +235,37 @@
 
     <p:dialog id="idNouveauNomConcept" header="Proposer un nouveau nom" widgetVar="nouveauNomConcept" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        <h:form>
-            <div class="row">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.actualName')}: " 
-                                  style="margin-left: 10px; color: black;" /> 
-                </div>
-                <div class="col-7" >
-                    <h:outputText value="#{propositionBean.proposition.nomConcept.lexical_value}" 
-                                  style="margin-left: 10px; color: black; margin-left: 5px" /> 
-                </div>
+        <div class="row">
+            <div class="col-5">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.actualName')}: " 
+                              style="margin-left: 10px; color: black;" /> 
             </div>
-
-            <div class="row" style="margin-top: 6px">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')}: " 
-                                  style="margin-left: 10px; color: black;" /> 
-                </div>
-                <div class="col-7">
-                    <p:inputText value="#{propositionBean.proposition.nomConceptProp}" 
-                                 style="width: 100%; border-color: #43B572; color: #000"/>
-                </div>
+            <div class="col-7" >
+                <h:outputText value="#{propositionBean.proposition.nomConcept.lexical_value}" 
+                              style="margin-left: 10px; color: black; margin-left: 5px" /> 
             </div>
+        </div>
 
-
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">                
-                <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 update="containerIndex:rightTab" oncomplete="PF('nouveauNomConcept').hiden();"
-                                 ajax="true" process="@this" />
-
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" 
-                                 update="containerIndex:rightTab" actionListener="#{propositionBean.ajouterPropNomConcept()}"
-                                 oncomplete="PF('nouveauNomConcept').hiden();"
-                                 ajax="true" process="@form" />
+        <div class="row" style="margin-top: 6px">
+            <div class="col-5">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')}: " 
+                              style="margin-left: 10px; color: black;" /> 
             </div>
-        </h:form>
+            <div class="col-7">
+                <p:inputText value="#{propositionBean.proposition.nomConceptProp}" 
+                             style="width: 100%; border-color: #43B572; color: #000"/>
+            </div>
+        </div>
+
+
+        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">                
+            <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                             update="containerIndex:rightTab" oncomplete="PF('nouveauNomConcept').hiden();"
+                             ajax="true" process="@this" />
+
+            <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                             update="containerIndex:rightTab" actionListener="PF('nouveauNomConcept').hiden();"  />
+        </div>
     </p:dialog>
 
     <p:dialog id="idAddSynonymProp" header="Proposer un nouveau synonyme" widgetVar="addSynonymProp" 
@@ -395,20 +416,10 @@
                     </div>
                 </div>                            
             </ui:repeat>
-
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
-                                 ajax="true" process="@form"
-                                 styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('renameSynonymProp').hide();" update="messageIndex containerIndex:formRightTab"/>
-
-                <p:commandButton value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}"
-                                 update="containerIndex:formRightTab messageIndex"
-                                 styleClass="ui-button-primary" oncomplete="PF('renameSynonymProp').hide();" 
-                                 ajax="true" process="@form"
-                                 actionListener="#{synonymBean.updateAllSynonymsProp()}" />        
-            </div>
         </h:form>            
     </p:dialog>
+
+
+
 
 </ui:fragment>

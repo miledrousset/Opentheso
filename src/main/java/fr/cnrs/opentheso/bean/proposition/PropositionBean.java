@@ -1,179 +1,195 @@
 package fr.cnrs.opentheso.bean.proposition;
 
-import com.sendgrid.Content;
-import com.sendgrid.Email;
-import com.sendgrid.Mail;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
+import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
+import fr.cnrs.opentheso.bean.proposition.model.Proposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
-import fr.cnrs.opentheso.bean.proposition.helper.PropositionHelper;
+import fr.cnrs.opentheso.bean.proposition.service.PropositionService;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.bean.search.SearchBean;
+
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 
 @Named(value = "propositionBean")
 @SessionScoped
 public class PropositionBean implements Serializable {
-    
-    @Inject 
+
+    @Inject
     private CurrentUser currentUser;
-    
-    @Inject 
+
+    @Inject
     private ConceptView conceptView;
-    
-    @Inject 
+
+    @Inject
+    private IndexSetting indexSetting;
+
+    @Inject
     private RoleOnThesoBean roleOnThesoBean;
-    
-    @Inject 
+
+    @Inject
     private SelectedTheso selectedTheso;
-    
+
     @Inject
     private RightBodySetting rightBodySetting;
-    
+
     @Inject
-    private Connect connect;
+    private PropositionService propositionService;
     
+
     private boolean isRubriqueVisible;
     private Proposition proposition;
     private String nom, email, commentaire;
-    
-    private List<PropositionDao> propositions;
-    
-    public void onSelectConcept(String idTheso, String idConcept, String idLang) {
-        roleOnThesoBean.initNodePref(idTheso);
-        selectedTheso.setSelectedIdTheso(idTheso);
-        selectedTheso.setSelectedLang(idLang);
-        try {
-            selectedTheso.setSelectedThesoForSearch();
-        } catch (IOException ex) {
-            Logger.getLogger(SearchBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        conceptView.getConcept(idTheso, idConcept, idLang);
-        rightBodySetting.setIndex("4");
-        
+    private PropositionDao propositionSelected;
+    private List<PropositionDao> propositions;
+
+    public void onSelectConcept(PropositionDao propositionDao) throws IOException {
+
+        this.propositionSelected = propositionDao;
+
+        roleOnThesoBean.initNodePref(propositionDao.getIdTheso());
+        selectedTheso.setSelectedIdTheso(propositionDao.getIdTheso());
+        selectedTheso.setSelectedLang(propositionDao.getLang());
+        selectedTheso.setSelectedThesoForSearch();
+        rightBodySetting.setIndex("3");
+        indexSetting.setIsSelectedTheso(true);
         isRubriqueVisible = true;
+
+        conceptView.getConcept(propositionDao.getIdTheso(), propositionDao.getIdConcept(), propositionDao.getLang());
+
+        nom = currentUser.getNodeUser().getName();
+        email = currentUser.getNodeUser().getMail();
+
+        propositionService.preparerPropositionSelect(proposition, propositionDao);
     }
 
     public void afficherListPropositions() {
-        propositions = new PropositionHelper().getAllProposition(connect.getPoolConnexion());
+        propositions = propositionService.searchAllPropositions();
         PrimeFaces.current().executeScript("PF('listNotification').show();");
     }
-    
+
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
         isRubriqueVisible = true;
-        
+
         if (currentUser.getNodeUser() == null) {
             rightBodySetting.setIndex("2");
         } else {
             rightBodySetting.setIndex("3");
         }
-        
+
         proposition = new Proposition();
-        
+        proposition.setConceptID(nodeConcept.getConcept().getIdConcept());
         proposition.setNomConceptProp(null);
         proposition.setNomConcept(nodeConcept.getTerm());
+        proposition.setSynonymsProp(propositionService.toSynonymPropBean(nodeConcept.getNodeEM(),
+                conceptView.getNodeConcept().getTerm().getId_term()));
+
+        if (!ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+            nom = currentUser.getNodeUser().getName();
+            email = currentUser.getNodeUser().getMail();
+        } else {
+            nom = "";
+            email = "";
+        }
+    }
+
+    public void supprimerPropostion() {
         
-        proposition.setSynonymsProp(toSynonymPropBean(nodeConcept.getNodeEM()));
+        propositionService.supprimerPropostion(propositionSelected);
+        switchToConceptInglet();
+        showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept() 
+                + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
+    }
+
+    public void refuserProposition() {
+        
+        propositionService.refuserProposition(propositionSelected);
+        
+        switchToConceptInglet();
+        showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
+                + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") suppprimé avec sucée !");
+    }
+
+    public void approuverProposition() throws IOException {
+
+        propositionService.insertProposition(proposition, propositionSelected);
+        
+        switchToConceptInglet();
+        showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
+                + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
+    }
+
+    private void switchToConceptInglet() {
+        rightBodySetting.setIndex("0");
+        isRubriqueVisible = false;
     }
 
     public void annulerPropostion() {
-        
+        switchToConceptInglet();
         proposition = null;
-        isRubriqueVisible = false;     
-        rightBodySetting.setIndex("1");
+        nom = "";
+        email = "";
     }
-    
+
     public void envoyerProposition() {
-        try {
-            sendRecapEmail();
-        } catch (IOException ex) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur detectée pendant l'envoie du mail de notification!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            PrimeFaces.current().ajax().update("messageIndex");
+
+        if (StringUtils.isEmpty(nom)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Le champs nom est oubligatoire !");
+            return;
         }
+
+        if (StringUtils.isEmpty(email)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Le champs email est oubligatoire !");
+            return;
+        }
+
+        if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent()) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez proposer au moins une modification !");
+            return;
+        }
+
+        propositionService.envoyerProposition(proposition, nom, email, commentaire);
+
+        switchToConceptInglet();
+        showMessage(FacesMessage.SEVERITY_INFO, "Proposition envoyée !");
     }
-    
-    private List<SynonymPropBean> toSynonymPropBean(List<NodeEM> nodesEm) {
-        List<SynonymPropBean> synonyms = null;
-        
-        if (CollectionUtils.isNotEmpty(nodesEm)) {
-            synonyms = new ArrayList<>();
-            for (NodeEM nodeEM : nodesEm) {
-                SynonymPropBean synonymPropBean = new SynonymPropBean();
-                synonymPropBean.setAction(nodeEM.getAction());
-                synonymPropBean.setCreated(nodeEM.getCreated());
-                synonymPropBean.setModified(nodeEM.getModified());
-                synonymPropBean.setHiden(nodeEM.isHiden());
-                synonymPropBean.setOldHiden(nodeEM.isHiden());
-                synonymPropBean.setLang(nodeEM.getLang());
-                synonymPropBean.setLexical_value(nodeEM.getLexical_value());
-                synonymPropBean.setOldValue(nodeEM.getLexical_value());
-                synonymPropBean.setSource(nodeEM.getSource());
-                synonymPropBean.setStatus(nodeEM.getStatus());
-                synonyms.add(synonymPropBean);
+
+    private boolean isSynchroProPresent() {
+        for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
+            if (synonymProp.isToAdd() || synonymProp.isToRemove() || synonymProp.isToUpdate()) {
+                return true;
             }
         }
-        
-        return synonyms;
+        return false;
     }
-    
+
+    private void showMessage(FacesMessage.Severity type, String message) {
+        FacesMessage msg = new FacesMessage(type, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
+    }
+
     public boolean isIsRubriqueVisible() {
         return isRubriqueVisible;
     }
 
     public void setIsRubriqueVisible(boolean isRubriqueVisible) {
         this.isRubriqueVisible = isRubriqueVisible;
-    }
-    
-    public void ajouterPropNomConcept() {
-        //proposition.set(proposition.getAncienNom());
-        //proposition.getNouveauNom().setLexical_value(proposition.getNomConceptProp());
-    }
-    
-    public void sendRecapEmail() throws IOException {
-       Email from = new Email("firas.gabsi@gmail.com");
-       Email to = new Email("firas.gabsi@gmail.com"); // use your own email address here
-
-       String subject = "Confirmation de la soumission de votre proposition";
-       Content content = new Content("text/html", "<p>Votre proposition a été bien reçue par nos administrateurs, elle sera traitée dans les plus brefs délais.</p>");
-
-       Mail mail = new Mail(from, subject, to, content);
-
-       SendGrid sg = new SendGrid("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");
-       Request request = new Request();
-
-       request.setMethod(Method.POST);
-       request.setEndpoint("mail/send");
-       request.setBody(mail.build());
-
-       Response response = sg.api(request);
-
-       System.out.println(response.getStatusCode());
-       System.out.println(response.getHeaders());
-       System.out.println(response.getBody());
     }
 
     public Proposition getProposition() {
@@ -207,7 +223,7 @@ public class PropositionBean implements Serializable {
     public void setCommentaire(String commentaire) {
         this.commentaire = commentaire;
     }
-    
+
     public List<PropositionDao> getPropositions() {
         return propositions;
     }
@@ -215,6 +231,9 @@ public class PropositionBean implements Serializable {
     public void setPropositions(List<PropositionDao> propositions) {
         this.propositions = propositions;
     }
-    
-    
+
+    public boolean showButtonDecision() {
+        return propositionSelected != null && (PropositionStatusEnum.LU.name().equals(propositionSelected.getStatus())
+                || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus()));
+    }
 }

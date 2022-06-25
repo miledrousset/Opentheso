@@ -339,8 +339,7 @@ public class SelectedTheso implements Serializable {
         // setting des préférences du thésaurus sélectionné
         roleOnThesoBean.initNodePref();
         roleOnThesoBean.showListTheso();
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), selectedIdTheso);
+        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), selectedIdTheso);
 
         if (idLang == null) {
             idLang = getIdLang();

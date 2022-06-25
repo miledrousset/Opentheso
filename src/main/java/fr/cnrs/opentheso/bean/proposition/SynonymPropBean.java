@@ -8,6 +8,7 @@ public class SynonymPropBean extends NodeEM {
     private boolean toAdd;
     private boolean toRemove;
     private boolean toUpdate;
+    private String idTerm;
     
 
     public boolean isToAdd() {
@@ -32,6 +33,14 @@ public class SynonymPropBean extends NodeEM {
 
     public void setToUpdate(boolean toUpdate) {
         this.toUpdate = toUpdate;
+    }
+
+    public String getIdTerm() {
+        return idTerm;
+    }
+
+    public void setIdTerm(String idTerm) {
+        this.idTerm = idTerm;
     }
     
 }

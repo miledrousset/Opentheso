@@ -212,13 +212,11 @@ public class SynonymBean implements Serializable {
         synonymPropBean.setToAdd(true);
         synonymPropBean.setHiden(isHidden);
         synonymPropBean.setLang(selectedLang);
-        synonymPropBean.setIdUser(currentUser.getNodeUser().getIdUser() + "");
         synonymPropBean.setLexical_value(value);
         if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
             propositionBean.getProposition().setSynonymsProp(Collections.emptyList());
         }
         propositionBean.getProposition().getSynonymsProp().add(synonymPropBean);
-        System.err.println("xxxxx");
     }
 
     /**
@@ -642,15 +640,10 @@ public class SynonymBean implements Serializable {
 
     public void deleteSynonymPropo(SynonymPropBean spb) {
 
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
-
         if (spb == null) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
 

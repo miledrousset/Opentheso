@@ -5,7 +5,6 @@
  */
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import com.jsf2leaf.model.Polyline;
 import com.jsf2leaf.model.LatLong;
 import com.jsf2leaf.model.Layer;
 import com.jsf2leaf.model.Map;
@@ -330,8 +329,7 @@ public class ConceptView implements Serializable {
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
         offset = 0; 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
+        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
         if (nodeConcept != null) {
             if(roleOnThesoBean.getNodePreference().isBreadcrumb())
                 pathOfConcept(idTheso, idConcept, idLang);

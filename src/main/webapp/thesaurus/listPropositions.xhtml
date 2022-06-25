@@ -18,13 +18,15 @@
                                 <p:commandLink value="#{proposition.nomConcept} (#{proposition.lang})" rendered="#{!proposition.isConsulter()}"
                                                style="font-size: 14px; font-weight: bold; color: #8f8f8f" 
                                                ajax="true" process="@this"
-                                               actionListener="#{propositionBean.onSelectConcept(proposition.idTheso, proposition.idConcept, proposition.lang)}"
-                                               update="containerIndex:thesorusContent containerIndex:thesoSelect" />
+                                               actionListener="#{propositionBean.onSelectConcept(proposition)}"
+                                               update="containerIndex:thesorusContent containerIndex:thesoSelect 
+                                                    containerIndex:formRightTab containerIndex:sideBarProposition" />
                                 
                                 <p:commandLink value="#{proposition.nomConcept} (#{proposition.lang})" rendered="#{proposition.isConsulter()}" 
                                                style="font-size: 14px; color: #8f8f8f" ajax="true" process="@this"
-                                               actionListener="#{propositionBean.onSelectConcept(proposition.idTheso, result.proposition, proposition.lang)}"
-                                               update="containerIndex:thesorusContent containerIndex:thesoSelect" />
+                                               actionListener="#{propositionBean.onSelectConcept(proposition)}"
+                                               update="containerIndex:thesorusContent containerIndex:thesoSelect 
+                                                    containerIndex:formRightTab containerIndex:sideBarProposition" />
                             </div>
                         </div>
                         <div class="row" style="margin-bottom: -4px">

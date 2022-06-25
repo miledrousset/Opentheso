@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
@@ -41,6 +42,7 @@ public class TreeConcepts implements Serializable {
     @Inject private ConceptView conceptView;
     @Inject private GroupView groupView;
     @Inject private SelectedTheso selectedTheso;
+    @Inject private PropositionBean propositionBean;
 
     private DataService dataService;
     private TreeNode root, selectedNode;
@@ -192,6 +194,10 @@ public class TreeConcepts implements Serializable {
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
+        
+        propositionBean.setIsRubriqueVisible(false);
+        rightBodySetting.setIndex("0");
+        
         if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
             rightBodySetting.setShowConceptToOn();
             conceptView.getConceptForTree(idTheso,
