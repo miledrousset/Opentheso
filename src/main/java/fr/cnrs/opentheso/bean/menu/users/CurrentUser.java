@@ -110,11 +110,8 @@ public class CurrentUser implements Serializable {
      * motpasstemp) #MR
      * @throws java.io.IOException
      */
-    public void login() throws IOException {
+    public void login() throws Exception {
         
-    /*    username = "admin";
-        password = "admin";
-      */  
         UserHelper userHelper = new UserHelper();
         
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
@@ -151,11 +148,8 @@ public class CurrentUser implements Serializable {
         setInfos();
         indexSetting.setIsThesoActive(true);
         
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex");
-        }        
-        FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
+        menuBean.redirectToThesaurus();
+        //FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
     }
 
     private void showErrorMessage(String msg) {

@@ -9,9 +9,10 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
+import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class TraductionBean implements Serializable {
     @Inject
     private Connect connect;
     @Inject
-    private LanguageBean languageBean;
+    private PropositionBean propositionBean;
     @Inject
     private ConceptView conceptBean;
     @Inject
@@ -185,13 +186,41 @@ public class TraductionBean implements Serializable {
         setLangWithNoTraduction();
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
-//            pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:rightTab:idAddTraduction");
             pf.executeScript("PF('addTraduction').show();");
-            //           pf.ajax().update("containerIndex:formLeftTab");
-//            pf.ajax().update("containerIndex:formLeftTab");            
-//            pf.ajax().update("containerIndex:formRightTab");
         }
+    }
+    
+    
+    public void addNewTraductionProposition() {
+        FacesMessage msg;
+        if (traductionValue == null || traductionValue.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Une valeur est obligatoire !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        if (selectedLang == null || selectedLang.isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Pas de langue choisie !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        TermHelper termHelper = new TermHelper();
+        if (termHelper.isTermExistIgnoreCase(
+                connect.getPoolConnexion(),
+                traductionValue,
+                selectedTheso.getCurrentIdTheso(),
+                selectedLang)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        
+        TraductionPropBean traductionProp = new TraductionPropBean();
+        traductionProp.setLang(selectedLang);
+        traductionProp.setLexicalValue(traductionValue);
+        traductionProp.setIdTerm(conceptBean.getNodeConcept().getTerm().getId_term());
+        traductionProp.setToAdd(true);
+        propositionBean.getProposition().getTraductionsProp().add(traductionProp);
     }
 
     /**
@@ -253,7 +282,36 @@ public class TraductionBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:rightTab:idRenameTraduction");
             pf.executeScript("PF('renameTraduction').show();");
-            //     pf.ajax().update("containerIndex:formRightTab");
+        }
+    }
+    
+    public void updateTraductionProp(TraductionPropBean traductionPropBean) {
+        
+        if (traductionPropBean == null || traductionPropBean.getLexicalValue().isEmpty()) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Veuillez saisir une valeur !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);        
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+        
+        if (new TermHelper().isTermExistIgnoreCase(
+                connect.getPoolConnexion(),
+                traductionPropBean.getLexicalValue(),
+                selectedTheso.getCurrentIdTheso(),
+                traductionPropBean.getLang())) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);       
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+        
+        for (int i = 0; i < propositionBean.getProposition().getTraductionsProp().size(); i++) {
+            if (propositionBean.getProposition().getTraductionsProp().get(i).getLang()
+                    .equals(traductionPropBean.getLang())) {
+                propositionBean.getProposition().getTraductionsProp().get(i).setToUpdate(true);
+                propositionBean.getProposition().getTraductionsProp()
+                        .get(i).setLexicalValue(traductionPropBean.getLexicalValue());
+            }
         }
     }
 
@@ -385,6 +443,16 @@ public class TraductionBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:rightTab:idDeleteTraduction");
             pf.executeScript("PF('deleteTraduction').show();");
+        }
+    }
+    
+    public void deleteTraductionProp(TraductionPropBean traductionPropBean) {
+        
+        for (int i = 0; i < propositionBean.getProposition().getTraductionsProp().size(); i++ ) {
+            if (propositionBean.getProposition().getTraductionsProp().get(i).getLexicalValue()
+                    .equals(traductionPropBean.getLexicalValue())) {
+                propositionBean.getProposition().getTraductionsProp().get(i).setToRemove(true);
+            }
         }
     }
 

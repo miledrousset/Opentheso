@@ -1,0 +1,126 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
+             xmlns:p="http://primefaces.org/ui">
+
+    <h:panelGroup id="propositionView" styleClass="textOpentheso" style="margin: 20px">
+
+        <ui:include src="TermProposition.xhtml" />
+
+        <ui:include src="TraductionProposition.xhtml" />
+
+        <h:panelGroup rendered="#{!currentUser.nodeUser.isSuperAdmin}">
+            <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
+                <div class="list-group">
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-3">
+                            <h:outputText value="Nom* : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:inputText value="#{propositionBean.nom}" rendered="#{currentUser.nodeUser == null}" />
+                            <h:outputText value="#{currentUser.nodeUser.name}" 
+                                          rendered="#{currentUser.nodeUser != null}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-3">
+                            <h:outputText value="E-Mail* : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:inputText value="#{propositionBean.email}" rendered="#{currentUser.nodeUser.mail == null}" />
+                            <h:outputText value="#{currentUser.nodeUser.mail}" 
+                                          rendered="#{currentUser.nodeUser != null}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-12">
+                            <h:outputText value="Commentaire : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-12">
+                            <p:inputTextarea value="#{propositionBean.commentaire}" rows="6" cols="33" style="width: 100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12" style="text-align: right;">
+                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" 
+                                     style="margin-right: 10px" ajax="true" process="@this"
+                                     update="containerIndex:rightTab" actionListener="#{propositionBean.annulerPropostion()}" />
+
+
+                    <p:commandButton icon="pi pi-send" value="Soumettre la proposition"
+                                     actionListener="#{propositionBean.envoyerProposition()}" 
+                                     update="containerIndex messageIndex"/>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}">
+            <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
+                <div class="list-group">
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-3">
+                            <h:outputText value="Nom : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:outputText value="#{propositionBean.nom}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-3">
+                            <h:outputText value="E-Mail : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:outputText value="#{propositionBean.email}" 
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-12">
+                            <h:outputText value="Commentaire : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-12">
+                            <p:inputTextarea value="#{propositionBean.commentaire}" 
+                                             disabled="true" rows="6" cols="33" style="width: 100%"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <p:commandButton value="Supprimer" styleClass="ui-button-secondary" 
+                                     style="margin-right: 10px" ajax="true" process="@this"
+                                     update="containerIndex messageIndex" actionListener="#{propositionBean.supprimerPropostion()}" />
+                </div>
+                <div class="col-9" style="text-align: right;">
+                    <p:commandButton value="Refusser la proposition" actionListener="#{propositionBean.refuserProposition()}"
+                                     rendered="#{propositionBean.showButtonDecision()}"
+                                     update="containerIndex messageIndex" style="margin-right: 10px; background-color: red"
+                                     styleClass="p-mr-2" icon="pi pi-check" />
+
+                    <p:commandButton value="Approuver la proposition" actionListener="#{propositionBean.approuverProposition()}" 
+                                     update="containerIndex messageIndex" style="background-color: #43B572; border-color: #43B572;"
+                                     styleClass="p-mr-2" icon="pi pi-check"
+                                     rendered="#{propositionBean.showButtonDecision()}" />
+                </div>
+            </div>
+        </h:panelGroup>
+
+    </h:panelGroup>
+
+</ui:fragment>

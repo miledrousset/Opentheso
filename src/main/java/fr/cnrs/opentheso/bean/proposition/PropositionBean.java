@@ -84,20 +84,11 @@ public class PropositionBean implements Serializable {
     }
 
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
+        
         isRubriqueVisible = true;
+        rightBodySetting.setIndex(currentUser.getNodeUser() == null ? "2" : "3");
 
-        if (currentUser.getNodeUser() == null) {
-            rightBodySetting.setIndex("2");
-        } else {
-            rightBodySetting.setIndex("3");
-        }
-
-        proposition = new Proposition();
-        proposition.setConceptID(nodeConcept.getConcept().getIdConcept());
-        proposition.setNomConceptProp(null);
-        proposition.setNomConcept(nodeConcept.getTerm());
-        proposition.setSynonymsProp(propositionService.toSynonymPropBean(nodeConcept.getNodeEM(),
-                conceptView.getNodeConcept().getTerm().getId_term()));
+        proposition = propositionService.selectProposition(nodeConcept);
 
         if (!ObjectUtils.isEmpty(currentUser.getNodeUser())) {
             nom = currentUser.getNodeUser().getName();
@@ -106,6 +97,11 @@ public class PropositionBean implements Serializable {
             nom = "";
             email = "";
         }
+    }
+    
+    public void updateNomConcept() {
+        proposition.setUpdateNomConcept(true);
+        PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
     }
 
     public void supprimerPropostion() {
@@ -158,7 +154,7 @@ public class PropositionBean implements Serializable {
             return;
         }
 
-        if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent()) {
+        if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent() && !isTraductionProPresent()) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez proposer au moins une modification !");
             return;
         }
@@ -172,6 +168,15 @@ public class PropositionBean implements Serializable {
     private boolean isSynchroProPresent() {
         for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
             if (synonymProp.isToAdd() || synonymProp.isToRemove() || synonymProp.isToUpdate()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isTraductionProPresent() {
+        for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
+            if (traductionProp.isToAdd() || traductionProp.isToRemove() || traductionProp.isToUpdate()) {
                 return true;
             }
         }
