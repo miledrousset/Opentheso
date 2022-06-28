@@ -26,7 +26,7 @@
 
         <p:commandLink rendered="#{(selectedTheso.selectedIdTheso != null) and (currentUser.nodeUser != null) and
                                    (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-            update="containerIndex"  style="margin-left: 15px;"
+             style="margin-left: 15px;"
                        actionListener="#{editThesoBean.init(selectedTheso.currentIdTheso)}"
                        action="#{viewEditionBean.setIsViewModifyTheso(true)}">
             <i class="fa-solid fa-pencil" style="color: #818183;" title="#{langueBean.getMsg('edition.editTheso')}"/>

@@ -54,6 +54,7 @@ public class LanguageBean implements Serializable {
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");
+            pf.ajax().update("menuBar");
         }
     }
 

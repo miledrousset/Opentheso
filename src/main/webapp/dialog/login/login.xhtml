@@ -65,10 +65,12 @@
             <h:form class="login-form">
                 <p:inputText placeholder="username" value="#{currentUser.username}" />
                 <p:inputText type="password" placeholder="password" value="#{currentUser.password}"/>
-                <p:commandButton title="Se connecter" class="formLogin-button"
+                <p:commandButton title="#{langueBean.getMsg('menu.login')}" class="formLogin-button"
                                  ajax="true" process="@form"
                                  action="#{currentUser.login()}" update="messageIndex "/>
-                <p class="message"><a href="#">Mot de passe oublier</a></p>
+                <p class="message">
+                    <p:commandLink value="#{langueBean.getMsg('menu.forgotten_pass')}" />
+                </p>
             </h:form>
         </div>
     </p:dialog>   

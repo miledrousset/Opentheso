@@ -84,8 +84,28 @@
                                                 </div>
                                             </div>
                                         </p:tab>
+                                        <p:tab title="Correction 2 - Collections">
+                                            <div class="row" style="margin-top: 10px; margin-bottom: 10px">
+                                                <div class="col-12">
+                                                    <p:outputPanel deferred="true">
+                                                        <h5>Permet de corriger les incohérences dans les collections et les concepts :</h5>
+                                                        <p>1- détecte corrige les concepts qui font partie d'une collection, mais la collection n'existe plus.<br/>
+                                                        </p>
+                                                        <p style="color:red;">!!! Ne pas oublier de recharger le thésaurus à la fin du traitement !!!</p>                   
+                                                    </p:outputPanel>                
+                                                </div>
+                                            </div>
 
-                                        <p:tab title="Correction 2 - Créateur/contributeur">
+                                            <div class="row" style="margin-top: 10px; margin-bottom: 10px">
+                                                <div class="col-12">
+                                                    <p:commandButton value="#{langueBean.getMsg('service.launchCorrection')}" icon="pi pi-check" iconPos="right"
+                                                                     action="#{restoreTheso.reorganizeConceptsAndCollections(selectedTheso.currentIdTheso)}"
+                                                                     update="containerIndex messageIndex"/>           
+                                                </div>
+                                            </div>
+                                        </p:tab> 
+
+                                        <p:tab title="Correction 3 - Créateur/contributeur">
                                             <p class="p-m-0">
                                                 <div class="row" style="margin-top: 10px; margin-bottom: 10px">
                                                     <div class="col-12">
@@ -106,7 +126,7 @@
                                                 </div>
                                             </p>
                                         </p:tab>
-                                        <p:tab title="Correction 3 - Les identifiants Ark">
+                                        <p:tab title="Correction 4 - Les identifiants Ark">
                                             <p class="p-m-0">
                                                 <!-- partie pour générer les identifiants Ark en local (identifiant basé sur l'Id interne)-->            
                                                 <div class="row" style="margin-top: 10px; margin-bottom: 10px">

@@ -288,6 +288,8 @@ public class SelectedTheso implements Serializable {
      * @throws java.io.IOException
      */
     public void reloadSelectedTheso() throws IOException {
+        roleOnThesoBean.showListTheso();
+
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();

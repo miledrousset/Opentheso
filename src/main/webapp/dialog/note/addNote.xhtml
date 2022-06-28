@@ -8,7 +8,7 @@
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form id="addNoteForm" >
-
+            <p:defaultCommand  target="nothing" />
             <div class="row">
                 <div class="col-5">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
@@ -65,16 +65,26 @@
                 </div>
             </div>
 
-                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                     actionListener="PF('addNote').hide();" update="containerIndex:idAddNote"/>
-
-                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="messageIndex"
-                                     ajax="true" process="@form"
-                                     styleClass="ui-button-primary" oncomplete="PF('addNote').show();"
-                                     actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12">
+                    <p:textEditor id="textEditor" widgetVar="NoteEditor2" value="#{noteBean.noteValue}" allowLinks="true" 
+                                  secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
+                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
+                    </p:textEditor>    
                 </div>
+            </div>            
+
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('addNote').hide();" update="containerIndex:idAddNote"/>
+
+                <p:commandButton id="commandAddNote" value="#{langueBean.getMsg('btnValidate')}" update="messageIndex"
+                                 ajax="true" process="@form"
+                                 styleClass="ui-button-primary" oncomplete="PF('addNote').show();"
+                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
+                <p:commandLink id="nothing"  />
+            </div>
 
             <div class="row">
                 <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">

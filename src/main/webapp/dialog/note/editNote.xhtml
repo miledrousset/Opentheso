@@ -24,6 +24,16 @@
                                              style="width: 100%; font-size: 12px; color: black; max-height: 200px; overflow-y:scroll" />
 
                         </div>
+                        
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12">
+                    <p:textEditor rendered="#{noteToEdit.lexicalvalue != ''}" 
+                                  widgetVar="NoteEditorModify" value="#{noteToEdit.lexicalvalue}" allowLinks="true" 
+                                  secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
+                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
+                    </p:textEditor>    
+                </div>
+            </div>                          
 
                         <div class="col-1" style="align-self: center;">
                             <p:commandLink style="color: #F7A269; align-items: center " oncomplete="PF('editNote').show();"

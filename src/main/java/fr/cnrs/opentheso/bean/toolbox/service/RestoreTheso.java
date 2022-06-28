@@ -6,6 +6,7 @@
 package fr.cnrs.opentheso.bean.toolbox.service;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
@@ -50,6 +51,33 @@ public class RestoreTheso implements Serializable {
     public RestoreTheso() {
     }
     
+    /**
+     * permet de corriger l'appartenance d'un cocnept à une collection, 
+     * si la collection n'existe plus, on supprime l'appartenance de ces concepts à la collection en question 
+     * @param idTheso 
+     */    
+    public void reorganizeConceptsAndCollections(String idTheso) {
+        if(idTheso == null || idTheso.isEmpty()) return;
+        
+        FacesContext fc = FacesContext.getCurrentInstance();        
+
+        // supprimer le concept qui ont une relation vers un groupe vide
+        // liste des concepts de la table concept-group-concept qui ont une relation vers un groupe qui n'existe plus
+        GroupHelper groupHelper = new GroupHelper();
+        if(!groupHelper.deleteConceptsWithEmptyRelation(connect.getPoolConnexion(), idTheso)) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations vides")); 
+        }
+        if(!groupHelper.deleteConceptsHavingRelationShipWithDeletedGroup(connect.getPoolConnexion(), idTheso)) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations interdites")); 
+        }    
+        if(!groupHelper.deleteConceptsHavingRelationShipWithDeletedConcept(connect.getPoolConnexion(), idTheso)) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations interdites")); 
+        }          
+        
+        fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction réussie !!!"));
+    }      
+        
+        
     public void reorganizing(String idTheso) {
         if(idTheso == null || idTheso.isEmpty()) return;
         

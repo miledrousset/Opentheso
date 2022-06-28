@@ -13,10 +13,12 @@
 
         <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central; font-size: 12px;">
             <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
-                <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
+
                     <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
                         <div class="row" style="padding: 2px">
-                            <div class="col-3" style="margin-left: 10px">
+                                <div class="col-3" style="margin-left: 10px">
+                            <h:panelGroup id="notesActions" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                    
                                 <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
                                               style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
@@ -27,12 +29,20 @@
                                                 actionListener="#{noteBean.reset()}" update="containerIndex:idAddNote"
                                                 oncomplete="PF('addNote').show();" icon="fas fa-plus" />
                                 </p:menuButton>
+                                  </h:panelGroup>
                             </div>
+                          
 
-                            <div class="col-9" />
+                            <div class="col-1 offset-7" style="margin-top: 0px">
+                                <p:commandLink rendered="#{conceptView.contributor=='moi'}" id="commandOtherLang" value="">
+                                    <i class="fa fa-language" style="font-size: 1.2rem; color: #F47B2A" />
+                                </p:commandLink>
+                                <p:tooltip for="commandOtherLang" value="#{langueBean.getMsg('concept.showNotesOtherLang')}" showDelay="1000" />
+                            </div>
+                            
                         </div>
                     </div>
-                </h:panelGroup>                
+           
 
                 <h:panelGroup id="idConceptNotes" style="margin-top: 5px;" rendered="#{(conceptView.notes.size() != 0 || conceptView.changeNotes.size() != 0 || conceptView.definitions.size() != 0
                                                                                        || conceptView.editorialNotes.size() != 0 || conceptView.examples.size() != 0 || conceptView.historyNotes.size() != 0
