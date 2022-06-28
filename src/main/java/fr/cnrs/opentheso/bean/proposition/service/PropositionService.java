@@ -10,9 +10,11 @@ import com.sendgrid.SendGrid;
 
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -20,6 +22,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
 import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
@@ -72,12 +75,12 @@ public class PropositionService implements Serializable {
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
 
-    public void envoyerProposition(Proposition proposition, String nom, String email, String commentaire) {
+    public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire) {
 
         if (new PropositionHelper().searchPropositionByEmailAndConceptAndLang(connect.getPoolConnexion(), email,
                 proposition.getConceptID(), selectedTheso.getCurrentLang()) != null) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous avez déjà une proposition pour le même concept en cours de etraitement !");
-            return;
+            return false;
         }
 
         PropositionDao propositionDao = new PropositionDao();
@@ -93,7 +96,7 @@ public class PropositionService implements Serializable {
 
         if (propositionID == -1) {
             showMessage(FacesMessage.SEVERITY_WARN, "Erreur pendant l'enregistrement de la proposition !");
-            return;
+            return false;
         }
 
         if (StringUtils.isNotEmpty(proposition.getNomConceptProp())) {
@@ -159,12 +162,203 @@ public class PropositionService implements Serializable {
                 }
             }
         }
+
+        if (!CollectionUtils.isEmpty(proposition.getNotes())) {
+            for (NotePropBean notePropBean : proposition.getNotes()) {
+                if (notePropBean.isToAdd() || notePropBean.isToUpdate() || notePropBean.isToRemove()) {
+                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
+                    PropositionActionEnum action;
+                    if (notePropBean.isToAdd()) {
+                        action = PropositionActionEnum.ADD;
+                        propositionDetail.setOldValue(notePropBean.getLexicalvalue());
+                    } else if (notePropBean.isToRemove()) {
+                        action = PropositionActionEnum.DELETE;
+                        propositionDetail.setOldValue(notePropBean.getOldValue());
+                    } else {
+                        action = PropositionActionEnum.UPDATE;
+                        propositionDetail.setOldValue(notePropBean.getOldValue());
+                    }
+
+                    propositionDetail.setIdProposition(propositionID);
+                    propositionDetail.setAction(action.name());
+                    propositionDetail.setCategorie(PropositionCategoryEnum.NOTE.name());
+                    propositionDetail.setLang(notePropBean.getLang());
+                    propositionDetail.setValue(notePropBean.getLexicalvalue());
+                    propositionDetail.setIdTerm(notePropBean.getId_term());
+                    new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
+                }
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(proposition.getChangeNotes())) {
+            for (NotePropBean chageNote : proposition.getChangeNotes()) {
+                if (chageNote.isToAdd() || chageNote.isToUpdate() || chageNote.isToRemove()) {
+                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
+                    PropositionActionEnum action;
+                    if (chageNote.isToAdd()) {
+                        action = PropositionActionEnum.ADD;
+                        propositionDetail.setOldValue(chageNote.getLexicalvalue());
+                    } else if (chageNote.isToRemove()) {
+                        action = PropositionActionEnum.DELETE;
+                        propositionDetail.setOldValue(chageNote.getOldValue());
+                    } else {
+                        action = PropositionActionEnum.UPDATE;
+                        propositionDetail.setOldValue(chageNote.getOldValue());
+                    }
+
+                    propositionDetail.setIdProposition(propositionID);
+                    propositionDetail.setAction(action.name());
+                    propositionDetail.setCategorie(PropositionCategoryEnum.CHANGE_NOTE.name());
+                    propositionDetail.setLang(chageNote.getLang());
+                    propositionDetail.setValue(chageNote.getLexicalvalue());
+                    propositionDetail.setIdTerm(chageNote.getId_term());
+                    new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
+                }
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(proposition.getDefinitions())) {
+            for (NotePropBean definition : proposition.getDefinitions()) {
+                if (definition.isToAdd() || definition.isToUpdate() || definition.isToRemove()) {
+                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
+                    PropositionActionEnum action;
+                    if (definition.isToAdd()) {
+                        action = PropositionActionEnum.ADD;
+                        propositionDetail.setOldValue(definition.getLexicalvalue());
+                    } else if (definition.isToRemove()) {
+                        action = PropositionActionEnum.DELETE;
+                        propositionDetail.setOldValue(definition.getOldValue());
+                    } else {
+                        action = PropositionActionEnum.UPDATE;
+                        propositionDetail.setOldValue(definition.getOldValue());
+                    }
+
+                    propositionDetail.setIdProposition(propositionID);
+                    propositionDetail.setAction(action.name());
+                    propositionDetail.setCategorie(PropositionCategoryEnum.DEFINITION.name());
+                    propositionDetail.setLang(definition.getLang());
+                    propositionDetail.setValue(definition.getLexicalvalue());
+                    propositionDetail.setIdTerm(definition.getId_term());
+                    new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
+                }
+            }
+        }     
+
+        if (!CollectionUtils.isEmpty(proposition.getEditorialNotes())) {
+            for (NotePropBean editorialNote : proposition.getEditorialNotes()) {
+                if (editorialNote.isToAdd() || editorialNote.isToUpdate() || editorialNote.isToRemove()) {
+                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
+                    PropositionActionEnum action;
+                    if (editorialNote.isToAdd()) {
+                        action = PropositionActionEnum.ADD;
+                        propositionDetail.setOldValue(editorialNote.getLexicalvalue());
+                    } else if (editorialNote.isToRemove()) {
+                        action = PropositionActionEnum.DELETE;
+                        propositionDetail.setOldValue(editorialNote.getOldValue());
+                    } else {
+                        action = PropositionActionEnum.UPDATE;
+                        propositionDetail.setOldValue(editorialNote.getOldValue());
+                    }
+
+                    propositionDetail.setIdProposition(propositionID);
+                    propositionDetail.setAction(action.name());
+                    propositionDetail.setCategorie(PropositionCategoryEnum.EDITORIAL_NOTE.name());
+                    propositionDetail.setLang(editorialNote.getLang());
+                    propositionDetail.setValue(editorialNote.getLexicalvalue());
+                    propositionDetail.setIdTerm(editorialNote.getId_term());
+                    new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
+                }
+            } 
+        } 
+
+        if (!CollectionUtils.isEmpty(proposition.getExamples())) {
+            for (NotePropBean exampleNote : proposition.getExamples()) {
+                if (exampleNote.isToAdd() || exampleNote.isToUpdate() || exampleNote.isToRemove()) {
+                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
+                    PropositionActionEnum action;
+                    if (exampleNote.isToAdd()) {
+                        action = PropositionActionEnum.ADD;
+                        propositionDetail.setOldValue(exampleNote.getLexicalvalue());
+                    } else if (exampleNote.isToRemove()) {
+                        action = PropositionActionEnum.DELETE;
+                        propositionDetail.setOldValue(exampleNote.getOldValue());
+                    } else {
+                        action = PropositionActionEnum.UPDATE;
+                        propositionDetail.setOldValue(exampleNote.getOldValue());
+                    }
+
+                    propositionDetail.setIdProposition(propositionID);
+                    propositionDetail.setAction(action.name());
+                    propositionDetail.setCategorie(PropositionCategoryEnum.EXAMPLE.name());
+                    propositionDetail.setLang(exampleNote.getLang());
+                    propositionDetail.setValue(exampleNote.getLexicalvalue());
+                    propositionDetail.setIdTerm(exampleNote.getId_term());
+                    new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
+                }
+            }
+        } 
+
+        if (!CollectionUtils.isEmpty(proposition.getHistoryNotes())) {
+            for (NotePropBean historyNote : proposition.getHistoryNotes()) {
+                if (historyNote.isToAdd() || historyNote.isToUpdate() || historyNote.isToRemove()) {
+                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
+                    PropositionActionEnum action;
+                    if (historyNote.isToAdd()) {
+                        action = PropositionActionEnum.ADD;
+                        propositionDetail.setOldValue(historyNote.getLexicalvalue());
+                    } else if (historyNote.isToRemove()) {
+                        action = PropositionActionEnum.DELETE;
+                        propositionDetail.setOldValue(historyNote.getOldValue());
+                    } else {
+                        action = PropositionActionEnum.UPDATE;
+                        propositionDetail.setOldValue(historyNote.getOldValue());
+                    }
+
+                    propositionDetail.setIdProposition(propositionID);
+                    propositionDetail.setAction(action.name());
+                    propositionDetail.setCategorie(PropositionCategoryEnum.HISTORY.name());
+                    propositionDetail.setLang(historyNote.getLang());
+                    propositionDetail.setValue(historyNote.getLexicalvalue());
+                    propositionDetail.setIdTerm(historyNote.getId_term());
+                    new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
+                }
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(proposition.getScopeNotes())) {
+            for (NotePropBean scopeNote : proposition.getScopeNotes()) {
+                if (scopeNote.isToAdd() || scopeNote.isToUpdate() || scopeNote.isToRemove()) {
+                    PropositionDetailDao propositionDetail = new PropositionDetailDao();
+                    PropositionActionEnum action;
+                    if (scopeNote.isToAdd()) {
+                        action = PropositionActionEnum.ADD;
+                        propositionDetail.setOldValue(scopeNote.getLexicalvalue());
+                    } else if (scopeNote.isToRemove()) {
+                        action = PropositionActionEnum.DELETE;
+                        propositionDetail.setOldValue(scopeNote.getOldValue());
+                    } else {
+                        action = PropositionActionEnum.UPDATE;
+                        propositionDetail.setOldValue(scopeNote.getOldValue());
+                    }
+
+                    propositionDetail.setIdProposition(propositionID);
+                    propositionDetail.setAction(action.name());
+                    propositionDetail.setCategorie(PropositionCategoryEnum.SCOPE.name());
+                    propositionDetail.setLang(scopeNote.getLang());
+                    propositionDetail.setValue(scopeNote.getLexicalvalue());
+                    propositionDetail.setIdTerm(scopeNote.getId_term());
+                    new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
+                }
+            }
+        }
+
         /*
         try {
             sendRecapEmail();
         } catch (IOException ex) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
         }*/
+        return true;
     }
 
     public void sendRecapEmail() throws IOException {
@@ -313,10 +507,94 @@ public class PropositionService implements Serializable {
                             currentUser.getNodeUser().getIdUser())) {
 
                         showMessage(FacesMessage.SEVERITY_ERROR, "La modification de la traduction "
-                                + traductionProp.getLexicalValue() + " ("+traductionProp.getLang()
+                                + traductionProp.getLexicalValue() + " (" + traductionProp.getLang()
                                 + ") a échouée !");
                         return;
                     }
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
+            for (NotePropBean note : proposition.getNotes()) {
+                if (note.isToAdd()) {
+                    addNewNote(note, "note", propositionSelected.getIdConcept());
+                } else if (note.isToUpdate()) {
+                    updateNote(note, "note");
+                } else {
+                    deleteNote(note, "note");
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
+            for (NotePropBean changeNote : proposition.getChangeNotes()) {
+                if (changeNote.isToAdd()) {
+                    addNewNote(changeNote, "changeNote", propositionSelected.getIdConcept());
+                } else if (changeNote.isToUpdate()) {
+                    updateNote(changeNote, "changeNote");
+                } else {
+                    deleteNote(changeNote, "changeNote");
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
+            for (NotePropBean definition : proposition.getDefinitions()) {
+                if (definition.isToAdd()) {
+                    addNewNote(definition, "definition", propositionSelected.getIdConcept());
+                } else if (definition.isToUpdate()) {
+                    updateNote(definition, "definition");
+                } else {
+                    deleteNote(definition, "definition");
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getEditorialNotes())) {
+            for (NotePropBean editorialNote : proposition.getEditorialNotes()) {
+                if (editorialNote.isToAdd()) {
+                    addNewNote(editorialNote, "editorialNote", propositionSelected.getIdConcept());
+                } else if (editorialNote.isToUpdate()) {
+                    updateNote(editorialNote, "editorialNote");
+                } else {
+                    deleteNote(editorialNote, "editorialNote");
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getExamples())) {
+            for (NotePropBean exampleNote : proposition.getExamples()) {
+                if (exampleNote.isToAdd()) {
+                    addNewNote(exampleNote, "example", propositionSelected.getIdConcept());
+                } else if (exampleNote.isToUpdate()) {
+                    updateNote(exampleNote, "example");
+                } else {
+                    deleteNote(exampleNote, "example");
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getScopeNotes())) {
+            for (NotePropBean scopeNote : proposition.getScopeNotes()) {
+                if (scopeNote.isToAdd()) {
+                    addNewNote(scopeNote, "scopeNote", propositionSelected.getIdConcept());
+                } else if (scopeNote.isToUpdate()) {
+                    updateNote(scopeNote, "scopeNote");
+                } else {
+                    deleteNote(scopeNote, "scopeNote");
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getHistoryNotes())) {
+            for (NotePropBean historyNote : proposition.getHistoryNotes()) {
+                if (historyNote.isToAdd()) {
+                    addNewNote(historyNote, "historyNote", propositionSelected.getIdConcept());
+                } else if (historyNote.isToUpdate()) {
+                    updateNote(historyNote, "historyNote");
+                } else {
+                    deleteNote(historyNote, "historyNote");
                 }
             }
         }
@@ -336,6 +614,100 @@ public class PropositionService implements Serializable {
                 propositionSelected.getLang());
     }
 
+    private void deleteNote(NotePropBean notePropBean, String typeNote) {
+        if (typeNote.equalsIgnoreCase("note") || typeNote.equalsIgnoreCase("scopeNote")) {
+            if (!new NoteHelper().deletethisNoteOfConcept(connect.getPoolConnexion(),
+                    notePropBean.getId_note(),
+                    notePropBean.getId_concept(),
+                    notePropBean.getLang(),
+                    selectedTheso.getCurrentIdTheso(),
+                    notePropBean.getNotetypecode(),
+                    notePropBean.getLexicalvalue(),
+                    currentUser.getNodeUser().getIdUser())) {
+
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        } else {
+            if (!new NoteHelper().deleteThisNoteOfTerm(connect.getPoolConnexion(),
+                    notePropBean.getId_note(),
+                    notePropBean.getId_term(),
+                    notePropBean.getLang(),
+                    selectedTheso.getCurrentIdTheso(),
+                    notePropBean.getNotetypecode(),
+                    notePropBean.getLexicalvalue(),
+                    currentUser.getNodeUser().getIdUser())) {
+
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        }
+    }
+
+    private void updateNote(NotePropBean notePropBean, String typeNote) {
+
+        if (typeNote.equalsIgnoreCase("note") || typeNote.equalsIgnoreCase("scopeNote")) {
+            if (!new NoteHelper().updateConceptNote(connect.getPoolConnexion(),
+                    notePropBean.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
+                    notePropBean.getId_concept(),
+                    notePropBean.getLang(),
+                    selectedTheso.getCurrentIdTheso(),
+                    notePropBean.getLexicalvalue(),
+                    notePropBean.getNotetypecode(),
+                    currentUser.getNodeUser().getIdUser())) {
+
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        } else {
+            if (!new NoteHelper().updateTermNote(connect.getPoolConnexion(),
+                    notePropBean.getId_note(),
+                    notePropBean.getId_term(),
+                    notePropBean.getLang(),
+                    selectedTheso.getCurrentIdTheso(),
+                    notePropBean.getLexicalvalue(),
+                    notePropBean.getNotetypecode(),
+                    currentUser.getNodeUser().getIdUser())) {
+
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        }
+    }
+
+    private void addNewNote(NotePropBean notePropBean, String typeNote, String conceptId) {
+
+        if (typeNote.equalsIgnoreCase("note") || typeNote.equalsIgnoreCase("scopeNote")) {
+            if (!new NoteHelper().addConceptNote(
+                    connect.getPoolConnexion(),
+                    conceptId,
+                    notePropBean.getLang(),
+                    selectedTheso.getCurrentIdTheso(),
+                    notePropBean.getLexicalvalue(),
+                    typeNote,
+                    currentUser.getNodeUser().getIdUser())) {
+
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        } else {
+            if (!new NoteHelper().addTermNote(
+                    connect.getPoolConnexion(),
+                    conceptId,
+                    notePropBean.getLang(),
+                    selectedTheso.getCurrentIdTheso(),
+                    notePropBean.getLexicalvalue(),
+                    typeNote,
+                    currentUser.getNodeUser().getIdUser())) {
+
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+
+            }
+        }
+    }
+    
+
     private void showMessage(FacesMessage.Severity type, String message) {
         FacesMessage msg = new FacesMessage(type, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -352,7 +724,54 @@ public class PropositionService implements Serializable {
                 conceptView.getNodeConcept().getTerm().getId_term()));
         proposition.setTraductionsProp(toTraductionPropBeans(nodeConcept.getNodeTermTraductions(),
                 nodeConcept.getTerm().getId_term()));
+
+        for (NodeNote nodeNote : nodeConcept.getNodeNotesConcept()) {
+            switch (nodeNote.getNotetypecode()) {
+                case "note":
+                    proposition.getNotes().add(toNotePropBean(nodeNote));
+                    break;
+                case "scopeNote":
+                    proposition.getScopeNotes().add(toNotePropBean(nodeNote));
+                    break;
+            }
+        }
+        for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
+            switch (nodeNote.getNotetypecode()) {
+                case "changeNote":
+                    proposition.getChangeNotes().add(toNotePropBean(nodeNote));
+                    break;
+                case "definition":
+                    proposition.getDefinitions().add(toNotePropBean(nodeNote));
+                    break;
+                case "editorialNote":
+                    proposition.getEditorialNotes().add(toNotePropBean(nodeNote));
+                    break;
+                case "example":
+                    proposition.getExamples().add(toNotePropBean(nodeNote));
+                    break;
+                case "historyNote":
+                    proposition.getHistoryNotes().add(toNotePropBean(nodeNote));
+                    break;
+            }
+        }
+
         return proposition;
+    }
+
+    private NotePropBean toNotePropBean(NodeNote nodeNote) {
+        NotePropBean notePropBean = new NotePropBean();
+        notePropBean.setModified(nodeNote.getModified());
+        notePropBean.setCreated(nodeNote.getCreated());
+        notePropBean.setIdUser(nodeNote.getIdUser());
+        notePropBean.setId_concept(nodeNote.getId_concept());
+        notePropBean.setId_note(nodeNote.getId_note());
+        notePropBean.setId_term(nodeNote.getId_term());
+        notePropBean.setLang(nodeNote.getLang());
+        notePropBean.setLexicalvalue(nodeNote.getLexicalvalue());
+        notePropBean.setOldValue(nodeNote.getLexicalvalue());
+        notePropBean.setNotetypecode(nodeNote.getNotetypecode());
+        notePropBean.setUser(nodeNote.getUser());
+        return notePropBean;
     }
 
     public void preparerPropositionSelect(Proposition proposition, PropositionDao propositionDao) {
@@ -402,7 +821,7 @@ public class PropositionService implements Serializable {
                     }
                 }
             } else if (PropositionCategoryEnum.TRADUCTION.name().equals(propositionDetailDao.getCategorie())) {
-                
+
                 if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
                     TraductionPropBean traductionPropBean = new TraductionPropBean();
                     traductionPropBean.setLexicalValue(propositionDetailDao.getValue());
@@ -421,6 +840,98 @@ public class PropositionService implements Serializable {
                             proposition.getTraductionsProp().get(i).setToAdd(true);
                         } else {
                             proposition.getTraductionsProp().get(i).setToRemove(true);
+                        }
+                    }
+                }
+            } else if (PropositionCategoryEnum.NOTE.name().equals(propositionDetailDao.getCategorie())) {
+
+                if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
+                    NotePropBean notePropBean = new NotePropBean();
+                    notePropBean.setLexicalvalue(propositionDetailDao.getValue());
+                    notePropBean.setToAdd(true);
+                    notePropBean.setLang(propositionDetailDao.getLang());
+                    notePropBean.setId_term(propositionDetailDao.getIdTerm());
+                    proposition.getNotes().add(notePropBean);
+                }
+
+                for (int i = 0; i < proposition.getNotes().size(); i++) {
+                    if (proposition.getNotes().get(i).getOldValue() != null
+                            && proposition.getNotes().get(i).getLang().equals(propositionDetailDao.getLang())) {
+                        if (PropositionActionEnum.UPDATE.name().equals(propositionDetailDao.getAction())) {
+                            proposition.getNotes().get(i).setToUpdate(true);
+                        } else if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
+                            proposition.getNotes().get(i).setToAdd(true);
+                        } else {
+                            proposition.getNotes().get(i).setToRemove(true);
+                        }
+                    }
+                }
+            } else if (PropositionCategoryEnum.CHANGE_NOTE.name().equals(propositionDetailDao.getCategorie())) {
+
+                if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
+                    NotePropBean notePropBean = new NotePropBean();
+                    notePropBean.setLexicalvalue(propositionDetailDao.getValue());
+                    notePropBean.setToAdd(true);
+                    notePropBean.setLang(propositionDetailDao.getLang());
+                    notePropBean.setId_term(propositionDetailDao.getIdTerm());
+                    proposition.getChangeNotes().add(notePropBean);
+                }
+
+                for (int i = 0; i < proposition.getChangeNotes().size(); i++) {
+                    if (proposition.getChangeNotes().get(i).getOldValue() != null
+                            && proposition.getChangeNotes().get(i).getLang().equals(propositionDetailDao.getLang())) {
+                        if (PropositionActionEnum.UPDATE.name().equals(propositionDetailDao.getAction())) {
+                            proposition.getChangeNotes().get(i).setToUpdate(true);
+                        } else if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
+                            proposition.getChangeNotes().get(i).setToAdd(true);
+                        } else {
+                            proposition.getChangeNotes().get(i).setToRemove(true);
+                        }
+                    }
+                }
+            } else if (PropositionCategoryEnum.DEFINITION.name().equals(propositionDetailDao.getCategorie())) {
+
+                if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
+                    NotePropBean notePropBean = new NotePropBean();
+                    notePropBean.setLexicalvalue(propositionDetailDao.getValue());
+                    notePropBean.setToAdd(true);
+                    notePropBean.setLang(propositionDetailDao.getLang());
+                    notePropBean.setId_term(propositionDetailDao.getIdTerm());
+                    proposition.getDefinitions().add(notePropBean);
+                }
+
+                for (int i = 0; i < proposition.getDefinitions().size(); i++) {
+                    if (proposition.getDefinitions().get(i).getOldValue() != null
+                            && proposition.getDefinitions().get(i).getLang().equals(propositionDetailDao.getLang())) {
+                        if (PropositionActionEnum.UPDATE.name().equals(propositionDetailDao.getAction())) {
+                            proposition.getDefinitions().get(i).setToUpdate(true);
+                        } else if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
+                            proposition.getDefinitions().get(i).setToAdd(true);
+                        } else {
+                            proposition.getDefinitions().get(i).setToRemove(true);
+                        }
+                    }
+                }
+            } else if (PropositionCategoryEnum.EDITORIAL_NOTE.name().equals(propositionDetailDao.getCategorie())) {
+
+                if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
+                    NotePropBean notePropBean = new NotePropBean();
+                    notePropBean.setLexicalvalue(propositionDetailDao.getValue());
+                    notePropBean.setToAdd(true);
+                    notePropBean.setLang(propositionDetailDao.getLang());
+                    notePropBean.setId_term(propositionDetailDao.getIdTerm());
+                    proposition.getEditorialNotes().add(notePropBean);
+                }
+
+                for (int i = 0; i < proposition.getEditorialNotes().size(); i++) {
+                    if (proposition.getEditorialNotes().get(i).getOldValue() != null
+                            && proposition.getEditorialNotes().get(i).getLang().equals(propositionDetailDao.getLang())) {
+                        if (PropositionActionEnum.UPDATE.name().equals(propositionDetailDao.getAction())) {
+                            proposition.getEditorialNotes().get(i).setToUpdate(true);
+                        } else if (PropositionActionEnum.ADD.name().equals(propositionDetailDao.getAction())) {
+                            proposition.getEditorialNotes().get(i).setToAdd(true);
+                        } else {
+                            proposition.getEditorialNotes().get(i).setToRemove(true);
                         }
                     }
                 }

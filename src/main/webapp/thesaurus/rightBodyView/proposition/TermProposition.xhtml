@@ -61,8 +61,7 @@
                                       style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                     </div>
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                        <p:menuButton icon="fas fa-cog" style="margin-top: -4px;"
-                                      rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                        <p:menuButton icon="fas fa-cog" style="margin-top: -4px;" >
                             <p:menuitem value="Proposez une nouvelle variante" 
                                         actionListener="#{synonymBean.reset()}"
                                         update="containerIndex:rightTab:idAddSynonymProp" icon="fas fa-plus"

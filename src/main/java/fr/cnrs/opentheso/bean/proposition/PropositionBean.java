@@ -22,8 +22,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
-
 
 @Named(value = "propositionBean")
 @SessionScoped
@@ -49,7 +49,6 @@ public class PropositionBean implements Serializable {
 
     @Inject
     private PropositionService propositionService;
-    
 
     private boolean isRubriqueVisible;
     private Proposition proposition;
@@ -84,7 +83,7 @@ public class PropositionBean implements Serializable {
     }
 
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
-        
+
         isRubriqueVisible = true;
         rightBodySetting.setIndex(currentUser.getNodeUser() == null ? "2" : "3");
 
@@ -98,24 +97,24 @@ public class PropositionBean implements Serializable {
             email = "";
         }
     }
-    
+
     public void updateNomConcept() {
         proposition.setUpdateNomConcept(true);
         PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
     }
 
     public void supprimerPropostion() {
-        
+
         propositionService.supprimerPropostion(propositionSelected);
         switchToConceptInglet();
-        showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept() 
+        showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
                 + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
     }
 
     public void refuserProposition() {
-        
+
         propositionService.refuserProposition(propositionSelected);
-        
+
         switchToConceptInglet();
         showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
                 + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") suppprimé avec sucée !");
@@ -124,7 +123,7 @@ public class PropositionBean implements Serializable {
     public void approuverProposition() throws IOException {
 
         propositionService.insertProposition(proposition, propositionSelected);
-        
+
         switchToConceptInglet();
         showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
                 + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
@@ -154,30 +153,115 @@ public class PropositionBean implements Serializable {
             return;
         }
 
-        if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent() && !isTraductionProPresent()) {
+        if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent() && !isTraductionProPresent()
+                && !isNoteProPresent() && !isChangeNoteProPresent() && !isDefinitionProPresent()
+                && !isEditorialNoteProPresent() && !isExempleNoteProPresent()
+                && !isHistoryNoteProPresent() && !isScopeNoteProPresent()) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez proposer au moins une modification !");
             return;
         }
 
-        propositionService.envoyerProposition(proposition, nom, email, commentaire);
+        if (propositionService.envoyerProposition(proposition, nom, email, commentaire)) {
+            showMessage(FacesMessage.SEVERITY_INFO, "Proposition envoyée !");
+        }
 
         switchToConceptInglet();
-        showMessage(FacesMessage.SEVERITY_INFO, "Proposition envoyée !");
     }
 
     private boolean isSynchroProPresent() {
-        for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
-            if (synonymProp.isToAdd() || synonymProp.isToRemove() || synonymProp.isToUpdate()) {
-                return true;
+        if (CollectionUtils.isNotEmpty(proposition.getSynonymsProp())) {
+            for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
+                if (synonymProp.isToAdd() || synonymProp.isToRemove() || synonymProp.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isHistoryNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getHistoryNotes())) {
+            for (NotePropBean history : proposition.getHistoryNotes()) {
+                if (history.isToAdd() || history.isToRemove() || history.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isScopeNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getScopeNotes())) {
+            for (NotePropBean scope : proposition.getScopeNotes()) {
+                if (scope.isToAdd() || scope.isToRemove() || scope.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isExempleNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getExamples())) {
+            for (NotePropBean exemple : proposition.getExamples()) {
+                if (exemple.isToAdd() || exemple.isToRemove() || exemple.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isEditorialNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getEditorialNotes())) {
+            for (NotePropBean editorialNote : proposition.getEditorialNotes()) {
+                if (editorialNote.isToAdd() || editorialNote.isToRemove() || editorialNote.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
+            for (NotePropBean notePropBean : proposition.getNotes()) {
+                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isChangeNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
+            for (NotePropBean notePropBean : proposition.getChangeNotes()) {
+                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isDefinitionProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
+            for (NotePropBean notePropBean : proposition.getDefinitions()) {
+                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     private boolean isTraductionProPresent() {
-        for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
-            if (traductionProp.isToAdd() || traductionProp.isToRemove() || traductionProp.isToUpdate()) {
-                return true;
+        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
+            for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
+                if (traductionProp.isToAdd() || traductionProp.isToRemove() || traductionProp.isToUpdate()) {
+                    return true;
+                }
             }
         }
         return false;

@@ -5,6 +5,13 @@ public enum PropositionCategoryEnum {
     
     NOM,
     SYNONYME,
-    TRADUCTION;
+    TRADUCTION,
+    NOTE,
+    CHANGE_NOTE,
+    DEFINITION,
+    EDITORIAL_NOTE,
+    EXAMPLE,
+    HISTORY,
+    SCOPE;
     
 }

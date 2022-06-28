@@ -12,9 +12,12 @@ import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.proposition.NotePropBean;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -37,7 +40,7 @@ public class NoteBean implements Serializable {
     @Inject
     private Connect connect;
     @Inject
-    private LanguageBean languageBean;
+    private PropositionBean propositionBean;
     @Inject
     private ConceptView conceptBean;
     @Inject
@@ -99,18 +102,17 @@ public class NoteBean implements Serializable {
      * @param idUser
      */
     public void addNewNote(int idUser) {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
+        
         if (noteValue == null || noteValue.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne doit pas être vide !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne doit pas être vide !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
+        
         noteValue = clearValue(noteValue);
         noteValue = StringEscapeUtils.unescapeXml(noteValue);
+        
         switch (selectedTypeNote) {
             case "note":
                 if (!addConceptNote(idUser)) {
@@ -157,8 +159,8 @@ public class NoteBean implements Serializable {
             default:
                 break;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        
+        new ConceptHelper().updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
@@ -168,16 +170,52 @@ public class NoteBean implements Serializable {
                 conceptBean.getSelectedLang());
         
         noteValue = "";
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note ajoutée avec succès");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-
-        //     PrimeFaces.current().executeScript("PF('addNote').hide();");
-
-     //   reset();
-  /*      if (pf.isAjaxRequest()) {
-            pf.ajax().update("addnoteMessages");
-     //       pf.ajax().update("containerIndex:formRightTab");
-        }*/
+    }
+    
+    public void addNewNoteProp() {
+        
+        if (noteValue == null || noteValue.isEmpty()) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne doit pas être vide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+        
+        noteValue = clearValue(noteValue);
+        noteValue = StringEscapeUtils.unescapeXml(noteValue);
+                
+        NotePropBean notePropBean = new NotePropBean();
+        notePropBean.setToAdd(true);
+        notePropBean.setLang(selectedLang);
+        notePropBean.setLexicalvalue(noteValue);
+        notePropBean.setId_concept(conceptBean.getNodeConcept().getConcept().getIdConcept());
+        notePropBean.setNotetypecode(selectedTypeNote);
+        
+        switch (selectedTypeNote) {
+            case "note":   
+                propositionBean.getProposition().getNotes().add(notePropBean);             
+                break;
+            case "definition":
+                propositionBean.getProposition().getDefinitions().add(notePropBean);
+                break;
+            case "scopeNote":
+                propositionBean.getProposition().getScopeNotes().add(notePropBean);  
+                break;
+            case "example":
+                propositionBean.getProposition().getExamples().add(notePropBean);  
+                break;
+            case "historyNote":
+                propositionBean.getProposition().getHistoryNotes().add(notePropBean);  
+                break;
+            case "editorialNote":
+                propositionBean.getProposition().getEditorialNotes().add(notePropBean);  
+                break;
+            case "changeNote":
+                propositionBean.getProposition().getChangeNotes().add(notePropBean);  
+                break;
+        }
     }
 
     public void updateNote(NodeNote nodeNote, int idUser) {
@@ -222,17 +260,82 @@ public class NoteBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-       // PrimeFaces.current().executeScript("PF('addNote').hide();");
-         //     reset();
- /*       PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-          //  pf.ajax().update("messageIndex");
-            pf.ajax().update("noteMessages");
-           // pf.ajax().update("containerIndex:rightTab:idConceptNotes");
-          
-        //  pf.ajax().update("conceptForm:idEditNote");
-        //    pf.ajax().update("containerIndex:formRightTab");
-        }*/
+    }
+
+    public void updateNoteProp(NotePropBean notePropBean) {
+                        
+        switch (selectedTypeNote) {
+            case "note":
+                for (int i = 0; i < propositionBean.getProposition().getNotes().size(); i++) {
+                    if (propositionBean.getProposition().getNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getNotes().get(i).setToUpdate(true);
+                        propositionBean.getProposition().getNotes().get(i).setLang(notePropBean.getLang());
+                        propositionBean.getProposition().getNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                    }
+                }            
+                break;
+            case "definition":
+                for (int i = 0; i < propositionBean.getProposition().getDefinitions().size(); i++) {
+                    if (propositionBean.getProposition().getDefinitions().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getDefinitions().get(i).setToUpdate(true);
+                        propositionBean.getProposition().getDefinitions().get(i).setLang(notePropBean.getLang());
+                        propositionBean.getProposition().getDefinitions().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                    }
+                }
+                break;
+            case "scopeNote":
+                for (int i = 0; i < propositionBean.getProposition().getScopeNotes().size(); i++) {
+                    if (propositionBean.getProposition().getScopeNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getScopeNotes().get(i).setToUpdate(true);
+                        propositionBean.getProposition().getScopeNotes().get(i).setLang(notePropBean.getLang());
+                        propositionBean.getProposition().getScopeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                    }
+                }
+                break;
+            case "example":
+                for (int i = 0; i < propositionBean.getProposition().getExamples().size(); i++) {
+                    if (propositionBean.getProposition().getExamples().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getExamples().get(i).setToUpdate(true);
+                        propositionBean.getProposition().getExamples().get(i).setLang(notePropBean.getLang());
+                        propositionBean.getProposition().getExamples().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                    }
+                } 
+                break;
+            case "historyNote":
+                for (int i = 0; i < propositionBean.getProposition().getHistoryNotes().size(); i++) {
+                    if (propositionBean.getProposition().getHistoryNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getHistoryNotes().get(i).setToUpdate(true);
+                        propositionBean.getProposition().getHistoryNotes().get(i).setLang(notePropBean.getLang());
+                        propositionBean.getProposition().getHistoryNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                    }
+                }  
+                break;
+            case "editorialNote":
+                for (int i = 0; i < propositionBean.getProposition().getEditorialNotes().size(); i++) {
+                    if (propositionBean.getProposition().getEditorialNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getEditorialNotes().get(i).setToUpdate(true);
+                        propositionBean.getProposition().getEditorialNotes().get(i).setLang(notePropBean.getLang());
+                        propositionBean.getProposition().getEditorialNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                    }
+                }
+                break;
+            case "changeNote":
+                for (int i = 0; i < propositionBean.getProposition().getChangeNotes().size(); i++) {
+                    if (propositionBean.getProposition().getChangeNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getChangeNotes().get(i).setToUpdate(true);
+                        propositionBean.getProposition().getChangeNotes().get(i).setLang(notePropBean.getLang());
+                        propositionBean.getProposition().getChangeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                    }
+                }
+                break;
+        }
     }
 
     public ArrayList<NodeNote> nodeToEdit() {
@@ -254,6 +357,30 @@ public class NoteBean implements Serializable {
                 return conceptBean.getEditorialNotes();
             case "changeNote":
                 return conceptBean.getChangeNotes();
+            default:
+                return null;
+        }
+    }
+
+    public List<NotePropBean> nodePropToEdit() {
+        if (selectedTypeNote == null) {
+            return null;
+        }
+        switch (selectedTypeNote) {
+            case "note":
+                return propositionBean.getProposition().getNotes();
+            case "definition":
+                return propositionBean.getProposition().getDefinitions();
+            case "scopeNote":
+                return propositionBean.getProposition().getScopeNotes();
+            case "example":
+                return propositionBean.getProposition().getExamples();
+            case "historyNote":
+                return propositionBean.getProposition().getHistoryNotes();
+            case "editorialNote":
+                return propositionBean.getProposition().getEditorialNotes();
+            case "changeNote":
+                return propositionBean.getProposition().getChangeNotes();
             default:
                 return null;
         }
@@ -296,14 +423,7 @@ public class NoteBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
-     //   reset();
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-        //    pf.ajax().update("messageIndex");
-         //   pf.ajax().update("conceptForm:idDeleteNote");
-        //    pf.ajax().update("containerIndex:formRightTab");
-        }
+        
     }
 
     public ArrayList<NodeNote> nodeToDelete() {
@@ -329,10 +449,72 @@ public class NoteBean implements Serializable {
                 return null;
         }
     }
+    
+    public void deleteNoteProp(NotePropBean notePropBean) {
+        
+        switch (selectedTypeNote) {
+            case "note":
+                for (int i = 0; i < propositionBean.getProposition().getNotes().size(); i++) {
+                    if (propositionBean.getProposition().getNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getNotes().get(i).setToRemove(true);
+                    }
+                }            
+                break;
+            case "definition":
+                for (int i = 0; i < propositionBean.getProposition().getDefinitions().size(); i++) {
+                    if (propositionBean.getProposition().getDefinitions().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getDefinitions().get(i).setToRemove(true);
+                    }
+                }
+                break;
+            case "scopeNote":
+                for (int i = 0; i < propositionBean.getProposition().getScopeNotes().size(); i++) {
+                    if (propositionBean.getProposition().getScopeNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getScopeNotes().get(i).setToRemove(true);
+                    }
+                }
+                break;
+            case "example":
+                for (int i = 0; i < propositionBean.getProposition().getExamples().size(); i++) {
+                    if (propositionBean.getProposition().getExamples().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getExamples().get(i).setToRemove(true);
+                    }
+                } 
+                break;
+            case "historyNote":
+                for (int i = 0; i < propositionBean.getProposition().getHistoryNotes().size(); i++) {
+                    if (propositionBean.getProposition().getHistoryNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getHistoryNotes().get(i).setToRemove(true);
+                    }
+                }  
+                break;
+            case "editorialNote":
+                for (int i = 0; i < propositionBean.getProposition().getEditorialNotes().size(); i++) {
+                    if (propositionBean.getProposition().getEditorialNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getEditorialNotes().get(i).setToRemove(true);
+                    }
+                }
+                break;
+            case "changeNote":
+                for (int i = 0; i < propositionBean.getProposition().getChangeNotes().size(); i++) {
+                    if (propositionBean.getProposition().getChangeNotes().get(i).getLexicalvalue()
+                            .equals(notePropBean.getLexicalvalue())) {
+                        propositionBean.getProposition().getChangeNotes().get(i).setToRemove(true);
+                    }
+                }
+                break;
+        }
+    }
 
     private boolean addConceptNote(int idUser) {
-        NoteHelper noteHelper = new NoteHelper();
-        if(noteHelper.isNoteExistOfConcept(
+        
+        if(new NoteHelper().isNoteExistOfConcept(
                 connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
@@ -345,7 +527,7 @@ public class NoteBean implements Serializable {
             return false;            
         }
 
-        return noteHelper.addConceptNote(
+        return new NoteHelper().addConceptNote(
                 connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedLang,
