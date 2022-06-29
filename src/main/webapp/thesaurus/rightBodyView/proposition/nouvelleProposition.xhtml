@@ -12,6 +12,27 @@
 
         <ui:include src="NoteProposition.xhtml" />
 
+        <p:dialog id="confirmDialogId" header="Confirmation ..." widgetVar="confirmDialog" 
+                  width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+            
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="#{propositionBean.message}" />  
+                </div>
+            </div>
+
+            <f:facet name="footer">
+                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                     update="confirmDialogId" actionListener="PF('confirmDialog').hide();" />
+
+                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" 
+                                     process="@this" update="containerIndex messageIndex"
+                                     actionListener="#{propositionBean.executionAction()}"/>
+                </div>
+            </f:facet>
+        </p:dialog>
+
         <h:panelGroup rendered="#{!currentUser.nodeUser.isSuperAdmin}">
             <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
                 <div class="list-group">
@@ -56,11 +77,11 @@
                 <div class="col-12" style="text-align: right;">
                     <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" 
                                      style="margin-right: 10px" ajax="true" process="@this"
-                                     update="containerIndex:rightTab" actionListener="#{propositionBean.annulerPropostion()}" />
+                                     update="containerIndex:rightTab" actionListener="#{propositionBean.preparerConfirmationDialog('annulerProposition')}" />
 
 
                     <p:commandButton icon="pi pi-send" value="Soumettre la proposition"
-                                     actionListener="#{propositionBean.envoyerProposition()}" 
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}" 
                                      update="containerIndex messageIndex"/>
                 </div>
             </div>
@@ -105,24 +126,22 @@
             </div>
             <div class="row">
                 <div class="col-3">
-                    <p:commandButton value="Supprimer" styleClass="ui-button-secondary" 
-                                     style="margin-right: 10px" ajax="true" process="@this"
-                                     update="containerIndex messageIndex" actionListener="#{propositionBean.supprimerPropostion()}" />
+                    <p:commandButton value="Supprimer" styleClass="ui-button-secondary" style="margin-right: 10px" 
+                                     ajax="true" process="@this" update="containerIndex messageIndex" 
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}" />
                 </div>
                 <div class="col-9" style="text-align: right;">
-                    <p:commandButton value="Refusser la proposition" actionListener="#{propositionBean.refuserProposition()}"
-                                     rendered="#{propositionBean.showButtonDecision()}"
+                    <p:commandButton value="Refuser la proposition" rendered="#{propositionBean.showButtonDecision()}"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('refuserProposition')}"
                                      update="containerIndex messageIndex" style="margin-right: 10px; background-color: red"
                                      styleClass="p-mr-2" icon="pi pi-check" />
 
-                    <p:commandButton value="Approuver la proposition" actionListener="#{propositionBean.approuverProposition()}" 
-                                     update="containerIndex messageIndex" style="background-color: #43B572; border-color: #43B572;"
-                                     styleClass="p-mr-2" icon="pi pi-check"
-                                     rendered="#{propositionBean.showButtonDecision()}" />
+                    <p:commandButton value="Approuver la proposition" update="containerIndex messageIndex"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('approuverProposition')}"
+                                     style="background-color: #43B572; border-color: #43B572;"
+                                     styleClass="p-mr-2" icon="pi pi-check" rendered="#{propositionBean.showButtonDecision()}" />
                 </div>
             </div>
         </h:panelGroup>
-
     </h:panelGroup>
-
 </ui:fragment>

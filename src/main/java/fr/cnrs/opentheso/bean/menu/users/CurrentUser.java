@@ -149,7 +149,6 @@ public class CurrentUser implements Serializable {
         indexSetting.setIsThesoActive(true);
         
         menuBean.redirectToThesaurus();
-        //FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
     }
 
     private void showErrorMessage(String msg) {

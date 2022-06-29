@@ -53,6 +53,9 @@ public class PropositionBean implements Serializable {
     private boolean isRubriqueVisible;
     private Proposition proposition;
     private String nom, email, commentaire;
+    private String message;
+    private String actionNom;
+    private int nbrNewPropositions;
 
     private PropositionDao propositionSelected;
     private List<PropositionDao> propositions;
@@ -75,11 +78,70 @@ public class PropositionBean implements Serializable {
         email = currentUser.getNodeUser().getMail();
 
         propositionService.preparerPropositionSelect(proposition, propositionDao);
+        
+        propositions = propositionService.searchAllPropositions();
+        nbrNewPropositions = propositionService.searchNbrNewProposition();
     }
 
     public void afficherListPropositions() {
         propositions = propositionService.searchAllPropositions();
         PrimeFaces.current().executeScript("PF('listNotification').show();");
+    }
+    
+    public void searchNewPropositions() {
+        nbrNewPropositions = propositionService.searchNbrNewProposition();
+    }
+
+    public void preparerConfirmationDialog(String action) {
+        actionNom = action;
+        switch (actionNom) {
+            case "envoyerProposition":
+                message = "Est ce que vous êtes sur de vouloir ENVOYER votre proposition ?";
+                break;
+            case "approuverProposition":
+                message = "Est ce que vous êtes sur de vouloir VALIDER la proposition ?";
+                break;
+            case "refuserProposition":
+                message = "Est ce que vous êtes sur de vouloir REFUSER la proposition ?";
+                break;
+            case "supprimerProposition":
+                message = "Est ce que vous êtes sur de vouloir SUPPRIMER la proposition ?";
+                break;
+            default:
+                message = "Est ce que vous êtes sur de vouloir ANNULER la proposition ?";
+                ;
+        }
+        PrimeFaces.current().executeScript("PF('confirmDialog').show();");
+    }
+
+    public void executionAction() throws IOException {
+        if (null != actionNom) switch (actionNom) {
+            case "envoyerProposition":
+                envoyerProposition();
+                break;
+            case "approuverProposition":
+                propositionService.insertProposition(proposition, propositionSelected);
+                switchToConceptInglet();
+                showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
+                        + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
+                break;
+            case "refuserProposition":
+                propositionService.refuserProposition(propositionSelected);
+                switchToConceptInglet();
+                showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
+                        + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") refusée avec sucée !");
+                break;
+            case "supprimerProposition":
+                propositionService.supprimerPropostion(propositionSelected);
+                switchToConceptInglet();
+                showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
+                        + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
+                break;
+            case "annulerProposition":
+                annulerPropostion();
+                break;
+        }
+        PrimeFaces.current().executeScript("PF('confirmDialog').hide();");
     }
 
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
@@ -103,32 +165,6 @@ public class PropositionBean implements Serializable {
         PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
     }
 
-    public void supprimerPropostion() {
-
-        propositionService.supprimerPropostion(propositionSelected);
-        switchToConceptInglet();
-        showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
-                + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
-    }
-
-    public void refuserProposition() {
-
-        propositionService.refuserProposition(propositionSelected);
-
-        switchToConceptInglet();
-        showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
-                + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") suppprimé avec sucée !");
-    }
-
-    public void approuverProposition() throws IOException {
-
-        propositionService.insertProposition(proposition, propositionSelected);
-
-        switchToConceptInglet();
-        showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
-                + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
-    }
-
     private void switchToConceptInglet() {
         rightBodySetting.setIndex("0");
         isRubriqueVisible = false;
@@ -141,7 +177,7 @@ public class PropositionBean implements Serializable {
         email = "";
     }
 
-    public void envoyerProposition() {
+    private void envoyerProposition() {
 
         if (StringUtils.isEmpty(nom)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Le champs nom est oubligatoire !");
@@ -267,6 +303,11 @@ public class PropositionBean implements Serializable {
         return false;
     }
 
+    public boolean showButtonDecision() {
+        return propositionSelected != null && (PropositionStatusEnum.LU.name().equals(propositionSelected.getStatus())
+                || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus()));
+    }
+
     private void showMessage(FacesMessage.Severity type, String message) {
         FacesMessage msg = new FacesMessage(type, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -321,8 +362,28 @@ public class PropositionBean implements Serializable {
         this.propositions = propositions;
     }
 
-    public boolean showButtonDecision() {
-        return propositionSelected != null && (PropositionStatusEnum.LU.name().equals(propositionSelected.getStatus())
-                || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus()));
+    public String getMessage() {
+        return message;
     }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getActionNom() {
+        return actionNom;
+    }
+
+    public void setActionNom(String actionNom) {
+        this.actionNom = actionNom;
+    }
+
+    public int getNbrNewPropositions() {
+        return nbrNewPropositions;
+    }
+
+    public void setNbrNewPropositions(int nbrNewPropositions) {
+        this.nbrNewPropositions = nbrNewPropositions;
+    }
+
 }

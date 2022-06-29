@@ -67,6 +67,25 @@ public class PropositionHelper {
         return null;
     }
 
+    public int searchNbrPorpositoinByStatus(HikariDataSource ds, String status) {
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select count(*) AS nbr from proposition_modification WHERE status = '" + status + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        return resultSet.getInt("nbr");
+                    } else {
+                        return 0;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            System.out.println("Erreur : " + sqle.getMessage());
+            return 0;
+        }
+    }
+
     private PropositionDao toPropositionDao(ResultSet resultSet) throws SQLException {
         PropositionDao proposition = new PropositionDao();
         proposition.setId(resultSet.getInt("id"));
@@ -112,9 +131,8 @@ public class PropositionHelper {
         boolean updateStatus = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("UPDATE proposition_modification SET status = "
-                        + status + " AND approuve_par = " + approuvePar + " AND approuve_date = "
-                        + approuveDate + " WHERE id = " + propositionId);
+                stmt.executeQuery("UPDATE proposition_modification SET status = '" + status + "', approuve_par = '" 
+                        + approuvePar + "', approuve_date = '" + approuveDate + "' WHERE id = " + propositionId);
                 updateStatus = true;
             }
         } catch (SQLException sqle) {

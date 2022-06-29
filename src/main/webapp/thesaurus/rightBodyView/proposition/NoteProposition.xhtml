@@ -35,11 +35,6 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.note')}"
-                                                  style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <h:panelGroup>
                                         <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.reset()}"
@@ -50,7 +45,11 @@
                                                         update="containerIndex:rightTab:idDeleteNoteProp" oncomplete="PF('deleteNoteProp').show();" icon="fas fa-plus"/>
                                         </p:menuButton>
                                     </h:panelGroup>
-
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.note')}"
+                                                  style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
                                     <ui:repeat var="note" value="#{propositionBean.proposition.notes}" varStatus="status">
                                         <h:outputText rendered="#{!note.toAdd and !note.toRemove and !note.toUpdate}" 
                                                       value="#{note.lexicalvalue}" escape="false" style="color: #666666; font-size: 14px;"/> 
@@ -60,10 +59,10 @@
 
                                         <h:panelGroup rendered="#{note.toUpdate}" >
                                             <h:outputText value="#{note.lexicalvalue} " escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
-                                            
+                                                          style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
+
                                             <h:outputText value="(#{note.oldValue})" escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
+                                                          style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
                                         </h:panelGroup>
 
                                         <h:outputText rendered="#{note.toRemove}" value="#{note.lexicalvalue}" escape="false" 
@@ -79,11 +78,6 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.change_note')}"
-                                                  style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                                
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                                   box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.reset()}"
@@ -95,6 +89,11 @@
                                                     update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />                                        
                                     </p:menuButton>
 
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.change_note')}"
+                                                  style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                                
                                     <ui:repeat var="changeNote" value="#{propositionBean.proposition.changeNotes}" varStatus="status">
                                         <h:outputText rendered="#{!changeNote.toAdd and !changeNote.toRemove and !changeNote.toUpdate}" 
                                                       value="#{changeNote.lexicalvalue}" escape="false" 
@@ -102,13 +101,13 @@
 
                                         <h:outputText rendered="#{changeNote.toAdd}" value="#{changeNote.lexicalvalue}" escape="false" 
                                                       style="color: #666666; font-size: 14px; color: green; font-weight: bold;"/>
-                                        
+
                                         <h:panelGroup rendered="#{changeNote.toUpdate}" >
                                             <h:outputText value="#{changeNote.lexicalvalue} " escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
-                                            
+                                                          style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
+
                                             <h:outputText value="(#{changeNote.oldValue})" escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
+                                                          style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
                                         </h:panelGroup>
 
                                         <h:outputText rendered="#{changeNote.toRemove}" value="#{changeNote.lexicalvalue}" escape="false" 
@@ -124,11 +123,6 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.definition')}"
-                                                  style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" >
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                     actionListener="#{noteBean.reset()}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
@@ -139,51 +133,43 @@
                                                     oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp"
                                                     icon="fas fa-minus"/>
                                     </p:menuButton>
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.definition')}"
+                                                  style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
                                 </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">     
+                                    <ui:repeat var="def" value="#{propositionBean.proposition.definitions}" varStatus="status">
+                                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                            <h:outputText rendered="#{!def.toAdd and !def.toRemove and !def.toUpdate}" 
+                                                          value="#{def.lexicalvalue}" escape="false" 
+                                                          style="color: #666666; font-size: 14px;"/> 
 
+                                            <h:outputText rendered="#{def.toAdd}" value="#{def.lexicalvalue}" escape="false" 
+                                                          style="color: #666666; font-size: 14px; color: green; font-weight: bold;"/>
+
+                                            <h:panelGroup rendered="#{def.toUpdate}" >
+                                                <h:outputText value="#{def.lexicalvalue} " escape="false" 
+                                                              style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
+
+                                                <h:outputText value="(#{def.oldValue})" escape="false" 
+                                                              style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
+                                            </h:panelGroup>
+
+                                            <h:outputText rendered="#{def.toRemove}" value="#{def.lexicalvalue}" escape="false" 
+                                                          style="color: #666666; font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/>
+
+                                            <br/>
+                                        </div>
+                                    </ui:repeat>
+                                </div>
                             </div>
-
-                            <ui:repeat var="def" value="#{propositionBean.proposition.definitions}" varStatus="status">
-                                <div class="row">
-                                    <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-
-                                    </div>
-
-                                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-
-
-                                        <h:outputText rendered="#{!def.toAdd and !def.toRemove and !def.toUpdate}" 
-                                                      value="#{def.lexicalvalue}" escape="false" 
-                                                      style="color: #666666; font-size: 14px;"/> 
-
-                                        <h:outputText rendered="#{def.toAdd}" value="#{def.lexicalvalue}" escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: green; font-weight: bold;"/>
-                                        
-                                        <h:panelGroup rendered="#{def.toUpdate}" >
-                                            <h:outputText value="#{def.lexicalvalue} " escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
-                                            
-                                            <h:outputText value="(#{def.oldValue})" escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
-                                        </h:panelGroup>
-
-                                        <h:outputText rendered="#{def.toRemove}" value="#{def.lexicalvalue}" escape="false" 
-                                                      style="color: #666666; font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/>
-                                    </div>
-                                </div>
-                            </ui:repeat>
                         </div>
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{propositionBean.proposition.editorialNotes.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                                   box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
@@ -195,7 +181,12 @@
                                                     actionListener="#{noteBean.reset()}" icon="fas fa-minus"
                                                     action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
                                                     oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp" />
-                                    </p:menuButton> 
+                                    </p:menuButton>
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
+                                                  style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <ui:repeat var="editorialNote" value="#{propositionBean.proposition.editorialNotes}" varStatus="status">
                                         <h:outputText rendered="#{!editorialNote.toAdd and !editorialNote.toRemove and !editorialNote.toUpdate}" 
                                                       value="#{editorialNote.lexicalvalue}" escape="false" 
@@ -203,13 +194,13 @@
 
                                         <h:outputText rendered="#{editorialNote.toAdd}" value="#{editorialNote.lexicalvalue}" escape="false" 
                                                       style="color: #666666; font-size: 14px; color: green; font-weight: bold;"/>
-                                        
+
                                         <h:panelGroup rendered="#{editorialNote.toUpdate}" >
                                             <h:outputText value="#{editorialNote.lexicalvalue} " escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
-                                            
+                                                          style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
+
                                             <h:outputText value="(#{editorialNote.oldValue})" escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
+                                                          style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
                                         </h:panelGroup>
 
                                         <h:outputText rendered="#{editorialNote.toRemove}" value="#{editorialNote.lexicalvalue}" escape="false" 
@@ -224,12 +215,8 @@
                     <h:panelGroup rendered="#{propositionBean.proposition.examples.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.example')}" 
-                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
+
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                                   box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
@@ -243,6 +230,12 @@
                                                     oncomplete="PF('deleteNoteProp').show();"
                                                     update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
                                     </p:menuButton> 
+                                    
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.example')}" 
+                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <ui:repeat var="example" value="#{propositionBean.proposition.examples}" varStatus="status">
                                         <h:outputText rendered="#{!example.toAdd and !example.toRemove and !example.toUpdate}" 
                                                       value="#{example.lexicalvalue}" escape="false" 
@@ -253,10 +246,10 @@
 
                                         <h:panelGroup rendered="#{example.toUpdate}" >
                                             <h:outputText value="#{example.lexicalvalue} " escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
-                                            
+                                                          style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
+
                                             <h:outputText value="(#{example.oldValue})" escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
+                                                          style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
                                         </h:panelGroup>
 
                                         <h:outputText rendered="#{example.toRemove}" value="#{example.lexicalvalue}" escape="false" 
@@ -272,11 +265,6 @@
                         <div class="list-group-item list-group-item-action" >                        
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.history_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                                   box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
@@ -290,7 +278,12 @@
                                                     oncomplete="PF('deleteNoteProp').show();"
                                                     update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
                                     </p:menuButton> 
-
+                                    
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.history_note')}"
+                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <ui:repeat var="historyNote" value="#{propositionBean.proposition.historyNotes}" varStatus="status">
                                         <h:outputText rendered="#{!historyNote.toAdd and !historyNote.toRemove and !historyNote.toUpdate}" 
                                                       value="#{historyNote.lexicalvalue}" escape="false" 
@@ -301,10 +294,10 @@
 
                                         <h:panelGroup rendered="#{historyNote.toUpdate}" >
                                             <h:outputText value="#{historyNote.lexicalvalue} " escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
-                                            
+                                                          style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
+
                                             <h:outputText value="(#{historyNote.oldValue})" escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
+                                                          style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
                                         </h:panelGroup>
 
                                         <h:outputText rendered="#{historyNote.toRemove}" value="#{historyNote.lexicalvalue}" escape="false" 
@@ -319,12 +312,7 @@
                     <h:panelGroup rendered="#{propositionBean.proposition.scopeNotes.size() != 0}">
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                                   box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
@@ -337,7 +325,13 @@
                                                     action = "#{noteBean.setSelectedTypeNote('scopeNote')}"
                                                     oncomplete="PF('deleteNoteProp').show();"
                                                     update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
-                                    </p:menuButton> 
+                                    </p:menuButton>
+                                    
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
+                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                                </div>
+                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                     <ui:repeat var="scopeNote" value="#{propositionBean.proposition.scopeNotes}" varStatus="status">
                                         <h:outputText rendered="#{!scopeNote.toAdd and !scopeNote.toRemove and !scopeNote.toUpdate}" 
                                                       value="#{scopeNote.lexicalvalue}" escape="false" 
@@ -348,10 +342,10 @@
 
                                         <h:panelGroup rendered="#{scopeNote.toUpdate}" >
                                             <h:outputText value="#{scopeNote.lexicalvalue} " escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
-                                            
+                                                          style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>
+
                                             <h:outputText value="(#{scopeNote.oldValue})" escape="false" 
-                                                      style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
+                                                          style="color: #666666; font-size: 14px; color: blue; text-decoration : line-through; "/>
                                         </h:panelGroup>
 
                                         <h:outputText rendered="#{scopeNote.toRemove}" value="#{scopeNote.lexicalvalue}" escape="false" 
@@ -441,7 +435,7 @@
             </div>   
         </h:form>
     </p:dialog> 
-    
+
     <p:dialog id="idDeleteNoteProp" header="#{langueBean.getMsg('rightbody.concept.delete_note')}" widgetVar="deleteNoteProp" 
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >  
         <h:form id="deleteNotePropForm" >

@@ -360,6 +360,11 @@ public class PropositionService implements Serializable {
         }*/
         return true;
     }
+    
+    public int searchNbrNewProposition() {
+        return new PropositionHelper().searchNbrPorpositoinByStatus(connect.getPoolConnexion(),
+                PropositionStatusEnum.ENVOYER.name());
+    }
 
     public void sendRecapEmail() throws IOException {
         Email from = new Email("firas.gabsi@gmail.com");
