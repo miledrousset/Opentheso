@@ -260,7 +260,7 @@ public class PropositionBean implements Serializable {
     }
 
     private boolean isNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
+        if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
             for (NotePropBean notePropBean : proposition.getNotes()) {
                 if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
                     return true;
@@ -293,7 +293,7 @@ public class PropositionBean implements Serializable {
     }
 
     private boolean isTraductionProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
+        if (CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
             for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
                 if (traductionProp.isToAdd() || traductionProp.isToRemove() || traductionProp.isToUpdate()) {
                     return true;

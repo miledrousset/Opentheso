@@ -123,6 +123,27 @@ public class TraductionBean implements Serializable {
         }
     }
 
+    public void setLangWithNoTraductionProp() {
+        nodeLangs.forEach((nodeLang) -> {
+            nodeLangsFiltered.add(nodeLang);
+        });
+
+        // les langues à ignorer
+        ArrayList<String> langsToRemove = new ArrayList<>();
+        langsToRemove.add(conceptBean.getSelectedLang());
+        for (TraductionPropBean nodeTermTraduction : propositionBean.getProposition().getTraductionsProp()) {
+            langsToRemove.add(nodeTermTraduction.getLang());
+        }
+        for (NodeLangTheso nodeLang : nodeLangs) {
+            if (langsToRemove.contains(nodeLang.getCode())) {
+                nodeLangsFiltered.remove(nodeLang);
+            }
+        }
+        if (nodeLangsFiltered.isEmpty()) {
+            infoNoTraductionToAdd();
+        }
+    }
+
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -190,8 +211,7 @@ public class TraductionBean implements Serializable {
             pf.executeScript("PF('addTraduction').show();");
         }
     }
-    
-    
+
     public void addNewTraductionProposition() {
         FacesMessage msg;
         if (traductionValue == null || traductionValue.isEmpty()) {
@@ -214,13 +234,23 @@ public class TraductionBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
+        for (TraductionPropBean traductionPropBean : propositionBean.getProposition().getTraductionsProp()) {
+            if (selectedLang.equalsIgnoreCase(traductionPropBean.getLang())
+                    && traductionValue.equalsIgnoreCase(traductionPropBean.getLexicalValue())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }
+
         TraductionPropBean traductionProp = new TraductionPropBean();
         traductionProp.setLang(selectedLang);
         traductionProp.setLexicalValue(traductionValue);
         traductionProp.setIdTerm(conceptBean.getNodeConcept().getTerm().getId_term());
         traductionProp.setToAdd(true);
         propositionBean.getProposition().getTraductionsProp().add(traductionProp);
+        
     }
 
     /**
@@ -276,7 +306,6 @@ public class TraductionBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
         reset();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
@@ -284,33 +313,46 @@ public class TraductionBean implements Serializable {
             pf.executeScript("PF('renameTraduction').show();");
         }
     }
-    
+
     public void updateTraductionProp(TraductionPropBean traductionPropBean) {
-        
+
         if (traductionPropBean == null || traductionPropBean.getLexicalValue().isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Veuillez saisir une valeur !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);        
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
-        
+
         if (new TermHelper().isTermExistIgnoreCase(
                 connect.getPoolConnexion(),
                 traductionPropBean.getLexicalValue(),
                 selectedTheso.getCurrentIdTheso(),
                 traductionPropBean.getLang())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);       
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
         
+        for (TraductionPropBean trad : propositionBean.getProposition().getTraductionsProp()) {
+            if (traductionValue.equalsIgnoreCase(trad.getLexicalValue())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }
+
         for (int i = 0; i < propositionBean.getProposition().getTraductionsProp().size(); i++) {
             if (propositionBean.getProposition().getTraductionsProp().get(i).getLang()
                     .equals(traductionPropBean.getLang())) {
-                propositionBean.getProposition().getTraductionsProp().get(i).setToUpdate(true);
-                propositionBean.getProposition().getTraductionsProp()
-                        .get(i).setLexicalValue(traductionPropBean.getLexicalValue());
+                if (!propositionBean.getProposition().getTraductionsProp().get(i).isToAdd()
+                        && !propositionBean.getProposition().getTraductionsProp().get(i).isToRemove()) {
+                    propositionBean.getProposition().getTraductionsProp().get(i).setToUpdate(true);
+                }
+                if (!propositionBean.getProposition().getTraductionsProp().get(i).isToRemove()) {
+                    propositionBean.getProposition().getTraductionsProp()
+                            .get(i).setLexicalValue(traductionPropBean.getLexicalValue());
+                }
             }
         }
     }
@@ -445,13 +487,17 @@ public class TraductionBean implements Serializable {
             pf.executeScript("PF('deleteTraduction').show();");
         }
     }
-    
+
     public void deleteTraductionProp(TraductionPropBean traductionPropBean) {
-        
-        for (int i = 0; i < propositionBean.getProposition().getTraductionsProp().size(); i++ ) {
+
+        for (int i = 0; i < propositionBean.getProposition().getTraductionsProp().size(); i++) {
             if (propositionBean.getProposition().getTraductionsProp().get(i).getLexicalValue()
                     .equals(traductionPropBean.getLexicalValue())) {
-                propositionBean.getProposition().getTraductionsProp().get(i).setToRemove(true);
+                if (propositionBean.getProposition().getTraductionsProp().get(i).isToAdd()) {
+                    propositionBean.getProposition().getTraductionsProp().remove(i);
+                } else {
+                    propositionBean.getProposition().getTraductionsProp().get(i).setToRemove(true);
+                }
             }
         }
     }
