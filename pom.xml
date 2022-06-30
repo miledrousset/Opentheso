@@ -324,7 +324,7 @@
         <cdi-api.version>2.0</cdi-api.version>
         <jsf2leaf.version>1.0</jsf2leaf.version>
         <jsf-api.version>2.2.20</jsf-api.version>
-        <itextpdf.version>5.1.2</itextpdf.version>
+        <itextpdf.version>5.5.12</itextpdf.version>
         <hikariCP.version>5.0.1</hikariCP.version>
         <treelayout.version>1.0.3</treelayout.version>
         <all.themes.version>1.0.8</all.themes.version>
