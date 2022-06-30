@@ -306,7 +306,7 @@ body .ui-tree {
     padding: 0.1rem;
     margin-left: -1rem;
     margin-right: -1.8rem;
-    margin-top: -0.8rem;
+   /* margin-top: -0.8rem;*/
     /* display: ruby-text;*/
 
 }

@@ -1542,6 +1542,10 @@ public class ImportFileBean implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning :", warning));
             }
         }
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().executeScript("PF('pbAjax').cancel();");
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
     }
 
     private void initError() {

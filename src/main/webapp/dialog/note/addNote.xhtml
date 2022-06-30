@@ -52,21 +52,6 @@
 
             <div class="row" style="margin-top: 10px">
                 <div class="col-12">
-                    <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" 
-                                  secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
-                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
-                        <f:facet name="toolbar" >
-                            <span class="ql-formats" >
-                                <button class="ql-link" title="#{langueBean.getMsg('rightbody.conceptdialog.add_link')}"></button>
-                                <button class="ql-unlink" title="#{langueBean.getMsg('rightbody.conceptdialog.delete_link')}"></button>
-                            </span>
-                        </f:facet>
-                    </p:textEditor>    
-                </div>
-            </div>
-
-            <div class="row" style="margin-top: 10px">
-                <div class="col-12">
                     <p:textEditor id="textEditor" widgetVar="NoteEditor2" value="#{noteBean.noteValue}" allowLinks="true" 
                                   secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
                                   placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">

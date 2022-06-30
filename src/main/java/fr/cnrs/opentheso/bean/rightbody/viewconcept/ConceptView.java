@@ -14,8 +14,10 @@ import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
+import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -358,6 +360,26 @@ public class ConceptView implements Serializable {
         countOfBranch = 0;
     }
 
+    /**
+     * permet de récupérer toutes les notes dans toutes les langues
+     */
+    public void getNotesWithAllLanguages(){
+        NoteHelper noteHelper = new NoteHelper();
+        nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
+                connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));  
+        nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
+                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));          
+        setNotes();
+    }
+    
+    public void getAltLabelWithAllLanguages(){
+        TermHelper termHelper = new TermHelper();
+        nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
+                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));  
+    }    
+    
+    
+    
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang){
         FacetHelper facetHelper = new FacetHelper();
         List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(connect.getPoolConnexion(), idConcept, idTheso);
@@ -707,7 +729,6 @@ public class ConceptView implements Serializable {
 /////////////////////////////////
     private void setNotes() {
         clearNotes();
-
         for (NodeNote nodeNote : nodeConcept.getNodeNotesConcept()) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":

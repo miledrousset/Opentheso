@@ -799,10 +799,10 @@ public class ExportRdf4jHelperNew {
         // si on ne trouve pas ni Handle, ni Ark
         //    uri = nodePreference.getCheminSite() + nodeConceptExport.getConcept().getIdConcept();
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
-            uri = nodePreference.getOriginalUri()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept()
+            uri = nodePreference.getOriginalUri()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
                         + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         } else {
-            uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept()
+            uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
                         + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         }
 
@@ -821,7 +821,7 @@ public class ExportRdf4jHelperNew {
             //    System.out.println("nodeConcept.getConcept = Null");
             return uri;
         }
-        uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept()
+        uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
                     + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();
         return uri;
     }
@@ -983,10 +983,10 @@ public class ExportRdf4jHelperNew {
 
         // si on ne trouve pas ni Handle, ni Ark
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
-            uri = nodePreference.getOriginalUri() + "/?idc=" + nodeUri.getIdConcept()
+            uri = nodePreference.getOriginalUri() + "/?idc=" + nodeUri.getIdConcept().trim()
                         + "&idt=" + idTheso;
         } else {
-            uri = getPath() + "/?idc=" + nodeUri.getIdConcept()
+            uri = getPath() + "/?idc=" + nodeUri.getIdConcept().trim()
                         + "&idt=" + idTheso;
         }
 
