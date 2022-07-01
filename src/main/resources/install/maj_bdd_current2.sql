@@ -425,6 +425,18 @@ begin
 end
 $$language plpgsql;
 
+
+-- Préférences : ajout de l'option pour activer l'affichage des noms pour les personnes qui ont changé les concepts 
+--
+create or replace function update_table_preferences_displayUserName() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='display_user_name') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN display_user_name boolean DEFAULT false;';
+    END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -449,6 +461,8 @@ SELECT update_table_preferences_ark_local();
 SELECT update_table_preferences_breadcrumb();
 SELECT update_table_concept_type();
 SELECT update_table_preferences_useConceptTree();
+SELECT update_table_preferences_displayUserName();
+
 
 ----------------------------------------------------------------------------
 -- suppression des fonctions
@@ -474,6 +488,8 @@ SELECT delete_fonction('update_table_preferences_ark_local','');
 SELECT delete_fonction('update_table_preferences_breadcrumb','');
 SELECT delete_fonction('update_table_concept_type','');
 SELECT delete_fonction('update_table_preferences_useConceptTree', '');
+SELECT delete_fonction('update_table_preferences_displayUserName', '');
+
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');

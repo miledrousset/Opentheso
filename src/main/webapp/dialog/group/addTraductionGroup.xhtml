@@ -4,14 +4,14 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddTraductionGroup" header="Ajouter une traduction groupe" widgetVar="addTraductionGroup" 
+    <p:dialog id="idAddTraductionGroup" header="#{langueBean.getMsg('rightbody.conceptdialog.add_translation')} _collection" widgetVar="addTraductionGroup" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form id="addTraductionGroupForm" >
             <p:defaultCommand target="validateAddTraductionGroup" /> 
             <div class="row">
                 <div class="col-4" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />  
+                    <h:outputText value="#{langueBean.getMsg('statistique.label')} : " />  
                 </div>
                 <div class="col-8" style="margin-top: 3px">
                     <h:outputText value="#{groupView.nodeGroup.lexicalValue}"
@@ -29,7 +29,8 @@
                         <h:outputText value="Traduction : "/>  
                     </div>
                     <div class="col-8">
-                        <p:inputText id="idTraductionValue" label="traduction" placeholder="tapez votre traduction ..."  
+                        <p:inputText id="idTraductionValue" label="#{langueBean.getMsg('candidat.traduction')}"
+                                     placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."  
                                      value="#{traductionGroupBean.traductionValue}" style="width: 100%"/>
                     </div>
                 </div>
@@ -38,10 +39,10 @@
             <h:panelGroup rendered="#{traductionGroupBean.nodeLangsFiltered.size() != 0}">
                 <div class="row" style="margin-top: 5px">
                     <div class="col-4">
-                        <h:outputText value="Langue : " />  
+                        <h:outputText value="#{langueBean.getMsg('candidat.language')} : " />  
                     </div>
                     <div class="col-8">
-                        <p:selectOneMenu label="Langue" value="#{traductionGroupBean.selectedLang}" 
+                        <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionGroupBean.selectedLang}" 
                                          style="width: 100%; background: white; border-color: #43B572">
                             <f:selectItems  value="#{traductionGroupBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                         </p:selectOneMenu> 

@@ -64,6 +64,9 @@ public class NodePreference {
     private int sizeIdArkLocal;
     
     private boolean breadcrumb;
+    
+    // pour affichager le nom des personnes qui ont modifié les concepts
+    private boolean displayUserName;
 
             
     public String getSourceLang() {
@@ -432,6 +435,14 @@ public class NodePreference {
 
     public void setUseConceptTree(boolean useConceptTree) {
         this.useConceptTree = useConceptTree;
+    }
+
+    public boolean isDisplayUserName() {
+        return displayUserName;
+    }
+
+    public void setDisplayUserName(boolean displayUserName) {
+        this.displayUserName = displayUserName;
     }
     
     

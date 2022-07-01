@@ -13,7 +13,8 @@
                     <!-- ligne Label du groupe -->
                     <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="Label" title="Label de la collection"
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.preferred_term')}" 
+                                      title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"
                                           style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
 
                         </div>
@@ -22,7 +23,7 @@
                                 <p:menuButton
                                     icon="pi pi-cog"
                                     style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    <p:menuitem value="Modifier" action="#{modifyGroupBean.init()}" oncomplete="PF('modifyGroup').show();"
+                                    <p:menuitem value="#{langueBean.getMsg('candidat.edit')}" action="#{modifyGroupBean.init()}" oncomplete="PF('modifyGroup').show();"
                                                 update="containerIndex:idModifyGroup" icon="fas fa-pen"/>
                                 </p:menuButton>
                             </h:panelGroup>                            
@@ -38,7 +39,7 @@
                     <!-- ligne Type de groupe -->    
                     <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="Type" title="Type de la collection" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="#{langueBean.getMsg('statistique.type')}" title="#{langueBean.getMsg('statistique.type')}" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                         </div>
@@ -54,12 +55,13 @@
                     <!-- ligne Type de groupe -->    
                     <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="Membres" title="Membres de la collection" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="#{langueBean.getMsg('group.members')}" title="#{langueBean.getMsg('group.membersToolTip')}" 
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                         </div>
                         <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
-                            <h:outputText value="#{groupView.count}" title="Nombre de concepts inclus dans la collection/groupe"
+                            <h:outputText value="#{groupView.count}" title="#{langueBean.getMsg('group.numberOfConcepts')}"
                                           style="font-size: 14px; color: #000;" />
                         </div>
                     </div>
@@ -70,25 +72,26 @@
                     <div class="list-group-item list-group-item-action">   
                         <div class="row" style="margin-left: 0px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="Traduction" title="Traduction de la collection" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.traduction')}" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
-                                    <p:menuitem value="Ajouter une traduction" icon="fas fa-plus"
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" icon="fas fa-plus"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 action = "#{traductionGroupBean.setLangWithNoTraduction()}"
                                                 oncomplete="PF('addTraductionGroup').show();"
                                                 update="containerIndex:idAddTraductionGroup"  />
 
-                                    <p:menuitem value="Modifier une traduction" icon="fas fa-pen"
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" icon="fas fa-pen"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 oncomplete="PF('renameTraductionGroup').show();"
                                                 disabled="#{groupView.nodeGroupTraductions.size() == 0}"
                                                 update="containerIndex:idRenameTraductionGroup" />
 
-                                    <p:menuitem value="Supprimer une traduction" icon="fas fa-trash-alt"
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" icon="fas fa-trash-alt"
                                                 actionListener="#{traductionGroupBean.reset()}"
                                                 oncomplete="PF('deleteTraductionGroup').show();"
                                                 disabled="#{groupView.nodeGroupTraductions.size() == 0}"
@@ -97,7 +100,7 @@
                             </div>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px"> 
                                 <h:panelGroup rendered="#{groupView.nodeGroupTraductions.size() == 0}">
-                                    <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{groupView.nodeGroupTraductions.size() != 0}">
                                     <ui:repeat var="trad" value="#{groupView.nodeGroupTraductions}" >
@@ -119,7 +122,8 @@
                     <!-- ligne Type de groupe -->    
                     <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="Notation" title="Notation de la collection" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.notation')}" 
+                                          title="rightbody.concept.notation" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                         </div>
@@ -127,7 +131,8 @@
                             <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
                                                       or (groupView.nodeGroup.conceptGroup.notation== '')}">
 
-                                <h:outputText  value="....." title="pas de valeur" style="font-size: 12px; color: grey; font-style: italic " />
+                                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
+                                               style="font-size: 12px; color: grey; font-style: italic " />
                             </h:panelGroup>
 
                             <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation != null) 
@@ -142,7 +147,7 @@
                 <div class="list-group-item list-group-item-action" style="margin-top: 10px;">  
                     <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="Identifiant / Lien permament" style="font-size: 14px; font-weight: bold;color: #8f8f8f; font-style: italic"/>
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.identifier')}" style="font-size: 14px; font-weight: bold;color: #8f8f8f; font-style: italic"/>
                         </div>
                     </div>
                 </div>
@@ -151,7 +156,7 @@
                 <div class="list-group-item list-group-item-action">  
                     <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
-                            <h:outputText value="Id interne" style="font-size: 14px;"/>
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}" style="font-size: 14px;"/>
                         </div>
                         <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                         </div>
