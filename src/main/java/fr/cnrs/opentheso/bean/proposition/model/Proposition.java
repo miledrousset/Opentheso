@@ -17,30 +17,17 @@ public class Proposition implements Serializable {
     private String nomConceptProp;
     private Term nomConcept;
     
-    private List<SynonymPropBean> synonymsProp;
+    private List<SynonymPropBean> synonymsProp = new ArrayList<>();
     
-    private List<TraductionPropBean> traductionsProp;
+    private List<TraductionPropBean> traductionsProp = new ArrayList<>();
     
-    private List<NotePropBean> notes;
-    private List<NotePropBean> scopeNotes;
-    private List<NotePropBean> historyNotes;
-    private List<NotePropBean> examples;
-    private List<NotePropBean> editorialNotes;
-    private List<NotePropBean> definitions;
-    private List<NotePropBean> changeNotes;
-    
-    
-    public Proposition() {
-        synonymsProp = new ArrayList<>();
-        traductionsProp = new ArrayList<>();
-        notes = new ArrayList<>();
-        scopeNotes = new ArrayList<>();
-        historyNotes = new ArrayList<>();
-        examples = new ArrayList<>();
-        editorialNotes = new ArrayList<>();
-        definitions = new ArrayList<>();
-        changeNotes = new ArrayList<>();
-    }
+    private List<NotePropBean> notes = new ArrayList<>();
+    private List<NotePropBean> scopeNotes = new ArrayList<>();
+    private List<NotePropBean> historyNotes = new ArrayList<>();
+    private List<NotePropBean> examples = new ArrayList<>();
+    private List<NotePropBean> editorialNotes = new ArrayList<>();
+    private List<NotePropBean> definitions = new ArrayList<>();
+    private List<NotePropBean> changeNotes = new ArrayList<>();
 
 
     public Term getNomConcept() {

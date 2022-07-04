@@ -16,7 +16,7 @@
         <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" 
                          style="color: #000; height: 28px; max-width: 400px" filter="true" filterMatchMode="contains">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" 
-                    update="containerIndex:notificationProp" />
+                    update="containerIndex:sideBarProposition" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
         </p:selectOneMenu>
@@ -35,7 +35,7 @@
             <h:panelGroup rendered="#{currentUser.isAlertVisible()}" 
                           style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
                 <p:commandLink actionListener="#{propositionBean.afficherListPropositions()}"
-                               update="containerIndex:sideBarProposition containerIndex:notificationProp" >
+                               update="containerIndex:sideBarProposition" >
                     <p:badge value="#{propositionBean.nbrNewPropositions}">
                         <i class="pi pi-bell" styleClass="p-mr-2"/>
                     </p:badge>

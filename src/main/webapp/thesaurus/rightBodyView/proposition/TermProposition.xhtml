@@ -61,18 +61,19 @@
                                       style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                     </div>
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                        <p:menuButton icon="fas fa-cog" style="margin-top: -4px;" >
-                            <p:menuitem value="Proposez une nouvelle variante" 
+                        <p:menuButton icon="fas fa-cog" style="margin-top: -4px;"
+                                      rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                            <p:menuitem value="Ajouter une nouvelle variante" 
                                         actionListener="#{synonymBean.reset()}"
                                         update="containerIndex:rightTab:idAddSynonymProp" icon="fas fa-plus"
                                         oncomplete="PF('addSynonymProp').show();" />
 
-                            <p:menuitem value="Proposez une modification d'une variante" 
+                            <p:menuitem value="Modification d'une variante" 
                                         actionListener="#{synonymBean.reset()}"
                                         oncomplete="PF('renameSynonymProp').show();" update="containerIndex:rightTab:idRenameSynonymProp" icon="fas fa-edit"
                                         disabled="#{(propositionBean.proposition.synonymsProp == null) or (propositionBean.proposition.synonymsProp.size() == 0)}" />
 
-                            <p:menuitem value="Proposez une suppression d'une variante" 
+                            <p:menuitem value="Supprimer d'une variante" 
                                         actionListener="#{synonymBean.reset()}" oncomplete="PF('deleteSynonymProp').show();"
                                         update="containerIndex:rightTab:idDeleteSynonymProp" icon="fas fa-minus"
                                         disabled="#{(propositionBean.proposition.synonymsProp == null) or (propositionBean.proposition.synonymsProp.size() == 0)}" />
@@ -84,27 +85,75 @@
 
                         <h:panelGroup rendered="#{propositionBean.proposition.synonymsProp != null and propositionBean.proposition.synonymsProp.size() != 0}">
                             <ui:repeat var="em" value="#{propositionBean.proposition.synonymsProp}" varStatus="status">
-                                <h:outputText rendered="#{!em.hiden and !em.toAdd and !em.toRemove and !em.toUpdate}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>  
 
-                                <h:outputText rendered="#{!em.hiden and em.toAdd}" value="#{em.lexical_value}" styleClass="textOpentheso" 
-                                              style="color: #666666; font-size: 14px; color: green; font-weight: bold;"/> 
+                                <h:panelGroup rendered="#{!em.hiden and !em.toAdd and !em.toRemove and !em.toUpdate}"  >
+                                    <h:outputText value="[#{em.lang.toUpperCase()}] " style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                    <h:outputText value="#{em.lexical_value}" style="color: #666666; font-size: 14px;"/> 
+                                </h:panelGroup>
 
-                                <h:outputText rendered="#{!em.hiden and em.toUpdate}" value="#{em.lexical_value}" styleClass="textOpentheso" 
-                                              style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/>  
+                                <h:panelGroup rendered="#{!em.hiden and em.toAdd}"  >
+                                    <h:outputText value="[#{em.lang.toUpperCase()}] " style="font-size: 14px; color: green; font-weight: bold;"/> 
+                                    <h:outputText value="#{em.lexical_value}" style="font-size: 14px; color: green;" /> 
+                                </h:panelGroup>
 
-                                <h:outputText rendered="#{!em.hiden and em.toRemove}" value="#{em.lexical_value}" styleClass="textOpentheso" 
-                                              style="color: #666666; font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/>                     
+                                <h:panelGroup rendered="#{!em.hiden and em.toUpdate}"  >
+                                    <h:outputText value="[#{em.lang.toUpperCase()}] " style="font-size: 14px; color: blue; font-weight: bold;"/> 
+                                    <h:outputText value="#{em.lexical_value} " style="font-size: 14px; color: blue;" /> 
+                                    <h:outputText value="(#{em.oldValue})" style="font-size: 14px; color: blue;" /> 
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{!em.hiden and em.toRemove}"  >
+                                    <h:outputText value="[#{em.lang.toUpperCase()}] " style="font-size: 14px; color: red; font-weight: bold; text-decoration : line-through;"/> 
+                                    <h:outputText value="#{em.lexical_value}" style="font-size: 14px; color: red; text-decoration : line-through;" /> 
+                                </h:panelGroup>
+
                                 <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
-
+                            
+                            <h:panelGroup rendered="#{propositionBean.proposition.synonymsProp != null and propositionBean.proposition.synonymsProp.size() != 0}">
+                                <br/>
+                            </h:panelGroup>
+                            
                             <ui:repeat var="em2" value="#{propositionBean.proposition.synonymsProp}" varStatus="status">
-                                <h:outputText rendered="#{em2.hiden}" value=" #{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
+
+                                <h:panelGroup rendered="#{em2.hiden and !em2.toAdd and !em2.toRemove and !em2.toUpdate}">
+                                    <h:outputText value=" #{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
+                                                  title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}" 
+                                                  style="font-size: 12px; color: #FF7979; font-style: italic "
+                                                  rendered="#{em2.hiden}" />
+                                    <h:outputText value="[#{em2.lang.toUpperCase()}] " escape="false" 
+                                                  style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="color: #666666; font-size: 14px;"/> 
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{em2.hiden and em2.toAdd}">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
                                               title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}" 
-                                              style="font-size: 12px; color: #FF7979; font-style: italic " />
-                                <h:outputText rendered="#{em2.hiden and !em2.toAdd and !em2.toRemove and !em2.toUpdate}" value=" #{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>  
-                                <h:outputText rendered="#{em2.hiden and em2.toAdd}" value=" #{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px; color: green; font-weight: bold;"/> 
-                                <h:outputText rendered="#{em2.hiden and em2.toUpdate}" value="#{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px; color: blue; font-weight: bold;"/> 
-                                <h:outputText rendered="#{em2.hiden and em2.toRemove}" value=" #{em2.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/>                    
+                                              style="font-size: 12px; color: #FF7979; font-style: italic "
+                                              rendered="#{em2.hiden}" />
+                                    <h:outputText value="[#{em2.lang.toUpperCase()}] " escape="false" style="font-size: 14px; color: green; font-weight: bold;"/> 
+                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="font-size: 14px; color: green;" /> 
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{em2.hiden and em2.toUpdate}">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
+                                              title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}" 
+                                              style="font-size: 12px; color: #FF7979; font-style: italic "
+                                              rendered="#{em2.hiden}" />
+                                    <h:outputText value="[#{em2.lang.toUpperCase()}] " escape="false" style="font-size: 14px; color: blue; font-weight: bold;"/> 
+                                    <h:outputText value="#{em2.lexical_value} " escape="false" style="font-size: 14px; color: blue;" /> 
+                                    <h:outputText value="(#{em2.oldValue})" style="font-size: 14px; color: blue;" /> 
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{em2.hiden and em2.toRemove}">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
+                                              title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}" 
+                                              style="font-size: 12px; color: #FF7979; font-style: italic "
+                                              rendered="#{em2.hiden}" />
+                                    <h:outputText value="[#{em2.lang.toUpperCase()}] " escape="false" style="font-size: 14px; color: red; font-weight: bold; text-decoration : line-through;"/> 
+                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="font-size: 14px; color: red; text-decoration : line-through;" /> 
+                                </h:panelGroup>
+
                                 <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
                         </h:panelGroup>
@@ -115,7 +164,7 @@
     </div>
 
 
-    <p:dialog id="idNouveauNomConcept" header="Proposer un nouveau nom" widgetVar="nouveauNomConcept" 
+    <p:dialog id="idNouveauNomConcept" header="Modifier le label du concept" widgetVar="nouveauNomConcept" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <div class="row">
             <div class="col-5">
@@ -140,13 +189,14 @@
         </div>
 
 
-        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">                
+        <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">                
             <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                             update="containerIndex:rightTab" oncomplete="PF('nouveauNomConcept').hiden();"
+                             update="containerIndex:rightTab messageIndex" oncomplete="PF('nouveauNomConcept').hiden();"
                              ajax="true" process="@this" />
 
             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
-                             update="containerIndex:rightTab" actionListener="#{propositionBean.updateNomConcept()}"  />
+                             update="containerIndex:rightTab messageIndex" 
+                             actionListener="#{propositionBean.updateNomConcept()}"  />
         </div>
     </p:dialog>
 
@@ -156,11 +206,11 @@
 
         <h:form id="addSynonymFormProp">
             <div class="row">
-                <div class="col-5" style="margin-top: 3px">
+                <div class="col-5">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')}: " class="dialog-titre" /> 
                 </div>
                 <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value.toUpperCase()}" 
                                   style="margin-left: 10px; color: #C63632; margin-left: 5px" />
                 </div>
             </div>
@@ -184,7 +234,7 @@
                 <div class="col-7">
                     <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{synonymBean.selectedLang}" 
                                      style="font-size: 12px; background: white; border-color: #43B572; color: #000; width: 100%">
-                        <f:selectItems  value="#{synonymBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                        <f:selectItems  value="#{synonymBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code.toUpperCase()}" />
                     </p:selectOneMenu> 
                 </div>
             </div>
@@ -199,13 +249,13 @@
             </div>
 
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
 
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addSynonymProp').hide();" update="containerIndex:rightTab"
+                                 actionListener="PF('addSynonymProp').hide();" update="containerIndex:rightTab messageIndex"
                                  ajax="true" process="@form"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:rightTab"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:rightTab messageIndex"
                                  styleClass="ui-button-primary" ajax="true" process="@form" 
                                  oncomplete="PF('addSynonymProp').hide();" actionListener="#{synonymBean.addPropSynonym()}"/>  
             </div>
@@ -213,92 +263,73 @@
     </p:dialog>
 
 
-    <p:dialog id="idDeleteSynonymProp" header="Proposez la supression d'un synonyme" widgetVar="deleteSynonymProp" 
+    <p:dialog id="idDeleteSynonymProp" header="Supprimer un synonyme" widgetVar="deleteSynonymProp" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-            </div>
-        </div>
-
-        <p:panel id="listSynonimesToDeleteProp">
-            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.listOfSynonyms')} : " class="dialog-titre" /> 
-            <ui:repeat var="synonymes" value="#{propositionBean.proposition.synonymsProp}" >
-                <div class="row">
-                    <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #FF7979" action="#{synonymBean.deleteSynonymPropo(synonymes)}"
-                                       update="containerIndex:formRightTab">
-                            <i class="pi pi-trash" />
-                        </p:commandLink>
-                    </div>
-                    <div class="col-11" style="margin-top: 3px">
-                        <h:outputText value="#{synonymes.lexical_value} (#{synonymes.lang})" style="color: #43B572"/> 
-                    </div>
-                </div>
-            </ui:repeat>
-        </p:panel>
+        <p:dataTable var="synonymes" lazy="true" value="#{propositionBean.proposition.synonymsProp}" style="font-size: 12px;">
+            <f:facet name="header">
+                <center>
+                    <b>
+                        #{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : 
+                        #{conceptView.nodeConcept.term.lexical_value.toUpperCase()}
+                    </b>
+                </center>
+            </f:facet>
+            <p:column headerText="Label">
+                <h:outputText value="#{synonymes.lexical_value}" style="color: #43B572; font-size: 14px;"/>
+            </p:column>    
+            <p:column width="70" headerText="Lang">
+                <h:outputText value="#{synonymes.lang.toUpperCase()}" style="color: #43B572; text-align: center; font-size: 14px;"/>
+            </p:column>     
+            <p:column width="70" headerText="Supprimer">
+                <p:commandLink style="color: #FF7979" oncomplete="PF('deleteSynonymProp').hide();"
+                               ajax="true" process="@form" update="containerIndex messageIndex"
+                               action="#{synonymBean.deleteSynonymPropo(synonymes)}"
+                               rendered="#{!synonymes.toRemove}">
+                    <i class="pi pi-trash" style="color: red" />
+                </p:commandLink>
+                <p:commandLink style="color: #FF7979" oncomplete="PF('deleteSynonymProp').hide();"
+                               ajax="true" process="@form" update="containerIndex messageIndex"
+                               action="#{synonymBean.deleteSynonymPropo(synonymes)}"
+                               rendered="#{synonymes.toRemove}">
+                    <i class="pi pi-pencil" style="color: #43B572" />
+                </p:commandLink>
+            </p:column>                    
+        </p:dataTable>
     </p:dialog>
 
 
-    <p:dialog id="idRenameSynonymProp" header="Proposez la modification d'un synonyme" widgetVar="renameSynonymProp" 
+    <p:dialog id="idRenameSynonymProp" header="Modifier un synonyme" widgetVar="renameSynonymProp" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <h:form id="renameSynonymFormProp">
-
-            <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="margin-left: 10px; color: black; margin-left: 5px" />
-                </div>
-            </div>
-
-            <div class="row" style="margin-top: 5px; overflow-y:scroll">
-                <div class="col-5" >
-                    <h:outputText value="#{langueBean.getMsg('indexview.synonym')}" style="color: black;font-size: 13px;"/>                    
-                </div>
-
-                <div class="col-2" >
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" style="color: black;font-size: 13px;"/> 
-                </div>
-
-                <div class="col-3" >
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')} ?" style="color: black;font-size: 13px;"/>                         
-                </div>                             
-
-                <div class="col-2">
-                    <h:outputText value="#{langueBean.getMsg('btnValidate')}" style="color: black;font-size: 13px;"/>
-                </div>
-            </div>
-
-            <ui:repeat var="synonymToEdit" value="#{propositionBean.proposition.synonymsProp}" >
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-5" style="background: #FAFAFA">
-                        <p:inputText value="#{synonymToEdit.lexical_value}" style="font-size: 12px; height: 25px; color: #000"/> 
-                    </div>
-
-                    <div class="col-2" style="background: #FAFAFA">
-                        <h:outputText value="#{synonymToEdit.lang}" style=" font-size: 14px;"/>
-                    </div>
-
-                    <div class="col-3" style="font-size: 12px;" >
-                        <p:toggleSwitch value="#{synonymToEdit.hiden}" style="font-size: 10px" />                            
-                    </div>                             
-
-                    <div class="col-2" style="background: #FAFAFA">
-                        <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex"
-                                       ajax="true" process="@form"
-                                       action="#{synonymBean.updateSynonymProp(synonymToEdit)}">
-                            <i class="pi pi-check-circle" />
-                        </p:commandLink>
-                    </div>
-                </div>                            
-            </ui:repeat>
+            <p:dataTable var="synonymes" lazy="true" value="#{propositionBean.proposition.synonymsProp}" style="font-size: 12px;">
+                <f:facet name="header">
+                    <center>
+                        <b>
+                            #{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : 
+                            #{conceptView.nodeConcept.term.lexical_value.toUpperCase()}
+                        </b>
+                    </center>
+                </f:facet>
+                <p:column width="65" headerText="#{langueBean.getMsg('indexview.synonym')}">
+                    <p:inputText value="#{synonymes.lexical_value}" style="color: #43B572; font-size: 14px;"/>
+                </p:column>    
+                <p:column width="10" headerText="#{langueBean.getMsg('rightbody.conceptdialog.language')}">
+                    <h:outputText value="#{synonymes.lang.toUpperCase()}" style="color: #43B572; text-align: center; font-size: 14px;"/>
+                </p:column>  
+                <p:column width="20" headerText="#{langueBean.getMsg('rightbody.conceptdialog.hidden')} ?">
+                    <p:toggleSwitch value="#{synonymes.hiden}" style="font-size: 10px" />  
+                </p:column> 
+                <p:column width="5">
+                    <p:commandLink style="color: #FF7979; text-align: center"
+                                   ajax="true" process="@form"
+                                   update="containerIndex:formRightTab messageIndex"
+                                   oncomplete="PF('deleteSynonymProp').hide();"
+                                   action="#{synonymBean.updateSynonymProp(synonymes)}">
+                        <i class="pi pi-check-circle" style="font-size: 1rem; padding-top: 5px; color: #C63632;" />
+                    </p:commandLink>
+                </p:column>                    
+            </p:dataTable>
         </h:form>            
     </p:dialog>
 </ui:fragment>

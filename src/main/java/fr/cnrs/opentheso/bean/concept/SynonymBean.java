@@ -5,19 +5,18 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import com.ctc.wstx.util.StringUtil;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -25,6 +24,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -46,9 +46,6 @@ public class SynonymBean implements Serializable {
 
     @Inject
     private PropositionBean propositionBean;
-
-    @Inject
-    private CurrentUser currentUser;
 
     private String selectedLang;
     private String selectedValue;
@@ -206,6 +203,17 @@ public class SynonymBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+
+        for (SynonymPropBean synonym : propositionBean.getProposition().getSynonymsProp()) {
+            if (synonym.getLexical_value().equalsIgnoreCase(value)
+                    && synonym.getLang().equalsIgnoreCase(selectedLang)) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                PrimeFaces.current().ajax().update("messageIndex");
+                return;
+            }
         }
 
         SynonymPropBean synonymPropBean = new SynonymPropBean();
@@ -213,8 +221,10 @@ public class SynonymBean implements Serializable {
         synonymPropBean.setHiden(isHidden);
         synonymPropBean.setLang(selectedLang);
         synonymPropBean.setLexical_value(value);
+        synonymPropBean.setOldValue(value);
+        
         if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
-            propositionBean.getProposition().setSynonymsProp(Collections.emptyList());
+            propositionBean.getProposition().setSynonymsProp(new ArrayList<>());
         }
         propositionBean.getProposition().getSynonymsProp().add(synonymPropBean);
     }
@@ -491,7 +501,7 @@ public class SynonymBean implements Serializable {
                     propositionBean.getProposition().getSynonymsProp().get(i).setToUpdate(true);
                 }
             } else {
-                if (propositionBean.getProposition().getSynonymsProp().get(i).isOldHiden() 
+                if (propositionBean.getProposition().getSynonymsProp().get(i).isOldHiden()
                         != propositionBean.getProposition().getSynonymsProp().get(i).isHiden()) {
                     if (!propositionBean.getProposition().getSynonymsProp().get(i).isToAdd()) {
                         propositionBean.getProposition().getSynonymsProp().get(i).setToUpdate(true);
@@ -502,10 +512,24 @@ public class SynonymBean implements Serializable {
     }
 
     public void updateSynonymProp(SynonymPropBean synonymPropBean) {
+        
         if (synonymPropBean == null) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", "pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+        
+        if (StringUtils.isEmpty(synonymPropBean.getLexical_value())) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", "Le champs valeur est obligatoire !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+
+        if (synonymPropBean.isToUpdate()
+                && synonymPropBean.getLexical_value().equals(synonymPropBean.getOldValue())) {
+            synonymPropBean.setToUpdate(false);
             return;
         }
 
@@ -514,26 +538,32 @@ public class SynonymBean implements Serializable {
                     synonymPropBean.getLexical_value(),
                     selectedTheso.getCurrentIdTheso(),
                     synonymPropBean.getLang())) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Un label identique existe déjà !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 PrimeFaces.current().ajax().update("messageIndex");
                 return;
             }
+
             if (new TermHelper().isAltLabelExist(connect.getPoolConnexion(),
                     synonymPropBean.getLexical_value(),
                     selectedTheso.getCurrentIdTheso(),
                     synonymPropBean.getLang())) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "Un label identique existe déjà !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 PrimeFaces.current().ajax().update("messageIndex");
                 return;
             }
-            if (!synonymPropBean.isToAdd()) {
+
+            if (synonymPropBean.isToRemove()) {
+                synonymPropBean.setLexical_value(synonymPropBean.getOldValue());
+            } else if (!synonymPropBean.isToAdd()) {
                 synonymPropBean.setToUpdate(true);
             }
         } else {
             if (synonymPropBean.isOldHiden() != synonymPropBean.isHiden()) {
-                if (!synonymPropBean.isToAdd()) {
+                if (synonymPropBean.isToRemove()) {
+                    synonymPropBean.setLexical_value(synonymPropBean.getOldValue());
+                } else if (!synonymPropBean.isToAdd()) {
                     synonymPropBean.setToUpdate(true);
                 }
             }
@@ -643,7 +673,6 @@ public class SynonymBean implements Serializable {
         if (spb == null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
 
@@ -651,8 +680,14 @@ public class SynonymBean implements Serializable {
             if (spb.getLexical_value().equals(propositionBean.getProposition().getSynonymsProp().get(i).getLexical_value())) {
                 if (propositionBean.getProposition().getSynonymsProp().get(i).isToAdd()) {
                     propositionBean.getProposition().getSynonymsProp().remove(i);
-                } else {
+                } else if (propositionBean.getProposition().getSynonymsProp().get(i).isToUpdate()) {
                     propositionBean.getProposition().getSynonymsProp().get(i).setToRemove(true);
+                    propositionBean.getProposition().getSynonymsProp().get(i).setToUpdate(false);
+                    propositionBean.getProposition().getSynonymsProp().get(i)
+                            .setLexical_value(propositionBean.getProposition().getSynonymsProp().get(i).getOldValue());
+                } else {
+                    propositionBean.getProposition().getSynonymsProp().get(i).setToRemove(!propositionBean.getProposition()
+                            .getSynonymsProp().get(i).isToRemove());
                 }
             }
         }

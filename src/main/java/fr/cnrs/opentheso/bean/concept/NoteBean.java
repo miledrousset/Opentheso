@@ -339,11 +339,29 @@ public class NoteBean implements Serializable {
                 for (int i = 0; i < propositionBean.getProposition().getNotes().size(); i++) {
                     if (propositionBean.getProposition().getNotes().get(i).getLexicalvalue()
                             .equals(notePropBean.getLexicalvalue())) {
-                        if (!propositionBean.getProposition().getNotes().get(i).isToAdd()) {
-                            propositionBean.getProposition().getNotes().get(i).setToUpdate(true);
+                        
+                        if (notePropBean.isToAdd()) {
+                            propositionBean.getProposition().getNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                            break;
                         }
-                        propositionBean.getProposition().getNotes().get(i).setLang(notePropBean.getLang());
-                        propositionBean.getProposition().getNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        
+                        if (notePropBean.getOldValue().equalsIgnoreCase(propositionBean.getProposition()
+                                .getNotes().get(i).getLexicalvalue())) {
+                            propositionBean.getProposition().getNotes().get(i).setToRemove(false);
+                            propositionBean.getProposition().getNotes().get(i).setToUpdate(false);
+                            propositionBean.getProposition().getNotes().get(i).setToAdd(false);
+                            propositionBean.getProposition().getNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (!propositionBean.getProposition().getNotes().get(i).isToRemove()) {
+                            propositionBean.getProposition().getNotes().get(i).setToUpdate(true);
+                            propositionBean.getProposition().getNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (propositionBean.getProposition().getNotes().get(i).isToRemove()) {
+                            propositionBean.getProposition().getNotes().get(i).setToRemove(false);
+                            propositionBean.getProposition().getNotes().get(i).setToUpdate(true);
+                            propositionBean.getProposition().getNotes().get(i).setToAdd(false);
+                            propositionBean.getProposition().getNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else {
+                            propositionBean.getProposition().getNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        }
                     }
                 }
                 break;
@@ -351,11 +369,24 @@ public class NoteBean implements Serializable {
                 for (int i = 0; i < propositionBean.getProposition().getDefinitions().size(); i++) {
                     if (propositionBean.getProposition().getDefinitions().get(i).getLexicalvalue()
                             .equals(notePropBean.getLexicalvalue())) {
-                        if (!propositionBean.getProposition().getDefinitions().get(i).isToAdd()) {
-                            propositionBean.getProposition().getDefinitions().get(i).setToUpdate(true);
+                        
+                        if (notePropBean.isToAdd()) {
+                            propositionBean.getProposition().getDefinitions().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                            break;
                         }
-                        propositionBean.getProposition().getDefinitions().get(i).setLang(notePropBean.getLang());
-                        propositionBean.getProposition().getDefinitions().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        
+                        if (notePropBean.getOldValue().equalsIgnoreCase(propositionBean.getProposition()
+                                .getDefinitions().get(i).getLexicalvalue())) {
+                            propositionBean.getProposition().getDefinitions().get(i).setToRemove(false);
+                            propositionBean.getProposition().getDefinitions().get(i).setToUpdate(false);
+                            propositionBean.getProposition().getDefinitions().get(i).setToAdd(false);
+                            propositionBean.getProposition().getDefinitions().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (propositionBean.getProposition().getDefinitions().get(i).isToAdd()) {
+                            propositionBean.getProposition().getDefinitions().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (!propositionBean.getProposition().getDefinitions().get(i).isToRemove()) {
+                            propositionBean.getProposition().getDefinitions().get(i).setToUpdate(true);
+                            propositionBean.getProposition().getDefinitions().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        }
                     }
                 }
                 break;
@@ -363,11 +394,24 @@ public class NoteBean implements Serializable {
                 for (int i = 0; i < propositionBean.getProposition().getScopeNotes().size(); i++) {
                     if (propositionBean.getProposition().getScopeNotes().get(i).getLexicalvalue()
                             .equals(notePropBean.getLexicalvalue())) {
-                        if (!propositionBean.getProposition().getScopeNotes().get(i).isToAdd()) {
-                            propositionBean.getProposition().getScopeNotes().get(i).setToUpdate(true);
+                        
+                        if (notePropBean.isToAdd()) {
+                            propositionBean.getProposition().getScopeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                            break;
                         }
-                        propositionBean.getProposition().getScopeNotes().get(i).setLang(notePropBean.getLang());
-                        propositionBean.getProposition().getScopeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        
+                        if (notePropBean.getOldValue().equalsIgnoreCase(propositionBean.getProposition()
+                                .getScopeNotes().get(i).getLexicalvalue())) {
+                            propositionBean.getProposition().getScopeNotes().get(i).setToRemove(false);
+                            propositionBean.getProposition().getScopeNotes().get(i).setToUpdate(false);
+                            propositionBean.getProposition().getScopeNotes().get(i).setToAdd(false);
+                            propositionBean.getProposition().getScopeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (propositionBean.getProposition().getScopeNotes().get(i).isToAdd()) {
+                            propositionBean.getProposition().getScopeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (!propositionBean.getProposition().getScopeNotes().get(i).isToRemove()) {
+                            propositionBean.getProposition().getScopeNotes().get(i).setToUpdate(true);
+                            propositionBean.getProposition().getScopeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        }
                     }
                 }
                 break;
@@ -375,11 +419,24 @@ public class NoteBean implements Serializable {
                 for (int i = 0; i < propositionBean.getProposition().getExamples().size(); i++) {
                     if (propositionBean.getProposition().getExamples().get(i).getLexicalvalue()
                             .equals(notePropBean.getLexicalvalue())) {
-                        if (!propositionBean.getProposition().getExamples().get(i).isToAdd()) {
-                            propositionBean.getProposition().getExamples().get(i).setToUpdate(true);
+                        
+                        if (notePropBean.isToAdd()) {
+                            propositionBean.getProposition().getExamples().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                            break;
                         }
-                        propositionBean.getProposition().getExamples().get(i).setLang(notePropBean.getLang());
-                        propositionBean.getProposition().getExamples().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        
+                        if (notePropBean.getOldValue().equalsIgnoreCase(propositionBean.getProposition()
+                                .getExamples().get(i).getLexicalvalue())) {
+                            propositionBean.getProposition().getExamples().get(i).setToRemove(false);
+                            propositionBean.getProposition().getExamples().get(i).setToUpdate(false);
+                            propositionBean.getProposition().getExamples().get(i).setToAdd(false);
+                            propositionBean.getProposition().getExamples().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (propositionBean.getProposition().getExamples().get(i).isToAdd()) {
+                            propositionBean.getProposition().getExamples().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (!propositionBean.getProposition().getExamples().get(i).isToRemove()) {
+                            propositionBean.getProposition().getExamples().get(i).setToUpdate(true);
+                            propositionBean.getProposition().getExamples().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        }
                     }
                 }
                 break;
@@ -387,11 +444,24 @@ public class NoteBean implements Serializable {
                 for (int i = 0; i < propositionBean.getProposition().getHistoryNotes().size(); i++) {
                     if (propositionBean.getProposition().getHistoryNotes().get(i).getLexicalvalue()
                             .equals(notePropBean.getLexicalvalue())) {
-                        if (!propositionBean.getProposition().getHistoryNotes().get(i).isToAdd()) {
-                            propositionBean.getProposition().getHistoryNotes().get(i).setToUpdate(true);
+                        
+                        if (notePropBean.isToAdd()) {
+                            propositionBean.getProposition().getHistoryNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                            break;
                         }
-                        propositionBean.getProposition().getHistoryNotes().get(i).setLang(notePropBean.getLang());
-                        propositionBean.getProposition().getHistoryNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        
+                        if (notePropBean.getOldValue().equalsIgnoreCase(propositionBean.getProposition()
+                                .getHistoryNotes().get(i).getLexicalvalue())) {
+                            propositionBean.getProposition().getHistoryNotes().get(i).setToRemove(false);
+                            propositionBean.getProposition().getHistoryNotes().get(i).setToUpdate(false);
+                            propositionBean.getProposition().getHistoryNotes().get(i).setToAdd(false);
+                            propositionBean.getProposition().getHistoryNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (propositionBean.getProposition().getHistoryNotes().get(i).isToAdd()) {
+                            propositionBean.getProposition().getHistoryNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (!propositionBean.getProposition().getHistoryNotes().get(i).isToRemove()) {
+                            propositionBean.getProposition().getHistoryNotes().get(i).setToUpdate(true);
+                            propositionBean.getProposition().getHistoryNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        }
                     }
                 }
                 break;
@@ -399,11 +469,24 @@ public class NoteBean implements Serializable {
                 for (int i = 0; i < propositionBean.getProposition().getEditorialNotes().size(); i++) {
                     if (propositionBean.getProposition().getEditorialNotes().get(i).getLexicalvalue()
                             .equals(notePropBean.getLexicalvalue())) {
-                        if (!propositionBean.getProposition().getEditorialNotes().get(i).isToAdd()) {
-                            propositionBean.getProposition().getEditorialNotes().get(i).setToUpdate(true);
+                        
+                        if (notePropBean.isToAdd()) {
+                            propositionBean.getProposition().getEditorialNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                            break;
                         }
-                        propositionBean.getProposition().getEditorialNotes().get(i).setLang(notePropBean.getLang());
-                        propositionBean.getProposition().getEditorialNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        
+                        if (notePropBean.getOldValue().equalsIgnoreCase(propositionBean.getProposition()
+                                .getEditorialNotes().get(i).getLexicalvalue())) {
+                            propositionBean.getProposition().getEditorialNotes().get(i).setToRemove(false);
+                            propositionBean.getProposition().getEditorialNotes().get(i).setToUpdate(false);
+                            propositionBean.getProposition().getEditorialNotes().get(i).setToAdd(false);
+                            propositionBean.getProposition().getEditorialNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (propositionBean.getProposition().getEditorialNotes().get(i).isToAdd()) {
+                            propositionBean.getProposition().getEditorialNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (!propositionBean.getProposition().getEditorialNotes().get(i).isToRemove()) {
+                            propositionBean.getProposition().getEditorialNotes().get(i).setToUpdate(true);
+                            propositionBean.getProposition().getEditorialNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        }
                     }
                 }
                 break;
@@ -411,11 +494,24 @@ public class NoteBean implements Serializable {
                 for (int i = 0; i < propositionBean.getProposition().getChangeNotes().size(); i++) {
                     if (propositionBean.getProposition().getChangeNotes().get(i).getLexicalvalue()
                             .equals(notePropBean.getLexicalvalue())) {
-                        if (!propositionBean.getProposition().getChangeNotes().get(i).isToAdd()) {
-                            propositionBean.getProposition().getChangeNotes().get(i).setToUpdate(true);
+                        
+                        if (notePropBean.isToAdd()) {
+                            propositionBean.getProposition().getChangeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                            break;
                         }
-                        propositionBean.getProposition().getChangeNotes().get(i).setLang(notePropBean.getLang());
-                        propositionBean.getProposition().getChangeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        
+                        if (notePropBean.getOldValue().equalsIgnoreCase(propositionBean.getProposition()
+                                .getChangeNotes().get(i).getLexicalvalue())) {
+                            propositionBean.getProposition().getChangeNotes().get(i).setToRemove(false);
+                            propositionBean.getProposition().getChangeNotes().get(i).setToUpdate(false);
+                            propositionBean.getProposition().getChangeNotes().get(i).setToAdd(false);
+                            propositionBean.getProposition().getChangeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (propositionBean.getProposition().getChangeNotes().get(i).isToAdd()) {
+                            propositionBean.getProposition().getChangeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        } else if (!propositionBean.getProposition().getChangeNotes().get(i).isToRemove()) {
+                            propositionBean.getProposition().getChangeNotes().get(i).setToUpdate(true);
+                            propositionBean.getProposition().getChangeNotes().get(i).setLexicalvalue(notePropBean.getLexicalvalue());
+                        }
                     }
                 }
                 break;
@@ -448,7 +544,7 @@ public class NoteBean implements Serializable {
 
     public List<NotePropBean> nodePropToEdit() {
         if (selectedTypeNote == null) {
-            return null;
+            return new ArrayList<>();
         }
         switch (selectedTypeNote) {
             case "note":
@@ -463,10 +559,8 @@ public class NoteBean implements Serializable {
                 return propositionBean.getProposition().getHistoryNotes();
             case "editorialNote":
                 return propositionBean.getProposition().getEditorialNotes();
-            case "changeNote":
-                return propositionBean.getProposition().getChangeNotes();
             default:
-                return null;
+                return propositionBean.getProposition().getChangeNotes();
         }
     }
 
@@ -543,8 +637,14 @@ public class NoteBean implements Serializable {
                             .equals(notePropBean.getLexicalvalue())) {
                         if (propositionBean.getProposition().getNotes().get(i).isToAdd()) {
                             propositionBean.getProposition().getNotes().remove(i);
-                        } else {
+                        } else if (propositionBean.getProposition().getNotes().get(i).isToUpdate()) {
+                            propositionBean.getProposition().getNotes().get(i).setToUpdate(false);
                             propositionBean.getProposition().getNotes().get(i).setToRemove(true);
+                            propositionBean.getProposition().getNotes().get(i)
+                                    .setLexicalvalue(notePropBean.getOldValue());
+                        } else {
+                            propositionBean.getProposition().getNotes().get(i).setToRemove(
+                                    !propositionBean.getProposition().getNotes().get(i).isToRemove());
                         }
                     }
                 }
@@ -555,8 +655,14 @@ public class NoteBean implements Serializable {
                             .equals(notePropBean.getLexicalvalue())) {
                         if (propositionBean.getProposition().getDefinitions().get(i).isToAdd()) {
                             propositionBean.getProposition().getDefinitions().remove(i);
-                        } else {
+                        } else if (propositionBean.getProposition().getDefinitions().get(i).isToUpdate()) {
+                            propositionBean.getProposition().getDefinitions().get(i).setToUpdate(false);
                             propositionBean.getProposition().getDefinitions().get(i).setToRemove(true);
+                            propositionBean.getProposition().getDefinitions().get(i)
+                                    .setLexicalvalue(notePropBean.getOldValue());
+                        } else {
+                            propositionBean.getProposition().getDefinitions().get(i).setToRemove(
+                                    !propositionBean.getProposition().getDefinitions().get(i).isToRemove());
                         }
                     }
                 }
@@ -567,8 +673,14 @@ public class NoteBean implements Serializable {
                             .equals(notePropBean.getLexicalvalue())) {
                         if (propositionBean.getProposition().getScopeNotes().get(i).isToAdd()) {
                             propositionBean.getProposition().getScopeNotes().remove(i);
-                        } else {
+                        } else if (propositionBean.getProposition().getScopeNotes().get(i).isToUpdate()) {
+                            propositionBean.getProposition().getScopeNotes().get(i).setToUpdate(false);
                             propositionBean.getProposition().getScopeNotes().get(i).setToRemove(true);
+                            propositionBean.getProposition().getScopeNotes().get(i)
+                                    .setLexicalvalue(notePropBean.getOldValue());
+                        } else {
+                            propositionBean.getProposition().getScopeNotes().get(i).setToRemove(
+                                    !propositionBean.getProposition().getScopeNotes().get(i).isToRemove());
                         }
                     }
                 }
@@ -579,8 +691,14 @@ public class NoteBean implements Serializable {
                             .equals(notePropBean.getLexicalvalue())) {
                         if (propositionBean.getProposition().getExamples().get(i).isToAdd()) {
                             propositionBean.getProposition().getExamples().remove(i);
-                        } else {
+                        } else if (propositionBean.getProposition().getExamples().get(i).isToUpdate()) {
+                            propositionBean.getProposition().getExamples().get(i).setToUpdate(false);
                             propositionBean.getProposition().getExamples().get(i).setToRemove(true);
+                            propositionBean.getProposition().getExamples().get(i)
+                                    .setLexicalvalue(notePropBean.getOldValue());
+                        } else {
+                            propositionBean.getProposition().getExamples().get(i).setToRemove(
+                                    !propositionBean.getProposition().getExamples().get(i).isToRemove());
                         }
                     }
                 }
@@ -591,8 +709,14 @@ public class NoteBean implements Serializable {
                             .equals(notePropBean.getLexicalvalue())) {
                         if (propositionBean.getProposition().getHistoryNotes().get(i).isToAdd()) {
                             propositionBean.getProposition().getHistoryNotes().remove(i);
-                        } else {
+                        } else if (propositionBean.getProposition().getHistoryNotes().get(i).isToUpdate()) {
+                            propositionBean.getProposition().getHistoryNotes().get(i).setToUpdate(false);
                             propositionBean.getProposition().getHistoryNotes().get(i).setToRemove(true);
+                            propositionBean.getProposition().getHistoryNotes().get(i)
+                                    .setLexicalvalue(notePropBean.getOldValue());
+                        } else {
+                            propositionBean.getProposition().getHistoryNotes().get(i).setToRemove(
+                                    !propositionBean.getProposition().getHistoryNotes().get(i).isToRemove());
                         }
                     }
                 }
@@ -603,8 +727,14 @@ public class NoteBean implements Serializable {
                             .equals(notePropBean.getLexicalvalue())) {
                         if (propositionBean.getProposition().getEditorialNotes().get(i).isToAdd()) {
                             propositionBean.getProposition().getEditorialNotes().remove(i);
-                        } else {
+                        } else if (propositionBean.getProposition().getEditorialNotes().get(i).isToUpdate()) {
+                            propositionBean.getProposition().getEditorialNotes().get(i).setToUpdate(false);
                             propositionBean.getProposition().getEditorialNotes().get(i).setToRemove(true);
+                            propositionBean.getProposition().getEditorialNotes().get(i)
+                                    .setLexicalvalue(notePropBean.getOldValue());
+                        } else {
+                            propositionBean.getProposition().getEditorialNotes().get(i).setToRemove(
+                                    !propositionBean.getProposition().getEditorialNotes().get(i).isToRemove());
                         }
                     }
                 }
@@ -615,8 +745,14 @@ public class NoteBean implements Serializable {
                             .equals(notePropBean.getLexicalvalue())) {
                         if (propositionBean.getProposition().getChangeNotes().get(i).isToAdd()) {
                             propositionBean.getProposition().getChangeNotes().remove(i);
-                        } else {
+                        } else if (propositionBean.getProposition().getChangeNotes().get(i).isToUpdate()) {
+                            propositionBean.getProposition().getChangeNotes().get(i).setToUpdate(false);
                             propositionBean.getProposition().getChangeNotes().get(i).setToRemove(true);
+                            propositionBean.getProposition().getChangeNotes().get(i)
+                                    .setLexicalvalue(notePropBean.getOldValue());
+                        } else {
+                            propositionBean.getProposition().getChangeNotes().get(i).setToRemove(
+                                    !propositionBean.getProposition().getChangeNotes().get(i).isToRemove());
                         }
                     }
                 }

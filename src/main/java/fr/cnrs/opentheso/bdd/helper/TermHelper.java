@@ -318,6 +318,8 @@ public class TermHelper {
                             + ",'" + source + "'"
                             + ",'" + status + "'"
                             + "," + isHidden + ")";
+                    
+                    System.out.println("SQL 2 : " + query);
 
                     stmt.executeUpdate(query);
                     if (addNonPreferredTermHistorique(conn, idTerm, value, idLang, idTheso, source, status, isHidden, "ADD", idUser)) {
@@ -1524,6 +1526,8 @@ public class TermHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
+                System.out.println("SQL 1 : " + "SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
+                        + "' and id_concept = '" + idConcept + "'");
                 stmt.executeQuery("SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
                         + "' and id_concept = '" + idConcept + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -1564,15 +1568,13 @@ public class TermHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT lexical_value, created, modified,"
+                    stmt.executeQuery("SELECT lexical_value, created, modified,"
                             + " source, status, hiden"
                             + " FROM non_preferred_term"
                             + " WHERE non_preferred_term.id_term = '" + idTerm + "'"
                             + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
                             + " and non_preferred_term.lang ='" + idLang + "'"
-                            + " order by lexical_value ASC";
-
-                    stmt.executeQuery(query);
+                            + " order by lexical_value ASC");
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {
                         nodeEMList = new ArrayList<>();

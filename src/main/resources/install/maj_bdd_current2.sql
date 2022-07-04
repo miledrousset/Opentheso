@@ -425,6 +425,39 @@ begin
 end
 $$language plpgsql;
 
+-- Module proposition --
+CREATE TABLE IF NOT EXISTS proposition_modification
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    id_concept character varying COLLATE pg_catalog."default" NOT NULL,
+    id_theso character varying COLLATE pg_catalog."default" NOT NULL,
+    status character varying COLLATE pg_catalog."default" NOT NULL,
+    nom character varying COLLATE pg_catalog."default" NOT NULL,
+    email character varying COLLATE pg_catalog."default" NOT NULL,
+    commentaire character varying COLLATE pg_catalog."default",
+    approuve_par character varying COLLATE pg_catalog."default",
+    approuve_date timestamp with time zone,
+    lang character varying COLLATE pg_catalog."default",
+    date character varying COLLATE pg_catalog."default",
+    CONSTRAINT proposition_modification_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS proposition_modification_detail
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    id_proposition integer NOT NULL,
+    categorie character varying COLLATE pg_catalog."default" NOT NULL,
+    value character varying COLLATE pg_catalog."default" NOT NULL,
+    action character varying COLLATE pg_catalog."default",
+    lang character varying COLLATE pg_catalog."default",
+    old_value character varying COLLATE pg_catalog."default",
+    hiden boolean,
+    status character varying COLLATE pg_catalog."default",
+    id_term character varying COLLATE pg_catalog."default",
+    CONSTRAINT proposition_modification_detail_pkey PRIMARY KEY (id)
+)
+-- Fin Module proposition --
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------

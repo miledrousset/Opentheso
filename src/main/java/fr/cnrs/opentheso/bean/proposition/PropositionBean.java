@@ -74,11 +74,12 @@ public class PropositionBean implements Serializable {
 
         conceptView.getConcept(propositionDao.getIdTheso(), propositionDao.getIdConcept(), propositionDao.getLang());
 
-        nom = currentUser.getNodeUser().getName();
-        email = currentUser.getNodeUser().getMail();
-
+        proposition = new Proposition();
         propositionService.preparerPropositionSelect(proposition, propositionDao);
-        
+
+        nom = propositionDao.getNom();
+        email = propositionDao.getEmail();
+
         propositions = propositionService.searchAllPropositions();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
     }
@@ -87,7 +88,7 @@ public class PropositionBean implements Serializable {
         propositions = propositionService.searchAllPropositions();
         PrimeFaces.current().executeScript("PF('listNotification').show();");
     }
-    
+
     public void searchNewPropositions() {
         nbrNewPropositions = propositionService.searchNbrNewProposition();
     }
@@ -115,31 +116,33 @@ public class PropositionBean implements Serializable {
     }
 
     public void executionAction() throws IOException {
-        if (null != actionNom) switch (actionNom) {
-            case "envoyerProposition":
-                envoyerProposition();
-                break;
-            case "approuverProposition":
-                propositionService.insertProposition(proposition, propositionSelected);
-                switchToConceptInglet();
-                showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
-                        + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
-                break;
-            case "refuserProposition":
-                propositionService.refuserProposition(propositionSelected);
-                switchToConceptInglet();
-                showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
-                        + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") refusée avec sucée !");
-                break;
-            case "supprimerProposition":
-                propositionService.supprimerPropostion(propositionSelected);
-                switchToConceptInglet();
-                showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
-                        + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
-                break;
-            case "annulerProposition":
-                annulerPropostion();
-                break;
+        if (null != actionNom) {
+            switch (actionNom) {
+                case "envoyerProposition":
+                    envoyerProposition();
+                    break;
+                case "approuverProposition":
+                    propositionService.insertProposition(proposition, propositionSelected);
+                    switchToConceptInglet();
+                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
+                            + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
+                    break;
+                case "refuserProposition":
+                    propositionService.refuserProposition(propositionSelected);
+                    switchToConceptInglet();
+                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
+                            + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") refusée avec sucée !");
+                    break;
+                case "supprimerProposition":
+                    propositionService.supprimerPropostion(propositionSelected);
+                    switchToConceptInglet();
+                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
+                            + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
+                    break;
+                case "annulerProposition":
+                    annulerPropostion();
+                    break;
+            }
         }
         PrimeFaces.current().executeScript("PF('confirmDialog').hide();");
     }
@@ -161,7 +164,20 @@ public class PropositionBean implements Serializable {
     }
 
     public void updateNomConcept() {
-        proposition.setUpdateNomConcept(true);
+
+        if (StringUtils.isEmpty(proposition.getNomConceptProp())) {
+            proposition.setNomConceptProp("");
+            proposition.setUpdateNomConcept(false);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Le label est oubligatoire !");
+        } else {
+            if (propositionService.updateNomConcept(proposition.getNomConceptProp())) {
+                proposition.setUpdateNomConcept(true);
+            } else {
+                proposition.setNomConceptProp("");
+                proposition.setUpdateNomConcept(false);
+            }
+        }
+
         PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
     }
 

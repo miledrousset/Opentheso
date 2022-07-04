@@ -215,12 +215,12 @@ public class TraductionBean implements Serializable {
     public void addNewTraductionProposition() {
         FacesMessage msg;
         if (traductionValue == null || traductionValue.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Une valeur est obligatoire !");
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Une valeur est obligatoire !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
         if (selectedLang == null || selectedLang.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Pas de langue choisie !");
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Pas de langue choisie !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
@@ -230,7 +230,7 @@ public class TraductionBean implements Serializable {
                 traductionValue,
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
@@ -238,7 +238,7 @@ public class TraductionBean implements Serializable {
         for (TraductionPropBean traductionPropBean : propositionBean.getProposition().getTraductionsProp()) {
             if (selectedLang.equalsIgnoreCase(traductionPropBean.getLang())
                     && traductionValue.equalsIgnoreCase(traductionPropBean.getLexicalValue())) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
@@ -316,13 +316,19 @@ public class TraductionBean implements Serializable {
 
     public void updateTraductionProp(TraductionPropBean traductionPropBean) {
 
-        if (traductionPropBean == null || traductionPropBean.getLexicalValue().isEmpty()) {
+        if (traductionPropBean.getLexicalValue().isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Veuillez saisir une valeur !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+        
+        if (traductionPropBean.isToUpdate() && 
+                traductionPropBean.getLexicalValue().equalsIgnoreCase(traductionPropBean.getOldValue())){
+            traductionPropBean.setToUpdate(false);
             return;
         }
 
+        // Rechercher dans la base s'il existe un label identique
         if (new TermHelper().isTermExistIgnoreCase(
                 connect.getPoolConnexion(),
                 traductionPropBean.getLexicalValue(),
@@ -330,28 +336,21 @@ public class TraductionBean implements Serializable {
                 traductionPropBean.getLang())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            PrimeFaces.current().ajax().update("messageIndex");
             return;
-        }
-        
-        for (TraductionPropBean trad : propositionBean.getProposition().getTraductionsProp()) {
-            if (traductionValue.equalsIgnoreCase(trad.getLexicalValue())) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
         }
 
         for (int i = 0; i < propositionBean.getProposition().getTraductionsProp().size(); i++) {
             if (propositionBean.getProposition().getTraductionsProp().get(i).getLang()
                     .equals(traductionPropBean.getLang())) {
-                if (!propositionBean.getProposition().getTraductionsProp().get(i).isToAdd()
-                        && !propositionBean.getProposition().getTraductionsProp().get(i).isToRemove()) {
+                if (propositionBean.getProposition().getTraductionsProp().get(i).isToRemove()) {
+                    propositionBean.getProposition().getTraductionsProp().get(i).setToRemove(false);
                     propositionBean.getProposition().getTraductionsProp().get(i).setToUpdate(true);
-                }
-                if (!propositionBean.getProposition().getTraductionsProp().get(i).isToRemove()) {
-                    propositionBean.getProposition().getTraductionsProp()
-                            .get(i).setLexicalValue(traductionPropBean.getLexicalValue());
+                    propositionBean.getProposition().getTraductionsProp().get(i).setLexicalValue(traductionPropBean.getLexicalValue());
+                } else if (propositionBean.getProposition().getTraductionsProp().get(i).isToAdd()) {
+                    propositionBean.getProposition().getTraductionsProp().get(i).setLexicalValue(traductionPropBean.getLexicalValue());
+                } else {
+                    propositionBean.getProposition().getTraductionsProp().get(i).setToUpdate(true);
+                    propositionBean.getProposition().getTraductionsProp().get(i).setLexicalValue(traductionPropBean.getLexicalValue());
                 }
             }
         }
@@ -493,10 +492,16 @@ public class TraductionBean implements Serializable {
         for (int i = 0; i < propositionBean.getProposition().getTraductionsProp().size(); i++) {
             if (propositionBean.getProposition().getTraductionsProp().get(i).getLexicalValue()
                     .equals(traductionPropBean.getLexicalValue())) {
-                if (propositionBean.getProposition().getTraductionsProp().get(i).isToAdd()) {
+                if (propositionBean.getProposition().getTraductionsProp().get(i).isToUpdate()) {
+                    propositionBean.getProposition().getTraductionsProp().get(i).setToRemove(true);
+                    propositionBean.getProposition().getTraductionsProp().get(i).setToUpdate(false);
+                    propositionBean.getProposition().getTraductionsProp().get(i).setLexicalValue(
+                        propositionBean.getProposition().getTraductionsProp().get(i).getOldValue());
+                } else if (propositionBean.getProposition().getTraductionsProp().get(i).isToAdd()) {
                     propositionBean.getProposition().getTraductionsProp().remove(i);
                 } else {
-                    propositionBean.getProposition().getTraductionsProp().get(i).setToRemove(true);
+                    propositionBean.getProposition().getTraductionsProp().get(i).setToRemove(
+                            !propositionBean.getProposition().getTraductionsProp().get(i).isToRemove());
                 }
             }
         }
