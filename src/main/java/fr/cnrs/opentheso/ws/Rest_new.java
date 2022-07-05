@@ -2010,7 +2010,63 @@ public class Rest_new {
         }
         return datas;
     }
+    
+    /**
+     * Pour retourner un thesaurus complet à partir de son identifiant
+     * le thesaurus retourné ne comporte pas de relations, maisn uniquement Id et value en Json
+     * On peut préciser la langue 
+     *
+     * @param uri
+     * @return
+     */
+    @Path("allIdValue/theso")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response getAllIdValueTheso(@Context UriInfo uri) {
+        String idTheso = null;
+        String lang = null;
+        String datas;
 
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("id")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("lang")) {
+                    lang = valeur;
+                }
+            }
+        }
+
+        if (idTheso == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if (lang == null || lang.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        
+        datas = getAllIdValueTheso__(idTheso, lang);
+        if (datas == null) {
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+    }    
+
+    private String getAllIdValueTheso__(String idtheso, String lang) {
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.getThesoIdValue(ds, idtheso, lang);
+        }
+        if (datas == null) {
+            return null;
+        }
+        return datas;
+    }    
+    
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
     /*

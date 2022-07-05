@@ -51,6 +51,12 @@
                                 oncomplete="PF('listImageCsv').show();"
                                 update="idListImageCsv listImageCsvForm"
                                 action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/> 
+                    
+                    <p:menuitem value="#{langueBean.getMsg('actions.importNotations')}" 
+                                title="#{langueBean.getMsg('actions.importNotationsTooltip')}"
+                                oncomplete="PF('listNotationCsv').show();"
+                                update="idListNotationCsv listNotationCsvForm"
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                     
                 </p:menuButton>
             </p:panel>           
         </div>
@@ -61,4 +67,5 @@
     <ui:include src="../dialog/import/listNoteCsv.xhtml" />      
     <ui:include src="../dialog/import/listArkCsv.xhtml" />      
     <ui:include src="../dialog/import/listImageCsv.xhtml" />      
+    <ui:include src="../dialog/import/listNotationCsv.xhtml" />     
 </ui:fragment>

@@ -1140,6 +1140,41 @@ public class RestRDFHelper {
     }      
     
     /**
+     * Fonction qui permet de récupérer un thésaurus entier uniquement Id et Value en Json
+     *
+     * @param ds
+     * @param idTheso
+     * @param lang
+     * @return skos
+     */
+    public String getThesoIdValue(HikariDataSource ds,
+            String idTheso, String lang) {
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
+        
+        String datasJson;
+        JsonArrayBuilder jsonArrayBuilderLine = Json.createArrayBuilder();
+
+        for (String idConcept : idConcepts) {
+            conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang);
+            JsonObjectBuilder jobLine = Json.createObjectBuilder();
+            jobLine.add("conceptId", idConcept);
+            jobLine.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
+            jobLine.add("notation", conceptHelper.getNotationOfConcept(ds, idConcept, idTheso));
+            jobLine.add("prefLabel", conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang));
+            jsonArrayBuilderLine.add(jobLine.build());
+        }
+        datasJson = jsonArrayBuilderLine.build().toString();
+
+        if (datasJson != null) {
+            return datasJson;
+        } else {
+            return null;
+        }
+    }      
+    
+    /**
      * Fonction qui permet de récupérer un thésaurus entier
      *
      * @param ds

@@ -2077,6 +2077,32 @@ public class ConceptHelper {
         }
         return false;
     }    
+    
+    /**
+     * 
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @return 
+     */
+    public boolean isHaveNotation(HikariDataSource ds, String idTheso, String idConcept) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select notation from concept where id_concept = '" + idConcept + "'" +
+                        " and id_thesaurus = '" + idTheso + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        String notation = resultSet.getString("notation");
+                        if(notation == null || notation.isEmpty()) return false;
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if id exist : " + idConcept, sqle);
+        }
+        return false;
+    }        
 
     /**
      * Cette fonction permet de savoir si l'ID du concept existe ou non
@@ -3821,6 +3847,12 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer le nom d'un Concept sinon renvoie une
      * chaine vide
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return 
      */
     public String getLexicalValueOfConcept(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
@@ -3858,7 +3890,7 @@ public class ConceptHelper {
                         + "' and id_concept = '" + idConcept + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
-                        ark = resultSet.getString("id_ark");
+                        ark = resultSet.getString("id_ark").trim();
                     }
                 }
             }
@@ -3867,6 +3899,34 @@ public class ConceptHelper {
         }
         return ark;
     }
+    
+    /**
+     * Cette fonction permet de récupérer la notation sinon renvoie une
+     * chaine vide
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
+     */
+    public String getNotationOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+
+        String notation = "";
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select notation from concept where id_thesaurus = '" + idThesaurus
+                        + "' and id_concept = '" + idConcept + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        notation = resultSet.getString("notation").trim();
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting notation of Concept : " + idConcept, sqle);
+        }
+        return notation;
+    }    
 
     /**
      * Cette fonction permet de récupérer les identifiants d'un concept idArk,
