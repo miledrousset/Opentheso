@@ -455,8 +455,8 @@ CREATE TABLE IF NOT EXISTS proposition_modification_detail
     status character varying COLLATE pg_catalog."default",
     id_term character varying COLLATE pg_catalog."default",
     CONSTRAINT proposition_modification_detail_pkey PRIMARY KEY (id)
-)
--- Fin Mbdd_currentodule proposition --
+);
+-- Fin Module proposition --
 
 ----------------------------------------------------------------------------
 -- exécution des fonctions
