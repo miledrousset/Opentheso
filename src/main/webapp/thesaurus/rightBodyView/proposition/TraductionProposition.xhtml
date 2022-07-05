@@ -9,15 +9,13 @@
         <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
             <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
                 <div class="row" style="margin-left: 0px;">
-                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                    <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 7px"/>
                     </div>
-                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: end"> 
-                        <i class="fa fa-language" style="color: #78261f; margin-right: 10px" />
-                    </div>  
-                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                    
-                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;"
+                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">  
+
+                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;  margin-left: -37px"
                                       rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" actionListener="#{traductionBean.reset()}"
@@ -80,7 +78,7 @@
                                                    update="containerIndex indexTitle"/>  
                                 </h:panelGroup>
 
-                                <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
+                                <br/>                                 
                             </ui:repeat>
                         </h:panelGroup>
                     </div>

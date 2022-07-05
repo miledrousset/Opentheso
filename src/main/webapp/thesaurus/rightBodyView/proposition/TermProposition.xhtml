@@ -16,7 +16,7 @@
                     </div> 
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                         <p:menuButton rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}"
-                                      icon="fas fa-cog" style="margin-top: -4px; font-size: 10px !important;">
+                                      icon="fas fa-cog" style="margin-top: -4px; font-size: 10px !important; margin-left: -37px">
                             <p:menuitem value="Proposer un nouveau nom"
                                         actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
                                         oncomplete="PF('nouveauNomConcept').show();" update="containerIndex:rightTab:idNouveauNomConcept" icon="fas fa-edit" />
@@ -61,7 +61,7 @@
                                       style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                     </div>
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                        <p:menuButton icon="fas fa-cog" style="margin-top: -4px;"
+                        <p:menuButton icon="fas fa-cog" style="margin-top: -4px; margin-left: -37px"
                                       rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
                             <p:menuitem value="Ajouter une nouvelle variante" 
                                         actionListener="#{synonymBean.reset()}"
@@ -88,31 +88,25 @@
 
                                 <h:panelGroup rendered="#{!em.hiden and !em.toAdd and !em.toRemove and !em.toUpdate}"  >
                                     <h:outputText value="[#{em.lang.toUpperCase()}] " style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                    <h:outputText value="#{em.lexical_value}" style="color: #666666; font-size: 14px;"/> 
+                                    <h:outputText value="#{em.lexical_value}" style="color: #666666; font-size: 14px;"/> <br/>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{!em.hiden and em.toAdd}"  >
                                     <h:outputText value="[#{em.lang.toUpperCase()}] " style="font-size: 14px; color: green; font-weight: bold;"/> 
-                                    <h:outputText value="#{em.lexical_value}" style="font-size: 14px; color: green;" /> 
+                                    <h:outputText value="#{em.lexical_value}" style="font-size: 14px; color: green;" /> <br/>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{!em.hiden and em.toUpdate}"  >
                                     <h:outputText value="[#{em.lang.toUpperCase()}] " style="font-size: 14px; color: blue; font-weight: bold;"/> 
                                     <h:outputText value="#{em.lexical_value} " style="font-size: 14px; color: blue;" /> 
-                                    <h:outputText value="(#{em.oldValue})" style="font-size: 14px; color: blue;" /> 
+                                    <h:outputText value="(#{em.oldValue})" style="font-size: 14px; color: blue;" /> <br/>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{!em.hiden and em.toRemove}"  >
                                     <h:outputText value="[#{em.lang.toUpperCase()}] " style="font-size: 14px; color: red; font-weight: bold; text-decoration : line-through;"/> 
-                                    <h:outputText value="#{em.lexical_value}" style="font-size: 14px; color: red; text-decoration : line-through;" /> 
+                                    <h:outputText value="#{em.lexical_value}" style="font-size: 14px; color: red; text-decoration : line-through;" /> <br/>
                                 </h:panelGroup>
-
-                                <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
-                            
-                            <h:panelGroup rendered="#{propositionBean.proposition.synonymsProp != null and propositionBean.proposition.synonymsProp.size() != 0}">
-                                <br/>
-                            </h:panelGroup>
                             
                             <ui:repeat var="em2" value="#{propositionBean.proposition.synonymsProp}" varStatus="status">
 
@@ -123,7 +117,7 @@
                                                   rendered="#{em2.hiden}" />
                                     <h:outputText value="[#{em2.lang.toUpperCase()}] " escape="false" 
                                                   style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="color: #666666; font-size: 14px;"/> 
+                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="color: #666666; font-size: 14px;"/> <br/>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{em2.hiden and em2.toAdd}">
@@ -132,7 +126,7 @@
                                               style="font-size: 12px; color: #FF7979; font-style: italic "
                                               rendered="#{em2.hiden}" />
                                     <h:outputText value="[#{em2.lang.toUpperCase()}] " escape="false" style="font-size: 14px; color: green; font-weight: bold;"/> 
-                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="font-size: 14px; color: green;" /> 
+                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="font-size: 14px; color: green;" /> <br/>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{em2.hiden and em2.toUpdate}">
@@ -142,7 +136,7 @@
                                               rendered="#{em2.hiden}" />
                                     <h:outputText value="[#{em2.lang.toUpperCase()}] " escape="false" style="font-size: 14px; color: blue; font-weight: bold;"/> 
                                     <h:outputText value="#{em2.lexical_value} " escape="false" style="font-size: 14px; color: blue;" /> 
-                                    <h:outputText value="(#{em2.oldValue})" style="font-size: 14px; color: blue;" /> 
+                                    <h:outputText value="(#{em2.oldValue})" style="font-size: 14px; color: blue;" /> <br/>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{em2.hiden and em2.toRemove}">
@@ -151,10 +145,8 @@
                                               style="font-size: 12px; color: #FF7979; font-style: italic "
                                               rendered="#{em2.hiden}" />
                                     <h:outputText value="[#{em2.lang.toUpperCase()}] " escape="false" style="font-size: 14px; color: red; font-weight: bold; text-decoration : line-through;"/> 
-                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="font-size: 14px; color: red; text-decoration : line-through;" /> 
+                                    <h:outputText value="#{em2.lexical_value}" escape="false" style="font-size: 14px; color: red; text-decoration : line-through;" /><br/>
                                 </h:panelGroup>
-
-                                <h:outputText rendered="#{(em2.hiden) and (!status.last)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
                         </h:panelGroup>
                     </div>

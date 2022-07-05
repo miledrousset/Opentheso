@@ -5,7 +5,6 @@ import com.sendgrid.Email;
 import com.sendgrid.Mail;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
-import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 
 import fr.cnrs.opentheso.bdd.datas.Term;
@@ -35,12 +34,17 @@ import fr.cnrs.opentheso.bean.proposition.model.PropositionCategoryEnum;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -355,7 +359,10 @@ public class PropositionService implements Serializable {
         }
 
         try {
-            sendRecapEmail(propositionDao.getEmail());
+            sendRecapEmail(propositionDao.getEmail(), propositionDao.getNom(), 
+                    propositionDao.getIdTheso(), proposition.getNomConcept().getLexical_value(), 
+                    "http://localhost:8080/opentheso2/?idc=" + propositionDao.getIdConcept() 
+                            + "&idt=" + propositionDao.getIdTheso());
         } catch (IOException ex) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
         }
@@ -367,27 +374,49 @@ public class PropositionService implements Serializable {
                 PropositionStatusEnum.ENVOYER.name());
     }
 
-    public void sendRecapEmail(String emailDestination) throws IOException {
-        Email from = new Email("firas.gabsi@gmail.com");
+    public void sendRecapEmail(String emailDestination, String userName, String thesoId,
+            String conceptName, String urlConcept) throws IOException {
+        
+        ResourceBundle resourceBundle = getBundlePool();
+        if(resourceBundle == null){
+            return;
+        }
+        
+        Email from = new Email(resourceBundle.getString("mailbox.from"));
         Email to = new Email(emailDestination);
 
         String subject = "Confirmation de la soumission de votre proposition";
-        Content content = new Content("text/html", "<p>Votre proposition a été bien reçue par nos administrateurs, elle sera traitée dans les plus brefs délais.</p>");
+        
+        String contentFile = "<html><body>"
+                + "<img src=\"https://i.ibb.co/kKBBnJJ/mail-entete.jpg\" width=\"450\" height=\"106\"><br/><br/> Cher(e) "+userName+", <br/> "
+                + "<p> Votre proposition a été bien reçue par nos administrateurs, elle sera traitée dans les plus brefs délais.<br/>"
+                + "Vous recevrez un mail dès que votre proposition sera traitée.<br/></p> "
+                + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>"+thesoId+"</b> "
+                + "(concept : <a href=\""+ urlConcept +"\">"+conceptName+"</a>). <br/><br/> Cordialement,<br/>"
+                + "L'équipe Opentheso.<br/><br/> <img src=\"https://i.ibb.co/N9bKdgW/mail-signature.jpg\" width=\"480\" height=\"106\"></body></html>";
+        Content content = new Content("text/html", contentFile);
 
         Mail mail = new Mail(from, subject, to, content);
 
-        SendGrid sg = new SendGrid("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");
+        SendGrid sg = new SendGrid(resourceBundle.getString("mailbox.key"));
         Request request = new Request();
 
         request.setMethod(Method.POST);
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
 
-        Response response = sg.api(request);
-
-        System.out.println(response.getStatusCode());
-        System.out.println(response.getHeaders());
-        System.out.println(response.getBody());
+        sg.api(request);
+    }
+    
+    private ResourceBundle getBundlePool(){
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            ResourceBundle bundlePool = context.getApplication().getResourceBundle(context, "conHikari");
+            return bundlePool;
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+        return null;
     }
 
     public void refuserProposition(PropositionDao propositionSelected) {
