@@ -1156,15 +1156,27 @@ public class RestRDFHelper {
         String datasJson;
         JsonArrayBuilder jsonArrayBuilderLine = Json.createArrayBuilder();
 
-        for (String idConcept : idConcepts) {
-            conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang);
-            JsonObjectBuilder jobLine = Json.createObjectBuilder();
-            jobLine.add("conceptId", idConcept);
-            jobLine.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
-            jobLine.add("notation", conceptHelper.getNotationOfConcept(ds, idConcept, idTheso));
-            jobLine.add("prefLabel", conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang));
-            jsonArrayBuilderLine.add(jobLine.build());
+        if(lang != null) {
+            for (String idConcept : idConcepts) {
+                JsonObjectBuilder jobLine = Json.createObjectBuilder();
+                jobLine.add("conceptId", idConcept);
+                jobLine.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
+                jobLine.add("notation", conceptHelper.getNotationOfConcept(ds, idConcept, idTheso));
+                jobLine.add("prefLabel", conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang));
+                jsonArrayBuilderLine.add(jobLine.build());
+            }
+        } else {
+            for (String idConcept : idConcepts) {
+                conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang);
+                JsonObjectBuilder jobLine = Json.createObjectBuilder();
+                jobLine.add("conceptId", idConcept);
+                jobLine.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
+                jobLine.add("notation", conceptHelper.getNotationOfConcept(ds, idConcept, idTheso));
+                jobLine.add("prefLabel", conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang));
+                jsonArrayBuilderLine.add(jobLine.build());
+            }            
         }
+        
         datasJson = jsonArrayBuilderLine.build().toString();
 
         if (datasJson != null) {

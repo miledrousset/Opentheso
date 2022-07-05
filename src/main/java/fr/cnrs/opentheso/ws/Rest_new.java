@@ -2041,9 +2041,9 @@ public class Rest_new {
         if (idTheso == null) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        if (lang == null || lang.isEmpty()) {
+      /*  if (lang == null || lang.isEmpty()) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
+        }*/
         
         datas = getAllIdValueTheso__(idTheso, lang);
         if (datas == null) {
