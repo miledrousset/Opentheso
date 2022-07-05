@@ -206,6 +206,10 @@ public class SynonymBean implements Serializable {
             return;
         }
 
+        if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
+            propositionBean.getProposition().setSynonymsProp(new ArrayList<>());
+         }
+        
         for (SynonymPropBean synonym : propositionBean.getProposition().getSynonymsProp()) {
             if (synonym.getLexical_value().equalsIgnoreCase(value)
                     && synonym.getLang().equalsIgnoreCase(selectedLang)) {
@@ -222,10 +226,6 @@ public class SynonymBean implements Serializable {
         synonymPropBean.setLang(selectedLang);
         synonymPropBean.setLexical_value(value);
         synonymPropBean.setOldValue(value);
-        
-        if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
-            propositionBean.getProposition().setSynonymsProp(new ArrayList<>());
-        }
         propositionBean.getProposition().getSynonymsProp().add(synonymPropBean);
     }
 

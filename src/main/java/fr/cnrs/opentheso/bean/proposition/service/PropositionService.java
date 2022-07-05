@@ -691,7 +691,7 @@ public class PropositionService implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     notePropBean.getLexicalvalue(),
                     typeNote,
-                    -1)) {
+                    currentUser.getNodeUser().getIdUser())) {
 
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -699,12 +699,12 @@ public class PropositionService implements Serializable {
         } else {
             if (!new NoteHelper().addTermNote(
                     connect.getPoolConnexion(),
-                    conceptView.getNodeConcept().getConcept().getIdConcept(),
+                    conceptView.getNodeConcept().getTerm().getId_term(),
                     notePropBean.getLang(),
                     selectedTheso.getCurrentIdTheso(),
                     notePropBean.getLexicalvalue(),
                     typeNote,
-                    -1)) {
+                    currentUser.getNodeUser().getIdUser())) {
 
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
