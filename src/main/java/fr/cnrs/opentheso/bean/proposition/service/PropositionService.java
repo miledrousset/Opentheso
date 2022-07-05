@@ -1082,10 +1082,9 @@ public class PropositionService implements Serializable {
     }
 
     public List<SynonymPropBean> toSynonymPropBean(List<NodeEM> nodesEm, String idTerm) {
-        List<SynonymPropBean> synonyms = null;
+        List<SynonymPropBean> synonyms = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(nodesEm)) {
-            synonyms = new ArrayList<>();
             for (NodeEM nodeEM : nodesEm) {
                 SynonymPropBean synonymPropBean = new SynonymPropBean();
                 synonymPropBean.setAction(nodeEM.getAction());
