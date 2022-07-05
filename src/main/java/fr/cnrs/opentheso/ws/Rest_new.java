@@ -2019,7 +2019,7 @@ public class Rest_new {
      * @param uri
      * @return
      */
-    @Path("allIdValue/theso")
+    @Path("jsonlist/theso")
     @GET
     @Produces("application/json;charset=UTF-8")
     public Response getAllIdValueTheso(@Context UriInfo uri) {
