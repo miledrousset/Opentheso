@@ -17,6 +17,7 @@ import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
@@ -1153,7 +1154,7 @@ public class RestRDFHelper {
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> idConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
         
-        String datasJson;
+        String datasJson = null;
         JsonArrayBuilder jsonArrayBuilderLine = Json.createArrayBuilder();
 
         if(lang != null) {
@@ -1166,18 +1167,33 @@ public class RestRDFHelper {
                 jsonArrayBuilderLine.add(jobLine.build());
             }
         } else {
+            TermHelper termHelper = new TermHelper();
+            ArrayList<NodeTermTraduction> termTraductions;
             for (String idConcept : idConcepts) {
-                conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang);
                 JsonObjectBuilder jobLine = Json.createObjectBuilder();
                 jobLine.add("conceptId", idConcept);
                 jobLine.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
                 jobLine.add("notation", conceptHelper.getNotationOfConcept(ds, idConcept, idTheso));
-                jobLine.add("prefLabel", conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang));
+                
+                termTraductions =  termHelper.getAllTraductionsOfConcept(ds, idConcept, idTheso);
+                
+                // traductions 
+                JsonArrayBuilder jsonArrayBuilderTrad = Json.createArrayBuilder();                 
+                
+                for (NodeTermTraduction termTraduction : termTraductions) {
+                    JsonObjectBuilder jobLang = Json.createObjectBuilder();
+                    jobLang.add("lang", termTraduction.getLang());
+                    jobLang.add("value", termTraduction.getLexicalValue());
+                    jsonArrayBuilderTrad.add(jobLang.build()); 
+                }
+                jobLine.add("traduction", jsonArrayBuilderTrad.build());
                 jsonArrayBuilderLine.add(jobLine.build());
-            }            
-        }
         
-        datasJson = jsonArrayBuilderLine.build().toString();
+
+            }
+        }
+        if(jsonArrayBuilderLine != null)
+            datasJson = jsonArrayBuilderLine.build().toString();
 
         if (datasJson != null) {
             return datasJson;
