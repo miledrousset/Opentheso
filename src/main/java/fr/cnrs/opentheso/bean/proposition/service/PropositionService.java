@@ -78,7 +78,6 @@ public class PropositionService implements Serializable {
 
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
-    
 
     public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire) {
 
@@ -359,10 +358,18 @@ public class PropositionService implements Serializable {
         }
 
         try {
-            sendRecapEmail(propositionDao.getEmail(), propositionDao.getNom(), 
-                    propositionDao.getIdTheso(), proposition.getNomConcept().getLexical_value(), 
-                    "http://localhost:8080/opentheso2/?idc=" + propositionDao.getIdConcept() 
-                            + "&idt=" + propositionDao.getIdTheso());
+            String subject = "[Opentheso] Confirmation de l'envoie de votre proposition";
+
+            String contentFile = "<html><body>"
+                    + "<img src=\"https://i.ibb.co/kKBBnJJ/mail-entete.jpg\" width=\"450\" height=\"106\"><br/><br/> Cher(e) " + propositionDao.getNom() + ", <br/> "
+                    + "<p> Votre proposition a été bien reçue par nos administrateurs, elle sera traitée dans les plus brefs délais.<br/>"
+                    + "Vous recevrez un mail dès que votre proposition sera traitée.<br/></p> "
+                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionDao.getIdTheso() + "</b> "
+                    + "(concept : <a href=\"" + getBundlePool().getString("mailbox.baseUrl") + propositionDao.getIdConcept()
+                    + "&idt=" + propositionDao.getIdTheso() + "\">" + proposition.getNomConcept().getLexical_value() + "</a>). <br/><br/> Cordialement,<br/>"
+                    + "L'équipe Opentheso.<br/><br/> <img src=\"https://i.ibb.co/N9bKdgW/mail-signature.jpg\" width=\"480\" height=\"106\"></body></html>";
+
+            sendEmail(propositionDao.getEmail(), subject, contentFile);
         } catch (IOException ex) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
         }
@@ -374,26 +381,16 @@ public class PropositionService implements Serializable {
                 PropositionStatusEnum.ENVOYER.name());
     }
 
-    public void sendRecapEmail(String emailDestination, String userName, String thesoId,
-            String conceptName, String urlConcept) throws IOException {
-        
+    public void sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
+
         ResourceBundle resourceBundle = getBundlePool();
-        if(resourceBundle == null){
+        if (resourceBundle == null) {
             return;
         }
-        
+
         Email from = new Email(resourceBundle.getString("mailbox.from"));
         Email to = new Email(emailDestination);
 
-        String subject = "Confirmation de la soumission de votre proposition";
-        
-        String contentFile = "<html><body>"
-                + "<img src=\"https://i.ibb.co/kKBBnJJ/mail-entete.jpg\" width=\"450\" height=\"106\"><br/><br/> Cher(e) "+userName+", <br/> "
-                + "<p> Votre proposition a été bien reçue par nos administrateurs, elle sera traitée dans les plus brefs délais.<br/>"
-                + "Vous recevrez un mail dès que votre proposition sera traitée.<br/></p> "
-                + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>"+thesoId+"</b> "
-                + "(concept : <a href=\""+ urlConcept +"\">"+conceptName+"</a>). <br/><br/> Cordialement,<br/>"
-                + "L'équipe Opentheso.<br/><br/> <img src=\"https://i.ibb.co/N9bKdgW/mail-signature.jpg\" width=\"480\" height=\"106\"></body></html>";
         Content content = new Content("text/html", contentFile);
 
         Mail mail = new Mail(from, subject, to, content);
@@ -405,10 +402,15 @@ public class PropositionService implements Serializable {
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
 
+        Response response = sg.api(request);
+
+        System.out.println(response.getStatusCode());
+        System.out.println(response.getHeaders());
+        System.out.println(response.getBody());
         sg.api(request);
     }
-    
-    private ResourceBundle getBundlePool(){
+
+    private ResourceBundle getBundlePool() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
             ResourceBundle bundlePool = context.getApplication().getResourceBundle(context, "conHikari");
@@ -426,6 +428,23 @@ public class PropositionService implements Serializable {
                 currentUser.getNodeUser().getName(),
                 DATE_FORMAT.format(new Date()),
                 propositionSelected.getId());
+
+        try {
+            String subject = "[Opentheso] Résultat de votre proposition";
+
+            String contentFile = "<html><body>"
+                    + "<img src=\"https://i.ibb.co/kKBBnJJ/mail-entete.jpg\" width=\"450\" height=\"106\"><br/><br/> Cher(e) " + propositionSelected.getNom() + ", <br/> "
+                    + "<p>Malheuresement, votre proposition a été refusée par un des adminisatrateur d'Opentheso.<br/>"
+                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionSelected.getIdTheso() + "</b> "
+                    + "(concept : <a href=\"" + getBundlePool().getString("mailbox.baseUrl") + propositionSelected.getIdConcept()
+                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>). <br/><br/> Cordialement,<br/>"
+                    + "L'équipe Opentheso.<br/><br/> <img src=\"https://i.ibb.co/N9bKdgW/mail-signature.jpg\" width=\"480\" height=\"106\"></body></html>";
+
+            sendEmail(propositionSelected.getEmail(), subject, contentFile);
+        } catch (IOException ex) {
+            System.out.print("error >> " + ex.getMessage());
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
+        }
     }
 
     public void supprimerPropostion(PropositionDao propositionSelected) {
@@ -556,7 +575,7 @@ public class PropositionService implements Serializable {
                     addNewNote(note, "note", propositionSelected.getIdConcept());
                 } else if (note.isToUpdate()) {
                     updateNote(note, "note");
-                } else if (note.isToRemove()){
+                } else if (note.isToRemove()) {
                     deleteNote(note, "note");
                 }
             }
@@ -647,6 +666,23 @@ public class PropositionService implements Serializable {
 
         conceptView.getConcept(propositionSelected.getIdTheso(), propositionSelected.getIdConcept(),
                 propositionSelected.getLang());
+
+        try {
+            String subject = "[Opentheso] Résultat de votre proposition";
+
+            String contentFile = "<html><body>"
+                    + "<img src=\"https://i.ibb.co/kKBBnJJ/mail-entete.jpg\" width=\"450\" height=\"106\"><br/><br/> Cher(e) " + propositionSelected.getNom() + ", <br/> "
+                    + "<p>Votre proposition a été acceptée par un des adminisatrateur d'Opentheso !!!<br/>"
+                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionSelected.getIdTheso() + "</b> "
+                    + "(concept : <a href=\"" + "http://localhost:8080/opentheso2/?idc=" + propositionSelected.getIdConcept()
+                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>). <br/><br/> Cordialement,<br/>"
+                    + "L'équipe Opentheso.<br/><br/> <img src=\"https://i.ibb.co/N9bKdgW/mail-signature.jpg\" width=\"480\" height=\"106\"></body></html>";
+
+            sendEmail(propositionSelected.getEmail(), subject, contentFile);
+        } catch (IOException ex) {
+            System.out.print("error >> " + ex.getMessage());
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
+        }
     }
 
     private void deleteNote(NotePropBean notePropBean, String typeNote) {
