@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.proposition.service;
 import com.sendgrid.Content;
 import com.sendgrid.Email;
 import com.sendgrid.Mail;
+import com.sendgrid.Response;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;
@@ -404,10 +405,10 @@ public class PropositionService implements Serializable {
 
         Response response = sg.api(request);
 
-        System.out.println(response.getStatusCode());
+     /*   System.out.println(response.getStatusCode());
         System.out.println(response.getHeaders());
         System.out.println(response.getBody());
-        sg.api(request);
+        sg.api(request);*/
     }
 
     private ResourceBundle getBundlePool() {
