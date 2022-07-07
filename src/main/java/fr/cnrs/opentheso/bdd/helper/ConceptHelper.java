@@ -43,7 +43,7 @@ import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
 import fr.cnrs.opentheso.ws.NodeDatas;
-import fr.cnrs.opentheso.ws.ark.ArkHelper;
+//import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.text.SimpleDateFormat;
@@ -1922,7 +1922,7 @@ public class ConceptHelper {
      * @param idArk
      * @return 
      */
-    public boolean updateArkId(HikariDataSource ds, String idTheso, String idConcept, String idArk) {
+/*    public boolean updateArkId(HikariDataSource ds, String idTheso, String idConcept, String idArk) {
 
         ArkHelper arkHelper = new ArkHelper(nodePreference);
         if (!arkHelper.login()) {
@@ -1987,7 +1987,7 @@ public class ConceptHelper {
             }
         }
         return true;
-    }
+    }*/
 
     /**
      * Pour préparer les données pour la création d'un idArk

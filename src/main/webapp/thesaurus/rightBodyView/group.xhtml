@@ -3,8 +3,9 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
     
-    
-    <ui:include src="groupActions.xhtml" />
+    <h:panelGroup rendered="#{(currentUser.nodeUser != null)}">
+        <ui:include src="groupActions.xhtml" />
+    </h:panelGroup>
     
     <h:panelGroup id="groupView" rendered="#{groupView.nodeGroup != null}" styleClass="textOpentheso">
 

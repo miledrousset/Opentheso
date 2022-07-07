@@ -64,6 +64,7 @@ public class SelectedTheso implements Serializable {
 
     private String idConceptFromUri;
     private String idThesoFromUri;
+    private String idGroupFromUri;
 
     private boolean isUriRequest = false;
 
@@ -401,8 +402,8 @@ public class SelectedTheso implements Serializable {
     }
 
     /**
-     * Pour sélectionner un thésaurus ou un concept en passant par l'URL
-     * @return 
+     * Pour sélectionner un thésaurus ou un concept en passant par l'URL 
+     * @throws java.io.IOException 
      */
     public void preRenderView() throws IOException {
         if (idThesoFromUri == null) {
@@ -436,10 +437,15 @@ public class SelectedTheso implements Serializable {
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
                     actionFromConceptToOn();
-                /*    if (conceptBean.getNodeConcept() != null) {
-                        tree.expandTreeToPath(idConceptFromUri, idThesoFromUri, currentLang);
-                    }*/
-                }else {
+                } else {
+                    //cas d'appel pour une collection
+                    if(idGroupFromUri != null && !idGroupFromUri.isEmpty()) {
+                        indexSetting.setIsSelectedTheso(true);
+                        indexSetting.setIsThesoActive(true);
+                        rightBodySetting.setIndex("1");
+                        initIdsFromUri();
+                        return;
+                    }
                     indexSetting.setIsHomeSelected(true);
                 }
             } else {
@@ -464,6 +470,14 @@ public class SelectedTheso implements Serializable {
 
     public void setIdConceptFromUri(String idConceptFromUri) {
         this.idConceptFromUri = idConceptFromUri;
+    }
+
+    public String getIdGroupFromUri() {
+        return idGroupFromUri;
+    }
+
+    public void setIdGroupFromUri(String idGroupFromUri) {
+        this.idGroupFromUri = idGroupFromUri;
     }
 
     public String getIdThesoFromUri() {
