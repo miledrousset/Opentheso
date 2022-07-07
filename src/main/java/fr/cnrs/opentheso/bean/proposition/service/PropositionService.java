@@ -35,12 +35,8 @@ import fr.cnrs.opentheso.bean.proposition.model.PropositionCategoryEnum;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1172,7 +1168,27 @@ public class PropositionService implements Serializable {
     }
 
     public List<PropositionDao> searchAllPropositions() {
-        return new PropositionHelper().getAllProposition(connect.getPoolConnexion());
+        List<PropositionDao> propositions = new ArrayList<>();
+        PropositionHelper propositionHelper = new PropositionHelper();
+        propositions.addAll(searchPropositionsNonTraitter());
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
+                PropositionStatusEnum.APPROUVER.name()));
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
+                PropositionStatusEnum.REFUSER.name()));
+        return propositions;
+    }
+
+    public List<PropositionDao> searchPropositionsNonTraitter() {
+        List<PropositionDao> propositions = new ArrayList<>();
+        propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(),
+                PropositionStatusEnum.ENVOYER.name()));
+        propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(),
+                PropositionStatusEnum.LU.name()));
+        return propositions;
+    }
+
+    public List<PropositionDao> searchOldPropositions() {
+        return new PropositionHelper().getOldPropositionByStatus(connect.getPoolConnexion());
     }
 
 }
