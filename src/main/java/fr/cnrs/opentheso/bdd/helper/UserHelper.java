@@ -951,7 +951,7 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nodeUserGroupUsers;
-    }      
+    }    
 
     /**
      * permet de créer un groupe ou projet pour regrouper les utilisateurs et

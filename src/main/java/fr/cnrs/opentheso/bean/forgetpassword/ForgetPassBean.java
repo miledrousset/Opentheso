@@ -19,6 +19,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -117,7 +118,7 @@ public class ForgetPassBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, fm);            
             
             return true;
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             printMessage(e.toString());
         }
         return false;

@@ -28,6 +28,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeMetaData;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTT;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
@@ -72,6 +73,37 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
+    
+    /**
+     * Permet de retourner la liste des concepts à partir d'une date donnée
+     * date de type 2021-02-01
+     * @param ds
+     * @param idTheso
+     * @param date
+     * @return 
+     */
+    public ArrayList<String> getIdConceptFromDate(HikariDataSource ds, String idTheso, String date) {
+        ArrayList<String> ids = new  ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept from concept" +
+                    " where " +
+                    " concept.id_thesaurus = '" + idTheso + "'" +
+                    " and" +
+                    " concept.status != 'CA'" +        
+                    " and" +
+                    " concept.modified BETWEEN '" + date + "' and now();");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        ids.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting concepts from date " , sqle);
+        }
+        return ids;
+    }
     
     /**
      * permet de récupérer les concepts dépréciés
@@ -469,6 +501,83 @@ public class ConceptHelper {
     }
 
     /**
+     * permet de récupérer les tops concepts par langue, cette focntion ne prend pas en compte 
+     * quand le concept n'existe pas dans la langue demandée
+     * @param ds
+     * @param idTheso
+     * @param idLang
+     * @return 
+     */
+    public List<NodeTree> getTopConceptsWithTermByTheso(HikariDataSource ds, String idTheso, String idLang) {
+
+        List<NodeTree> nodes = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT distinct(concept.id_concept), term.lexical_value " +
+                        " FROM concept, term, preferred_term " +
+                        " WHERE concept.id_concept = preferred_term.id_concept" +
+                        " AND concept.id_thesaurus = preferred_term.id_thesaurus" +
+                        " AND preferred_term.id_thesaurus = term.id_thesaurus" +
+                        " AND preferred_term.id_term = term.id_term" +
+                        " AND concept.id_thesaurus = '" + idTheso + "' " +
+                        " AND concept.top_concept = true " +
+                        " AND concept.status != 'CA'" +
+                        " AND term.lang = '" + idLang + "'" +
+                        " order by term.lexical_value");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeTree nodeTree = new NodeTree();
+                        nodeTree.setIdConcept(resultSet.getString("id_concept"));
+                        nodeTree.setPreferredTerm(resultSet.getString("lexical_value"));
+                        nodes.add(nodeTree);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Liste of TT of theso : " + idTheso, sqle);
+        }
+        return nodes;
+    }
+    
+    
+    public List<NodeTree> getListChildrenOfConceptWithTerm(HikariDataSource ds, String idConcept, String idLang, String idThesaurus) {
+        List<NodeTree> nodes = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT distinct(hierarchical_relationship.id_concept2), term.lexical_value " +
+                    "FROM hierarchical_relationship, term, preferred_term " +
+                    "WHERE hierarchical_relationship.id_concept2 = preferred_term.id_concept " +
+                    "AND hierarchical_relationship.id_thesaurus = preferred_term.id_thesaurus " +
+                    "AND preferred_term.id_term = term.id_term " +
+                    "AND preferred_term.id_thesaurus = term.id_thesaurus " +
+                    "AND hierarchical_relationship.id_thesaurus = '" + idThesaurus + "' " +
+                    "AND hierarchical_relationship.id_concept1 = '" + idConcept + "' " +
+                    "AND hierarchical_relationship.role LIKE 'NT%' " +
+                    "AND term.lang = '" + idLang + "' " +
+                    "ORDER BY term.lexical_value");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeTree nodeTree = new NodeTree();
+                        nodeTree.setIdConcept(resultSet.getString("id_concept2"));
+                        nodeTree.setPreferredTerm(resultSet.getString("lexical_value"));
+                        nodes.add(nodeTree);
+                    }
+                }catch (SQLException sqle) {
+                    log.error("Error while getting Liste of TT of theso : " + idThesaurus, sqle);
+                }
+            }catch (SQLException sqle) {
+                log.error("Error while getting Liste of TT of theso : " + idThesaurus, sqle);
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Liste of TT of theso : " + idThesaurus, sqle);
+        }
+        return nodes;
+    }  
+
+    /**
      * Cettte fonction permet de retourner la liste des types de concepts
      * @param ds
      * @return 
@@ -739,7 +848,9 @@ public class ConceptHelper {
         TermHelper termHelper = new TermHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         GroupHelper groupHelper = new GroupHelper();
-
+        
+        nodeConceptSerach.setIdTheso(idThesaurus);
+        nodeConceptSerach.setCurrentLang(idLang);
         nodeConceptSerach.setIdConcept(idConcept);
         nodeConceptSerach.setIsDeprecated(isDeprecated(ds, idConcept, idThesaurus));
         
@@ -829,7 +940,9 @@ public class ConceptHelper {
         ArrayList<String> conceptIds = getIdConceptsFromLabel(ds, idThesaurus, label, idLang);
         for (String conceptId : conceptIds) {
             NodeConceptSearch nodeConceptSearch = new NodeConceptSearch();
-                    
+
+            nodeConceptSearch.setIdTheso(idThesaurus);
+            nodeConceptSearch.setCurrentLang(idLang);                            
             nodeConceptSearch.setIdConcept(conceptId);
             nodeConceptSearch.setIsDeprecated(isDeprecated(ds, conceptId, idThesaurus));
             
@@ -1964,6 +2077,32 @@ public class ConceptHelper {
         }
         return false;
     }    
+    
+    /**
+     * 
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @return 
+     */
+    public boolean isHaveNotation(HikariDataSource ds, String idTheso, String idConcept) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select notation from concept where id_concept = '" + idConcept + "'" +
+                        " and id_thesaurus = '" + idTheso + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        String notation = resultSet.getString("notation");
+                        if(notation == null || notation.isEmpty()) return false;
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if id exist : " + idConcept, sqle);
+        }
+        return false;
+    }        
 
     /**
      * Cette fonction permet de savoir si l'ID du concept existe ou non
@@ -3430,6 +3569,98 @@ public class ConceptHelper {
     }
 
     /**
+     * Cette fonction permet de récupérer le total des Id concept d'un thésaurus
+     * en filtrant par Domaine/Group
+     */
+    public int  getCountConceptOfThesaurusByLang(HikariDataSource ds,
+            String idThesaurus, String idLang) {
+
+        int count = -1;
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT count(concept.id_concept) " +
+                        " FROM concept, term, preferred_term " +
+                        " WHERE " +
+                        " concept.id_concept = preferred_term.id_concept" +
+                        " and" +
+                        " concept.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_thesaurus = term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_term = term.id_term" +
+                        " AND" +
+                        " concept.id_thesaurus = '" + idThesaurus + "' " +
+                        " AND" +
+                        " concept.status != 'CA'" +
+                        " and term.lang = '" + idLang + "'");
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        count = resultSet.getInt("count");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus by Group : " + idThesaurus, sqle);
+        }
+        return count;
+    }    
+    
+    /**
+     * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
+     * en filtrant par plusieurs domaines/Groupes
+     * 
+     * @param ds
+     * @param idThesaurus
+     * @param idGroups
+     * @return 
+     */
+    public ArrayList<String> getAllIdConceptOfThesaurusByMultiGroup(HikariDataSource ds,
+            String idThesaurus, String[] idGroups) {
+
+        ArrayList<String> tabIdConcept = new ArrayList<>();
+        String multiValuesGroup = "";
+        // filter by group
+        if (idGroups != null && idGroups.length != 0) {
+            String groupSearch = "";
+            for (String idGroup : idGroups) {
+                if(groupSearch.isEmpty())
+                    groupSearch = "'" + idGroup + "'";
+                else
+                    groupSearch = groupSearch + ",'" + idGroup + "'";
+            }
+            multiValuesGroup = " and concept_group_concept.idgroup in (" + groupSearch + ")";
+        }        
+        
+        
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT concept.id_concept " +
+                    " FROM concept, concept_group_concept " +
+                    " WHERE " +
+                    " concept.id_concept = concept_group_concept.idconcept" +
+                    " AND" +
+                    " concept.id_thesaurus = concept_group_concept.idthesaurus " +
+                    " AND" +
+                    " concept.id_thesaurus = '" + idThesaurus + "' " +
+                    " AND" +
+                    " concept.status != 'CA' " +
+                    multiValuesGroup );
+
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        tabIdConcept.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus by multiGroups : " + idThesaurus, sqle);
+        }
+        return tabIdConcept;
+    }    
+    
+    /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
      * en filtrant par Domaine/Group
      */
@@ -3440,12 +3671,18 @@ public class ConceptHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT DISTINCT concept.id_concept"
-                        + " FROM concept, concept_group_concept WHERE"
-                        + " concept.id_concept = concept_group_concept.idconcept AND"
-                        + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                        + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                        + " concept_group_concept.idgroup = '" + idGroup + "';");
+                stmt.executeQuery("SELECT concept.id_concept " +
+                    " FROM concept, concept_group_concept " +
+                    " WHERE " +
+                    " concept.id_concept = concept_group_concept.idconcept" +
+                    " AND" +
+                    " concept.id_thesaurus = concept_group_concept.idthesaurus " +
+                    " AND" +
+                    " concept.id_thesaurus = '" + idThesaurus + "' " +
+                    " AND" +
+                    " concept.status != 'CA' " +
+                    " AND" +
+                    " concept_group_concept.idgroup = '" + idGroup + "'");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -3610,6 +3847,12 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer le nom d'un Concept sinon renvoie une
      * chaine vide
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return 
      */
     public String getLexicalValueOfConcept(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
@@ -3647,7 +3890,7 @@ public class ConceptHelper {
                         + "' and id_concept = '" + idConcept + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
-                        ark = resultSet.getString("id_ark");
+                        ark = resultSet.getString("id_ark").trim();
                     }
                 }
             }
@@ -3656,6 +3899,34 @@ public class ConceptHelper {
         }
         return ark;
     }
+    
+    /**
+     * Cette fonction permet de récupérer la notation sinon renvoie une
+     * chaine vide
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
+     */
+    public String getNotationOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+
+        String notation = "";
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select notation from concept where id_thesaurus = '" + idThesaurus
+                        + "' and id_concept = '" + idConcept + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        notation = resultSet.getString("notation").trim();
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting notation of Concept : " + idConcept, sqle);
+        }
+        return notation;
+    }    
 
     /**
      * Cette fonction permet de récupérer les identifiants d'un concept idArk,
@@ -4687,6 +4958,8 @@ public class ConceptHelper {
         //récupération des notes du term        
         nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(ds, term.getId_term(),
                 idThesaurus, idLang));
+      
+        
 
         GroupHelper groupHelper = new GroupHelper();
         nodeConcept.setNodeConceptGroup(groupHelper.getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));
@@ -5285,6 +5558,8 @@ public class ConceptHelper {
         return nbrConcept;
     }
 
+    
+    
     public List<ConceptStatisticData> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus, String lang,
             String dateDebut, String dateFin, String collectionId, String nbrResultat) throws SQLException {
 

@@ -26,6 +26,8 @@
                     <p:column width="60" headerText="action">
                         <p:commandLink style="color: #FF7979; text-align: center"
                                        ajax="true" process="@form"
+                                       update="messageIndex containerIndex:idDeleteRelatedLink"
+                                       oncomplete="PF('deleteRelatedLink').show();"
                                        action="#{relatedBean.deleteRelatedLink( related, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-trash" style="font-size: 1rem; padding-top: 5px; color: #C63632;" />
                         </p:commandLink>
@@ -37,7 +39,7 @@
 
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  actionListener="PF('deleteRelatedLink').hide();" update="containerIndex:idDeleteRelatedLink"/>
-            </div>            
+            </div>
 
         </h:form>
     </p:dialog> 

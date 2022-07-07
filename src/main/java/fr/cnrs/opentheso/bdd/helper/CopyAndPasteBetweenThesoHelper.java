@@ -9,7 +9,6 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.concept.SynonymBean;
-import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
@@ -19,7 +18,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.eclipse.rdf4j.rio.RDFFormat;
 
 /**
  *

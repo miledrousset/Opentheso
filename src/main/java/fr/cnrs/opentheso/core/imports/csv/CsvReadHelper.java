@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.core.imports.csv;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import java.io.IOException;
 import java.io.Reader;
@@ -16,7 +17,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+//import org.apache.commons.csv.CSVFormat;
+//import org.apache.commons.csv.CSVRecord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,46 +35,56 @@ public class CsvReadHelper {
     private String message = "";
     private char delimiter = ',';
     private String uri;
-    
+
     private ArrayList<String> langs;
 
     private ArrayList<ConceptObject> conceptObjects;
-    
-    private ArrayList <NodeAlignmentImport> nodeAlignmentImports;
+
+    private ArrayList<NodeAlignmentImport> nodeAlignmentImports;
     private ArrayList<NodeNote> nodeNotes;
     private ArrayList<NodeIdValue> nodeIdValues;
-    
+
     public CsvReadHelper(char delimiter) {
         this.delimiter = delimiter;
         conceptObjects = new ArrayList<>();
     }
-    
-    
+
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
+     *
      * @param in
-     * @return 
+     * @return
      */
-    public boolean readFileArk(Reader in){
+    public boolean readFileArk(Reader in) {
         try {
-            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
-                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+
+            CSVParser cSVParser = cSVFormat.parse(in);
             String value;
             nodeIdValues = new ArrayList<>();
-            for (CSVRecord record : records) {
+            for (CSVRecord record : cSVParser) {
                 NodeIdValue nodeIdValue = new NodeIdValue();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     value = record.get("localId");
-                    if(value == null) continue;
+                    if (value == null) {
+                        continue;
+                    }
                     nodeIdValue.setId(value);
-                } catch (Exception e) {continue; }                
+                } catch (Exception e) {
+                    continue;
+                }
                 // on récupère les uris à supprimer
                 try {
                     value = record.get("arkId");
-                    if(value == null) continue;
+                    if (value == null) {
+                        continue;
+                    }
                     nodeIdValue.setValue(value.trim());
-                } catch (Exception e) {continue;}                  
+                } catch (Exception e) {
+                    continue;
+                }
                 nodeIdValues.add(nodeIdValue);
             }
             return true;
@@ -78,35 +92,46 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }    
-    
+    }
+
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
+     *
      * @param in
-     * @return 
+     * @return
      */
-    public boolean readFileAlignmentToDelete(Reader in){
+    public boolean readFileAlignmentToDelete(Reader in) {
         try {
-            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
-                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+
             String value;
-            for (CSVRecord record : records) {
+            for (CSVRecord record : cSVParser) {
                 ConceptObject conceptObject = new ConceptObject();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     value = record.get("localId");
-                    if(value == null) continue;
+                    if (value == null) {
+                        continue;
+                    }
                     conceptObject.setLocalId(value);
-                } catch (Exception e) {continue; }                
+                } catch (Exception e) {
+                    continue;
+                }
                 // on récupère les uris à supprimer
                 try {
                     value = record.get("Uri");
-                    if(value == null) continue;
+                    if (value == null) {
+                        continue;
+                    }
                     NodeIdValue nodeIdValue = new NodeIdValue();
                     nodeIdValue.setId("");
                     nodeIdValue.setValue(value.trim());
                     conceptObject.alignments.add(nodeIdValue);
-                } catch (Exception e) {continue;}                  
+                } catch (Exception e) {
+                    continue;
+                }
 
                 conceptObjects.add(conceptObject);
             }
@@ -116,44 +141,134 @@ public class CsvReadHelper {
         }
         return false;
     }
-    
-    
-   
+
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
+     *
      * @param in
-     * @return 
+     * @return
      */
-    public boolean readFileAlignment(Reader in){
+    public boolean readFileImage(Reader in) {
         try {
-            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
-                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
             String value;
-            if(nodeAlignmentImports == null)
-                nodeAlignmentImports = new ArrayList<>();
-            else
-                nodeAlignmentImports.clear();
-            for (CSVRecord record : records) {
-                NodeAlignmentImport nodeAlignmentImport = new NodeAlignmentImport();
+            for (CSVRecord record : cSVParser) {
+                ConceptObject conceptObject = new ConceptObject();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     value = record.get("localId");
-                    if(value == null) continue;
-                    nodeAlignmentImport.setLocalId(value);
-                } catch (Exception e) {continue; }                
-                
-                // on récupère les alignements 
-                
-                nodeAlignmentImport = getNewAlignment(nodeAlignmentImport, record);
-                if(nodeAlignmentImport != null)
-                    nodeAlignmentImports.add(nodeAlignmentImport);
+                    if (value == null) {
+                        continue;
+                    }
+                    conceptObject.setLocalId(value);
+                } catch (Exception e) {
+                    continue;
+                }
+
+                // on récupère les images 
+                conceptObject = getImages(conceptObject, record);
+
+                if (conceptObject != null) {
+                    conceptObjects.add(conceptObject);
+                }
             }
             return true;
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }      
+    }
+    
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileNotation(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+
+            CSVParser cSVParser = cSVFormat.parse(in);
+            String value;
+            nodeIdValues = new ArrayList<>();
+            for (CSVRecord record : cSVParser) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setId(value);
+                } catch (Exception e) {
+                    continue;
+                }
+                // on récupère les uris à supprimer
+                try {
+                    value = record.get("skos:notation");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setValue(value.trim());
+                } catch (Exception e) {
+                    continue;
+                }
+                nodeIdValues.add(nodeIdValue);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }    
+
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileAlignment(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+            String value;
+            if (nodeAlignmentImports == null) {
+                nodeAlignmentImports = new ArrayList<>();
+            } else {
+                nodeAlignmentImports.clear();
+            }
+            for (CSVRecord record : cSVParser) {
+                NodeAlignmentImport nodeAlignmentImport = new NodeAlignmentImport();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeAlignmentImport.setLocalId(value);
+                } catch (Exception e) {
+                    continue;
+                }
+
+                // on récupère les alignements 
+                nodeAlignmentImport = getNewAlignment(nodeAlignmentImport, record);
+                if (nodeAlignmentImport != null) {
+                    nodeAlignmentImports.add(nodeAlignmentImport);
+                }
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
     private NodeAlignmentImport getNewAlignment(
             NodeAlignmentImport nodeAlignmentImport,
             CSVRecord record) {
@@ -163,51 +278,59 @@ public class CsvReadHelper {
         try {
             uri1 = record.get("Wikidata");
             nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Wikidata", uri1);
-        } catch (Exception e) {}        
-        
+        } catch (Exception e) {
+        }
+
         try {
             uri1 = record.get("AAT");
             nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "AAT", uri1);
-        } catch (Exception e) {}
-        
+        } catch (Exception e) {
+        }
+
         try {
             uri1 = record.get("BNF");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "BNF", uri1);       
-        } catch (Exception e) {}
-        
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "BNF", uri1);
+        } catch (Exception e) {
+        }
+
         try {
             uri1 = record.get("IdRef");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "IdRef", uri1);         
-        } catch (Exception e) {}
-        
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "IdRef", uri1);
+        } catch (Exception e) {
+        }
+
         try {
             uri1 = record.get("Pleiades");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Pleiades", uri1);            
-        } catch (Exception e) {}       
-        
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Pleiades", uri1);
+        } catch (Exception e) {
+        }
+
         try {
             uri1 = record.get("PeriodO");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "PeriodO", uri1);            
-        } catch (Exception e) {}       
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "PeriodO", uri1);
+        } catch (Exception e) {
+        }
         try {
             uri1 = record.get("Geonames");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Geonames", uri1);            
-        } catch (Exception e) {}          
-        
+            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Geonames", uri1);
+        } catch (Exception e) {
+        }
+
         return nodeAlignmentImport;
     }
-    private NodeAlignmentImport getAlignmentSource(NodeAlignmentImport nodeAlignmentImport, String source, String uri){
+
+    private NodeAlignmentImport getAlignmentSource(NodeAlignmentImport nodeAlignmentImport, String source, String uri) {
         String[] valueType;
         /// types alignements 1=exactMatch ; 2=closeMatch ; 3=broadMatch ; 4=relatedMatch ; 5=narrowMatch
         try {
-            if(source != null && !source.isEmpty()) {
+            if (source != null && !source.isEmpty()) {
                 NodeAlignmentSmall nodeAlignmentSmall = new NodeAlignmentSmall();
                 nodeAlignmentSmall.setSource(source);
-                
+
                 //on récupère le type d'alignement (url##1)
-                if(uri.contains("##")) {
+                if (uri.contains("##")) {
                     valueType = uri.split("##");
-                    if(valueType.length == 2){
+                    if (valueType.length == 2) {
                         nodeAlignmentSmall.setUri_target(valueType[0]);
                         try {
                             nodeAlignmentSmall.setAlignement_id_type(Integer.parseInt(valueType[1]));
@@ -225,35 +348,42 @@ public class CsvReadHelper {
                 nodeAlignmentImport.getNodeAlignmentSmalls().add(nodeAlignmentSmall);
                 return nodeAlignmentImport;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return null;
     }
-    
+
     /**
-     * permet de lire un fichier CSV complet pour importer les notes
-     * avec option de vider les notes avant
+     * permet de lire un fichier CSV complet pour importer les notes avec option
+     * de vider les notes avant
+     *
      * @param in
-     * @return 
+     * @return
      */
-    public boolean readFileNote(Reader in){
+    public boolean readFileNote(Reader in) {
         try {
-            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
-                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
-            
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+
             String idConcept;
-            for (CSVRecord record : records) {
-                ConceptObject conceptObject = new ConceptObject();                
+            for (CSVRecord record : cSVParser) {
+                ConceptObject conceptObject = new ConceptObject();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     idConcept = record.get("localId");
-                    if(idConcept == null || idConcept.isEmpty()) continue;
+                    if (idConcept == null || idConcept.isEmpty()) {
+                        continue;
+                    }
                     conceptObject.setIdConcept(idConcept);
-                } catch (Exception e) {continue; }                
-                
+                } catch (Exception e) {
+                    continue;
+                }
+
                 // on récupère les notes 
                 conceptObject = getNotes(conceptObject, record);
-                
-                if(conceptObject != null) {
+
+                if (conceptObject != null) {
                     conceptObjects.add(conceptObject);
                 }
             }
@@ -262,109 +392,109 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    }
+
 ////////////////////////////////////////////////////////////////////////////////    
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-    
-    public boolean setLangs(Reader in){
+    public boolean setLangs(Reader in) {
         langs = new ArrayList<>();
         try {
-            Map<String, Integer> headers = CSVFormat.RFC4180.withFirstRecordAsHeader().withIgnoreHeaderCase().withIgnoreEmptyLines().withDelimiter(delimiter).parse(in).getHeaderMap();
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+            Map<String, Integer> headers = cSVParser.getHeaderMap();
+
             String values[];
             for (String columnName : headers.keySet()) {
-                if(columnName.contains("@")) {
+                if (columnName.contains("@")) {
                     values = columnName.split("@");
-                    if(values[1] != null)
-                        if(!langs.contains(values[1]))
+                    if (values[1] != null) {
+                        if (!langs.contains(values[1])) {
                             langs.add(values[1]);//columnName.substring(columnName.indexOf("@"), columnName.indexOf("@" +2)));
+                        }
+                    }
                 }
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        return !langs.isEmpty(); 
+        }
+        return !langs.isEmpty();
     }
-    
-    
+
     /**
      * permet de lire un fichier CSV complet pour changer un thésaurus
+     *
      * @param in
-     * @return 
+     * @return
      */
-    public boolean readFile(Reader in){
+    public boolean readFile(Reader in) {
         try {
-            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
-                    withDelimiter(delimiter).withIgnoreEmptyLines().withIgnoreHeaderCase().withTrim().parse(in);
-            String uri1 = null; 
-            String uri_forId;             
-            for (CSVRecord record : records) {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);            
+
+            String uri1 = null;
+            String uri_forId;
+            for (CSVRecord record : cSVParser) {
                 ConceptObject conceptObject = new ConceptObject();
-                
+
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 // puis on génère un nouvel identifiant
-                
                 try {
                     uri1 = record.get("URI");
                     conceptObject.setUri(uri1);
-                } catch (Exception e) { }                
+                } catch (Exception e) {
+                }
 
-                if(record.isMapped("identifier")) {
+                if (record.isMapped("identifier")) {
                     try {
                         uri_forId = record.get("identifier");
-                        if(uri_forId == null || uri_forId.isEmpty())
+                        if (uri_forId == null || uri_forId.isEmpty()) {
                             conceptObject.setIdConcept(getId(uri1));
-                        else
+                        } else {
                             conceptObject.setIdConcept(uri_forId);
-                    } catch (Exception e) { }                    
+                        }
+                    } catch (Exception e) {
+                    }
                 } else {
                     try {
                         uri_forId = record.get("URI");
                         conceptObject.setIdConcept(getId(uri_forId));
-                    } catch (Exception e) { }                    
+                    } catch (Exception e) {
+                    }
                 }
-                
+
                 // on récupère l'id Ark s'il existe
-                conceptObject = getArkId(conceptObject, record);                
-                
+                conceptObject = getArkId(conceptObject, record);
+
                 // on récupère les labels
                 conceptObject = getLabels(conceptObject, record);
-                
+
                 // on récupère les notes
                 conceptObject = getNotes(conceptObject, record);
- 
+
                 // on récupère le type
                 conceptObject.setType(getType(record));
-                
+
                 // on récupère la notation
                 conceptObject.setNotation(getNotation(record));
 
                 // on récupère les relations (BT, NT, RT)
                 conceptObject = getRelations(conceptObject, record);
-                
+
                 // on récupère les alignements 
                 conceptObject = getAlignments(conceptObject, record);
-                
+
                 // on récupère la localisation
                 conceptObject = getGeoLocalisation(conceptObject, record);
-                
+
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
                 conceptObject = getMembers(conceptObject, record);
-                
+
                 // on récupère la date
                 conceptObject = getDates(conceptObject, record);
-                
+
                 conceptObjects.add(conceptObject);
                 uri1 = null;
             }
@@ -373,23 +503,24 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }    
-    
-    
+    }
+
     /**
-     * permet de lire une liste en CSV, la première colonne n'est pas obligatoire 
-     * pour charger une liste de concepts
+     * permet de lire une liste en CSV, la première colonne n'est pas
+     * obligatoire pour charger une liste de concepts
+     *
      * @param in
-     * @return 
+     * @return
      */
-    public boolean readListFile(Reader in){
+    public boolean readListFile(Reader in) {
         try {
-            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().
-                    withDelimiter(delimiter).withIgnoreEmptyLines().withTrim().parse(in);
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);  
             String uri1 = null;
-  //          boolean first = true;
-            
-            for (CSVRecord record : records) {
+            //          boolean first = true;
+
+            for (CSVRecord record : cSVParser) {
 //                if(first) {
 //                    // set the Uri
 //                    try {
@@ -401,57 +532,59 @@ public class CsvReadHelper {
 //                    first = false;
 //                }
                 ConceptObject conceptObject = new ConceptObject();
-                
+
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 // puis on génère un nouvel identifiant
                 try {
                     uri1 = record.get("URI");
                     conceptObject.setUri(uri1);
-                } catch (Exception e) { }                
+                } catch (Exception e) {
+                }
 
                 try {
                     uri1 = record.get("identifier");
-                } catch (Exception e) { }
-                
+                } catch (Exception e) {
+                }
+
                 try {
-                    if(uri1 == null || uri1.isEmpty()) {
+                    if (uri1 == null || uri1.isEmpty()) {
                         uri1 = record.get("URI");
                         uri1 = getId(uri1);
                     }
                     conceptObject.setIdConcept(uri1);
-                } catch (Exception e) { }
+                } catch (Exception e) {
+                }
 
                 // on récupère l'id Ark s'il existe
-                conceptObject = getArkId(conceptObject, record);   
+                conceptObject = getArkId(conceptObject, record);
 
-                
                 // on récupère les labels
                 conceptObject = getLabels(conceptObject, record);
-                
+
                 // on récupère les notes
                 conceptObject = getNotes(conceptObject, record);
- 
+
                 // on récupère le type
                 conceptObject.setType(getType(record));
-                
+
                 // on récupère la notation
                 conceptObject.setNotation(getNotation(record));
 
                 // on récupère les relations (BT, NT, RT)
                 conceptObject = getRelations(conceptObject, record);
-                
+
                 // on récupère les alignements 
                 conceptObject = getAlignments(conceptObject, record);
-                
+
                 // on récupère la localisation
                 conceptObject = getGeoLocalisation(conceptObject, record);
-                
+
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
                 conceptObject = getMembers(conceptObject, record);
-                
+
                 // on récupère la date
                 conceptObject = getDates(conceptObject, record);
-                
+
                 conceptObjects.add(conceptObject);
                 uri1 = null;
             }
@@ -461,16 +594,19 @@ public class CsvReadHelper {
         }
         return false;
     }
-    
+
     /**
      * permet de récupérer l'identifiant d'près une URI
-     * @return 
+     *
+     * @return
      */
     private String getId(String uri) {
         String id;
 
-        if(uri == null || uri.isEmpty()) return null;
-    
+        if (uri == null || uri.isEmpty()) {
+            return null;
+        }
+
         if (uri.contains("idg=")) {
             if (uri.contains("&")) {
                 id = uri.substring(uri.indexOf("idg=") + 4, uri.indexOf("&"));
@@ -496,11 +632,12 @@ public class CsvReadHelper {
         id = stringPlus.normalizeStringForIdentifier(id);
         return id;
     }
-    
+
     /**
      * permet de récupérer le type du concept (collection, groupe ...)
+     *
      * @param record
-     * @return 
+     * @return
      */
     private String getType(CSVRecord record) {
         String type = "";
@@ -510,12 +647,13 @@ public class CsvReadHelper {
             //System.err.println("");
         }
         return type.trim();
-    } 
-    
+    }
+
     /**
      * permet de récupérer la notation du concept
+     *
      * @param record
-     * @return 
+     * @return
      */
     private String getNotation(CSVRecord record) {
         String notation = "";
@@ -525,22 +663,23 @@ public class CsvReadHelper {
             //System.err.println("");
         }
         return notation.trim();
-    }  
-    
+    }
+
     /**
      * permet de charger tous les alignements d'un concept
+     *
      * @param conceptObject
      * @param record
-     * @return 
+     * @return
      */
     private ConceptObject getDates(ConceptObject conceptObject, CSVRecord record) {
 
         String value;
-        
+
         // dct:created
         try {
             value = record.get("dct:created");
-            if(!value.isEmpty()) {
+            if (!value.isEmpty()) {
                 conceptObject.setCreated(value.trim());
             }
         } catch (Exception e) {
@@ -549,67 +688,70 @@ public class CsvReadHelper {
         // dct:modified
         try {
             value = record.get("dct:modified");
-            if(!value.isEmpty()) {
+            if (!value.isEmpty()) {
                 conceptObject.setModified(value.trim());
             }
         } catch (Exception e) {
             //System.err.println("");
-        }         
+        }
 
         return conceptObject;
-    }      
+    }
 
     /**
      * permet de charger tous les alignements d'un concept
+     *
      * @param conceptObject
      * @param record
-     * @return 
+     * @return
      */
     private ConceptObject getMembers(ConceptObject conceptObject, CSVRecord record) {
 
         String value;
         String values[];
-        
+
         // skos:member
         try {
             value = record.get("skos:member");
             values = value.split("##");
             for (String value1 : values) {
-                if(!value1.isEmpty()) {
+                if (!value1.isEmpty()) {
                     conceptObject.members.add(getId(value.trim()));
                 }
-            }            
+            }
         } catch (Exception e) {
             //System.err.println("");
-        }   
+        }
 
         return conceptObject;
-    }      
-    
+    }
+
     /**
      * permet de charger tous les alignements d'un concept
+     *
      * @param conceptObject
      * @param record
-     * @return 
+     * @return
      */
     private ConceptObject getArkId(ConceptObject conceptObject, CSVRecord record) {
         String arkId;
         try {
             arkId = record.get("arkId");
-            if(arkId != null) {
+            if (arkId != null) {
                 conceptObject.setArkId(arkId.trim());
             }
         } catch (Exception e) {
             //System.err.println("");
-        }   
+        }
         return conceptObject;
-    }      
-    
+    }
+
     /**
      * permet de charger tous les alignements d'un concept
+     *
      * @param conceptObject
      * @param record
-     * @return 
+     * @return
      */
     private ConceptObject getGeoLocalisation(
             ConceptObject conceptObject,
@@ -620,8 +762,8 @@ public class CsvReadHelper {
         try {
             lat = record.get("geo:lat");
             longitude = record.get("geo:long");
-            if(!lat.isEmpty()) {
-                if(!longitude.isEmpty()) {
+            if (!lat.isEmpty()) {
+                if (!longitude.isEmpty()) {
                     conceptObject.setLatitude(lat.trim());
                     conceptObject.setLongitude(longitude.trim());
                 }
@@ -630,42 +772,43 @@ public class CsvReadHelper {
             //System.err.println("");
         }
         return conceptObject;
-    }      
-    
+    }
+
     /**
      * permet de charger tous les alignements d'un concept
+     *
      * @param conceptObject
      * @param record
-     * @return 
+     * @return
      */
     private ConceptObject getAlignments(
             ConceptObject conceptObject,
             CSVRecord record) {
         String value;
         String values[];
-        
+
         // skos:exactMatch
         try {
             value = record.get("skos:exactMatch");
             values = value.split("##");
             for (String value1 : values) {
-                if(!value1.isEmpty()) {
+                if (!value1.isEmpty()) {
                     conceptObject.exactMatchs.add(value1.trim());
                 }
-            }            
+            }
         } catch (Exception e) {
             //System.err.println("");
         }
-        
+
         // skos:closeMatch
         try {
             value = record.get("skos:closeMatch");
             values = value.split("##");
             for (String value1 : values) {
-                if(!value1.isEmpty()) {
+                if (!value1.isEmpty()) {
                     conceptObject.closeMatchs.add(value1.trim());
                 }
-            }            
+            }
         } catch (Exception e) {
             //System.err.println("");
         }
@@ -674,22 +817,22 @@ public class CsvReadHelper {
             value = record.get("skos:broadMatch");
             values = value.split("##");
             for (String value1 : values) {
-                if(!value1.isEmpty()) {
+                if (!value1.isEmpty()) {
                     conceptObject.broadMatchs.add(value1.trim());
                 }
-            }            
+            }
         } catch (Exception e) {
             //System.err.println("");
-        }     
+        }
         // skos:narrowMatch
         try {
             value = record.get("skos:narrowMatch");
             values = value.split("##");
             for (String value1 : values) {
-                if(!value1.isEmpty()) {
+                if (!value1.isEmpty()) {
                     conceptObject.narrowMatchs.add(value1.trim());
                 }
-            }            
+            }
         } catch (Exception e) {
             //System.err.println("");
         }
@@ -698,134 +841,135 @@ public class CsvReadHelper {
             value = record.get("skos:relatedMatch");
             values = value.split("##");
             for (String value1 : values) {
-                if(!value1.isEmpty()) {
+                if (!value1.isEmpty()) {
                     conceptObject.relatedMatchs.add(value1.trim());
                 }
-            }            
+            }
         } catch (Exception e) {
             //System.err.println("");
-        }         
+        }
 
         return conceptObject;
-    }    
-    
+    }
+
     /**
      * permet de charger toutes les relations d'un concept
+     *
      * @param conceptObject
      * @param record
-     * @return 
+     * @return
      */
     private ConceptObject getRelations(
             ConceptObject conceptObject,
             CSVRecord record) {
         String value = null;
         String values[];
-        
+
         // skos:narrowerId (on vérifie si ce champs est renseigné, on le prend avant skos:narrower pour éviter de découper les identifiants
         // et surtout en cas de fichier avec des uris Ark pour retrouver les bons id internes
-
         // narrowerId 
-        if(record.isMapped("narrowerid")) {
+        if (record.isMapped("narrowerid")) {
             try {
                 value = record.get("narrowerid");
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         conceptObject.narrowers.add(value1.trim());
                     }
-                }            
+                }
             } catch (Exception e) {
                 //System.err.println("");
-            }            
+            }
         } else {
             // skos:narrower
             try {
                 value = record.get("skos:narrower");
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         conceptObject.narrowers.add(getId(value1.trim()));
                     }
                 }
             } catch (Exception e) {
                 //System.err.println("");
-            }            
+            }
         }
 
         // broaderId        
-        if(record.isMapped("broaderid")) {
+        if (record.isMapped("broaderid")) {
             try {
                 value = record.get("broaderid");
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         conceptObject.broaders.add(value1.trim());
                     }
-                }            
+                }
             } catch (Exception e) {
                 //System.err.println("");
-            }             
+            }
         } else {
             // skos:broader
             try {
                 value = record.get("skos:broader");
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         conceptObject.broaders.add(getId(value1.trim()));
                     }
                 }
             } catch (Exception e) {
                 //System.err.println("");
-            }            
+            }
         }
-        
-        if(record.isMapped("relatedid")) {
+
+        if (record.isMapped("relatedid")) {
             // relatedId        
             try {
                 value = record.get("relatedid");
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         conceptObject.relateds.add(value1.trim());
                     }
-                }            
+                }
             } catch (Exception e) {
                 //System.err.println("");
-            }             
+            }
         } else {
             // skos:related
             try {
                 value = record.get("skos:related");
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         conceptObject.relateds.add(getId(value1.trim()));
                     }
                 }
             } catch (Exception e) {
                 //System.err.println("");
-            }              
+            }
         }
         return conceptObject;
     }
-    
+
     /**
      * permet de charger tous les labels d'un concept dans toutes les langues
+     *
      * @param conceptObject
      * @param record
-     * @return 
+     * @return
      */
     private ConceptObject getLabels(ConceptObject conceptObject, CSVRecord record) {
         String value;
         Label label;
         String values[];
-        
+
         for (String idLang : langs) {
             // prefLabel
             try {
                 value = record.get("skos:prefLabel@" + idLang.trim());
-                if(!value.isEmpty()) {
+                if (!value.isEmpty()) {
                     label = new Label();
                     label.setLabel(value);
                     label.setLang(idLang);
@@ -840,7 +984,7 @@ public class CsvReadHelper {
                 value = record.get("skos:altLabel@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value.isEmpty()) {
+                    if (!value.isEmpty()) {
                         label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -850,13 +994,13 @@ public class CsvReadHelper {
             } catch (Exception e) {
                 //System.err.println("");
             }
-            
+
             // hiddenLabel
             try {
                 value = record.get("skos:hiddenLabel@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value.isEmpty()) {
+                    if (!value.isEmpty()) {
                         label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -864,14 +1008,14 @@ public class CsvReadHelper {
                     }
                 }
             } catch (Exception e) {
-            }             
+            }
         }
 
         return conceptObject;
     }
-    
-    private ConceptObject getNotes(ConceptObject conceptObject, CSVRecord record){
-        
+
+    private ConceptObject getNotes(ConceptObject conceptObject, CSVRecord record) {
+
         String value;
         String values[];
         for (String idLang : langs) {
@@ -880,7 +1024,7 @@ public class CsvReadHelper {
                 value = record.get("skos:note@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -890,13 +1034,13 @@ public class CsvReadHelper {
 
             } catch (Exception e) {
                 //System.err.println("");
-            }            
+            }
             // définition
             try {
                 value = record.get("skos:definition@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -907,13 +1051,13 @@ public class CsvReadHelper {
             } catch (Exception e) {
                 //System.err.println("");
             }
-            
+
             // scopeNotes note d'application
             try {
                 value = record.get("skos:scopeNote@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -924,13 +1068,13 @@ public class CsvReadHelper {
             } catch (Exception e) {
                 //System.err.println("");
             }
-        
+
             // example
             try {
                 value = record.get("skos:example@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -940,14 +1084,14 @@ public class CsvReadHelper {
 
             } catch (Exception e) {
                 //System.err.println("");
-            } 
-            
+            }
+
             // historyNotes
             try {
                 value = record.get("skos:historyNote@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -958,13 +1102,13 @@ public class CsvReadHelper {
             } catch (Exception e) {
                 //System.err.println("");
             }
-            
+
             // changeNotes
             try {
                 value = record.get("skos:changeNote@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -975,13 +1119,13 @@ public class CsvReadHelper {
             } catch (Exception e) {
                 //System.err.println("");
             }
-            
+
             // editorialNotes
             try {
                 value = record.get("skos:editorialNote@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if(!value1.isEmpty()) {
+                    if (!value1.isEmpty()) {
                         Label label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
@@ -991,11 +1135,53 @@ public class CsvReadHelper {
 
             } catch (Exception e) {
                 //System.err.println("");
-            }              
-        }        
-        return conceptObject; 
-    } 
+            }
+        }
+        return conceptObject;
+    }
     
+    private ConceptObject getImages(ConceptObject conceptObject, CSVRecord record) {
+
+        String value;
+        String values[];
+        ArrayList<NodeImage> nodeImages = new ArrayList<>();
+
+        try {
+            value = record.get("foaf:image");
+            values = value.split("##");
+
+            for (String value1 : values) {
+                if (!value1.isEmpty()) {
+                    NodeImage nodeImage = new NodeImage();
+                    nodeImage.setUri(value1);
+                    nodeImage.setCopyRight("");
+                    nodeImages.add(nodeImage);
+                }
+            }
+            try {
+                value = record.get("copyright");
+                values = value.split("##");
+                int i = 0;
+                if (nodeImages.size() == values.length) {
+                    for (String value1 : values) {
+                        if (!value1.isEmpty()) {
+                            nodeImages.get(i).setCopyRight(value1);
+                        }
+                        i++;
+                    }
+                }
+            } catch (Exception e) {
+                //System.err.println("");
+            }
+            conceptObject.setImages(nodeImages);
+
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+
+        return conceptObject;
+    }
+
     public Logger getLog() {
         return log;
     }
@@ -1048,9 +1234,8 @@ public class CsvReadHelper {
         this.nodeIdValues = nodeIdValues;
     }
 
-    
-    
     public class ConceptObject {
+
         private String idConcept;
         private String uri;
         private String localId; //identifiant local
@@ -1058,17 +1243,17 @@ public class CsvReadHelper {
         private String idTerm;
         // rdf:type pour distinguer les concepts des collections, groupes ...
         private String type;
-                
+
         // notation
         private String notation;
-        
+
         // les labels
         private ArrayList<Label> prefLabels;
         private ArrayList<Label> altLabels;
         private ArrayList<Label> hiddenLabels;
-        
+
         // Les notes
-        private ArrayList<Label> note;        
+        private ArrayList<Label> note;
         private ArrayList<Label> definitions;
         private ArrayList<Label> scopeNotes;
         private ArrayList<Label> examples;
@@ -1079,36 +1264,38 @@ public class CsvReadHelper {
         // les relations, broader, narrower, related
         private ArrayList<String> broaders;
         private ArrayList<String> narrowers;
-        private ArrayList<String> relateds;        
-        
+        private ArrayList<String> relateds;
+
         // les aligenements 
         private ArrayList<String> exactMatchs;
         private ArrayList<String> closeMatchs;
         private ArrayList<String> broadMatchs;
         private ArrayList<String> narrowMatchs;
-        private ArrayList<String> relatedMatchs;       
-        
+        private ArrayList<String> relatedMatchs;
+
         // géolocalisation
         // geo:lat  geo:long
         private String latitude;
         private String longitude;
-        
+
         // skos:member, l'appartenance du concept à un groupe ou collection ...
         private ArrayList<String> members;
-        
+
+        private ArrayList<NodeImage> images;
+
         // dates 
         //dct:created, dct:modified
         private String created;
-        private String modified;        
-        
+        private String modified;
+
         /// pour récupérer une liste d'alignements (à ajouter ou à supprimer)
-        private ArrayList<NodeIdValue> alignments; 
+        private ArrayList<NodeIdValue> alignments;
 
         public ConceptObject() {
             prefLabels = new ArrayList<>();
-            altLabels = new ArrayList<>(); 
+            altLabels = new ArrayList<>();
             hiddenLabels = new ArrayList<>();
-            
+
             note = new ArrayList<>();
             definitions = new ArrayList<>();
             scopeNotes = new ArrayList<>();
@@ -1116,42 +1303,91 @@ public class CsvReadHelper {
             historyNotes = new ArrayList<>();
             changeNotes = new ArrayList<>();
             editorialNotes = new ArrayList<>();
-            
+
             broaders = new ArrayList<>();
-            narrowers = new ArrayList<>(); 
-            relateds = new ArrayList<>();             
-            
+            narrowers = new ArrayList<>();
+            relateds = new ArrayList<>();
+
             exactMatchs = new ArrayList<>();
             closeMatchs = new ArrayList<>();
             broadMatchs = new ArrayList<>();
             narrowMatchs = new ArrayList<>();
             relatedMatchs = new ArrayList<>();
-            
-            members = new ArrayList<>();      
+
+            members = new ArrayList<>();
             alignments = new ArrayList<>();
         }
-        public void clear(){
-            if(prefLabels != null) prefLabels.clear();
-            if(altLabels != null) altLabels.clear();
-            if(hiddenLabels != null) hiddenLabels.clear();
-            if(note != null) note.clear();
-            if(definitions != null) definitions.clear();
-            if(scopeNotes != null) scopeNotes.clear();
-            if(examples != null) examples.clear();
-            if(historyNotes != null) historyNotes.clear();
-            if(changeNotes != null) changeNotes.clear();
-            if(editorialNotes != null) editorialNotes.clear();
-            if(broaders != null) broaders.clear();    
-            if(narrowers != null) narrowers.clear();   
-            if(relateds != null) relateds.clear();  
-            if(exactMatchs != null) exactMatchs.clear();  
-            if(closeMatchs != null) closeMatchs.clear();  
-            if(broadMatchs != null) broadMatchs.clear();  
-            if(narrowMatchs != null) narrowMatchs.clear();  
-            if(relatedMatchs != null) relatedMatchs.clear();  
-            if(members != null) members.clear();  
-            if(alignments != null) alignments.clear();
-        }        
+
+        public void clear() {
+            if (prefLabels != null) {
+                prefLabels.clear();
+            }
+            if (altLabels != null) {
+                altLabels.clear();
+            }
+            if (hiddenLabels != null) {
+                hiddenLabels.clear();
+            }
+            if (note != null) {
+                note.clear();
+            }
+            if (definitions != null) {
+                definitions.clear();
+            }
+            if (scopeNotes != null) {
+                scopeNotes.clear();
+            }
+            if (examples != null) {
+                examples.clear();
+            }
+            if (historyNotes != null) {
+                historyNotes.clear();
+            }
+            if (changeNotes != null) {
+                changeNotes.clear();
+            }
+            if (editorialNotes != null) {
+                editorialNotes.clear();
+            }
+            if (broaders != null) {
+                broaders.clear();
+            }
+            if (narrowers != null) {
+                narrowers.clear();
+            }
+            if (relateds != null) {
+                relateds.clear();
+            }
+            if (exactMatchs != null) {
+                exactMatchs.clear();
+            }
+            if (closeMatchs != null) {
+                closeMatchs.clear();
+            }
+            if (broadMatchs != null) {
+                broadMatchs.clear();
+            }
+            if (narrowMatchs != null) {
+                narrowMatchs.clear();
+            }
+            if (relatedMatchs != null) {
+                relatedMatchs.clear();
+            }
+            if (members != null) {
+                members.clear();
+            }
+            if (alignments != null) {
+                alignments.clear();
+            }
+        }
+
+        public ArrayList<NodeImage> getImages() {
+            return images;
+        }
+
+        public void setImages(ArrayList<NodeImage> images) {
+            this.images = images;
+        }
 
         public String getIdConcept() {
             return idConcept;
@@ -1168,7 +1404,7 @@ public class CsvReadHelper {
         public void setArkId(String arkId) {
             this.arkId = arkId;
         }
-        
+
         public String getUri() {
             return uri;
         }
@@ -1401,10 +1637,7 @@ public class CsvReadHelper {
             this.alignments = alignments;
         }
 
-
-
     }
-    
 
     public class Label {
 

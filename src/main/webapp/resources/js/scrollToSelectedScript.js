@@ -33,7 +33,7 @@ function srollToSelected() {
     scrollPanel.scrollTop = 800;*/
     if (selectedElement !== null && selectedElement !== undefined && selectedElement.position() !== undefined) {
       /*  var scrollPanel = document.getElementById("formLeftTab:tabTree:tree");*/
-        console.log("je passe");
+       // console.log("je passe");
         var scrollPanel = document.getElementById("containerIndex:formLeftTab:tabTree:tree");
         
         scrollPanel.scrollTop = selectedElement.position().top;

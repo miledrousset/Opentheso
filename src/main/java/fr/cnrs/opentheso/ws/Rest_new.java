@@ -34,8 +34,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * REST Web Service
@@ -45,7 +43,6 @@ import org.apache.commons.logging.LogFactory;
 //general path = /api
 @Path("/")
 public class Rest_new {
-    private final Log log = LogFactory.getLog(Rest_new.class);
     /**
      * Creates a new instance of resources La connexion est faite à chaque
      * question
@@ -90,7 +87,7 @@ public class Rest_new {
     public String testWS(){
         return "pong";
     }
-     
+
     /**
      * pour produire du RDF-SKOS
      *
@@ -1425,6 +1422,70 @@ public class Rest_new {
     }
 
 
+
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////  
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    private String getDatas(
+            String idTheso, String idLang, String group,
+            String value,
+            String format, String filter) {
+        HikariDataSource ds = connect();
+        if (ds == null) {
+            return null;
+        }
+        String datas;
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+
+        if (filter != null) {
+            switch (filter) {
+                case "notation:":
+                    value = value.substring(value.indexOf(":") + 1);
+                    datas = restRDFHelper.findNotation(ds, idTheso, value, format);
+                    ds.close();
+                    return datas;
+            }
+        }
+
+        datas = restRDFHelper.findConcepts(ds,
+                idTheso, idLang, group, value, format);
+        ds.close();
+        if (datas == null) {
+            return null;
+        }
+        return datas;
+    }
+
+    //http://localhost:8082/opentheso2/api/search?q=ark:/26678/pcrt4gr80Hd4Bm
+    private String getDatasFromArk(
+            String idTheso,
+            String idLang,
+            String idArk,
+            boolean showLabels) {
+
+        HikariDataSource ds = null;
+        String datas;
+        try {
+            ds = connect();
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            if(idLang == null || idLang.isEmpty()) {
+                datas = restRDFHelper.exportConcept(ds,
+                        idArk, "application/json");
+            } else
+                datas = restRDFHelper.exportConceptFromArkWithLang(ds,
+                        idArk, idTheso, idLang, showLabels, "application/json");
+            ds.close();
+            return datas;
+        } catch (Exception e) {
+            if (ds != null) {
+                ds.close();
+            }
+        }
+        return null;
+    }
+    
     ///////////////////////////////////////////////////////////////////////////////////////
     //////////////Fonction qui permet de produire /////////////////////////////////////////  
     //////////////des données Json pour le widget Aïoli////////////////////////////////////
@@ -1485,69 +1546,7 @@ public class Rest_new {
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
         //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
-    }
-
-    //////////////////////////////////////////////////
-    //////////////////////////////////////////////////  
-    //////////////////////////////////////////////////
-    //////////////////////////////////////////////////
-    private String getDatas(
-            String idTheso, String idLang, String group,
-            String value,
-            String format, String filter) {
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return null;
-        }
-        String datas = null;
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-
-        if (filter != null) {
-            switch (filter) {
-                case "notation:":
-                    value = value.substring(value.indexOf(":") + 1);
-                    datas = restRDFHelper.findNotation(ds, idTheso, value, format);
-                    ds.close();
-                    return datas;
-            }
-        }
-
-        datas = restRDFHelper.findConcepts(ds,
-                idTheso, idLang, group, value, format);
-        ds.close();
-        if (datas == null) {
-            return null;
-        }
-        return datas;
-    }
-
-    //http://localhost:8082/opentheso2/api/search?q=ark:/26678/pcrt4gr80Hd4Bm
-    private String getDatasFromArk(
-            String idTheso,
-            String idLang,
-            String idArk,
-            boolean showLabels) {
-
-        HikariDataSource ds = null;
-        String datas;
-        try {
-            ds = connect();
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            if(idLang == null || idLang.isEmpty()) {
-                datas = restRDFHelper.exportConcept(ds,
-                        idArk, "application/json");
-            } else
-                datas = restRDFHelper.exportConceptFromArkWithLang(ds,
-                        idArk, idTheso, idLang, showLabels, "application/json");
-            ds.close();
-            return datas;
-        } catch (Exception e) {
-            if (ds != null) {
-                ds.close();
-            }
-        }
-        return null;
-    }
+    }    
 
 
 /////////////////////////////////////////////////////    
@@ -1581,7 +1580,7 @@ public class Rest_new {
     public Response searchAutocomplete(@PathParam("value") String value, @Context UriInfo uri) {
         String idLang = "";
         String idTheso = null;
-        String group = "";
+        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
         String format = null;
 
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
@@ -1593,7 +1592,7 @@ public class Rest_new {
                     idTheso = valeur;
                 }
                 if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
+                    groups = valeur.split(",");
                 }
                 if (e.getKey().equalsIgnoreCase("format")) {
                     format = valeur;
@@ -1609,9 +1608,9 @@ public class Rest_new {
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = getAutocompleteDatas(idTheso, idLang, group, value, true);
+            datas = getAutocompleteDatas(idTheso, idLang, groups, value, true);
         } else {
-            datas = getAutocompleteDatas(idTheso, idLang, group, value, false);
+            datas = getAutocompleteDatas(idTheso, idLang, groups, value, false);
         }
 
         if (datas == null) {
@@ -1644,7 +1643,7 @@ public class Rest_new {
         String idLang = "";
         String value = null;
         String idTheso = null;
-        String group = "";
+        String [] groups = null;
         String format = null;
 
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
@@ -1659,7 +1658,7 @@ public class Rest_new {
                     idTheso = valeur;
                 }
                 if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
+                    groups = valeur.split(",");
                 }
                 if (e.getKey().equalsIgnoreCase("format")) {
                     format = valeur;
@@ -1683,9 +1682,9 @@ public class Rest_new {
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = getAutocompleteDatas(idTheso, idLang, group, value, true);
+            datas = getAutocompleteDatas(idTheso, idLang, groups, value, true);
         } else {
-            datas = getAutocompleteDatas(idTheso, idLang, group, value, false);
+            datas = getAutocompleteDatas(idTheso, idLang, groups, value, false);
         }
 
         if (datas == null) {
@@ -1703,7 +1702,7 @@ public class Rest_new {
     }
 
     private String getAutocompleteDatas(String idTheso,
-                                        String idLang, String group,
+                                        String idLang, String[] groups,
                                         String value, boolean withNotes) {
         HikariDataSource ds = connect();
         if (ds == null) {
@@ -1711,7 +1710,7 @@ public class Rest_new {
         }
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.findAutocompleteConcepts(ds,
-                idTheso, idLang, group, value, withNotes);
+                idTheso, idLang, groups, value, withNotes);
         ds.close();
         if (datas == null) {
             return null;
@@ -1862,7 +1861,7 @@ public class Rest_new {
     @GET
     @Produces("application/rdf+xml;charset=UTF-8")
     public Response getAllBrancheOfGroup(@Context UriInfo uri) {
-        String idGroup = null;
+        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
         String idTheso = null;
         String format = null;
         String datas;
@@ -1870,7 +1869,7 @@ public class Rest_new {
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
             for (String valeur : e.getValue()) {
                 if (e.getKey().equalsIgnoreCase("id")) {
-                    idGroup = valeur;
+                    groups = valeur.split(",");
                 }
                 if (e.getKey().equalsIgnoreCase("theso")) {
                     idTheso = valeur;
@@ -1881,7 +1880,7 @@ public class Rest_new {
             }
         }
 
-        if (idTheso == null || idGroup == null) {
+        if (idTheso == null || groups == null) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         if (format == null) {
@@ -1890,7 +1889,7 @@ public class Rest_new {
         switch (format) {
             case "rdf": {
                 format = "application/rdf+xml";
-                datas = getAllBrancheOfGroup__(idTheso, idGroup, format);
+                datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
@@ -1898,21 +1897,21 @@ public class Rest_new {
             }
             case "jsonld":
                 format = "application/ld+json";
-                datas = getAllBrancheOfGroup__(idTheso, idGroup, format);
+                datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
                 return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
             case "turtle":
                 format = "text/turtle";
-                datas = getAllBrancheOfGroup__(idTheso, idGroup, format);
+                datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
                 return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
             case "json":
                 format = "application/json";
-                datas = getAllBrancheOfGroup__(idTheso, idGroup, format);
+                datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
@@ -1922,20 +1921,13 @@ public class Rest_new {
     }
 
     private String getAllBrancheOfGroup__(String idtheso,
-                                          String idGroup, String format) {
-        HikariDataSource ds = connect();
+                                          String [] groups, String format) {
         String datas;
-        if (ds == null) {
-            return null;
+        try (HikariDataSource ds = connect()) {
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.brancheOfGroup(ds, groups, idtheso, format);           
         }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        datas = restRDFHelper.brancheOfGroup(ds, idGroup, idtheso, format);
-
-        ds.close();
-        if (datas == null) {
-            return null;
-        }
-        return datas;
+        return datas;         
     }
 
     /**
@@ -2018,7 +2010,63 @@ public class Rest_new {
         }
         return datas;
     }
+    
+    /**
+     * Pour retourner un thesaurus complet à partir de son identifiant
+     * le thesaurus retourné ne comporte pas de relations, maisn uniquement Id et value en Json
+     * On peut préciser la langue 
+     *
+     * @param uri
+     * @return
+     */
+    @Path("jsonlist/theso")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response getAllIdValueTheso(@Context UriInfo uri) {
+        String idTheso = null;
+        String lang = null;
+        String datas;
 
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("id")) {
+                    idTheso = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("lang")) {
+                    lang = valeur;
+                }
+            }
+        }
+
+        if (idTheso == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+      /*  if (lang == null || lang.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }*/
+        
+        datas = getAllIdValueTheso__(idTheso, lang);
+        if (datas == null) {
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+    }    
+
+    private String getAllIdValueTheso__(String idtheso, String lang) {
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.getThesoIdValue(ds, idtheso, lang);
+        }
+        if (datas == null) {
+            return null;
+        }
+        return datas;
+    }    
+    
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
     /*
@@ -2308,8 +2356,91 @@ public class Rest_new {
         return "{\"lastUpdate\": \"" + date.toString() + "\"}";
     }
 
+        /**
+     * Pour retourner les concepts modifiés à partir de la date donnée
+     * format de la date 2022-01-01
+     * @param uri
+     * @return
+     */
+    @Path("/getchangesfrom")
+    @GET
+    @Produces("application/rdf+xml,application/ld+json,application/json,text/turtle;charset=UTF-8")
+    public Response getConceptsFrom(@Context UriInfo uri) {
+        String fromDate = null;
+        String idTheso = null;      
+        String format = null;
+        
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("theso")) {
+                    idTheso = valeur;
+                }                
+                if (e.getKey().equalsIgnoreCase("date")) {
+                    fromDate = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("format")) {
+                    format = valeur;
+                }                
+            }
+        }
+        if (fromDate == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if (idTheso == null) {
+            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        if (format == null) {
+            format = "rdf";
+        }     
+        String datas;
+        
+        switch (format) {
+            case "rdf": {
+                format = "application/rdf+xml";
+                datas = getLastConcepts__(idTheso, fromDate, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+            }
+            case "jsonld":
+                format = "application/ld+json";
+                datas = getLastConcepts__(idTheso, fromDate, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+            case "turtle":
+                format = "text/turtle";
+                datas = getLastConcepts__(idTheso, fromDate, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+            case "json":
+                format = "application/json";
+                datas = getLastConcepts__(idTheso, fromDate, format);
+                if (datas == null) {
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                }
+                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();        
+    }
+
+    private String getLastConcepts__(String idTheso, String fromDate, String format) {
+
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.getIdConceptFromDate(ds, idTheso, fromDate, format);           
+        }
+        return datas;
+    }
 
 
+    
+    
 
 
     ///////////////////////////////////////////////////////////////////////////////////////

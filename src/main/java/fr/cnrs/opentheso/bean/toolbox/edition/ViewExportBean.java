@@ -213,6 +213,10 @@ public class ViewExportBean implements Serializable {
     public boolean isDeprecatedExport() {
         return "deprecated".equals(formatFile);
     }
+    
+    public boolean isCsvStrucExport() {
+        return "CSV_STRUC".equals(formatFile);
+    }
 
     public String getFormat() {
         return formatFile;

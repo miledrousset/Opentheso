@@ -401,6 +401,56 @@ public class AlignmentBean implements Serializable {
         sortDatatableAlignementByColor();
     }
     
+    /**
+     * Permet de charger les données des concepts à aligner 
+     * ###### remplace la focntion ci-dessus aprsè vérification #####
+     * @param idLang
+     * @param idTheso 
+     * #MR
+     */
+    public void getIdsAndValues2(String idLang, String idTheso) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(
+                connect.getPoolConnexion(),
+                allIdsOfBranch,
+                idLang,
+                idTheso);
+        selectConceptForAlignment(idConceptSelectedForAlignment);
+
+        allignementsList = new ArrayList<>();
+
+        for (NodeIdValue idsAndValue : idsAndValues) {
+
+            ArrayList<NodeAlignment> alignements = new AlignmentHelper()
+                    .getAllAlignmentOfConcept(connect.getPoolConnexion(), idsAndValue.getId(), idTheso);
+
+            if (!CollectionUtils.isEmpty(alignements)) {
+                for (NodeAlignment alignement : alignements) {
+                    AlignementElement element = new AlignementElement();
+                    element.setIdConceptOrig(idsAndValue.getId());
+                    element.setLabelConceptOrig(idsAndValue.getValue());
+
+                    element.setIdAlignment(alignement.getId_alignement());
+                    element.setTypeAlignement(alignement.getAlignmentLabelType());
+                    element.setLabelConceptCible(alignement.getConcept_target());
+                    element.setTargetUri(alignement.getUri_target());
+                    element.setThesaurus_target(alignement.getThesaurus_target());
+                    element.setAlignement_id_type(alignement.getAlignement_id_type());
+                    element.setIdSource(alignement.getId_source());
+                    element.setConceptTarget(alignement.getConcept_target());
+                    allignementsList.add(element);
+                }
+            }
+
+            AlignementElement element = new AlignementElement();
+            element.setIdConceptOrig(idsAndValue.getId());
+            element.setLabelConceptOrig(idsAndValue.getValue());
+            allignementsList.add(element);
+        }
+
+        sortDatatableAlignementByColor();
+    }    
+    
     public void sortDatatableAlignementByColor() {
         
         if (allignementsList.size() > 1) {
@@ -1590,7 +1640,8 @@ public class AlignmentBean implements Serializable {
         isViewSelection = false;
         setExistingAlignment(idConcept, idTheso);
 
-        getIdsAndValues(selectedTheso.getCurrentLang(), idTheso);
+        getIdsAndValues2(conceptView.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        //getIdsAndValues(selectedTheso.getCurrentLang(), idTheso);
 
         resetVariables();
     }

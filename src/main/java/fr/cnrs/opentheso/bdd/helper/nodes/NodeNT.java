@@ -71,12 +71,12 @@ public class NodeNT implements Comparable {
         return naturalCompare(str1, str2, true);
         //return str1.toUpperCase().compareTo(str2.toUpperCase());
     }
-    
+        
     private int naturalCompare(String a, String b, boolean ignoreCase) {
         if (ignoreCase) {
             a = a.toLowerCase();
             b = b.toLowerCase();
-        }
+    }
         int aLength = a.length();
         int bLength = b.length();
         int minSize = Math.min(aLength, bLength);

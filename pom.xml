@@ -6,9 +6,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>22.04.1</version>
+    <version>22.07</version>
     <packaging>war</packaging>
-    <name>opentheso2</name>
+    <name>opentheso2_dev</name>
 
     <dependencies>
 
@@ -17,8 +17,8 @@
             <groupId>io.nayuki</groupId>
             <artifactId>qrcodegen</artifactId>
             <version>1.7.0</version>
-        </dependency>    
-        
+        </dependency>
+
         <!-- fin QrCode--> 
       
       
@@ -221,6 +221,13 @@
             <artifactId>commons-compress</artifactId>
             <version>1.21</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.9.0</version>
+            <type>jar</type>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.jena</groupId>
@@ -324,7 +331,7 @@
         <cdi-api.version>2.0</cdi-api.version>
         <jsf2leaf.version>1.0</jsf2leaf.version>
         <jsf-api.version>2.2.20</jsf-api.version>
-        <itextpdf.version>5.1.2</itextpdf.version>
+        <itextpdf.version>5.5.13.3</itextpdf.version>
         <hikariCP.version>5.0.1</hikariCP.version>
         <treelayout.version>1.0.3</treelayout.version>
         <all.themes.version>1.0.8</all.themes.version>

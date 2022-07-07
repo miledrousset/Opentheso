@@ -15,13 +15,11 @@
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
 
-        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
-
-        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/all.css"/> 
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
     </h:head>
 
-
-    <h:body id="page-top" onload="closeMenu()">
+    <h:body id="page-top" onload="initMenu()">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -91,7 +89,7 @@
                                                 </div>
 
                                                 <div class="col-8">
-                                                    <p:inputText value="#{myAccountBean.passWord1}" title="#{langueBean.getMsg('profile.tootltip_user')}" 
+                                                    <p:password value="#{myAccountBean.passWord1}" title="#{langueBean.getMsg('profile.tootltip_user')}" 
                                                                  style="width: 100%; height: 100%" />
                                                 </div>
                                             </div>
@@ -103,7 +101,7 @@
                                                 </div>
 
                                                 <div class="col-8">
-                                                    <p:inputText value="#{myAccountBean.passWord2}" style="width: 100%; height: 100%" />
+                                                    <p:password value="#{myAccountBean.passWord2}" style="width: 100%; height: 100%" />
                                                 </div>
 
                                                 <div class="col-1" style="vertical-align: central; margin-top: 3px">

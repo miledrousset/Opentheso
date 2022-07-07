@@ -4,15 +4,15 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddSubGroup" header="Ajouter un sous-groupe/collection" widgetVar="addSubGroup" 
+    <p:dialog id="idAddSubGroup" header="#{langueBean.getMsg('leftbody.group.addSubGroup')}" widgetVar="addSubGroup" 
               modal="true" resizable="true" position="top" width="600" style="margin-top: 150px" >
 
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Sous :" style="font-weight: bold;"/>
+                <h:outputText value="#{langueBean.getMsg('leftbody.group.sub')} :" style="font-weight: bold;"/>
             </div>
             <div class="col-7">
-                <h:outputText  title="Ajouter un sous-groupe/collection sous :" value="#{treeGroups.selectedNode.data}" style="font-size: 14px; color: #43B572"/>
+                <h:outputText  title="#{langueBean.getMsg('leftbody.group.addSubGroup')} #{langueBean.getMsg('leftbody.group.sub')} :" value="#{treeGroups.selectedNode.data}" style="font-size: 14px; color: #43B572"/>
                 <p:commandLink style="font-size: 17px; color: #FF7979" action="#{addGroupBean.infos}" update="idAddSubGroup">
                     <i class="pi pi-info-circle"></i>
                 </p:commandLink>
@@ -21,10 +21,10 @@
 
         <div class="row" style="margin-top: 10px">
             <div class="col-5">
-                <h:outputText value="Nom :" style="font-weight: bold;"/>
+                <h:outputText value="#{langueBean.getMsg('statistique.label')} :" style="font-weight: bold;"/>
             </div>
             <div class="col-7">
-                <p:inputText placeholder="new sub group ..." value="#{addGroupBean.titleGroup}"
+                <p:inputText placeholder="#{langueBean.getMsg('leftbody.group.newSubGroup')} ..." value="#{addGroupBean.titleGroup}"
                              style="width: 100%"/>
             </div>
         </div>
@@ -51,11 +51,11 @@
         </div>
 
         <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-            <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                              actionListener="PF('addSubGroup').hide();" update="idAddSubGroup"/>
 
-            <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnValidate')}"
-                             update="containerIndex messageIndex" oncomplete="PF('addSubGroup').hide();"
+            <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                             update="messageIndex" oncomplete="PF('addSubGroup').hide();"
                              actionListener="#{addGroupBean.addSubGroup(treeGroups.selectedNodeId,
                                                selectedTheso.currentIdTheso, selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
         </div>

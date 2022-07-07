@@ -133,11 +133,11 @@
                                 <h:outputText value=", " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
 
-                            <p:commandLink rendered="#{conceptView.haveNext}"
+                            <p:commandLink value="..." rendered="#{conceptView.haveNext}"
                                            action="#{conceptView.getNextNT(selectedTheso.selectedIdTheso,
                                                      value.idConcept, conceptView.selectedLang)}" update="containerIndex:rightTab:idConceptNarrower"
                                            style="color: #FF7979" styleClass="textOpentheso">
-                                <i class="pi pi-angle-double-right" style="color:#f47b2a; font-size: 14px;" />
+                                <i class="fa-solid fa-forward" style=" color:#f47b2a; font-size: 14px;" />
                             </p:commandLink>
                         </h:panelGroup>
                     </div>
@@ -247,8 +247,6 @@
     <ui:include src="../../../dialog/narrower/addNarrowerLink.xhtml" />
     <ui:include src="../../../dialog/narrower/deleteNarrowerLink.xhtml" />
     <ui:include src="../../../dialog/narrower/changeRelation.xhtml" />
-
-
 
 
 

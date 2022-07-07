@@ -31,9 +31,11 @@
                     <p:menuButton  value="#{langueBean.getMsg('candidat.import_export_candidates')}" icon="fas fa-download"
                                    style="background: none; border: none; box-shadow: none; margin-left: 10px"  >
 
-                        <p:menuitem value="#{langueBean.getMsg('candidat.retrieve_from_old_version')}"
+                        <!--
+                        <p:menuitem value="# {langueBean.getMsg('candidat.retrieve_from_old_version')}"
                                     icon="fas fa-box" update="tabViewCandidat messageIndex" process="@this"
-                                    actionListener="#{candidatBean.getOldCandidates()}" />
+                                    actionListener="# {candidatBean.getOldCandidates()}" />
+                        -->
 
                         <p:menuitem value="#{langueBean.getMsg('candidat.export_in_SKOS')}"                              
                                     disabled="#{candidatBean.candidatList.size() == 0}"
@@ -99,8 +101,7 @@
                 </p:column>  
                 <p:column width="20" headerText="Votes" sortBy="#{listCandidats.nbrVote}">
                     <p:badge rendered="#{listCandidats.nbrVote > 0}" severity="danger" value="#{listCandidats.nbrVote}" styleClass="p-mr-2"></p:badge>
-                </p:column>
-                
+                </p:column>   
                 <p:column width="20" headerText="Votes Note">
                     <p:badge rendered="#{listCandidats.nbrNoteVote > 0}" value="#{listCandidats.nbrNoteVote}" severity="danger" styleClass="p-mr-2">
                         <p:commandButton icon="pi pi-bell" styleClass="rounded-button ui-button-warning" update="idShowVoteNote"
@@ -124,13 +125,13 @@
                                          update="idDeleteCandidate"
                                          oncomplete="PF('deleteCandidate').show();" 
                                          /> 
-                    </div> 
+                    </div>
                     
                     <div class="col-2 offset-6" style="text-align: right; margin-top: 20px;">
                         <p:commandButton value="#{langueBean.getMsg('candidat.submitList')}" ajax="true" process="@this"
                                          update="idProcessCandidateList processCandidateListForm" styleClass="ui-button-primary"
                                          oncomplete="PF('processCandidateList').show();" style="font-size: 12px; width: 100%"/> 
-                    </div>
+                </div>
                 </div>
             </h:panelGroup>  
         </h:form>        

@@ -7,12 +7,9 @@ package fr.cnrs.opentheso.core.exports.csv;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import java.io.ByteArrayOutputStream;
@@ -144,27 +141,6 @@ public class CsvWriteHelper {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180)) {
 
-                /// écriture des headers
-/*                ArrayList<String> header = new ArrayList<>();
-                header.add("conceptId");
-                header.add("arkId");
-                header.add("handleId");
-                header.add("prefLabel");
-                header.add("altLabel");
-                header.add("definition");
-                header.add("alignment");
-                csvFilePrinter.printRecord(header);*/
-
-            /*    NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
-                if (nodePreference == null) {
-                    return null;
-                }
-                ConceptHelper conceptHelper = new ConceptHelper();
-
-                ArrayList<NodeIdValue> listChilds = conceptHelper.getListChildrenOfConceptSorted(ds, idConcept, idLang, idTheso);
-                */
-
-
                 ConceptHelper conceptHelper = new ConceptHelper();
                 ArrayList <String> idConcepts = null;
                 if(idGroups == null || idGroups.isEmpty())
@@ -269,7 +245,7 @@ public class CsvWriteHelper {
                 csvFilePrinter.printRecord(header);
 
                 ConceptHelper conceptHelper = new ConceptHelper();
-                ArrayList <NodeDeprecated> nodeDeprecateds = null;
+                ArrayList <NodeDeprecated> nodeDeprecateds;
                 //    if(idGroups == null || idGroups.isEmpty())
                 nodeDeprecateds = conceptHelper.getAllDeprecatedConceptOfThesaurus(ds, idTheso, idLang);
               /*  else {

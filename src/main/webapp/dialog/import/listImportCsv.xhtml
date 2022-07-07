@@ -4,7 +4,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idListImportCsv" header="Importer une liste tabulée" widgetVar="listImportCsv" 
+    <p:dialog id="idListImportCsv" header="#{langueBean.getMsg('rightbody.concept.import_tabulated_list')}" widgetVar="listImportCsv" 
               width="auto" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >
 
         <h:panelGroup id="listImportCsvForm">   
@@ -58,14 +58,9 @@
                                 </p:row>                  
                             </p:panelGrid>     
                             <br/>
-                            <p:outputPanel deferred="true" style="font-size: 12px;">
+                            <p:outputPanel deferred="true" style="font-size: 12px; max-width: 500px;">
                                 <p>
-                                    Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
-                                    Pour les champs qui autorisent les valeurs multiples, il faut les séparer par (##) ex : (deux##2).<br/>
-                                    Si l'identifiant existe déjà dans le thésaurus, le concept à importer sera rejeté.
-
-                                    La colonne Uri est obligatoire, les identifiants peuvent être vides si vous ne les avez pas.<br/>
-                                    Si vous voulez récupérer une hiérarchie en utilisant la colonne (skos:broader), c'est possible aussi.
+                                    #{langueBean.getMsg('import.listCsv.help')}
                                 </p>
                             </p:outputPanel>
                         </fieldset>
@@ -75,7 +70,7 @@
                 <!-- délimiteur CSV -->
                 <div class="row">
                     <div class="col-3">
-                        <h:outputText value="Délimiteur Csv :" style="font-size: 12px;" />
+                        <h:outputText value="#{langueBean.getMsg('import.separatedValue')}:" style="font-size: 12px;" />
                     </div>
                     <div class="col-3">
                         <p:selectOneMenu id="idDelimiter" value="#{importFileBean.choiceDelimiter}" 
@@ -88,13 +83,14 @@
                         </p:selectOneMenu>
                     </div>
                 </div>
+                <p:spacer/>
 
                 <h:panelGroup id="panelListCsv">
                     <!-- Choix du fichier -->   
                     <div class="row" style="margin-left: 30px; margin-right: 30px; ">
                         <div class="col-12" > 
                             <p:fileUpload listener="#{importFileBean.loadFileCsv}" 
-                                          label="parcourir" 
+                                          label="#{langueBean.getMsg('candidat.parcourir')}" 
                                           mode="advanced" auto="true"
                                           allowTypes="/(\.|\/)(csv|txt)$/"
                                           update="panelListCsv" disabled="#{importFileBean.loadDone}"
@@ -133,7 +129,7 @@
                                                  styleClass="ui-button-primary"
                                                  actionListener="#{importFileBean.addListCsvToConcept(conceptView.nodeConcept)}"
                                                  ajax="true"
-                                                 value="Importer"
+                                                 value="#{langueBean.getMsg('candidat.import')}"
                                                  disabled="#{!importFileBean.loadDone}" />
                             </div>                             
                         </div>

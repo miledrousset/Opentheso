@@ -71,7 +71,7 @@ public class NodeIdValue implements Comparable, Serializable{
         if (ignoreCase) {
             a = a.toLowerCase();
             b = b.toLowerCase();
-        }
+}
         int aLength = a.length();
         int bLength = b.length();
         int minSize = Math.min(aLength, bLength);

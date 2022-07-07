@@ -306,9 +306,13 @@ body .ui-tree {
     padding: 0.1rem;
     margin-left: -1rem;
     margin-right: -1.8rem;
-    margin-top: -0.8rem;
+   /* margin-top: -0.8rem;*/
     /* display: ruby-text;*/
 
+}
+
+.ui-tree .ui-treenode-children {
+    margin-bottom: 2px;
 }
 
 .ui-tree .ui-treenode {
@@ -334,7 +338,8 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode 
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
-    margin: -4px;
+    /*margin: -4px;*/
+    margin-top: -8px;
     /*   display: ruby-text;*/
 }
 
@@ -755,4 +760,24 @@ body .custom-indicator-galleria .ui-galleria-indicator {
 body .custom-indicator-galleria .ui-galleria-indicator.ui-state-highlight {
     background-color: var(--primary-color);
     color: var(--primary-color-text);
+}
+
+body .ui-sidebar .ui-sidebar-close .ui-icon {
+    font-family: "primeicons" !important;
+    font-style: normal;
+    font-weight: normal;
+    display: inline-block;
+    background: none;
+    color: red;
+}
+
+.sidebar.toggled {
+    overflow: visible;
+    width: 4.5rem !important;
+}
+
+.sidebar.toggled .nav-item .nav-link {
+    text-align: center;
+    padding: 0.75rem 1rem;
+    width: 4.5rem;
 }
