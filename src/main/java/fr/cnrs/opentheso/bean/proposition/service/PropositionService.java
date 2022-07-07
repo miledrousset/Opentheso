@@ -5,6 +5,7 @@ import com.sendgrid.Email;
 import com.sendgrid.Mail;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
+import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 
 import fr.cnrs.opentheso.bdd.datas.Term;
@@ -34,12 +35,8 @@ import fr.cnrs.opentheso.bean.proposition.model.PropositionCategoryEnum;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -402,11 +399,6 @@ public class PropositionService implements Serializable {
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
 
-        Response response = sg.api(request);
-
-        System.out.println(response.getStatusCode());
-        System.out.println(response.getHeaders());
-        System.out.println(response.getBody());
         sg.api(request);
     }
 
@@ -1171,7 +1163,27 @@ public class PropositionService implements Serializable {
     }
 
     public List<PropositionDao> searchAllPropositions() {
-        return new PropositionHelper().getAllProposition(connect.getPoolConnexion());
+        List<PropositionDao> propositions = new ArrayList<>();
+        PropositionHelper propositionHelper = new PropositionHelper();
+        propositions.addAll(searchPropositionsNonTraitter());
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(), 
+                PropositionStatusEnum.APPROUVER.name()));
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(), 
+                PropositionStatusEnum.REFUSER.name()));
+        return propositions;
+    }
+
+    public List<PropositionDao> searchPropositionsNonTraitter() {
+        List<PropositionDao> propositions = new ArrayList<>();
+        propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(), 
+                PropositionStatusEnum.ENVOYER.name()));
+        propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(), 
+                PropositionStatusEnum.LU.name()));
+        return propositions;
+    }
+
+    public List<PropositionDao> searchOldPropositions() {
+        return new PropositionHelper().getOldPropositionByStatus(connect.getPoolConnexion());
     }
 
 }

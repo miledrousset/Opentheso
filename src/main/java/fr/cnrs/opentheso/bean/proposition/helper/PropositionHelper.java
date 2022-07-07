@@ -39,6 +39,52 @@ public class PropositionHelper {
         return propositions;
     }
 
+    public List<PropositionDao> getAllPropositionByStatus(HikariDataSource ds, String status) {
+
+        List<PropositionDao> propositions = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT pro.*, term.lexical_value " +
+                                "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " +
+                                "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " +
+                                "WHERE pro.status = '" + status + "' ORDER BY pro.id DESC");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        propositions.add(toPropositionDao(resultSet));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            System.out.println("Erreur : " + sqle.getMessage());
+        }
+
+        return propositions;
+    }
+
+    public List<PropositionDao> getOldPropositionByStatus(HikariDataSource ds) {
+
+        List<PropositionDao> propositions = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT pro.*, term.lexical_value " +
+                                "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " +
+                                "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " +
+                                "WHERE pro.status NOT IN ('LU', 'ENVOYER') ORDER BY pro.id DESC");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        propositions.add(toPropositionDao(resultSet));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            System.out.println("Erreur : " + sqle.getMessage());
+        }
+
+        return propositions;
+    }
+
     public PropositionDao searchPropositionByEmailAndConceptAndLang(HikariDataSource ds, String email, 
             String conceptID, String lang) {
 

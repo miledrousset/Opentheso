@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -55,10 +56,16 @@ public class PropositionBean implements Serializable {
     private String nom, email, commentaire;
     private String message;
     private String actionNom;
+    private String showAllPropositions;
     private int nbrNewPropositions;
 
     private PropositionDao propositionSelected;
     private List<PropositionDao> propositions;
+    
+    
+    public PropositionBean() {
+        showAllPropositions = "1";
+    }
 
     public void onSelectConcept(PropositionDao propositionDao) throws IOException {
 
@@ -85,7 +92,17 @@ public class PropositionBean implements Serializable {
     }
 
     public void afficherListPropositions() {
-        propositions = propositionService.searchAllPropositions();
+        propositions = new ArrayList<>();
+        switch (showAllPropositions) {
+            case "1" :
+                propositions = propositionService.searchPropositionsNonTraitter();
+                break;
+            case "2" :
+                propositions = propositionService.searchOldPropositions();
+                break;
+            default:
+                propositions = propositionService.searchAllPropositions();
+        }
         PrimeFaces.current().executeScript("PF('listNotification').show();");
     }
 
@@ -400,6 +417,14 @@ public class PropositionBean implements Serializable {
 
     public void setNbrNewPropositions(int nbrNewPropositions) {
         this.nbrNewPropositions = nbrNewPropositions;
+    }
+
+    public String getShowAllPropositions() {
+        return showAllPropositions;
+    }
+
+    public void setShowAllPropositions(String showAllPropositions) {
+        this.showAllPropositions = showAllPropositions;
     }
 
 }
