@@ -12,7 +12,7 @@
 
         <ui:include src="NoteProposition.xhtml" />
 
-        <p:dialog id="confirmDialogId" header="Confirmation ..." widgetVar="confirmDialog" 
+        <p:dialog id="confirmDialogId" header="#{langueBean.getMsg('profile.confirmation')}" widgetVar="confirmDialog" 
                   width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
             <div class="row">
@@ -38,7 +38,7 @@
                 <div class="list-group">
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
                         <div class="col-3">
-                            <h:outputText value="Nom* : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.name')} * : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-9">
                             <h:inputText value="#{propositionBean.nom}" rendered="#{currentUser.nodeUser == null}" />
@@ -50,7 +50,7 @@
 
                     <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
                         <div class="col-3">
-                            <h:outputText value="E-Mail* : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="#{langueBean.getMsg('profile.email')} * : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-9">
                             <h:inputText value="#{propositionBean.email}" rendered="#{currentUser.nodeUser.mail == null}" />
@@ -62,7 +62,7 @@
 
                     <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
                         <div class="col-12">
-                            <h:outputText value="Commentaire : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="#{langueBean.getMsg('proposition.commentaire')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                     </div>
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
@@ -92,7 +92,7 @@
                 <div class="list-group">
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
                         <div class="col-3">
-                            <h:outputText value="Nom : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.name')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-9">
                             <h:outputText value="#{propositionBean.nom}"
@@ -102,7 +102,7 @@
 
                     <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
                         <div class="col-3">
-                            <h:outputText value="E-Mail : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <h:outputText value="#{langueBean.getMsg('profile.email')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <div class="col-9">
                             <h:outputText value="#{propositionBean.email}" 
@@ -114,7 +114,7 @@
 
                         <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
                             <div class="col-12">
-                                <h:outputText value="Commentaire : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                                <h:outputText value="#{langueBean.getMsg('proposition.commentaire')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                         </div>
 
@@ -129,17 +129,17 @@
             </div>
             <div class="row">
                 <div class="col-3">
-                    <p:commandButton value="Supprimer" styleClass="ui-button-secondary" style="margin-right: 10px" 
+                    <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" styleClass="ui-button-secondary" style="margin-right: 10px" 
                                      ajax="true" process="@this" update="containerIndex messageIndex" 
                                      actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}" />
                 </div>
                 <div class="col-9" style="text-align: right;">
-                    <p:commandButton value="Refuser la proposition" rendered="#{propositionBean.showButtonDecision()}"
+                    <p:commandButton value="#{langueBean.getMsg('proposition.refuser')}" rendered="#{propositionBean.showButtonDecision()}"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('refuserProposition')}"
                                      update="containerIndex messageIndex" style="margin-right: 10px; background-color: red"
                                      styleClass="p-mr-2" icon="pi pi-check" />
 
-                    <p:commandButton value="Approuver la proposition" update="containerIndex messageIndex"
+                    <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="containerIndex messageIndex"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('approuverProposition')}"
                                      style="background-color: #43B572; border-color: #43B572;"
                                      styleClass="p-mr-2" icon="pi pi-check" rendered="#{propositionBean.showButtonDecision()}" />
