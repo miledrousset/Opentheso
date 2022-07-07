@@ -3,9 +3,9 @@ package fr.cnrs.opentheso.bean.proposition.service;
 import com.sendgrid.Content;
 import com.sendgrid.Email;
 import com.sendgrid.Mail;
+import com.sendgrid.Response;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
-import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 
 import fr.cnrs.opentheso.bdd.datas.Term;
@@ -399,7 +399,12 @@ public class PropositionService implements Serializable {
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
 
-        sg.api(request);
+        Response response = sg.api(request);
+
+     /*   System.out.println(response.getStatusCode());
+        System.out.println(response.getHeaders());
+        System.out.println(response.getBody());
+        sg.api(request);*/
     }
 
     private ResourceBundle getBundlePool() {
@@ -1166,18 +1171,18 @@ public class PropositionService implements Serializable {
         List<PropositionDao> propositions = new ArrayList<>();
         PropositionHelper propositionHelper = new PropositionHelper();
         propositions.addAll(searchPropositionsNonTraitter());
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(), 
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
                 PropositionStatusEnum.APPROUVER.name()));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(), 
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
                 PropositionStatusEnum.REFUSER.name()));
         return propositions;
     }
 
     public List<PropositionDao> searchPropositionsNonTraitter() {
         List<PropositionDao> propositions = new ArrayList<>();
-        propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(), 
+        propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(),
                 PropositionStatusEnum.ENVOYER.name()));
-        propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(), 
+        propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(),
                 PropositionStatusEnum.LU.name()));
         return propositions;
     }
