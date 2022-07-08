@@ -804,3 +804,29 @@ element.style {
     border: none;
     padding: -10px;
 }
+
+body .ui-button.ui-button-text-only .ui-button-text {
+    padding: 0.3rem 0.4rem;
+}
+
+body .ui-selectbooleanbutton.ui-state-active, body .ui-selectonebutton > .ui-button.ui-state-active, body .ui-selectmanybutton > .ui-button.ui-state-active {
+    background: #f47b2a;
+    border-color: #f47b2a;
+    color: #ffffff;
+}
+
+body .ui-selectbooleanbutton.ui-state-active, body .ui-selectonebutton > .ui-button.ui-state-active, body .ui-selectmanybutton > .ui-button.ui-state-active {
+    background: #f47b2a;
+    border-color: #f47b2a;
+    color: #ffffff;
+}
+
+body .ui-state-hover .ui-state-focus .ui-state-active .ui-state-default .ui-state-highlight {
+    background: #f47b2a;
+    color: #ffffff;
+    border: 1px solid #f47b2a;
+    margin: 0;
+    outline: 0 none;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
