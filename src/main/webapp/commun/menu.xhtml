@@ -22,20 +22,16 @@
             <!-- Debut Thesaurus -->
             <li class="nav-item" style="margin-top: 20px;">
                 <span class="nav-link">
-                    <div id="thesoButton1" style=" margin-left: 5px">
-                        <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
-                                       style="color: #fff; text-decoration: none; font-size: 14px;" process="@this">
-                            <i class="fa-solid fa-folder-tree" style="font-size: 1.2rem" />
-                            <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.thesaurus')}</span>
-                        </p:commandLink>
-                    </div>
-                    <div id="thesoButton2">
-                        <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
-                                       style="color: #fff; text-decoration: none;" process="@this"
-                                       title="#{langueBean.getMsg('menu.thesaurus')}">
-                            <i class="fa-solid fa-folder-tree" style="font-size: 1.4rem" />
-                        </p:commandLink>
-                    </div>
+                    <p:commandLink id="thesoButton1" class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
+                                   style="color: #fff; text-decoration: none; font-size: 14px; display: none" process="@this">
+                        <i class="fa-solid fa-folder-tree" style="font-size: 1.2rem; margin-left: 5px" />
+                        <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.thesaurus')}</span>
+                    </p:commandLink>
+                    <p:commandLink id="thesoButton2" class="collapse-item" actionListener="#{menuBean.redirectToThesaurus()}"
+                                   style="color: #fff; text-decoration: none;" process="@this"
+                                   title="#{langueBean.getMsg('menu.thesaurus')}">
+                        <i class="fa-solid fa-folder-tree" style="font-size: 1.4rem" />
+                    </p:commandLink>
                 </span>
             </li>
             <!-- Fin Thesorus -->
@@ -43,23 +39,18 @@
             <!-- Debut Candidat -->
             <h:panelGroup rendered="#{(currentUser.nodeUser != null and selectedTheso.currentIdTheso != null) and
                                       (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isManagerOnThisTheso or roleOnTheso.isContributorOnThisTheso or currentUser.nodeUser.isSuperAdmin)}" > 
-
                 <li class="nav-item">
                     <span class="nav-link">
-                        <div id="candidatButton1" style=" margin-left: 5px">
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
-                                           style="color: #fff; text-decoration: none; font-size: 14px;">
-                                <i class="fa-solid fa-file-circle-check" style="font-size: 1.2rem" />
-                                <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('candidat.titre')}</span>
-                            </p:commandLink>
-                        </div>
-                        <div id="candidatButton2">
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}"
-                                           style="color: #fff; text-decoration: none;" process="@this"
-                                           title="#{langueBean.getMsg('candidat.titre')}">
-                                <i class="fa-solid fa-file-circle-check" style="font-size: 1.4rem" />
-                            </p:commandLink>
-                        </div>
+                        <p:commandLink id="candidatButton1" class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}" process="@this" 
+                                       style="color: #fff; text-decoration: none; font-size: 14px;; display: none; margin-left: 5px">
+                            <i class="fa-solid fa-file-circle-check" style="font-size: 1.2rem" />
+                            <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('candidat.titre')}</span>
+                        </p:commandLink>
+                        <p:commandLink id="candidatButton2" class="collapse-item" actionListener="#{menuBean.redirectToCandidatPage()}"
+                                       style="color: #fff; text-decoration: none;" process="@this"
+                                       title="#{langueBean.getMsg('candidat.titre')}">
+                            <i class="fa-solid fa-file-circle-check" style="font-size: 1.4rem" />
+                        </p:commandLink>
                     </span>
                 </li>
             </h:panelGroup>
@@ -68,19 +59,15 @@
             <!-- Debut profile -->
             <h:panelGroup rendered="#{currentUser.nodeUser != null}" > 
                 <li class="nav-item">
-                    <div id="profileButton1">
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                           aria-expanded="true" aria-controls="collapseTwo">
-                            <i class="fas fa-fw fa-user" style="font-size: 1.2rem" />
-                            <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.profile')}</span>
-                        </a>
-                    </div>
-                    <div id="profileButton2">
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                           aria-expanded="true" aria-controls="collapseTwo" title="#{langueBean.getMsg('menu.profile')}">
-                            <i class="fas fa-fw fa-user" style="font-size: 1.4rem" />
-                        </a>
-                    </div>
+                    <a id="profileButton1" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                       aria-expanded="true" aria-controls="collapseTwo" style="display: none">
+                        <i class="fas fa-fw fa-user" style="font-size: 1.2rem" />
+                        <span style="color: #fff; text-decoration: none; font-size: 12px;">#{langueBean.getMsg('menu.profile')}</span>
+                    </a>
+                    <a id="profileButton2" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                       aria-expanded="true" aria-controls="collapseTwo" title="#{langueBean.getMsg('menu.profile')}">
+                        <i class="fas fa-fw fa-user" style="font-size: 1.4rem" />
+                    </a>
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMyProfilePage()}" 
@@ -113,21 +100,17 @@
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and 
                                       (currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin)}" >        
                 <li class="nav-item">
-                    <div id="toolboxButton1">
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                           aria-expanded="true" aria-controls="collapseUtilities">
-                            <i class="fas fa-fw fa-briefcase" style="font-size: 1.2rem" />
-                            <span style="color: #fff; text-decoration: none; font-size: 12px;">
-                                #{langueBean.getMsg('menu.toolbox')}
-                            </span>
-                        </a>
-                    </div>
-                    <div id="toolboxButton2">
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                           aria-expanded="true" aria-controls="collapseUtilities" title="#{langueBean.getMsg('menu.toolbox')}">
-                            <i class="fas fa-fw fa-briefcase" style="font-size: 1.4rem" />
-                        </a>
-                    </div>
+                    <a id="toolboxButton1" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                       aria-expanded="true" aria-controls="collapseUtilities" style="; display: none">
+                        <i class="fas fa-fw fa-briefcase" style="font-size: 1.2rem;" />
+                        <span style="color: #fff; text-decoration: none; font-size: 12px;">
+                            #{langueBean.getMsg('menu.toolbox')}
+                        </span>
+                    </a>
+                    <a id="toolboxButton2" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                       aria-expanded="true" aria-controls="collapseUtilities" title="#{langueBean.getMsg('menu.toolbox')}">
+                        <i class="fas fa-fw fa-briefcase" style="font-size: 1.4rem" />
+                    </a>
                     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
@@ -149,21 +132,17 @@
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso != null)
                                       and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >        
                 <li class="nav-item">
-                    <div id="settingButton1">
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
-                           aria-expanded="true" aria-controls="collapseParams">
-                            <i class="fas fa-fw fa-wrench" style="font-size: 1.2rem" />
-                            <span style="color: #fff; text-decoration: none; font-size: 12px;">
-                                #{langueBean.getMsg('menu.setting')}
-                            </span>
-                        </a>
-                    </div>
-                    <div id="settingButton2">
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
-                           aria-expanded="true" aria-controls="collapseParams"  title="#{langueBean.getMsg('menu.setting')}">
-                            <i class="fas fa-fw fa-wrench" style="font-size: 1.4rem" />
-                        </a>
-                    </div>
+                    <a id="settingButton1" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
+                       aria-expanded="true" aria-controls="collapseParams" style="display: none">
+                        <i class="fas fa-fw fa-wrench" style="font-size: 1.2rem;" />
+                        <span style="color: #fff; text-decoration: none; font-size: 12px;">
+                            #{langueBean.getMsg('menu.setting')}
+                        </span>
+                    </a>
+                    <a id="settingButton2" class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseParams"
+                       aria-expanded="true" aria-controls="collapseParams"  title="#{langueBean.getMsg('menu.setting')}">
+                        <i class="fas fa-fw fa-wrench" style="font-size: 1.4rem" />
+                    </a>
                     <div id="collapseParams" class="collapse" aria-labelledby="headingUtilities"
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
