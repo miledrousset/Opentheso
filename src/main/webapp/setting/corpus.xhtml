@@ -14,8 +14,9 @@
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_general.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/theme_opentheso.css" />
         <link rel="stylesheet" type="text/css" href="../resources/css/composants_opentheso.css" />
-        <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v6.1.0/css/all.css"/> 
-        <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>s
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/all.css"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
     </h:head>
 
     <h:body id="page-top" onload="initMenu()">
@@ -32,88 +33,96 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <h:panelGroup id="content-wrapper" style="width: 100%">
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
-            <h:form id="containerIndex">
+            <div id="content-wrapper" style="width: 100%">
+                
+                <h:form id="containerIndex" style="min-height:100%; position:relative;">
+                    <div>
+                        <ui:include src="../commun/header.xhtml" />
+                    </div>
 
-                <ui:include src="../commun/header.xhtml" />
+                    <div class="container-fluid">
 
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.setting')} / <span style="color: #f47b2a">#{langueBean.getMsg('menu.corpus')}</span></h1>
-                </div>
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.setting')} / <span style="color: #f47b2a">#{langueBean.getMsg('menu.corpus')}</span></h1>
+                        </div>
 
-                <div class="card shadow mb-4" style="height: 100%;">
+                        <div class="col-12" style="height: 100%">
+                            <div class="card shadow mb-4" style="height: 100%;">
 
-                    <div class="row" style="padding-left: 20px; margin-top: 20px; margin-left: 10px; font-size: 16px">
-                        <div class="col-12">
-                            <h:outputText value="Gestion des corpus liés pour  " />
-                            <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" style="color: #f47b2a" />
+                                <div class="row" style="padding-left: 20px; margin-top: 20px; margin-left: 10px; font-size: 16px">
+                                    <div class="col-12">
+                                        <h:outputText value="Gestion des corpus liés pour  " />
+                                        <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" style="color: #f47b2a" />
+                                    </div>
+                                </div>
+
+                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 20px; vertical-align: central;
+                                     margin-left: 30px; margin-right: 30px; padding: 20px">
+
+                                    <p:toolbar>
+                                        <p:toolbarGroup align="left" />
+                                        <p:toolbarGroup align="right">
+                                            <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}"
+                                                             actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
+                                                             title="Nouveau Corpus" update="idNewCorpus" oncomplete="PF('newCorpus').show();" class="btn btn-primary">
+                                                <p:tooltip value="Ajouter un nouveau corpus" showDelay="1000" />
+                                            </p:commandButton>
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
+
+                                    <p:dataTable value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true"
+                                                 resizableColumns="true" scrollHeight="450" style="margin-top: 10px"
+                                                 reflow="true">
+
+                                        <p:column headerText="Nom">
+                                            <h:outputText value="#{corpus.corpusName}" title="Obligatoire"/>
+                                        </p:column>
+
+                                        <p:column headerText="URI pour le total">
+                                            <h:outputText value="#{corpus.uriCount}" title="facultatif"/>
+                                        </p:column>
+
+                                        <p:column headerText="URI pour le lien" >
+                                            <h:outputText value="#{corpus.uriLink}" title="Obligatoire"/>
+                                        </p:column>
+
+                                        <p:column headerText="Off/On">
+                                            <p:toggleSwitch value="#{corpus.active}" style="font-size: 10px;" disabled="true" />
+                                        </p:column>
+
+                                        <p:column exportable="false">
+                                            <p:commandButton icon="pi pi-pencil" update=":containerIndex:manage-product-content"
+                                                             oncomplete="PF('editCorpus').show()" style="margin-right: 10px"
+                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this"
+                                                             styleClass="edit-button rounded-button ui-button-success">
+                                                <p:resetInput target=":containerIndex:manage-product-content"/>
+                                            </p:commandButton>
+
+                                            <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
+                                                             actionListener="#{corpusBean.setCorpusForEdit(corpus)}" update="containerIndex:idConfirmDeleteCorpus"
+                                                             oncomplete="PF('confirmDeleteCorpus').show()"/>
+                                        </p:column>
+
+                                        <f:facet name="footer">
+                                            <span class="p-text-bold">Nombre total des corpus:  #{corpusBean.nodeCorpuses.size()}</span>
+                                        </f:facet>
+                                    </p:dataTable>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card mb-4 py-3 border-left-success" style="margin-top: 20px; vertical-align: central;
-                         margin-left: 30px; margin-right: 30px; padding: 20px">
+                    <ui:include src="../dialog/setting/editCorpus.xhtml" />
+                    <ui:include src="../dialog/setting/confirmDeleteCorpus.xhtml" />
 
-                        <p:toolbar>
-                            <p:toolbarGroup align="left" />
-                            <p:toolbarGroup align="right">
-                                <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}" 
-                                                 actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
-                                                 title="Nouveau Corpus" update="idNewCorpus" oncomplete="PF('newCorpus').show();" class="btn btn-primary">
-                                    <p:tooltip value="Ajouter un nouveau corpus" showDelay="1000" />
-                                </p:commandButton>
-                            </p:toolbarGroup>
-                        </p:toolbar>
-
-                        <p:dataTable value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true" 
-                                     resizableColumns="true" scrollHeight="450" style="margin-top: 10px"
-                                     reflow="true">
-
-                            <p:column headerText="Nom">
-                                <h:outputText value="#{corpus.corpusName}" title="Obligatoire"/>
-                            </p:column>
-
-                            <p:column headerText="URI pour le total"> 
-                                <h:outputText value="#{corpus.uriCount}" title="facultatif"/>
-                            </p:column>
-
-                            <p:column headerText="URI pour le lien" >
-                                <h:outputText value="#{corpus.uriLink}" title="Obligatoire"/>
-                            </p:column>
-
-                            <p:column headerText="Off/On">
-                                <p:toggleSwitch value="#{corpus.active}" style="font-size: 10px;" disabled="true" />
-                            </p:column>
-
-                            <p:column exportable="false">
-                                <p:commandButton icon="pi pi-pencil" update=":containerIndex:manage-product-content"
-                                                 oncomplete="PF('editCorpus').show()" style="margin-right: 10px" 
-                                                 actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this"
-                                                 styleClass="edit-button rounded-button ui-button-success">
-                                    <p:resetInput target=":containerIndex:manage-product-content"/>
-                                </p:commandButton>
-
-                                <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
-                                                 actionListener="#{corpusBean.setCorpusForEdit(corpus)}" update="containerIndex:idConfirmDeleteCorpus"
-                                                 oncomplete="PF('confirmDeleteCorpus').show()"/>
-                            </p:column>
-
-                            <f:facet name="footer">
-                                <span class="p-text-bold">Nombre total des corpus:  #{corpusBean.nodeCorpuses.size()}</span>
-                            </f:facet>
-                        </p:dataTable>      
-                    </div>
-                </div>
-                
+                    <ui:include src="../commun/footer.xhtml" />
+                </h:form>
                 <ui:include src="../dialog/setting/newCorpus.xhtml" />
-                <ui:include src="../dialog/setting/editCorpus.xhtml" />
-                <ui:include src="../dialog/setting/confirmDeleteCorpus.xhtml" />
-
-                <ui:include src="../commun/footer.xhtml" />
-            </h:form>
-
+            </div>
         </h:panelGroup>
     </h:body>
 </html>

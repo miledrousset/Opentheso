@@ -830,3 +830,7 @@ body .ui-state-hover .ui-state-focus .ui-state-active .ui-state-default .ui-stat
     border-radius: 4px;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
+
+footer.sticky-footer {
+    padding: 1.2rem 0;
+}
