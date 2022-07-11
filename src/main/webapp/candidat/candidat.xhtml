@@ -44,85 +44,79 @@
 
                 <div class="container-fluid">
 
-                    <div class="col-12" style="margin-top: -10px; margin-bottom: 10px; font-size: 15px; font-weight: bold">
-                        <div class="col-12" >
-                            <h:outputText value="#{langueBean.getMsg('candidat.titre')}" style="color: #f47b2a; margin-left: -20px; " />
-                        </div>
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">#{langueBean.getMsg('candidat.titre')}</span></h1>
                     </div>
 
-                    <div class="col-12" style="height: 100%">
-                        <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
-                                   style="background-color: #FAFAFA;">
-                            <p:tab id="tab1" title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
-                                <h:panelGroup rendered="#{candidatBean.isListCandidatsActivate() || 
-                                                          candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
-                                    <ui:include src="../candidat/candidatsList.xhtml" />
-                                </h:panelGroup>
+                    <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
+                               style="background-color: #FAFAFA;">
+                        <p:tab id="tab1" title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
+                            <h:panelGroup rendered="#{candidatBean.isListCandidatsActivate() || 
+                                                      candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">
+                                <ui:include src="../candidat/candidatsList.xhtml" />
+                            </h:panelGroup>
 
-                                <h:panelGroup rendered="#{candidatBean.isShowCandidatActivate() || candidatBean.isNewCandidatActivate()}">
-                                    <h:form id="containerIndexCandidat">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <p:commandLink value="#{langueBean.getMsg('candidat.return')}"
-                                                               update="tabViewCandidat" style="color: #F47B2A" ajax="true" process="@this"
-                                                               action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
-                                                               actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
+                            <h:panelGroup rendered="#{candidatBean.isShowCandidatActivate() || candidatBean.isNewCandidatActivate()}">
+                                <h:form id="containerIndexCandidat">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p:commandLink value="#{langueBean.getMsg('candidat.return')}"
+                                                           update="tabViewCandidat" style="color: #F47B2A" ajax="true" process="@this"
+                                                           action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
+                                                           actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top: 20px">
+                                        <div class="col-6">
+                                            <div class="card mb-4 py-3 border-left-success">
+                                                <div class="list-group" style="padding-left: 10px; margin-right: 10px">
+                                                    <ui:include src="../candidat/candidatDetails.xhtml" />
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="row" style="margin-top: 20px">
-                                            <div class="col-6">
+                                        <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
+                                            <div class="col-6" style="vertical-align: top;" >
                                                 <div class="card mb-4 py-3 border-left-success">
                                                     <div class="list-group" style="padding-left: 10px; margin-right: 10px">
-                                                        <ui:include src="../candidat/candidatDetails.xhtml" />
+                                                        <ui:include src="../candidat/candidatDiscussion.xhtml" />
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
-                                                <div class="col-6" style="vertical-align: top;" >
-                                                    <div class="card mb-4 py-3 border-left-success">
-                                                        <div class="list-group" style="padding-left: 10px; margin-right: 10px">
-                                                            <ui:include src="../candidat/candidatDiscussion.xhtml" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </h:panelGroup>
-                                        </div>
-
-                                        <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and candidatBean.isShowCandidatActivate()}">
-                                            <div class="row">
-                                                <div class="col-12" style="align-content: center">
-                                                    <p:commandButton title="#{langueBean.getMsg('candidat.submit')}" class="btn btn-primary" ajax="true" process="@this"
-                                                                     actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"
-                                                                     update="idProcessCandidate processCandidateForm" oncomplete="PF('processCandidate').show();"/>
                                                 </div>
                                             </div>
                                         </h:panelGroup>
-                                    </h:form>
-                                </h:panelGroup>
-                            </p:tab>
+                                    </div>
 
-                            <p:tab id="accept" title="#{langueBean.getMsg('candidat.inserted_concepts')}" >
-                                <h:panelGroup rendered="#{candidatBean.isAcceptedCandidatsActivate()}">
-                                    <ui:include src="../candidat/candidatAcceptedList.xhtml" />
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{!candidatBean.isAcceptedCandidatsActivate()}">
-                                    <ui:include src="../candidat/acceptedCandidatDetails.xhtml" />
-                                </h:panelGroup>
-                            </p:tab>
+                                    <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and candidatBean.isShowCandidatActivate()}">
+                                        <div class="row">
+                                            <div class="col-12" style="align-content: center">
+                                                <p:commandButton title="#{langueBean.getMsg('candidat.submit')}" class="btn btn-primary" ajax="true" process="@this"
+                                                                 actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"
+                                                                 update="idProcessCandidate processCandidateForm" oncomplete="PF('processCandidate').show();"/>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </h:form>
+                            </h:panelGroup>
+                        </p:tab>
 
-                            <p:tab title="#{langueBean.getMsg('candidat.rejected_concepts')}" titleStyleClass="tab1">
-                                <h:panelGroup rendered="#{candidatBean.isRejectCandidatsActivate()}">
-                                    <ui:include src="../candidat/candidatRejectesList.xhtml" />
-                                </h:panelGroup>
+                        <p:tab id="accept" title="#{langueBean.getMsg('candidat.inserted_concepts')}" >
+                            <h:panelGroup rendered="#{candidatBean.isAcceptedCandidatsActivate()}">
+                                <ui:include src="../candidat/candidatAcceptedList.xhtml" />
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!candidatBean.isAcceptedCandidatsActivate()}">
+                                <ui:include src="../candidat/acceptedCandidatDetails.xhtml" />
+                            </h:panelGroup>
+                        </p:tab>
 
-                                <h:panelGroup rendered="#{!candidatBean.isRejectCandidatsActivate()}">
-                                    <ui:include src="../candidat/rejectCandidatDetails.xhtml" />
-                                </h:panelGroup>
-                            </p:tab>
-                        </p:tabView>
+                        <p:tab title="#{langueBean.getMsg('candidat.rejected_concepts')}" titleStyleClass="tab1">
+                            <h:panelGroup rendered="#{candidatBean.isRejectCandidatsActivate()}">
+                                <ui:include src="../candidat/candidatRejectesList.xhtml" />
+                            </h:panelGroup>
 
-                    </div>
-
+                            <h:panelGroup rendered="#{!candidatBean.isRejectCandidatsActivate()}">
+                                <ui:include src="../candidat/rejectCandidatDetails.xhtml" />
+                            </h:panelGroup>
+                        </p:tab>
+                    </p:tabView>
                 </div>
                 <ui:include src="../commun/footer.xhtml" />
 
