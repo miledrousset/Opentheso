@@ -16,6 +16,11 @@
         body .ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-icon {
             color: #43B572;
         }
+        .formLogin-label {
+            font-family: "Roboto", sans-serif;
+            font-size: 14px;
+            color: #4CAF50;
+        }
         .formLogin input {
             font-family: "Roboto", sans-serif;
             outline: 0;
@@ -63,16 +68,16 @@
 
         <div class="formLogin">
             <h:form class="login-form">
+                <div style="height: auto; margin-top: -40px; margin-bottom: 7px; text-align: right; vertical-align: central">
+                    <p:outputLabel value="LDAP" styleClass="formLogin-label" />
+                    <p:inputSwitch value="#{currentUser.ldapEnable}" style="color: #f47b2a; margin-left: 10px" />
+                </div>
                 <p:inputText placeholder="username" value="#{currentUser.username}" />
                 <p:inputText type="password" placeholder="password" value="#{currentUser.password}"/>
-                <p:commandButton title="#{langueBean.getMsg('menu.login')}" class="formLogin-button"
-                                 ajax="true" process="@form"
-                                 action="#{currentUser.login()}" update="messageIndex "/>
+                <p:commandButton title="Se connecter" class="formLogin-button"
+                                 ajax="true" process="@form" action="#{currentUser.login()}" update="messageIndex "/>
                 <p class="message">
-                    <p:commandLink 
-                        update="idForgetPass forgetPassForm"
-                        oncomplete="PF('forgetPass').show();"
-                        value="#{langueBean.getMsg('menu.forgotten_pass')}" />
+                    <a href="#">Mot de passe oublier</a>
                 </p>
             </h:form>
         </div>

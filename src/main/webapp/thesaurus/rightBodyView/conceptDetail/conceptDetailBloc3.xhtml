@@ -28,10 +28,10 @@
                             </h:panelGroup>
                             <h:outputText rendered="#{(currentUser.nodeUser == null) and (conceptView.notes.size() == 0 and conceptView.changeNotes.size() == 0 and conceptView.definitions.size() == 0
                                                                                        and conceptView.editorialNotes.size() == 0 and conceptView.examples.size() == 0 and conceptView.historyNotes.size() == 0
-                                                                                       and conceptView.scopeNotes.size() == 0)}" value="#{langueBean.getMsg('rightbody.concept.notes')}" 
+                                                                                       and conceptView.scopeNotes.size() == 0)}" value="#{langueBean.getMsg('rightbody.concept.notes')}"
                                           style="font-size: 14px; font-weight: bold;color: #8f8f8f; margin-left: 10px;"/>
 
-                        </div>                        
+                        </div>
                         <div class="col-1 offset-8" style="margin-top: 0px">
                             <p:commandLink  id="commandOtherLang" value="" action="#{conceptView.getNotesWithAllLanguages()}"
                                             update="containerIndex:rightTab:idConceptNotes containerIndex:formRightTab" >
@@ -80,7 +80,7 @@
                                             <h:outputText value="(#{note.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>                                            
-                                        </h:panelGroup>  
+                                        </h:panelGroup>
                                     </ui:repeat>
                                 </div>
                             </div>

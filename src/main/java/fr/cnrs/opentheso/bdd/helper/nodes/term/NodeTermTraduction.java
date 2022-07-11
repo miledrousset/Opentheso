@@ -1,36 +1,35 @@
 package fr.cnrs.opentheso.bdd.helper.nodes.term;
 
-public class NodeTermTraduction {
+import java.io.Serializable;
 
-	private String lang;
-	private String lexicalValue;
-	
-	public NodeTermTraduction() {
-		super();
-	}
+public class NodeTermTraduction implements Serializable {
 
-	
-	public NodeTermTraduction(String lang, String lexicalValue) {
-		super();
-		this.lang = lang;
-		this.lexicalValue = lexicalValue;
-	}
+    private String lang;
+    private String lexicalValue;
+    
+    public NodeTermTraduction() {
+        
+    }
 
-	public String getLang() {
-		return lang;
-	}
+    public NodeTermTraduction(String lang, String lexicalValue) {
+        this.lang = lang;
+        this.lexicalValue = lexicalValue;
+    }
 
-	public void setLang(String lang) {
-		this.lang = lang;
-	}
+    public String getLang() {
+        return lang;
+    }
 
-	public String getLexicalValue() {
-		return lexicalValue;
-	}
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
 
-	public void setLexicalValue(String lexicalValue) {
-		this.lexicalValue = lexicalValue;
-	}
-	
-	
+    public String getLexicalValue() {
+        return lexicalValue;
+    }
+
+    public void setLexicalValue(String lexicalValue) {
+        this.lexicalValue = lexicalValue;
+    }
+
 }
