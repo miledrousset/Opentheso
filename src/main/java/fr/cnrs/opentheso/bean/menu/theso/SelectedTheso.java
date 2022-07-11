@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
@@ -49,6 +50,7 @@ public class SelectedTheso implements Serializable {
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private RightBodySetting rightBodySetting;
     @Inject private MenuBean menuBean;
+    @Inject private PropositionBean propositionBean;
 
     private static final long serialVersionUID = 1L;
 
@@ -212,6 +214,8 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsHomeSelected(true);
         indexSetting.setIsThesoActive(true);
         
+        propositionBean.searchNewPropositions();
+        
         for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
             if (selectedIdTheso.equals(thesoModel.getId())) {
                 roleOnThesoBean.setSelectedThesoForSearch(Arrays.asList(selectedIdTheso));
@@ -342,8 +346,7 @@ public class SelectedTheso implements Serializable {
         // setting des préférences du thésaurus sélectionné
         roleOnThesoBean.initNodePref();
         roleOnThesoBean.showListTheso();
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), selectedIdTheso);
+        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), selectedIdTheso);
 
         if (idLang == null) {
             idLang = getIdLang();

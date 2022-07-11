@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bean.menu.users.NewUSerBean;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.setting.CorpusBean;
 import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
@@ -64,6 +65,9 @@ public class MenuBean implements Serializable {
     @Inject 
     private CurrentUser currentUser;
     
+    @Inject
+    private PropositionBean propositionBean;
+    
     
     
     public boolean checkIfUserIsConnected() throws IOException {
@@ -76,6 +80,8 @@ public class MenuBean implements Serializable {
     
     // LOGIN Page
     public void redirectToThesaurus() throws IOException {
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/index.xhtml");
     }
@@ -83,6 +89,8 @@ public class MenuBean implements Serializable {
     // LOGIN Page
     public void redirectToCandidatPage() throws IOException {
         candidatBean.initCandidatModule();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/candidat/candidat.xhtml");
     }
@@ -90,24 +98,32 @@ public class MenuBean implements Serializable {
     // MENU Profile
     public void redirectToUsersPage() throws IOException {
         superAdminBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/users.xhtml");
     }
 
     public void redirectToProjetsPage() throws IOException {
         superAdminBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/projects.xhtml");
     }
 
     public void redirectToThesorusPage() throws IOException {
         superAdminBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/thesaurus.xhtml");
     }
     
     public void redirectToMyProfilePage() throws IOException {
         myAccountBean.reset();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/myAccount.xhtml");
     }
@@ -115,6 +131,8 @@ public class MenuBean implements Serializable {
     public void redirectToMesProjectsPage() throws IOException {
         myProjectBean.init();
         newUSerBean.clear();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/myProject.xhtml");
     }
@@ -122,18 +140,24 @@ public class MenuBean implements Serializable {
     // MENU Paramètres
     public void redirectToIdetifiantPage() throws IOException {
         preferenceBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/identifier.xhtml");
     }
     
     public void redirectToPreferencePage() throws IOException {
         preferenceBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/preference.xhtml");
     }
     
     public void redirectToCorpusPage() throws IOException {
         corpusBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/corpus.xhtml");
     }
@@ -141,12 +165,16 @@ public class MenuBean implements Serializable {
     ///Boite à outils
     public void redirectToEditionPage() throws IOException {
         viewEditionBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/edition.xhtml");
     }
     
     public void redirectToAtelierPage() throws IOException {
         atelierThesBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/atelier.xhtml");
     }
@@ -160,6 +188,8 @@ public class MenuBean implements Serializable {
             return;
         }
         atelierThesBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/service.xhtml");
     }
@@ -173,12 +203,16 @@ public class MenuBean implements Serializable {
             return;
         }
         statistiqueBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/statistic.xhtml");
     }
 
     // LOGIN Page
     public void redirectToLoginPage() throws IOException {
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/login.xhtml");
     }

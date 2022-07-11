@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import java.io.IOException;
 import java.io.Serializable;
@@ -21,6 +22,8 @@ import javax.inject.Inject;
 import javax.annotation.PreDestroy;
 
 import fr.cnrs.opentheso.utils.LDAPUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -36,11 +39,12 @@ public class CurrentUser implements Serializable {
     @Inject private ViewEditorHomeBean viewEditorHomeBean;
     @Inject private IndexSetting indexSetting;
     @Inject private MenuBean menuBean;
+    @Inject private RightBodySetting rightBodySetting;
 
     private NodeUser nodeUser;
     private String username;
     private String password;
-    private boolean ldapEnable;
+    private boolean ldapEnable = false;
     
     private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
 
@@ -76,20 +80,18 @@ public class CurrentUser implements Serializable {
     }
 
     public void disconnect(boolean redirectionEnable) throws IOException {
-        FacesMessage facesMessage;
-        facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
+        
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
+        
         nodeUser = null;
         roleOnThesoBean.showListTheso();
+        
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
         indexSetting.setIsThesoActive(true);
-        PrimeFaces pf = PrimeFaces.current();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        rightBodySetting.setIndex("0");
+        
         initHtmlPages();
         
         if (redirectionEnable) {
@@ -108,11 +110,8 @@ public class CurrentUser implements Serializable {
      * motpasstemp) #MR
      * @throws java.io.IOException
      */
-    public void login() throws IOException {
+    public void login() throws Exception {
         
-    /*    username = "admin";
-        password = "admin";
-      */  
         UserHelper userHelper = new UserHelper();
         
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
@@ -149,11 +148,7 @@ public class CurrentUser implements Serializable {
         setInfos();
         indexSetting.setIsThesoActive(true);
         
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex");
-        }        
-        FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
+        menuBean.redirectToThesaurus();
     }
 
     private void showErrorMessage(String msg) {
@@ -195,6 +190,13 @@ public class CurrentUser implements Serializable {
         }
     }
     
+    public String formatUserName(String userName) {
+        if (StringUtils.isEmpty(userName)) {
+            return "";
+        }
+        return StringUtils.upperCase(userName.charAt(0)+"") + userName.substring(1, userName.length());
+    }
+
     /**
      * permet de savoir si l'utilisateur est admin au moins sur un projet
      * pour contôler la partie import et export
@@ -218,6 +220,10 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage("loginForm:username", msg);
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Default password: rocks!");
         FacesContext.getCurrentInstance().addMessage("loginForm:password", msg);
+    }
+
+    public boolean isAlertVisible() {
+        return ObjectUtils.isNotEmpty(nodeUser) && nodeUser.isIsSuperAdmin() && nodeUser.isIsActive();
     }
 
     public NodeUser getNodeUser() {

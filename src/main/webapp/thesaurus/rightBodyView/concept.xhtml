@@ -46,9 +46,17 @@
         <ui:include src="conceptDetail/conceptDetailBloc5.xhtml" />
 
         <ui:include src="download.xhtml" />
-    
+
         <!-- Autres -->
         <ui:include src="conceptDetail/conceptDetailBloc6.xhtml" />
-        
+
+        <!--  --> 
+        <div class="col-12" style="vertical-align: central; text-align: right">
+            <p:commandButton icon="pi pi-send" process="@this" value="Proposez une amélioration"
+                             rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}"
+                             actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeConcept)}" onclick="scrollToPageTop();" 
+                             ajax="true" update="containerIndex:formRightTab"/>
+        </div>
+
     </h:panelGroup>
 </ui:fragment>

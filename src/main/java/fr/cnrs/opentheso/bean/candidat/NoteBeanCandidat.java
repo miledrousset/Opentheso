@@ -10,6 +10,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.proposition.NotePropBean;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class NoteBeanCandidat implements Serializable {
     @Inject private NoteBeanCandidat noteBeanCandidat;
     @Inject private SelectedTheso selectedTheso;
     @Inject private CandidatBean candidatBean;
+    @Inject private PropositionBean propositionBean;
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
@@ -287,31 +290,6 @@ public class NoteBeanCandidat implements Serializable {
             pf.ajax().update("candidatForm");
         }
     }
-    
-    /*
-    public ArrayList<NodeNote> nodeToDelete() {
-        if (selectedTypeNote == null) {
-            return null;
-        }
-        switch (selectedTypeNote) {
-            case "note":
-                return conceptBean.getNotes();
-            case "definition":
-                return conceptBean.getDefinitions();
-            case "scopeNote":
-                return conceptBean.getScopeNotes();
-            case "example":
-                return conceptBean.getExamples();
-            case "historyNote":
-                return conceptBean.getHistoryNotes();
-            case "editorialNote":
-                return conceptBean.getEditorialNotes();
-            case "changeNote":
-                return conceptBean.getChangeNotes();
-            default:
-                return null;
-        }
-    }*/
 
     private boolean addConceptNote(int idUser) {
         NoteHelper noteHelper = new NoteHelper();

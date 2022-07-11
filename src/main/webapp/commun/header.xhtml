@@ -15,49 +15,40 @@
         <!-- liste des thésaurus -->
         <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" 
                          style="color: #000; height: 28px; max-width: 400px" filter="true" filterMatchMode="contains">
-            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
+            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}"
+                    update="containerIndex" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
         </p:selectOneMenu>
 
         <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" style="margin-left: 15px;">
-            <i class="fas fa-refresh" style="color: #818183; font-size: 14px;" title="#{langueBean.getMsg('menu.reload_thesaurus')}" />
+            <i class="fas fa-refresh" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.reload_thesaurus')}"  />
         </p:commandLink>
 
-        <p:commandLink rendered="#{(selectedTheso.selectedIdTheso != null) and (currentUser.nodeUser != null) and
-                                   (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-             style="margin-left: 15px;"
-                       actionListener="#{editThesoBean.init(selectedTheso.currentIdTheso)}"
-                       action="#{viewEditionBean.setIsViewModifyTheso(true)}">
-            <i class="fa-solid fa-pencil" style="color: #818183;" title="#{langueBean.getMsg('edition.editTheso')}"/>
-            <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
-        </p:commandLink>  
-        
-        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; ">
-            <i class="fa-solid fa-eraser" style="color: #78261f; font-size: 1rem;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
+        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 15px;">
+            <i class="fas fa-broom" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.cleanSession')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
-        
-        
-      
-        
-
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
-
-            <li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="#" role="button" style="margin-top: 3px; font-size: 12px;"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-bell fa-refresh"></i>
-                </a>
-            </li>
+            <h:panelGroup rendered="#{currentUser.isAlertVisible()}"
+                          style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
+                <p:commandLink actionListener="#{propositionBean.afficherListPropositions()}"
+                               update="containerIndex" >
+                    <p:badge value="#{propositionBean.nbrNewPropositions}"
+                             style="background: #ff0000; color: #ffffff; font-size: 0.6rem;
+                                        font-weight: 700; min-width: 1rem; height: 1rem; line-height: 1rem;">
+                        <i class="pi pi-bell" styleClass="p-mr-2"/>
+                    </p:badge>
+                </p:commandLink>
+            </h:panelGroup>
 
             <!-- Nav Item - Alerts -->
             <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 3px; font-size: 12px;">
-                    <img src="#{request.contextPath}/resources/img/#{langueBean.idLangue}.png" width="20px" />
+                    <img src="#{request.contextPath}/resources/img/#{langueBean.idLangue}.png" width="30px" />
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                      aria-labelledby="alertsDropdown" style="font-size: 12px;">
@@ -103,7 +94,7 @@
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                         <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px; margin-top: 7px;">
-                            <h:outputText value="#{currentUser.nodeUser.name}" style="font-size: 12px; " />
+                            <h:outputText value="#{currentUser.formatUserName(currentUser.nodeUser.name)}" style="font-size: 12px; font-family: Roboto, sans-serif; font-size: 14px" />
                         </span>
                         <img class="img-profile rounded-circle" src="#{request.contextPath}/resources/img/undraw_profile.svg" style="margin-top: 5px;font-size: 12px;" />
                     </a>

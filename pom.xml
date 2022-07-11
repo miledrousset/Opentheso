@@ -20,13 +20,6 @@
         </dependency>
 
         <!-- fin QrCode--> 
-      
-      
-      
-      
-      
-      
-      
 
         <!-- ne marche pas au delà de cette version 2.25 pour java 8-->
         <!-- ne marche pas au delà de cette version 2.33 pour java 11-->        
@@ -235,6 +228,25 @@
             <version>4.1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.sendgrid</groupId>
+            <artifactId>sendgrid-java</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -337,7 +349,7 @@
         <all.themes.version>1.0.8</all.themes.version>
         <javax.json.version>1.1.4</javax.json.version>
         <postgresql.version>42.3.3</postgresql.version>
-        <font-awesome.version>6.1.0</font-awesome.version>
+        <font-awesome.version>6.1.1</font-awesome.version>
         <primefaces.version>11.0.0</primefaces.version>
         <javaee-web-api.version>8.0.1</javaee-web-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>

@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
     </h:head>
 
-    <h:body id="page-top" onload="initMenu()">
+    <h:body id="page-top" onload="initMenu()" style="margin:0; padding:0; height:100%;">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -37,21 +37,20 @@
 
             <ui:include src="../commun/menu.xhtml" />
 
-            <div id="content-wrapper" style="width: 100%">
+            <div id="content-wrapper" style="min-height:100%; position:relative;">
 
                 <h:form id="containerIndex">
-                    <div>
-                        <ui:include src="../commun/header.xhtml" />
-                    </div>
+                    
+                    <ui:include src="../commun/header.xhtml" />
 
-                    <div class="container-fluid">
+                    <div class="container-fluid" style="padding-bottom: 70px">
 
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.my_account')}</span></h1>
                         </div>
 
                         <div class="col-12" style="height: 100%">
-
+                            
                             <!-- Compte d'utilisateur -->
                             <div class="card shadow mb-4" style="height: 100%;"> 
                                 <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">

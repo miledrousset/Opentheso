@@ -1,9 +1,7 @@
 package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
@@ -22,6 +20,7 @@ import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 
@@ -77,6 +76,9 @@ public class Tree implements Serializable {
 
     @Inject
     private AlignmentBean alignmentBean;
+
+    @Inject
+    private PropositionBean propositionBean;
 
     @Inject
     private AlignmentManualBean alignmentManualBean;
@@ -491,7 +493,8 @@ public class Tree implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {
         
         alignmentManualBean.reset();
-        
+        propositionBean.setIsRubriqueVisible(false);
+        rightBodySetting.setIndex("0");
         leftBodySetting.setIndex("0");
         DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
@@ -499,17 +502,10 @@ public class Tree implements Serializable {
         if (!"facet".equals(parent.getType())) {
             indexSetting.setIsFacetSelected(false);
             idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
-
-            /*    if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
-                rightBodySetting.setShowConceptToOn();
-                conceptBean.getConceptForTree(idTheso,
-                        ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-            }
-            if (((TreeNodeData) selectedNode.getData()).isIsTopConcept()) {*/
+            
             rightBodySetting.setShowConceptToOn();
             conceptBean.getConceptForTree(idTheso,
                     ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
-            //     }
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             if(rightBodySetting.getIndex().equalsIgnoreCase("2")){
@@ -518,23 +514,14 @@ public class Tree implements Serializable {
                 alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                         conceptBean.getNodeConcept().getConcept().getIdConcept(),
                         conceptBean.getSelectedLang());
-                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-                //alignmentBean.nextTen(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());           
+                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());        
             } else
             rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
         }
-
-        /*
-        Il ne faut pas charger le tableau d'alignement ici, mais plutôt au moment où l'utilisateur clique sur l'onglet alignement (voir après avoir sélectionné la source d'alignement)
         
-        Désactivé pat MR, ca prend trop de temps quand on a 40.000 concepts dans la branche
-         */
-        ////alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
-        ////alignmentBean.nextTenRecresive(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
-        /////// 
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("indexTitle");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");

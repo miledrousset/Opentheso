@@ -1,0 +1,430 @@
+package fr.cnrs.opentheso.bean.proposition;
+
+import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
+import fr.cnrs.opentheso.bean.proposition.model.Proposition;
+import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
+import fr.cnrs.opentheso.bean.proposition.service.PropositionService;
+import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.primefaces.PrimeFaces;
+
+@Named(value = "propositionBean")
+@SessionScoped
+public class PropositionBean implements Serializable {
+
+    @Inject
+    private CurrentUser currentUser;
+
+    @Inject
+    private ConceptView conceptView;
+
+    @Inject
+    private IndexSetting indexSetting;
+
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+
+    @Inject
+    private SelectedTheso selectedTheso;
+
+    @Inject
+    private RightBodySetting rightBodySetting;
+
+    @Inject
+    private PropositionService propositionService;
+
+    private boolean isRubriqueVisible;
+    private Proposition proposition;
+    private String nom, email, commentaire;
+    private String message;
+    private String actionNom;
+    private String showAllPropositions;
+    private int nbrNewPropositions;
+
+    private PropositionDao propositionSelected;
+    private List<PropositionDao> propositions;
+    
+    
+    public PropositionBean() {
+        showAllPropositions = "1";
+    }
+
+    public void onSelectConcept(PropositionDao propositionDao) throws IOException {
+
+        this.propositionSelected = propositionDao;
+
+        roleOnThesoBean.initNodePref(propositionDao.getIdTheso());
+        selectedTheso.setSelectedIdTheso(propositionDao.getIdTheso());
+        selectedTheso.setSelectedLang(propositionDao.getLang());
+        selectedTheso.setSelectedThesoForSearch();
+        rightBodySetting.setIndex("3");
+        indexSetting.setIsSelectedTheso(true);
+        isRubriqueVisible = true;
+
+        conceptView.getConcept(propositionDao.getIdTheso(), propositionDao.getIdConcept(), propositionDao.getLang());
+
+        proposition = new Proposition();
+        propositionService.preparerPropositionSelect(proposition, propositionDao);
+
+        nom = propositionDao.getNom();
+        email = propositionDao.getEmail();
+
+        propositions = propositionService.searchAllPropositions();
+        nbrNewPropositions = propositionService.searchNbrNewProposition();
+    }
+
+    public void afficherListPropositions() {
+        propositions = new ArrayList<>();
+        switch (showAllPropositions) {
+            case "1" :
+                propositions = propositionService.searchPropositionsNonTraitter();
+                break;
+            case "2" :
+                propositions = propositionService.searchOldPropositions();
+                break;
+            default:
+                propositions = propositionService.searchAllPropositions();
+        }
+        PrimeFaces.current().executeScript("PF('listNotification').show();");
+    }
+
+    public void searchNewPropositions() {
+        nbrNewPropositions = propositionService.searchNbrNewProposition();
+    }
+
+    public void preparerConfirmationDialog(String action) {
+        actionNom = action;
+        switch (actionNom) {
+            case "envoyerProposition":
+                message = "Est ce que vous êtes sur de vouloir ENVOYER votre proposition ?";
+                break;
+            case "approuverProposition":
+                message = "Est ce que vous êtes sur de vouloir VALIDER la proposition ?";
+                break;
+            case "refuserProposition":
+                message = "Est ce que vous êtes sur de vouloir REFUSER la proposition ?";
+                break;
+            case "supprimerProposition":
+                message = "Est ce que vous êtes sur de vouloir SUPPRIMER la proposition ?";
+                break;
+            default:
+                message = "Est ce que vous êtes sur de vouloir ANNULER la proposition ?";
+                ;
+        }
+        PrimeFaces.current().executeScript("PF('confirmDialog').show();");
+    }
+
+    public void executionAction() throws IOException {
+        if (null != actionNom) {
+            switch (actionNom) {
+                case "envoyerProposition":
+                    envoyerProposition();
+                    break;
+                case "approuverProposition":
+                    propositionService.insertProposition(proposition, propositionSelected);
+                    switchToConceptInglet();
+                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
+                            + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
+                    break;
+                case "refuserProposition":
+                    propositionService.refuserProposition(propositionSelected);
+                    switchToConceptInglet();
+                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
+                            + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") refusée avec sucée !");
+                    break;
+                case "supprimerProposition":
+                    propositionService.supprimerPropostion(propositionSelected);
+                    switchToConceptInglet();
+                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
+                            + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
+                    break;
+                case "annulerProposition":
+                    annulerPropostion();
+                    break;
+            }
+        }
+        PrimeFaces.current().executeScript("PF('confirmDialog').hide();");
+    }
+
+    public void switchToNouvelleProposition(NodeConcept nodeConcept) {
+
+        isRubriqueVisible = true;
+        rightBodySetting.setIndex(currentUser.getNodeUser() == null ? "2" : "3");
+
+        proposition = propositionService.selectProposition(nodeConcept);
+
+        if (!ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+            nom = currentUser.getNodeUser().getName();
+            email = currentUser.getNodeUser().getMail();
+        } else {
+            nom = "";
+            email = "";
+        }
+    }
+
+    public void updateNomConcept() {
+
+        if (StringUtils.isEmpty(proposition.getNomConceptProp())) {
+            proposition.setNomConceptProp("");
+            proposition.setUpdateNomConcept(false);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Le label est oubligatoire !");
+        } else {
+            if (propositionService.updateNomConcept(proposition.getNomConceptProp())) {
+                proposition.setUpdateNomConcept(true);
+            } else {
+                proposition.setNomConceptProp("");
+                proposition.setUpdateNomConcept(false);
+            }
+        }
+
+        PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
+    }
+
+    private void switchToConceptInglet() {
+        rightBodySetting.setIndex("0");
+        isRubriqueVisible = false;
+    }
+
+    public void annulerPropostion() {
+        switchToConceptInglet();
+        proposition = null;
+        nom = "";
+        email = "";
+    }
+
+    private void envoyerProposition() {
+
+        if (StringUtils.isEmpty(nom)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Le champs nom est oubligatoire !");
+            return;
+        }
+
+        if (StringUtils.isEmpty(email)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Le champs email est oubligatoire !");
+            return;
+        }
+
+        if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent() && !isTraductionProPresent()
+                && !isNoteProPresent() && !isChangeNoteProPresent() && !isDefinitionProPresent()
+                && !isEditorialNoteProPresent() && !isExempleNoteProPresent()
+                && !isHistoryNoteProPresent() && !isScopeNoteProPresent()) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez proposer au moins une modification !");
+            return;
+        }
+
+        if (propositionService.envoyerProposition(proposition, nom, email, commentaire)) {
+            showMessage(FacesMessage.SEVERITY_INFO, "Proposition envoyée !");
+        }
+
+        switchToConceptInglet();
+    }
+
+    private boolean isSynchroProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getSynonymsProp())) {
+            for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
+                if (synonymProp.isToAdd() || synonymProp.isToRemove() || synonymProp.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isHistoryNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getHistoryNotes())) {
+            for (NotePropBean history : proposition.getHistoryNotes()) {
+                if (history.isToAdd() || history.isToRemove() || history.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isScopeNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getScopeNotes())) {
+            for (NotePropBean scope : proposition.getScopeNotes()) {
+                if (scope.isToAdd() || scope.isToRemove() || scope.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isExempleNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getExamples())) {
+            for (NotePropBean exemple : proposition.getExamples()) {
+                if (exemple.isToAdd() || exemple.isToRemove() || exemple.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isEditorialNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getEditorialNotes())) {
+            for (NotePropBean editorialNote : proposition.getEditorialNotes()) {
+                if (editorialNote.isToAdd() || editorialNote.isToRemove() || editorialNote.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
+            for (NotePropBean notePropBean : proposition.getNotes()) {
+                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isChangeNoteProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
+            for (NotePropBean notePropBean : proposition.getChangeNotes()) {
+                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isDefinitionProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
+            for (NotePropBean notePropBean : proposition.getDefinitions()) {
+                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isTraductionProPresent() {
+        if (CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
+            for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
+                if (traductionProp.isToAdd() || traductionProp.isToRemove() || traductionProp.isToUpdate()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean showButtonDecision() {
+        return propositionSelected != null && (PropositionStatusEnum.LU.name().equals(propositionSelected.getStatus())
+                || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus()));
+    }
+
+    private void showMessage(FacesMessage.Severity type, String message) {
+        FacesMessage msg = new FacesMessage(type, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
+    }
+
+    public boolean isIsRubriqueVisible() {
+        return isRubriqueVisible;
+    }
+
+    public void setIsRubriqueVisible(boolean isRubriqueVisible) {
+        this.isRubriqueVisible = isRubriqueVisible;
+    }
+
+    public Proposition getProposition() {
+        return proposition;
+    }
+
+    public void setProposition(Proposition proposition) {
+        this.proposition = proposition;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCommentaire() {
+        return commentaire;
+    }
+
+    public void setCommentaire(String commentaire) {
+        this.commentaire = commentaire;
+    }
+
+    public List<PropositionDao> getPropositions() {
+        return propositions;
+    }
+
+    public void setPropositions(List<PropositionDao> propositions) {
+        this.propositions = propositions;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getActionNom() {
+        return actionNom;
+    }
+
+    public void setActionNom(String actionNom) {
+        this.actionNom = actionNom;
+    }
+
+    public int getNbrNewPropositions() {
+        return nbrNewPropositions;
+    }
+
+    public void setNbrNewPropositions(int nbrNewPropositions) {
+        this.nbrNewPropositions = nbrNewPropositions;
+    }
+
+    public String getShowAllPropositions() {
+        return showAllPropositions;
+    }
+
+    public void setShowAllPropositions(String showAllPropositions) {
+        this.showAllPropositions = showAllPropositions;
+    }
+
+}
