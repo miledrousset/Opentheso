@@ -45,7 +45,7 @@
             <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
             <f:viewAction action="#{selectedTheso.preRenderView}"/>
         </f:metadata>
-        
+
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <div id="wrapper" style="height: 100%">
@@ -68,7 +68,7 @@
 
                     <ui:include src="commun/header.xhtml" />
 
-                    <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px;">
+                    <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative;">
 
                         <p:panel id="searchBar">
                             <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px; width: 100%; margin: 25px;">
@@ -84,6 +84,12 @@
                                 </div>
                             </div>
                         </p:panel>
+
+                        <div style="margin-top: -22px; right: 0;  margin-right: 50px; position: absolute; z-index: 1">
+                            <p:commandButton icon="pi pi-folder-open" styleClass="ui-button-primary" update="messageIndex"
+                                             style="border-radius: 10px 10px 0 0px; margin-left: 5px; margin-right: 5px"
+                                             actionListener="#{searchBean.afficherResultatRecherche()}" />
+                        </div>
 
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
