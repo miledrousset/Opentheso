@@ -77,7 +77,10 @@
                 <p:commandButton title="Se connecter" class="formLogin-button"
                                  ajax="true" process="@form" action="#{currentUser.login()}" update="messageIndex "/>
                 <p class="message">
-                    <a href="#">Mot de passe oublier</a>
+                    <p:commandLink
+                            update="idForgetPass forgetPassForm"
+                            oncomplete="PF('forgetPass').show();"
+                            value="#{langueBean.getMsg('menu.forgotten_pass')}" />
                 </p>
             </h:form>
         </div>

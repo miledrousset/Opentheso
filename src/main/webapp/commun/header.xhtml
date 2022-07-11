@@ -25,8 +25,17 @@
             <i class="fas fa-refresh" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.reload_thesaurus')}"  />
         </p:commandLink>
 
-        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 15px;">
-            <i class="fas fa-broom" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.cleanSession')}"/>
+        <p:commandLink rendered="#{(selectedTheso.selectedIdTheso != null) and (currentUser.nodeUser != null) and
+                                   (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                       update="containerIndex"  style="margin-left: 15px;"
+                       actionListener="#{editThesoBean.init(selectedTheso.currentIdTheso)}"
+                       action="#{viewEditionBean.setIsViewModifyTheso(true)}">
+            <i class="fa-solid fa-pencil" style="color: #818183;" title="#{langueBean.getMsg('edition.editTheso')}"/>
+            <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
+        </p:commandLink>
+
+        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; ">
+            <i class="fa-solid fa-eraser" style="color: #78261f; font-size: 1rem;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
