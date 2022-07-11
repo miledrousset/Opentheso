@@ -5,44 +5,44 @@
              xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup id="sideBarProposition">
-        <p:scrollTop />     
-        
-        <p:selectOneButton value="#{propositionBean.showAllPropositions}">
-            <f:selectItem itemLabel="Nouvelles" itemValue="1"  />
-            <f:selectItem itemLabel="Anciennes" itemValue="2"/>
-            <f:selectItem itemLabel="Toutes" itemValue="3"/>
-            <p:ajax update="containerIndex:listPropositionNotification" event="change" listener="#{propositionBean.afficherListPropositions()}" />
-        </p:selectOneButton>
+        <p:scrollTop />   
 
-        <p:scrollPanel id="listPropositionNotification" style="width: 100%; height: 100%; overflow: overlay; border: none; padding: 0px;
+        <p:scrollPanel id="listPropositionNotification" style="width: 100%; height: 100%; border: none; padding: 0px;
                        margin-top: 7px" mode="native">
+
+            <p:selectOneButton value="#{propositionBean.showAllPropositions}" style="margin-bottom: 5px">
+                <f:selectItem itemLabel="Nouvelles" itemValue="1"  />
+                <f:selectItem itemLabel="Anciennes" itemValue="2"/>
+                <f:selectItem itemLabel="Toutes" itemValue="3"/>
+                <p:ajax update="containerIndex:listPropositionNotification" event="change" listener="#{propositionBean.afficherListPropositions()}" />
+            </p:selectOneButton>
 
             <ui:repeat var="proposition" value="#{propositionBean.propositions}" >
                 <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin-right: 20px;">
-                    <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
+                    <div class="list-group" style="margin-top: -10px;  margin-left: 10px">
                         <div class="row">
                             <div class="col-12">
                                 <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />
-                                
+
                                 <p:commandLink value="#{proposition.nomConcept} (#{proposition.lang})" rendered="#{!proposition.isConsulter()}"
                                                style="font-size: 14px; font-weight: bold; color: #8f8f8f" 
                                                ajax="true" process="@this"
                                                actionListener="#{propositionBean.onSelectConcept(proposition)}"
                                                update="containerIndex:thesorusContent containerIndex:thesoSelect 
-                                                    containerIndex:formRightTab containerIndex:notificationProp" />
-                                
+                                               containerIndex:formRightTab containerIndex:notificationProp" />
+
                                 <p:commandLink value="#{proposition.nomConcept} (#{proposition.lang})" rendered="#{proposition.isConsulter()}" 
                                                style="font-size: 14px; color: #8f8f8f" ajax="true" process="@this"
                                                actionListener="#{propositionBean.onSelectConcept(proposition)}"
                                                update="containerIndex:thesorusContent containerIndex:thesoSelect 
-                                                    containerIndex:formRightTab containerIndex:notificationProp" />
+                                               containerIndex:formRightTab containerIndex:notificationProp" />
                             </div>
                         </div>
                         <div class="row" style="margin-bottom: -4px">
                             <div class="col-10">
                                 <h:outputText value="#{proposition.datePublication} - #{proposition.nom}" rendered="#{!proposition.isConsulter()}"  
                                               style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
-                                
+
                                 <h:outputText value="#{proposition.datePublication} - #{proposition.nom}" 
                                               rendered="#{proposition.isConsulter()}"  
                                               style="font-size: 14px; color: #8f8f8f"/>
@@ -63,7 +63,7 @@
                 </div>
             </ui:repeat>
         </p:scrollPanel>
-        
+
         <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="pi pi-arrow-up" />
     </h:panelGroup>
 </ui:fragment>
