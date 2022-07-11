@@ -22,7 +22,8 @@
             <ui:repeat var="result" value="#{searchBean.nodeConceptSearchs}" >
                 <div class="card py-3 border-left-success" style="vertical-align: central; margin-top: 5px; margin-bottom: 0.2rem">
                     <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
-                        <p:tag rendered="#{selectedTheso.currentIdTheso == null}" styleClass="p-mr-2" severity="success" value="#{result.idTheso}" />
+                        <p:tag id="tagIdTheso" rendered="#{selectedTheso.currentIdTheso == null}" styleClass="p-mr-2" severity="success"
+                               value="#{result.idTheso} (#{result.thesoName})"/>
                         <div class="row">
                             <div class="col-12">
                                 

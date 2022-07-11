@@ -236,6 +236,10 @@ public class ImportFileBean implements Serializable {
         }
     }
     
+    public void actionChoiceLang(String lang) {
+   //     selectedLang = lang;
+    }    
+    
     public void actionChoiceIdentifier() {
         setSelectedIdentifier(selectedIdentifierImportAlign);
     }    
