@@ -24,8 +24,8 @@
 
             <ui:repeat var="proposition" value="#{propositionBean.propositions}"
                        rendered="#{propositionBean.propositions.size() > 0}">
-                <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin-right: 20px;">
-                    <div class="list-group" style="margin-top: -10px;  margin-left: 10px">
+                <div class="card py-3 border-left-success" style="vertical-align: central; margin-top: 5px; margin-bottom: 0.2rem">
+                    <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
                         <div class="row">
                             <div class="col-12">
                                 <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />

@@ -7,18 +7,20 @@
              xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup id="sideBarSearch">
-        <h:panelGroup rendered="#{!searchBean.isSelectedItem}">
-            <div class="row">
-                <div class="col-12" style="background-color: #ecf8f1; height: 25px">
-                    <h:outputText value="#{searchBean.nodeConceptSearchs.size()}" style="color: #8C8C8C; font-style: italic; font-weight: bold;"/>
-                    <h:outputText value=" #{langueBean.getMsg('search.result_found')} #{langueBean.getMsg('search.for')} '#{searchBean.searchValue}'" style="color: #8C8C8C; font-style: italic;"/>
-                </div>
-            </div>
-        </h:panelGroup>
 
         <p:scrollTop />
 
-        <p:scrollPanel style="width: 100%; height: 100%; overflow: overlay; border: none; padding: 0px" mode="native">
+        <p:scrollPanel style="width: 100%; height: 100%; border: none; padding: 0px" mode="native">
+
+            <h:panelGroup rendered="#{!searchBean.isSelectedItem}" style="margin-bottom: 5px">
+                <div class="row">
+                    <div class="col-12" style="background-color: #ecf8f1; height: 25px">
+                        <h:outputText value="#{searchBean.nodeConceptSearchs.size()}" style="color: #8C8C8C; font-style: italic; font-weight: bold;"/>
+                        <h:outputText value=" #{langueBean.getMsg('search.result_found')} #{langueBean.getMsg('search.for')} '#{searchBean.searchValue}'" style="color: #8C8C8C; font-style: italic;"/>
+                    </div>
+                </div>
+            </h:panelGroup>
+
             <ui:repeat var="result" value="#{searchBean.nodeConceptSearchs}" >
                 <div class="card py-3 border-left-success" style="vertical-align: central; margin-top: 5px; margin-bottom: 0.2rem">
                     <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
@@ -26,7 +28,7 @@
                                value="#{result.idTheso} (#{result.thesoName})"/>
                         <div class="row">
                             <div class="col-12">
-                                
+
                                 <h:panelGroup rendered="#{result.isDeprecated}">
                                     <i class="fa fa-solid fa-ban" style="font-size: 12px; color: #C63632"></i>
                                     <p:commandLink rendered="#{result.prefLabel != null and result.prefLabel != ''}"
@@ -91,7 +93,7 @@
                             </div>
                         </h:panelGroup>
 
- 
+
                     </div>
                 </div>
             </ui:repeat>
