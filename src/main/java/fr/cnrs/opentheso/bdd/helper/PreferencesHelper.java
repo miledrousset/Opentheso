@@ -141,7 +141,8 @@ public class PreferencesHelper {
                         np.setPrefixArkLocal(resultSet.getString("prefix_ark_local"));
                         np.setSizeIdArkLocal(resultSet.getInt("sizeid_ark_local"));
                         
-                        np.setBreadcrumb(resultSet.getBoolean("breadcrumb"));
+                        np.setDisplayUserName(resultSet.getBoolean("breadcrumb"));
+                        np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
                     }
                 }
             }
@@ -326,6 +327,7 @@ public class PreferencesHelper {
                         + ", prefix_ark_local='" + np.getPrefixArkLocal() + "'"
                         + ", sizeid_ark_local=" + np.getSizeIdArkLocal()
                         + ", breadcrumb=" + np.isBreadcrumb()
+                        + ", display_user_name=" + np.isDisplayUserName()
                         
 
                         + " WHERE"
@@ -365,7 +367,7 @@ public class PreferencesHelper {
                         + " user_handle, pass_handle, path_key_handle, path_cert_handle,"
                         + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
                         + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
-                        + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb, useConceptTree)"
+                        + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb, useConceptTree, display_user_name)"
 
                         + " values('" + idThesaurus + "'"
                         + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
@@ -418,6 +420,7 @@ public class PreferencesHelper {
                         + "," + np.getSizeIdArkLocal()
                         + "," + np.isBreadcrumb()
                         + "," + np.isUseConceptTree()
+                        + "," + np.isDisplayUserName()
                         
 
                         + ")";

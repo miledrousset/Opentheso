@@ -236,6 +236,10 @@ public class ImportFileBean implements Serializable {
         }
     }
     
+    public void actionChoiceLang(String lang) {
+   //     selectedLang = lang;
+    }    
+    
     public void actionChoiceIdentifier() {
         setSelectedIdentifier(selectedIdentifierImportAlign);
     }    
@@ -339,6 +343,52 @@ public class ImportFileBean implements Serializable {
             PrimeFaces.current().executeScript("PF('waitDialog').hide()");            
         }
     }      
+    
+    /**
+     * permet de charger un fichier de notes en Csv
+     *
+     * @param event
+     */
+    public void loadFileNotationCsv(FileUploadEvent event) {
+        initError();
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+
+                if (!csvReadHelper.readFileNotation(reader)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+
+                warning = csvReadHelper.getMessage();
+                nodeIdValues = csvReadHelper.getNodeIdValues();
+                if (nodeIdValues != null) {
+                    if (nodeIdValues.isEmpty()) {
+                        haveError = true;
+                        error.append(System.getProperty("line.separator"));
+                        error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
+                        warning = "";
+                    } else {
+                        total = nodeIdValues.size();
+                        uri = "";//csvReadHelper.getUri();
+                        loadDone = true;
+                        BDDinsertEnable = true;
+                        info = "File correctly loaded";
+                    }
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");           
+        }
+    }         
     
     /**
      * permet de charger un fichier en Csv
@@ -970,6 +1020,80 @@ public class ImportFileBean implements Serializable {
     }        
         
     
+    /**
+     * permet d'ajouter une liste de notations en CSV au thésaurus
+     *
+     */
+    public void addNotationList() {
+        if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
+            warning = "pas de thésaurus sélectionné";
+            return;
+        }
+        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+            return;
+        }
+        if (importInProgress) {
+            return;
+        }
+        initError();
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+        String idConcept = null;        
+        ConceptHelper conceptHelper = new ConceptHelper();        
+        try {
+            for (NodeIdValue nodeIdValue : nodeIdValues) {
+                if(nodeIdValue == null) continue;
+                if (nodeIdValue.getId() == null || nodeIdValue.getId().isEmpty()) {
+                    continue;
+                }
+                if("ark".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeIdValue.getId());
+                }
+                if("handle".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), nodeIdValue.getId());
+                } 
+                if("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                    idConcept = nodeIdValue.getId();
+                }                
+                
+                if (idConcept == null || idConcept.isEmpty()) {
+                    continue;
+                }                
+                
+                // controle pour vérifier l'existance de l'Id
+                if(!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())){
+                    continue;
+                }
+                
+                if(clearBefore) {
+                    if(conceptHelper.updateNotation(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue()))
+                        total++;
+                } else {
+                    if(!conceptHelper.isHaveNotation(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), idConcept)) {
+                        if(conceptHelper.updateNotation(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso(), nodeIdValue.getValue()))
+                            total++;                        
+                    }                    
+                }
+                progressStep++;
+                progress = progressStep / total * 100;
+            }
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            info = "import réussi, notations importées = " + (int)total;            
+            total = 0; 
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+    }        
+    
     
     /**
      * permet d'ajouter une liste d'alignements en CSV au thésaurus
@@ -1541,6 +1665,10 @@ public class ImportFileBean implements Serializable {
             if (!warning.isEmpty()) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning :", warning));
             }
+        }
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().executeScript("PF('pbAjax').cancel();");
+            PrimeFaces.current().ajax().update("messageIndex");
         }
     }
 

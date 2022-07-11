@@ -6,6 +6,8 @@
     <p:dialog id="idEditNote" header="#{langueBean.getMsg('rightbody.concept.edit_note')}" widgetVar="editNote" 
               width="650" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >       
         <h:form id="editNoteForm" >
+             <p:defaultCommand  target="nothingEditNote" />
+                                     <p:commandLink id="nothingEditNote"  />
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
@@ -19,24 +21,32 @@
 
                     <div class="row" style="margin-bottom: 10px;">
                         <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-
-                            <p:inputTextarea rendered="#{noteToEdit.lexicalvalue != ''}" value="#{noteToEdit.lexicalvalue}"  
-                                             style="width: 100%; font-size: 12px; color: black; max-height: 200px; overflow-y:scroll" />
-
+                            <p:textEditor rendered="#{noteToEdit.lexicalvalue != ''}" 
+                                           value="#{noteToEdit.lexicalvalue}" allowLinks="true" 
+                                          secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
+                                          placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
+                            </p:textEditor>                               
                         </div>
 
                         <div class="col-1" style="align-self: center;">
-                            <p:commandLink style="color: #F7A269; align-items: center " oncomplete="PF('editNote').show();"
-                                           ajax="true" process="@form"
+                            <p:commandButton style=" align-items: center " oncomplete="PF('editNote').show();"
+                                           ajax="true" process="@form" icon="pi pi-check" styleClass="rounded-button ui-button-raised"
                                            action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}">
-                                <i class="pi pi-check-circle" />
-                            </p:commandLink>
-                        </div>                
+                               
+                            </p:commandButton>
+                        </div>
+
                     </div>                    
 
                 </ui:repeat>
             </p:panel>
-            <p:spacer height= "20px;"/>
+            <p:spacer height= "20px;"/>      
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                 actionListener="PF('editNote').hide();" update="containerIndex:idEditNote"/>
+
+            </div>                                     
 
             <div class="row">
                 <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">

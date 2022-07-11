@@ -175,7 +175,7 @@ public class TreeGroups implements Serializable {
         }
         int i = 0;
         for (NodeIdValue nodeGroup : listeConceptsOfGroup) {
-            if (i == 2000) { // pour limiter l'affichage dans l'arbre de plus de 2000 concepts à la suite
+            if (i == 4000) { // pour limiter l'affichage dans l'arbre de plus de 2000 concepts à la suite
                 data = new TreeNodeData(
                         "....",
                         "....",

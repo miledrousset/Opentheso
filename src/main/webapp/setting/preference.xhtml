@@ -148,7 +148,7 @@
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Désactiver/Activer le déploiement auto de l'arbre" style="font-size: 14px; font-weight: bold;"/>
+                                                    <h:outputText value="Activer le déploiement auto de l'arbre" style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
                                                 <div class="col-6">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.auto_expand_tree}" style="font-size: 12px;" /> 
@@ -160,7 +160,7 @@
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Désactiver/Activer le cache de l'arbre" 
+                                                    <h:outputText value="Activer le cache de l'arbre" 
                                                                   title="Quand c'est activé, si on raffraichi la page, l'arbre se déplie même quand les dossiers sont fermés" 
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
@@ -174,7 +174,7 @@
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Désactiver/Activer le tri par notation par defaut"
+                                                    <h:outputText value="Activer le tri par notation par defaut"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
                                                 <div class="col-6">
@@ -187,7 +187,7 @@
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Désactiver/Activer le webservices"
+                                                    <h:outputText value="Activer le webservices"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
                                                 <div class="col-6">
@@ -220,6 +220,19 @@
                                                 </div>
                                             </div>
                                         </div>  
+                                        
+                                        <!-- Activer/ désactiver l'affichage des noms des personnes qui ont créé ou modifié les concepts en pulic -->
+                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                            <div class="row" style="padding-top: 3px;">
+                                                <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="Activer l'affichage du nom des personnes qui ont modifié les concepts"
+                                                                  style="font-size: 14px; font-weight: bold;"/>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p:toggleSwitch value="#{preferenceBean.nodePreference.displayUserName}" style="font-size: 12px;" />
+                                                </div>
+                                            </div>
+                                        </div>                                          
 
                                         <div class="row" style="padding-top: 5px;">
                                             <div class="col-3" />

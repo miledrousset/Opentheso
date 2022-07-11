@@ -212,6 +212,14 @@ public class NewConcept implements Serializable {
             }
             return;
         }
+                
+        if ((notation != null) && (!notation.isEmpty())) {
+            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }          
 
         if ((idNewConcept != null) && (!idNewConcept.isEmpty())) {
             if (conceptHelper.isIdExiste(connect.getPoolConnexion(), idNewConcept, idTheso)) {
@@ -272,7 +280,7 @@ public class NewConcept implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le top concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
+  //      PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
 
         tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
         tree.expandTreeToPath(idNewConcept, idTheso, idLang);
@@ -281,7 +289,7 @@ public class NewConcept implements Serializable {
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
+            pf.ajax().update("containerIndex:idAddTopConcept");
         }
     }
 
@@ -316,7 +324,7 @@ public class NewConcept implements Serializable {
         }
 
         TermHelper termHelper = new TermHelper();
-
+        
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
         if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
@@ -338,6 +346,15 @@ public class NewConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        ConceptHelper conceptHelper = new ConceptHelper();
+                
+        if ((notation != null) && (!notation.isEmpty())) {
+            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }           
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
     }
@@ -380,6 +397,8 @@ public class NewConcept implements Serializable {
         } else {
             idNewConcept = null;
         }
+        
+  
 
         Concept concept = new Concept();
 
@@ -499,6 +518,7 @@ public class NewConcept implements Serializable {
         duplicate = false;
         idNewConcept = null;
         prefLabel = "";
+        notation = "";
     }
 
     public void cancel() {

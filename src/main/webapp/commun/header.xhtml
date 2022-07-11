@@ -15,7 +15,7 @@
         <!-- liste des thésaurus -->
         <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" 
                          style="color: #000; height: 28px; max-width: 400px" filter="true" filterMatchMode="contains">
-            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" 
+            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}"
                     update="containerIndex" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
@@ -32,7 +32,7 @@
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
-            <h:panelGroup rendered="#{currentUser.isAlertVisible()}" 
+            <h:panelGroup rendered="#{currentUser.isAlertVisible()}"
                           style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
                 <p:commandLink actionListener="#{propositionBean.afficherListPropositions()}"
                                update="containerIndex" >

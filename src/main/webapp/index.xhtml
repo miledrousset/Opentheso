@@ -41,10 +41,11 @@
 
         <f:metadata>
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
+            <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
             <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
             <f:viewAction action="#{selectedTheso.preRenderView}"/>
         </f:metadata>
-
+        
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <div id="wrapper" style="height: 100%">
@@ -122,5 +123,6 @@
         </p:dialog>  
 
         <ui:include src="dialog/login/login.xhtml" />
+        <ui:include src="dialog/login/forgetPass.xhtml" />
     </h:body>
 </html>

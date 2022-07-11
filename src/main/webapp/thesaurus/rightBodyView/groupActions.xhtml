@@ -1,0 +1,27 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
+
+    <div style="width: 100%; display: flex; background-color: #f3f3f3; padding-top: 3px; padding-bottom: 3px; ">
+
+        <div style="height: 100%; vertical-align: central; ">
+            <h:panelGroup id="idGroupViewActions" >
+                <p:menuButton icon="pi pi-align-justify" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+
+                    <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                                disabled="false" id="newArkIdGroup" 
+                                actionListener="#{editConcept.infosArk()}"
+                                oncomplete="PF('generateArkGroup').show();"
+                                update="containerIndex:idGenerateArkGroup containerIndex:generateArkGroupForm" 
+                                value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
+                                icon="fas fa-plus" />
+                </p:menuButton>
+                <p:tooltip for="newArkIdGroup" value="#{langueBean.getMsg('rightbody.concept.tooltip_generate_ark')}" />
+                
+            </h:panelGroup>
+        </div>
+    </div>
+</ui:fragment>

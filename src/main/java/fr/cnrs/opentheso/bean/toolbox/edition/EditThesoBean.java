@@ -15,8 +15,10 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -41,6 +43,7 @@ public class EditThesoBean implements Serializable {
     @Inject private Connect connect;
     @Inject private CurrentUser currentUser;
     @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private MenuBean menuBean;
 
     private NodeLangTheso langSelected;
     private ArrayList<Languages_iso639> allLangs;
@@ -78,6 +81,41 @@ public class EditThesoBean implements Serializable {
     public EditThesoBean() {
     }
 
+    public void init(String idTheso) {
+        nodeIdValueOfTheso = null;
+        nodeIdValueOfTheso = new NodeIdValue();
+
+        this.nodeIdValueOfTheso.setId(idTheso);
+
+        LanguageHelper languageHelper = new LanguageHelper();
+        // toutes les langues Iso
+        allLangs = languageHelper.getAllLanguages(connect.getPoolConnexion());
+
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        // les langues du thésaurus
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+
+        isPrivateTheso = thesaurusHelper.isThesoPrivate(
+                connect.getPoolConnexion(),
+                nodeIdValueOfTheso.getId());
+        // langue par defaut
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
+                connect.getPoolConnexion(),
+                nodeIdValueOfTheso.getId());
+        preferredLang = nodePreference.getSourceLang();
+        selectedLang = null;
+        langSelected = null;
+        langSelected = new NodeLangTheso();
+        title = "";
+        try {
+            menuBean.redirectToEditionPage();
+        } catch (IOException ex) {
+            Logger.getLogger(EditThesoBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }    
+    
     public void init(NodeIdValue nodeIdValueOfTheso) {
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
 

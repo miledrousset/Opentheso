@@ -90,7 +90,18 @@ public class AddConcept implements Serializable {
             }
             return;
         }
-
+        ConceptHelper conceptHelper = new ConceptHelper();
+        if ((notation != null) && (!notation.isEmpty())) {
+            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (PrimeFaces.current().isAjaxRequest()) {
+                    PrimeFaces.current().ajax().update("containerIndex:addNTMessage");
+                    PrimeFaces.current().ajax().update("containerIndex:idAddNT");
+                }                
+                return;
+            }
+        }  
         TermHelper termHelper = new TermHelper();
 
         // vérification si le term à ajouter existe déjà 
@@ -120,6 +131,7 @@ public class AddConcept implements Serializable {
             }
             return;        
         }
+            
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
     }
@@ -312,6 +324,7 @@ public class AddConcept implements Serializable {
         duplicate = false;
         idNewConcept = null;
         setPrefLabel("");
+        notation = "";
     }
 
     public void cancel() {

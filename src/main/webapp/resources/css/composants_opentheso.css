@@ -305,10 +305,15 @@ body .ui-tree {
     border-collapse: collapse;
     padding: 0.1rem;
     margin-left: -1rem;
-    margin-right: -1.8rem;
-    margin-top: -0.8rem;
+    margin-right: -1.7rem;
+    margin-bottom: -0.8rem;
+   /* margin-top: -0.8rem;*/
     /* display: ruby-text;*/
 
+}
+
+.ui-tree .ui-treenode-children {
+    margin-bottom: 2px;
 }
 
 .ui-tree .ui-treenode {
@@ -334,7 +339,8 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode 
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
-    margin: -4px;
+    /*margin: -4px;*/
+    margin-top: -8px;
     /*   display: ruby-text;*/
 }
 

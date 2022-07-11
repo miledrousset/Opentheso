@@ -33,7 +33,6 @@ import fr.cnrs.opentheso.bdd.tools.StringPlus;
 
 import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import org.apache.commons.logging.Log;
@@ -860,13 +859,14 @@ public class GroupHelper {
 
     /**
      * permet de supprimer l'appartenance des concepts à ce groupe/ collection
+     * cas d'une suppression de collection
      *
      * @param ds
      * @param idGroup
      * @param idTheso
      * @return #MR
      */
-    public boolean removeConceptsFromThisGroup(HikariDataSource ds, String idGroup, String idTheso) {
+    public boolean removeAllConceptsFromThisGroup(HikariDataSource ds, String idGroup, String idTheso) {
         boolean status = false;
         Connection conn;
         Statement stmt;
@@ -893,7 +893,134 @@ public class GroupHelper {
         }
         return status;
     }
+    
+    /**
+     * permet de supprimer l'appartenance des concepts à ce groupe/ collection
+     *
+     * @param ds
+     * @param idConcept
+     * @param idGroup
+     * @param idTheso
+     * @return #MR
+     */
+    public boolean removeConceptFromThisGroup(HikariDataSource ds, String idConcept, String idGroup, String idTheso) {
+        boolean status = false;
+        Connection conn;
+        Statement stmt;
 
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "delete from concept_group_concept where "
+                            + " idgroup = '" + idGroup + "'"
+                            + " and idconcept = '" + idConcept + "'"
+                            + " and idthesaurus = '" + idTheso + "'";
+                    stmt.executeUpdate(query);
+                    status = true;
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting concept from group-concept : " + idConcept, sqle);
+        }
+        return status;
+    }
+    
+
+    /**
+     * permet de supprimer l'appartenance des concepts avec des relations vide vers une collection
+     *
+     * @param ds
+     * @param idTheso
+     * @return #MR
+     */
+    public boolean deleteConceptsWithEmptyRelation(HikariDataSource ds, String idTheso) {
+        boolean status = false;
+        
+        try (Connection  conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("delete FROM concept_group_concept" +
+                                " WHERE idthesaurus = '" + idTheso + "' and idgroup = ''");
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while deleting fack relations groups of theso : " + idTheso, sqle);
+        }
+        return status;
+    }    
+    
+    /**
+     * permet de supprimer les concepts qui ont une relation vers une collection supprimée
+     *
+     * @param ds
+     * @param idTheso
+     * @return #MR
+     */
+    public boolean deleteConceptsHavingRelationShipWithDeletedGroup(HikariDataSource ds, String idTheso) {
+        boolean status = false;
+        try (Connection  conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select idgroup " +
+                            " from concept_group_concept " +
+                            " where " +
+                            " idthesaurus = '" + idTheso + "' " +
+                            " and " +
+                            " idgroup not in" +
+                            " (select idgroup from concept_group where idthesaurus = '" + idTheso + "')");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        // le group est supprimé, alors on supprime toutes les relations avec les concepts
+                        removeAllConceptsFromThisGroup(ds, resultSet.getString("idgroup"), idTheso);
+                    }
+                    status = true;
+                }                
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting fack relations groups of theso : " + idTheso, sqle);
+        }
+        return status;
+    }       
+    
+    /**
+     * permet de supprimer les concepts de la table collection
+     * qui ont une relation vers un concept supprimé
+     *
+     * @param ds
+     * @param idTheso
+     * @return #MR
+     */
+    public boolean deleteConceptsHavingRelationShipWithDeletedConcept(HikariDataSource ds, String idTheso) {
+        boolean status = false;
+        try (Connection  conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select idconcept, idgroup " +
+                            " from concept_group_concept " +
+                            " where " +
+                            " idthesaurus = '" + idTheso + "' " +
+                            " and " +
+                            " idconcept not in" +
+                            " (select id_concept from concept where id_thesaurus = '" + idTheso + "')");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        removeConceptFromThisGroup(ds, resultSet.getString("idconcept"), resultSet.getString("idgroup"), idTheso);
+                    }
+                    status = true;
+                }                
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting fack relations groups of theso : " + idTheso, sqle);
+        }
+        return status;
+    }    
+    
+    
+    
     /**
      * Cette fonction permet de supprimer un groupe et ses traductions
      * (subGroup)

@@ -1127,27 +1127,43 @@ public class ImportRdf4jHelper {
     }
 
     private String getIdFromUri(String uri) {
-        if (uri.contains("idg=")) {
+        boolean pass = false;
+        
+        if (uri.contains("idc=")) {
             if (uri.contains("&")) {
-                uri = uri.substring(uri.indexOf("idg=") + 4, uri.indexOf("&"));
+                uri = uri.substring(uri.indexOf("idc=") + 4, uri.indexOf("&"));
             } else {
-                uri = uri.substring(uri.indexOf("idg=") + 4, uri.length());
+                uri = uri.substring(uri.indexOf("idc=") + 4, uri.length());
             }
-        } else {
-            if (uri.contains("idc=")) {
+            pass = true;
+        }
+        if(!pass) {
+            if (uri.contains("idg=")) {
                 if (uri.contains("&")) {
-                    uri = uri.substring(uri.indexOf("idc=") + 4, uri.indexOf("&"));
+                    uri = uri.substring(uri.indexOf("idg=") + 4, uri.indexOf("&"));
                 } else {
-                    uri = uri.substring(uri.indexOf("idc=") + 4, uri.length());
+                    uri = uri.substring(uri.indexOf("idg=") + 4, uri.length());
                 }
-            } else {
-                if (uri.contains("#")) {
-                    uri = uri.substring(uri.indexOf("#") + 1, uri.length());
+                pass = true;
+            } 
+        }
+        if(!pass) {
+            if (uri.contains("idf=")) {
+                if (uri.contains("&")) {
+                    uri = uri.substring(uri.indexOf("idf=") + 4, uri.indexOf("&"));
                 } else {
-                    uri = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
+                    uri = uri.substring(uri.indexOf("idf=") + 4, uri.length());
                 }
+                pass = true;
             }
         }
+        if(!pass) {        
+            if (uri.contains("#")) {
+                uri = uri.substring(uri.indexOf("#") + 1, uri.length());
+            } else {
+                uri = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
+            }
+        }           
 
         StringPlus stringPlus = new StringPlus();
         uri = stringPlus.normalizeStringForIdentifier(uri);

@@ -13,7 +13,7 @@
                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: " />
                     <h:outputText value="#{conceptView.nodeConcept.concept.created} " style="color: #43B572"/>
                     
-                    <h:panelGroup rendered="#{currentUser.nodeUser != null}" >
+                    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (currentUser.nodeUser == null and roleOnTheso.nodePreference.displayUserName)}" >
                         <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
                         <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value="#{conceptView.creator}" style="color: #43B572"/>                         
                     </h:panelGroup>
@@ -24,7 +24,7 @@
                     <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')}: "/>
                     <h:outputText value="#{conceptView.nodeConcept.concept.modified} " style="color: #43B572"/>                
                     
-                    <h:panelGroup rendered="#{currentUser.nodeUser != null}" >
+                    <h:panelGroup  rendered="#{(currentUser.nodeUser != null) or (currentUser.nodeUser == null and roleOnTheso.nodePreference.displayUserName)}">
                         <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
                         <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value="#{conceptView.contributor}" style="color: #43B572"/>
                     </h:panelGroup> 

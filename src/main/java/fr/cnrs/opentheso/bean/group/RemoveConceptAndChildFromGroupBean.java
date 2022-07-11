@@ -128,7 +128,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
             }
             conn.commit();
             conn.close();
-            if(!groupHelper.removeConceptsFromThisGroup(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso())){
+            if(!groupHelper.removeAllConceptsFromThisGroup(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso())){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de l'appartenance des concepts à la collection !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);                
             }

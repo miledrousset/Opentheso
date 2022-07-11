@@ -245,7 +245,7 @@ public class CsvWriteHelper {
                 csvFilePrinter.printRecord(header);
 
                 ConceptHelper conceptHelper = new ConceptHelper();
-                ArrayList <NodeDeprecated> nodeDeprecateds = null;
+                ArrayList <NodeDeprecated> nodeDeprecateds;
                 //    if(idGroups == null || idGroups.isEmpty())
                 nodeDeprecateds = conceptHelper.getAllDeprecatedConceptOfThesaurus(ds, idTheso, idLang);
               /*  else {

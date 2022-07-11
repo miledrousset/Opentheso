@@ -118,9 +118,11 @@
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.edition')}</p:commandLink>
                             <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToAtelierPage()}" 
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('menu.thesaurusWorkshop')}</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" 
+                            <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
+                                           class="collapse-item" actionListener="#{menuBean.redirectToMaintenancePage()}" 
                                            style="font-size: 12px;"  process="@this">#{langueBean.getMsg('menu.service')}</p:commandLink>
-                            <p:commandLink class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" 
+                            <p:commandLink rendered="#{selectedTheso.currentIdTheso != null}"
+                                           class="collapse-item" actionListener="#{menuBean.redirectToStatistiquePage()}" 
                                            style="font-size: 12px;"  process="@this">#{langueBean.getMsg('statistique.statistic')}</p:commandLink>
                         </div>
                     </div>

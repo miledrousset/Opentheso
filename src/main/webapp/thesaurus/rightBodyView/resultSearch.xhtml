@@ -1,3 +1,6 @@
+
+
+
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -17,24 +20,37 @@
 
         <p:scrollPanel style="width: 100%; height: 100%; overflow: overlay; border: none; padding: 0px" mode="native">
             <ui:repeat var="result" value="#{searchBean.nodeConceptSearchs}" >
-                <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin-top: 15px">
+                <div class="card py-3 border-left-success" style="vertical-align: central; margin-top: 5px; margin-bottom: 0.2rem">
                     <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
-                        <p:tag rendered="#{selectedTheso.currentIdTheso == null}" styleClass="p-mr-2" severity="success" value="#{result.idTheso}" />
+                        <p:tag id="tagIdTheso" rendered="#{selectedTheso.currentIdTheso == null}" styleClass="p-mr-2" severity="success"
+                               value="#{result.idTheso} (#{result.thesoName})"/>
                         <div class="row">
                             <div class="col-12">
                                 
                                 <h:panelGroup rendered="#{result.isDeprecated}">
                                     <i class="fa fa-solid fa-ban" style="font-size: 12px; color: #C63632"></i>
-                                    <p:commandLink rendered="#{result.isDeprecated}" value=" #{result.prefLabel}" 
-                                                   style="color: #C63632; font-weight: bold; font-style: italic" ajax="true" process="@this"
+                                    <p:commandLink rendered="#{result.prefLabel != null and result.prefLabel != ''}"
+                                                   value=" #{result.prefLabel}" 
+                                                   style="color: #C63632; font-weight: bold; font-style: italic; font-size: 12px;" ajax="true" process="@this"
                                                    actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
-                                                   update="containerIndex:thesorusContent containerIndex:thesoSelect" />                                 
+                                                   update="containerIndex:thesorusContent containerIndex:thesoSelect" />                               
+                                    <p:commandLink rendered="#{result.prefLabel == null or result.prefLabel == ''}"
+                                                   value=" (#{result.idConcept})" 
+                                                   style="color: #601e18; font-size: 12px; font-weight: bold;" ajax="true" process="@this"
+                                                   actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
+                                                   update="containerIndex:thesorusContent containerIndex:thesoSelect" />                                     
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{!result.isDeprecated}">                            
-                                    <p:commandLink rendered="#{!result.isDeprecated}" value="#{result.prefLabel}" 
-                                                   style="color: #43B572; font-size: 12px; font-weight: bold;" ajax="true" process="@this"
+                                    <p:commandLink rendered="#{result.prefLabel != null and result.prefLabel != ''}"
+                                                   value="#{result.prefLabel}" 
+                                                   style="color: #601e18; font-size: 12px; font-weight: bold;" ajax="true" process="@this"
                                                    actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
                                                    update="containerIndex:thesorusContent containerIndex:thesoSelect" />    
+                                    <p:commandLink rendered="#{result.prefLabel == null or result.prefLabel == ''}"
+                                                   value=" (#{result.idConcept})" 
+                                                   style="color: #601e18; font-size: 12px; font-weight: bold;" ajax="true" process="@this"
+                                                   actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
+                                                   update="containerIndex:thesorusContent containerIndex:thesoSelect" />                                      
                                 </h:panelGroup>
                             </div>
                         </div>
