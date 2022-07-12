@@ -377,7 +377,7 @@ begin
 end
 $$language plpgsql;
 
--- Préférences : ajout de l'option activation ou non du fil d'ariane
+-- Préférences : ajout de l'option activation ou non le dernier onglet de l'arbre avec collection
 --
 create or replace function update_table_preferences_useConceptTree() returns void as $$
 begin
@@ -432,6 +432,16 @@ create or replace function update_table_preferences_displayUserName() returns vo
 begin
     IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='display_user_name') THEN
         execute 'ALTER TABLE preferences ADD COLUMN display_user_name boolean DEFAULT false;';
+END IF;
+end
+$$language plpgsql;
+
+-- Préférences : ajout de l'option pour activer le module de propositions d'amélioration
+--
+create or replace function update_table_preferences_suggestion() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='suggestion') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN suggestion boolean DEFAULT false;';
 END IF;
 end
 $$language plpgsql;
@@ -495,6 +505,8 @@ SELECT update_table_preferences_breadcrumb();
 SELECT update_table_concept_type();
 SELECT update_table_preferences_useConceptTree();
 SELECT update_table_preferences_displayUserName();
+SELECT update_table_preferences_suggestion();
+
 
 
 ----------------------------------------------------------------------------
@@ -522,6 +534,8 @@ SELECT delete_fonction('update_table_preferences_breadcrumb','');
 SELECT delete_fonction('update_table_concept_type','');
 SELECT delete_fonction('update_table_preferences_useConceptTree', '');
 SELECT delete_fonction('update_table_preferences_displayUserName', '');
+SELECT delete_fonction('update_table_preferences_suggestion', '');
+
 
 
 -- auto_suppression de nettoyage

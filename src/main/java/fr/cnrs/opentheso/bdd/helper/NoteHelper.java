@@ -1115,9 +1115,7 @@ public class NoteHelper {
                         + ",'" + idTerm + "'"
                         + ",'" + idLang + "'"
                         + ",'" + new StringPlus().convertString(note) + "'," + idUser + ")";
-                
-                System.out.println("SQL :: " + query);
-                
+
                 stmt.executeUpdate(query);
             }
         } catch (SQLException sqle) {

@@ -65,6 +65,8 @@ public class NodePreference {
     
     private boolean breadcrumb;
     
+    private boolean suggestion;
+    
     // pour affichager le nom des personnes qui ont modifié les concepts
     private boolean displayUserName;
 
@@ -443,6 +445,14 @@ public class NodePreference {
 
     public void setDisplayUserName(boolean displayUserName) {
         this.displayUserName = displayUserName;
+    }
+
+    public boolean isSuggestion() {
+        return suggestion;
+    }
+
+    public void setSuggestion(boolean suggestion) {
+        this.suggestion = suggestion;
     }
     
     

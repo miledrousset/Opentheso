@@ -80,7 +80,7 @@
                                      update="containerIndex:rightTab" actionListener="#{propositionBean.preparerConfirmationDialog('annulerProposition')}" />
 
 
-                    <p:commandButton icon="pi pi-send" value="Soumettre la proposition"
+                    <p:commandButton icon="pi pi-send" value="#{langueBean.getMsg('rightbody.sendProposal')}"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}" 
                                      update="containerIndex messageIndex"/>
                 </div>

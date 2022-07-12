@@ -76,21 +76,25 @@
                                     <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
                                         <ui:include src="thesaurus/search.xhtml"/>
                                     </div>
-                                    <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; margin-left: -10px">
-                                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                                            <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">#{langueBean.getMsg('menu.thesaurus')}</span></h1>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </p:panel>
-
-                        <div style="margin-top: -22px; right: 0;  margin-right: 50px; position: absolute; z-index: 1">
-                            <p:commandButton icon="pi pi-folder-open" styleClass="ui-button-primary" update="messageIndex"
-                                             style="border-radius: 10px 10px 0 0px; margin-left: 5px; margin-right: 5px"
-                                             actionListener="#{searchBean.afficherResultatRecherche()}" />
-                        </div>
-
+                        
+                        <h:panelGroup id="resultSearch" >
+                            <style>
+                                body .ui-button.ui-button-icon-only .ui-icon {
+                                    margin-top: -0.3rem;
+                                    margin-left: -0.4rem;
+                                }    
+                            </style>
+                            
+                            <div style="margin-top: -22px; right: 0;  margin-right: 50px; position: absolute; z-index: 1">
+                                <p:commandButton  icon="fa fa-magnifying-glass-arrow-right" styleClass="ui-button-primary" update="messageIndex"
+                                                 style="border-radius: 10px 10px 0 0px; margin-left: 5px; margin-right: 5px; font-size: 16px;"
+                                                 actionListener="#{searchBean.afficherResultatRecherche()}" />
+                            </div>
+                        </h:panelGroup>
+                        
                         <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                             <ui:include src="thesaurus/main_thesaurus.xhtml" />
                         </h:panelGroup>
