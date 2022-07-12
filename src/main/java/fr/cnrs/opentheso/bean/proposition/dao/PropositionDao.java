@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.proposition.dao;
 
+import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
 import java.io.Serializable;
 
 
@@ -29,16 +30,20 @@ public class PropositionDao implements Serializable {
     
     private String userAction;
     
-    public boolean isConsulter() {
-        return !"ENVOYER".equals(status);
+    public boolean isEnvoyer() {
+        return PropositionStatusEnum.ENVOYER.name().equals(status);
+    }
+    
+    public boolean isLu() {
+        return PropositionStatusEnum.LU.name().equals(status);
     }
     
     public boolean isApprouver() {
-        return "APPROUVER".equals(status);
+        return PropositionStatusEnum.APPROUVER.name().equals(status);
     }
     
     public boolean isRefuser() {
-        return "REFUSER".equals(status);
+        return PropositionStatusEnum.REFUSER.name().equals(status);
     }
 
     public Integer getId() {

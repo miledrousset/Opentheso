@@ -16,22 +16,30 @@
                 <f:selectItem itemLabel="Toutes" itemValue="3"/>
                 <p:ajax update="containerIndex:listPropositionNotification" event="change" listener="#{propositionBean.afficherListPropositions()}" />
             </p:selectOneButton>
+            
+            <p:panel rendered="#{propositionBean.propositions == null or propositionBean.propositions.size() == 0}"
+                          style="width: 100%; margin-top: 100px; text-align: center; color: #43B572">
+                #{langueBean.getMsg('proposition.aucune_proposition')}
+            </p:panel>
 
-            <ui:repeat var="proposition" value="#{propositionBean.propositions}" >
-                <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin-right: 20px;">
-                    <div class="list-group" style="margin-top: -10px;  margin-left: 10px">
+            <ui:repeat var="proposition" value="#{propositionBean.propositions}"
+                       rendered="#{propositionBean.propositions.size() > 0}">
+                <div class="card py-3 border-left-success" style="vertical-align: central; margin-top: 5px; margin-bottom: 0.2rem">
+                    <div class="list-group" style="margin-top: -10px; margin-bottom: -5px; margin-left: 10px">
                         <div class="row">
                             <div class="col-12">
                                 <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />
 
-                                <p:commandLink value="#{proposition.nomConcept} (#{proposition.lang})" rendered="#{!proposition.isConsulter()}"
+                                <p:commandLink value="#{proposition.nomConcept} (#{proposition.lang})" 
+                                              rendered="#{proposition.isEnvoyer()}"  
                                                style="font-size: 14px; font-weight: bold; color: #8f8f8f" 
                                                ajax="true" process="@this"
                                                actionListener="#{propositionBean.onSelectConcept(proposition)}"
                                                update="containerIndex:thesorusContent containerIndex:thesoSelect 
                                                containerIndex:formRightTab containerIndex:notificationProp" />
 
-                                <p:commandLink value="#{proposition.nomConcept} (#{proposition.lang})" rendered="#{proposition.isConsulter()}" 
+                                <p:commandLink value="#{proposition.nomConcept} (#{proposition.lang})"
+                                              rendered="#{proposition.isLu() or proposition.isApprouver() or proposition.isRefuser()}"  
                                                style="font-size: 14px; color: #8f8f8f" ajax="true" process="@this"
                                                actionListener="#{propositionBean.onSelectConcept(proposition)}"
                                                update="containerIndex:thesorusContent containerIndex:thesoSelect 
@@ -40,16 +48,20 @@
                         </div>
                         <div class="row" style="margin-bottom: -4px">
                             <div class="col-10">
-                                <h:outputText value="#{proposition.datePublication} - #{proposition.nom}" rendered="#{!proposition.isConsulter()}"  
+                                <h:outputText value="#{proposition.datePublication} - #{proposition.nom}"  
+                                              rendered="#{proposition.isEnvoyer()}"  
                                               style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
 
                                 <h:outputText value="#{proposition.datePublication} - #{proposition.nom}" 
-                                              rendered="#{proposition.isConsulter()}"  
+                                              rendered="#{proposition.isLu() or proposition.isApprouver() or proposition.isRefuser()}" 
                                               style="font-size: 14px; color: #8f8f8f"/>
                             </div>
                             <div class="col-2">
-                                <h:panelGroup rendered="#{!proposition.isApprouver() and !proposition.isRefuser()}">
+                                <h:panelGroup rendered="#{proposition.isEnvoyer()}">
                                     <i class="fa-solid fa-envelope" style="color: orange" />
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{proposition.isLu()}">
+                                    <i class="fa-solid fa-envelope-open-text" />
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{proposition.isApprouver()}">
                                     <i class="fa-solid fa-thumbs-up" style="color: green" />
