@@ -61,14 +61,11 @@
                                             <p:dataTable id="tabUser" rendered="#{superAdminBean.allProjects != null}" value="#{superAdminBean.allProjects}" 
                                                          var="listProject" scrollable="true" resizableColumns="true" scrollHeight="600">
                                                 
-                                                <f:facet name="header">
-                                                    <center>
-                                                        <h:outputText value="#{langueBean.getMsg('profile.list_of_all_projects')}" style="font-size: 15px; color: #C63632" />
-                                                    </center>
-                                                </f:facet>
-
+                                                <p:column width="60px" headerText="Id" >
+                                                    <h:outputText value="#{listProject.idGroup}"/>
+                                                </p:column>                                                
                                                 <p:column headerText="#{langueBean.getMsg('profile.name')}" >
-                                                    <h:outputText value="#{listProject.groupName} (#{listProject.idGroup})"/>
+                                                    <h:outputText value="#{listProject.groupName}"/>
                                                 </p:column>
 
                                                 <f:facet name="footer">
