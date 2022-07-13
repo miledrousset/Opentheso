@@ -319,7 +319,7 @@ public class TermHelper {
                             + ",'" + status + "'"
                             + "," + isHidden + ")";
                     
-                    System.out.println("SQL 2 : " + query);
+                 //   System.out.println("SQL 2 : " + query);
 
                     stmt.executeUpdate(query);
                     if (addNonPreferredTermHistorique(conn, idTerm, value, idLang, idTheso, source, status, isHidden, "ADD", idUser)) {
@@ -1526,8 +1526,8 @@ public class TermHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                System.out.println("SQL 1 : " + "SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
-                        + "' and id_concept = '" + idConcept + "'");
+               /* System.out.println("SQL 1 : " + "SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
+                        + "' and id_concept = '" + idConcept + "'");*/
                 stmt.executeQuery("SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
                         + "' and id_concept = '" + idConcept + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {

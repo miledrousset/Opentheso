@@ -41,7 +41,7 @@
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
-            <h:panelGroup rendered="#{currentUser.isAlertVisible()}"
+            <h:panelGroup rendered="#{currentUser.isAlertVisible() and roleOnTheso.nodePreference.suggestion}"
                           style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
                 <p:commandLink actionListener="#{propositionBean.afficherListPropositions()}"
                                update="containerIndex" rendered="#{propositionBean.nbrNewPropositions > 0}" >

@@ -125,6 +125,9 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> historyNotes;
     
     private List<ResponsiveOption> responsiveOptions;
+    
+    private boolean toggleSwitchAltLabelLang;
+    private boolean toggleSwitchNotesLang;    
 
 
     @PostConstruct
@@ -197,6 +200,8 @@ public class ConceptView implements Serializable {
             isUriRequest = false;
             return;
         }*/
+        toggleSwitchAltLabelLang = false;
+        toggleSwitchNotesLang = false;
         if (nodeConcept != null) {
             nodeConcept.clear();
         }
@@ -282,10 +287,17 @@ public class ConceptView implements Serializable {
         if (nodeConcept.getNodeGps() != null) {
             initMap();
         }
-
-        setNotes();
-
         selectedLang = idLang;
+        if(toggleSwitchAltLabelLang) {
+            getAltLabelWithAllLanguages();
+        }
+        if(toggleSwitchNotesLang) {
+            getNotesWithAllLanguages();
+        } else {
+            setNotes();
+        }
+
+
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
@@ -332,12 +344,23 @@ public class ConceptView implements Serializable {
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
         offset = 0; 
         nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
-        if (nodeConcept != null) {
-            if(roleOnThesoBean.getNodePreference().isBreadcrumb())
-                pathOfConcept(idTheso, idConcept, idLang);
-            setNotes();
-            setOffset();
+        if(nodeConcept == null) return;
+
+        if(roleOnThesoBean.getNodePreference().isBreadcrumb())
+            pathOfConcept(idTheso, idConcept, idLang);
+
+        if(toggleSwitchAltLabelLang) {
+            getAltLabelWithAllLanguages();
         }
+        if(toggleSwitchNotesLang) {
+            getNotesWithAllLanguages();
+        } else {
+            setNotes();
+        }
+        
+        setOffset();
+
+
         // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
         haveCorpus = false;
@@ -363,17 +386,39 @@ public class ConceptView implements Serializable {
      */
     public void getNotesWithAllLanguages(){
         NoteHelper noteHelper = new NoteHelper();
-        nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
-                connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));  
-        nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
-                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));          
+        if(toggleSwitchNotesLang) {
+            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
+                    connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));  
+            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
+                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));             
+        } else {
+            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(
+                    connect.getPoolConnexion(),
+                    nodeConcept.getTerm().getId_term(),
+                    nodeConcept.getConcept().getIdThesaurus(),
+                    selectedLang));             
+                   
+            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConcept(
+                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
+                    nodeConcept.getConcept().getIdThesaurus(),
+                    selectedLang));               
+        }
+        
+         
         setNotes();
     }
     
     public void getAltLabelWithAllLanguages(){
         TermHelper termHelper = new TermHelper();
-        nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
+        
+        if(toggleSwitchAltLabelLang)
+            nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
                 connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));  
+        else
+            nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(connect.getPoolConnexion(),
+                    nodeConcept.getTerm().getId_term(),
+                    nodeConcept.getConcept().getIdThesaurus(),
+                    selectedLang));
     }    
     
     
@@ -757,6 +802,10 @@ public class ConceptView implements Serializable {
             }
         }
     }
+    
+    public void changeStateAltLabelOtherLang() {
+        
+    }
 
     public NodeConcept getNodeConcept() {
         return nodeConcept;
@@ -883,5 +932,22 @@ public class ConceptView implements Serializable {
     public void setNodeFacets(ArrayList<NodeIdValue> nodeFacets) {
         this.nodeFacets = nodeFacets;
     }
+
+    public boolean isToggleSwitchAltLabelLang() {
+        return toggleSwitchAltLabelLang;
+    }
+
+    public void setToggleSwitchAltLabelLang(boolean toggleSwitchAltLabelLang) {
+        this.toggleSwitchAltLabelLang = toggleSwitchAltLabelLang;
+    }
+
+    public boolean isToggleSwitchNotesLang() {
+        return toggleSwitchNotesLang;
+    }
+
+    public void setToggleSwitchNotesLang(boolean toggleSwitchNotesLang) {
+        this.toggleSwitchNotesLang = toggleSwitchNotesLang;
+    }
+
 
 }

@@ -33,13 +33,11 @@
 
                         </div>
                         <div class="col-1 offset-8" style="margin-top: 0px">
-                            <p:commandLink  id="commandOtherLang" value="" action="#{conceptView.getNotesWithAllLanguages()}"
-                                            update="containerIndex:rightTab:idConceptNotes containerIndex:formRightTab" >
-                                <i class="fa fa-language" style="font-size: 1.2rem; color: #F47B2A" />
-                            </p:commandLink>
+                            <p:toggleSwitch value="#{conceptView.toggleSwitchNotesLang}" id="commandOtherLang" style="font-size: 1rem;">
+                                <p:ajax listener="#{conceptView.getNotesWithAllLanguages()}" update="containerIndex:formRightTab"/>
+                            </p:toggleSwitch>                              
                             <p:tooltip for="commandOtherLang" value="#{langueBean.getMsg('concept.showNotesOtherLang')}" showDelay="1000" />
                         </div>
-
                     </div>
                 </div>
 
@@ -69,15 +67,15 @@
                                     </h:panelGroup>                                        
                                     <ui:repeat var="note" value="#{conceptView.notes}" varStatus="status">
                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                                            <h:outputText rendered="#{status.first}" value="(#{note.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{status.first and conceptView.toggleSwitchNotesLang}" value="(#{note.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{status.first}" value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
 
-                                            <h:outputText rendered="#{!status.first}" value="(#{note.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{!status.first and conceptView.toggleSwitchNotesLang}" value="(#{note.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{!status.first}" value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
-                                            <h:outputText value="(#{note.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{conceptView.toggleSwitchNotesLang}" value="(#{note.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>                                            
                                         </h:panelGroup>
@@ -111,15 +109,15 @@
                                     </p:menuButton>
                                     <ui:repeat var="changeNote" value="#{conceptView.changeNotes}" varStatus="status">
                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                                            <h:outputText rendered="#{status.first}" value="(#{changeNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{status.first and conceptView.toggleSwitchNotesLang}" value="(#{changeNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
 
-                                            <h:outputText rendered="#{!status.first}" value="(#{changeNote.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{!status.first and conceptView.toggleSwitchNotesLang}" value="(#{changeNote.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
-                                            <h:outputText value="(#{changeNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{conceptView.toggleSwitchNotesLang}" value="(#{changeNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>                                            
                                         </h:panelGroup>
@@ -153,15 +151,15 @@
                                     </p:menuButton>
                                     <ui:repeat var="def" value="#{conceptView.definitions}" varStatus="status">
                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                                            <h:outputText rendered="#{status.first}" value="(#{def.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{status.first and conceptView.toggleSwitchNotesLang}" value="(#{def.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
 
-                                            <h:outputText rendered="#{!status.first}" value="(#{def.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{!status.first and conceptView.toggleSwitchNotesLang}" value="(#{def.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{!status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
-                                            <h:outputText value="(#{def.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{conceptView.toggleSwitchNotesLang}" value="(#{def.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>                                            
                                         </h:panelGroup>
@@ -197,15 +195,15 @@
                                     </p:menuButton> 
                                     <ui:repeat var="editorialNote" value="#{conceptView.editorialNotes}" varStatus="status">
                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                                            <h:outputText rendered="#{status.first}" value="(#{editorialNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{status.first and conceptView.toggleSwitchNotesLang}" value="(#{editorialNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
 
-                                            <h:outputText rendered="#{!status.first}" value="(#{editorialNote.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{!status.first and conceptView.toggleSwitchNotesLang}" value="(#{editorialNote.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
-                                            <h:outputText value="(#{editorialNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{conceptView.toggleSwitchNotesLang}" value="(#{editorialNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>                                            
                                         </h:panelGroup>
@@ -242,15 +240,15 @@
                                     </p:menuButton> 
                                     <ui:repeat var="example" value="#{conceptView.examples}" varStatus="status">
                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                                            <h:outputText rendered="#{status.first}" value="(#{example.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{status.first and conceptView.toggleSwitchNotesLang}" value="(#{example.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
 
-                                            <h:outputText rendered="#{!status.first}" value="(#{example.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{!status.first and conceptView.toggleSwitchNotesLang}" value="(#{example.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{!status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
-                                            <h:outputText value="(#{example.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{conceptView.toggleSwitchNotesLang}" value="(#{example.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>                                            
                                         </h:panelGroup>
@@ -287,15 +285,15 @@
                                     </p:menuButton> 
                                     <ui:repeat var="historyNote" value="#{conceptView.historyNotes}" varStatus="status">
                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                                            <h:outputText rendered="#{status.first}" value="(#{historyNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{status.first and conceptView.toggleSwitchNotesLang}" value="(#{historyNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
 
-                                            <h:outputText rendered="#{!status.first}" value="(#{historyNote.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{!status.first and conceptView.toggleSwitchNotesLang}" value="(#{historyNote.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
-                                            <h:outputText value="(#{historyNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{conceptView.toggleSwitchNotesLang}" value="(#{historyNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>                                            
                                         </h:panelGroup>
@@ -332,15 +330,15 @@
                                     </p:menuButton> 
                                     <ui:repeat var="scopeNote" value="#{conceptView.scopeNotes}" varStatus="status">
                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                                            <h:outputText rendered="#{status.first}" value="(#{scopeNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{status.first and conceptView.toggleSwitchNotesLang}" value="(#{scopeNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
 
-                                            <h:outputText rendered="#{!status.first}" value="(#{scopeNote.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{!status.first and conceptView.toggleSwitchNotesLang}" value="(#{scopeNote.lang}) " style="margin-left: 38px;font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
-                                            <h:outputText value="(#{scopeNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                            <h:outputText rendered="#{conceptView.toggleSwitchNotesLang}" value="(#{scopeNote.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
                                             <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                             <br/>                                            
                                         </h:panelGroup>
