@@ -96,6 +96,7 @@ public class LanguageHelper {
                         language.setId_iso639_2(resultSet.getString("iso639_2"));
                         language.setFrench_name(resultSet.getString("french_name"));
                         language.setEnglish_name(resultSet.getString("english_name"));
+                        language.setCodePays(resultSet.getString("code_pays"));
                     }
                 }
             }
@@ -120,7 +121,7 @@ public class LanguageHelper {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select distinct languages_iso639.iso639_1,"
                         + " languages_iso639.iso639_2, languages_iso639.english_name,"
-                        + " languages_iso639.french_name"
+                        + " languages_iso639.french_name, languages_iso639.code_pays"
                         + " from languages_iso639, thesaurus_label where thesaurus_label.lang = languages_iso639.iso639_1 "
                         + " and thesaurus_label.id_thesaurus ='" + idThesaurus + "';");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
@@ -133,6 +134,7 @@ public class LanguageHelper {
                             languageTmp.setId_iso639_2(resultSet.getString("iso639_2").trim());
                             languageTmp.setFrench_name(resultSet.getString("french_name"));
                             languageTmp.setEnglish_name(resultSet.getString("english_name"));
+                            languageTmp.setCodePays(resultSet.getString("code_pays"));
                             language.add(languageTmp);
                         }
                     }
@@ -166,6 +168,7 @@ public ArrayList<Languages_iso639> getAllLanguages(HikariDataSource ds) {
                             languageTmp.setId_iso639_2(resultSet.getString("iso639_2"));
                             languageTmp.setFrench_name(resultSet.getString("french_name"));
                             languageTmp.setEnglish_name(resultSet.getString("english_name"));
+                            languageTmp.setCodePays(resultSet.getString("code_pays"));
                             language.add(languageTmp);
                         }
                     }

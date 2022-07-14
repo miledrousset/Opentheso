@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class NodeTermTraduction implements Serializable {
 
     private String lang;
+    private String nomLang;
     private String lexicalValue;
     
     public NodeTermTraduction() {
@@ -30,6 +31,14 @@ public class NodeTermTraduction implements Serializable {
 
     public void setLexicalValue(String lexicalValue) {
         this.lexicalValue = lexicalValue;
+    }
+
+    public String getNomLang() {
+        return nomLang;
+    }
+
+    public void setNomLang(String nomLang) {
+        this.nomLang = nomLang;
     }
 
 }

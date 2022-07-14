@@ -24,12 +24,14 @@
                     <h:outputText value="Langue à ajouter: "/>
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                    <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" 
+                                     panelStyleClass="selectOneMenu_panelStyle_custom"
                                      style="width: 100%; background: none;  box-shadow: none; "
                                      panelStyle="border: none; box-shadow: none; width: 200px" >
-                        <f:selectItems value="#{editThesoBean.allLangs}" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" 
-                                       itemValue="#{lang.id_iso639_1}" var="lang" /> 
-                    </p:selectOneMenu>  
+                        <f:selectItems value="#{editThesoBean.allLangs}" itemValue="#{lang.codePays}"
+                                       itemLabelEscaped="false" var="lang" 
+                                       itemLabel="&lt;img height='15' width='20' src='https://countryflagsapi.com/png/#{lang.codePays}' /&gt; #{lang.french_name}" /> 
+                    </p:selectOneMenu> 
                 </div>
             </div> 
 

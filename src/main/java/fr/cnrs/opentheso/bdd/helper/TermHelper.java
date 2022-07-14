@@ -1871,46 +1871,32 @@ public class TermHelper {
     public ArrayList<NodeTermTraduction> getTraductionsOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus, String idLang) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         ArrayList<NodeTermTraduction> nodeTraductionsList = null;
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT term.id_term, term.lexical_value, term.lang FROM"
-                            + " term, preferred_term WHERE"
-                            + " term.id_term = preferred_term.id_term"
-                            + " and term.id_thesaurus = preferred_term.id_thesaurus"
-                            + " and preferred_term.id_concept = '" + idConcept + "'"
-                            + " and term.lang != '" + idLang + "'"
-                            + " and term.id_thesaurus = '" + idThesaurus + "'"
-                            + " order by term.lexical_value";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("SELECT term.id_term, term.lexical_value, lang.code_pays, " +
+                        "CASE WHEN '"+idLang+"' = 'fr' THEN lang.french_name ELSE lang.english_name END lang_name " +
+                        "FROM term, preferred_term, languages_iso639 lang " +
+                        "WHERE term.id_term = preferred_term.id_term " +
+                        "and term.id_thesaurus = preferred_term.id_thesaurus " +
+                        "and term.lang = lang.iso639_1 " +
+                        "and preferred_term.id_concept = '" + idConcept + "' " +
+                        "and term.lang != '" + idLang + "' " +
+                        "and term.id_thesaurus = '" + idThesaurus + "' " +
+                        "order by term.lexical_value");
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet != null) {
                         nodeTraductionsList = new ArrayList<>();
                         while (resultSet.next()) {
                             NodeTermTraduction nodeTraductions = new NodeTermTraduction();
-                            nodeTraductions.setLang(resultSet.getString("lang"));
+                            nodeTraductions.setLang(resultSet.getString("code_pays"));
                             nodeTraductions.setLexicalValue(resultSet.getString("lexical_value"));
+                            nodeTraductions.setNomLang(resultSet.getString("lang_name"));
                             nodeTraductionsList.add(nodeTraductions);
                         }
                     }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
