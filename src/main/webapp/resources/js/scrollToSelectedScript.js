@@ -41,3 +41,23 @@ function srollToSelected() {
     }
 
 }
+
+function srollGroupToSelected() {
+    var treeGroupWidgetVar = PrimeFaces.widgets["groupWidget"];
+  /*  console.log(treeWidgetVar.toLocaleString());*/
+    var selectedElement = treeGroupWidgetVar.jq.find('.ui-state-highlight');
+/*    console.log("VAleur de : " + selectedElement.toString());
+    console.log("Valeur de position : " + selectedElement.position());
+    var scrollPanel = document.getElementById("containerIndex:formLeftTab:tabTree:tree");
+    console.log(scrollPanel);
+    scrollPanel.scrollTop = 800;*/
+    if (selectedElement !== null && selectedElement !== undefined && selectedElement.position() !== undefined) {
+      /*  var scrollPanel = document.getElementById("formLeftTab:tabTree:tree");*/
+       // console.log("je passe");
+        var scrollPanel = document.getElementById("containerIndex:formLeftTab:tabTree:treeGroups");
+        
+        scrollPanel.scrollTop = selectedElement.position().top;
+
+    }
+
+}

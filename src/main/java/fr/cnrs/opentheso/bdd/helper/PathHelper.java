@@ -75,7 +75,7 @@ public class PathHelper {
         path.add(idConcept);
         
         ArrayList<String> firstPath = new ArrayList<>();
-        allPaths = getInvertPathOfConcept(ds, idConcept,
+        allPaths = getPathOfConcept(ds, idConcept,
                 idThesaurus,
                 firstPath,
                 path, allPaths);
@@ -99,7 +99,7 @@ public class PathHelper {
      * il faut trouver le path qui correspond au microthesaurus en cours pour
      * l'afficher en premier
      */
-    private ArrayList<Path> getInvertPathOfConcept(HikariDataSource ds,
+    private ArrayList<Path> getPathOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus,
             ArrayList<String> firstPath,
             ArrayList<String> path,
@@ -133,14 +133,62 @@ public class PathHelper {
 
         for (String idBT : idBTs) {
             path.add(idBT);
-            getInvertPathOfConcept(ds, idBT, idThesaurus, firstPath, path, allPaths);
+            getPathOfConcept(ds, idBT, idThesaurus, firstPath, path, allPaths);
         }
         
         return allPaths;
 
     }
 
+    /**
+     * permet de rtourner le chemin vers le groupe sélectionné
+     * @param ds
+     * @param idGroup
+     * @param idThesaurus
+     * @return 
+     */
+    public ArrayList<String> getPathOfGroup(HikariDataSource ds,
+            String idGroup, String idThesaurus) {
 
+        ArrayList<String> path = new ArrayList<>();
+        path.add(idGroup);
+        
+
+        path = getPathOfGroup(ds, idGroup,
+                idThesaurus, path);
+
+        return path;
+    }    
+
+        /**
+     * Fonction récursive pour trouver le chemin complet d'un concept en partant
+     * du Concept lui même pour arriver à la tête TT on peut rencontrer
+     * plusieurs têtes en remontant, alors on construit à chaque fois un chemin
+     * complet.
+     *
+     * @param ds
+     * @param idGroup
+     * @param idThesaurus
+     * @param path
+     * @return Vector Ce vecteur contient tous les Path des BT d'un id_terme
+     * exemple (327,368,100,#,2251,5555,54544,8789,#) ici deux path disponible
+     * il faut trouver le path qui correspond au microthesaurus en cours pour
+     * l'afficher en premier
+     */
+    private ArrayList<String> getPathOfGroup(HikariDataSource ds,
+            String idGroup, String idThesaurus,
+            ArrayList<String> path) {
+
+        GroupHelper groupHelper = new GroupHelper();
+
+        String idGroupParent = groupHelper.getIdFather(ds, idGroup, idThesaurus);
+        if(idGroupParent == null) return path;
+
+        path.add(0,idGroupParent);
+        getPathOfGroup(ds, idGroupParent, idThesaurus, path);
+        
+        return path;
+    }
     
     
     /**

@@ -23,7 +23,7 @@
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary"
                                  style="margin-right: 10px"
                                  ajax="true" process="@form"
-                                 actionListener="PF('generateArkGroup').hide();" />
+                                 oncomplete="PF('generateArkGroup').hide();"/>
 
                 <p:commandButton value="#{langueBean.getMsg('service.generate')}" styleClass="ui-button-primary"
                                  update="containerIndex messageIndex" 
