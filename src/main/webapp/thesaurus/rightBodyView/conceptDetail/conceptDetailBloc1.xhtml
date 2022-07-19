@@ -265,7 +265,7 @@
                                                 icon="fas fa-magnet" update="containerIndex:idAddConceptToFacet"
                                                 action="#{editConcept.reset('')}"
                                                 oncomplete="PF('addConceptToFacet').show();" />
-                                    <p:menuitem value="Supprimer le concept des facettes" icon="far fa-trash-alt"
+                                    <p:menuitem value="#{langueBean.getMsg('leftbody.removeTheConceptOfFacets')}" icon="far fa-trash-alt"
                                                 oncomplete="PF('removeConceptFromFracets').show();"
                                                 update="containerIndex:idRemoveConceptFromFracets"
                                                 disabled="#{conceptView.nodeFacets.size() == 0}"/>                                      

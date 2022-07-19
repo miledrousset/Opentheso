@@ -100,10 +100,10 @@
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  actionListener="PF('addNTFacette').hide();" update="idAddNTFacette"/>
 
-                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
                                  update="containerIndex messageIndex" 
                                  style="color: white;" oncomplete="PF('addNTFacette').hide();"
                                  actionListener="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,

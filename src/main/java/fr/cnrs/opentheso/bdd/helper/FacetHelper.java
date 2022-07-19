@@ -211,6 +211,37 @@ public class FacetHelper {
         }
 
         return nodeFacet;
+    }    
+    
+    /**
+     * permet de retourner l'id parent d'une facette
+     *
+     * @param ds
+     * @param idFacet
+     * @param idThesaurus
+     * @return
+     */
+    public String getIdConceptParentOfFacet(HikariDataSource ds, String idFacet, String idThesaurus) {
+        String idParentFacet = null;
+        try (Connection conn = ds.getConnection()){
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT thesaurus_array.id_concept_parent"
+                            + " FROM thesaurus_array"
+                            + " WHERE"
+                            + " thesaurus_array.id_facet ='" + idFacet + "'"
+                            + " and thesaurus_array.id_thesaurus = '" + idThesaurus + "'");
+
+                try( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        idParentFacet = resultSet.getString("id_concept_parent");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting idParent of Facet : " + idFacet, sqle);
+        }
+        return idParentFacet;
     }
 
 //////////////////////////////////////////////////////////////////////////////

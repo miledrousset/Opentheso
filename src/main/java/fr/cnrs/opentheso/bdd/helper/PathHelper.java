@@ -6,8 +6,10 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
+import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -139,6 +141,85 @@ public class PathHelper {
         return allPaths;
 
     }
+    
+    public ArrayList<Path> getPathOfFacet(HikariDataSource ds,
+            String idFacet, String idThesaurus) {
+
+        ArrayList<Path> allPaths = new ArrayList<>();
+        ArrayList<String> path = new ArrayList<>();
+        path.add(idFacet);
+        
+        FacetHelper facetHelper = new FacetHelper();
+        String idConceptParentOfFacet = facetHelper.getIdConceptParentOfFacet(ds, idFacet, idThesaurus);        
+        path.add(0,idConceptParentOfFacet);
+        ArrayList<String> firstPath = new ArrayList<>();
+        allPaths = getPathOfConcept(ds, idConceptParentOfFacet,
+                idThesaurus,
+                firstPath,
+                path, allPaths);
+
+        return allPaths;
+    }    
+    
+    /**
+     * Fonction récursive pour trouver le chemin complet d'un concept en partant
+     * du Concept lui même pour arriver à la tête TT on peut rencontrer
+     * plusieurs têtes en remontant, alors on construit à chaque fois un chemin
+     * complet.
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param firstPath
+     * @param path
+     * @return Vector Ce vecteur contient tous les Path des BT d'un id_terme
+     * exemple (327,368,100,#,2251,5555,54544,8789,#) ici deux path disponible
+     * il faut trouver le path qui correspond au microthesaurus en cours pour
+     * l'afficher en premier
+     */
+  /*  private ArrayList<Path> getPathOfFacet(HikariDataSource ds,
+            String idFacet, String idThesaurus,
+            ArrayList<String> firstPath,
+            ArrayList<String> path,
+            ArrayList<Path> allPaths) {
+
+        RelationsHelper relationsHelper = new RelationsHelper();
+
+        FacetHelper facetHelper = new FacetHelper();
+        String idFacetParent = facetHelper.getIdParentOfFacet(ds, idFacet, idThesaurus);
+       
+        ArrayList<String> idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
+        if(idBTs == null) return null;
+        if (idBTs.size() > 1) {
+            for (String idBT1 : path) {
+                firstPath.add(0,idBT1);
+            }
+        }
+        if (idBTs.isEmpty()) {
+            ArrayList<String> pathTemp = new ArrayList<>();
+            for (String id2 : firstPath) {
+                pathTemp.add(id2);
+            }
+            for (String id1 : path) {
+                if (pathTemp.indexOf(id1) == -1) {
+                    pathTemp.add(0,id1);
+                }
+            }
+            
+            Path path1 = new Path();
+            path1.setPath(pathTemp);
+            allPaths.add(path1);
+            path.clear();
+        }
+
+        for (String idBT : idBTs) {
+            path.add(idBT);
+            getPathOfConcept(ds, idBT, idThesaurus, firstPath, path, allPaths);
+        }
+        
+        return allPaths;
+
+    }    */
 
     /**
      * permet de rtourner le chemin vers le groupe sélectionné
