@@ -1,0 +1,75 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:tag rendered="#{selectedTheso.currentIdTheso == null}" style="margin-top: -16px; border-radius: 10px 10px 0px 0px;" severity="success"
+           value="#{result.idTheso} (#{result.thesoName})"/>
+    
+    <div class="row">
+        <div class="col-12" style="margin-left: 7px; margin-right: 7px">
+
+            <h:panelGroup rendered="#{result.isDeprecated}">
+                <i class="fa fa-solid fa-ban" style="font-size: 12px; color: #C63632"></i>
+                <p:commandLink rendered="#{result.prefLabel != null and result.prefLabel != ''}"
+                               value=" #{result.prefLabel}" 
+                               style="color: #C63632; font-weight: bold; font-style: italic; font-size: 12px;" ajax="true" process="@this"
+                               actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
+                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch" />                               
+                <p:commandLink rendered="#{result.prefLabel == null or result.prefLabel == ''}"
+                               value=" (#{result.idConcept})" 
+                               style="color: #601e18; font-size: 12px; font-weight: bold;" ajax="true" process="@this"
+                               actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
+                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch" />                                     
+            </h:panelGroup>
+            <h:panelGroup rendered="#{!result.isDeprecated}">                            
+                <p:commandLink rendered="#{result.prefLabel != null and result.prefLabel != ''}"
+                               value="#{result.prefLabel}" 
+                               style="color: #601e18; font-size: 12px; font-weight: bold;" ajax="true" process="@this"
+                               actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
+                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch" />    
+                <p:commandLink rendered="#{result.prefLabel == null or result.prefLabel == ''}"
+                               value=" (#{result.idConcept})" 
+                               style="color: #601e18; font-size: 12px; font-weight: bold;" ajax="true" process="@this"
+                               actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
+                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch" />                                      
+            </h:panelGroup>
+        </div>
+    </div>
+
+    <h:panelGroup rendered="#{result.nodeEM.size() != 0}">
+        <div class="row" >
+            <div class="col-12" style="margin-left: 7px; margin-right: 7px">
+                <h:outputText value="SYN : " title="#{langueBean.getMsg('rightbody.concept.synonym')}" 
+                              style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
+                <ui:repeat var="em" value="#{result.nodeEM}" >
+                    <h:outputText value="#{em.lexical_value}, " style="color: #8C8C8C; font-size: 12px"/>
+                </ui:repeat>
+            </div>            
+        </div>
+    </h:panelGroup>  
+
+    <h:panelGroup rendered="#{result.nodeBT.size() != 0}">
+        <div class="row" >
+            <div class="col-12" style="margin-left: 7px; margin-right: 7px">
+                <h:outputText value="BT : " title="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')}" 
+                              style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
+                <ui:repeat var="bt" value="#{result.nodeBT}" >
+                    <h:outputText value="#{bt.title}, " style="color: #8C8C8C; font-size: 12px"/>
+                </ui:repeat>
+            </div>
+        </div>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{result.nodeRT.size() != 0}">
+        <div class="row">
+            <div class="col-12" style="margin-left: 7px; margin-right: 7px">
+                <h:outputText value="RT : " title="Terme associé" 
+                              style="color: #8C8C8C; font-size: 12px; font-weight: bold;"/>
+                <ui:repeat var="rt" value="#{result.nodeRT}" >
+                    <h:outputText value="#{rt.title}, " style="color: #8C8C8C; font-size: 12px"/>
+                </ui:repeat>
+            </div>
+        </div>
+    </h:panelGroup>
+</ui:fragment>

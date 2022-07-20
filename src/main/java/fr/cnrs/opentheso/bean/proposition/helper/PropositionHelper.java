@@ -16,16 +16,17 @@ public class PropositionHelper {
 
     private final Log log = LogFactory.getLog(PropositionHelper.class);
 
-    public List<PropositionDao> getAllProposition(HikariDataSource ds) {
+    public List<PropositionDao> getAllProposition(HikariDataSource ds, String idTheso) {
 
         List<PropositionDao> propositions = new ArrayList<>();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT pro.*, term.lexical_value " +
-                                "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " +
-                                "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " +
-                                "ORDER BY pro.id DESC");
+                stmt.executeQuery("SELECT pro.*, term.lexical_value " 
+                        + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
+                        + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " 
+                        + "WHERE term.id_thesaurus like '" + idTheso + "'"
+                        + "ORDER BY pro.id DESC");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         propositions.add(toPropositionDao(resultSet));
@@ -39,16 +40,17 @@ public class PropositionHelper {
         return propositions;
     }
 
-    public List<PropositionDao> getAllPropositionByStatus(HikariDataSource ds, String status) {
+    public List<PropositionDao> getAllPropositionByStatus(HikariDataSource ds, String status, String idTheso) {
 
         List<PropositionDao> propositions = new ArrayList<>();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT pro.*, term.lexical_value " +
-                                "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " +
-                                "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " +
-                                "WHERE pro.status = '" + status + "' ORDER BY pro.id DESC");
+                stmt.executeQuery("SELECT pro.*, term.lexical_value " 
+                        + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
+                        + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus "
+                        + "WHERE term.id_thesaurus like '" + idTheso + "'"
+                        + "AND pro.status = '" + status + "' ORDER BY pro.id DESC");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         propositions.add(toPropositionDao(resultSet));
@@ -62,16 +64,17 @@ public class PropositionHelper {
         return propositions;
     }
 
-    public List<PropositionDao> getOldPropositionByStatus(HikariDataSource ds) {
+    public List<PropositionDao> getOldPropositionByStatus(HikariDataSource ds, String idTheso) {
 
         List<PropositionDao> propositions = new ArrayList<>();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT pro.*, term.lexical_value " +
-                                "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " +
-                                "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " +
-                                "WHERE pro.status NOT IN ('LU', 'ENVOYER') ORDER BY pro.id DESC");
+                stmt.executeQuery("SELECT pro.*, term.lexical_value " 
+                        + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
+                        + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " 
+                        + "WHERE term.id_thesaurus like '" + idTheso + "'"
+                        + "AND pro.status NOT IN ('LU', 'ENVOYER') ORDER BY pro.id DESC");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         propositions.add(toPropositionDao(resultSet));

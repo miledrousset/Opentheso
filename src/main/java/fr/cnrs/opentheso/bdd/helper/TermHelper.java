@@ -1526,8 +1526,6 @@ public class TermHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                System.out.println("SQL 1 : " + "SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
-                        + "' and id_concept = '" + idConcept + "'");
                 stmt.executeQuery("SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
                         + "' and id_concept = '" + idConcept + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {

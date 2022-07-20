@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
 import fr.cnrs.opentheso.bean.proposition.service.PropositionService;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.bean.search.SearchBean;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
+
 
 @Named(value = "propositionBean")
 @SessionScoped
@@ -51,21 +53,20 @@ public class PropositionBean implements Serializable {
     @Inject
     private PropositionService propositionService;
 
+    @Inject
+    private SearchBean searchBean;
+
     private boolean isRubriqueVisible;
     private Proposition proposition;
     private String nom, email, commentaire;
     private String message;
     private String actionNom;
-    private String showAllPropositions;
-    private int nbrNewPropositions;
+    private String showAllPropositions = "1";
+    private int nbrNewPropositions, filter2 = 1;
 
     private PropositionDao propositionSelected;
     private List<PropositionDao> propositions;
     
-    
-    public PropositionBean() {
-        showAllPropositions = "1";
-    }
 
     public void onSelectConcept(PropositionDao propositionDao) throws IOException {
 
@@ -87,23 +88,33 @@ public class PropositionBean implements Serializable {
         nom = propositionDao.getNom();
         email = propositionDao.getEmail();
 
-        propositions = propositionService.searchAllPropositions();
+        propositions = propositionService.searchAllPropositions(null);
         nbrNewPropositions = propositionService.searchNbrNewProposition();
+    }
+    
+    public void afficherPropositionsNotification() {
+        afficherListPropositions();
+        PrimeFaces.current().executeScript("afficheNotificationBar();");
     }
 
     public void afficherListPropositions() {
+        chercherProposition();
+        searchBean.setSearchResultVisible(false);
+    }
+    
+    public void chercherProposition() {
         propositions = new ArrayList<>();
+        String idTheso = filter2 == 2 ? selectedTheso.getSelectedIdTheso() : "%";
         switch (showAllPropositions) {
             case "1" :
-                propositions = propositionService.searchPropositionsNonTraitter();
+                propositions = propositionService.searchPropositionsNonTraitter(idTheso);
                 break;
             case "2" :
-                propositions = propositionService.searchOldPropositions();
+                propositions = propositionService.searchOldPropositions(idTheso);
                 break;
             default:
-                propositions = propositionService.searchAllPropositions();
+                propositions = propositionService.searchAllPropositions(idTheso);
         }
-        PrimeFaces.current().executeScript("PF('listNotification').show();");
     }
 
     public void searchNewPropositions() {
@@ -425,6 +436,14 @@ public class PropositionBean implements Serializable {
 
     public void setShowAllPropositions(String showAllPropositions) {
         this.showAllPropositions = showAllPropositions;
+    }
+
+    public int getFilter2() {
+        return filter2;
+    }
+
+    public void setFilter2(int filter2) {
+        this.filter2 = filter2;
     }
 
 }

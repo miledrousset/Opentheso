@@ -46,6 +46,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -67,6 +68,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
 
@@ -261,6 +263,23 @@ public class ConceptView implements Serializable {
             historyNotes = new ArrayList<>();
         } else 
             historyNotes.clear();        
+    }
+    
+    public String getDrapeauImg(String codePays) {
+        if (StringUtils.isEmpty(codePays)) {
+            return FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequestContextPath() + "/resources/img/nu.svg";
+        }
+        
+        return "https://countryflagsapi.com/png/" + codePays;      
+    }
+    
+    public boolean hostAvailabilityCheck() { 
+        try (Socket s = new Socket("countryflagsapi.com", 80)) {
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }
     }
     
     /**

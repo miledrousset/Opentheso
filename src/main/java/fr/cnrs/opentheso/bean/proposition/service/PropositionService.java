@@ -439,7 +439,6 @@ public class PropositionService implements Serializable {
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
         } catch (IOException ex) {
-            System.out.print("error >> " + ex.getMessage());
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
         }
     }
@@ -677,7 +676,6 @@ public class PropositionService implements Serializable {
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
         } catch (IOException ex) {
-            System.out.print("error >> " + ex.getMessage());
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification!");
         }
     }
@@ -928,7 +926,6 @@ public class PropositionService implements Serializable {
                 }
 
                 for (int i = 0; i < proposition.getSynonymsProp().size(); i++) {
-                    System.out.println(proposition.getSynonymsProp().get(i).getLexical_value() + " >> " + propositionDetailDao.getValue());
                     if (proposition.getSynonymsProp().get(i).getLexical_value().equals(propositionDetailDao.getValue())) {
                         if (PropositionActionEnum.DELETE.name().equals(propositionDetailDao.getAction())) {
                             proposition.getSynonymsProp().get(i).setToRemove(true);
@@ -1167,28 +1164,28 @@ public class PropositionService implements Serializable {
         return synonyms;
     }
 
-    public List<PropositionDao> searchAllPropositions() {
+    public List<PropositionDao> searchAllPropositions(String idTheso) {
         List<PropositionDao> propositions = new ArrayList<>();
         PropositionHelper propositionHelper = new PropositionHelper();
-        propositions.addAll(searchPropositionsNonTraitter());
+        propositions.addAll(searchPropositionsNonTraitter(idTheso));
         propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.APPROUVER.name()));
+                PropositionStatusEnum.APPROUVER.name(), idTheso));
         propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.REFUSER.name()));
+                PropositionStatusEnum.REFUSER.name(), idTheso));
         return propositions;
     }
 
-    public List<PropositionDao> searchPropositionsNonTraitter() {
+    public List<PropositionDao> searchPropositionsNonTraitter(String idTheso) {
         List<PropositionDao> propositions = new ArrayList<>();
         propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.ENVOYER.name()));
+                PropositionStatusEnum.ENVOYER.name(), idTheso));
         propositions.addAll(new PropositionHelper().getAllPropositionByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.LU.name()));
+                PropositionStatusEnum.LU.name(), idTheso));
         return propositions;
     }
 
-    public List<PropositionDao> searchOldPropositions() {
-        return new PropositionHelper().getOldPropositionByStatus(connect.getPoolConnexion());
+    public List<PropositionDao> searchOldPropositions(String idTheso) {
+        return new PropositionHelper().getOldPropositionByStatus(connect.getPoolConnexion(), idTheso);
     }
 
 }

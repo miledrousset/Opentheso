@@ -142,10 +142,10 @@ public class PreferencesHelper {
                         np.setSizeIdArkLocal(resultSet.getInt("sizeid_ark_local"));
                         
                         np.setBreadcrumb(resultSet.getBoolean("breadcrumb"));
-                        np.setSuggestion(resultSet.getBoolean("suggestion"));
+                        //np.setSuggestion(resultSet.getBoolean("suggestion"));
                         
                         
-                        np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
+                        //np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
                     }
                 }
             }

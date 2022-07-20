@@ -46,7 +46,7 @@
             <f:viewAction action="#{selectedTheso.preRenderView}"/>
         </f:metadata>
 
-        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>		
 
         <div id="wrapper" style="height: 100%">
 
@@ -55,17 +55,6 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex">
-
-                    <p:sidebar widgetVar="resultatRecherche" modal="false" position="right">
-                        <h:outputText value="#{langueBean.getMsg('rightbody.search_result')}" style="font-size: 18px" />
-                        <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml"/>
-                    </p:sidebar>
-
-                    <p:sidebar widgetVar="listNotification" modal="false" position="right">
-                        <h:outputText value="Liste des propositions" style="font-size: 18px" />
-                        <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml"/>
-                    </p:sidebar>
-
                     <ui:include src="commun/header.xhtml" />
 
                     <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative;">
@@ -79,29 +68,40 @@
                                 </div>
                             </div>
                         </p:panel>
-                        
-                        <h:panelGroup id="resultSearch" >
-                            <style>
-                                body .ui-button.ui-button-icon-only .ui-icon {
-                                    margin-top: -0.3rem;
-                                    margin-left: -0.4rem;
-                                }    
-                            </style>
-                            
+
+                        <h:panelGroup id="resultSearch" >                            
                             <div style="margin-top: -22px; right: 0;  margin-right: 50px; position: absolute; z-index: 1">
                                 <p:commandButton  icon="fa fa-magnifying-glass-arrow-right" styleClass="ui-button-primary" update="messageIndex"
-                                                 style="border-radius: 10px 10px 0 0px; margin-left: 5px; margin-right: 5px; font-size: 16px;"
-                                                 actionListener="#{searchBean.afficherResultatRecherche()}" />
+                                                  style="border-radius: 10px 10px 0 0px; margin-left: 5px; margin-right: 5px; font-size: 16px;"
+                                                  actionListener="#{searchBean.afficherResultatRecherche()}" />
                             </div>
                         </h:panelGroup>
-                        
-                        <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
-                            <ui:include src="thesaurus/main_thesaurus.xhtml" />
-                        </h:panelGroup>
 
-                        <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
-                            <ui:include src="thesaurus/details_thesaurus.xhtml" />
-                        </h:panelGroup>
+                        <div id="contenuPrincipale">
+                            <h:panelGroup id="contentConcept">
+                                <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
+                                    <ui:include src="thesaurus/main_thesaurus.xhtml" />
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
+                                    <ui:include src="thesaurus/details_thesaurus.xhtml" />
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </div>
+
+                        <div id="notification" style="top: 0; width: 0px; right: 0; position: absolute; height: 100vh;
+                             display: none; margin-top: 65px;" class="card py-3" >
+
+                            <h:panelGroup id="notificationPanel" >
+                                <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
+                                    <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
+                                </h:panelGroup>
+
+                                <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
+                                    <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </div>
                     </p:panel>
                 </h:form>
 
@@ -134,5 +134,51 @@
 
         <ui:include src="dialog/login/login.xhtml" />
         <ui:include src="dialog/login/forgetPass.xhtml" />
+
+
+
+        <script>
+        var animated = false;
+
+        function animate() {
+
+            document.getElementById("notification").style.display = "block";
+
+            $('#notification').animate({width: '0', right: '0'}, 300, 'swing');
+            $('#notification').animate({width: '20%'}, 300, 'swing');
+            $('#notification').css("left", "");
+
+            $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
+            $('#contenuPrincipale').animate({width: '80%'}, 300, 'swing');
+            $('#contenuPrincipale').css("right", "");
+
+            animated = true;
+        }
+        
+        function afficheNotificationBar() {
+            if (animated) {
+                reverseAnimate();
+            }
+            animate();
+        }
+
+        function reverseAnimate() {
+            $('#notification').animate({width: '0', right: '-40%'}, 300, 'swing');
+            $('#notification').animate({width: '0'}, 300, 'swing');
+            $('#notification').css("right", "");
+
+            $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
+
+            animated = false;
+        }
+
+        function notificationBarAction() {
+            if (!animated) {
+                animate();
+            } else {
+                reverseAnimate();
+            }
+        }
+        </script>
     </h:body>
 </html>
