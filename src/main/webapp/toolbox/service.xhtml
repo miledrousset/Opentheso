@@ -215,6 +215,30 @@
                                                 </div>
                                             </p>
                                         </p:tab>
+                                        
+                                        <!-- générer le sitemap pour le thésaurus en cours -->
+                                        <p:tab title="Générer le sitemap.xml pour le thésaurus en cours">
+                                            <p class="p-m-0">
+                                                <div class="row" style="margin-top: 10px; margin-bottom: 10px">
+                                                    <div class="col-12" >
+                                                        <h:outputText value ="Permet de générer le fichier sitemap.xml pour les robots d'indexation." />   
+                                                        <br/>
+                                                        <h:outputText value =" Le fichier aura un nom de ce type (identifiant du thésaurus (.) xml" />
+                                                        <br/>
+                                                        <h:outputText value ="exemple (th400.xml) qu'il faudrait déclarer ensuite dans robots.txt" />                    
+                                                    </div>
+                                                </div>
+                                                <p:spacer/>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p:commandButton disabled="true" 
+                                                                         value="#{langueBean.getMsg('service.generate')}" icon="pi pi-check" iconPos="right" 
+                                                                         action="#{restoreTheso.generateSitemap(selectedTheso.currentIdTheso, selectedTheso.thesoName)}"
+                                                                         update="containerIndex messageIndex"/>        
+                                                    </div>
+                                                </div>             
+                                            </p>
+                                        </p:tab>                                        
                                     </p:accordionPanel>
                                 </div>
                             </div>

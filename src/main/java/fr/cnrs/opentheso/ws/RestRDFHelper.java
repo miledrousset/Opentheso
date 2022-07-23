@@ -886,16 +886,16 @@ public class RestRDFHelper {
      * @param ds
      * @param idTheso
      * @param lang 
-     * @param group 
+     * @param groups 
      * @param value 
      * @return  
      */
     public String findDatasForWidget(HikariDataSource ds,
-            String idTheso, String lang, String group,
+            String idTheso, String lang, String[] groups,
             String value) {
 
         String datas = findDatasForWidget__(ds,
-                 value, idTheso, lang, group);
+                 value, idTheso, lang, groups);
         if(datas == null) return null;
         return datas;
     }    
@@ -912,7 +912,7 @@ public class RestRDFHelper {
     private String findDatasForWidget__(
             HikariDataSource ds,
             String value, String idTheso,
-            String lang, String group) {
+            String lang, String[] groups) {
 
         if(value == null || idTheso == null) {
             return null;
@@ -926,7 +926,7 @@ public class RestRDFHelper {
 
         
         // recherche de toutes les valeurs
-        ArrayList<String> nodeIds = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, group, idTheso);
+        ArrayList<String> nodeIds = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
         
         if(nodeIds == null || nodeIds.isEmpty())
             return null;
@@ -1369,7 +1369,7 @@ public class RestRDFHelper {
         // URI de type Ark
         if (nodeAutoCompletion1.getIdArk() != null) {
             if (!nodeAutoCompletion1.getIdArk().trim().isEmpty()) {
-                uri = nodePreference.getServeurArk() + nodeAutoCompletion1.getIdArk();
+                uri = nodePreference.getOriginalUri() + "/" + nodeAutoCompletion1.getIdArk();
                 return uri;
             }
         }

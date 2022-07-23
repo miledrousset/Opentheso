@@ -8,8 +8,10 @@ package fr.cnrs.opentheso.bdd.helper;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -52,17 +54,45 @@ public class PathHelper {
             ArrayList<Path> paths, JsonArrayBuilder jsonArrayBuilder,
             String idTheso, String idLang, String selectedIdConcept) {
         String label;
-   
+        ConceptHelper conceptHelper = new ConceptHelper();
+        GroupHelper groupHelper = new GroupHelper();
+       // ArrayList<NodeGroup> nodeGroup;
+        ArrayList<NodeUri> nodeGroup;
+         
         for (Path path1 : paths) {
             JsonArrayBuilder jsonArrayBuilderPath = Json.createArrayBuilder();            
             for (String idConcept : path1.getPath()) {
                 JsonObjectBuilder job = Json.createObjectBuilder();
 
-                label = new ConceptHelper().getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
+                label = conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
                 if(label.isEmpty())
                     label = "("+ idConcept+")";
                 job.add("id", idConcept);
+                job.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
                 job.add("label", label);
+                
+                // ajout des groups
+                // temps 2 secondes
+                nodeGroup = groupHelper.getListGroupOfConceptArk(ds, idTheso, idConcept);//ListGroupOfConcept(ds, idTheso, idConcept, idLang);
+                JsonArrayBuilder jsonArrayBuilderGroup = Json.createArrayBuilder();
+                for (NodeUri nodeUri : nodeGroup) {
+                    JsonObjectBuilder jobGroup = Json.createObjectBuilder();
+                    jobGroup.add("id", nodeUri.getIdConcept());
+                    jobGroup.add("arkId", nodeUri.getIdArk());
+                    jobGroup.add("label", groupHelper.getLexicalValueOfGroup(ds, nodeUri.getIdConcept(), idTheso, idLang));
+                    jsonArrayBuilderGroup.add(jobGroup.build());
+                }                
+                
+                
+                // temps 6 secondes
+                /*
+                nodeGroup = groupHelper.getListGroupOfConcept(ds, idTheso, idConcept, idLang);
+                for (NodeGroup nodeGroup1 : nodeGroup) {
+                    job.add("group", nodeGroup1.getConceptGroup().getIdARk());
+                    job.add("group", nodeGroup1.getLexicalValue());
+                }
+                */
+                job.add("group", jsonArrayBuilderGroup.build());
                 jsonArrayBuilderPath.add(job.build());
             }
             jsonArrayBuilder.add(jsonArrayBuilderPath.build());//.toString());

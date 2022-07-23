@@ -414,9 +414,17 @@ public class SelectedTheso implements Serializable {
         }
         if (idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (idConceptFromUri == null || idConceptFromUri.isEmpty()) {
-                // accès au même thésaurus, on l'ignore 
-                initIdsFromUri();
-                return;
+                //test si c'est une collection 
+                if (idGroupFromUri == null || idGroupFromUri.isEmpty()) {
+                    initIdsFromUri();
+                    return;
+                } else {
+                    // sélectionner le groupe ou collection
+                    treeGroups.selectThisGroup(idGroupFromUri.trim());
+                    initIdsFromUri();
+                    return;
+                }
+
             }
             if (currentLang == null) {
                 String idLang = getIdLang();
@@ -435,30 +443,32 @@ public class SelectedTheso implements Serializable {
         // gestion de l'accès par thésaurus d'un identifiant différent 
         if (!idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (isValidTheso(idThesoFromUri)) {
+                /// chargement du thésaurus
                 selectedIdTheso = idThesoFromUri;
                 startNewTheso(currentLang);
+                indexSetting.setIsSelectedTheso(true);
+                indexSetting.setIsThesoActive(true);
+                rightBodySetting.setIndex("0");  
+                
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
+                    // chargement du concept puisqu'il est renseigné
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
                     actionFromConceptToOn();
+                    
                 } else {
                     //cas d'appel pour une collection
                     if(idGroupFromUri != null && !idGroupFromUri.isEmpty()) {
-                        indexSetting.setIsSelectedTheso(true);
-                        indexSetting.setIsThesoActive(true);
-                        rightBodySetting.setIndex("1");
+                        treeGroups.selectThisGroup(idGroupFromUri.trim());
+                        rightBodySetting.setIndex("1");                        
                         initIdsFromUri();
-                        return;
-                    }
-                    indexSetting.setIsHomeSelected(true);
+                     //   return;
+                    } else 
+                        indexSetting.setIsHomeSelected(true);
                 }
             } else {
                 return;
             }
         }
-
-        indexSetting.setIsSelectedTheso(true);
-        indexSetting.setIsThesoActive(true);
-        rightBodySetting.setIndex("0");
         initIdsFromUri();
     }
 
