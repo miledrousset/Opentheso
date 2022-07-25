@@ -1786,6 +1786,7 @@ public class Rest_new {
     @Produces("application/rdf+xml;charset=UTF-8")
     public Response getBrancheOfConcepts(@Context UriInfo uri) {
         String idConcept = null;
+        String idArk = null;        
         String idTheso = null;
         String way = null;
         String format = null;
@@ -1795,6 +1796,9 @@ public class Rest_new {
                 if (e.getKey().equalsIgnoreCase("id")) {
                     idConcept = valeur;
                 }
+                if (e.getKey().equalsIgnoreCase("idark")) {
+                    idArk = valeur;
+                }                
                 if (e.getKey().equalsIgnoreCase("theso")) {
                     idTheso = valeur;
                 }
@@ -1806,8 +1810,18 @@ public class Rest_new {
                 }
             }
         }
-        if (idTheso == null || idConcept == null) {
+        if (idTheso == null || idTheso.isEmpty()) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        
+        if(idConcept == null || idConcept.isEmpty()) {
+            if(idArk == null || idArk.isEmpty()) {
+                return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            } else {
+                idConcept = getIdConceptFromArk(idArk);
+                if(idConcept == null)
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();                
+            }
         }
 
         if (format == null) {
@@ -1847,6 +1861,19 @@ public class Rest_new {
                 return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
         }
         return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+    }
+    
+    private String getIdConceptFromArk(String idArk){
+        String idConcept;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            ConceptHelper conceptHelper = new ConceptHelper();
+            idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk);
+
+        }
+        return idConcept;
     }
 
     private String getBranchOfConcepts(String idConcept,

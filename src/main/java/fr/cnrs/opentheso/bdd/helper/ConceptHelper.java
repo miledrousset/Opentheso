@@ -3980,7 +3980,10 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet de récupérer l'identifiant du Concept d'après
-     * l'idHandle
+     * l'idArk
+     * @param ds
+     * @param arkId
+     * @return 
      */
     public String getIdConceptFromArkId(HikariDataSource ds, String arkId) {
         String idConcept = null;
@@ -3989,7 +3992,7 @@ public class ConceptHelper {
                 stmt.executeQuery("select id_concept from concept where id_ark = '" + arkId + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
-                        idConcept = resultSet.getString("id_concept");
+                        idConcept = resultSet.getString("id_concept").trim();
                     }
                 }
             }
