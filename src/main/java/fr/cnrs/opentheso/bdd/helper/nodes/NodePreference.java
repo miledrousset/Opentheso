@@ -455,7 +455,4 @@ public class NodePreference {
         this.suggestion = suggestion;
     }
     
-    
-    
-    
 }

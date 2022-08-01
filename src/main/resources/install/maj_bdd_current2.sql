@@ -5,14 +5,14 @@
 -- à appliquer ce script uniquement sur la nouvelle version à partir de 20.07
 -- il faut appliquer ce script à votre BDD actuelle,
 -- il faut faire une sauvegarde avant toute opération
--- pour une nouvelle installation, il faut utiliser le script (opentheso_current.sql) en créant votre BDD avant 
+-- pour une nouvelle installation, il faut utiliser le script (opentheso_current.sql) en créant votre BDD avant
 
---  !!!!!!! Attention !!!!!!!!! 
+--  !!!!!!! Attention !!!!!!!!!
 
 -- version=20.07
 -- date : 29/07/2020
 --
--- n'oubliez pas de définir le role suivant votre installation 
+-- n'oubliez pas de définir le role suivant votre installation
 --
 
 
@@ -134,8 +134,8 @@ $$language plpgsql;
 --
 create or replace function update_table_info_constraint() returns void as $$
 begin
-    if exists (SELECT * from information_schema.table_constraints where table_name = 'info' 
-	and constraint_name ='info_pkey') then 
+    if exists (SELECT * from information_schema.table_constraints where table_name = 'info'
+	and constraint_name ='info_pkey') then
 	execute
 	'ALTER TABLE ONLY info
 	  drop CONSTRAINT info_pkey';
@@ -173,11 +173,11 @@ $$language plpgsql;
 -- Table: concept_orphan à supprimer, elle n'est plus utile
 DROP TABLE if exists public.concept_orphan;
 
--- 
+--
 DROP TABLE if exists public.thesaurus_array_concept;
 
 
--- Renommer la table concept_fusion pour gérer les concepts dépréciés 
+-- Renommer la table concept_fusion pour gérer les concepts dépréciés
 ALTER TABLE if exists concept_fusion RENAME TO concept_replacedby;
 
 
@@ -229,7 +229,7 @@ end
 $$language plpgsql;
 
 
--- Ajout d'une nouvelle langue à la liste ISO 
+-- Ajout d'une nouvelle langue à la liste ISO
 --
 create or replace function update_table_languages() returns void as $$
 begin
@@ -240,7 +240,7 @@ end
 $$language plpgsql;
 
 
--- Ajout d'une nouvelle source à la table sources d'alignements 
+-- Ajout d'une nouvelle source à la table sources d'alignements
 --
 create or replace function update_table_alignement_source() returns void as $$
 begin
@@ -255,7 +255,7 @@ begin
                 }'', ''SPARQL'', ''json'', 1, ''alignement avec le vocabulaire Wikidata SPARQL'', false, ''Wikidata_sparql'');';
     END IF;
     IF NOT EXISTS(SELECT *  FROM alignement_source where source='Wikidata_rest') THEN
-        execute 'INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id_user, description, gps, source_filter) 
+        execute 'INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id_user, description, gps, source_filter)
                 VALUES (''Wikidata_rest'',
                 ''https://www.wikidata.org/w/api.php?action=wbsearchentities&language=##lang##&search=##value##&format=json&limit=10'',
                 ''REST'', ''json'', 1, ''alignement avec le vocabulaire Wikidata REST'', false, ''Wikidata_rest'');';
@@ -269,8 +269,8 @@ $$language plpgsql;
 --
 create or replace function update_table_note_constraint() returns void as $$
 begin
-    if exists (SELECT * from information_schema.table_constraints where table_name = 'note' 
-	and constraint_name ='note_notetypecode_id_thesaurus_id_concept_lang_key') then 
+    if exists (SELECT * from information_schema.table_constraints where table_name = 'note'
+	and constraint_name ='note_notetypecode_id_thesaurus_id_concept_lang_key') then
 	execute
 	'ALTER TABLE ONLY note drop CONSTRAINT note_notetypecode_id_thesaurus_id_concept_lang_key;
          ALTER TABLE ONLY note drop CONSTRAINT note_notetypecode_id_thesaurus_id_term_lang_key;';
@@ -401,7 +401,7 @@ AS $BODY$
 $BODY$;
 
 
--- table pour typer les concepts 
+-- table pour typer les concepts
 CREATE TABLE IF NOT EXISTS concept_type
 (
     code text COLLATE pg_catalog."default" NOT NULL,

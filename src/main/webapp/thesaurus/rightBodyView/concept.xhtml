@@ -51,7 +51,7 @@
         <ui:include src="conceptDetail/conceptDetailBloc6.xhtml" />
 
         <!--  -->
-        <h:panelGroup rendered="#{roleOnTheso.nodePreference.suggestion}" >
+        <h:panelGroup  >
             <div class="col-12" style="vertical-align: central; text-align: right">
                 <p:commandButton icon="pi pi-send" process="@this" value="#{langueBean.getMsg('rightbody.suggestImprovement')}"
                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}"

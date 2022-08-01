@@ -418,7 +418,7 @@ public class PropositionService implements Serializable {
         return null;
     }
 
-    public void refuserProposition(PropositionDao propositionSelected) {
+    public void refuserProposition(PropositionDao propositionSelected, String commentaireAdmin) {
 
         new PropositionHelper().updateStatusProposition(connect.getPoolConnexion(),
                 PropositionStatusEnum.REFUSER.name(),
@@ -428,13 +428,18 @@ public class PropositionService implements Serializable {
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
+            
+            String commentaire = "";
+            if (StringUtils.isNotEmpty(commentaireAdmin)) {
+                commentaire = "<br/>L'adminisatrateur vous a laissé le message suivant : " + commentaireAdmin; 
+            }
 
             String contentFile = "<html><body>"
                     + "<img src=\"https://i.ibb.co/kKBBnJJ/mail-entete.jpg\" width=\"450\" height=\"106\"><br/><br/> Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Malheuresement, votre proposition a été refusée par un des adminisatrateur d'Opentheso.<br/>"
                     + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionSelected.getIdTheso() + "</b> "
                     + "(concept : <a href=\"" + getBundlePool().getString("mailbox.baseUrl") + propositionSelected.getIdConcept()
-                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>). <br/><br/> Cordialement,<br/>"
+                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>)."+commentaire+"<br/><br/> Cordialement,<br/>"
                     + "L'équipe Opentheso.<br/><br/> <img src=\"https://i.ibb.co/N9bKdgW/mail-signature.jpg\" width=\"480\" height=\"106\"></body></html>";
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
@@ -449,11 +454,14 @@ public class PropositionService implements Serializable {
         new PropositionHelper().supprimerProposition(connect.getPoolConnexion(), propositionSelected.getId());
     }
 
-    public void insertProposition(Proposition proposition, PropositionDao propositionSelected) throws IOException {
+    public void insertProposition(Proposition proposition, PropositionDao propositionSelected,
+            String commentaireAdmin, boolean prefTermeAccepted, boolean varianteAccepted, boolean traductionAccepted,
+            boolean noteAccepted, boolean definitionAccepted, boolean changeNoteAccepted, boolean scopeAccepted,
+            boolean editorialNotesAccepted, boolean examplesAccepted, boolean historyAccepted) throws IOException {
 
         TermHelper termHelper = new TermHelper();
 
-        if (proposition.isUpdateNomConcept()) {
+        if (prefTermeAccepted && proposition.isUpdateNomConcept()) {
             Term term = termHelper.getThisTerm(connect.getPoolConnexion(),
                     propositionSelected.getIdConcept(),
                     propositionSelected.getIdTheso(),
@@ -470,7 +478,7 @@ public class PropositionService implements Serializable {
             indexSetting.setIsSelectedTheso(true);
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getSynonymsProp())) {
+        if (varianteAccepted && CollectionUtils.isNotEmpty(proposition.getSynonymsProp())) {
             for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
                 if (synonymPropBean.isToAdd()) {
 
@@ -523,7 +531,7 @@ public class PropositionService implements Serializable {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
+        if (traductionAccepted && CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
             for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
                 if (traductionProp.isToAdd()) {
                     if (!termHelper.addTraduction(connect.getPoolConnexion(),
@@ -565,7 +573,7 @@ public class PropositionService implements Serializable {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
+        if (noteAccepted && CollectionUtils.isNotEmpty(proposition.getNotes())) {
             for (NotePropBean note : proposition.getNotes()) {
                 if (note.isToAdd()) {
                     addNewNote(note, "note", propositionSelected.getIdConcept());
@@ -577,7 +585,7 @@ public class PropositionService implements Serializable {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
+        if (changeNoteAccepted && CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
             for (NotePropBean changeNote : proposition.getChangeNotes()) {
                 if (changeNote.isToAdd()) {
                     addNewNote(changeNote, "changeNote", propositionSelected.getIdConcept());
@@ -589,7 +597,7 @@ public class PropositionService implements Serializable {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
+        if (definitionAccepted && CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
             for (NotePropBean definition : proposition.getDefinitions()) {
                 if (definition.isToAdd()) {
                     addNewNote(definition, "definition", propositionSelected.getIdConcept());
@@ -601,7 +609,7 @@ public class PropositionService implements Serializable {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getEditorialNotes())) {
+        if (editorialNotesAccepted && CollectionUtils.isNotEmpty(proposition.getEditorialNotes())) {
             for (NotePropBean editorialNote : proposition.getEditorialNotes()) {
                 if (editorialNote.isToAdd()) {
                     addNewNote(editorialNote, "editorialNote", propositionSelected.getIdConcept());
@@ -613,7 +621,7 @@ public class PropositionService implements Serializable {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getExamples())) {
+        if (examplesAccepted && CollectionUtils.isNotEmpty(proposition.getExamples())) {
             for (NotePropBean exampleNote : proposition.getExamples()) {
                 if (exampleNote.isToAdd()) {
                     addNewNote(exampleNote, "example", propositionSelected.getIdConcept());
@@ -625,7 +633,7 @@ public class PropositionService implements Serializable {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getScopeNotes())) {
+        if (scopeAccepted && CollectionUtils.isNotEmpty(proposition.getScopeNotes())) {
             for (NotePropBean scopeNote : proposition.getScopeNotes()) {
                 if (scopeNote.isToAdd()) {
                     addNewNote(scopeNote, "scopeNote", propositionSelected.getIdConcept());
@@ -637,7 +645,7 @@ public class PropositionService implements Serializable {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getHistoryNotes())) {
+        if (historyAccepted && CollectionUtils.isNotEmpty(proposition.getHistoryNotes())) {
             for (NotePropBean historyNote : proposition.getHistoryNotes()) {
                 if (historyNote.isToAdd()) {
                     addNewNote(historyNote, "historyNote", propositionSelected.getIdConcept());
@@ -665,13 +673,19 @@ public class PropositionService implements Serializable {
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
+            
+            String commentaire = "";
+            if (StringUtils.isNotEmpty(commentaireAdmin)) {
+                commentaire = "<br/>L'adminisatrateur vous a laissé le message suivant : " + commentaireAdmin; 
+            }
 
             String contentFile = "<html><body>"
                     + "<img src=\"https://i.ibb.co/kKBBnJJ/mail-entete.jpg\" width=\"450\" height=\"106\"><br/><br/> Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Votre proposition a été acceptée par un des adminisatrateur d'Opentheso !!!<br/>"
                     + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionSelected.getIdTheso() + "</b> "
                     + "(concept : <a href=\"" + "http://localhost:8080/opentheso2/?idc=" + propositionSelected.getIdConcept()
-                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>). <br/><br/> Cordialement,<br/>"
+                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>)." 
+                    + commentaire + "<br/><br/> Cordialement,<br/>"
                     + "L'équipe Opentheso.<br/><br/> <img src=\"https://i.ibb.co/N9bKdgW/mail-signature.jpg\" width=\"480\" height=\"106\"></body></html>";
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);

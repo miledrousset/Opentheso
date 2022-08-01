@@ -64,6 +64,10 @@
 
                         <p:panel rendered="#{viewEditionBean.isViewImportCsv}">
                             <ui:include src="edition/viewImportCsv.xhtml" />
+                        </p:panel>
+
+                        <p:panel rendered="#{viewEditionBean.isIsViewExportCSVStructure}">
+                            <ui:include src="edition/viewImportCsvStrecture.xhtml" />
                         </p:panel>  
 
                         <p:panel rendered="#{viewEditionBean.isViewNewTheso}">

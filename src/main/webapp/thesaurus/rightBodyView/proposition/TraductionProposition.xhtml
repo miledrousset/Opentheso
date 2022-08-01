@@ -10,13 +10,17 @@
             <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
                 <div class="row" style="margin-left: 0px;">
                     <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                        
+                        <p:selectBooleanCheckbox value="#{propositionBean.traductionAccepted}" title="Accepter cette proposition"
+                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
+                        
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
-                                      style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 7px"/>
+                                      style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 7px; margin-left: 5px"/>
                     </div>
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">  
 
-                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;  margin-left: -37px"
-                                      rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;  margin-left: -37px">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" actionListener="#{traductionBean.reset()}"
                                         action="#{traductionBean.setLangWithNoTraductionProp()}"
@@ -38,28 +42,31 @@
 
                         <h:panelGroup rendered="#{propositionBean.proposition.traductionsProp.size() != 0}"> 
                             <ui:repeat var="trad" value="#{propositionBean.proposition.traductionsProp}" varStatus="status2">
-
-                                <h:panelGroup rendered="#{!trad.toAdd and !trad.toRemove and !trad.toUpdate}">
+                                
+                                <p:spacer width="1" rendered="#{!status2.first}" />
+                                
+                                <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
+                                    <img src="#{conceptView.getDrapeauImg(trad.lang)}" width="20" height="15" 
+                                         title="#{trad.nomLang}" style="margin-right: 10px"/>
+                                </h:panelGroup>
+                                
+                                <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
                                     <p:commandLink value="[#{trad.lang.toUpperCase()}] " update="containerIndex indexTitle"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"/> 
-
-                                    <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                                   update="containerIndex indexTitle" />  
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, 
+                                                             conceptView.nodeConcept.concept.idConcept, trad.lang)}"/> 
                                 </h:panelGroup>
 
-                                <h:panelGroup rendered="#{trad.toAdd}">
-                                    <p:commandLink value="[#{trad.lang.toUpperCase()}] " style="font-size: 14px; color: green; font-weight: bold;" update="containerIndex indexTitle"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"/> 
-                                    <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
+                                <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
+                                                   rendered="#{!trad.toAdd and !trad.toRemove and !trad.toUpdate}"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                                   style="font-size: 14px; color: green;"
-                                                   update="containerIndex indexTitle"/>  
-                                </h:panelGroup>
-
+                                                   update="containerIndex indexTitle" /> 
+                                
+                                <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
+                                                   style="font-size: 14px; color: green;" rendered="#{trad.toAdd}"
+                                                   update="containerIndex indexTitle"/>
+                                
                                 <h:panelGroup rendered="#{trad.toUpdate}">
-                                    <p:commandLink value="[#{trad.lang.toUpperCase()}] " style="font-size: 14px; color: blue; font-weight: bold;" update="containerIndex indexTitle"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"/>
                                     <p:commandLink value="#{trad.lexicalValue} " title="#{propositionBean.proposition.conceptID}"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
                                                    style="font-size: 14px; color: blue;" update="containerIndex indexTitle" />
@@ -69,14 +76,10 @@
                                                    update="containerIndex indexTitle"/>
                                 </h:panelGroup> 
 
-                                <h:panelGroup rendered="#{trad.toRemove}">
-                                    <p:commandLink value="[#{trad.lang.toUpperCase()}] " style="font-size: 14px; color: red; font-weight: bold; text-decoration: line-through;" update="containerIndex indexTitle"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"/>                                   
-                                    <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
+                                <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
                                                    style="font-size: 14px; text-decoration: line-through; color: red;"
-                                                   update="containerIndex indexTitle"/>  
-                                </h:panelGroup>
+                                                   update="containerIndex indexTitle" rendered="#{trad.toRemove}" />  
 
                                 <br/>                                 
                             </ui:repeat>

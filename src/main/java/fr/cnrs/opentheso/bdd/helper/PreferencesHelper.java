@@ -133,7 +133,7 @@ public class PreferencesHelper {
                         np.setOriginalUri(resultSet.getString("original_uri"));
                         np.setOriginalUriIsArk(resultSet.getBoolean("original_uri_is_ark"));
                         np.setOriginalUriIsHandle(resultSet.getBoolean("original_uri_is_handle"));
-                        //np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
+                        np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
 
                         // Ark local
                         np.setUseArkLocal(resultSet.getBoolean("use_ark_local"));
@@ -142,10 +142,10 @@ public class PreferencesHelper {
                         np.setSizeIdArkLocal(resultSet.getInt("sizeid_ark_local"));
                         
                         np.setBreadcrumb(resultSet.getBoolean("breadcrumb"));
-                        //np.setSuggestion(resultSet.getBoolean("suggestion"));
+                        np.setSuggestion(resultSet.getBoolean("suggestion"));
                         
                         
-                        //np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
+                        np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
                     }
                 }
             }

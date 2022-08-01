@@ -133,9 +133,8 @@ public class CsvImportHelper {
     
     public void addLangsToThesaurus(HikariDataSource ds, ArrayList<String> langs, String idTheso) {
 
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         for (String idLang : langs) {
-            if (!thesaurusHelper.isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
+            if (!new ThesaurusHelper().isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
                 Thesaurus thesaurus1 = new Thesaurus();
                 thesaurus1.setId_thesaurus(idTheso);
                 thesaurus1.setContributor("");
@@ -151,7 +150,7 @@ public class CsvImportHelper {
                 thesaurus1.setSubject("");
                 thesaurus1.setTitle("theso_" + idTheso + "_" + idLang);
                 thesaurus1.setType("");
-                thesaurusHelper.addThesaurusTraduction(ds, thesaurus1);
+                new ThesaurusHelper().addThesaurusTraduction(ds, thesaurus1);
             }            
         }
     }    

@@ -46,7 +46,17 @@
             <f:viewAction action="#{selectedTheso.preRenderView}"/>
         </f:metadata>
 
-        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>		
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
+
+        <h:form>
+            <ui:repeat var="proposition" value="#{propositionBean.propositions}">
+                <p:commandLink value="#{proposition.nomConcept}" 
+                               style="font-size: 14px; font-weight: bold; color: #8f8f8f" 
+                               ajax="true" process="@form"
+                               actionListener="#{propositionBean.onSelectConcept(proposition)}"
+                               update="containerIndex:contentConcept" />
+            </ui:repeat>
+        </h:form>
 
         <div id="wrapper" style="height: 100%">
 
@@ -154,12 +164,13 @@
 
             animated = true;
         }
-        
+
         function afficheNotificationBar() {
             if (animated) {
                 reverseAnimate();
+            } else {
+                animate();
             }
-            animate();
         }
 
         function reverseAnimate() {

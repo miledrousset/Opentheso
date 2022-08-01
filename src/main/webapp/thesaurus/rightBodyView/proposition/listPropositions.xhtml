@@ -18,7 +18,7 @@
                         listener="#{propositionBean.afficherListPropositions()}" />
             </p:selectOneButton>
             
-            <p:selectOneMenu value="#{propositionBean.filter2}" rendered="#{selectedTheso.currentIdTheso != null}"
+            <p:selectOneMenu value="#{propositionBean.filter2}"  rendered="#{selectedTheso.currentIdTheso != null}"
                              style="color: #000; height: 28px;" >
                 <p:ajax event="valueChange" listener="#{propositionBean.afficherListPropositions()}"
                         update="containerIndex:notificationPanel" />
@@ -40,9 +40,7 @@
                         <div class="col-12">
                             <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />
 
-                            <img src="https://countryflagsapi.com/png/#{proposition.lang}" width="20" height="15" 
-                                 title="#{trad.nomLang}"
-                                 style="margin-right: 10px"/>
+                            <img src="#{conceptView.getDrapeauImg(proposition.lang)}" width="20" height="15" style="margin-right: 10px"/>
 
                             <p:commandLink value="#{proposition.nomConcept}" 
                                            rendered="#{proposition.isEnvoyer()}"  

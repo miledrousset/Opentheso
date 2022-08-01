@@ -206,7 +206,8 @@ public class ViewEditionBean implements Serializable {
     }
 
     public boolean isExportView() {
-        return isViewExportPDF || isViewExportCSV || isViewExportSkos || isViewImportVirtuoso || isViewExportCSVStructure;
+        return isViewExportPDF || isViewExportCSV || isViewExportSkos 
+                || isViewImportVirtuoso;
     }
 
     public boolean isIsViewExportPDF() {
@@ -303,4 +304,9 @@ public class ViewEditionBean implements Serializable {
     public void setNomGraphe(String nomGraphe) {
         this.nomGraphe = nomGraphe;
     }
+
+    public boolean getIsIsViewExportCSVStructure() {
+        return isViewExportCSVStructure;
+    }
+    
 }

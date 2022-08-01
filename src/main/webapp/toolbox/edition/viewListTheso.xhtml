@@ -25,6 +25,10 @@
                             <p:menuitem value="Format CSV" icon="fas fa-download" actionListener="#{importFileBean.init()}"
                                         action="#{viewEditionBean.setIsViewImportCsv(true)}"
                                         update="containerIndex" />
+
+                            <p:menuitem value="Format CSV Strecturé" icon="fas fa-download" actionListener="#{importFileBean.init()}"
+                                        action="#{viewEditionBean.setIsViewExportCSVStructure(true)}"
+                                        update="containerIndex" />
                         </p:menuButton>
                     </p:toolbarGroup>
 
