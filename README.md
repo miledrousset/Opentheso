@@ -52,9 +52,6 @@ To run our project in Apache Tomcat 10 server, you need to follow these steps:
 2. Launch Apache Tomcat 10
 3. Move the war in this new directory
 4. There is a thread that will retrieve the war and create a new one in 'webapps' directory suitable for version 10.
-5. 
-
-5. 
 
 Any technical question?
 
