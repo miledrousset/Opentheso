@@ -40,6 +40,22 @@ OpenTheso is used by a network of 39 research libraries (FRANTIQ. Archaeology, 3
 License
 
 OpenTheso is released under the terms of the CeCILL_C license, fully compatible with the GNU GPL.
+
+### How to run Opentheso2:
+--> Apach Tomcat < 10
+1. Launch Apache Tomcat 10
+2. Move your war in 'webapps' directory
+
+--> Apache Tomcat 10
+To run our project in Apache Tomcat 10 server, you need to follow these steps:
+1. Create a directory in the root of the server with name 'webapps-javaee'.
+2. Launch Apache Tomcat 10
+3. Move the war in this new directory
+4. There is a thread that will retrieve the war and create a new one in 'webapps' directory suitable for version 10.
+5. 
+
+5. 
+
 Any technical question?
 
 Contact Opentheso R&D director : miled.rousset[at]mom[dot]fr
