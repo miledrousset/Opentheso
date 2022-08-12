@@ -15,12 +15,12 @@
                 <f:selectItem itemLabel="Anciennes" itemValue="2"/>
                 <f:selectItem itemLabel="Toutes" itemValue="3"/>
                 <p:ajax update="containerIndex:notificationPanel" event="change" 
-                        listener="#{propositionBean.afficherListPropositions()}" />
+                        listener="#{propositionBean.chercherProposition()}" />
             </p:selectOneButton>
             
             <p:selectOneMenu value="#{propositionBean.filter2}"  rendered="#{selectedTheso.currentIdTheso != null}"
                              style="color: #000; height: 28px;" >
-                <p:ajax event="valueChange" listener="#{propositionBean.afficherListPropositions()}"
+                <p:ajax event="valueChange" listener="#{propositionBean.chercherProposition()}"
                         update="containerIndex:notificationPanel" />
                 <f:selectItem itemLabel="Tous" itemValue="1"/>
                 <f:selectItem itemLabel="Thésorus selectionné" itemValue="2"/>
@@ -47,13 +47,15 @@
                                            style="font-size: 14px; font-weight: bold; color: #8f8f8f" 
                                            ajax="true" process="@this"
                                            actionListener="#{propositionBean.onSelectConcept(proposition)}"
-                                           update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp" />
+                                           update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp
+                                                    containerIndex:notificationPanel" />
 
                             <p:commandLink value="#{proposition.nomConcept}"
                                            rendered="#{proposition.isLu() or proposition.isApprouver() or proposition.isRefuser()}"  
                                            style="font-size: 14px; color: #8f8f8f" ajax="true" process="@this"
                                            actionListener="#{propositionBean.onSelectConcept(proposition)}"
-                                           update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp" />
+                                           update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp 
+                                                    containerIndex:notificationPanel" />
                         </div>
                     </div>
                     <div class="row" style="margin-bottom: -4px">

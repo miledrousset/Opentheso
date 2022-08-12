@@ -95,6 +95,7 @@ public class PropositionBean implements Serializable {
         propositions = propositionService.searchAllPropositions(null);
         nbrNewPropositions = propositionService.searchNbrNewProposition();
         
+        afficherListPropositions();
         
         prefTermeAccepted = proposition.isUpdateNomConcept();
         checkSynonymPropositionStatus();
@@ -427,6 +428,11 @@ public class PropositionBean implements Serializable {
     public boolean showButtonDecision() {
         return propositionSelected != null && (PropositionStatusEnum.LU.name().equals(propositionSelected.getStatus())
                 || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus()));
+    }
+    
+    public boolean showButtonAction() {
+        return propositionSelected == null || PropositionStatusEnum.LU.name().equals(propositionSelected.getStatus())
+                || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus());
     }
 
     private void showMessage(FacesMessage.Severity type, String message) {

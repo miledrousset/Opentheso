@@ -231,8 +231,11 @@
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}" > 
                             <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
                                 
-                                <p:spacer width="3" rendered="#{status2.first}" />
-                                <p:spacer width="40" rendered="#{!status2.first}" />
+                                <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                    <p:spacer width="3" rendered="#{status2.first}" />
+                                    <p:spacer width="40" rendered="#{!status2.first}" />
+                                </h:panelGroup>
 
                                 <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
                                     <img src="#{conceptView.getDrapeauImg(trad.lang)}" width="20" height="15" 
