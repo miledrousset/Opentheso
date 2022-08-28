@@ -20,14 +20,7 @@
         </dependency>
 
         <!-- fin QrCode--> 
-      
-      
-      
-      
-      
-      
-      
-
+        
         <!-- ne marche pas au delà de cette version 2.25 pour java 8-->
         <!-- ne marche pas au delà de cette version 2.33 pour java 11-->        
         <dependency>
@@ -233,6 +226,20 @@
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
             <version>4.1.0</version>
+        </dependency>
+        
+         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>4.3.11.RELEASE</version>
+        </dependency>
+
+        <!-- https:// mvnrepository.com/artifact
+        /org.springframework/spring-context -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>4.3.11.RELEASE</version>
         </dependency>
 
     </dependencies>

@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.ExportHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -18,6 +19,7 @@ import fr.cnrs.opentheso.core.exports.csv.WriteCSV;
 import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
+import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 
 import java.io.*;
@@ -72,7 +74,6 @@ public class ExportFileBean implements Serializable {
 
     int posJ = 0;
     int posX = 0;
-
 
     public StreamedContent exportCandidatsEnSkos() {
         initProgressBar();
@@ -213,197 +214,66 @@ public class ExportFileBean implements Serializable {
         return concepts;
     }
 
-    public StreamedContent exportThesorus() throws SQLException {
-        /// export des concepts dépréciés 
-        if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) {
-            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
-            byte[] datas;
-            if (viewExportBean.isToogleFilterByGroup()) {
-                datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
-                        viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
-            } else {
-                datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
-                        viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null);
-            }
-            if (datas == null) {
-                return null;
-            }
+    public StreamedContent exportThesorus() throws SQLException, Exception {
+        
+        return exportNewGen();
+    }
 
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
-                return DefaultStreamedContent.builder()
-                        .contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
-                        .stream(() -> input)
-                        .build();
-            } catch (IOException ex) {
-            }
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+    public StreamedContent exportNewGen() throws Exception {
+        
+        long start = System.currentTimeMillis();
+        System.out.println(">>> DEBUT 2 : " + start);
+        
+        SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId(), "fr");
+
+        char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+
+        byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
+
+        try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+                
+                
+                System.out.println(">>> FIN 2 : " + System.currentTimeMillis());
+                System.out.println(">>> DUREE 2 : " + (System.currentTimeMillis() - start));
+                System.out.println(">>> DUREE (SEC) 2 : " + ((System.currentTimeMillis() - start) / 1000));
+                
+            return DefaultStreamedContent.builder().contentType("text/csv")
+                    .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                    .stream(() -> flux)
+                    .build();
+        } catch (Exception ex) {
             return new DefaultStreamedContent();
         }
-        ///////////////////////////////////  
-        if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
-            sizeOfTheso = 0;
-            ConceptHelper conceptHelper = new ConceptHelper();
-            List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
-                    viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
+    }
 
-            for (NodeTree topConcept : topConcepts) {
-                sizeOfTheso++;
-                topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm())
-                        ? "(" + topConcept.getIdConcept() + ")" : topConcept.getPreferredTerm());
-                topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
-            }
+    private SKOSXmlDocument getConcepts(String idTheso, String idLang) throws Exception {
 
-            String[][] tab = new String[sizeOfTheso][20];
-            posX = 0;
-            for (NodeTree topConcept : topConcepts) {
-                posJ = 0;
-                createMatrice(tab, topConcept);
-            }
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(),
+                viewExportBean.getNodeIdValueOfTheso().getId());
 
-            byte[] str = new WriteCSV().importTreeCsv(tab, ';');
-
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return DefaultStreamedContent.builder().contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
-                        .stream(() -> flux)
-                        .build();
-            } catch (Exception ex) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return new DefaultStreamedContent();
-            }
-        }
-
-        ///////////////////////////////////
-        /// export des concepts avec Id, label         
-        if ("CSV_id".equalsIgnoreCase(viewExportBean.getFormat())) {
-            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
-            byte[] datas;
-            if (viewExportBean.isToogleFilterByGroup()) {
-                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
-                        viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
-            } else {
-                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
-                        viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null);
-            }
-            if (datas == null) {
-                return null;
-            }
-
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
-                return DefaultStreamedContent.builder()
-                        .contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
-                        .stream(() -> input)
-                        .build();
-            } catch (IOException ex) {
-            }
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-            return new DefaultStreamedContent();
-        }
-        ///////////////////////////////////        
-
-        /// autres exports
-        SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                viewExportBean.getSelectedIdGroups(),
-                viewExportBean.getSelectedLanguages());
-
-        if (skosxd == null) {
+        if (nodePreference == null) {
             return null;
         }
 
-        if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(),
+                viewExportBean.getNodeIdValueOfTheso().getId(), nodePreference);
 
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
-                    viewExportBean.getSelectedLang1_PDF(),
-                    viewExportBean.getSelectedLang2_PDF(),
-                    viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return DefaultStreamedContent
-                        .builder()
-                        .contentType("application/pdf")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
-                        .stream(() -> flux)
-                        .build();
-            } catch (Exception ex) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return new DefaultStreamedContent();
-            }
-
-        } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-
-            char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
-
-            byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
-
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
-
-                str = null;
-                skosxd = null;
-                System.gc();
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return DefaultStreamedContent.builder().contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
-                        .stream(() -> flux)
-                        .build();
-            } catch (Exception ex) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return new DefaultStreamedContent();
-            }
-        } else {
-            RDFFormat format = null;
-            String extention = ".xml";
-
-            switch (viewExportBean.getSelectedExportFormat().toLowerCase()) {
-                case "rdf":
-                    format = RDFFormat.RDFXML;
-                    extention = ".rdf";
-                    break;
-                case "jsonld":
-                    format = RDFFormat.JSONLD;
-                    extention = ".json";
-                    break;
-                case "turtle":
-                    format = RDFFormat.TURTLE;
-                    extention = ".ttl";
-                    break;
-                case "json":
-                    format = RDFFormat.RDFJSON;
-                    extention = ".json";
-                    break;
-            }
-
-            try ( ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-                WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
-                Rio.write(writeRdf4j.getModel(), out, format);
-                writeRdf4j.closeCache();
-
-                skosxd.clear();
-                skosxd = null;
-                System.gc();
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
-                    out.close();
-                    return DefaultStreamedContent.builder()
-                            .contentType("application/xml")
-                            .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)
-                            .stream(() -> input)
-                            .build();
-                }
-            } catch (Exception ex) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return new DefaultStreamedContent();
-            }
+        List<SKOSResource> concepts;
+        //if (withGroup) {
+        //exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
+        //} else {
+        //Non pour csv
+        //exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
+        //}
+        concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, idLang);
+        for (SKOSResource concept : concepts) {
+            exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
         }
+
+        //exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
+        return exportRdf4jHelperNew.getSkosXmlDocument();
     }
 
     private boolean exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String nomGraphe, String url, String login, String password) {
