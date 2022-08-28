@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
-import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
 import fr.cnrs.opentheso.skosapi.SKOSDiscussion;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
@@ -16,22 +10,24 @@ import fr.cnrs.opentheso.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.skosapi.SKOSVote;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- *
- * @author miledrousset
- */
+
+
 public class ExportHelper {
 
     private final static String SEPERATEUR = "##";
+    private final static String SUB_SEPERATEUR = "@";
 
     public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso, 
             String idLang) throws Exception {
@@ -125,15 +121,16 @@ public class ExportHelper {
                         if ("CA".equalsIgnoreCase(resultSet.getString("type"))) {
                             
                             SKOSStatus skosStatus = new SKOSStatus();
-                            skosStatus.setDate(nodeStatus.getDate());
-                            skosStatus.setIdConcept(nodeStatus.getIdConcept());
-                            skosStatus.setIdStatus(nodeStatus.getIdStatus());
-                            skosStatus.setMessage(nodeStatus.getMessage());
-                            skosStatus.setIdThesaurus(nodeStatus.getIdThesaurus());
-                            skosStatus.setIdUser(nodeStatus.getIdUser());
+                            skosStatus.setDate(resultSet.getString("date_candidat"));
+                            skosStatus.setIdConcept(resultSet.getString("identifier"));
+                            skosStatus.setIdStatus(resultSet.getString("status_candidat"));
+                            skosStatus.setMessage(resultSet.getString("message_candidat"));
+                            skosStatus.setIdThesaurus(idTheso);
+                            //skosStatus.setIdUser(nodeStatus.getIdUser());
                             sKOSResource.setSkosStatus(skosStatus);
                             
                             addCandidatDiscussions(sKOSResource, resultSet.getString("messages_candidat"));
+                            
                             addCandidatVote(ds, sKOSResource, resultSet.getString("vote_candidat"), 
                                     idTheso, resultSet.getString("identifier"));
                         }
@@ -168,7 +165,7 @@ public class ExportHelper {
                 if(pathFromArray.isEmpty())
                     pathFromArray = string1;
                 else
-                    pathFromArray = pathFromArray + "##" + string1;
+                    pathFromArray = pathFromArray + SEPERATEUR + string1;
             }
             allPath.add(pathFromArray);
             pathFromArray = "";
@@ -182,7 +179,7 @@ public class ExportHelper {
             String[] tabs = textBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
-                String[] element = tab.split("@");
+                String[] element = tab.split(SUB_SEPERATEUR);
                 SKOSDiscussion skosDiscussion = new SKOSDiscussion();
                 skosDiscussion.setMsg(element[0]);
                 skosDiscussion.setIdUser(Integer.valueOf(element[1]));
@@ -197,7 +194,7 @@ public class ExportHelper {
             String[] tabs = textBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
-                String[] element = tab.split("@");
+                String[] element = tab.split(SUB_SEPERATEUR);
                 
                 SKOSVote skosVote = new SKOSVote();
                 skosVote.setIdNote(element[2]);
@@ -248,7 +245,7 @@ public class ExportHelper {
             String[] tabs = textBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
-                String[] element = tab.split("@");
+                String[] element = tab.split(SUB_SEPERATEUR);
                 sKOSResource.addRelation(element[2], element[0], getType(element[1]));
             }
         }
@@ -326,9 +323,8 @@ public class ExportHelper {
             String[] tabs = textBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
-                String label = tab.substring(0, tab.indexOf('@'));
-                String lang = tab.substring(tab.indexOf('@') + 1, tab.length());
-                sKOSResource.addDocumentation(label, lang, type);
+                String[] element = tab.split(SUB_SEPERATEUR);
+                sKOSResource.addDocumentation(element[0], element[1], type);
             }
         }
     }
@@ -339,9 +335,8 @@ public class ExportHelper {
             String[] tabs = labelBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
-                String label = tab.substring(0, tab.indexOf('@'));
-                String lang = tab.substring(tab.indexOf('@') + 1, tab.length());
-                sKOSResource.addLabel(label, lang, type);
+                String[] element = tab.split(SUB_SEPERATEUR);
+                sKOSResource.addLabel(element[0], element[1], type);
             }
         }
     }
