@@ -214,36 +214,312 @@ public class ExportFileBean implements Serializable {
         return concepts;
     }
 
-    public StreamedContent exportThesorus() throws SQLException, Exception {
+    public StreamedContent exportThesorus() throws SQLException {
         
-        return exportNewGen();
+        long start = System.currentTimeMillis();
+        System.out.println(">>> DEBUT 1 : " + start);
+        
+        /// export des concepts dépréciés
+        if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) {
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas;
+            if (viewExportBean.isToogleFilterByGroup()) {
+                datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+            } else {
+                datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), null);
+            }
+            if (datas == null) {
+                return null;
+            }
+
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();
+        }
+        ///////////////////////////////////
+        if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
+            sizeOfTheso = 0;
+            ConceptHelper conceptHelper = new ConceptHelper();
+            List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
+                    viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
+
+            for (NodeTree topConcept : topConcepts) {
+                sizeOfTheso++;
+                topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm())
+                        ? "(" + topConcept.getIdConcept() + ")" : topConcept.getPreferredTerm());
+                topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
+            }
+
+            String[][] tab = new String[sizeOfTheso][20];
+            posX = 0;
+            for (NodeTree topConcept : topConcepts) {
+                posJ = 0;
+                createMatrice(tab, topConcept);
+            }
+
+            byte[] str = new WriteCSV().importTreeCsv(tab, ';');
+
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return DefaultStreamedContent.builder().contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> flux)
+                        .build();
+            } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return new DefaultStreamedContent();
+            }
+        }
+
+        ///////////////////////////////////
+        /// export des concepts avec Id, label
+        if ("CSV_id".equalsIgnoreCase(viewExportBean.getFormat())) {
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas;
+            if (viewExportBean.isToogleFilterByGroup()) {
+                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+            } else {
+                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), null);
+            }
+            if (datas == null) {
+                return null;
+            }
+
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();
+        }
+        ///////////////////////////////////
+
+        /// autres exports
+        SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
+                viewExportBean.getSelectedIdGroups(),
+                viewExportBean.getSelectedLanguages());
+
+        if (skosxd == null) {
+            return null;
+        }
+
+        if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
+
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
+                    viewExportBean.getSelectedLang1_PDF(),
+                    viewExportBean.getSelectedLang2_PDF(),
+                    viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return DefaultStreamedContent
+                        .builder()
+                        .contentType("application/pdf")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
+                        .stream(() -> flux)
+                        .build();
+            } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return new DefaultStreamedContent();
+            }
+
+        } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
+
+            char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+
+            byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
+
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+
+                str = null;
+                skosxd = null;
+                System.gc();
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                
+                System.out.println(">>> FIN 1 : " + System.currentTimeMillis());
+                System.out.println(">>> FIN 1 : " + (System.currentTimeMillis() - start));
+                System.out.println(">>> FIN (SEC) 1 : " + ((System.currentTimeMillis() - start) / 1000));
+                
+                return DefaultStreamedContent.builder().contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> flux)
+                        .build();
+            } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return new DefaultStreamedContent();
+            }
+        } else {
+            RDFFormat format = null;
+            String extention = ".xml";
+
+            switch (viewExportBean.getSelectedExportFormat().toLowerCase()) {
+                case "rdf":
+                    format = RDFFormat.RDFXML;
+                    extention = ".rdf";
+                    break;
+                case "jsonld":
+                    format = RDFFormat.JSONLD;
+                    extention = ".json";
+                    break;
+                case "turtle":
+                    format = RDFFormat.TURTLE;
+                    extention = ".ttl";
+                    break;
+                case "json":
+                    format = RDFFormat.RDFJSON;
+                    extention = ".json";
+                    break;
+            }
+
+            try ( ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+                WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
+                Rio.write(writeRdf4j.getModel(), out, format);
+                writeRdf4j.closeCache();
+
+                skosxd.clear();
+                skosxd = null;
+                System.gc();
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
+                    out.close();
+                    return DefaultStreamedContent.builder()
+                            .contentType("application/xml")
+                            .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)
+                            .stream(() -> input)
+                            .build();
+                }
+            } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return new DefaultStreamedContent();
+            }
+        }
     }
 
     public StreamedContent exportNewGen() throws Exception {
-        
+
         long start = System.currentTimeMillis();
         System.out.println(">>> DEBUT 2 : " + start);
-        
+
         SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId(), "fr");
 
-        char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+        if (skosxd == null) {
+            return null;
+        }
 
-        byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
+        if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
-        try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
-                
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
+                    viewExportBean.getSelectedLang1_PDF(),
+                    viewExportBean.getSelectedLang2_PDF(),
+                    viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 
                 System.out.println(">>> FIN 2 : " + System.currentTimeMillis());
-                System.out.println(">>> DUREE 2 : " + (System.currentTimeMillis() - start));
-                System.out.println(">>> DUREE (SEC) 2 : " + ((System.currentTimeMillis() - start) / 1000));
+                System.out.println(">>> FIN 2 : " + (System.currentTimeMillis() - start));
+                System.out.println(">>> FIN (SEC) 2 : " + ((System.currentTimeMillis() - start) / 1000));
                 
-            return DefaultStreamedContent.builder().contentType("text/csv")
-                    .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
-                    .stream(() -> flux)
-                    .build();
-        } catch (Exception ex) {
-            return new DefaultStreamedContent();
+                return DefaultStreamedContent
+                        .builder()
+                        .contentType("application/pdf")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
+                        .stream(() -> flux)
+                        .build();
+            } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return new DefaultStreamedContent();
+            }
+
+        } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
+
+            char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+
+            byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
+
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+
+                System.out.println(">>> FIN 2 : " + System.currentTimeMillis());
+                System.out.println(">>> FIN 2 : " + (System.currentTimeMillis() - start));
+                System.out.println(">>> FIN (SEC) 2 : " + ((System.currentTimeMillis() - start) / 1000));
+
+                return DefaultStreamedContent.builder().contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> flux)
+                        .build();
+            } catch (Exception ex) {
+                return new DefaultStreamedContent();
+            }
+        } else {
+            RDFFormat format = null;
+            String extention = ".xml";
+
+            switch (viewExportBean.getSelectedExportFormat().toLowerCase()) {
+                case "rdf":
+                    format = RDFFormat.RDFXML;
+                    extention = ".rdf";
+                    break;
+                case "jsonld":
+                    format = RDFFormat.JSONLD;
+                    extention = ".json";
+                    break;
+                case "turtle":
+                    format = RDFFormat.TURTLE;
+                    extention = ".ttl";
+                    break;
+                case "json":
+                    format = RDFFormat.RDFJSON;
+                    extention = ".json";
+                    break;
+            }
+
+            try ( ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+                WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
+                Rio.write(writeRdf4j.getModel(), out, format);
+                writeRdf4j.closeCache();
+
+                skosxd.clear();
+                skosxd = null;
+                System.gc();
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
+
+                    System.out.println(">>> FIN 2 : " + System.currentTimeMillis());
+                    System.out.println(">>> FIN 2 : " + (System.currentTimeMillis() - start));
+                    System.out.println(">>> FIN (SEC) 2 : " + ((System.currentTimeMillis() - start) / 1000));
+                    
+                    return DefaultStreamedContent.builder()
+                            .contentType("application/xml")
+                            .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)
+                            .stream(() -> input)
+                            .build();
+                }
+            } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return new DefaultStreamedContent();
+            }
         }
+
     }
 
     private SKOSXmlDocument getConcepts(String idTheso, String idLang) throws Exception {

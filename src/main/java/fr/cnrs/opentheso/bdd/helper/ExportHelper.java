@@ -39,7 +39,7 @@ public class ExportHelper {
                 stmt.executeQuery("select * from get_concepts('"+idTheso+"', 'http://localhost:8080', '"+idLang+"') as x(URI text, TYPE varchar,  LOCAL_URI text, " +
                         "IDENTIFIER varchar, ARK_ID varchar, prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, " +
                         "editorialNote text, changeNote text, secopeNote text, note text, historyNote text, notation varchar, narrower text, " +
-                        "narrowerId text, broader text, broaderId text, related text, relatedId text, exactMatch text, closeMatch text, broadMatch text, " +
+                        "broader text, related text, exactMatch text, closeMatch text, broadMatch text, " +
                         "relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, membre text, " +
                         "created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, date_candidat varchar, " +
                         "message_candidat varchar, vote_candidat text, messages_candidat text);");
@@ -79,9 +79,9 @@ public class ExportHelper {
 
                         addRelations(resultSet.getString("broader"), sKOSResource, SKOSProperty.topConceptOf, idTheso);
 
-                        addReplaced(resultSet.getString("replaces_by"), sKOSResource, SKOSProperty.isReplacedBy);
+                        //addReplaced(resultSet.getString("replaces_by"), sKOSResource, SKOSProperty.isReplacedBy);
 
-                        addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
+                        //addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
                         
                         addRelationsGiven(resultSet.getString("narrower"), sKOSResource);
                         addRelationsGiven(resultSet.getString("broader"), sKOSResource);
@@ -238,8 +238,7 @@ public class ExportHelper {
 
     }
 
-    private void addRelationsGiven(String textBrut, SKOSResource sKOSResource)
-            throws SQLException, Exception {
+    private void addRelationsGiven(String textBrut, SKOSResource sKOSResource) {
 
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPERATEUR);
