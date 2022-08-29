@@ -45,7 +45,7 @@
                         <h:panelGroup rendered="#{propositionBean.proposition.traductionsProp.size() != 0}"> 
                             <ui:repeat var="trad" value="#{propositionBean.proposition.traductionsProp}" varStatus="status2">
                                 
-                                <p:spacer width="1" rendered="#{!status2.first}" />
+                                <p:spacer width="1" rendered="#{!status2.first and propositionBean.showButtonAction()}" />
                                 
                                 <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
                                     <img src="#{conceptView.getDrapeauImg(trad.lang)}" width="20" height="15" 

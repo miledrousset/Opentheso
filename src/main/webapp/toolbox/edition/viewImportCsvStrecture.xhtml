@@ -95,11 +95,11 @@
                                              style="width: 100%; background-color: #FFC107; color: black; border: none;"
                                              actionListener="#{viewEditionBean.init()}"
                                              action="#{importFileBean.init()}"
-                                             update="containerIndex" />
+                                             update="containerIndex messageIndex" />
                         </div>
                         <div class="col-6"> 
                             <p:commandButton class="btn btn-success" widgetVar="buttonImportCsv"
-                                             icon="fa fa-download" update="containerIndex"
+                                             icon="fa fa-download" update="containerIndex messageIndex"
                                              onclick="PrimeFaces.monitorDownload(start, stop);"
                                              style="width: 100%; background-color: #5CB85C; border: none;"
                                              actionListener="#{importFileBean.addCsvStrucToDB()}"

@@ -97,6 +97,16 @@ public class PropositionBean implements Serializable {
         
         afficherListPropositions();
         
+        varianteAccepted = false;
+        traductionAccepted = false;
+        noteAccepted = false;
+        definitionAccepted = false;
+        changeNoteAccepted = false;
+        scopeAccepted = false;
+        editorialNotesAccepted = false;
+        examplesAccepted = false;
+        historyAccepted = false;
+        
         prefTermeAccepted = proposition.isUpdateNomConcept();
         checkSynonymPropositionStatus();
         checkTraductionPropositionStatus();
@@ -431,8 +441,8 @@ public class PropositionBean implements Serializable {
     }
     
     public boolean showButtonAction() {
-        return propositionSelected == null || PropositionStatusEnum.LU.name().equals(propositionSelected.getStatus())
-                || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus());
+        return propositionSelected == null || (!PropositionStatusEnum.APPROUVER.name().equals(propositionSelected.getStatus())
+                && !PropositionStatusEnum.REFUSER.name().equals(propositionSelected.getStatus()));
     }
 
     private void showMessage(FacesMessage.Severity type, String message) {

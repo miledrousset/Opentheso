@@ -26,6 +26,7 @@ public class ViewEditionBean implements Serializable {
     private boolean isViewImportSkos;
     private boolean isViewImportCsv;
     private boolean isViewImportVirtuoso;
+    private boolean isViewImportCSVStructure;
     private boolean isViewExportCSVStructure;
 
     private boolean isViewNewTheso;
@@ -69,7 +70,8 @@ public class ViewEditionBean implements Serializable {
         isViewModifyTheso = false;
         isViewExportCSV = false;
         isViewImportVirtuoso = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;     
+        isViewImportCSVStructure = false;
     }
 
     public String getNewAlternateColor() {
@@ -117,7 +119,8 @@ public class ViewEditionBean implements Serializable {
         isViewModifyTheso = false;
         isViewExportCSV = false;
         isViewImportVirtuoso = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;  
+        isViewImportCSVStructure = false;
     }
 
     public boolean isIsExportStarted() {
@@ -142,7 +145,8 @@ public class ViewEditionBean implements Serializable {
         isViewExportPDF = false;
         isViewExportCSV = false;
         isViewImportVirtuoso = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;  
+        isViewImportCSVStructure = false;
     }
 
     public boolean isIsImportStarted() {
@@ -168,7 +172,8 @@ public class ViewEditionBean implements Serializable {
         isViewExportPDF = false;
         isViewExportCSV = false;
         isViewImportVirtuoso = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;  
+        isViewImportCSVStructure = false;
     }
 
     public boolean isIsViewModifyTheso() {
@@ -185,7 +190,8 @@ public class ViewEditionBean implements Serializable {
         isViewExportPDF = false;
         isViewExportCSV = false;
         isViewImportVirtuoso = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;  
+        isViewImportCSVStructure = false;
     }
 
     public boolean isIsViewImportCsv() {
@@ -202,12 +208,13 @@ public class ViewEditionBean implements Serializable {
         isViewExportPDF = false;
         isViewExportCSV = false;
         isViewImportVirtuoso = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;  
+        isViewImportCSVStructure = false;
     }
 
     public boolean isExportView() {
         return isViewExportPDF || isViewExportCSV || isViewExportSkos 
-                || isViewImportVirtuoso;
+                || isViewImportVirtuoso || isViewExportCSVStructure;
     }
 
     public boolean isIsViewExportPDF() {
@@ -224,7 +231,8 @@ public class ViewEditionBean implements Serializable {
         isViewImportCsv = false;
         isViewExportCSV = false;
         isViewImportVirtuoso = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;  
+        isViewImportCSVStructure = false;
     }
 
     public void setIsViewExportCSV(boolean isViewExportCSV) {
@@ -237,7 +245,8 @@ public class ViewEditionBean implements Serializable {
         isViewModifyTheso = false;
         isViewImportCsv = false;
         isViewImportVirtuoso = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;  
+        isViewImportCSVStructure = false;
     }
 
     public void setIsViewExportCSVStructure(boolean isViewExportCSVStructure) {
@@ -250,7 +259,8 @@ public class ViewEditionBean implements Serializable {
         isViewImportSkos = false;
         isViewModifyTheso = false;
         isViewImportCsv = false;
-        isViewImportVirtuoso = false;
+        isViewImportVirtuoso = false;  
+        isViewImportCSVStructure = false;
     }
 
     public void setIsViewExportVirtuoso(boolean isViewImportVirtuoso) {
@@ -262,8 +272,27 @@ public class ViewEditionBean implements Serializable {
         isViewImportSkos = false;
         isViewModifyTheso = false;
         isViewImportCsv = false;
-        isViewExportCSVStructure = false;
+        isViewExportCSVStructure = false;  
+        isViewImportCSVStructure = false;
     }
+
+    public boolean isIsViewImportCSVStructure() {
+        return isViewImportCSVStructure;
+    }
+
+    public void setIsViewImportCSVStructure(boolean isViewImportCSVStructure) {
+        this.isViewImportCSVStructure = isViewImportCSVStructure;
+        isViewImportCsv = false;
+        isViewNewTheso = false;
+        isViewExportSkos = false;
+        isViewListTheso = false;
+        isViewImportSkos = false;
+        isViewModifyTheso = false;
+        isViewExportPDF = false;
+        isViewExportCSV = false;
+        isViewImportVirtuoso = false;
+        isViewExportCSVStructure = false;
+    }    
 
     public boolean isIsViewExportCSV() {
         return isViewImportCsv;

@@ -9,10 +9,13 @@
                    max-height: 100vh; overflow: scroll; overflow-x: hidden;" mode="native">
 
         <h:panelGroup rendered="#{!searchBean.isSelectedItem}" style="margin-bottom: 5px">
-            <div class="row">
-                <div class="col-12" style="background-color: #ecf8f1; height: 25px">
+            <div class="row" style="background-color: #ecf8f1; height: 25px">
+                <div class="col-10">
                     <h:outputText value="#{searchBean.nodeConceptSearchs.size()}" style="color: #8C8C8C; font-style: italic; font-weight: bold;"/>
                     <h:outputText value=" #{langueBean.getMsg('search.result_found')} #{langueBean.getMsg('search.for')} '#{searchBean.searchValue}'" style="color: #8C8C8C; font-style: italic;"/>
+                </div>
+                <div class="col-2">
+                    <p:commandButton icon="fa fa-magnifying-glass-arrow-right" actionListener="#{searchBean.afficherResultatRecherche()}" />
                 </div>
             </div>
         </h:panelGroup>

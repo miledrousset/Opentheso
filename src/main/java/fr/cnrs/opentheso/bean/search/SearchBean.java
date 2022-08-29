@@ -77,6 +77,7 @@ public class SearchBean implements Serializable {
     private boolean withId;
 
     private boolean searchResultVisible;
+    private boolean searchVisibleControle;
 
     @PreDestroy
     public void destroy() {
@@ -299,6 +300,9 @@ public class SearchBean implements Serializable {
             
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
+        
+        searchVisibleControle = true;
+        PrimeFaces.current().ajax().update("containerIndex:resultSearch");
     }
     
     private String searchLangOfTheso(List<RoleOnThesoBean.ThesoModel> listTheso, String idTheso) {
@@ -386,6 +390,7 @@ public class SearchBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } else {
             PrimeFaces.current().executeScript("notificationBarAction();");
+            searchVisibleControle = false;
         }
     }
 
@@ -780,4 +785,12 @@ public class SearchBean implements Serializable {
         this.searchResultVisible = searchResultVisible;
     }
 
+    public boolean isSearchVisibleControle() {
+        return searchVisibleControle;
+    }
+
+    public void setSearchVisibleControle(boolean searchVisibleControle) {
+        this.searchVisibleControle = searchVisibleControle;
+    }
+   
 }

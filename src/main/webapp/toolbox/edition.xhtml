@@ -66,12 +66,12 @@
                             <ui:include src="edition/viewImportCsv.xhtml" />
                         </p:panel>
 
-                        <p:panel rendered="#{viewEditionBean.isIsViewExportCSVStructure}">
-                            <ui:include src="edition/viewImportCsvStrecture.xhtml" />
-                        </p:panel>  
-
                         <p:panel rendered="#{viewEditionBean.isViewNewTheso}">
                             <ui:include src="edition/viewNewTheso.xhtml" />
+                        </p:panel>  
+
+                        <p:panel rendered="#{viewEditionBean.isViewImportCSVStructure}">
+                            <ui:include src="edition/viewImportCsvStrecture.xhtml" />
                         </p:panel>  
 
                         <p:panel rendered="#{viewEditionBean.isExportView()}">

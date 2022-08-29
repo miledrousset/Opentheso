@@ -6,10 +6,10 @@
 
     <p:scrollTop />   
 
-    <p:scrollPanel style="border: none; padding-left: 10px; padding-right: 10px; padding-top: -5px;
+    <p:scrollPanel style="border: none; padding-left: 10px; padding-right: 10px; padding-top: -15px;
                    max-height: 100vh;; overflow: scroll; align-content: center; overflow-x: hidden;" mode="native">
 
-        <div style="width: 100%; text-align: center; margin-top: -15px">
+        <div style="width: 100%; text-align: center;">
             <p:selectOneButton value="#{propositionBean.showAllPropositions}" style="margin-bottom: 5px">
                 <f:selectItem itemLabel="Nouvelles" itemValue="1"  />
                 <f:selectItem itemLabel="Anciennes" itemValue="2"/>
@@ -17,7 +17,7 @@
                 <p:ajax update="containerIndex:notificationPanel" event="change" 
                         listener="#{propositionBean.chercherProposition()}" />
             </p:selectOneButton>
-            
+
             <p:selectOneMenu value="#{propositionBean.filter2}"  rendered="#{selectedTheso.currentIdTheso != null}"
                              style="color: #000; height: 28px;" >
                 <p:ajax event="valueChange" listener="#{propositionBean.chercherProposition()}"
@@ -40,7 +40,9 @@
                         <div class="col-12">
                             <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />
 
-                            <img src="#{conceptView.getDrapeauImg(proposition.lang)}" width="20" height="15" style="margin-right: 10px"/>
+                            <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
+                                <img src="#{conceptView.getDrapeauImg(proposition.lang)}" width="20" height="15" style="margin-right: 10px"/>
+                            </h:panelGroup>
 
                             <p:commandLink value="#{proposition.nomConcept}" 
                                            rendered="#{proposition.isEnvoyer()}"  
@@ -48,14 +50,14 @@
                                            ajax="true" process="@this"
                                            actionListener="#{propositionBean.onSelectConcept(proposition)}"
                                            update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp
-                                                    containerIndex:notificationPanel" />
+                                           containerIndex:notificationPanel" />
 
                             <p:commandLink value="#{proposition.nomConcept}"
                                            rendered="#{proposition.isLu() or proposition.isApprouver() or proposition.isRefuser()}"  
                                            style="font-size: 14px; color: #8f8f8f" ajax="true" process="@this"
                                            actionListener="#{propositionBean.onSelectConcept(proposition)}"
                                            update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp 
-                                                    containerIndex:notificationPanel" />
+                                           containerIndex:notificationPanel" />
                         </div>
                     </div>
                     <div class="row" style="margin-bottom: -4px">

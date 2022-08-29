@@ -69,14 +69,6 @@
                             </div>
                         </p:panel>
 
-                        <h:panelGroup id="resultSearch" >                            
-                            <div style="margin-top: -22px; right: 0;  margin-right: 50px; position: absolute; z-index: 1">
-                                <p:commandButton  icon="fa fa-magnifying-glass-arrow-right" styleClass="ui-button-primary" update="messageIndex"
-                                                  style="border-radius: 10px 10px 0 0px; margin-left: 5px; margin-right: 5px; font-size: 16px;"
-                                                  actionListener="#{searchBean.afficherResultatRecherche()}" />
-                            </div>
-                        </h:panelGroup>
-
                         <div id="contenuPrincipale">
                             <h:panelGroup id="contentConcept">
                                 <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
@@ -89,9 +81,7 @@
                             </h:panelGroup>
                         </div>
 
-                        <div id="notification" style="top: 0; width: 0px; right: 0; position: absolute; height: 100vh;
-                             display: none; margin-top: 65px;" class="card py-3" >
-
+                        <div id="notification" style="top: 0; width: 0px; right: 0; position: absolute; display: none;" class="card py-3" >
                             <h:panelGroup id="notificationPanel" >
                                 <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
                                     <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
