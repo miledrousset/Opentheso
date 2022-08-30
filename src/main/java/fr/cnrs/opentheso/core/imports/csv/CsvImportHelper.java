@@ -169,7 +169,7 @@ public class CsvImportHelper {
         Concept concept = new Concept();
         TermHelper termHelper = new TermHelper();
 
-        // On vérifie si le conceptPere est un Groupe, alors il faut ajouter un TopTerm, sinon, c'est un concept avec des reraltions
+        // On vérifie si le conceptPere est un Groupe, alors il faut ajouter un TopTerm, sinon, c'est un concept avec des relations
         if (idConceptPere == null) {
             concept.setTopConcept(true);
         } else {
@@ -195,13 +195,12 @@ public class CsvImportHelper {
                 idConcept = conceptHelper.addConcept(ds, idConceptPere, "NT", concept, term, idUser);
                 if (idConcept == null) {
                     message = message + "\n" + "erreur dans l'intégration du concept " + prefLabel.getLabel();
+                    return;
                 } else {
                     conceptObject.setIdConcept(idConcept);
                     idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idTheso);
                     conceptObject.setIdTerm(idTerm);
-                    first = false;
-                }
-                if (idConcept != null) {
+
                     // synonymes et cachés
                     addAltLabels(ds, idTheso, conceptObject);
 
@@ -216,6 +215,8 @@ public class CsvImportHelper {
 
                     // géolocalisation
                     addGeoLocalisation(ds, idTheso, conceptObject);
+                    
+                    first = false;
                 }
 
             } // ajout des traductions
@@ -230,7 +231,7 @@ public class CsvImportHelper {
                     term.setSource("");
                     term.setStatus("");
                     if (!conceptHelper.addConceptTraduction(ds, term, idUser)) {
-                        message = message + "\n" + "erreur dans l'intégration du terme " + prefLabel.getLabel();
+                        message = message + "\n" + "erreur dans l'intégration de la traduction " + prefLabel.getLabel();
                     }
                 }
             }

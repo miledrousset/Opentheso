@@ -67,7 +67,7 @@
                                                 <p:outputLabel value="Veuillez choisir l'action que vous voulez faire : " style="color: #000"/>
                                                 <p:selectOneRadio value="#{atelierThesBean.actionSelected}" unselectable="true" layout="pageDirection">
                                                     <f:selectItem itemLabel="Comparaison d'un fichier aux thésaurus" itemValue="opt1"/>
-                                                    <f:selectItem itemLabel="Correction globale" itemValue="opt2"/>
+                                                    <f:selectItem itemDisabled="true" itemLabel="Correction globale" itemValue="opt2"/>
                                                     <f:selectItem itemLabel="Fusionner deux thésaurus" itemValue="opt3"/>
                                                 </p:selectOneRadio>
                                                 <h:outputText  value="!!! Pour la fusion de deux thésaurus, les informations prises en compte sont : prefLabel, altLabel, definiton, alignement" style="color: brown" />
@@ -78,7 +78,7 @@
 
                                             <p:panel id="fussion" rendered="#{atelierThesBean.isRubriqueSelected('opt3')}" style="padding: 10px">
 
-                                                <h5 style="color: #43B572; font-weight: bold; margin-top: 10px">Importation du thésorus source</h5>
+                                                <h5 style="color: #43B572; font-weight: bold; margin-top: 10px">Importation du thésaurus source</h5>
 
                                                 <p:fileUpload listener="#{fusionService.importTheso}" update="fussion" label="parcourir" 
                                                               mode="advanced" auto="true" allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/" />
@@ -99,7 +99,7 @@
                                                 </h:panelGroup>
                                             </p:panel>
 
-                                            <p:panel style="padding: 10px">
+                                            <p:panel rendered="#{atelierThesBean.isRubriqueSelected('opt1')}" style="padding: 10px">
                                                 <h5 style="color: #43B572; font-weight: bold; margin-top: 10px">Les données de comparaison</h5>
                                                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
                                                     <p:outputLabel for="@next" value="Délimiteur Csv :" style="color: #000" />
