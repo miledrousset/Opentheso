@@ -67,6 +67,7 @@ public class PropositionBean implements Serializable {
     private PropositionDao propositionSelected;
     private List<PropositionDao> propositions;
     
+    private boolean propositionVisibleControle;
     private boolean prefTermeAccepted, varianteAccepted, traductionAccepted,
             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
             editorialNotesAccepted, examplesAccepted, historyAccepted;
@@ -178,7 +179,24 @@ public class PropositionBean implements Serializable {
     
     public void afficherPropositionsNotification() {
         afficherListPropositions();
-        PrimeFaces.current().executeScript("afficheNotificationBar();");
+        if (searchBean.isSearchVisibleControle()) {
+            PrimeFaces.current().executeScript("disparaitre();");
+            PrimeFaces.current().executeScript("afficher();");
+            searchBean.setBarVisisble(true);
+            searchBean.setSearchResultVisible(false);
+            searchBean.setSearchVisibleControle(false);
+            propositionVisibleControle = true;
+        } else {
+            if (searchBean.isBarVisisble()) {           
+                PrimeFaces.current().executeScript("disparaitre();");
+                searchBean.setBarVisisble(false);
+                propositionVisibleControle = false;
+            } else {
+                PrimeFaces.current().executeScript("afficher();");
+                searchBean.setBarVisisble(true);
+                propositionVisibleControle = true;
+            }
+        }
     }
 
     public void afficherListPropositions() {
@@ -625,6 +643,14 @@ public class PropositionBean implements Serializable {
 
     public void setHistoryAccepted(boolean historyAccepted) {
         this.historyAccepted = historyAccepted;
+    }
+
+    public boolean isPropositionVisibleControle() {
+        return propositionVisibleControle;
+    }
+
+    public void setPropositionVisibleControle(boolean propositionVisibleControle) {
+        this.propositionVisibleControle = propositionVisibleControle;
     }
     
 }

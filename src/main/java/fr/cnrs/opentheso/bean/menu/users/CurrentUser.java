@@ -93,10 +93,6 @@ public class CurrentUser implements Serializable {
         rightBodySetting.setIndex("0");
         
         initHtmlPages();
-        
-        if (redirectionEnable) {
-            menuBean.redirectToThesaurus();
-        }
     }
 
     /**
@@ -144,11 +140,16 @@ public class CurrentUser implements Serializable {
         }
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-
-        setInfos();
-        indexSetting.setIsThesoActive(true);
         
-        menuBean.redirectToThesaurus();
+        if ("index".equals(menuBean.getActivePageName())) {
+            menuBean.setNotificationPannelVisible(true);
+        }
+        
+        PrimeFaces.current().executeScript("PF('login').hiden();");
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("idLogin");
+        }
     }
 
     private void showErrorMessage(String msg) {

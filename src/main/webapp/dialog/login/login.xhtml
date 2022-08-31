@@ -75,11 +75,10 @@
                 <p:inputText placeholder="username" value="#{currentUser.username}" />
                 <p:inputText type="password" placeholder="password" value="#{currentUser.password}"/>
                 <p:commandButton title="Se connecter" class="formLogin-button"
-                                 ajax="true" process="@form" action="#{currentUser.login()}" update="messageIndex "/>
+                                 ajax="true" action="#{currentUser.login()}" 
+                                 update="messageIndex containerIndex:header menuBar"/>
                 <p class="message">
-                    <p:commandLink
-                            update="idForgetPass forgetPassForm"
-                            oncomplete="PF('forgetPass').show();"
+                    <p:commandLink update="idForgetPass forgetPassForm" oncomplete="PF('forgetPass').show();"
                             value="#{langueBean.getMsg('menu.forgotten_pass')}" />
                 </p>
             </h:form>

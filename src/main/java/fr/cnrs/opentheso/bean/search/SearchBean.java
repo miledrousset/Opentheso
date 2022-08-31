@@ -16,6 +16,7 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -58,6 +60,8 @@ public class SearchBean implements Serializable {
     private TreeGroups treeGroups;
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
+    @Inject
+    private PropositionBean propositionBean;
 
     private NodeSearchMini searchSelected;
 
@@ -78,6 +82,9 @@ public class SearchBean implements Serializable {
 
     private boolean searchResultVisible;
     private boolean searchVisibleControle;
+    private boolean barVisisble;
+    
+    private boolean isSearchInSpecificTheso;
 
     @PreDestroy
     public void destroy() {
@@ -264,7 +271,12 @@ public class SearchBean implements Serializable {
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
-
+        
+        isSearchInSpecificTheso = true;
+        if ((selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) && roleOnThesoBean.getSelectedThesoForSearch().size() > 1) {
+            isSearchInSpecificTheso = false;
+        }
+        
         // cas où la recherche est sur un thésaurus sélectionné, il faut trouver la langue sélectionnée par l'utilisateur, si all, on cherche sur tous les thésaurus 
         if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
             for (String idTheso : roleOnThesoBean.getSelectedThesoForSearch()) {
@@ -288,23 +300,32 @@ public class SearchBean implements Serializable {
                 setViewsSearch();
                 isSelectedItem = false;
             }
-            PrimeFaces.current().executeScript("afficheNotificationBar()();");
-            
+
+            searchResultVisible = true;
+            if (propositionBean.isPropositionVisibleControle()) {
+                PrimeFaces.current().executeScript("disparaitre();");
+                PrimeFaces.current().executeScript("afficher();");
+                barVisisble = true;
+                searchVisibleControle = true;
+                propositionBean.setPropositionVisibleControle(false);
+            } else {
+                if (!barVisisble) {
+                    PrimeFaces.current().executeScript("afficher();");
+                    barVisisble = true;
+                    searchVisibleControle = true;
+                }
+            }
         } else {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
 
-            searchResultVisible = true;
-            afficherResultatRecherche();
-            
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
-        
-        searchVisibleControle = true;
+
         PrimeFaces.current().ajax().update("containerIndex:resultSearch");
     }
-    
+
     private String searchLangOfTheso(List<RoleOnThesoBean.ThesoModel> listTheso, String idTheso) {
         for (RoleOnThesoBean.ThesoModel theso : listTheso) {
             if (theso.getId().equals(idTheso)) {
@@ -313,12 +334,13 @@ public class SearchBean implements Serializable {
         }
         return selectedTheso.getSelectedLang();
     }
-    
+
     /**
-     * permet de retourner le nom du thesaurus 
+     * permet de retourner le nom du thesaurus
+     *
      * @param idTheso
      * @param idLang
-     * @return 
+     * @return
      */
     public String getThesoName(String idTheso, String idLang) {
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
@@ -331,7 +353,7 @@ public class SearchBean implements Serializable {
         List<NodeConceptSearch> concepts = new ArrayList<>();
         String thesaurusLabel = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), idTheso, idLang);
         NodeConceptSearch nodeConceptSearch;
-        
+
         if (withId) {
             nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(), searchValue, idTheso);
             for (String idConcept : nodeSearchsId) {
@@ -365,32 +387,52 @@ public class SearchBean implements Serializable {
             for (NodeSearchMini nodeSearchMini1 : nodeSearchMini) {
                 concepts.add(conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
                         nodeSearchMini1.getIdConcept(), idTheso, idLang));
-            }            
-            
-        }        
-        
+            }
+
+        }
+
         if (!withId && !withNote && !exactMatch && !indexMatch) {
             ArrayList<String> nodeSearchMinis = searchHelper.searchFullTextId(
                     connect.getPoolConnexion(), searchValue, idLang, idTheso);
             for (String nodeSearchMini : nodeSearchMinis) {
                 nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
                         nodeSearchMini, idTheso, idLang);
-                if(nodeConceptSearch != null)
+                if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
+                }
                 concepts.add(nodeConceptSearch);
             }
         }
         Collections.sort(concepts);
         return concepts;
     }
-
+    
     public void afficherResultatRecherche() {
-        if(CollectionUtils.isEmpty(nodeConceptSearchs)) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut faire une recherche avant !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (propositionBean.isPropositionVisibleControle()) {
+            PrimeFaces.current().executeScript("disparaitre();");
+            PrimeFaces.current().executeScript("afficher();");
+            barVisisble = true;
+            searchResultVisible = true;
+            searchVisibleControle = true;
+            propositionBean.setPropositionVisibleControle(false);
         } else {
-            PrimeFaces.current().executeScript("notificationBarAction();");
-            searchVisibleControle = false;
+            if (barVisisble) {
+                PrimeFaces.current().executeScript("disparaitre();");
+                barVisisble = false;
+                searchVisibleControle = false;
+            } else {
+                PrimeFaces.current().executeScript("afficher();");
+                barVisisble = true;
+                searchVisibleControle = true;
+            }
+        }
+    }
+    
+    public void setBarSearchStatus() {
+        if (barVisisble) {
+            PrimeFaces.current().executeScript("afficher();");
+        } else {
+            PrimeFaces.current().executeScript("disparaitre();");
         }
     }
 
@@ -447,7 +489,7 @@ public class SearchBean implements Serializable {
             pf.ajax().update("containerIndex");
         }
     }
-    
+
     /**
      * permet de retourner la liste des concepts qui ont une poly-hiérarchie
      */
@@ -500,7 +542,7 @@ public class SearchBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");
         }
-    }    
+    }
 
     /**
      * permet de retourner la liste des concepts qui ont plusieurs Groupes
@@ -704,9 +746,14 @@ public class SearchBean implements Serializable {
         } catch (IOException ex) {
             Logger.getLogger(SearchBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        roleOnThesoBean.setSelectedThesoForSearch(roleOnThesoBean.getSelectedThesoForSearch().stream()
+                .filter(theso -> theso.contains(idTheso))
+                .collect(Collectors.toList()));
 
         conceptBean.getConcept(idTheso, idConcept, idLang);
         rightBodySetting.setIndex("0");
+        
     }
 
     public NodeSearchMini getSearchSelected() {
@@ -792,5 +839,21 @@ public class SearchBean implements Serializable {
     public void setSearchVisibleControle(boolean searchVisibleControle) {
         this.searchVisibleControle = searchVisibleControle;
     }
-   
+
+    public boolean isBarVisisble() {
+        return barVisisble;
+    }
+
+    public void setBarVisisble(boolean barVisisble) {
+        this.barVisisble = barVisisble;
+    }
+
+    public boolean isIsSearchInSpecificTheso() {
+        return isSearchInSpecificTheso;
+    }
+
+    public void setIsSearchInSpecificTheso(boolean isSearchInSpecificTheso) {
+        this.isSearchInSpecificTheso = isSearchInSpecificTheso;
+    }
+
 }

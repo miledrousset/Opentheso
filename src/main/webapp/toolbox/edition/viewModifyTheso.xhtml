@@ -29,16 +29,29 @@
                         <h:outputText value="Langue par defaut" />
                     </div>
 
-                    <div class="col-5" >  
-                        <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
-                                         panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 500px; background: none;  box-shadow: none; "
-                                         panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                           <f:selectItems value="#{editThesoBean.languagesOfTheso}" itemValue="#{lang.code}"
-                                           itemLabelEscaped="false" var="lang" 
-                                           itemLabel="&lt;img height='15' width='20' src='#{conceptView.getDrapeauImg(lang.code)}' /&gt; #{lang.value}" />  
-                            <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
-                        </p:selectOneMenu>
+                    <div class="col-5" > 
+                        <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
+                            <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
+                                             panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 500px; background: none;  box-shadow: none; "
+                                             panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                               <f:selectItems value="#{editThesoBean.languagesOfTheso}" itemValue="#{lang.code}"
+                                               itemLabelEscaped="false" var="lang" 
+                                               itemLabel="&lt;img height='15' width='20' src='#{conceptView.getDrapeauImg(lang.code)}' /&gt; #{lang.value}" />  
+                                <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
+                            <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
+                                             panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 500px; background: none;  box-shadow: none; "
+                                             panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                               <f:selectItems value="#{editThesoBean.languagesOfTheso}" itemValue="#{lang.code}"
+                                               itemLabelEscaped="false" var="lang" 
+                                               itemLabel="#{lang.value}" />  
+                                <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
                     </div>       
                 </div>
 
@@ -79,8 +92,12 @@
                             </p:column>
 
                             <p:column width="15" headerText="Langue"> 
-                                <img src="#{conceptView.getDrapeauImg(langOfTheso.code)}" width="25" height="20" 
-                                         title="#{trad.nomLang}" style="margin-right: 10px"/>
+                                <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
+                                    <img src="#{conceptView.getDrapeauImg(langOfTheso.code)}" width="25" height="20"/>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
+                                    <h:outputLabel value="[#{langOfTheso.code}]" />
+                                </h:panelGroup>
                             </p:column>
 
                             <p:column width="15" headerText="Modifier">

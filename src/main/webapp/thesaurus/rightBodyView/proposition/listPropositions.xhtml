@@ -41,7 +41,10 @@
                             <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />
 
                             <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
-                                <img src="#{conceptView.getDrapeauImg(proposition.lang)}" width="20" height="15" style="margin-right: 10px"/>
+                                <img src="#{conceptView.getDrapeauImg(proposition.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
+                                <h:outputLabel value="[#{proposition.lang}]" style="margin-right: 7px" />
                             </h:panelGroup>
 
                             <p:commandLink value="#{proposition.nomConcept}" 

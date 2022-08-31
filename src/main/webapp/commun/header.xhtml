@@ -15,8 +15,7 @@
         <!-- liste des thésaurus -->
         <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" 
                          style="color: #000; height: 28px; max-width: 400px" filter="true" filterMatchMode="contains">
-            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}"
-                    update="containerIndex" />
+            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
         </p:selectOneMenu>
@@ -143,8 +142,8 @@
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  update="logoutID"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" 
-                                 process="@this"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                                 ajax="true" update="messageIndex containerIndex:header menuBar"
                                  actionListener="#{currentUser.disconnect(true)}"/>
             </div>
         </f:facet>

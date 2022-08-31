@@ -55,7 +55,32 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex">
-                    <ui:include src="commun/header.xhtml" />
+                    
+                    <p:remoteCommand name="update_page" process="@this" actionListener="#{searchBean.setBarSearchStatus()}" />
+
+                    <h:panelGroup id="header">
+                        <ui:include src="commun/header.xhtml" />
+                    </h:panelGroup>
+
+                        <div id="notification" style="top: 50px; width: 0px; right: 0; position: absolute; display: none; z-index: 10" class="card py-3" >
+                            <h:panelGroup id="notificationPanel" >
+                                <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
+                                    <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
+                                </h:panelGroup>
+
+                                <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
+                                    <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </div>
+
+                    <h:panelGroup id="resultSearch" style="z-index: 10">
+                            <div style="margin-top: -5px; right: 0;  margin-right: 10px; position: absolute; z-index: 11">
+                                <p:commandButton  icon="fa fa-magnifying-glass-arrow-right" styleClass="ui-button-primary" 
+                                                  update="messageIndex containerIndex:notificationPanel"
+                                                  actionListener="#{searchBean.afficherResultatRecherche()}" />
+                            </div>
+                        </h:panelGroup>
 
                     <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative;">
 
@@ -77,18 +102,6 @@
 
                                 <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
                                     <ui:include src="thesaurus/details_thesaurus.xhtml" />
-                                </h:panelGroup>
-                            </h:panelGroup>
-                        </div>
-
-                        <div id="notification" style="top: 0; width: 0px; right: 0; position: absolute; display: none;" class="card py-3" >
-                            <h:panelGroup id="notificationPanel" >
-                                <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
-                                </h:panelGroup>
-
-                                <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
                                 </h:panelGroup>
                             </h:panelGroup>
                         </div>
@@ -124,52 +137,48 @@
 
         <ui:include src="dialog/login/login.xhtml" />
         <ui:include src="dialog/login/forgetPass.xhtml" />
-
-
-
+        
         <script>
-        var animated = false;
+            if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+               update_page();
+            } 
+        </script>
+        
+        <script>
+            var animated = false;
 
-        function animate() {
-
-            document.getElementById("notification").style.display = "block";
-
-            $('#notification').animate({width: '0', right: '0'}, 300, 'swing');
-            $('#notification').animate({width: '20%'}, 300, 'swing');
-            $('#notification').css("left", "");
-
-            $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
-            $('#contenuPrincipale').animate({width: '80%'}, 300, 'swing');
-            $('#contenuPrincipale').css("right", "");
-
-            animated = true;
-        }
-
-        function afficheNotificationBar() {
-            if (animated) {
-                reverseAnimate();
-            } else {
-                animate();
+            function afficheNotificationBar() {
+                if (animated) {
+                    disparaitre();
+                } else {
+                    afficher();
+                }
             }
-        }
 
-        function reverseAnimate() {
-            $('#notification').animate({width: '0', right: '-40%'}, 300, 'swing');
-            $('#notification').animate({width: '0'}, 300, 'swing');
-            $('#notification').css("right", "");
+            function afficher() {
 
-            $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
+                document.getElementById("notification").style.display = "block";
 
-            animated = false;
-        }
+                $('#notification').animate({width: '0', right: '0'}, 300, 'swing');
+                $('#notification').animate({width: '20%'}, 300, 'swing');
+                $('#notification').css("left", "");
 
-        function notificationBarAction() {
-            if (!animated) {
-                animate();
-            } else {
-                reverseAnimate();
+                $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
+                $('#contenuPrincipale').animate({width: '80%'}, 300, 'swing');
+                $('#contenuPrincipale').css("right", "");
+
+                animated = true;
             }
-        }
+
+            function disparaitre() {
+                $('#notification').animate({width: '0', right: '-40%'}, 300, 'swing');
+                $('#notification').animate({width: '0'}, 300, 'swing');
+                $('#notification').css("right", "");
+
+                $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
+
+                animated = false;
+            }
         </script>
     </h:body>
 </html>

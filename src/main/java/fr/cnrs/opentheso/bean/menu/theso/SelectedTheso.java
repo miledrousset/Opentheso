@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Arrays;
 import javax.faces.application.FacesMessage;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 
 
@@ -169,12 +170,13 @@ public class SelectedTheso implements Serializable {
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
         connect.setLocalUri(localUri);
         
-        searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
         if (isUriRequest) {
             isUriRequest = false;
-            menuBean.redirectToThesaurus();
+            if (!"index".equals(menuBean.getActivePageName())) {
+                menuBean.redirectToThesaurus();
+            }
             return;
         }
 
@@ -194,7 +196,9 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
             }
             
-            menuBean.redirectToThesaurus();
+            if (!"index".equals(menuBean.getActivePageName())) {
+                menuBean.redirectToThesaurus();
+            }
             return;
         }
 
@@ -203,7 +207,9 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
-            menuBean.redirectToThesaurus();
+            if (!"index".equals(menuBean.getActivePageName())) {
+                menuBean.redirectToThesaurus();
+            }
             return;
         }
 
@@ -221,8 +227,14 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.setSelectedThesoForSearch(Arrays.asList(selectedIdTheso));
             }
         }
-
-        menuBean.redirectToThesaurus();
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("containerIndex:contentConcept");
+            pf.ajax().update("containerIndex:thesoSelect");
+            pf.ajax().update("containerIndex:sideBarSearch");
+            pf.ajax().update("containerIndex:searchBar");
+        }
     }
     
     

@@ -336,7 +336,6 @@ public class ConceptView implements Serializable {
             }
         }
         
-        searchBean.setSearchResultVisible(true);
         countOfBranch = 0;
     }
 
