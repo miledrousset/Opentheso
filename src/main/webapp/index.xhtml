@@ -55,32 +55,35 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex">
-                    
+
                     <p:remoteCommand name="update_page" process="@this" actionListener="#{searchBean.setBarSearchStatus()}" />
 
                     <h:panelGroup id="header">
                         <ui:include src="commun/header.xhtml" />
                     </h:panelGroup>
 
-                        <div id="notification" style="top: 50px; width: 0px; right: 0; position: absolute; display: none; z-index: 10" class="card py-3" >
-                            <h:panelGroup id="notificationPanel" >
-                                <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
-                                </h:panelGroup>
-
-                                <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
-                                </h:panelGroup>
+                    <div id="notification" style="top: 50px; width: 0px; right: 0; position: absolute; display: none; z-index: 10" class="card py-3" >
+                        <h:panelGroup id="notificationPanel" >
+                            <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
+                                <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
                             </h:panelGroup>
-                        </div>
 
-                    <h:panelGroup id="resultSearch" style="z-index: 10">
-                            <div style="margin-top: -5px; right: 0;  margin-right: 10px; position: absolute; z-index: 11">
-                                <p:commandButton  icon="fa fa-magnifying-glass-arrow-right" styleClass="ui-button-primary" 
+                            <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
+                                <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </div>
+
+                    <div id="boutonNotification" style="top: 65px; right: 0; position: absolute; z-index: 10" >
+                        <h:panelGroup id="resultSearch" style="z-index: 10">
+                            <div style="margin-top: -5px; right: 0; margin-right: 5px; z-index: 11;">
+                                <p:commandButton  icon="pi pi-search" style="height: 40px; width: 40px; font-size: 4rem"
+                                                  styleClass="ui-button-raised ui-button-success"
                                                   update="messageIndex containerIndex:notificationPanel"
                                                   actionListener="#{searchBean.afficherResultatRecherche()}" />
                             </div>
                         </h:panelGroup>
+                    </div>
 
                     <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative;">
 
@@ -137,13 +140,13 @@
 
         <ui:include src="dialog/login/login.xhtml" />
         <ui:include src="dialog/login/forgetPass.xhtml" />
-        
+
         <script>
-            if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
-               update_page();
-            } 
+        if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+            update_page();
+        }
         </script>
-        
+
         <script>
             var animated = false;
 
@@ -167,6 +170,8 @@
                 $('#contenuPrincipale').animate({width: '80%'}, 300, 'swing');
                 $('#contenuPrincipale').css("right", "");
 
+                $('#boutonNotification').animate({width: '425', right: '0'}, 700, 'swing');
+                
                 animated = true;
             }
 
@@ -176,6 +181,8 @@
                 $('#notification').css("right", "");
 
                 $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
+                
+                $('#boutonNotification').animate({width: '50'}, 300, 'swing');
 
                 animated = false;
             }
