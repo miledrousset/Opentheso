@@ -199,6 +199,17 @@ public class SelectedTheso implements Serializable {
             if (!"index".equals(menuBean.getActivePageName())) {
                 menuBean.redirectToThesaurus();
             }
+        
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("containerIndex:contentConcept");
+                pf.ajax().update("containerIndex:thesoSelect");
+                pf.ajax().update("containerIndex:sideBarSearch");
+                pf.ajax().update("containerIndex:searchBar");
+                pf.ajax().update("containerIndex:header");
+                pf.ajax().update("containerIndex:notificationPanel");
+                pf.ajax().update("containerIndex:contentConcept");
+            }
             return;
         }
 
@@ -228,12 +239,21 @@ public class SelectedTheso implements Serializable {
             }
         }
         
+        if (searchBean.isBarVisisble()) {
+            searchBean.setNodeConceptSearchs(new ArrayList<>());
+            searchBean.setBarVisisble(false);
+            PrimeFaces.current().executeScript("disparaitre();");
+        }
+        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex:contentConcept");
             pf.ajax().update("containerIndex:thesoSelect");
             pf.ajax().update("containerIndex:sideBarSearch");
             pf.ajax().update("containerIndex:searchBar");
+            pf.ajax().update("containerIndex:header");
+            pf.ajax().update("containerIndex:notificationPanel");
+            pf.ajax().update("containerIndex:contentConcept");
         }
     }
     

@@ -143,8 +143,7 @@
                                  update="logoutID"/>
 
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
-                                 ajax="true" update="messageIndex containerIndex:header menuBar"
-                                 actionListener="#{currentUser.disconnect(true)}"/>
+                                 ajax="true" actionListener="#{currentUser.disconnect(true)}"/>
             </div>
         </f:facet>
     </p:dialog>

@@ -143,20 +143,26 @@
             </div>
             <div class="row">
                 <div class="col-3">
-                    <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" styleClass="ui-button-secondary" style="margin-right: 10px" 
-                                     ajax="true" process="@this" update="containerIndex messageIndex" 
-                                     actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}" />
+                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" rendered="#{propositionBean.showButtonDecision()}"
+                                     actionListener="#{propositionBean.annuler()}" update="containerIndex" 
+                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
+                                     icon="pi pi-chevron-left" />
                 </div>
                 <div class="col-9" style="text-align: right;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" rendered="#{propositionBean.showButtonDecision()}"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}"
+                                     update="containerIndex messageIndex" style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
+                                     icon="fa fa-regular fa-trash" />
+                    
                     <p:commandButton value="#{langueBean.getMsg('proposition.refuser')}" rendered="#{propositionBean.showButtonDecision()}"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('refuserProposition')}"
                                      update="containerIndex messageIndex" style="margin-right: 10px; background-color: red"
-                                     styleClass="p-mr-2" icon="pi pi-check" />
+                                     styleClass="p-mr-2" icon="pi pi-times-circle" />
 
                     <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="containerIndex messageIndex"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('approuverProposition')}"
                                      style="background-color: #43B572; border-color: #43B572;"
-                                     styleClass="p-mr-2" icon="pi pi-check" rendered="#{propositionBean.showButtonDecision()}" />
+                                     styleClass="p-mr-2" icon="pi pi-check-circle" rendered="#{propositionBean.showButtonDecision()}" />
                 </div>
             </div>
         </h:panelGroup>

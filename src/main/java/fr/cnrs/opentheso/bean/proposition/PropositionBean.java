@@ -177,6 +177,10 @@ public class PropositionBean implements Serializable {
         }
     }
     
+    public void annuler() {
+        rightBodySetting.setIndex("0");
+    }
+    
     public void afficherPropositionsNotification() {
         afficherListPropositions();
         if (searchBean.isSearchVisibleControle()) {

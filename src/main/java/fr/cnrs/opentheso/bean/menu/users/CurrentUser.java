@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
@@ -35,36 +36,46 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CurrentUser implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private ViewEditorHomeBean viewEditorHomeBean;
-    @Inject private IndexSetting indexSetting;
-    @Inject private MenuBean menuBean;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private PropositionBean propositionBean;
+    @Inject
+    private Connect connect;
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+    @Inject
+    private ViewEditorHomeBean viewEditorHomeBean;
+    @Inject
+    private IndexSetting indexSetting;
+    @Inject
+    private MenuBean menuBean;
+    @Inject
+    private RightBodySetting rightBodySetting;
+    @Inject
+    private PropositionBean propositionBean;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private NodeUser nodeUser;
     private String username;
     private String password;
     private boolean ldapEnable = false;
-    
+
     private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         /// c'est le premier composant qui se détruit
         clear();
-    }  
-    public void clear(){
-        if(allAuthorizedProjectAsAdmin!= null){
+    }
+
+    public void clear() {
+        if (allAuthorizedProjectAsAdmin != null) {
             allAuthorizedProjectAsAdmin.clear();
             allAuthorizedProjectAsAdmin = null;
         }
         nodeUser = null;
         username = null;
         password = null;
-    }    
-    
+    }
+
     public void setUsername(String name) {
         this.username = name;
     }
@@ -82,19 +93,29 @@ public class CurrentUser implements Serializable {
     }
 
     public void disconnect(boolean redirectionEnable) throws IOException {
-        
+
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-        
+
         nodeUser = null;
         roleOnThesoBean.showListTheso();
-        
+
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
         indexSetting.setIsThesoActive(true);
         rightBodySetting.setIndex("0");
-        
+
         initHtmlPages();
+        
+        //selectedTheso.get
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("containerIndex:contentConcept");
+            pf.ajax().update("containerIndex:header");
+            pf.ajax().update("menuBar");
+            pf.ajax().update("messageIndex");
+        }
     }
 
     /**
@@ -106,12 +127,13 @@ public class CurrentUser implements Serializable {
      * le login normal (usuaire, pass), une 2 si on fait le login avec le
      * motpasstemp (et nous sommes dirigées a la page web de changer le
      * motpasstemp) #MR
+     *
      * @throws java.io.IOException
      */
     public void login() throws Exception {
-        
+
         UserHelper userHelper = new UserHelper();
-        
+
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             showErrorMessage("champ vide non autorisé");
             return;
@@ -142,13 +164,15 @@ public class CurrentUser implements Serializable {
         }
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-        
+
         if ("index".equals(menuBean.getActivePageName())) {
             menuBean.setNotificationPannelVisible(true);
         }
         
+        setInfos();
+
         propositionBean.searchNewPropositions();
-        
+
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -162,8 +186,8 @@ public class CurrentUser implements Serializable {
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", msg);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
     }
-    
-    private void initHtmlPages(){
+
+    private void initHtmlPages() {
         viewEditorHomeBean.reset();
     }
 
@@ -178,10 +202,10 @@ public class CurrentUser implements Serializable {
         }
         roleOnThesoBean.showListTheso();
         initAllAuthorizedProjectAsAdmin();
-        
+
         /// Permet de vérifier après une connexion, si le thésaurus actuel est dans la liste des thésaurus authorisés pour modification
         // sinon, on nettoie l'interface et le thésaurus. 
-        roleOnThesoBean.redirectAndCleanTheso();      
+        roleOnThesoBean.redirectAndCleanTheso();
     }
 
     /**
@@ -195,29 +219,32 @@ public class CurrentUser implements Serializable {
             nodeUser = new UserHelper().getUser(connect.getPoolConnexion(), nodeUser.getIdUser());
         }
     }
-    
+
     public String formatUserName(String userName) {
         if (StringUtils.isEmpty(userName)) {
             return "";
         }
-        return StringUtils.upperCase(userName.charAt(0)+"") + userName.substring(1, userName.length());
+        return StringUtils.upperCase(userName.charAt(0) + "") + userName.substring(1, userName.length());
     }
 
     /**
-     * permet de savoir si l'utilisateur est admin au moins sur un projet
-     * pour contôler la partie import et export
-     * @return 
+     * permet de savoir si l'utilisateur est admin au moins sur un projet pour
+     * contôler la partie import et export
+     *
+     * @return
      */
-    private void initAllAuthorizedProjectAsAdmin(){
+    private void initAllAuthorizedProjectAsAdmin() {
         UserHelper userHelper = new UserHelper();
         ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdminTemp = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
-        if(allAuthorizedProjectAsAdmin == null)
+        if (allAuthorizedProjectAsAdmin == null) {
             allAuthorizedProjectAsAdmin = new ArrayList<>();
-        else
+        } else {
             allAuthorizedProjectAsAdmin.clear();
+        }
         for (NodeUserRoleGroup nodeUserRoleGroup : allAuthorizedProjectAsAdminTemp) {
-            if(nodeUserRoleGroup.isIsAdmin())
+            if (nodeUserRoleGroup.isIsAdmin()) {
                 allAuthorizedProjectAsAdmin.add(nodeUserRoleGroup);
+            }
         }
     }
 
@@ -247,6 +274,7 @@ public class CurrentUser implements Serializable {
     public void setAllAuthorizedProjectAsAdmin(ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin) {
         this.allAuthorizedProjectAsAdmin = allAuthorizedProjectAsAdmin;
     }
+
     public boolean isLdapEnable() {
         return ldapEnable;
     }
