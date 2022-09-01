@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class CurrentUser implements Serializable {
     @Inject private IndexSetting indexSetting;
     @Inject private MenuBean menuBean;
     @Inject private RightBodySetting rightBodySetting;
+    @Inject private PropositionBean propositionBean;
 
     private NodeUser nodeUser;
     private String username;
@@ -145,10 +147,13 @@ public class CurrentUser implements Serializable {
             menuBean.setNotificationPannelVisible(true);
         }
         
+        propositionBean.searchNewPropositions();
+        
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("idLogin");
+            pf.ajax().update("containerIndex:header");
         }
     }
 

@@ -34,6 +34,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.lucene.util.CollectionUtil;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -421,9 +422,16 @@ public class SearchBean implements Serializable {
                 barVisisble = false;
                 searchVisibleControle = false;
             } else {
-                PrimeFaces.current().executeScript("afficher();");
-                barVisisble = true;
-                searchVisibleControle = true;
+                if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut lancer une recherche !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    PrimeFaces.current().ajax().update("messageIndex");
+                } else {
+                    searchResultVisible = true;
+                    PrimeFaces.current().executeScript("afficher();");
+                    barVisisble = true;
+                    searchVisibleControle = true;
+                }
             }
         }
     }
