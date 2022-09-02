@@ -747,6 +747,7 @@ public class ImportFileBean implements Serializable {
      * insérer un thésaurus dans la BDD (CSV)
      *
      * @param idTheso
+     * @param idUser1
      */
     public void mergeCsvThesoToBDD(String idTheso, int idUser1) {
 
