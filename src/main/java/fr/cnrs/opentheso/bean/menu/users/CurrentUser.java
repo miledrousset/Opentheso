@@ -8,10 +8,10 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
+import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class CurrentUser implements Serializable {
     @Inject
     private PropositionBean propositionBean;
     @Inject
-    private SelectedTheso selectedTheso;
+    private SearchBean searchBean;
 
     private NodeUser nodeUser;
     private String username;
@@ -107,6 +107,13 @@ public class CurrentUser implements Serializable {
 
         initHtmlPages();
         
+        if (propositionBean.isPropositionVisibleControle()) {
+            PrimeFaces.current().executeScript("disparaitre();");
+            propositionBean.setPropositionVisibleControle(false);
+            searchBean.setBarVisisble(false);
+            searchBean.setSearchResultVisible(false);
+            searchBean.setSearchVisibleControle(false);
+        }
         //selectedTheso.get
 
         PrimeFaces pf = PrimeFaces.current();
