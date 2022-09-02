@@ -679,4 +679,126 @@ public class CsvImportHelper {
         }
         return true;
     }
+    
+    
+    
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// Fusion de concepts ///////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////    
+    
+    public boolean updateConcept(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+
+        conceptObject.setIdTerm(conceptObject.getIdConcept());
+        
+        if (!updatePrefLabel(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }
+        // synonymes et cachés
+        if (!updateAltLabel(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }
+/*        // notes
+        if (!addNotes(ds, idTheso, conceptObject)) {
+            return false;
+        }
+        // relations
+        if (!addRelations(ds, idTheso, conceptObject)) {
+            return false;
+        }
+        // alignements
+        if (!addAlignments(ds, idTheso, conceptObject)) {
+            return false;
+        }
+        // géolocalisation
+        if (!addGeoLocalisation(ds, idTheso, conceptObject)) {
+            return false;
+        }
+        // Membres ou appartenance aux groupes
+        if (!addMembers(ds, idTheso, conceptObject)) {
+            return false;
+        }
+*/
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(ds, idTheso, conceptObject.getIdConcept(), idUser1);  
+        return true;
+    }    
+    
+    
+    private boolean updatePrefLabel(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+        if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
+            message = message + "\n" + "concept sans identifiant : " + conceptObject.getPrefLabels().toString();
+            return false;
+        }
+        TermHelper termHelper = new TermHelper();
+        String idTerm = termHelper.getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso);
+        if(idTerm == null || idTerm.isEmpty()) return false;
+        String oldLabel;
+        
+        for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
+            // on supprime les preflabels dans cette langue
+            oldLabel = termHelper.getLexicalValue(ds, idTerm, idTheso, prefLabel.getLang());
+            if(!oldLabel.isEmpty()) {
+                if(!termHelper.deleteTraductionOfTerm(ds, idTerm, oldLabel, prefLabel.getLang(), idTheso, idUser1)) 
+                    return false;
+            }
+            // on ajoute les nouveaux prefLabels dans cette langue
+            if(!prefLabel.getLabel().isEmpty()) {
+                if(!termHelper.addTraduction(ds, prefLabel.getLabel(), idTerm, prefLabel.getLang(), "import", "", idTheso, idUser1))
+                    return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean updateAltLabel(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+        if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
+            message = message + "\n" + "concept sans identifiant : " + conceptObject.getPrefLabels().toString();
+            return false;
+        }
+        TermHelper termHelper = new TermHelper();
+        String idTerm = termHelper.getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso);
+        if(idTerm == null || idTerm.isEmpty()) return false;
+        ArrayList<String> oldLabels;
+        
+        // suppression des altLabel par langue
+        ArrayList<String> langs = getLlangs(conceptObject.getAltLabels()); 
+        for (String lang : langs) {
+            oldLabels = termHelper.getLexicalValueOfAltLabel(ds, idTerm, idTheso, lang);
+            for (String oldLabel : oldLabels) {
+                if(!termHelper.deleteNonPreferedTerm(ds, idTerm, lang, oldLabel, idTheso, "", idUser1))
+                    return false;
+            }
+        }
+        
+        for (CsvReadHelper.Label altLabel : conceptObject.getAltLabels()) {
+            // on ajoute les nouveaux prefLabels dans cette langue
+            if(!altLabel.getLabel().isEmpty()){
+                if(!termHelper.addNonPreferredTerm(ds, idTerm, altLabel.getLabel(), altLabel.getLang(), idTheso, "import", "", false, idUser))
+                    return false;
+            }
+        }
+        return true;
+    }
+    
+    private ArrayList<String> getLlangs(ArrayList<CsvReadHelper.Label> altLabels) {
+        ArrayList<String> langs = new ArrayList<>();
+        for (CsvReadHelper.Label altLabel : altLabels) {
+            if (!langs.contains(altLabel.getLang())) {
+                langs.add(altLabel.getLang());
+            }            
+        }
+        return langs;
+    }
+    
+    
+    
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// Fin Fusion de concepts ///////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////     
+    
+    
 }

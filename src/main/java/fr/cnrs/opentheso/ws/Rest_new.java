@@ -1507,7 +1507,7 @@ public class Rest_new {
         String idTheso = null;
         String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
         String [] arkGroups = null; // group peut être de la forme suivante pour multiGroup (psrbfdfdjsfh,fdsfdsfsf,kdhfjsdfhjhf)        
-//        String format = null;
+        String format = null; // format = full (on renvoie les altLabel en plus)
 //        String filter = null;
 
         String datas;
@@ -1529,6 +1529,9 @@ public class Rest_new {
                 if (e.getKey().equalsIgnoreCase("arkgroup")) {
                     arkGroups = valeur.split(",");
                 }
+                if (e.getKey().equalsIgnoreCase("format")) {
+                    format = valeur;
+                }                
             }
         }
 
@@ -1542,7 +1545,7 @@ public class Rest_new {
             groups = getIdGroupFromArk(arkGroups);
         }
         
-        datas = getDatasForWidget(idTheso, idLang, groups, value);
+        datas = getDatasForWidget(idTheso, idLang, groups, value, format);
         if (datas == null) {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
@@ -1741,7 +1744,8 @@ public class Rest_new {
     }
     
     private String getDatasForWidget(String idTheso,
-                                     String idLang, String[] groups, String value) {
+                                     String idLang, String[] groups, String value,
+                                     String format) {
         String datas;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
@@ -1749,7 +1753,7 @@ public class Rest_new {
             }
             RestRDFHelper restRDFHelper = new RestRDFHelper();
             datas = restRDFHelper.findDatasForWidget(ds,
-                    idTheso, idLang, groups, value);
+                    idTheso, idLang, groups, value, format);
             ds.close();
         }
         if (datas == null) {

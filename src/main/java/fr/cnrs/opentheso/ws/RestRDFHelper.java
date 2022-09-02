@@ -888,14 +888,15 @@ public class RestRDFHelper {
      * @param lang 
      * @param groups 
      * @param value 
+     * @param format 
      * @return  
      */
     public String findDatasForWidget(HikariDataSource ds,
             String idTheso, String lang, String[] groups,
-            String value) {
+            String value, String format) {
 
         String datas = findDatasForWidget__(ds,
-                 value, idTheso, lang, groups);
+                 value, idTheso, lang, groups, format);
         if(datas == null) return null;
         return datas;
     }    
@@ -912,7 +913,7 @@ public class RestRDFHelper {
     private String findDatasForWidget__(
             HikariDataSource ds,
             String value, String idTheso,
-            String lang, String[] groups) {
+            String lang, String[] groups, String format) {
 
         if(value == null || idTheso == null) {
             return null;
@@ -943,7 +944,7 @@ public class RestRDFHelper {
                 pathHelper.getPathWithLabelAsJson(ds, 
                         paths, 
                         jsonArrayBuilder,
-                        idTheso, lang, idConcept);
+                        idTheso, lang, idConcept, format);
             }
         }
     //    datasJson = jsonArrayBuilder.build().toString();

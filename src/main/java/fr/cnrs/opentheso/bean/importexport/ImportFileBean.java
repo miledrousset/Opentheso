@@ -550,8 +550,8 @@ public class ImportFileBean implements Serializable {
                 }
                 //deuxième lecture pour les données
                 try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
-
-                    if (!csvReadHelper.readFile(reader2)) {
+                    // false to not read empty data
+                    if (!csvReadHelper.readFile(reader2, false)) {
                         error.append(csvReadHelper.getMessage());
                     }
 
@@ -587,6 +587,55 @@ public class ImportFileBean implements Serializable {
         }
     }
 
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
+    public void loadFileCsvForMerge(FileUploadEvent event) {
+        initError();
+        
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            // première lecrture pour charger les langues
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+
+                if (!csvReadHelper.setLangs(reader1)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+                //deuxième lecture pour les données
+                try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
+                    /// option true to read empty data
+                    if (!csvReadHelper.readFile(reader2, true)) {
+                        error.append(csvReadHelper.getMessage());
+                    }
+
+                    warning = csvReadHelper.getMessage();
+                    conceptObjects = csvReadHelper.getConceptObjects();
+                    if (conceptObjects != null) {
+                        langs = csvReadHelper.getLangs();
+                        total = conceptObjects.size();
+                        uri = "";//csvReadHelper.getUri();
+                        loadDone = true;
+                        BDDinsertEnable = true;
+                        info = "File correctly loaded";
+                    }
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");            
+        }
+    }    
+    
     /**
      * insérer un thésaurus dans la BDD (CSV)
      *
@@ -694,6 +743,70 @@ public class ImportFileBean implements Serializable {
         onComplete();
     }
 
+    /**
+     * insérer un thésaurus dans la BDD (CSV)
+     *
+     * @param idTheso
+     */
+    public void mergeCsvThesoToBDD(String idTheso, int idUser1) {
+
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+
+        if (conceptObjects == null || conceptObjects.isEmpty()) {
+            return;
+        }
+
+        if (importInProgress) {
+            return;
+        }
+
+        initError();
+
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+
+        // mise à jouor des concepts
+        try {
+            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                if(csvImportHelper.updateConcept(connect.getPoolConnexion(), idTheso, conceptObject, idUser1)) {
+                    total++;
+                }
+            }
+
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            //total = 0;
+            info = info + "\n" + "total = " + total + "\n" + csvImportHelper.getMessage();
+            roleOnThesoBean.showListTheso();
+            viewEditionBean.init();
+
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("toolBoxForm");
+                pf.ajax().update("toolBoxForm:listThesoForm");
+            }
+
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+
+        conceptObjects = null;
+        csvImportHelper = null;
+        System.gc();
+        System.gc();
+
+        onComplete();
+    }    
+    
+    
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////// Fonctions pour importer des données en CSV //////////////////
 ///////////////// L'ajout des données se fait en fusion  //////////////////////

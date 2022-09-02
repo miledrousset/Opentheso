@@ -6,12 +6,9 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -52,12 +49,14 @@ public class PathHelper {
     
     public void getPathWithLabelAsJson(HikariDataSource ds,
             ArrayList<Path> paths, JsonArrayBuilder jsonArrayBuilder,
-            String idTheso, String idLang, String selectedIdConcept) {
+            String idTheso, String idLang, String selectedIdConcept, String format) {
         String label;
         ConceptHelper conceptHelper = new ConceptHelper();
         GroupHelper groupHelper = new GroupHelper();
+        TermHelper termHelper = new TermHelper();
        // ArrayList<NodeGroup> nodeGroup;
         ArrayList<NodeUri> nodeGroup;
+        int i = 0;
          
         for (Path path1 : paths) {
             JsonArrayBuilder jsonArrayBuilderPath = Json.createArrayBuilder();            
@@ -70,6 +69,19 @@ public class PathHelper {
                 job.add("id", idConcept);
                 job.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
                 job.add("label", label);
+                
+                // synonymes
+                if(format != null && format.equalsIgnoreCase("full")) {
+                    if(i++ == path1.getPath().size() - 1){
+                        ArrayList<String> altLabels = termHelper.getNonPreferredTermsLabel(ds, idConcept, idTheso, idLang);
+                        JsonArrayBuilder jsonArrayBuilderAltLabels = Json.createArrayBuilder();
+                        for (String altLabel : altLabels) {
+                            jsonArrayBuilderAltLabels.add(altLabel);
+                        }
+                        if(jsonArrayBuilderAltLabels != null && !altLabels.isEmpty())
+                            job.add("altLabel", jsonArrayBuilderAltLabels.build());  
+                    }
+                }
                 
                 // ajout des groups
                 // temps 2 secondes
@@ -96,6 +108,7 @@ public class PathHelper {
                 jsonArrayBuilderPath.add(job.build());
             }
             jsonArrayBuilder.add(jsonArrayBuilderPath.build());//.toString());
+            i = 0;
         }
     }      
     

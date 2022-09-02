@@ -428,7 +428,7 @@ public class CsvReadHelper {
      * @param in
      * @return
      */
-    public boolean readFile(Reader in) {
+    public boolean readFile(Reader in, boolean readEmptyData) {
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
@@ -469,7 +469,7 @@ public class CsvReadHelper {
                 conceptObject = getArkId(conceptObject, record);
 
                 // on récupère les labels
-                conceptObject = getLabels(conceptObject, record);
+                conceptObject = getLabels(conceptObject, record, readEmptyData);
 
                 // on récupère les notes
                 conceptObject = getNotes(conceptObject, record);
@@ -559,7 +559,7 @@ public class CsvReadHelper {
                 conceptObject = getArkId(conceptObject, record);
 
                 // on récupère les labels
-                conceptObject = getLabels(conceptObject, record);
+                conceptObject = getLabels(conceptObject, record, false);
 
                 // on récupère les notes
                 conceptObject = getNotes(conceptObject, record);
@@ -960,7 +960,7 @@ public class CsvReadHelper {
      * @param record
      * @return
      */
-    private ConceptObject getLabels(ConceptObject conceptObject, CSVRecord record) {
+    private ConceptObject getLabels(ConceptObject conceptObject, CSVRecord record, boolean readEmptyData) {
         String value;
         Label label;
         String values[];
@@ -969,11 +969,18 @@ public class CsvReadHelper {
             // prefLabel
             try {
                 value = record.get("skos:prefLabel@" + idLang.trim());
-                if (!value.isEmpty()) {
+                if(readEmptyData) {
                     label = new Label();
                     label.setLabel(value);
                     label.setLang(idLang);
-                    conceptObject.prefLabels.add(label);
+                    conceptObject.prefLabels.add(label);                    
+                } else {
+                    if (!value.isEmpty()) {
+                        label = new Label();
+                        label.setLabel(value);
+                        label.setLang(idLang);
+                        conceptObject.prefLabels.add(label);
+                    }
                 }
             } catch (Exception e) {
                 //System.err.println("");
@@ -984,11 +991,18 @@ public class CsvReadHelper {
                 value = record.get("skos:altLabel@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if (!value.isEmpty()) {
+                    if(readEmptyData) {
                         label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
-                        conceptObject.altLabels.add(label);
+                        conceptObject.altLabels.add(label);                        
+                    } else {
+                        if (!value.isEmpty()) {
+                            label = new Label();
+                            label.setLabel(value1);
+                            label.setLang(idLang);
+                            conceptObject.altLabels.add(label);
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -1000,17 +1014,23 @@ public class CsvReadHelper {
                 value = record.get("skos:hiddenLabel@" + idLang.trim());
                 values = value.split("##");
                 for (String value1 : values) {
-                    if (!value.isEmpty()) {
+                    if(readEmptyData) {
                         label = new Label();
                         label.setLabel(value1);
                         label.setLang(idLang);
-                        conceptObject.hiddenLabels.add(label);
+                        conceptObject.hiddenLabels.add(label);                        
+                    } else {
+                        if (!value.isEmpty()) {
+                            label = new Label();
+                            label.setLabel(value1);
+                            label.setLang(idLang);
+                            conceptObject.hiddenLabels.add(label);
+                        }
                     }
                 }
             } catch (Exception e) {
             }
         }
-
         return conceptObject;
     }
 

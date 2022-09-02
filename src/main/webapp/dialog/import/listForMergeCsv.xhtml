@@ -9,47 +9,41 @@
 
         <h:form id="listForMergeCsvForm">              
 
-            <p:scrollPanel mode="native" >
-                <p:panelGrid style="font-size: 12px;">
-                    <f:facet name="header">
-                        <p:row style="font-size: 12px;">
-                            <p:column colspan="1">localId</p:column>
-                            <p:column colspan="1">skos:notation</p:column>
-                        </p:row>
-                    </f:facet>
-                    <p:row style="font-size: 12px;">
-                        <p:column colspan="1">26678/crtcg26jeN4R9</p:column>
-                        <p:column colspan="1">CBL1</p:column>                        
-                    </p:row>
-                </p:panelGrid>    
-                <p:spacer/>
-            </p:scrollPanel>  
-            
-            <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px;">
+            <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px; overflow-y: auto; max-height: 300px;">
                 Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
                 Si l'identifiant n'existe pas dans le thésaurus, la ligne sera rejetée.<br/>
                 Chaque concept trouvé par identifiant, il sera mise à jour avec les nouvelles valeurs du tableau.<br/>
-                Le format accepté est le même pour importer un thésaurus en CSV.
+                Le format accepté est le même pour importer un thésaurus en CSV.<br/>
+                exemple :<br/>
+                Si nous avons un concept comme suit :<br/>
+                Id = 300<br/>
+                prefLabel@fr = gourde<br/>
+                altLabel@fr = récipient de transport, contenant, vase fermé<br/>
+                Définition@fr = vase à col étroit<br/>
+
+                Et si nous souhaitons mettre à jour ce concept, on propose alors les informations suivantes :<br/>
+                Id = 300<br/>
+                prefLabel@fr = récipient de transport<br/>
+                prefLabel@en = flask<br/>                
+                altLabel@fr = douïre, gourde, contenant, vase fermé<br/>
+                altLabel@en = costrel<br/>
+                Définition@fr = Récipient muni d'un goulot<br/>
+                Définition@en = Definition in english<br/>                
+                Le résultat final, le concept devient comme suit :<br/>
+
+                Id = 300<br/>
+                prefLabel = (fr) récipient de transport, (en) flask<br/>
+                altLabel =  (fr) douïre, gourde, contenant, vase fermé (en) costrel<br/>
+                Définition = (fr) Récipient muni d'un goulot (en) Definition in english<br/>
+
+                Tous les champs fournis par l’utilisateur remplacent l’existant.<br/>
+                si on souhaite supprimer une valeur dans une langue donnée, on fourni la colonne vide exp :<br/>
+                altLabel@en = <br/>
+                C’est à dire, si nous avons un champ (Note d’application), il ne sera pas modifié.
+                
             </p:outputPanel>
 
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
-                <!-- choix du l'identifiant Ark ou Id ou Handle -->
-                <div class="row" style="margin-top: 10px; font-size: 12px; color: #000" >
-                    <div class="col-5">
-                        <h:outputText value="L'identifiant est de type:" />
-                    </div>
-                    <div class="col-7">
-                        <p:selectOneMenu value="#{importFileBean.selectedIdentifierImportAlign}" 
-                                         styleClass="selectOneMenu_custom" 
-                                         panelStyleClass="selectOneMenu_panelStyle_custom" style="width: 100%; font-size: 12px"
-                                         title="Choix de l'identifiant pour détecter le concept">
-                            <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
-                            <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
-                            <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
-                            <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />
-                        </p:selectOneMenu>
-                    </div>
-                </div>    
 
                 <!-- délimiteur CSV -->
                 <div class="row" style="margin-top: 5px;">
@@ -74,7 +68,7 @@
                 <!-- Choix du fichier -->   
                 <div class="row" style="margin-left: 30px; margin-right: 30px; margin-top: 10px">
                     <div class="col-12" > 
-                        <p:fileUpload listener="#{importFileBean.loadFileNotationCsv}" 
+                        <p:fileUpload listener="#{importFileBean.loadFileCsvForMerge}" 
                                       label="parcourir" 
                                       mode="advanced" auto="true"
                                       allowTypes="/(\.|\/)(csv|txt)$/"
@@ -110,9 +104,10 @@
                                      process="@this"
                                      update="messageIndex listForMergeCsvForm"
                                      disabled="#{!importFileBean.loadDone}"
-                                     actionListener="#{importFileBean.addNotationList()}" />
+                                     actionListener="#{importFileBean.mergeCsvThesoToBDD(selectedTheso.selectedIdTheso, currentUser.nodeUser.idUser)}" />
                 </div> 
             </h:panelGroup>
         </h:form>
+ 
     </p:dialog> 
 </ui:fragment>

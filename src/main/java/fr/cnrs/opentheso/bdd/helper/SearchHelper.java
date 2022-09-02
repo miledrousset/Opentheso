@@ -290,19 +290,43 @@ public class SearchHelper {
         for (String value1 : values) {
             multiValuesPT
                     += " and ("
-                    + " f_unaccent(lower(term.lexical_value)) like '" + value1 + "%'"
-                    + " or"
-                    + " f_unaccent(lower(term.lexical_value)) like '% " + value1 + "%'"
-                    + " or"
-                    + " f_unaccent(lower(term.lexical_value)) like '%''" + value1 + "%'"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('" + value1 +"%'))"
+                        + " or"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('% " + value1 + "%'))"
+                        + " or"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('% "+ value1 + "-%'))"	
+                        + " or"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('%-" + value1 + "%'))"
+                        + " or"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('%(" + value1 + "%')) "
+                        + " or"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('%\\_" + value1 + "%'))"	
+                        + " or"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('%''" + value1 + "%'))"
+                        + " or"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('%ʿ" + value1 + "%'))"
+                        + " or"
+                        + " unaccent(lower(term.lexical_value)) like unaccent(lower('%[" + value1 + "%')) "         
                     + ")";
             multiValuesNPT
                     += " and ("
-                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '" + value1 + "%'"
-                    + " or"
-                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '% " + value1 + "%'"
-                    + " or"
-                    + " f_unaccent(lower(non_preferred_term.lexical_value)) like '%''" + value1 + "%'"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value1 +"%'))"
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('% " + value1 + "%'))"
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('% "+ value1 + "-%'))"	
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%-" + value1 + "%'))"
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%(" + value1 + "%')) "
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value1 + "%'))"	
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%''" + value1 + "%'))"
+                        + " or"
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%ʿ" + value1 + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('%[" + value1 + "%')) "   
                     + ")";
         }
 
@@ -329,6 +353,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus "
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
+                                + " and concept.status != 'CA' "
                                 + multiValuesPT
                                 + " order by term.lexical_value ASC limit 100";
                     } else {
@@ -342,6 +367,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus"
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
+                                + " and concept.status != 'CA' "
                                 + multiValuesPT
                                 + " order by term.lexical_value ASC limit 100";
                     }
@@ -875,6 +901,8 @@ public class SearchHelper {
                         + " unaccent(lower(lexical_value)) like unaccent(lower('%''" + value + "%'))"
                         + " or"
                         + " unaccent(lower(lexical_value)) like unaccent(lower('%ʿ" + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('%[" + value + "%')) "                                
                                 
                         + "	)"
                         + " order by lexical_value limit 50");
@@ -935,6 +963,8 @@ public class SearchHelper {
                         + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%''" + value + "%'))"
                         + " or"
                         + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%ʿ" + value + "%'))"
+                        + " or"
+                        + " unaccent(lower(lexical_value)) like unaccent(lower('%[" + value + "%')) "                                  
                         + "	)"
                         + "order by non_preferred_term.lexical_value limit 50");
 

@@ -182,7 +182,7 @@ public class ConceptHelper {
             nodeDatas.setName(label);
         nodeDatas.setUrl(getUri(idConcept, idTheso));
         nodeDatas.setDefinition(new NoteHelper().getDefinition(ds, idConcept, idTheso, idLang));
-        nodeDatas.setSynonym(new TermHelper().getNonPreferredTermsLabel(ds, idTheso, idTheso, idLang));
+        nodeDatas.setSynonym(new TermHelper().getNonPreferredTermsLabel(ds, idConcept, idTheso, idLang));
         return nodeDatas;        
     }
     /**
