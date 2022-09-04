@@ -136,8 +136,7 @@ public class ExportFileBean implements Serializable {
 
     public void exportToVertuoso() {
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                viewExportBean.getSelectedIdGroups(),
-                viewExportBean.getSelectedLanguages());
+                viewExportBean.getSelectedIdGroups());
 
         if (skosxd == null) {
             return;
@@ -318,8 +317,7 @@ public class ExportFileBean implements Serializable {
 
         /// autres exports
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                viewExportBean.getSelectedIdGroups(),
-                viewExportBean.getSelectedLanguages());
+                viewExportBean.getSelectedIdGroups());
 
         if (skosxd == null) {
             return null;
@@ -420,6 +418,102 @@ public class ExportFileBean implements Serializable {
 
         long start = System.currentTimeMillis();
         System.out.println(">>> DEBUT 2 : " + start);
+        
+        /// export des concepts dépréciés
+        if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) {
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas;
+            if (viewExportBean.isToogleFilterByGroup()) {
+                datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+            } else {
+                datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), null);
+            }
+            if (datas == null) {
+                return null;
+            }
+
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();
+        }
+        ///////////////////////////////////
+        if ("CSV_STRUC".equalsIgnoreCase(viewExportBean.getFormat())) {
+            sizeOfTheso = 0;
+            ConceptHelper conceptHelper = new ConceptHelper();
+            List<NodeTree> topConcepts = conceptHelper.getTopConceptsWithTermByTheso(connect.getPoolConnexion(),
+                    viewExportBean.getNodeIdValueOfTheso().getId(), viewExportBean.getSelectedIdLangTheso());
+
+            for (NodeTree topConcept : topConcepts) {
+                sizeOfTheso++;
+                topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm())
+                        ? "(" + topConcept.getIdConcept() + ")" : topConcept.getPreferredTerm());
+                topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
+            }
+
+            String[][] tab = new String[sizeOfTheso][20];
+            posX = 0;
+            for (NodeTree topConcept : topConcepts) {
+                posJ = 0;
+                createMatrice(tab, topConcept);
+            }
+
+            byte[] str = new WriteCSV().importTreeCsv(tab, ';');
+
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return DefaultStreamedContent.builder().contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> flux)
+                        .build();
+            } catch (Exception ex) {
+                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+                return new DefaultStreamedContent();
+            }
+        }
+
+        ///////////////////////////////////
+        /// export des concepts avec Id, label
+        if ("CSV_id".equalsIgnoreCase(viewExportBean.getFormat())) {
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas;
+            if (viewExportBean.isToogleFilterByGroup()) {
+                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+            } else {
+                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
+                        viewExportBean.getNodeIdValueOfTheso().getId(),
+                        viewExportBean.getSelectedIdLangTheso(), null);
+            }
+            if (datas == null) {
+                return null;
+            }
+
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();
+        }
 
         SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId(), "fr");
 
@@ -537,18 +631,19 @@ public class ExportFileBean implements Serializable {
                 viewExportBean.getNodeIdValueOfTheso().getId(), nodePreference);
 
         List<SKOSResource> concepts;
-        //if (withGroup) {
-        //exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
-        //} else {
-        //Non pour csv
-        //exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
-        //}
+        if (!viewExportBean.isToogleFilterByGroup()) {
+            exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
+        } else {
+            exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, 
+                    viewExportBean.getSelectedIdGroups());
+        }
         concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, idLang);
         for (SKOSResource concept : concepts) {
             exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
         }
 
-        //exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
+        exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
+        
         return exportRdf4jHelperNew.getSkosXmlDocument();
     }
 
@@ -594,7 +689,7 @@ public class ExportFileBean implements Serializable {
         }
     }
 
-    private SKOSXmlDocument getThesorusDatas(String idTheso, List<String> selectedGroups, List<NodeLangTheso> selectedLanguages) {
+    private SKOSXmlDocument getThesorusDatas(String idTheso, List<String> selectedGroups) {
 
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
 
