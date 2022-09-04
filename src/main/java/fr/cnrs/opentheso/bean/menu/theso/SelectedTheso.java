@@ -174,9 +174,9 @@ public class SelectedTheso implements Serializable {
         viewEditorHomeBean.reset();
         if (isUriRequest) {
             isUriRequest = false;
-            if (!"index".equals(menuBean.getActivePageName())) {
+            //if (!"index".equals(menuBean.getActivePageName())) {
                 menuBean.redirectToThesaurus();
-            }
+            //}
             return;
         }
 
@@ -196,10 +196,10 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
             }
             
-            if (!"index".equals(menuBean.getActivePageName())) {
+            //if (!"index".equals(menuBean.getActivePageName())) {
                 menuBean.redirectToThesaurus();
-            }
-        
+            //}
+        /*
             PrimeFaces pf = PrimeFaces.current();
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("containerIndex:contentConcept");
@@ -210,6 +210,7 @@ public class SelectedTheso implements Serializable {
                 pf.ajax().update("containerIndex:notificationPanel");
                 pf.ajax().update("containerIndex:contentConcept");
             }
+            */
             return;
         }
 
@@ -218,9 +219,9 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
-            if (!"index".equals(menuBean.getActivePageName())) {
+            //if (!"index".equals(menuBean.getActivePageName())) {
                 menuBean.redirectToThesaurus();
-            }
+            //}
             return;
         }
 
@@ -244,7 +245,8 @@ public class SelectedTheso implements Serializable {
             searchBean.setBarVisisble(false);
             PrimeFaces.current().executeScript("disparaitre();");
         }
-        
+        menuBean.redirectToThesaurus();
+        /*
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("containerIndex:contentConcept");
@@ -254,7 +256,7 @@ public class SelectedTheso implements Serializable {
             pf.ajax().update("containerIndex:header");
             pf.ajax().update("containerIndex:notificationPanel");
             pf.ajax().update("containerIndex:contentConcept");
-        }
+        }*/
     }
     
     
