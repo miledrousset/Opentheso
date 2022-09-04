@@ -34,7 +34,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.util.CollectionUtil;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -410,6 +409,12 @@ public class SearchBean implements Serializable {
     
     public void afficherResultatRecherche() {
         if (propositionBean.isPropositionVisibleControle()) {
+            if(CollectionUtils.isEmpty(nodeConceptSearchs)) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut faire une recherche avant !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                PrimeFaces.current().ajax().update("messageIndex");
+                return;
+            }
             PrimeFaces.current().executeScript("disparaitre();");
             PrimeFaces.current().executeScript("afficher();");
             barVisisble = true;
@@ -423,7 +428,7 @@ public class SearchBean implements Serializable {
                 searchVisibleControle = false;
             } else {
                 if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
-                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut lancer une recherche !");
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut faire une recherche avant !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     PrimeFaces.current().ajax().update("messageIndex");
                 } else {

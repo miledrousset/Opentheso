@@ -25,7 +25,11 @@ public class NodeLangTheso {
     }
 
     public String getValue() {
-        return value;
+        if(value == null || value.isEmpty()) {
+            return value;
+        }
+
+        return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
 
     public void setValue(String value) {

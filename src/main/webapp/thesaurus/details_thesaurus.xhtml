@@ -6,11 +6,11 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <div class="row" style="margin-left: 10px; margin-right: 10px; margin-top: 5px;">
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 card shadow mb-1">
-            <h:form id="formLeftTab">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 card shadow mb-1" style="overflow:hidden;">
+            <h:form id="formLeftTab" >
                 <p:tabView id="tabTree" activeIndex="#{leftBodySetting.index}" style="border-style: none; width: 100%;" >
                     <p:ajax event="tabChange" listener="#{tree.onTabTreeChange}" update="containerIndex:formRightTab" />
-                    <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style="height: 100%;">
+                    <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style="overflow: auto;">
                         <p:tab id="viewTabTree">
                             <f:facet name="title">
                                 <i class="pi pi-sitemap" />

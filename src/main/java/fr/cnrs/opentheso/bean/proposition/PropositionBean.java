@@ -93,10 +93,10 @@ public class PropositionBean implements Serializable {
         nom = propositionDao.getNom();
         email = propositionDao.getEmail();
 
-        propositions = propositionService.searchAllPropositions(null);
-        nbrNewPropositions = propositionService.searchNbrNewProposition();
+        //propositions = propositionService.searchAllPropositions(null);
+        //nbrNewPropositions = propositionService.searchNbrNewProposition();
         
-        afficherListPropositions();
+        //afficherListPropositions();
         
         varianteAccepted = false;
         traductionAccepted = false;

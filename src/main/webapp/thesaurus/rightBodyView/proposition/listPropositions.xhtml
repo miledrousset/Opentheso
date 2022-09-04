@@ -14,7 +14,7 @@
                 <f:selectItem itemLabel="Nouvelles" itemValue="1"  />
                 <f:selectItem itemLabel="Anciennes" itemValue="2"/>
                 <f:selectItem itemLabel="Toutes" itemValue="3"/>
-                <p:ajax update="containerIndex:notificationPanel" event="change" 
+                <p:ajax update="containerIndex:notificationPanel" event="change"  
                         listener="#{propositionBean.chercherProposition()}" />
             </p:selectOneButton>
 
@@ -40,20 +40,12 @@
                         <div class="col-12">
                             <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />
 
-                            <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
-                                <img src="#{conceptView.getDrapeauImg(proposition.lang)}" width="20" height="15" style="margin-right: 7px"/>
-                            </h:panelGroup>
-                            <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
-                                <h:outputLabel value="[#{proposition.lang}]" style="margin-right: 7px" />
-                            </h:panelGroup>
-
                             <p:commandLink value="#{proposition.nomConcept}" 
                                            rendered="#{proposition.isEnvoyer()}"  
                                            style="font-size: 14px; font-weight: bold; color: #8f8f8f" 
-                                           ajax="true" process="@this"
+                                           process="@this"
                                            actionListener="#{propositionBean.onSelectConcept(proposition)}"
-                                           update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp
-                                           containerIndex:notificationPanel" />
+                                           update="containerIndex" />
 
                             <p:commandLink value="#{proposition.nomConcept}"
                                            rendered="#{proposition.isLu() or proposition.isApprouver() or proposition.isRefuser()}"  

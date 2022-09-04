@@ -13,7 +13,6 @@ import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.bean.toolbox.statistique.StatistiqueBean;
-
 import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
