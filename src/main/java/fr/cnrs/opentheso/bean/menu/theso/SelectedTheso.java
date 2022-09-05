@@ -452,18 +452,29 @@ public class SelectedTheso implements Serializable {
         treeGroups.reset();
         tree.reset();
         listIndex.reset();
-        searchBean.reset();
 
         // initialisation de l'arbre des groupes
         treeGroups.initialise(selectedIdTheso, selectedLang);
         treeConcepts.initialise(selectedIdTheso, selectedLang);
         tree.initialise(selectedIdTheso, selectedLang);
+        
         if (!isActionFromConcept) {
             conceptBean.init();
         }
         isActionFromConcept = false;
 
         searchBean.onSelectConcept(selectedIdTheso, tree.getIdConceptSelected(), selectedLang);
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.executeScript("srollToSelected()");
+        }
+        
+        if (searchBean.isBarVisisble()) {
+            searchBean.setNodeConceptSearchs(new ArrayList<>());
+            searchBean.setBarVisisble(false);
+            PrimeFaces.current().executeScript("disparaitre();");
+        }
     }
 
     private String getIdLang() {
