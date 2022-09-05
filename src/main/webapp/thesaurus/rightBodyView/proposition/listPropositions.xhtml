@@ -39,6 +39,14 @@
                     <div class="row">
                         <div class="col-12">
                             <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />
+                            
+                            <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
+                                <img src="#{conceptView.getDrapeauImg(proposition.lang)}" width="20" height="15" style="margin-right: 7px"/>
+                            </h:panelGroup>
+                            
+                            <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
+                                <h:outputLabel value="[#{proposition.lang}]" style="margin-right: 7px" />
+                            </h:panelGroup>
 
                             <p:commandLink value="#{proposition.nomConcept}" 
                                            rendered="#{proposition.isEnvoyer()}"  

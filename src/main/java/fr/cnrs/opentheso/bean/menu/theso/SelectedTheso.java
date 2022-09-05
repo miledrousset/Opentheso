@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.Socket;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -74,6 +75,8 @@ public class SelectedTheso implements Serializable {
     private String thesoName;
     private boolean sortByNotation;
     
+    private boolean isNetworkAvailable;
+    
     private String localUri;
 
     private List<AlignementElement> listAlignementElement;
@@ -107,6 +110,8 @@ public class SelectedTheso implements Serializable {
             return;
         }
         
+        isNetworkAvailable = hostAvailabilityCheck();
+        
         ///////
         ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
@@ -120,6 +125,14 @@ public class SelectedTheso implements Serializable {
         
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
+    }
+    
+    public boolean hostAvailabilityCheck() { 
+        try (Socket s = new Socket("countryflagsapi.com", 80)) {
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }
     }
 
     public void init() {
@@ -615,6 +628,10 @@ public class SelectedTheso implements Serializable {
 
     public void setOptionThesoSelected(String optionThesoSelected) {
         this.optionThesoSelected = optionThesoSelected;
+    }
+
+    public boolean isIsNetworkAvailable() {
+        return isNetworkAvailable;
     }
 
 }

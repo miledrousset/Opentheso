@@ -94,8 +94,6 @@ public class ConceptView implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
     private SelectedTheso selectedTheso;
-    @Inject
-    private SearchBean searchBean;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -127,11 +125,6 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> historyNotes;
     
     private List<ResponsiveOption> responsiveOptions;
-
-
-    @PostConstruct
-    public void postInit() {
-    }
 
     @PreDestroy
     public void destroy() {
@@ -272,14 +265,6 @@ public class ConceptView implements Serializable {
         }
         
         return "https://countryflagsapi.com/png/" + codePays;      
-    }
-    
-    public boolean hostAvailabilityCheck() { 
-        try (Socket s = new Socket("countryflagsapi.com", 80)) {
-            return true;
-        } catch (IOException ex) {
-            return false;
-        }
     }
     
     /**
