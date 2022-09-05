@@ -448,6 +448,7 @@ public class SelectedTheso implements Serializable {
 
     private void startNewLang() {
         currentLang = selectedLang;
+        
         treeGroups.reset();
         tree.reset();
         listIndex.reset();
@@ -461,6 +462,8 @@ public class SelectedTheso implements Serializable {
             conceptBean.init();
         }
         isActionFromConcept = false;
+
+        searchBean.onSelectConcept(selectedIdTheso, tree.getIdConceptSelected(), selectedLang);
     }
 
     private String getIdLang() {

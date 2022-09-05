@@ -298,22 +298,9 @@ public class SearchBean implements Serializable {
                 isSelectedItem = false;
             }
 
-            searchResultVisible = true;
-            if (propositionBean.isPropositionVisibleControle()) {
-                PrimeFaces.current().executeScript("disparaitre();");
-                PrimeFaces.current().executeScript("afficher();");
-                barVisisble = true;
-                searchVisibleControle = true;
-                propositionBean.setPropositionVisibleControle(false);
-            } else {
-                if (!barVisisble) {
-                    PrimeFaces.current().executeScript("afficher();");
-                    barVisisble = true;
-                    searchVisibleControle = true;
-                }
-            }
+            afficherResultatRecherche();
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche de '" + searchValue + "' : Aucun resultat trouvée !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
 
@@ -467,17 +454,15 @@ public class SearchBean implements Serializable {
                 connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(
-                    conceptHelper.getConceptForSearch(
-                            connect.getPoolConnexion(),
-                            idConcept,
-                            selectedTheso.getCurrentIdTheso(),
-                            selectedTheso.getCurrentLang()));
+            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(connect.getPoolConnexion(), 
+                    idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
+        
         if (!nodeConceptSearchs.isEmpty()) {
             Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
+        
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             if (nodeConceptSearchs.size() == 1) {
                 isSelectedItem = true;
@@ -487,23 +472,22 @@ public class SearchBean implements Serializable {
                 isSelectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche Poly-hiéarchie : Aucun résultat trouvée !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
+        
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        afficherResultatRecherche();
     }
 
     /**
      * permet de retourner la liste des concepts qui ont une poly-hiérarchie
      */
     public void getAllDeprecatedConcepts() {
+        
         if (nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
         } else {
@@ -521,16 +505,16 @@ public class SearchBean implements Serializable {
                 connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(
-                    conceptHelper.getConceptForSearch(
-                            connect.getPoolConnexion(),
-                            idConcept,
-                            selectedTheso.getCurrentIdTheso(),
-                            selectedTheso.getCurrentLang()));
+            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(
+                connect.getPoolConnexion(),idConcept,
+                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
+        
         if (!nodeConceptSearchs.isEmpty()) {
-            onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
+            onSelectConcept(selectedTheso.getCurrentIdTheso(), 
+                    nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
+        
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             Collections.sort(nodeConceptSearchs);
             if (nodeConceptSearchs.size() == 1) {
@@ -541,17 +525,15 @@ public class SearchBean implements Serializable {
                 isSelectedItem = false;
             }
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Pas de résultat !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche de concepts dépréciés : Pas de résultat !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
+        
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        afficherResultatRecherche();
     }
 
     /**
@@ -594,7 +576,16 @@ public class SearchBean implements Serializable {
                 setViewsSearch();
                 isSelectedItem = false;
             }
+        } else {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche multi-groupes : Aucun résultat trouvée !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
+        
+        rightBodySetting.setIndex("0");
+        indexSetting.setIsValueSelected(true);
+
+        afficherResultatRecherche();
     }
 
     /**
@@ -637,7 +628,16 @@ public class SearchBean implements Serializable {
                 setViewsSearch();
                 isSelectedItem = false;
             }
+        } else {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche sans-groupes : Aucun résultat trouvée !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
+        
+        rightBodySetting.setIndex("0");
+        indexSetting.setIsValueSelected(true);
+
+        afficherResultatRecherche();
     }
 
     /**
@@ -681,7 +681,16 @@ public class SearchBean implements Serializable {
                 setViewsSearch();
                 isSelectedItem = false;
             }
+        } else {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche doublons : Aucun résultat trouvée !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
+        
+        rightBodySetting.setIndex("0");
+        indexSetting.setIsValueSelected(true);
+
+        afficherResultatRecherche();
     }
 
     /**
@@ -732,7 +741,16 @@ public class SearchBean implements Serializable {
                 setViewsSearch();
                 isSelectedItem = false;
             }
+        } else {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche relations interdites : Aucun résultat trouvée !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
+        
+        rightBodySetting.setIndex("0");
+        indexSetting.setIsValueSelected(true);
+
+        afficherResultatRecherche();
     }
 
     private void setViewsSearch() {
