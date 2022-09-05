@@ -47,12 +47,12 @@
                                 
                                 <p:spacer width="1" rendered="#{!status2.first and propositionBean.showButtonAction()}" />
                                 
-                                <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
+                                <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
                                     <img src="#{conceptView.getDrapeauImg(trad.lang)}" width="20" height="15" 
                                          title="#{trad.nomLang}" style="margin-right: 10px"/>
                                 </h:panelGroup>
                                 
-                                <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
+                                <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
                                     <p:commandLink value="[#{trad.lang.toUpperCase()}] " update="containerIndex indexTitle"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, 
                                                              conceptView.nodeConcept.concept.idConcept, trad.lang)}"/> 

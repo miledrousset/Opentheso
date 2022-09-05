@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="col-5" > 
-                        <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
+                        <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
                             <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
                                              panelStyleClass="selectOneMenu_panelStyle_custom"
                                              style="width: 500px; background: none;  box-shadow: none; "
@@ -41,7 +41,7 @@
                                 <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
                             </p:selectOneMenu>
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
+                        <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
                             <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
                                              panelStyleClass="selectOneMenu_panelStyle_custom"
                                              style="width: 500px; background: none;  box-shadow: none; "
@@ -92,10 +92,10 @@
                             </p:column>
 
                             <p:column width="15" headerText="Langue"> 
-                                <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
+                                <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
                                     <img src="#{conceptView.getDrapeauImg(langOfTheso.code)}" width="25" height="20"/>
                                 </h:panelGroup>
-                                <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
+                                <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
                                     <h:outputLabel value="[#{langOfTheso.code}]" />
                                 </h:panelGroup>
                             </p:column>

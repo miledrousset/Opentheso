@@ -24,7 +24,7 @@
                     <h:outputText value="Langue à ajouter: "/>
                 </div>
                 <div class="col-7">
-                    <h:panelGroup rendered="#{conceptView.hostAvailabilityCheck()}">
+                    <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
                         <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" 
                                          panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "
@@ -35,7 +35,7 @@
                                            itemLabel="&lt;img height='15' width='20' src='#{conceptView.getDrapeauImg(lang.codePays)}' /&gt; #{lang.french_name}" /> 
                         </p:selectOneMenu> 
                     </h:panelGroup>
-                    <h:panelGroup rendered="#{!conceptView.hostAvailabilityCheck()}">
+                    <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
                         <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" 
                                          panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "
