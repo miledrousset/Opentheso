@@ -37,7 +37,7 @@
                                              panelStyle="border: none; box-shadow: none; max-width: 300px" >
                                <f:selectItems value="#{editThesoBean.languagesOfTheso}" itemValue="#{lang.code}"
                                                itemLabelEscaped="false" var="lang" 
-                                               itemLabel="&lt;img height='15' width='20' src='#{conceptView.getDrapeauImg(lang.code)}' /&gt; #{lang.value}" />  
+                                               itemLabel="&lt;img height='15' width='20' src='#{conceptView.getDrapeauImg(lang.codeFlag)}' /&gt; #{lang.value}" />  
                                 <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
                             </p:selectOneMenu>
                         </h:panelGroup>
@@ -93,7 +93,7 @@
 
                             <p:column width="15" headerText="Langue"> 
                                 <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
-                                    <img src="#{conceptView.getDrapeauImg(langOfTheso.code)}" width="25" height="20"/>
+                                    <img src="#{conceptView.getDrapeauImg(langOfTheso.codeFlag)}" width="25" height="20"/>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
                                     <h:outputLabel value="[#{langOfTheso.code}]" />
