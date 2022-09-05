@@ -174,6 +174,13 @@ public class SelectedTheso implements Serializable {
         viewEditorHomeBean.reset();
         if (isUriRequest) {
             isUriRequest = false;
+            
+            if (searchBean.isBarVisisble()) {
+                searchBean.setNodeConceptSearchs(new ArrayList<>());
+                searchBean.setBarVisisble(false);
+                PrimeFaces.current().executeScript("disparaitre();");
+            }
+            
             //if (!"index".equals(menuBean.getActivePageName())) {
                 menuBean.redirectToThesaurus();
             //}
@@ -194,6 +201,12 @@ public class SelectedTheso implements Serializable {
             roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());
             for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
                 roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
+            }
+            
+            if (searchBean.isBarVisisble()) {
+                searchBean.setNodeConceptSearchs(new ArrayList<>());
+                searchBean.setBarVisisble(false);
+                PrimeFaces.current().executeScript("disparaitre();");
             }
             
             //if (!"index".equals(menuBean.getActivePageName())) {
@@ -219,6 +232,13 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
+            
+            if (searchBean.isBarVisisble()) {
+                searchBean.setNodeConceptSearchs(new ArrayList<>());
+                searchBean.setBarVisisble(false);
+                PrimeFaces.current().executeScript("disparaitre();");
+            }
+            
             //if (!"index".equals(menuBean.getActivePageName())) {
                 menuBean.redirectToThesaurus();
             //}
