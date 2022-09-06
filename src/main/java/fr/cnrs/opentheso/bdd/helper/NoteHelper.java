@@ -875,7 +875,7 @@ public class NoteHelper {
         }
         return status;
     }
-    
+
     public boolean addConceptNoteProp(HikariDataSource ds, String idConcept, String idLang, String idThesaurus,
             String note, String noteTypeCode, int idUser) {
 
@@ -1131,7 +1131,7 @@ public class NoteHelper {
         }
         return true;
     }
-    
+
     public boolean addTermNoteProp(HikariDataSource ds, String idTerm, String idLang, String idThesaurus,
             String note, String noteTypeCode, int idUser) {
         try ( Connection conn = ds.getConnection()) {
@@ -1286,6 +1286,36 @@ public class NoteHelper {
     }
 
     /**
+     * Cette fonction permet de supprimer toutes les notes d'un Concept par
+     * langue
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @param notetypecode
+     * @return boolean
+     */
+    public boolean deleteNoteOfConceptByLang(HikariDataSource ds,
+            String idConcept, String idThesaurus, String idLang, String notetypecode) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from note"
+                        + " where id_concept = '" + idConcept + "'"
+                        + " and id_thesaurus = '" + idThesaurus + "'"
+                        + " and lang = '" + idLang + "'"
+                        + " and notetypecode = '" + notetypecode + "'"
+                        
+                );
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while deleting all notes of Concept : " + idConcept, sqle);
+        }
+        return false;
+    }
+
+    /**
      * Cette fonction permet de supprimer toutes les notes d'un terme
      *
      * @param conn
@@ -1305,6 +1335,34 @@ public class NoteHelper {
         }
         return false;
     }
+    
+    /**
+     * Cette fonction permet de supprimer toutes les notes d'un terme par langue
+     *
+     * @param ds
+     * @param idTerm
+     * @param idThesaurus
+     * @param idLang
+     * @param notetypecode
+     * @return boolean
+     */
+    public boolean deleteNotesOfTermByLang(HikariDataSource ds,
+            String idTerm, String idThesaurus, String idLang, String notetypecode) {
+        try ( Connection conn = ds.getConnection()) {        
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from note"
+                        + " where id_term = '" + idTerm + "'"
+                        + " and id_thesaurus = '" + idThesaurus + "'"
+                        + " and lang = '" + idLang + "'"
+                        + " and notetypecode = '" + notetypecode + "'"
+                );
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while deleting all notes of Term : " + idTerm, sqle);
+        }
+        return false;
+    }    
 
     /**
      * pour pouvoir obtener une list des Notes a partir du idTerm sans conter

@@ -355,7 +355,7 @@ public class SearchHelper {
                                 + " term.id_thesaurus = '" + idTheso + "'"
                                 + " and concept.status != 'CA' "
                                 + multiValuesPT
-                                + " order by term.lexical_value ASC limit 100";
+                                + " order by unaccent(lower(lexical_value)) ASC limit 100";
                     } else {
                         query = "select term.lexical_value, "
                                 + " concept.id_concept"
@@ -369,7 +369,7 @@ public class SearchHelper {
                                 + " term.id_thesaurus = '" + idTheso + "'"
                                 + " and concept.status != 'CA' "
                                 + multiValuesPT
-                                + " order by term.lexical_value ASC limit 100";
+                                + " order by unaccent(lower(lexical_value)) ASC limit 100";
                     }
                     resultSet = stmt.executeQuery(query);
                     while (resultSet.next()) {
@@ -398,7 +398,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
                                 + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"
                                 + multiValuesNPT
-                                + " order by non_preferred_term.lexical_value ASC limit 100";
+                                + " order by unaccent(lower(non_preferred_term.lexical_value)) ASC limit 100";
                     } else {
                         query = "select concept.id_concept"
                                 + " from non_preferred_term, preferred_term, concept"
@@ -409,7 +409,7 @@ public class SearchHelper {
                                 + " AND preferred_term.id_thesaurus = concept.id_thesaurus"
                                 + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"
                                 + multiValuesNPT
-                                + " order by non_preferred_term.lexical_value ASC limit 100";
+                                + " order by unaccent(lower(non_preferred_term.lexical_value)) ASC limit 100";
                     }
                     resultSet = stmt.executeQuery(query);
                     while (resultSet.next()) {

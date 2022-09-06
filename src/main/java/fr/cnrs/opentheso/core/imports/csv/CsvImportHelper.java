@@ -23,6 +23,7 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 
 /**
  *
@@ -699,11 +700,12 @@ public class CsvImportHelper {
         if (!updateAltLabel(ds, idTheso, conceptObject, idUser1)) {
             return false;
         }
-/*        // notes
-        if (!addNotes(ds, idTheso, conceptObject)) {
+        // notes
+        if (!updateNotes(ds, idTheso, conceptObject, idUser1)) {
             return false;
         }
-        // relations
+        
+/*      // relations
         if (!addRelations(ds, idTheso, conceptObject)) {
             return false;
         }
@@ -715,6 +717,10 @@ public class CsvImportHelper {
         if (!addGeoLocalisation(ds, idTheso, conceptObject)) {
             return false;
         }
+        // images
+        // ressources externes
+        
+        
         // Membres ou appartenance aux groupes
         if (!addMembers(ds, idTheso, conceptObject)) {
             return false;
@@ -763,7 +769,7 @@ public class CsvImportHelper {
         ArrayList<String> oldLabels;
         
         // suppression des altLabel par langue
-        ArrayList<String> langs = getLlangs(conceptObject.getAltLabels()); 
+        ArrayList<String> langs = getLangs(conceptObject.getAltLabels()); 
         for (String lang : langs) {
             oldLabels = termHelper.getLexicalValueOfAltLabel(ds, idTerm, idTheso, lang);
             for (String oldLabel : oldLabels) {
@@ -782,17 +788,108 @@ public class CsvImportHelper {
         return true;
     }
     
-    private ArrayList<String> getLlangs(ArrayList<CsvReadHelper.Label> altLabels) {
+    private ArrayList<String> getLangs(ArrayList<CsvReadHelper.Label> labels) {
         ArrayList<String> langs = new ArrayList<>();
-        for (CsvReadHelper.Label altLabel : altLabels) {
-            if (!langs.contains(altLabel.getLang())) {
-                langs.add(altLabel.getLang());
+        for (CsvReadHelper.Label label : labels) {
+            if (!langs.contains(label.getLang())) {
+                langs.add(label.getLang());
             }            
         }
         return langs;
     }
     
+    /**
+     * Intègre les notes
+     *
+     * @param ds
+     * @param idTheso
+     * @param conceptObject
+     * @return
+     */
+    private boolean updateNotes(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+
+        NoteHelper noteHelper = new NoteHelper();
+    //    ArrayList<NodeNote> oldNotes;     
     
+        // suppression des Notes  par langue
+        ArrayList<String> langs = getLangs(conceptObject.getNote()); 
+        for (String lang : langs) {
+        //    oldNotes = noteHelper.getListNotesConcept(ds, conceptObject.getIdConcept(), idTheso, lang);
+            if(!noteHelper.deleteNoteOfConceptByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "note"))
+                return false;
+        }        
+        for (CsvReadHelper.Label note : conceptObject.getNote()) {
+            if(!note.getLabel().isEmpty())
+                noteHelper.addConceptNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "note", idUser1);
+        }
+        langs = getLangs(conceptObject.getScopeNotes()); 
+        for (String lang : langs) {
+            if(!noteHelper.deleteNoteOfConceptByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "scopeNote"))
+                return false;         
+        }         
+        for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
+            if(!note.getLabel().isEmpty())
+                noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
+                        "scopeNote", idUser1);
+        }        
+        
+        langs = getLangs(conceptObject.getDefinitions());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "definition"))
+                return false;            
+        }        
+        for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
+            if(!note.getLabel().isEmpty())
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "definition", idUser1);
+        }
+        
+        langs = getLangs(conceptObject.getChangeNotes());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "changeNote"))
+                return false;            
+        }           
+        for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
+            if(!note.getLabel().isEmpty())                
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "changeNote", idUser1);
+        }
+        
+        langs = getLangs(conceptObject.getEditorialNotes());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "editorialNote"))
+                return false;            
+        }          
+        for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
+            if(!note.getLabel().isEmpty())            
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "editorialNote", idUser1);
+        }
+        
+        langs = getLangs(conceptObject.getHistoryNotes());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "historyNote"))
+                return false;            
+        }          
+        for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
+            if(!note.getLabel().isEmpty())            
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "historyNote", idUser1);
+        }
+
+        langs = getLangs(conceptObject.getExamples());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "example"))
+                return false;            
+        }          
+        for (CsvReadHelper.Label note : conceptObject.getExamples()) {
+            if(!note.getLabel().isEmpty())
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "example", idUser1);
+        }
+        return true;
+    }    
     
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
