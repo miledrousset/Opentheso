@@ -15,12 +15,14 @@ import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GpsHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
@@ -704,22 +706,28 @@ public class CsvImportHelper {
         if (!updateNotes(ds, idTheso, conceptObject, idUser1)) {
             return false;
         }
+        // alignements
+        if (!updateAlignments(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }
+        // géolocalisation
+        if (!updateGeoLocalisation(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }        
+
+        // images
+        if (!updateImages(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }   
+
+        // ressources externes
+               
+        
         
 /*      // relations
         if (!addRelations(ds, idTheso, conceptObject)) {
             return false;
         }
-        // alignements
-        if (!addAlignments(ds, idTheso, conceptObject)) {
-            return false;
-        }
-        // géolocalisation
-        if (!addGeoLocalisation(ds, idTheso, conceptObject)) {
-            return false;
-        }
-        // images
-        // ressources externes
-        
         
         // Membres ou appartenance aux groupes
         if (!addMembers(ds, idTheso, conceptObject)) {
@@ -890,6 +898,126 @@ public class CsvImportHelper {
         }
         return true;
     }    
+    
+    
+    private boolean updateAlignments(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+        NodeAlignment nodeAlignment = new NodeAlignment();
+        nodeAlignment.setId_author(idUser1);
+        nodeAlignment.setConcept_target("");
+        nodeAlignment.setThesaurus_target("");
+        nodeAlignment.setInternal_id_concept(conceptObject.getIdConcept());
+        nodeAlignment.setInternal_id_thesaurus(idTheso);
+
+//        exactMatch   = 1;
+//        closeMatch   = 2;
+//        broadMatch   = 3;
+//        relatedMatch = 4;        
+//        narrowMatch  = 5;
+
+        /// suppression des alignements 
+        if(!conceptObject.getExactMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 1);
+        }
+        for (String uri : conceptObject.getExactMatchs()) {
+            if(uri.isEmpty()) continue;
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(1);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+        
+        if(!conceptObject.getCloseMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 2);
+        }        
+        for (String uri : conceptObject.getCloseMatchs()) {
+            if(uri.isEmpty()) continue;
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(2);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+        
+        if(!conceptObject.getBroadMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 3);
+        }          
+        for (String uri : conceptObject.getBroadMatchs()) {
+            if(uri.isEmpty()) continue;
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(3);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+        
+        if(!conceptObject.getRelatedMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 4);
+        }         
+        for (String uri : conceptObject.getRelatedMatchs()) {
+            if(uri.isEmpty()) continue;            
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(4);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+        
+        if(!conceptObject.getNarrowMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 5);
+        }          
+        for (String uri : conceptObject.getNarrowMatchs()) {
+            if(uri.isEmpty()) continue;            
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(5);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+
+        return true;
+    }    
+    
+    private boolean updateGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+
+        Double latitude;
+        Double longitude;
+        
+        GpsHelper gpsHelper = new GpsHelper();
+        if (conceptObject.getLatitude() == null || conceptObject.getLongitude() == null) return true;
+        
+        gpsHelper.deleteGpsCoordinate(ds, conceptObject.getIdConcept(), idTheso);
+        if (conceptObject.getLatitude().isEmpty() || conceptObject.getLongitude().isEmpty()) {
+            return true;
+        }
+        try {
+            latitude = Double.parseDouble(conceptObject.getLatitude());
+            longitude = Double.parseDouble(conceptObject.getLongitude());
+        } catch (Exception e) {
+            return true;
+        }
+        gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
+        return true;
+    }    
+    
+    
+    private boolean updateImages(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1){
+        ImagesHelper imagesHelper = new ImagesHelper();
+        
+        if(conceptObject.getImages() == null) return true;
+
+        imagesHelper.deleteAllExternalImage(ds, conceptObject.getIdConcept(), idTheso);
+        
+        for (NodeImage nodeImage : conceptObject.getImages()) {
+            if(!nodeImage.getUri().isEmpty()) 
+                if(imagesHelper.addExternalImage(ds, conceptObject.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), idUser1)) {
+                    return false;
+                }
+        }
+        return true;
+    }
     
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
