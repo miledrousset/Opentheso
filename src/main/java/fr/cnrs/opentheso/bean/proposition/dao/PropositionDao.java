@@ -30,6 +30,8 @@ public class PropositionDao implements Serializable {
     
     private String userAction;
     
+    private String codeDrapeau;
+    
     public boolean isEnvoyer() {
         return PropositionStatusEnum.ENVOYER.name().equals(status);
     }
@@ -140,6 +142,14 @@ public class PropositionDao implements Serializable {
 
     public void setLang(String lang) {
         this.lang = lang;
+    }
+
+    public String getCodeDrapeau() {
+        return codeDrapeau;
+    }
+
+    public void setCodeDrapeau(String codeDrapeau) {
+        this.codeDrapeau = codeDrapeau;
     }
     
 }

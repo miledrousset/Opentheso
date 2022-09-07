@@ -180,6 +180,11 @@ public class CurrentUser implements Serializable {
         setInfos();
 
         propositionBean.searchNewPropositions();
+        
+        if ("2".equals(rightBodySetting.getIndex())) {
+            rightBodySetting.setIndex("0");
+        }
+        propositionBean.setIsRubriqueVisible(false);
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();

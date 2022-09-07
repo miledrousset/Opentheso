@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
-
 @Named(value = "propositionBean")
 @SessionScoped
 public class PropositionBean implements Serializable {
@@ -66,12 +65,11 @@ public class PropositionBean implements Serializable {
 
     private PropositionDao propositionSelected;
     private List<PropositionDao> propositions;
-    
+
     private boolean propositionVisibleControle;
     private boolean prefTermeAccepted, varianteAccepted, traductionAccepted,
             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
             editorialNotesAccepted, examplesAccepted, historyAccepted;
-    
 
     public void onSelectConcept(PropositionDao propositionDao) throws IOException {
 
@@ -93,11 +91,10 @@ public class PropositionBean implements Serializable {
         nom = propositionDao.getNom();
         email = propositionDao.getEmail();
 
-        //propositions = propositionService.searchAllPropositions(null);
-        //nbrNewPropositions = propositionService.searchNbrNewProposition();
+        chercherProposition();
+        nbrNewPropositions = propositionService.searchNbrNewProposition();
         
         //afficherListPropositions();
-        
         varianteAccepted = false;
         traductionAccepted = false;
         noteAccepted = false;
@@ -107,80 +104,80 @@ public class PropositionBean implements Serializable {
         editorialNotesAccepted = false;
         examplesAccepted = false;
         historyAccepted = false;
-        
+
         prefTermeAccepted = proposition.isUpdateNomConcept();
         checkSynonymPropositionStatus();
         checkTraductionPropositionStatus();
         checkNotePropositionStatus();
     }
-    
+
     public void checkSynonymPropositionStatus() {
         for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
-            if (synonymPropBean.isToAdd() || synonymPropBean.isToRemove() 
+            if (synonymPropBean.isToAdd() || synonymPropBean.isToRemove()
                     || synonymPropBean.isToUpdate()) {
                 varianteAccepted = true;
             }
         }
     }
-    
+
     public void checkTraductionPropositionStatus() {
         for (TraductionPropBean traductionPropBean : proposition.getTraductionsProp()) {
-            if (traductionPropBean.isToAdd() || traductionPropBean.isToRemove() 
+            if (traductionPropBean.isToAdd() || traductionPropBean.isToRemove()
                     || traductionPropBean.isToUpdate()) {
                 traductionAccepted = true;
             }
         }
     }
-    
+
     public void checkNotePropositionStatus() {
-        
+
         for (NotePropBean note : proposition.getNotes()) {
             if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
                 noteAccepted = true;
             }
         }
-        
+
         for (NotePropBean note : proposition.getDefinitions()) {
             if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
                 definitionAccepted = true;
             }
         }
-        
+
         for (NotePropBean note : proposition.getChangeNotes()) {
             if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
                 changeNoteAccepted = true;
             }
         }
-        
+
         for (NotePropBean note : proposition.getScopeNotes()) {
             if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
                 scopeAccepted = true;
             }
         }
-        
+
         for (NotePropBean note : proposition.getEditorialNotes()) {
             if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
                 editorialNotesAccepted = true;
             }
         }
-        
+
         for (NotePropBean note : proposition.getExamples()) {
             if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
                 examplesAccepted = true;
             }
         }
-        
+
         for (NotePropBean note : proposition.getHistoryNotes()) {
             if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
                 historyAccepted = true;
             }
         }
     }
-    
+
     public void annuler() {
         rightBodySetting.setIndex("0");
     }
-    
+
     public void afficherPropositionsNotification() {
         afficherListPropositions();
         if (searchBean.isSearchVisibleControle()) {
@@ -191,7 +188,7 @@ public class PropositionBean implements Serializable {
             searchBean.setSearchVisibleControle(false);
             propositionVisibleControle = true;
         } else {
-            if (searchBean.isBarVisisble()) {           
+            if (searchBean.isBarVisisble()) {
                 PrimeFaces.current().executeScript("disparaitre();");
                 searchBean.setBarVisisble(false);
                 propositionVisibleControle = false;
@@ -207,15 +204,15 @@ public class PropositionBean implements Serializable {
         chercherProposition();
         searchBean.setSearchResultVisible(false);
     }
-    
+
     public void chercherProposition() {
         propositions = new ArrayList<>();
         String idTheso = filter2 == 2 ? selectedTheso.getSelectedIdTheso() : "%";
         switch (showAllPropositions) {
-            case "1" :
+            case "1":
                 propositions = propositionService.searchPropositionsNonTraitter(idTheso);
                 break;
-            case "2" :
+            case "2":
                 propositions = propositionService.searchOldPropositions(idTheso);
                 break;
             default:
@@ -261,26 +258,30 @@ public class PropositionBean implements Serializable {
                             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
                             editorialNotesAccepted, examplesAccepted, historyAccepted);
                     switchToConceptInglet();
-                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
+                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec succès dans le concept '"
                             + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
                     break;
                 case "refuserProposition":
                     propositionService.refuserProposition(propositionSelected, commentaireAdmin);
                     switchToConceptInglet();
                     showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
-                            + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") refusée avec sucée !");
+                            + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") a été refusée avec succès !");
                     break;
                 case "supprimerProposition":
                     propositionService.supprimerPropostion(propositionSelected);
                     switchToConceptInglet();
                     showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
-                            + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
+                            + "' (" + propositionSelected.getIdTheso() + ") a été suppprimée avec succès !");
                     break;
                 case "annulerProposition":
                     annulerPropostion();
                     break;
             }
         }
+        
+        chercherProposition();
+        nbrNewPropositions = propositionService.searchNbrNewProposition();
+
         PrimeFaces.current().executeScript("PF('confirmDialog').hide();");
     }
 
@@ -461,10 +462,9 @@ public class PropositionBean implements Serializable {
         return propositionSelected != null && (PropositionStatusEnum.LU.name().equals(propositionSelected.getStatus())
                 || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus()));
     }
-    
+
     public boolean showButtonAction() {
-        return propositionSelected == null || (!PropositionStatusEnum.APPROUVER.name().equals(propositionSelected.getStatus())
-                && !PropositionStatusEnum.REFUSER.name().equals(propositionSelected.getStatus()));
+        return (proposition != null && propositionSelected == null) || showButtonDecision();
     }
 
     private void showMessage(FacesMessage.Severity type, String message) {
@@ -656,5 +656,5 @@ public class PropositionBean implements Serializable {
     public void setPropositionVisibleControle(boolean propositionVisibleControle) {
         this.propositionVisibleControle = propositionVisibleControle;
     }
-    
+
 }

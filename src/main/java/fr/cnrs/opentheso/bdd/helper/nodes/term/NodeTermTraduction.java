@@ -7,6 +7,7 @@ public class NodeTermTraduction implements Serializable {
     private String lang;
     private String nomLang;
     private String lexicalValue;
+    private String codePays;
     
     public NodeTermTraduction() {
         
@@ -39,6 +40,14 @@ public class NodeTermTraduction implements Serializable {
 
     public void setNomLang(String nomLang) {
         this.nomLang = nomLang;
+    }
+
+    public String getCodePays() {
+        return codePays;
+    }
+
+    public void setCodePays(String codePays) {
+        this.codePays = codePays;
     }
 
 }

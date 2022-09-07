@@ -22,10 +22,11 @@ public class PropositionHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT pro.*, term.lexical_value " 
+                stmt.executeQuery("SELECT pro.*, term.lexical_value, code_pays " 
                         + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
                         + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " 
-                        + "WHERE term.id_thesaurus like '" + idTheso + "'"
+                        + "LEFT JOIN languages_iso639 ON iso639_1 = term.lang "
+                        + "WHERE term.id_thesaurus like '" + idTheso + "' "
                         + "ORDER BY pro.id DESC");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -46,10 +47,11 @@ public class PropositionHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT pro.*, term.lexical_value " 
+                stmt.executeQuery("SELECT pro.*, term.lexical_value, code_pays " 
                         + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
                         + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus "
-                        + "WHERE term.id_thesaurus like '" + idTheso + "'"
+                        + "LEFT JOIN languages_iso639 ON iso639_1 = term.lang "
+                        + "WHERE term.id_thesaurus like '" + idTheso + "' "
                         + "AND pro.status = '" + status + "' ORDER BY pro.id DESC");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -70,10 +72,11 @@ public class PropositionHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT pro.*, term.lexical_value " 
+                stmt.executeQuery("SELECT pro.*, term.lexical_value, code_pays "
                         + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
                         + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " 
-                        + "WHERE term.id_thesaurus like '" + idTheso + "'"
+                        + "LEFT JOIN languages_iso639 ON iso639_1 = term.lang "
+                        + "WHERE term.id_thesaurus like '" + idTheso + "' "
                         + "AND pro.status NOT IN ('LU', 'ENVOYER') ORDER BY pro.id DESC");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -149,6 +152,7 @@ public class PropositionHelper {
         proposition.setUserAction(resultSet.getString("approuve_par"));
         proposition.setDateUpdate(resultSet.getString("approuve_date"));
         proposition.setNomConcept(resultSet.getString("lexical_value"));
+        proposition.setCodeDrapeau(resultSet.getString("code_pays"));
         return proposition;
     }
 

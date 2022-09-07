@@ -1873,7 +1873,7 @@ public class TermHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("SELECT term.id_term, term.lexical_value, lang.code_pays, " +
+                stmt.executeQuery("SELECT term.id_term, term.lexical_value, lang.code_pays, lang.iso639_1, " +
                         "CASE WHEN '"+idLang+"' = 'fr' THEN lang.french_name ELSE lang.english_name END lang_name " +
                         "FROM term, preferred_term, languages_iso639 lang " +
                         "WHERE term.id_term = preferred_term.id_term " +
@@ -1888,7 +1888,8 @@ public class TermHelper {
                         nodeTraductionsList = new ArrayList<>();
                         while (resultSet.next()) {
                             NodeTermTraduction nodeTraductions = new NodeTermTraduction();
-                            nodeTraductions.setLang(resultSet.getString("code_pays"));
+                            nodeTraductions.setCodePays(resultSet.getString("code_pays"));
+                            nodeTraductions.setLang(resultSet.getString("iso639_1"));
                             nodeTraductions.setLexicalValue(resultSet.getString("lexical_value"));
                             nodeTraductions.setNomLang(resultSet.getString("lang_name"));
                             nodeTraductionsList.add(nodeTraductions);

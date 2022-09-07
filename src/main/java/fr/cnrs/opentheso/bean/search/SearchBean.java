@@ -268,12 +268,12 @@ public class SearchBean implements Serializable {
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
-        
+
         isSearchInSpecificTheso = true;
         if ((selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) && roleOnThesoBean.getSelectedThesoForSearch().size() > 1) {
             isSearchInSpecificTheso = false;
         }
-        
+
         // cas où la recherche est sur un thésaurus sélectionné, il faut trouver la langue sélectionnée par l'utilisateur, si all, on cherche sur tous les thésaurus 
         if (selectedTheso.getCurrentIdTheso() == null || selectedTheso.getCurrentIdTheso().isEmpty()) {
             for (String idTheso : roleOnThesoBean.getSelectedThesoForSearch()) {
@@ -298,7 +298,19 @@ public class SearchBean implements Serializable {
                 isSelectedItem = false;
             }
 
-            afficherResultatRecherche();
+            if (propositionBean.isPropositionVisibleControle()) {
+                PrimeFaces.current().executeScript("disparaitre();");
+                PrimeFaces.current().executeScript("afficher();");
+                barVisisble = true;
+                searchResultVisible = true;
+                searchVisibleControle = true;
+                propositionBean.setPropositionVisibleControle(false);
+            } else if (!barVisisble) {
+                searchResultVisible = true;
+                PrimeFaces.current().executeScript("afficher();");
+                barVisisble = true;
+                searchVisibleControle = true;
+            }
         } else {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche de '" + searchValue + "' : Aucun resultat trouvée !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -390,10 +402,10 @@ public class SearchBean implements Serializable {
         Collections.sort(concepts);
         return concepts;
     }
-    
+
     public void afficherResultatRecherche() {
         if (propositionBean.isPropositionVisibleControle()) {
-            if(CollectionUtils.isEmpty(nodeConceptSearchs)) {
+            if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut faire une recherche avant !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 PrimeFaces.current().ajax().update("messageIndex");
@@ -424,7 +436,7 @@ public class SearchBean implements Serializable {
             }
         }
     }
-    
+
     public void setBarSearchStatus() {
         if (barVisisble) {
             PrimeFaces.current().executeScript("afficher();");
@@ -454,15 +466,15 @@ public class SearchBean implements Serializable {
                 connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(connect.getPoolConnexion(), 
+            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
                     idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
-        
+
         if (!nodeConceptSearchs.isEmpty()) {
             Collections.sort(nodeConceptSearchs);
             onSelectConcept(selectedTheso.getCurrentIdTheso(), nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
-        
+
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             if (nodeConceptSearchs.size() == 1) {
                 isSelectedItem = true;
@@ -476,7 +488,7 @@ public class SearchBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
@@ -487,7 +499,7 @@ public class SearchBean implements Serializable {
      * permet de retourner la liste des concepts qui ont une poly-hiérarchie
      */
     public void getAllDeprecatedConcepts() {
-        
+
         if (nodeConceptSearchs == null) {
             nodeConceptSearchs = new ArrayList<>();
         } else {
@@ -506,15 +518,15 @@ public class SearchBean implements Serializable {
 
         for (String idConcept : nodeSearchsId) {
             nodeConceptSearchs.add(conceptHelper.getConceptForSearch(
-                connect.getPoolConnexion(),idConcept,
-                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
+                    connect.getPoolConnexion(), idConcept,
+                    selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
-        
+
         if (!nodeConceptSearchs.isEmpty()) {
-            onSelectConcept(selectedTheso.getCurrentIdTheso(), 
+            onSelectConcept(selectedTheso.getCurrentIdTheso(),
                     nodeConceptSearchs.get(0).getIdConcept(), selectedTheso.getCurrentLang());
         }
-        
+
         if (nodeConceptSearchs != null && !nodeConceptSearchs.isEmpty()) {
             Collections.sort(nodeConceptSearchs);
             if (nodeConceptSearchs.size() == 1) {
@@ -529,7 +541,7 @@ public class SearchBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
@@ -581,7 +593,7 @@ public class SearchBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
@@ -633,7 +645,7 @@ public class SearchBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
@@ -686,7 +698,7 @@ public class SearchBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
@@ -746,7 +758,7 @@ public class SearchBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        
+
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
@@ -774,14 +786,14 @@ public class SearchBean implements Serializable {
         } catch (IOException ex) {
             Logger.getLogger(SearchBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         roleOnThesoBean.setSelectedThesoForSearch(roleOnThesoBean.getSelectedThesoForSearch().stream()
                 .filter(theso -> theso.contains(idTheso))
                 .collect(Collectors.toList()));
 
         conceptBean.getConcept(idTheso, idConcept, idLang);
         rightBodySetting.setIndex("0");
-        
+
     }
 
     public NodeSearchMini getSearchSelected() {
