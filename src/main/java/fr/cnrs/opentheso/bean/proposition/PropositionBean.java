@@ -198,6 +198,8 @@ public class PropositionBean implements Serializable {
                 propositionVisibleControle = true;
             }
         }
+        
+        PrimeFaces.current().ajax().update("containerIndex:notificationPanel");
     }
 
     public void afficherListPropositions() {
