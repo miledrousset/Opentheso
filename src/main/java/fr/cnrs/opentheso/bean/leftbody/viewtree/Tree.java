@@ -190,22 +190,25 @@ public class Tree implements Serializable {
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
+        DefaultTreeNode node = (DefaultTreeNode) event.getTreeNode();
+        onNodeExpand_(node);
+    }    
+    
+    private void onNodeExpand_(DefaultTreeNode node) {
         leftBodySetting.setIndex("0");
         manySiblings = false;
 
-        DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
-
-        if (parent.getChildCount() == 1 && ((TreeNode) parent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
-            parent.getChildren().remove(0);
-            idConceptParent = ((TreeNodeData) parent.getData()).getNodeId();
+        if (node.getChildCount() == 1 && ((TreeNode) node.getChildren().get(0)).getData().toString().equals("DUMMY")) {
+            node.getChildren().remove(0);
+            idConceptParent = ((TreeNodeData) node.getData()).getNodeId();
             FacetHelper facetHelper = new FacetHelper();
-            if ("facet".equals(parent.getType())) {
-                addMembersOfFacet(parent);
+            if ("facet".equals(node.getType())) {
+                addMembersOfFacet(node);
             } else {
                 if (facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), idConceptParent, idTheso)) {
-                    addConceptsChildWithFacets(parent);
+                    addConceptsChildWithFacets(node);
                 } else {
-                    addConceptsChild(parent);
+                    addConceptsChild(node);
                 }
             }
         }
@@ -489,17 +492,62 @@ public class Tree implements Serializable {
             }
         });
     }
+    
+    
+    public void selectThisFacet(String idFacet) {
+        /// chargement de l'arbre jusqu'au concept Parent de la Facette
+        FacetHelper facetHelper = new FacetHelper();
+        String idConceptParentOfFacet = facetHelper.getIdConceptParentOfFacet(connect.getPoolConnexion(), idFacet, idTheso);         
+        expandTreeToPath(idConceptParentOfFacet, idTheso, idLang);
+        onNodeExpand_((DefaultTreeNode)selectedNode);
+        
+        // rechercher la facette dans les fils et la sélectionner
+        expandToFacet(idFacet);
+        
+        indexSetting.setIsFacetSelected(true);
+        editFacet.initEditFacet(idFacet, idTheso, idLang);        
+        rightBodySetting.setIndex("0");
+    }
 
-    public void onNodeSelect(NodeSelectEvent event) {
+    private void expandToFacet(String idFacet){
+        selectedNode.setExpanded(true);
+        List<TreeNode> treeNodes = selectedNode.getChildren();
+        for (TreeNode treeNode : treeNodes) {
+            if (((TreeNodeData) treeNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
+                try {
+                    if(((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idFacet)){
+                        selectedNode.setSelected(false);
+                        selectedNode = treeNode;
+                        selectedNode.setSelected(true);
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }        
+    }
+    
+    /**
+     * récupération du noeud sélectionné dans l'arbre et appliquer les actions
+     * @param event 
+     */
+    public void onNodeSelect(NodeSelectEvent event) {    
+        DefaultTreeNode node = (DefaultTreeNode) event.getTreeNode();
+        onNodeSelectByNode(node);
+    }
+
+    /**
+     * appliquer les actions sur un noeud fourni par l'utilisateur
+     * @param node 
+     */
+    public void onNodeSelectByNode(DefaultTreeNode node) {
         
         alignmentManualBean.reset();
         propositionBean.setIsRubriqueVisible(false);
         rightBodySetting.setIndex("0");
         leftBodySetting.setIndex("0");
-        DefaultTreeNode parent = (DefaultTreeNode) event.getTreeNode();
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
 
-        if (!"facet".equals(parent.getType())) {
+        if (!"facet".equals(node.getType())) {
             indexSetting.setIsFacetSelected(false);
             idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
             
@@ -519,7 +567,7 @@ public class Tree implements Serializable {
             rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
-            editFacet.initEditFacet(((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
+            editFacet.initEditFacet(((TreeNodeData) node.getData()).getNodeId(), idTheso, idLang);
         }
         
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
@@ -629,6 +677,7 @@ public class Tree implements Serializable {
     //    leftBodySetting.setIndex("0");
         PrimeFaces.current().executeScript("srollToSelected();");
     }
+  
 
     public void expandTreeToPath2(String idConcept, String idTheso, String idLang, String idFacette) {
 

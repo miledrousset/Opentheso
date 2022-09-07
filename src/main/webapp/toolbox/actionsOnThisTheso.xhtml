@@ -56,7 +56,15 @@
                                 title="#{langueBean.getMsg('actions.importNotationsTooltip')}"
                                 oncomplete="PF('listNotationCsv').show();"
                                 update="idListNotationCsv listNotationCsvForm"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                     
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>      
+                    <p:divider style="margin-bottom: 10px;" />
+                    
+                    <!-- Import d'une liste tabulée pour fusionner avec les concepts existants -->
+                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.importListForMerging')}" 
+                                title="#{langueBean.getMsg('actions.importListForMergingTooltip')}"
+                                oncomplete="PF('listForMergeCsv').show();"
+                                update="idListForMergeCsv listForMergeCsvForm"
+                                action="#{importFileBean.init()}" icon="fa fa-code-merge" style="font-size: 12px;"/>
                 </p:menuButton>
             </p:panel>           
         </div>
@@ -68,4 +76,5 @@
     <ui:include src="../dialog/import/listArkCsv.xhtml" />      
     <ui:include src="../dialog/import/listImageCsv.xhtml" />      
     <ui:include src="../dialog/import/listNotationCsv.xhtml" />     
+    <ui:include src="../dialog/import/listForMergeCsv.xhtml" />      
 </ui:fragment>

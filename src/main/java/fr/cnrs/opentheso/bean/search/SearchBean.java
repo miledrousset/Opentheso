@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -58,6 +59,8 @@ public class SearchBean implements Serializable {
     private IndexSetting indexSetting;
     @Inject
     private TreeGroups treeGroups;
+    @Inject
+    private Tree tree;    
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
@@ -213,6 +216,10 @@ public class SearchBean implements Serializable {
             if (values[1].equalsIgnoreCase("isGroup")) {
                 treeGroups.selectThisGroup(idConcept);
             }
+            //action facet
+            if (values[1].equalsIgnoreCase("isFacet")) {
+                tree.selectThisFacet(idConcept);
+            }            
 
         } else {
             idConcept = searchSelected.getIdConcept();

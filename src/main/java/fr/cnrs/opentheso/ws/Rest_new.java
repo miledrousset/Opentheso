@@ -1505,8 +1505,9 @@ public class Rest_new {
         String value = null;
         String idLang = "";
         String idTheso = null;
-        String group = "";
-//        String format = null;
+        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
+        String [] arkGroups = null; // group peut être de la forme suivante pour multiGroup (psrbfdfdjsfh,fdsfdsfsf,kdhfjsdfhjhf)        
+        String format = null; // format = full (on renvoie les altLabel en plus)
 //        String filter = null;
 
         String datas;
@@ -1523,11 +1524,14 @@ public class Rest_new {
                     idTheso = valeur;
                 }
                 if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
+                    groups = valeur.split(",");
                 }
-//                if (e.getKey().equalsIgnoreCase("format")) {
-//                    format = valeur;
-//                }
+                if (e.getKey().equalsIgnoreCase("arkgroup")) {
+                    arkGroups = valeur.split(",");
+                }
+                if (e.getKey().equalsIgnoreCase("format")) {
+                    format = valeur;
+                }                
             }
         }
 
@@ -1537,7 +1541,11 @@ public class Rest_new {
         if (value == null) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        datas = getDatasForWidget(idTheso, idLang, group, value);
+        if(arkGroups != null && arkGroups.length != 0){
+            groups = getIdGroupFromArk(arkGroups);
+        }
+        
+        datas = getDatasForWidget(idTheso, idLang, groups, value, format);
         if (datas == null) {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
@@ -1547,7 +1555,24 @@ public class Rest_new {
                 .build();
         //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }    
-
+    
+    private String[] getIdGroupFromArk(String[] arkGroups) {
+        String[] groups = new String[arkGroups.length];
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            /// récupération des IdGroup si arkGroup est renseigné
+            GroupHelper groupHelper = new GroupHelper();
+            int i=0;
+            for (String arkGroup : arkGroups) {
+                groups[i] = groupHelper.getIdGroupFromArkId(ds, arkGroup);
+                i++;
+            }
+            ds.close();
+        }
+        return groups;
+    }    
 
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
@@ -1717,9 +1742,10 @@ public class Rest_new {
         }
         return datas;
     }
-
+    
     private String getDatasForWidget(String idTheso,
-                                     String idLang, String group, String value) {
+                                     String idLang, String[] groups, String value,
+                                     String format) {
         String datas;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
@@ -1727,7 +1753,7 @@ public class Rest_new {
             }
             RestRDFHelper restRDFHelper = new RestRDFHelper();
             datas = restRDFHelper.findDatasForWidget(ds,
-                    idTheso, idLang, group, value);
+                    idTheso, idLang, groups, value, format);
             ds.close();
         }
         if (datas == null) {
@@ -1764,6 +1790,7 @@ public class Rest_new {
     @Produces("application/rdf+xml;charset=UTF-8")
     public Response getBrancheOfConcepts(@Context UriInfo uri) {
         String idConcept = null;
+        String idArk = null;        
         String idTheso = null;
         String way = null;
         String format = null;
@@ -1773,6 +1800,9 @@ public class Rest_new {
                 if (e.getKey().equalsIgnoreCase("id")) {
                     idConcept = valeur;
                 }
+                if (e.getKey().equalsIgnoreCase("idark")) {
+                    idArk = valeur;
+                }                
                 if (e.getKey().equalsIgnoreCase("theso")) {
                     idTheso = valeur;
                 }
@@ -1784,8 +1814,18 @@ public class Rest_new {
                 }
             }
         }
-        if (idTheso == null || idConcept == null) {
+        if (idTheso == null || idTheso.isEmpty()) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        }
+        
+        if(idConcept == null || idConcept.isEmpty()) {
+            if(idArk == null || idArk.isEmpty()) {
+                return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            } else {
+                idConcept = getIdConceptFromArk(idArk);
+                if(idConcept == null)
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();                
+            }
         }
 
         if (format == null) {
@@ -1825,6 +1865,19 @@ public class Rest_new {
                 return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
         }
         return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+    }
+    
+    private String getIdConceptFromArk(String idArk){
+        String idConcept;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            ConceptHelper conceptHelper = new ConceptHelper();
+            idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk);
+
+        }
+        return idConcept;
     }
 
     private String getBranchOfConcepts(String idConcept,

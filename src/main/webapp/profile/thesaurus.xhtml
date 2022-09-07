@@ -61,14 +61,7 @@
                                             <!-- Vue liste de tous les utilisateurs -->
                                             <p:dataTable id="tabThesoProject" rendered="#{superAdminBean.allThesoProject != null}"
                                                          value="#{superAdminBean.allThesoProject}" var="listTheso" scrollable="true" resizableColumns="true" scrollHeight="600">
-
-                                                <f:facet name="header">
-                                                    <center>
-                                                        <h:outputText value="#{langueBean.getMsg('profile.list_of_all_thesauri')}" style="font-size: 15px; color: #C63632" />
-                                                    </center>
-                                                </f:facet>
-
-                                                <p:column headerText="ID Thesaurus" sortBy="#{listTheso.idThesaurus}" >
+                                                <p:column width="100px" headerText="Id" sortBy="#{listTheso.idThesaurus}" >
                                                     <h:outputText value="#{listTheso.idThesaurus}"/>
                                                 </p:column>
 
@@ -76,11 +69,11 @@
                                                     <h:outputText value="#{listTheso.thesaurusName}"/>
                                                 </p:column>
 
-                                                <p:column headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
+                                                <p:column width="250px" headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
                                                     <h:outputText value="#{listTheso.groupName}"/>
                                                 </p:column>
 
-                                                <p:column headerText="Action"> 
+                                                <p:column width="60px" headerText="Action"> 
                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                      actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName,  listTheso.idGroup)}"
                                                                      update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();"

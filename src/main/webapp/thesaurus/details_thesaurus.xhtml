@@ -17,9 +17,9 @@
                                 <h:outputText value=" #{langueBean.getMsg('leftbody.concept')}"/>
                             </f:facet>
                             <ui:include src="leftBodyView/tree.xhtml"/>
-                        </p:tab>                                            
+                        </p:tab>
                     </div>
-                    
+
                     <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
                         <p:tab id="viewTabList">
                             <f:facet name="title">
@@ -27,9 +27,9 @@
                                 <h:outputText value=" #{langueBean.getMsg('leftbody.index')}"/>
                             </f:facet>
                             <ui:include src="leftBodyView/list.xhtml"/>
-                        </p:tab>                                            
+                        </p:tab>
                     </div>
-                    
+
                     <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
                         <p:tab id="viewTabGroups">
                             <f:facet name="title">
@@ -37,20 +37,20 @@
                                 <h:outputText value=" #{langueBean.getMsg('leftbody.collection')}"/>
                             </f:facet>
                             <ui:include src="leftBodyView/groups.xhtml"/>
-                        </p:tab>                                            
+                        </p:tab>
                     </div>
-                    
+
                     <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style=" height: 100%">
                         <p:tab rendered="#{roleOnTheso.nodePreference.useConceptTree}" id="viewTabConceptTree">
                             <f:facet name="title">
                                 <i class="pi pi-sitemap" />
                                 <h:outputText value=" #{langueBean.getMsg('leftbody.tree')}"/>
                             </f:facet>
-                            <ui:include src="leftBodyView/conceptsTree.xhtml" />       
-                        </p:tab>                                     
-                    </div>                                        
+                            <ui:include src="leftBodyView/conceptsTree.xhtml" />
+                        </p:tab>
+                    </div>
                 </p:tabView>
-                
+
                 <ui:include src="../dialog/dragAndDrop/dragAndDrop.xhtml" />
             </h:form>
         </div>
@@ -75,7 +75,7 @@
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                             </f:facet>
                             <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
-                        </p:tab>           
+                        </p:tab>
 
                         <p:tab rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
@@ -85,7 +85,7 @@
                             <ui:include src="rightBodyView/alignement.xhtml"/>
                         </p:tab>
 
-                        <p:tab disabled="#{!propositionBean.isRubriqueVisible}" title="#{langueBean.getMsg('rightbody.newSuggest')}" >
+                        <p:tab rendered="#{roleOnTheso.nodePreference.suggestion}" disabled="#{!propositionBean.isRubriqueVisible}" title="#{langueBean.getMsg('rightbody.newSuggest')}" >
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                             </f:facet>
@@ -156,4 +156,6 @@
 
     <ui:include src="../dialog/related/deleteRelatedLink.xhtml" />   
     <ui:include src="../dialog/related/addRelatedLink.xhtml" />    
+
+
 </ui:composition>

@@ -599,6 +599,55 @@ public class ImportFileBean implements Serializable {
         }
     }
 
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
+    public void loadFileCsvForMerge(FileUploadEvent event) {
+        initError();
+
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            // première lecrture pour charger les langues
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+
+                if (!csvReadHelper.setLangs(reader1)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+                //deuxième lecture pour les données
+                try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
+                    /// option true to read empty data
+                    if (!csvReadHelper.readFile(reader2, true)) {
+                        error.append(csvReadHelper.getMessage());
+                    }
+
+                    warning = csvReadHelper.getMessage();
+                    conceptObjects = csvReadHelper.getConceptObjects();
+                    if (conceptObjects != null) {
+                        langs = csvReadHelper.getLangs();
+                        total = conceptObjects.size();
+                        uri = "";//csvReadHelper.getUri();
+                        loadDone = true;
+                        BDDinsertEnable = true;
+                        info = "File correctly loaded";
+                    }
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+        }
+    }
+
     public void loadFileCsvStrecture(FileUploadEvent event) throws IOException {
         total = 0;
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
@@ -662,7 +711,7 @@ public class ImportFileBean implements Serializable {
             idProject = Integer.parseInt(selectedUserProject);
         }
 
-        // préparer la langue source 
+        // préparer la langue source
         if (StringUtils.isEmpty(selectedLang)) {
             selectedLang = connect.getWorkLanguage();
         }
@@ -858,10 +907,75 @@ public class ImportFileBean implements Serializable {
         onComplete();
     }
 
+    /**
+     * insérer un thésaurus dans la BDD (CSV)
+     *
+     * @param idTheso
+     * @param idUser1
+     */
+    public void mergeCsvThesoToBDD(String idTheso, int idUser1) {
+
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+
+        if (conceptObjects == null || conceptObjects.isEmpty()) {
+            return;
+        }
+
+        if (importInProgress) {
+            return;
+        }
+
+        initError();
+
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+
+        // mise à jouor des concepts
+        try {
+            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                if(csvImportHelper.updateConcept(connect.getPoolConnexion(), idTheso, conceptObject, idUser1)) {
+                    total++;
+                }
+            }
+
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            //total = 0;
+            info = info + "\n" + "total = " + total + "\n" + csvImportHelper.getMessage();
+            roleOnThesoBean.showListTheso();
+            viewEditionBean.init();
+
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("toolBoxForm");
+                pf.ajax().update("toolBoxForm:listThesoForm");
+            }
+
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+
+        conceptObjects = null;
+        csvImportHelper = null;
+        System.gc();
+        System.gc();
+
+        onComplete();
+    }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////// Fonctions pour importer des données en CSV //////////////////
 ///////////////// L'ajout des données se fait en fusion  //////////////////////
-///////////////////////////////////////////////////////////////////////////////    
+///////////////////////////////////////////////////////////////////////////////
     /**
      * permet d'ajouter une liste de notes en CSV au thésaurus
      *
@@ -1389,24 +1503,24 @@ public class ImportFileBean implements Serializable {
                 if (conceptObject.getLocalId() == null || conceptObject.getLocalId().isEmpty()) {
                     continue;
                 }
-                if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+                if("ark".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId());
                 }
-                if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+                if("handle".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getLocalId());
-                }
-                if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+                } 
+                if("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)){
                     idConcept = conceptObject.getLocalId();
-                }
+                }  
                 if (idConcept == null || idConcept.isEmpty()) {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if (!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())) {
+                if(!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())){
                     continue;
-                }
+                }                
                 for (NodeIdValue nodeIdValue : conceptObject.getAlignments()) {
-                    if (alignmentHelper.deleteAlignmentByUri(connect.getPoolConnexion(),
+                    if(alignmentHelper.deleteAlignmentByUri(connect.getPoolConnexion(),
                             nodeIdValue.getValue().trim(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso())) {
@@ -1419,7 +1533,7 @@ public class ImportFileBean implements Serializable {
             BDDinsertEnable = false;
             importInProgress = false;
             uri = null;
-            info = "Suppression réussi, alignements supprimés = " + (int) total;
+            info = "Suppression réussi, alignements supprimés = " + (int)total;            
             total = 0;
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
@@ -1427,7 +1541,7 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
-    }
+    }    
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////Fin Ajout des alignements de Wikidata////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

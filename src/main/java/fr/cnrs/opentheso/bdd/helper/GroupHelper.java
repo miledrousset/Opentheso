@@ -2150,41 +2150,31 @@ public class GroupHelper {
         return nodeGroupList;
     }
 
+    /**
+     * retourne l'Id du parent du groupe
+     * @param ds
+     * @param idGRoup
+     * @param idThesaurus
+     * @return 
+     */
     public String getIdFather(HikariDataSource ds,
             String idGRoup, String idThesaurus) {
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         String idFather = null;
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select id_group1 from relation_group where id_thesaurus = '"
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_group1 from relation_group where id_thesaurus = '"
                             + idThesaurus + "'"
                             + " and id_group2 = '" + idGRoup + "'"
-                            + " and relation='sub'";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+                            + " and relation='sub'");
+                
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idFather = resultSet.getString("id_group1");
                     }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while  getChildrenOf: " + idThesaurus, sqle);
+            log.error("Error while  getFatherOf: " + idThesaurus, sqle);
         }
 
         return idFather;

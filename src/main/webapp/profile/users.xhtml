@@ -61,22 +61,18 @@
                                             <!-- Vue liste de tous les utilisateurs -->
                                             <p:dataTable scrollable="true" style="width: 100%" value="#{superAdminBean.nodeUserGroupUsers}" 
                                                          var="listUserRole" resizableColumns="true" scrollHeight="600" >
-                                                
-                                                <f:facet name="header">
-                                                    <center>
-                                                        <h:outputText value="#{langueBean.getMsg('profile.list_of_all_users')}" style="font-size: 15px; color: #C63632" />
-                                                    </center>
-                                                </f:facet>
-
-                                                <p:column headerText="#{langueBean.getMsg('profile.pseudo')}">
+                                                <p:column width="50px" headerText="Id">
+                                                    <h:outputText  value="#{listUserRole.idUser}" />
+                                                </p:column>
+                                                <p:column headerText="#{langueBean.getMsg('profile.pseudo')}" sortBy="#{listUserRole.userName}">
                                                     <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" value="#{listUserRole.userName}" />
                                                 </p:column>
 
-                                                <p:column headerText="#{langueBean.getMsg('profile.role')}">
+                                                <p:column headerText="#{langueBean.getMsg('profile.role')}" sortBy="#{listUserRole.roleName}">
                                                     <h:outputText value="#{listUserRole.roleName}"/>
                                                 </p:column>
 
-                                                <p:column headerText="#{langueBean.getMsg('profile.project')}">
+                                                <p:column headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listUserRole.groupName}">
                                                     <h:outputText value="#{listUserRole.groupName}"/>
                                                 </p:column>
 

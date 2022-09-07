@@ -61,7 +61,7 @@
             <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 3px; font-size: 12px;">
-                    <img src="#{request.contextPath}/resources/img/#{langueBean.idLangue}.png" width="30px" />
+                    <img src="#{request.contextPath}/resources/img/#{langueBean.idLangue}.png" width="25px" />
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                      aria-labelledby="alertsDropdown" style="font-size: 12px;">
@@ -72,7 +72,7 @@
                     <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('fr')}" 
                                    update="menuBar">
                         <div class="mr-3">
-                            <img src="#{request.contextPath}/resources/img/fr.png" width="30px" />
+                            <img src="#{request.contextPath}/resources/img/fr.png" width="25px" />
                         </div>
                         <div>
                             <span class="font-weight-bold" style="font-size: 12px;">#{langueBean.getMsg('menu.french')}</span>
@@ -81,7 +81,7 @@
                     <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('en')}" 
                                    update="menuBar">
                         <div class="mr-3">
-                            <img src="#{request.contextPath}/resources/img/en.png" width="30px" />
+                            <img src="#{request.contextPath}/resources/img/en.png" width="25px" />
                         </div>
                         <div>
                             <span class="font-weight-bold" style="font-size: 12px;">#{langueBean.getMsg('menu.english')}</span>
