@@ -562,8 +562,8 @@ public class ImportFileBean implements Serializable {
                 }
                 //deuxième lecture pour les données
                 try ( Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
-
-                    if (!csvReadHelper.readFile(reader2)) {
+                    // false to not read empty data
+                    if (!csvReadHelper.readFile(reader2, false)) {
                         error.append(csvReadHelper.getMessage());
                     }
 
