@@ -247,7 +247,7 @@
 
                                 <p:commandLink value="#{trad.lexicalValue} " title="#{conceptView.nodeConcept.concept.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                               update="containerIndex indexTitle"/>
+                                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch containerIndex:searchBar indexTitle"/>
                                 <br/>                                
                             </ui:repeat>
                         </h:panelGroup>

@@ -49,7 +49,7 @@
                                                         update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />                                            
                                             <p:menuitem value="Supprimer une note" 
                                                         actionListener="#{noteBean.reset()}" action="#{noteBean.setSelectedTypeNote('note')}"
-                                                        update="containerIndex:rightTab:idDeleteNoteProp" oncomplete="PF('deleteNoteProp').show();" icon="fas fa-plus"/>
+                                                        update="containerIndex:rightTab:idDeleteNoteProp" oncomplete="PF('deleteNoteProp').show();" icon="fas fa-minus"/>
                                         </p:menuButton>
                                     </h:panelGroup>
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 

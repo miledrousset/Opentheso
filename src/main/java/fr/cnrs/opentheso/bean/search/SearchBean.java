@@ -60,7 +60,7 @@ public class SearchBean implements Serializable {
     @Inject
     private TreeGroups treeGroups;
     @Inject
-    private Tree tree;    
+    private Tree tree;
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
@@ -86,7 +86,7 @@ public class SearchBean implements Serializable {
     private boolean searchResultVisible;
     private boolean searchVisibleControle;
     private boolean barVisisble;
-    
+
     private boolean isSearchInSpecificTheso;
 
     @PreDestroy
@@ -219,7 +219,7 @@ public class SearchBean implements Serializable {
             //action facet
             if (values[1].equalsIgnoreCase("isFacet")) {
                 tree.selectThisFacet(idConcept);
-            }            
+            }
 
         } else {
             idConcept = searchSelected.getIdConcept();
@@ -499,7 +499,7 @@ public class SearchBean implements Serializable {
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        afficherResultatRecherche();
+        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -552,7 +552,7 @@ public class SearchBean implements Serializable {
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        afficherResultatRecherche();
+        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -604,7 +604,7 @@ public class SearchBean implements Serializable {
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        afficherResultatRecherche();
+        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -656,7 +656,7 @@ public class SearchBean implements Serializable {
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        afficherResultatRecherche();
+        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -709,7 +709,7 @@ public class SearchBean implements Serializable {
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        afficherResultatRecherche();
+        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -769,7 +769,7 @@ public class SearchBean implements Serializable {
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        afficherResultatRecherche();
+        afficherResultatRechercheSpecific();
     }
 
     private void setViewsSearch() {
@@ -901,6 +901,22 @@ public class SearchBean implements Serializable {
 
     public void setIsSearchInSpecificTheso(boolean isSearchInSpecificTheso) {
         this.isSearchInSpecificTheso = isSearchInSpecificTheso;
+    }
+
+    private void afficherResultatRechercheSpecific() {
+        if (propositionBean.isPropositionVisibleControle()) {
+            PrimeFaces.current().executeScript("disparaitre();");
+            PrimeFaces.current().executeScript("afficher();");
+            barVisisble = true;
+            searchResultVisible = true;
+            searchVisibleControle = true;
+            propositionBean.setPropositionVisibleControle(false);
+        } else if (!barVisisble) {
+            searchResultVisible = true;
+            PrimeFaces.current().executeScript("afficher();");
+            barVisisble = true;
+            searchVisibleControle = true;
+        }
     }
 
 }
