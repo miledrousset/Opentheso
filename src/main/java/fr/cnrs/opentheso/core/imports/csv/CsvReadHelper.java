@@ -495,6 +495,9 @@ public class CsvReadHelper {
 
                 // on récupère la date
                 conceptObject = getDates(conceptObject, record);
+                
+                // on récupère les images 
+                conceptObject = getImages(conceptObject, record, readEmptyData);                
 
                 conceptObjects.add(conceptObject);
                 uri1 = null;
@@ -877,6 +880,59 @@ public class CsvReadHelper {
 
         return conceptObject;
     }
+    
+    /**
+     * permet de charger toutes les images d'un concept
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getImages(
+            ConceptObject conceptObject,
+            CSVRecord record, boolean readEmptyData) {
+        String value;
+        String values[];
+
+        // foaf:Image
+   /*     
+ <foaf:Image rdf:about="http://www.peterparker.com/photos/spiderman/statue.jpg">
+
+   <dc:title>Battle on the Statue Of Liberty</dc:title>
+
+   
+
+   <foaf:depicts rdf:resource="#spiderman"/>
+
+   <foaf:depicts rdf:resource="#green-goblin"/>
+
+   
+
+   <foaf:maker rdf:resource="#peter"/>   
+
+ </foaf:Image>        */
+        
+        
+        
+        try {
+            value = record.get("foaf:Image");
+            values = value.split("##");
+            for (String value1 : values) {
+                if(readEmptyData){
+                    conceptObject.exactMatchs.add(value1.trim());
+                } else {
+                    if (!value1.isEmpty()) {
+                        conceptObject.exactMatchs.add(value1.trim());
+                    }                    
+                }
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+        return conceptObject;
+    }    
+    
+    
 
     /**
      * permet de charger toutes les relations d'un concept
