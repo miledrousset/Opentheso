@@ -36,13 +36,13 @@ public class ExportHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from get_concepts('"+idTheso+"', 'http://localhost:8080', '"+idLang+"') as x(URI text, TYPE varchar,  LOCAL_URI text, " +
-                        "IDENTIFIER varchar, ARK_ID varchar, prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, " +
-                        "editorialNote text, changeNote text, secopeNote text, note text, historyNote text, notation varchar, narrower text, " +
-                        "broader text, related text, exactMatch text, closeMatch text, broadMatch text, " +
-                        "relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, membre text, " +
-                        "created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, date_candidat varchar, " +
-                        "message_candidat varchar, vote_candidat text, messages_candidat text);");
+                stmt.executeQuery("select * from opentheso_get_concepts('"+idTheso+"', 'http://localhost:8080', '"+idLang+"') as x(URI text, TYPE varchar,  LOCAL_URI text, \n" +
+"				IDENTIFIER varchar, ARK_ID varchar, prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, \n" +
+"				editorialNote text, changeNote text, secopeNote text, note text, historyNote text, notation varchar, narrower text, \n" +
+"				broader text, related text, exactMatch text, closeMatch text, broadMatch text, \n" +
+"				relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, membre text, \n" +
+"				created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, date_candidat varchar, \n" +
+"				message_candidat varchar, vote_candidat text, messages_candidat text, creator text, contributor text);");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -75,7 +75,7 @@ public class ExportHelper {
                         addAlignementGiven(resultSet.getString("closeMatch"), sKOSResource, SKOSProperty.closeMatch);
                         addAlignementGiven(resultSet.getString("broadMatch"), sKOSResource, SKOSProperty.broadMatch);
                         addAlignementGiven(resultSet.getString("relatedmatch"), sKOSResource, SKOSProperty.relatedMatch);
-                        //addAlignementGiven(resultSet.getString("narrowmatch"), sKOSResource, SKOSProperty.narrowMatch);
+                        addAlignementGiven(resultSet.getString("narrowMatch"), sKOSResource, SKOSProperty.narrowMatch);
 
                         addRelations(resultSet.getString("broader"), sKOSResource, SKOSProperty.topConceptOf, idTheso);
 
@@ -91,23 +91,24 @@ public class ExportHelper {
                             sKOSResource.addNotation(resultSet.getString("notation"));
                         }
                         
-                        /*
-                        conceptDao.setMembre(resultSet.getString("membre"));*/
+                        addImages(sKOSResource, resultSet.getString("img"));
+                        
+                        //addMembres(sKOSResource, resultSet.getString("membre"));
 
                         if (resultSet.getString("latitude") != null || resultSet.getString("longitude") != null) {
                             sKOSResource.setGPSCoordinates(new SKOSGPSCoordinates(
                                     resultSet.getDouble("latitude"), resultSet.getDouble("longitude")));
                         }
 
-                        /*
+                        
                         // createur et contributeur
-                        if (nodeConcept.getConcept().getCreatorName()!= null && !nodeConcept.getConcept().getCreatorName().isEmpty()) {
-                            sKOSResource.addCreator(nodeConcept.getConcept().getCreatorName(), SKOSProperty.creator);
+                        if (resultSet.getString("creator") != null) {
+                            sKOSResource.addCreator(resultSet.getString("creator"), SKOSProperty.creator);
                         }
-                        if (nodeConcept.getConcept().getContributorName()!= null && !nodeConcept.getConcept().getContributorName().isEmpty()) {
-                            sKOSResource.addCreator(nodeConcept.getConcept().getContributorName(), SKOSProperty.contributor);
+                        if (resultSet.getString("contributor") != null) {
+                            sKOSResource.addCreator(resultSet.getString("contributor"), SKOSProperty.contributor);
                         }
-                         */
+                        
                         if (StringUtils.isNotEmpty(resultSet.getString("created"))) {
                             sKOSResource.addDate(resultSet.getString("created"), SKOSProperty.created);
                         }
@@ -155,6 +156,18 @@ public class ExportHelper {
         }
 
         return concepts;
+    }
+    
+    private void addMembres(SKOSResource resource, String textBrut) {
+        if (StringUtils.isNotEmpty(textBrut)) {
+            String[] tabs = textBrut.split(SEPERATEUR);
+
+            for (String tab : tabs) {
+                String[] element = tab.split(SUB_SEPERATEUR);
+                
+                
+            }
+        }
     }
 
     private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
@@ -215,14 +228,15 @@ public class ExportHelper {
         }
     }
     
-    /*private void getImages() {
-        
-        if(nodeConcept.getNodeimages() != null || (!nodeConcept.getNodeimages().isEmpty())) {
-            for (String imageUri : nodeConcept.getNodeimages()) {
-                sKOSResource.addImageUri(imageUri);
+    private void addImages(SKOSResource resource, String textBrut) {
+        if (StringUtils.isNotEmpty(textBrut)) {
+            String[] images = textBrut.split(SEPERATEUR);
+            for (String image : images) {
+                 resource.addImageUri(image);
             }
         }
-    }*/
+    }
+    
     private void setStatusOfConcept(String status, SKOSResource sKOSResource) {
         switch (status.toLowerCase()) {
             case "ca":

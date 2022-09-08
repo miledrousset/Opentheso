@@ -342,6 +342,8 @@ DECLARE
 	message_candidat VARCHAR;
 	vote_candidat text;
 	messages_candidat text;
+	creator text;
+	contributor text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -518,14 +520,17 @@ BEGIN
 		img = '';
 		FOR img_rec IN SELECT * FROM opentheso_get_images(id_theso, con.id_concept)
 		LOOP
-			img = img || img_rec.name || sous_seperateur || img_rec.url || seperateur;
+			img = img || img_rec.url || seperateur;
 		END LOOP;
+		
+		SELECT username INTO creator FROM users WHERE id_user = con.creator;
+		SELECT username INTO contributor FROM users WHERE id_user = con.contributor;
 		
 		
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example, 
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch, 
 				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, 
-				membre, con.created, con.modified, img, status_candidat, date_candidat, message_candidat, vote_candidat, messages_candidat INTO rec;
+				membre, con.created, con.modified, img, status_candidat, date_candidat, message_candidat, vote_candidat, messages_candidat, creator, contributor INTO rec;
 		
   		RETURN NEXT rec;
     END LOOP;

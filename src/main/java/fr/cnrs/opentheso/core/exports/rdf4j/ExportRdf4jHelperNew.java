@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;

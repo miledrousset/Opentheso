@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.importexport;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.ExportHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
@@ -515,7 +514,9 @@ public class ExportFileBean implements Serializable {
             return new DefaultStreamedContent();
         }
 
-        SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId(), "fr");
+        
+        SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId(), 
+                selectedTheso.getCurrentLang());
 
         if (skosxd == null) {
             return null;
@@ -630,14 +631,15 @@ public class ExportFileBean implements Serializable {
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(),
                 viewExportBean.getNodeIdValueOfTheso().getId(), nodePreference);
 
-        List<SKOSResource> concepts;
         if (!viewExportBean.isToogleFilterByGroup()) {
             exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
         } else {
             exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, 
                     viewExportBean.getSelectedIdGroups());
         }
-        concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, idLang);
+        
+        List<SKOSResource> concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, idLang);
+        
         for (SKOSResource concept : concepts) {
             exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
         }
