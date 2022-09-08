@@ -840,3 +840,7 @@ body .ui-state-hover .ui-state-focus .ui-state-active .ui-state-default .ui-stat
 footer.sticky-footer {
     padding: 1.2rem 0;
 }
+
+body .ui-button.ui-button-text-only .ui-button-text {
+    font-size: 12px;
+}

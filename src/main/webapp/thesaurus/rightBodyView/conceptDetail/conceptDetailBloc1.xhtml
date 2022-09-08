@@ -25,7 +25,7 @@
                             </p:menuButton>
                         </h:panelGroup>                        
 
-                        <h:outputText id="textPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.term.lang})"
+                        <h:outputText id="textPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}  [#{conceptView.nodeConcept.term.getLangInUpperCase()}]"
                                       style="
                                       font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
                                       font-size: 1.1rem;
@@ -33,6 +33,7 @@
                                       color: #666666;
                                       font-weight: bold;
                                       text-shadow: none;" />
+                        
                         <p:tooltip for="textPrefLabel" value="#{conceptView.nodeConcept.concept.idConcept}" showDelay="1000" />
 
                         <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"

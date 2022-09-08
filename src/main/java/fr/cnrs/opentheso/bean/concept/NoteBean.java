@@ -268,6 +268,8 @@ public class NoteBean implements Serializable {
                 propositionBean.getProposition().getChangeNotes().add(notePropBean);
                 break;
         }
+        
+        propositionBean.checkNotePropositionStatus();
     }
 
     private void showErrorMessageNote() {
@@ -516,6 +518,8 @@ public class NoteBean implements Serializable {
                 }
                 break;
         }
+        
+        propositionBean.checkNotePropositionStatus();
     }
 
     public ArrayList<NodeNote> nodeToEdit() {
@@ -758,6 +762,8 @@ public class NoteBean implements Serializable {
                 }
                 break;
         }
+        
+        propositionBean.checkNotePropositionStatus();
     }
 
     private boolean addConceptNote(int idUser) {

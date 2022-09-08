@@ -40,9 +40,10 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex" style="min-height:100%; position:relative;">
-                    <div>
+                    
+                    <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
-                    </div>
+                    </h:panelGroup>
 
                     <div class="container-fluid">
 
@@ -64,10 +65,14 @@
 
                         <p:panel rendered="#{viewEditionBean.isViewImportCsv}">
                             <ui:include src="edition/viewImportCsv.xhtml" />
-                        </p:panel>  
+                        </p:panel>
 
                         <p:panel rendered="#{viewEditionBean.isViewNewTheso}">
                             <ui:include src="edition/viewNewTheso.xhtml" />
+                        </p:panel>  
+
+                        <p:panel rendered="#{viewEditionBean.isViewImportCSVStructure}">
+                            <ui:include src="edition/viewImportCsvStrecture.xhtml" />
                         </p:panel>  
 
                         <p:panel rendered="#{viewEditionBean.isExportView()}">

@@ -15,8 +15,7 @@
         <!-- liste des thésaurus -->
         <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" 
                          style="color: #000; height: 28px; max-width: 400px" filter="true" filterMatchMode="contains">
-            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}"
-                    update="containerIndex" />
+            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
         </p:selectOneMenu>
@@ -41,10 +40,9 @@
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
-            <h:panelGroup rendered="#{currentUser.isAlertVisible() and roleOnTheso.nodePreference.suggestion}"
+            <h:panelGroup rendered="#{currentUser.isAlertVisible() and menuBean.notificationPannelVisible}"
                           style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
-                <p:commandLink actionListener="#{propositionBean.afficherListPropositions()}"
-                               update="containerIndex" rendered="#{propositionBean.nbrNewPropositions > 0}" >
+                <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}" rendered="#{propositionBean.nbrNewPropositions > 0}" >
                     <p:badge value="#{propositionBean.nbrNewPropositions}"
                              style="background: #ff0000; color: #ffffff; font-size: 0.6rem;
                              font-weight: 700; min-width: 1rem; height: 1rem; line-height: 1rem;">
@@ -52,8 +50,7 @@
                     </p:badge>
                 </p:commandLink>
 
-                <p:commandLink actionListener="#{propositionBean.afficherListPropositions()}"
-                               update="containerIndex"  rendered="#{propositionBean.nbrNewPropositions == 0}">
+                <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}" rendered="#{propositionBean.nbrNewPropositions == 0}">
                     <i class="pi pi-bell" styleClass="p-mr-2" style="color: #d1d3e2; font-size: 1.1rem" />
                 </p:commandLink>
             </h:panelGroup>
@@ -143,9 +140,8 @@
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  update="logoutID"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" 
-                                 process="@this"
-                                 actionListener="#{currentUser.disconnect(true)}"/>
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                                 ajax="true" actionListener="#{currentUser.disconnect(true)}"/>
             </div>
         </f:facet>
     </p:dialog>

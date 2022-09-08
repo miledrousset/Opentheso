@@ -26,8 +26,8 @@
                     <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                      update="confirmDialogId" actionListener="PF('confirmDialog').hide();" />
 
-                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" 
-                                     process="@this" update="containerIndex messageIndex"
+                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" ajax="true"
+                                     process="@this" update="containerIndex:contentConcept containerIndex:notificationPanel messageIndex"
                                      actionListener="#{propositionBean.executionAction()}"/>
                 </div>
             </f:facet>
@@ -67,7 +67,7 @@
                     </div>
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
                         <div class="col-12">
-                            <p:inputTextarea value="#{propositionBean.commentaire}" rows="6" cols="33" style="width: 100%"/>
+                            <p:textEditor widgetVar="editor2" secure="false" value="#{propositionBean.commentaire}" height="300"  />
                         </div>
                     </div>
                 </div>
@@ -125,24 +125,44 @@
                             </div>
                         </div>
                     </h:panelGroup>
+
+                    <h:panelGroup rendered="#{propositionBean.showButtonDecision()}">  
+                        <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 20px">
+                            <div class="col-12">
+                                <h:outputText value="Commentaire de l'adminisatrateur : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                        </div>
+
+                        <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                            <div class="col-12">
+                                <p:textEditor widgetVar="editor1" value="#{propositionBean.commentaireAdmin}" secure="false" height="300"  />
+                            </div>
+                        </div>
+                    </h:panelGroup>
                 </div>
             </div>
             <div class="row">
                 <div class="col-3">
-                    <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" styleClass="ui-button-secondary" style="margin-right: 10px" 
-                                     ajax="true" process="@this" update="containerIndex messageIndex" 
-                                     actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}" />
+                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" rendered="#{propositionBean.showButtonDecision()}"
+                                     actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept" 
+                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
+                                     icon="pi pi-chevron-left" />
                 </div>
                 <div class="col-9" style="text-align: right;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.remove')}"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}"
+                                     ajax="true" process="@this" icon="fa fa-regular fa-trash" update="messageIndex" 
+                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f" />
+                    
                     <p:commandButton value="#{langueBean.getMsg('proposition.refuser')}" rendered="#{propositionBean.showButtonDecision()}"
-                                     actionListener="#{propositionBean.preparerConfirmationDialog('refuserProposition')}"
-                                     update="containerIndex messageIndex" style="margin-right: 10px; background-color: red"
-                                     styleClass="p-mr-2" icon="pi pi-check" />
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('refuserProposition')}" ajax="true" process="@this"
+                                     update="messageIndex" style="margin-right: 10px; background-color: red"
+                                     styleClass="p-mr-2" icon="pi pi-times-circle" />
 
-                    <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="containerIndex messageIndex"
+                    <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="messageIndex"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('approuverProposition')}"
-                                     style="background-color: #43B572; border-color: #43B572;"
-                                     styleClass="p-mr-2" icon="pi pi-check" rendered="#{propositionBean.showButtonDecision()}" />
+                                     style="background-color: #43B572; border-color: #43B572;" ajax="true" process="@this"
+                                     styleClass="p-mr-2" icon="pi pi-check-circle" rendered="#{propositionBean.showButtonDecision()}" />
                 </div>
             </div>
         </h:panelGroup>

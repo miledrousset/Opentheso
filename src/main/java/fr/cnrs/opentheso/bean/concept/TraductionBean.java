@@ -250,6 +250,7 @@ public class TraductionBean implements Serializable {
         traductionProp.setIdTerm(conceptBean.getNodeConcept().getTerm().getId_term());
         traductionProp.setToAdd(true);
         propositionBean.getProposition().getTraductionsProp().add(traductionProp);
+        propositionBean.setTraductionAccepted(true);
         
     }
 
@@ -352,8 +353,11 @@ public class TraductionBean implements Serializable {
                     propositionBean.getProposition().getTraductionsProp().get(i).setToUpdate(true);
                     propositionBean.getProposition().getTraductionsProp().get(i).setLexicalValue(traductionPropBean.getLexicalValue());
                 }
+                propositionBean.setTraductionAccepted(propositionBean.getProposition().getTraductionsProp().get(i).isToUpdate());
             }
         }
+        
+        propositionBean.checkTraductionPropositionStatus();
     }
 
     /**
@@ -505,6 +509,8 @@ public class TraductionBean implements Serializable {
                 }
             }
         }
+        
+        propositionBean.checkTraductionPropositionStatus();
     }
 
     public String getSelectedLang() {

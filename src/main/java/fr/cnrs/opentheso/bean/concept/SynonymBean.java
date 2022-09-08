@@ -5,7 +5,6 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
-import com.ctc.wstx.util.StringUtil;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
@@ -227,6 +226,7 @@ public class SynonymBean implements Serializable {
         synonymPropBean.setLexical_value(value);
         synonymPropBean.setOldValue(value);
         propositionBean.getProposition().getSynonymsProp().add(synonymPropBean);
+        propositionBean.setVarianteAccepted(true);
     }
 
     /**
@@ -568,6 +568,8 @@ public class SynonymBean implements Serializable {
                 }
             }
         }
+        
+        propositionBean.checkSynonymPropositionStatus();
     }
 
     /**
@@ -691,6 +693,8 @@ public class SynonymBean implements Serializable {
                 }
             }
         }
+        
+        propositionBean.checkSynonymPropositionStatus();
     }
 
     public void cancel() {

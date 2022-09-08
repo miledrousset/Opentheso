@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.Socket;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Arrays;
 import javax.faces.application.FacesMessage;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 
 
@@ -73,6 +75,8 @@ public class SelectedTheso implements Serializable {
     private String thesoName;
     private boolean sortByNotation;
     
+    private boolean isNetworkAvailable;
+    
     private String localUri;
 
     private List<AlignementElement> listAlignementElement;
@@ -106,6 +110,8 @@ public class SelectedTheso implements Serializable {
             return;
         }
         
+        isNetworkAvailable = hostAvailabilityCheck();
+        
         ///////
         ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
@@ -119,6 +125,14 @@ public class SelectedTheso implements Serializable {
         
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
+    }
+    
+    public boolean hostAvailabilityCheck() { 
+        try (Socket s = new Socket("countryflagsapi.com", 80)) {
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }
     }
 
     public void init() {
@@ -169,12 +183,20 @@ public class SelectedTheso implements Serializable {
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
         connect.setLocalUri(localUri);
         
-        searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
         if (isUriRequest) {
             isUriRequest = false;
-            menuBean.redirectToThesaurus();
+            
+            if (searchBean.isBarVisisble()) {
+                searchBean.setNodeConceptSearchs(new ArrayList<>());
+                searchBean.setBarVisisble(false);
+                PrimeFaces.current().executeScript("disparaitre();");
+            }
+            
+            //if (!"index".equals(menuBean.getActivePageName())) {
+                menuBean.redirectToThesaurus();
+            //}
             return;
         }
 
@@ -194,7 +216,27 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
             }
             
-            menuBean.redirectToThesaurus();
+            if (searchBean.isBarVisisble()) {
+                searchBean.setNodeConceptSearchs(new ArrayList<>());
+                searchBean.setBarVisisble(false);
+                PrimeFaces.current().executeScript("disparaitre();");
+            }
+            
+            //if (!"index".equals(menuBean.getActivePageName())) {
+                menuBean.redirectToThesaurus();
+            //}
+        /*
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("containerIndex:contentConcept");
+                pf.ajax().update("containerIndex:thesoSelect");
+                pf.ajax().update("containerIndex:sideBarSearch");
+                pf.ajax().update("containerIndex:searchBar");
+                pf.ajax().update("containerIndex:header");
+                pf.ajax().update("containerIndex:notificationPanel");
+                pf.ajax().update("containerIndex:contentConcept");
+            }
+            */
             return;
         }
 
@@ -203,7 +245,16 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
-            menuBean.redirectToThesaurus();
+            
+            if (searchBean.isBarVisisble()) {
+                searchBean.setNodeConceptSearchs(new ArrayList<>());
+                searchBean.setBarVisisble(false);
+                PrimeFaces.current().executeScript("disparaitre();");
+            }
+            
+            //if (!"index".equals(menuBean.getActivePageName())) {
+                menuBean.redirectToThesaurus();
+            //}
             return;
         }
 
@@ -221,8 +272,24 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.setSelectedThesoForSearch(Arrays.asList(selectedIdTheso));
             }
         }
-
+        
+        if (searchBean.isBarVisisble()) {
+            searchBean.setNodeConceptSearchs(new ArrayList<>());
+            searchBean.setBarVisisble(false);
+            PrimeFaces.current().executeScript("disparaitre();");
+        }
         menuBean.redirectToThesaurus();
+        /*
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("containerIndex:contentConcept");
+            pf.ajax().update("containerIndex:thesoSelect");
+            pf.ajax().update("containerIndex:sideBarSearch");
+            pf.ajax().update("containerIndex:searchBar");
+            pf.ajax().update("containerIndex:header");
+            pf.ajax().update("containerIndex:notificationPanel");
+            pf.ajax().update("containerIndex:contentConcept");
+        }*/
     }
     
     
@@ -381,19 +448,33 @@ public class SelectedTheso implements Serializable {
 
     private void startNewLang() {
         currentLang = selectedLang;
+        
         treeGroups.reset();
         tree.reset();
         listIndex.reset();
-        searchBean.reset();
 
         // initialisation de l'arbre des groupes
         treeGroups.initialise(selectedIdTheso, selectedLang);
         treeConcepts.initialise(selectedIdTheso, selectedLang);
         tree.initialise(selectedIdTheso, selectedLang);
+        
         if (!isActionFromConcept) {
             conceptBean.init();
         }
         isActionFromConcept = false;
+
+        searchBean.onSelectConcept(selectedIdTheso, tree.getIdConceptSelected(), selectedLang);
+        
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.executeScript("srollToSelected()");
+        }
+        
+        if (searchBean.isBarVisisble()) {
+            searchBean.setNodeConceptSearchs(new ArrayList<>());
+            searchBean.setBarVisisble(false);
+            PrimeFaces.current().executeScript("disparaitre();");
+        }
     }
 
     private String getIdLang() {
@@ -571,6 +652,10 @@ public class SelectedTheso implements Serializable {
 
     public void setOptionThesoSelected(String optionThesoSelected) {
         this.optionThesoSelected = optionThesoSelected;
+    }
+
+    public boolean isIsNetworkAvailable() {
+        return isNetworkAvailable;
     }
 
 }
