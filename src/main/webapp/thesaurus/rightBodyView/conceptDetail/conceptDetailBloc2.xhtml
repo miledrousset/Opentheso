@@ -230,24 +230,19 @@
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}" > 
                             <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
-                                
                                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
                                     <p:spacer width="3" rendered="#{status2.first}" />
                                     <p:spacer width="40" rendered="#{!status2.first}" />
                                 </h:panelGroup>
                                 
-                                <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
-                                    <img src="#{conceptView.getDrapeauImg(trad.codePays)}" width="20" height="15" style="margin-right: 7px"/>
-                                </h:panelGroup>
+                                <img src="#{conceptView.getDrapeauImg(trad.codePays)}" width="20" height="15" style="margin-right: 7px"/>
 
-                                <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
-                                    <h:outputLabel value="[#{trad.lang}]" style="margin-right: 7px" />
-                                </h:panelGroup>
 
                                 <p:commandLink value="#{trad.lexicalValue} " title="#{conceptView.nodeConcept.concept.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
                                                update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch containerIndex:searchBar indexTitle"/>
+                                <h:outputText value=" (#{trad.lang})" style="font-size: 14px; font-weight: 300; margin-left: 5px; "/>
                                 <br/>                                
                             </ui:repeat>
                         </h:panelGroup>

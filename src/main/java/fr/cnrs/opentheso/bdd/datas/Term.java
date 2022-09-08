@@ -16,13 +16,20 @@ public class Term {
     private boolean prefered;
     private boolean hidden;
     private String idUser;
-    
+    private String codePays;    
     private int contributor;
     private int creator;
 
     public Term() {
     }
 
+    public String getCodePays() {
+        return codePays;
+    }
+
+    public void setCodePays(String codePays) {
+        this.codePays = codePays;
+    }
     public String getId_term() {
         return id_term;
     }
