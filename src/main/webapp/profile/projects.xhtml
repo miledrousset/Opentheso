@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
     </h:head>
 
-    <h:body id="page-top" onload="initMenu()">
+    <h:body id="page-top" onload="initMenu()" style="margin:0; padding:0; height:100%;">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -39,12 +39,13 @@
 
             <div id="content-wrapper" style="width: 100%">
 
-                <h:form id="containerIndex">
-                    <div>
+                <h:form id="containerIndex" style="min-height:100%; position:relative;">
+                    
+                    <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
-                    </div>
+                    </h:panelGroup>
 
-                    <div class="container-fluid">
+                    <div class="container-fluid" style="padding-bottom: 70px">
 
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_projects')}</span></h1>
@@ -61,14 +62,11 @@
                                             <p:dataTable id="tabUser" rendered="#{superAdminBean.allProjects != null}" value="#{superAdminBean.allProjects}" 
                                                          var="listProject" scrollable="true" resizableColumns="true" scrollHeight="600">
                                                 
-                                                <f:facet name="header">
-                                                    <center>
-                                                        <h:outputText value="#{langueBean.getMsg('profile.list_of_all_projects')}" style="font-size: 15px; color: #C63632" />
-                                                    </center>
-                                                </f:facet>
-
+                                                <p:column width="60px" headerText="Id" >
+                                                    <h:outputText value="#{listProject.idGroup}"/>
+                                                </p:column>                                                
                                                 <p:column headerText="#{langueBean.getMsg('profile.name')}" >
-                                                    <h:outputText value="#{listProject.groupName} (#{listProject.idGroup})"/>
+                                                    <h:outputText value="#{listProject.groupName}"/>
                                                 </p:column>
 
                                                 <f:facet name="footer">

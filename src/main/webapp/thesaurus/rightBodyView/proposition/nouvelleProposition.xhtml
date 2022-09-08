@@ -1,0 +1,170 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
+             xmlns:p="http://primefaces.org/ui">
+
+    <h:panelGroup id="propositionView" styleClass="textOpentheso" style="margin: 20px">
+
+        <ui:include src="TermProposition.xhtml" />
+
+        <ui:include src="TraductionProposition.xhtml" />
+
+        <ui:include src="NoteProposition.xhtml" />
+
+        <p:dialog id="confirmDialogId" header="#{langueBean.getMsg('profile.confirmation')}" widgetVar="confirmDialog" 
+                  width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="#{propositionBean.message}" />  
+                </div>
+            </div>
+
+            <f:facet name="footer">
+                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                                     update="confirmDialogId" actionListener="PF('confirmDialog').hide();" />
+
+                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" ajax="true"
+                                     process="@this" update="containerIndex:contentConcept containerIndex:notificationPanel messageIndex"
+                                     actionListener="#{propositionBean.executionAction()}"/>
+                </div>
+            </f:facet>
+        </p:dialog>
+
+        <h:panelGroup rendered="#{!currentUser.nodeUser.isSuperAdmin}">
+            <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
+                <div class="list-group">
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-3">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.name')} * : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:inputText value="#{propositionBean.nom}" rendered="#{currentUser.nodeUser == null}" />
+                            <h:outputText value="#{currentUser.nodeUser.name}" 
+                                          rendered="#{currentUser.nodeUser != null}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-3">
+                            <h:outputText value="#{langueBean.getMsg('profile.email')} * : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:inputText value="#{propositionBean.email}" rendered="#{currentUser.nodeUser.mail == null}" />
+                            <h:outputText value="#{currentUser.nodeUser.mail}" 
+                                          rendered="#{currentUser.nodeUser != null}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-12">
+                            <h:outputText value="#{langueBean.getMsg('proposition.commentaire')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-12">
+                            <p:textEditor widgetVar="editor2" secure="false" value="#{propositionBean.commentaire}" height="300"  />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12" style="text-align: right;">
+                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" 
+                                     style="margin-right: 10px" ajax="true" process="@this"
+                                     update="containerIndex:rightTab" actionListener="#{propositionBean.preparerConfirmationDialog('annulerProposition')}" />
+
+
+                    <p:commandButton icon="pi pi-send" value="#{langueBean.getMsg('rightbody.sendProposal')}"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}" 
+                                     update="containerIndex messageIndex"/>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}">
+            <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
+                <div class="list-group">
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                        <div class="col-3">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.name')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:outputText value="#{propositionBean.nom}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                        <div class="col-3">
+                            <h:outputText value="#{langueBean.getMsg('profile.email')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <div class="col-9">
+                            <h:outputText value="#{propositionBean.email}" 
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                    </div>
+
+                    <h:panelGroup rendered="#{propositionBean.commentaire != null and propositionBean.commentaire.length() > 0}">  
+
+                        <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
+                            <div class="col-12">
+                                <h:outputText value="#{langueBean.getMsg('proposition.commentaire')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                        </div>
+
+                        <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                            <div class="col-12">
+                                <p:inputTextarea value="#{propositionBean.commentaire}" 
+                                                 disabled="true" rows="6" cols="33" style="width: 100%"/>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{propositionBean.showButtonDecision()}">  
+                        <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 20px">
+                            <div class="col-12">
+                                <h:outputText value="Commentaire de l'adminisatrateur : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                        </div>
+
+                        <div class="row" style=" margin-left: 15px; margin-right: 15px">
+                            <div class="col-12">
+                                <p:textEditor widgetVar="editor1" value="#{propositionBean.commentaireAdmin}" secure="false" height="300"  />
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" rendered="#{propositionBean.showButtonDecision()}"
+                                     actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept" 
+                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
+                                     icon="pi pi-chevron-left" />
+                </div>
+                <div class="col-9" style="text-align: right;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.remove')}"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}"
+                                     ajax="true" process="@this" icon="fa fa-regular fa-trash" update="messageIndex" 
+                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f" />
+                    
+                    <p:commandButton value="#{langueBean.getMsg('proposition.refuser')}" rendered="#{propositionBean.showButtonDecision()}"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('refuserProposition')}" ajax="true" process="@this"
+                                     update="messageIndex" style="margin-right: 10px; background-color: red"
+                                     styleClass="p-mr-2" icon="pi pi-times-circle" />
+
+                    <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="messageIndex"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('approuverProposition')}"
+                                     style="background-color: #43B572; border-color: #43B572;" ajax="true" process="@this"
+                                     styleClass="p-mr-2" icon="pi pi-check-circle" rendered="#{propositionBean.showButtonDecision()}" />
+                </div>
+            </div>
+        </h:panelGroup>
+    </h:panelGroup>
+</ui:fragment>

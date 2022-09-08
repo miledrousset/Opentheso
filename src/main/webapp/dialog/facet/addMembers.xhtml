@@ -4,12 +4,12 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idAddMembersFacette" header="Gérer les concepts membres" widgetVar="addMembersFacette" 
+    <p:dialog id="idAddMembersFacette" header="#{langueBean.getMsg('leftbody.addExistingConcepts')}" widgetVar="addMembersFacette" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Facette: " />  
+                <h:outputText value="#{langueBean.getMsg('leftbody.facet')} : " />  
             </div>
             <div class="col-7">
                 <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: #42a068;" />
@@ -18,7 +18,7 @@
         
         <div class="row">
             <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Rechercher un concept" style="font-size: 12px; width: 100%" />
+                <h:outputText value="#{langueBean.getMsg('leftbody.SearchAConcept')}" style="font-size: 12px; width: 100%" />
             </div>
             <div class="col-7">
                 <p:autoComplete value="#{editFacet.conceptSelected}" var="concept"
@@ -36,10 +36,10 @@
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  actionListener="PF('addMembersFacette').hide();" update="idAddMembersFacette"/>
 
-                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
                                  update="containerIndex messageIndex" oncomplete="PF('addMembersFacette').hide();"
                                  actionListener="#{editFacet.addMemberToFacet()}"/>
             </div>

@@ -39,10 +39,11 @@
 
             <div id="content-wrapper" style="width: 100%">
 
-                <h:form id="containerIndex">
-                    <div>
+                <h:form id="containerIndex" style="min-height:100%; position:relative;">
+
+                    <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
-                    </div>
+                    </h:panelGroup>
 
                     <div class="container-fluid">
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -233,7 +234,20 @@
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.displayUserName}" style="font-size: 12px;" />
                                                 </div>
                                             </div>
-                                        </div>                                          
+                                        </div>    
+                                        
+                                        <!-- Activer/ désactiver les suggestions / propositions de modification d'un concept -->
+                                        <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                            <div class="row" style="padding-top: 3px;">
+                                                <div class="col-3" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="Activer les propostions de modifications pour les concepts"
+                                                                  style="font-size: 14px; font-weight: bold;"/>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p:toggleSwitch value="#{preferenceBean.nodePreference.suggestion}" style="font-size: 12px;" />
+                                                </div>
+                                            </div>
+                                        </div>                                            
 
                                         <div class="row" style="padding-top: 5px;">
                                             <div class="col-3" />

@@ -7,6 +7,7 @@ public class Languages_iso639 {
     private String id_iso639_2;
     private String english_name;
     private String french_name;
+    private String codePays;
 
     public Languages_iso639() {
     }
@@ -41,6 +42,14 @@ public class Languages_iso639 {
 
     public void setFrench_name(String french_name) {
         this.french_name = french_name;
+    }
+
+    public String getCodePays() {
+        return codePays;
+    }
+
+    public void setCodePays(String codePays) {
+        this.codePays = codePays;
     }
 
 }

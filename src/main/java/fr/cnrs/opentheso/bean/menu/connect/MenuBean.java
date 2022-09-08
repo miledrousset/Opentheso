@@ -7,6 +7,8 @@ import fr.cnrs.opentheso.bean.menu.users.NewUSerBean;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
+import fr.cnrs.opentheso.bean.proposition.PropositionBean;
+import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.bean.setting.CorpusBean;
 import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
@@ -27,6 +29,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "menuBean")
 @SessionScoped
 public class MenuBean implements Serializable {
+
+    @Inject 
+    private SearchBean searchBean;
 
     @Inject 
     private SuperAdminBean superAdminBean;
@@ -64,6 +69,13 @@ public class MenuBean implements Serializable {
     @Inject 
     private CurrentUser currentUser;
     
+    @Inject
+    private PropositionBean propositionBean;
+    
+    private boolean notificationPannelVisible;
+    
+    private String activePageName = "index";
+    
     
     
     public boolean checkIfUserIsConnected() throws IOException {
@@ -76,82 +88,143 @@ public class MenuBean implements Serializable {
     
     // LOGIN Page
     public void redirectToThesaurus() throws IOException {
+        activePageName = "index";
+        notificationPannelVisible = true;
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/index.xhtml");
     }
     
     // LOGIN Page
     public void redirectToCandidatPage() throws IOException {
+        initSearchBar();
+        activePageName = "candidat";
+        notificationPannelVisible = false;
         candidatBean.initCandidatModule();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/candidat/candidat.xhtml");
     }
     
     // MENU Profile
     public void redirectToUsersPage() throws IOException {
+        initSearchBar();
+        activePageName = "users";
+        notificationPannelVisible = false;
         superAdminBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/users.xhtml");
     }
 
     public void redirectToProjetsPage() throws IOException {
+        initSearchBar();
+        activePageName = "Projects";
+        notificationPannelVisible = false;
         superAdminBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/projects.xhtml");
     }
 
     public void redirectToThesorusPage() throws IOException {
+        initSearchBar();
+        activePageName = "thesorus";
+        notificationPannelVisible = false;
         superAdminBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/thesaurus.xhtml");
     }
     
     public void redirectToMyProfilePage() throws IOException {
+        initSearchBar();
+        activePageName = "myAccount";
+        notificationPannelVisible = false;
         myAccountBean.reset();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/myAccount.xhtml");
     }
     
     public void redirectToMesProjectsPage() throws IOException {
+        initSearchBar();
+        activePageName = "myProject";
+        notificationPannelVisible = false;
         myProjectBean.init();
         newUSerBean.clear();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/myProject.xhtml");
     }
     
     // MENU Paramètres
     public void redirectToIdetifiantPage() throws IOException {
+        initSearchBar();
+        activePageName = "identifier";
+        notificationPannelVisible = false;
         preferenceBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/identifier.xhtml");
     }
     
     public void redirectToPreferencePage() throws IOException {
+        initSearchBar();
+        activePageName = "preference";
+        notificationPannelVisible = false;
         preferenceBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/preference.xhtml");
     }
     
     public void redirectToCorpusPage() throws IOException {
+        initSearchBar();
+        activePageName = "corpus";
+        notificationPannelVisible = false;
         corpusBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/corpus.xhtml");
     }
     
     ///Boite à outils
     public void redirectToEditionPage() throws IOException {
+        initSearchBar();
+        activePageName = "edition";
+        notificationPannelVisible = false;
         viewEditionBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/edition.xhtml");
     }
     
     public void redirectToAtelierPage() throws IOException {
+        initSearchBar();
+        activePageName = "atelier";
         atelierThesBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/atelier.xhtml");
     }
     
     public void redirectToMaintenancePage() throws IOException {
+        initSearchBar();
+        activePageName = "service";
+        notificationPannelVisible = false;
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", 
                     "Vous devez choisir un Thesorus avant !"));
@@ -160,11 +233,16 @@ public class MenuBean implements Serializable {
             return;
         }
         atelierThesBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/service.xhtml");
     }
     
     public void redirectToStatistiquePage() throws IOException {
+        initSearchBar();
+        activePageName = "statistic";
+        notificationPannelVisible = false;
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", 
                     "Vous devez choisir un Thesorus avant !"));
@@ -173,14 +251,39 @@ public class MenuBean implements Serializable {
             return;
         }
         statistiqueBean.init();
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/statistic.xhtml");
     }
 
     // LOGIN Page
     public void redirectToLoginPage() throws IOException {
+        initSearchBar();
+        activePageName = "login";
+        notificationPannelVisible = false;
+        propositionBean.searchNewPropositions();
+        propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/login.xhtml");
+    }
+
+    public boolean isNotificationPannelVisible() {
+        return notificationPannelVisible;
+    }
+
+    public void setNotificationPannelVisible(boolean notificationPannelVisible) {
+        this.notificationPannelVisible = notificationPannelVisible;
+    }
+
+    public String getActivePageName() {
+        return activePageName;
+    }
+    
+    private void initSearchBar() {
+        searchBean.setBarVisisble(false);
+        searchBean.setSearchResultVisible(false);
+        searchBean.setSearchVisibleControle(false);
     }
     
 }

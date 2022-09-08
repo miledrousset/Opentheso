@@ -5,7 +5,6 @@
  */
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import com.jsf2leaf.model.Polyline;
 import com.jsf2leaf.model.LatLong;
 import com.jsf2leaf.model.Layer;
 import com.jsf2leaf.model.Map;
@@ -47,6 +46,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -68,6 +68,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
 
@@ -93,8 +94,6 @@ public class ConceptView implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
     private SelectedTheso selectedTheso;
-    @Inject
-    private SearchBean searchBean;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -126,11 +125,9 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> historyNotes;
     
     private List<ResponsiveOption> responsiveOptions;
-
-
-    @PostConstruct
-    public void postInit() {
-    }
+    
+    private boolean toggleSwitchAltLabelLang;
+    private boolean toggleSwitchNotesLang;    
 
     @PreDestroy
     public void destroy() {
@@ -198,6 +195,8 @@ public class ConceptView implements Serializable {
             isUriRequest = false;
             return;
         }*/
+        toggleSwitchAltLabelLang = false;
+        toggleSwitchNotesLang = false;
         if (nodeConcept != null) {
             nodeConcept.clear();
         }
@@ -264,6 +263,15 @@ public class ConceptView implements Serializable {
             historyNotes.clear();        
     }
     
+    public String getDrapeauImg(String codePays) {
+        if (StringUtils.isEmpty(codePays)) {
+            return FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequestContextPath() + "/resources/img/nu.svg";
+        }
+        
+        return "https://countryflagsapi.com/png/" + codePays;      
+    }
+    
     /**
      * récuparation des informations pour le concept sélectionné c'est pour la
      * navigation entre les concepts dans la vue de droite avec deployement de
@@ -283,10 +291,17 @@ public class ConceptView implements Serializable {
         if (nodeConcept.getNodeGps() != null) {
             initMap();
         }
-
-        setNotes();
-
         selectedLang = idLang;
+        if(toggleSwitchAltLabelLang) {
+            getAltLabelWithAllLanguages();
+        }
+        if(toggleSwitchNotesLang) {
+            getNotesWithAllLanguages();
+        } else {
+            setNotes();
+        }
+
+
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
@@ -318,7 +333,6 @@ public class ConceptView implements Serializable {
             }
         }
         
-        searchBean.setSearchResultVisible(true);
         countOfBranch = 0;
     }
 
@@ -332,14 +346,24 @@ public class ConceptView implements Serializable {
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
         offset = 0; 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
-        if (nodeConcept != null) {
-            if(roleOnThesoBean.getNodePreference().isBreadcrumb())
-                pathOfConcept(idTheso, idConcept, idLang);
-            setNotes();
-            setOffset();
+        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
+        if(nodeConcept == null) return;
+
+        if(roleOnThesoBean.getNodePreference().isBreadcrumb())
+            pathOfConcept(idTheso, idConcept, idLang);
+
+        if(toggleSwitchAltLabelLang) {
+            getAltLabelWithAllLanguages();
         }
+        if(toggleSwitchNotesLang) {
+            getNotesWithAllLanguages();
+        } else {
+            setNotes();
+        }
+        
+        setOffset();
+
+
         // récupération des informations sur les corpus liés
         CorpusHelper corpusHelper = new CorpusHelper();
         haveCorpus = false;
@@ -365,17 +389,39 @@ public class ConceptView implements Serializable {
      */
     public void getNotesWithAllLanguages(){
         NoteHelper noteHelper = new NoteHelper();
-        nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
-                connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));  
-        nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
-                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));          
+        if(toggleSwitchNotesLang) {
+            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
+                    connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));  
+            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
+                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));             
+        } else {
+            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(
+                    connect.getPoolConnexion(),
+                    nodeConcept.getTerm().getId_term(),
+                    nodeConcept.getConcept().getIdThesaurus(),
+                    selectedLang));             
+                   
+            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConcept(
+                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
+                    nodeConcept.getConcept().getIdThesaurus(),
+                    selectedLang));               
+        }
+        
+         
         setNotes();
     }
     
     public void getAltLabelWithAllLanguages(){
         TermHelper termHelper = new TermHelper();
-        nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
+        
+        if(toggleSwitchAltLabelLang)
+            nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
                 connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));  
+        else
+            nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(connect.getPoolConnexion(),
+                    nodeConcept.getTerm().getId_term(),
+                    nodeConcept.getConcept().getIdThesaurus(),
+                    selectedLang));
     }    
     
     
@@ -420,9 +466,6 @@ public class ConceptView implements Serializable {
         mapModel.setLayerControl(false);
         mapModel.setDraggingEnabled(true);
         mapModel.setZoomEnabled(true);
-  //      mapModel.setUrlTemplate("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png");
-    //    mapModel.setUrlTemplate("http://b.tile.osm.org/13/4334/2723.png");
-
         mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
     }
 
@@ -605,7 +648,6 @@ public class ConceptView implements Serializable {
             return count;
         } catch (Exception e) {
             System.err.println(e + " " + jsonText + " " + nodeConcept.getConcept().getIdConcept());
-            // Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, e + " " + jsonText);
             return -1;
         }
     }
@@ -759,6 +801,10 @@ public class ConceptView implements Serializable {
             }
         }
     }
+    
+    public void changeStateAltLabelOtherLang() {
+        
+    }
 
     public NodeConcept getNodeConcept() {
         return nodeConcept;
@@ -885,5 +931,22 @@ public class ConceptView implements Serializable {
     public void setNodeFacets(ArrayList<NodeIdValue> nodeFacets) {
         this.nodeFacets = nodeFacets;
     }
+
+    public boolean isToggleSwitchAltLabelLang() {
+        return toggleSwitchAltLabelLang;
+    }
+
+    public void setToggleSwitchAltLabelLang(boolean toggleSwitchAltLabelLang) {
+        this.toggleSwitchAltLabelLang = toggleSwitchAltLabelLang;
+    }
+
+    public boolean isToggleSwitchNotesLang() {
+        return toggleSwitchNotesLang;
+    }
+
+    public void setToggleSwitchNotesLang(boolean toggleSwitchNotesLang) {
+        this.toggleSwitchNotesLang = toggleSwitchNotesLang;
+    }
+
 
 }

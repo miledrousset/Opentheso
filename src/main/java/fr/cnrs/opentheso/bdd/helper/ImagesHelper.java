@@ -98,6 +98,12 @@ public class ImagesHelper {
     /**
      * Pemret de supprimer l'URI d'une image, donc la suppression de l'accès à
      * l'image distante
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param uri
+     * @return 
      */
     public boolean deleteExternalImage(HikariDataSource ds, String idConcept, String idThesaurus, String uri) {
 
@@ -114,6 +120,30 @@ public class ImagesHelper {
         }
         return status;
     }
+    
+    /**
+     * Pemret de supprimer toutes les images, d'un concept
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
+     */
+    public boolean deleteAllExternalImage(HikariDataSource ds, String idConcept, String idThesaurus) {
+
+        boolean status = false;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from external_images where id_thesaurus = '" + idThesaurus + "'"
+                        + " and id_concept  = '" + idConcept + "'");
+                status = true;
+
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while deleting external Image of Concept : " + idConcept, sqle);
+        }
+        return status;
+    }    
 
     /**
      * Permet de récupérer les URI des images distantes qui sont liées au

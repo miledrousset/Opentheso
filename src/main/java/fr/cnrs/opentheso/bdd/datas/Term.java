@@ -50,6 +50,10 @@ public class Term {
     public String getLang() {
         return lang;
     }
+    
+    public String getLangInUpperCase() {
+        return lang.toUpperCase();
+    }
 
     public void setLang(String lang) {
         this.lang = lang;

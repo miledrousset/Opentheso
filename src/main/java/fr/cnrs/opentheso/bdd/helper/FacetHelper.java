@@ -136,17 +136,6 @@ public class FacetHelper {
                         + " FROM thesaurus_array "
                         + " WHERE thesaurus_array.id_thesaurus = '" + idThesaurus + "'"
                         + " AND thesaurus_array.id_concept_parent = '" + idConcept + "'");
-            /*    stmt.executeQuery("SELECT thesaurus_array.id_facet " +
-                        " FROM thesaurus_array, node_label  " +
-                        " WHERE" +
-                        " thesaurus_array.id_thesaurus = node_label.id_thesaurus" +
-                        " and" +
-                        " thesaurus_array.id_facet = node_label.id_facet" +
-                        " and" +
-                        " thesaurus_array.id_thesaurus = '" + idThesaurus + "' " +
-                        " AND thesaurus_array.id_concept_parent = '" + idConcept + "'" +
-                        " order by node_label.lexical_value");*/
-
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         listIdFacets.add(resultSet.getString("id_facet"));
@@ -211,6 +200,37 @@ public class FacetHelper {
         }
 
         return nodeFacet;
+    }    
+    
+    /**
+     * permet de retourner l'id parent d'une facette
+     *
+     * @param ds
+     * @param idFacet
+     * @param idThesaurus
+     * @return
+     */
+    public String getIdConceptParentOfFacet(HikariDataSource ds, String idFacet, String idThesaurus) {
+        String idParentFacet = null;
+        try (Connection conn = ds.getConnection()){
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT thesaurus_array.id_concept_parent"
+                            + " FROM thesaurus_array"
+                            + " WHERE"
+                            + " thesaurus_array.id_facet ='" + idFacet + "'"
+                            + " and thesaurus_array.id_thesaurus = '" + idThesaurus + "'");
+
+                try( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        idParentFacet = resultSet.getString("id_concept_parent");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting idParent of Facet : " + idFacet, sqle);
+        }
+        return idParentFacet;
     }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -630,7 +630,7 @@ public class UserHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT * FROM users order by username");
+                stmt.executeQuery("SELECT * FROM users order by f_unaccent(lower(username))");
                 try (ResultSet resultSet = stmt.getResultSet()) {    
                     while (resultSet.next()) {
                         NodeUser nodeUser = new NodeUser();
@@ -861,7 +861,7 @@ public class UserHelper {
                             + " WHERE"
                             + " user_role_group.id_user = users.id_user AND"
                             + " user_group_label.id_group = user_role_group.id_group AND"
-                            + " roles.id = user_role_group.id_role order by lower (users.username) ASC");
+                            + " roles.id = user_role_group.id_role order by f_unaccent(lower(username)) ASC");
                 try (ResultSet resultSet = stmt.getResultSet()) {     
                     while (resultSet.next()) {
                         NodeUserGroupUser nodeUserGroupUser = new NodeUserGroupUser();
@@ -903,7 +903,8 @@ public class UserHelper {
                             + " users.issuperadmin != true"
                             + " and"
                             + " users.id_user not in"
-                            + " (select user_role_group.id_user from user_role_group)");
+                            + " (select user_role_group.id_user from user_role_group)"
+                            + " order by f_unaccent(lower(username))");
                 try (ResultSet resultSet = stmt.getResultSet()) { 
                     while (resultSet.next()) {
                         NodeUserGroupUser nodeUserGroupUser = new NodeUserGroupUser();
@@ -933,10 +934,10 @@ public class UserHelper {
         
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user, username FROM users where issuperadmin = true order by username");
+                stmt.executeQuery("SELECT id_user, username FROM users where issuperadmin = true order by f_unaccent(lower(username))");
                 try (ResultSet resultSet = stmt.getResultSet()) { 
-                    NodeUserGroupUser nodeUserGroupUser = new NodeUserGroupUser();
                     while (resultSet.next()) {
+                        NodeUserGroupUser nodeUserGroupUser = new NodeUserGroupUser();
                         nodeUserGroupUser.setIdUser(resultSet.getString("id_user"));
                         nodeUserGroupUser.setUserName(resultSet.getString("username"));
                         nodeUserGroupUser.setIdGroup(-1);

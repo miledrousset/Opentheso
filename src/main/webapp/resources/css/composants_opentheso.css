@@ -305,7 +305,8 @@ body .ui-tree {
     border-collapse: collapse;
     padding: 0.1rem;
     margin-left: -1rem;
-    margin-right: -1.8rem;
+    margin-right: -1.7rem;
+    margin-bottom: -0.8rem;
    /* margin-top: -0.8rem;*/
     /* display: ruby-text;*/
 
@@ -780,4 +781,66 @@ body .ui-sidebar .ui-sidebar-close .ui-icon {
     text-align: center;
     padding: 0.75rem 1rem;
     width: 4.5rem;
+}
+
+.sidebar.toggled .nav-item .collapse {
+    position: absolute;
+    left: calc(5.5rem + 1.5rem / 2);
+    z-index: 1;
+    top: 2px;
+    animation-name: growIn;
+    animation-duration: 200ms;
+    animation-timing-function: transform cubic-bezier(0.18, 1.25, 0.4, 1), opacity cubic-bezier(0, 1, 0.4, 1);
+}
+
+body .ui-badge {
+    background: #ff0000;
+    color: #ffffff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    min-width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+}
+
+element.style {
+    width: 100%;
+    height: 100%;
+    overflow: overlay;
+    border: none;
+    padding: -10px;
+}
+
+body .ui-button.ui-button-text-only .ui-button-text {
+    padding: 0.3rem 0.4rem;
+}
+
+body .ui-selectbooleanbutton.ui-state-active, body .ui-selectonebutton > .ui-button.ui-state-active, body .ui-selectmanybutton > .ui-button.ui-state-active {
+    background: #f47b2a;
+    border-color: #f47b2a;
+    color: #ffffff;
+}
+
+body .ui-selectbooleanbutton.ui-state-active, body .ui-selectonebutton > .ui-button.ui-state-active, body .ui-selectmanybutton > .ui-button.ui-state-active {
+    background: #f47b2a;
+    border-color: #f47b2a;
+    color: #ffffff;
+}
+
+body .ui-state-hover .ui-state-focus .ui-state-active .ui-state-default .ui-state-highlight {
+    background: #f47b2a;
+    color: #ffffff;
+    border: 1px solid #f47b2a;
+    margin: 0;
+    outline: 0 none;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+footer.sticky-footer {
+    padding: 1.2rem 0;
+}
+
+body .ui-button.ui-button-text-only .ui-button-text {
+    font-size: 12px;
 }
