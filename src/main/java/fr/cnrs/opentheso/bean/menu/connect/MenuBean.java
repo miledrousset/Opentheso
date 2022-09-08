@@ -68,6 +68,10 @@ public class MenuBean implements Serializable {
     @Inject
     private PropositionBean propositionBean;
     
+    private boolean notificationPannelVisible;
+    
+    private String activePageName = "index";
+    
     
     
     public boolean checkIfUserIsConnected() throws IOException {
@@ -80,6 +84,8 @@ public class MenuBean implements Serializable {
     
     // LOGIN Page
     public void redirectToThesaurus() throws IOException {
+        activePageName = "index";
+        notificationPannelVisible = true;
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
@@ -88,6 +94,8 @@ public class MenuBean implements Serializable {
     
     // LOGIN Page
     public void redirectToCandidatPage() throws IOException {
+        activePageName = "candidat";
+        notificationPannelVisible = false;
         candidatBean.initCandidatModule();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -97,6 +105,8 @@ public class MenuBean implements Serializable {
     
     // MENU Profile
     public void redirectToUsersPage() throws IOException {
+        activePageName = "users";
+        notificationPannelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -105,6 +115,8 @@ public class MenuBean implements Serializable {
     }
 
     public void redirectToProjetsPage() throws IOException {
+        activePageName = "Projects";
+        notificationPannelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -113,6 +125,8 @@ public class MenuBean implements Serializable {
     }
 
     public void redirectToThesorusPage() throws IOException {
+        activePageName = "thesorus";
+        notificationPannelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -121,6 +135,8 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToMyProfilePage() throws IOException {
+        activePageName = "myAccount";
+        notificationPannelVisible = false;
         myAccountBean.reset();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -129,6 +145,8 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToMesProjectsPage() throws IOException {
+        activePageName = "myProject";
+        notificationPannelVisible = false;
         myProjectBean.init();
         newUSerBean.clear();
         propositionBean.searchNewPropositions();
@@ -139,6 +157,8 @@ public class MenuBean implements Serializable {
     
     // MENU Paramètres
     public void redirectToIdetifiantPage() throws IOException {
+        activePageName = "identifier";
+        notificationPannelVisible = false;
         preferenceBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -147,6 +167,8 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToPreferencePage() throws IOException {
+        activePageName = "preference";
+        notificationPannelVisible = false;
         preferenceBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -155,6 +177,8 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToCorpusPage() throws IOException {
+        activePageName = "corpus";
+        notificationPannelVisible = false;
         corpusBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -164,6 +188,8 @@ public class MenuBean implements Serializable {
     
     ///Boite à outils
     public void redirectToEditionPage() throws IOException {
+        activePageName = "edition";
+        notificationPannelVisible = false;
         viewEditionBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -172,6 +198,7 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToAtelierPage() throws IOException {
+        activePageName = "atelier";
         atelierThesBean.init();
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
@@ -180,6 +207,8 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToMaintenancePage() throws IOException {
+        activePageName = "service";
+        notificationPannelVisible = false;
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", 
                     "Vous devez choisir un Thesorus avant !"));
@@ -195,6 +224,8 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToStatistiquePage() throws IOException {
+        activePageName = "statistic";
+        notificationPannelVisible = false;
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", 
                     "Vous devez choisir un Thesorus avant !"));
@@ -211,10 +242,24 @@ public class MenuBean implements Serializable {
 
     // LOGIN Page
     public void redirectToLoginPage() throws IOException {
+        activePageName = "login";
+        notificationPannelVisible = false;
         propositionBean.searchNewPropositions();
         propositionBean.setIsRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/login.xhtml");
+    }
+
+    public boolean isNotificationPannelVisible() {
+        return notificationPannelVisible;
+    }
+
+    public void setNotificationPannelVisible(boolean notificationPannelVisible) {
+        this.notificationPannelVisible = notificationPannelVisible;
+    }
+
+    public String getActivePageName() {
+        return activePageName;
     }
     
 }

@@ -234,7 +234,7 @@ public class TermHelper {
                             + " and id_term  = '" + idTerm + "'"
                             + " and lexical_value  = '" + lexicalValue + "'"
                             + " and lang  = '" + idLang + "'");
-                
+
                 addNonPreferredTermHistorique(conn, idTerm, lexicalValue, idLang, idTheso, "", "", false, "delete", idUser);
                 isPassed = true;
             }
@@ -292,7 +292,6 @@ public class TermHelper {
                             + ",'" + status + "'"
                             + "," + isHidden + ")";
 
-                    //   System.out.println("SQL 2 : " + query);
                     stmt.executeUpdate(query);
                     if (addNonPreferredTermHistorique(conn, idTerm, value, idLang, idTheso, source, status, isHidden, "ADD", idUser)) {
                         conn.commit();
@@ -553,7 +552,7 @@ public class TermHelper {
                     while (resultSet.next()) {
                         lexicalValue = resultSet.getString("lexical_value");
                     }
-                }    
+                }
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -1500,8 +1499,6 @@ public class TermHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                /* System.out.println("SQL 1 : " + "SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
-                        + "' and id_concept = '" + idConcept + "'");*/
                 stmt.executeQuery("SELECT id_term FROM preferred_term WHERE id_thesaurus = '" + idThesaurus
                         + "' and id_concept = '" + idConcept + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
@@ -1852,46 +1849,33 @@ public class TermHelper {
     public ArrayList<NodeTermTraduction> getTraductionsOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus, String idLang) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         ArrayList<NodeTermTraduction> nodeTraductionsList = null;
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT term.id_term, term.lexical_value, term.lang FROM"
-                            + " term, preferred_term WHERE"
-                            + " term.id_term = preferred_term.id_term"
-                            + " and term.id_thesaurus = preferred_term.id_thesaurus"
-                            + " and preferred_term.id_concept = '" + idConcept + "'"
-                            + " and term.lang != '" + idLang + "'"
-                            + " and term.id_thesaurus = '" + idThesaurus + "'"
-                            + " order by term.lexical_value";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("SELECT term.id_term, term.lexical_value, lang.code_pays, lang.iso639_1, " +
+                        "CASE WHEN '"+idLang+"' = 'fr' THEN lang.french_name ELSE lang.english_name END lang_name " +
+                        "FROM term, preferred_term, languages_iso639 lang " +
+                        "WHERE term.id_term = preferred_term.id_term " +
+                        "and term.id_thesaurus = preferred_term.id_thesaurus " +
+                        "and term.lang = lang.iso639_1 " +
+                        "and preferred_term.id_concept = '" + idConcept + "' " +
+                        "and term.lang != '" + idLang + "' " +
+                        "and term.id_thesaurus = '" + idThesaurus + "' " +
+                        "order by term.lexical_value");
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet != null) {
                         nodeTraductionsList = new ArrayList<>();
                         while (resultSet.next()) {
                             NodeTermTraduction nodeTraductions = new NodeTermTraduction();
-                            nodeTraductions.setLang(resultSet.getString("lang"));
+                            nodeTraductions.setCodePays(resultSet.getString("code_pays"));
+                            nodeTraductions.setLang(resultSet.getString("iso639_1"));
                             nodeTraductions.setLexicalValue(resultSet.getString("lexical_value"));
+                            nodeTraductions.setNomLang(resultSet.getString("lang_name"));
                             nodeTraductionsList.add(nodeTraductions);
                         }
                     }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception

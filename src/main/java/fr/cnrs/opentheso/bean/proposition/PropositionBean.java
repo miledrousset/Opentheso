@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
 import fr.cnrs.opentheso.bean.proposition.service.PropositionService;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.bean.search.SearchBean;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -51,21 +52,24 @@ public class PropositionBean implements Serializable {
     @Inject
     private PropositionService propositionService;
 
+    @Inject
+    private SearchBean searchBean;
+
     private boolean isRubriqueVisible;
     private Proposition proposition;
-    private String nom, email, commentaire;
+    private String nom, email, commentaire, commentaireAdmin;
     private String message;
     private String actionNom;
-    private String showAllPropositions;
-    private int nbrNewPropositions;
+    private String showAllPropositions = "1";
+    private int nbrNewPropositions, filter2 = 1;
 
     private PropositionDao propositionSelected;
     private List<PropositionDao> propositions;
-    
-    
-    public PropositionBean() {
-        showAllPropositions = "1";
-    }
+
+    private boolean propositionVisibleControle;
+    private boolean prefTermeAccepted, varianteAccepted, traductionAccepted,
+            noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
+            editorialNotesAccepted, examplesAccepted, historyAccepted;
 
     public void onSelectConcept(PropositionDao propositionDao) throws IOException {
 
@@ -87,23 +91,135 @@ public class PropositionBean implements Serializable {
         nom = propositionDao.getNom();
         email = propositionDao.getEmail();
 
-        propositions = propositionService.searchAllPropositions();
+        chercherProposition();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
+        
+        //afficherListPropositions();
+        varianteAccepted = false;
+        traductionAccepted = false;
+        noteAccepted = false;
+        definitionAccepted = false;
+        changeNoteAccepted = false;
+        scopeAccepted = false;
+        editorialNotesAccepted = false;
+        examplesAccepted = false;
+        historyAccepted = false;
+
+        prefTermeAccepted = proposition.isUpdateNomConcept();
+        checkSynonymPropositionStatus();
+        checkTraductionPropositionStatus();
+        checkNotePropositionStatus();
+    }
+
+    public void checkSynonymPropositionStatus() {
+        for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
+            if (synonymPropBean.isToAdd() || synonymPropBean.isToRemove()
+                    || synonymPropBean.isToUpdate()) {
+                varianteAccepted = true;
+            }
+        }
+    }
+
+    public void checkTraductionPropositionStatus() {
+        for (TraductionPropBean traductionPropBean : proposition.getTraductionsProp()) {
+            if (traductionPropBean.isToAdd() || traductionPropBean.isToRemove()
+                    || traductionPropBean.isToUpdate()) {
+                traductionAccepted = true;
+            }
+        }
+    }
+
+    public void checkNotePropositionStatus() {
+
+        for (NotePropBean note : proposition.getNotes()) {
+            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+                noteAccepted = true;
+            }
+        }
+
+        for (NotePropBean note : proposition.getDefinitions()) {
+            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+                definitionAccepted = true;
+            }
+        }
+
+        for (NotePropBean note : proposition.getChangeNotes()) {
+            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+                changeNoteAccepted = true;
+            }
+        }
+
+        for (NotePropBean note : proposition.getScopeNotes()) {
+            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+                scopeAccepted = true;
+            }
+        }
+
+        for (NotePropBean note : proposition.getEditorialNotes()) {
+            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+                editorialNotesAccepted = true;
+            }
+        }
+
+        for (NotePropBean note : proposition.getExamples()) {
+            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+                examplesAccepted = true;
+            }
+        }
+
+        for (NotePropBean note : proposition.getHistoryNotes()) {
+            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+                historyAccepted = true;
+            }
+        }
+    }
+
+    public void annuler() {
+        rightBodySetting.setIndex("0");
+    }
+
+    public void afficherPropositionsNotification() {
+        afficherListPropositions();
+        if (searchBean.isSearchVisibleControle()) {
+            PrimeFaces.current().executeScript("disparaitre();");
+            PrimeFaces.current().executeScript("afficher();");
+            searchBean.setBarVisisble(true);
+            searchBean.setSearchResultVisible(false);
+            searchBean.setSearchVisibleControle(false);
+            propositionVisibleControle = true;
+        } else {
+            if (searchBean.isBarVisisble()) {
+                PrimeFaces.current().executeScript("disparaitre();");
+                searchBean.setBarVisisble(false);
+                propositionVisibleControle = false;
+            } else {
+                PrimeFaces.current().executeScript("afficher();");
+                searchBean.setBarVisisble(true);
+                propositionVisibleControle = true;
+            }
+        }
+        
+        PrimeFaces.current().ajax().update("containerIndex:notificationPanel");
     }
 
     public void afficherListPropositions() {
+        chercherProposition();
+        searchBean.setSearchResultVisible(false);
+    }
+
+    public void chercherProposition() {
         propositions = new ArrayList<>();
+        String idTheso = filter2 == 2 ? selectedTheso.getSelectedIdTheso() : "%";
         switch (showAllPropositions) {
-            case "1" :
-                propositions = propositionService.searchPropositionsNonTraitter();
+            case "1":
+                propositions = propositionService.searchPropositionsNonTraitter(idTheso);
                 break;
-            case "2" :
-                propositions = propositionService.searchOldPropositions();
+            case "2":
+                propositions = propositionService.searchOldPropositions(idTheso);
                 break;
             default:
-                propositions = propositionService.searchAllPropositions();
+                propositions = propositionService.searchAllPropositions(idTheso);
         }
-        PrimeFaces.current().executeScript("PF('listNotification').show();");
     }
 
     public void searchNewPropositions() {
@@ -139,28 +255,35 @@ public class PropositionBean implements Serializable {
                     envoyerProposition();
                     break;
                 case "approuverProposition":
-                    propositionService.insertProposition(proposition, propositionSelected);
+                    propositionService.insertProposition(proposition, propositionSelected, commentaireAdmin,
+                            prefTermeAccepted, varianteAccepted, traductionAccepted,
+                            noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
+                            editorialNotesAccepted, examplesAccepted, historyAccepted);
                     switchToConceptInglet();
-                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec sucée dans le concept '"
+                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec succès dans le concept '"
                             + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
                     break;
                 case "refuserProposition":
-                    propositionService.refuserProposition(propositionSelected);
+                    propositionService.refuserProposition(propositionSelected, commentaireAdmin);
                     switchToConceptInglet();
                     showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
-                            + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") refusée avec sucée !");
+                            + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") a été refusée avec succès !");
                     break;
                 case "supprimerProposition":
                     propositionService.supprimerPropostion(propositionSelected);
                     switchToConceptInglet();
                     showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
-                            + "' (" + propositionSelected.getIdTheso() + ") suppprimée avec sucée !");
+                            + "' (" + propositionSelected.getIdTheso() + ") a été suppprimée avec succès !");
                     break;
                 case "annulerProposition":
                     annulerPropostion();
                     break;
             }
         }
+        
+        chercherProposition();
+        nbrNewPropositions = propositionService.searchNbrNewProposition();
+
         PrimeFaces.current().executeScript("PF('confirmDialog').hide();");
     }
 
@@ -195,6 +318,7 @@ public class PropositionBean implements Serializable {
             }
         }
 
+        prefTermeAccepted = proposition.isUpdateNomConcept();
         PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
     }
 
@@ -341,6 +465,10 @@ public class PropositionBean implements Serializable {
                 || PropositionStatusEnum.ENVOYER.name().equals(propositionSelected.getStatus()));
     }
 
+    public boolean showButtonAction() {
+        return (proposition != null && propositionSelected == null) || showButtonDecision();
+    }
+
     private void showMessage(FacesMessage.Severity type, String message) {
         FacesMessage msg = new FacesMessage(type, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -425,6 +553,110 @@ public class PropositionBean implements Serializable {
 
     public void setShowAllPropositions(String showAllPropositions) {
         this.showAllPropositions = showAllPropositions;
+    }
+
+    public int getFilter2() {
+        return filter2;
+    }
+
+    public void setFilter2(int filter2) {
+        this.filter2 = filter2;
+    }
+
+    public String getCommentaireAdmin() {
+        return commentaireAdmin;
+    }
+
+    public void setCommentaireAdmin(String commentaireAdmin) {
+        this.commentaireAdmin = commentaireAdmin;
+    }
+
+    public boolean isPrefTermeAccepted() {
+        return prefTermeAccepted;
+    }
+
+    public void setPrefTermeAccepted(boolean prefTermeAccepted) {
+        this.prefTermeAccepted = prefTermeAccepted;
+    }
+
+    public boolean isVarianteAccepted() {
+        return varianteAccepted;
+    }
+
+    public void setVarianteAccepted(boolean varianteAccepted) {
+        this.varianteAccepted = varianteAccepted;
+    }
+
+    public boolean isTraductionAccepted() {
+        return traductionAccepted;
+    }
+
+    public void setTraductionAccepted(boolean traductionAccepted) {
+        this.traductionAccepted = traductionAccepted;
+    }
+
+    public boolean isNoteAccepted() {
+        return noteAccepted;
+    }
+
+    public void setNoteAccepted(boolean noteAccepted) {
+        this.noteAccepted = noteAccepted;
+    }
+
+    public boolean isDefinitionAccepted() {
+        return definitionAccepted;
+    }
+
+    public void setDefinitionAccepted(boolean definitionAccepted) {
+        this.definitionAccepted = definitionAccepted;
+    }
+
+    public boolean isChangeNoteAccepted() {
+        return changeNoteAccepted;
+    }
+
+    public void setChangeNoteAccepted(boolean changeNoteAccepted) {
+        this.changeNoteAccepted = changeNoteAccepted;
+    }
+
+    public boolean isScopeAccepted() {
+        return scopeAccepted;
+    }
+
+    public void setScopeAccepted(boolean scopeAccepted) {
+        this.scopeAccepted = scopeAccepted;
+    }
+
+    public boolean isEditorialNotesAccepted() {
+        return editorialNotesAccepted;
+    }
+
+    public void setEditorialNotesAccepted(boolean editorialNotesAccepted) {
+        this.editorialNotesAccepted = editorialNotesAccepted;
+    }
+
+    public boolean isExamplesAccepted() {
+        return examplesAccepted;
+    }
+
+    public void setExamplesAccepted(boolean examplesAccepted) {
+        this.examplesAccepted = examplesAccepted;
+    }
+
+    public boolean isHistoryAccepted() {
+        return historyAccepted;
+    }
+
+    public void setHistoryAccepted(boolean historyAccepted) {
+        this.historyAccepted = historyAccepted;
+    }
+
+    public boolean isPropositionVisibleControle() {
+        return propositionVisibleControle;
+    }
+
+    public void setPropositionVisibleControle(boolean propositionVisibleControle) {
+        this.propositionVisibleControle = propositionVisibleControle;
     }
 
 }

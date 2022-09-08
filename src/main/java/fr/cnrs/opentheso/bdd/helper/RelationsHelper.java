@@ -1990,7 +1990,9 @@ public class RelationsHelper {
                             listIdBT.add(resultSet.getString("id_concept2"));
                         }
                     }
-                } finally {
+                } catch (Exception ex) {
+                    log.error("Error while getting Liste ID of BT Concept : " + idConcept, ex);
+                }finally {
                     if (resultSet != null) resultSet.close();
                     stmt.close();
                 }

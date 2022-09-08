@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
-    
+
     <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
         <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
 
@@ -44,10 +44,10 @@
                             <ui:repeat  var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
                                 <p:tooltip style="font-size: 12px;" position="bottom"/>
                                 <p:commandLink id="toolTipBT1" rendered="#{value.title != ''}" value="#{value.title}"
-                                               
+
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex">
-                                    
+
                                 </p:commandLink>    
 
                                 <p:commandLink id="toolTipBT2" rendered="#{value.title == ''}" value="(#{value.idConcept})"
@@ -223,16 +223,32 @@
                                         oncomplete="PF('deleteTraduction').show();" update="containerIndex:idDeleteTraduction"
                                         icon="fas fa-minus" disabled="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}"/>
                         </p:menuButton>
+
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}" >            
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}"> 
+                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}" > 
                             <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
-                                <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})" title="#{conceptView.nodeConcept.concept.idConcept}"
+                                
+                                <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
+                                    <p:spacer width="3" rendered="#{status2.first}" />
+                                    <p:spacer width="40" rendered="#{!status2.first}" />
+                                </h:panelGroup>
+                                
+                                <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
+                                    <img src="#{conceptView.getDrapeauImg(trad.codePays)}" width="20" height="15" style="margin-right: 7px"/>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
+                                    <h:outputLabel value="[#{trad.lang}]" style="margin-right: 7px" />
+                                </h:panelGroup>
+
+                                <p:commandLink value="#{trad.lexicalValue} " title="#{conceptView.nodeConcept.concept.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                               update="containerIndex indexTitle"/>  
-                                <h:outputText rendered="#{!status2.last}" value=" , " style="color: #FF7979"/>                                   
+                                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch containerIndex:searchBar indexTitle"/>
+                                <br/>                                
                             </ui:repeat>
                         </h:panelGroup>
                     </div>

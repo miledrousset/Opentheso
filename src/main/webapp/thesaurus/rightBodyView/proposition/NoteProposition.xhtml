@@ -17,7 +17,7 @@
                                               style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
                                 <p:menuButton icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
-                                              rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                                              rendered="${propositionBean.showButtonAction()}">
                                     <p:menuitem value="Proposer une nouvelle note"
                                                 actionListener="#{noteBean.reset()}" update="containerIndex:rightTab:idAddNoteProp"
                                                 oncomplete="PF('addNoteProp').show();" icon="fas fa-plus" />
@@ -35,15 +35,21 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                    
+                                    <p:selectBooleanCheckbox value="#{propositionBean.noteAccepted}" title="Accepter cette proposition"
+                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)
+                                                  and propositionBean.showButtonAction()}"/>
+                                    
                                     <h:panelGroup>
                                         <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
-                                                      rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                                                      rendered="${propositionBean.showButtonAction()}">
                                             <p:menuitem value="Modifier une note" actionListener="#{noteBean.reset()}"
                                                         action = "#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNoteProp').show();"
                                                         update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />                                            
                                             <p:menuitem value="Supprimer une note" 
                                                         actionListener="#{noteBean.reset()}" action="#{noteBean.setSelectedTypeNote('note')}"
-                                                        update="containerIndex:rightTab:idDeleteNoteProp" oncomplete="PF('deleteNoteProp').show();" icon="fas fa-plus"/>
+                                                        update="containerIndex:rightTab:idDeleteNoteProp" oncomplete="PF('deleteNoteProp').show();" icon="fas fa-minus"/>
                                         </p:menuButton>
                                     </h:panelGroup>
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
@@ -87,9 +93,13 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                                  box-shadow: none; font-size: 12px;"
-                                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                                    
+                                    <p:selectBooleanCheckbox value="#{propositionBean.changeNoteAccepted}" title="Accepter cette proposition"
+                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+                                    
+                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
+                                                  rendered="${propositionBean.showButtonAction()}">
                                         <p:menuitem value="Modifier une note de changement" actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('changeNote')}"                                          
                                                     oncomplete="PF('editNoteProp').show();"
@@ -147,8 +157,13 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
-                                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                                    
+                                    <p:selectBooleanCheckbox value="#{propositionBean.definitionAccepted}" title="Accepter cette proposition"
+                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+                                    
+                                    <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
+                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;" >
                                         <p:menuitem value="Modifier une définition" 
                                                     actionListener="#{noteBean.reset()}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
                                                     oncomplete="PF('editNoteProp').show();"
@@ -158,6 +173,7 @@
                                                     oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp"
                                                     icon="fas fa-minus"/>
                                     </p:menuButton>
+                                    
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.definition')}"
                                                   style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
@@ -209,9 +225,13 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                                  box-shadow: none; font-size: 12px;"
-                                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                                    
+                                    <p:selectBooleanCheckbox value="#{propositionBean.editorialNotesAccepted}" title="Accepter cette proposition"
+                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+                                    
+                                    <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}"
+                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="Modifier une édite note" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
@@ -222,6 +242,7 @@
                                                     action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
                                                     oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp" />
                                     </p:menuButton>
+                                    
                                     <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
                                                   title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
                                                   style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
@@ -270,10 +291,13 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
+                                    
+                                    <p:selectBooleanCheckbox value="#{propositionBean.examplesAccepted}" title="Accepter cette proposition"
+                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
 
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                                  box-shadow: none; font-size: 12px;"
-                                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                                    <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
+                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="Modifier un example" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('example')}"                                          
@@ -334,9 +358,13 @@
                         <div class="list-group-item list-group-item-action" >                        
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                                  box-shadow: none; font-size: 12px;"
-                                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                                    
+                                    <p:selectBooleanCheckbox value="#{propositionBean.historyAccepted}" title="Accepter cette proposition"
+                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+                                    
+                                    <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
+                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="Modifier une note historique" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
@@ -397,9 +425,13 @@
                         <div class="list-group-item list-group-item-action" >
                             <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                                 <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
-                                                  box-shadow: none; font-size: 12px;"
-                                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}">
+                                    
+                                    <p:selectBooleanCheckbox value="#{propositionBean.scopeAccepted}" title="Accepter cette proposition"
+                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+                                    
+                                    <p:menuButton rendered="${propositionBean.showButtonAction()}" icon="fas fa-cog" 
+                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="Modifier une scope note" 
                                                     actionListener="#{noteBean.reset()}"
                                                     action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          

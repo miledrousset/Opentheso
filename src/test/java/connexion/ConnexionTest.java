@@ -29,7 +29,7 @@ public class ConnexionTest {
         // Pactols2
         config.addDataSourceProperty("user", "opentheso");
         config.addDataSourceProperty("password", "opentheso");
-        config.addDataSourceProperty("databaseName", "opentheso");
+        config.addDataSourceProperty("databaseName", "huma-num");
         config.addDataSourceProperty("portNumber", "5432");
         config.addDataSourceProperty("serverName", "localhost");
 

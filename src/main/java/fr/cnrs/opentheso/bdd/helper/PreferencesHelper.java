@@ -133,7 +133,7 @@ public class PreferencesHelper {
                         np.setOriginalUri(resultSet.getString("original_uri"));
                         np.setOriginalUriIsArk(resultSet.getBoolean("original_uri_is_ark"));
                         np.setOriginalUriIsHandle(resultSet.getBoolean("original_uri_is_handle"));
-                        //np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
+                        np.setOriginalUriIsDoi(resultSet.getBoolean("original_uri_is_doi"));
 
                         // Ark local
                         np.setUseArkLocal(resultSet.getBoolean("use_ark_local"));

@@ -46,6 +46,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -67,6 +68,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
 
@@ -92,8 +94,6 @@ public class ConceptView implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
     private SelectedTheso selectedTheso;
-    @Inject
-    private SearchBean searchBean;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -128,11 +128,6 @@ public class ConceptView implements Serializable {
     
     private boolean toggleSwitchAltLabelLang;
     private boolean toggleSwitchNotesLang;    
-
-
-    @PostConstruct
-    public void postInit() {
-    }
 
     @PreDestroy
     public void destroy() {
@@ -268,6 +263,15 @@ public class ConceptView implements Serializable {
             historyNotes.clear();        
     }
     
+    public String getDrapeauImg(String codePays) {
+        if (StringUtils.isEmpty(codePays)) {
+            return FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequestContextPath() + "/resources/img/nu.svg";
+        }
+        
+        return "https://countryflagsapi.com/png/" + codePays;      
+    }
+    
     /**
      * récuparation des informations pour le concept sélectionné c'est pour la
      * navigation entre les concepts dans la vue de droite avec deployement de
@@ -329,7 +333,6 @@ public class ConceptView implements Serializable {
             }
         }
         
-        searchBean.setSearchResultVisible(true);
         countOfBranch = 0;
     }
 
@@ -463,9 +466,6 @@ public class ConceptView implements Serializable {
         mapModel.setLayerControl(false);
         mapModel.setDraggingEnabled(true);
         mapModel.setZoomEnabled(true);
-  //      mapModel.setUrlTemplate("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png");
-    //    mapModel.setUrlTemplate("http://b.tile.osm.org/13/4334/2723.png");
-
         mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
     }
 
@@ -648,7 +648,6 @@ public class ConceptView implements Serializable {
             return count;
         } catch (Exception e) {
             System.err.println(e + " " + jsonText + " " + nodeConcept.getConcept().getIdConcept());
-            // Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, e + " " + jsonText);
             return -1;
         }
     }
