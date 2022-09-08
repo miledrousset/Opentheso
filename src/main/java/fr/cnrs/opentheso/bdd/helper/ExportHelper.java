@@ -36,12 +36,12 @@ public class ExportHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from opentheso_get_concepts('"+idTheso+"', 'http://localhost:8080', '"+idLang+"') as x(URI text, TYPE varchar,  LOCAL_URI text, \n" +
-"				IDENTIFIER varchar, ARK_ID varchar, prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, \n" +
-"				editorialNote text, changeNote text, secopeNote text, note text, historyNote text, notation varchar, narrower text, \n" +
-"				broader text, related text, exactMatch text, closeMatch text, broadMatch text, \n" +
-"				relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, membre text, \n" +
-"				created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, date_candidat varchar, \n" +
+                stmt.executeQuery("select * from opentheso_get_concepts('"+idTheso+"', 'http://localhost:8080', '"+idLang+"') as x(URI text, TYPE varchar,  LOCAL_URI text, " +
+"				IDENTIFIER varchar, ARK_ID varchar, prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, " +
+"				editorialNote text, changeNote text, secopeNote text, note text, historyNote text, notation varchar, narrower text, " +
+"				broader text, related text, exactMatch text, closeMatch text, broadMatch text, " +
+"				relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, membre text, " +
+"				created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, date_candidat varchar, " +
 "				message_candidat varchar, vote_candidat text, messages_candidat text, creator text, contributor text);");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
@@ -92,7 +92,7 @@ public class ExportHelper {
                         }
                         
                         addImages(sKOSResource, resultSet.getString("img"));
-                        
+
                         //addMembres(sKOSResource, resultSet.getString("membre"));
 
                         if (resultSet.getString("latitude") != null || resultSet.getString("longitude") != null) {
@@ -100,7 +100,7 @@ public class ExportHelper {
                                     resultSet.getDouble("latitude"), resultSet.getDouble("longitude")));
                         }
 
-                        
+
                         // createur et contributeur
                         if (resultSet.getString("creator") != null) {
                             sKOSResource.addCreator(resultSet.getString("creator"), SKOSProperty.creator);
@@ -108,7 +108,7 @@ public class ExportHelper {
                         if (resultSet.getString("contributor") != null) {
                             sKOSResource.addCreator(resultSet.getString("contributor"), SKOSProperty.contributor);
                         }
-                        
+
                         if (StringUtils.isNotEmpty(resultSet.getString("created"))) {
                             sKOSResource.addDate(resultSet.getString("created"), SKOSProperty.created);
                         }
@@ -157,15 +157,15 @@ public class ExportHelper {
 
         return concepts;
     }
-    
+
     private void addMembres(SKOSResource resource, String textBrut) {
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
-                
-                
+
+
             }
         }
     }
@@ -236,7 +236,7 @@ public class ExportHelper {
             }
         }
     }
-    
+
     private void setStatusOfConcept(String status, SKOSResource sKOSResource) {
         switch (status.toLowerCase()) {
             case "ca":
