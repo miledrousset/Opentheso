@@ -1,9 +1,14 @@
 package fr.cnrs.opentheso.bean.proposition;
 
+import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
 import fr.cnrs.opentheso.bean.proposition.model.Proposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -31,6 +36,8 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class PropositionBean implements Serializable {
 
+    @Inject
+    private Connect connect;
     @Inject
     private CurrentUser currentUser;
 
@@ -74,6 +81,13 @@ public class PropositionBean implements Serializable {
     public void onSelectConcept(PropositionDao propositionDao) throws IOException {
 
         this.propositionSelected = propositionDao;
+        
+        NodePreference preference = new PreferencesHelper().getThesaurusPreferences(
+                connect.getPoolConnexion(), propositionDao.getIdTheso());
+        if (!preference.isSuggestion()) {
+            showMessage(FacesMessage.SEVERITY_WARN, "La suggestion est désactivée pour le thesaurus dans lequel la proposition selectionnée appartienne !");
+            return;
+        }
 
         roleOnThesoBean.initNodePref(propositionDao.getIdTheso());
         selectedTheso.setSelectedIdTheso(propositionDao.getIdTheso());

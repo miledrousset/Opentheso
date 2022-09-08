@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
+import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.bean.setting.CorpusBean;
 import fr.cnrs.opentheso.bean.setting.PreferenceBean;
 import fr.cnrs.opentheso.bean.toolbox.atelier.AtelierThesBean;
@@ -28,6 +29,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "menuBean")
 @SessionScoped
 public class MenuBean implements Serializable {
+
+    @Inject 
+    private SearchBean searchBean;
 
     @Inject 
     private SuperAdminBean superAdminBean;
@@ -94,6 +98,7 @@ public class MenuBean implements Serializable {
     
     // LOGIN Page
     public void redirectToCandidatPage() throws IOException {
+        initSearchBar();
         activePageName = "candidat";
         notificationPannelVisible = false;
         candidatBean.initCandidatModule();
@@ -105,6 +110,7 @@ public class MenuBean implements Serializable {
     
     // MENU Profile
     public void redirectToUsersPage() throws IOException {
+        initSearchBar();
         activePageName = "users";
         notificationPannelVisible = false;
         superAdminBean.init();
@@ -115,6 +121,7 @@ public class MenuBean implements Serializable {
     }
 
     public void redirectToProjetsPage() throws IOException {
+        initSearchBar();
         activePageName = "Projects";
         notificationPannelVisible = false;
         superAdminBean.init();
@@ -125,6 +132,7 @@ public class MenuBean implements Serializable {
     }
 
     public void redirectToThesorusPage() throws IOException {
+        initSearchBar();
         activePageName = "thesorus";
         notificationPannelVisible = false;
         superAdminBean.init();
@@ -135,6 +143,7 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToMyProfilePage() throws IOException {
+        initSearchBar();
         activePageName = "myAccount";
         notificationPannelVisible = false;
         myAccountBean.reset();
@@ -145,6 +154,7 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToMesProjectsPage() throws IOException {
+        initSearchBar();
         activePageName = "myProject";
         notificationPannelVisible = false;
         myProjectBean.init();
@@ -157,6 +167,7 @@ public class MenuBean implements Serializable {
     
     // MENU Paramètres
     public void redirectToIdetifiantPage() throws IOException {
+        initSearchBar();
         activePageName = "identifier";
         notificationPannelVisible = false;
         preferenceBean.init();
@@ -167,6 +178,7 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToPreferencePage() throws IOException {
+        initSearchBar();
         activePageName = "preference";
         notificationPannelVisible = false;
         preferenceBean.init();
@@ -177,6 +189,7 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToCorpusPage() throws IOException {
+        initSearchBar();
         activePageName = "corpus";
         notificationPannelVisible = false;
         corpusBean.init();
@@ -188,6 +201,7 @@ public class MenuBean implements Serializable {
     
     ///Boite à outils
     public void redirectToEditionPage() throws IOException {
+        initSearchBar();
         activePageName = "edition";
         notificationPannelVisible = false;
         viewEditionBean.init();
@@ -198,6 +212,7 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToAtelierPage() throws IOException {
+        initSearchBar();
         activePageName = "atelier";
         atelierThesBean.init();
         propositionBean.searchNewPropositions();
@@ -207,6 +222,7 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToMaintenancePage() throws IOException {
+        initSearchBar();
         activePageName = "service";
         notificationPannelVisible = false;
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
@@ -224,6 +240,7 @@ public class MenuBean implements Serializable {
     }
     
     public void redirectToStatistiquePage() throws IOException {
+        initSearchBar();
         activePageName = "statistic";
         notificationPannelVisible = false;
         if (StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
@@ -242,6 +259,7 @@ public class MenuBean implements Serializable {
 
     // LOGIN Page
     public void redirectToLoginPage() throws IOException {
+        initSearchBar();
         activePageName = "login";
         notificationPannelVisible = false;
         propositionBean.searchNewPropositions();
@@ -260,6 +278,12 @@ public class MenuBean implements Serializable {
 
     public String getActivePageName() {
         return activePageName;
+    }
+    
+    private void initSearchBar() {
+        searchBean.setBarVisisble(false);
+        searchBean.setSearchResultVisible(false);
+        searchBean.setSearchVisibleControle(false);
     }
     
 }
