@@ -36,7 +36,7 @@ public class ExportHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from get_concepts('"+idTheso+"', 'http://localhost:8080', '"+idLang+"') as x(URI text, TYPE varchar,  LOCAL_URI text, " +
+                stmt.executeQuery("select * from opentheso_get_concepts('"+idTheso+"', 'http://localhost:8080', '"+idLang+"') as x(URI text, TYPE varchar,  LOCAL_URI text, " +
                         "IDENTIFIER varchar, ARK_ID varchar, prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, " +
                         "editorialNote text, changeNote text, secopeNote text, note text, historyNote text, notation varchar, narrower text, " +
                         "broader text, related text, exactMatch text, closeMatch text, broadMatch text, " +
