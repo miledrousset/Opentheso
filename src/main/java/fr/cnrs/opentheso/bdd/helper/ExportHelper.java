@@ -29,20 +29,13 @@ public class ExportHelper {
     private final static String SEPERATEUR = "##";
     private final static String SUB_SEPERATEUR = "@";
 
-    public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso, 
-            String idLang) throws Exception {
+    public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso, String baseUrl, String idGroup) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from opentheso_get_concepts('"+idTheso+"', 'http://localhost:8080', '"+idLang+"') as x(URI text, TYPE varchar,  LOCAL_URI text, " +
-"				IDENTIFIER varchar, ARK_ID varchar, prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, " +
-"				editorialNote text, changeNote text, secopeNote text, note text, historyNote text, notation varchar, narrower text, " +
-"				broader text, related text, exactMatch text, closeMatch text, broadMatch text, " +
-"				relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, membre text, " +
-"				created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, date_candidat varchar, " +
-"				message_candidat varchar, vote_candidat text, messages_candidat text, creator text, contributor text);");
+                stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -156,6 +149,22 @@ public class ExportHelper {
         }
 
         return concepts;
+    }
+    
+    private String getSQLRequest(String idTheso, String baseUrl, String idGroup) {
+        String baseSQL = "SELECT * FROM ";
+        if (StringUtils.isEmpty(idGroup)) {
+            baseSQL = baseSQL + "opentheso_get_concepts('" + idTheso + "', '" + baseUrl; 
+        } else {
+            baseSQL = baseSQL + "opentheso_get_concepts_by_group('" + idTheso + "', '" + baseUrl + "', '"+ idGroup;
+        }
+        
+        return baseSQL + "') as x(URI text, TYPE varchar,  LOCAL_URI text, IDENTIFIER varchar, ARK_ID varchar, "
+                + "prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, editorialNote text, changeNote text, "
+                + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
+                + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, "
+                + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, "
+                + "date_candidat varchar, message_candidat varchar, vote_candidat text, messages_candidat text, creator text, contributor text);";
     }
 
     private void addMembres(SKOSResource resource, String textBrut) {

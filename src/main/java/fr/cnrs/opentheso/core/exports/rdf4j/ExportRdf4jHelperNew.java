@@ -318,7 +318,7 @@ public class ExportRdf4jHelperNew {
             addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
-    private void addChildsGroupRecursive(HikariDataSource ds,
+    public void addChildsGroupRecursive(HikariDataSource ds,
             String idTheso,
             String idParent,
             SKOSResource sKOSResource) {
@@ -828,7 +828,7 @@ public class ExportRdf4jHelperNew {
     /**
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark : si renseigné sinon l'URL du Site
      */
-    private String getUriFromGroup(NodeGroupLabel nodeGroupLabel) {
+    public String getUriFromGroup(NodeGroupLabel nodeGroupLabel) {
         String uri = "";
         if (nodeGroupLabel == null) {
             //      System.out.println("nodeConcept = Null");

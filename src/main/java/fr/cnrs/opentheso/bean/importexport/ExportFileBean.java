@@ -2,9 +2,11 @@ package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.ExportHelper;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
+import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -18,6 +20,7 @@ import fr.cnrs.opentheso.core.exports.csv.WriteCSV;
 import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 
@@ -515,8 +518,7 @@ public class ExportFileBean implements Serializable {
         }
 
         
-        SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId(), 
-                selectedTheso.getCurrentLang());
+        SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId());
 
         if (skosxd == null) {
             return null;
@@ -617,7 +619,7 @@ public class ExportFileBean implements Serializable {
 
     }
 
-    private SKOSXmlDocument getConcepts(String idTheso, String idLang) throws Exception {
+    private SKOSXmlDocument getConcepts(String idTheso) throws Exception {
 
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(),
                 viewExportBean.getNodeIdValueOfTheso().getId());
@@ -630,15 +632,29 @@ public class ExportFileBean implements Serializable {
         exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(),
                 viewExportBean.getNodeIdValueOfTheso().getId(), nodePreference);
-
-        if (!viewExportBean.isToogleFilterByGroup()) {
-            exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
-        } else {
-            exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, 
-                    viewExportBean.getSelectedIdGroups());
-        }
         
-        List<SKOSResource> concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, idLang);
+        String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
+        String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
+        String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();        
+        String baseUrl = protocole + "://" + serverAdress + contextPath;
+
+        List<SKOSResource> concepts = new ArrayList<>();
+        
+        if (!viewExportBean.isToogleFilterByGroup()) {
+            exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);    
+            concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, baseUrl, null);
+        } else {
+            for (String idGroup : viewExportBean.getSelectedIdGroups()) {
+                NodeGroupLabel nodeGroupLabel = new GroupHelper().getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
+                SKOSResource sKOSResource = new SKOSResource(
+                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
+                sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), 
+                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+                exportRdf4jHelperNew.addChildsGroupRecursive(connect.getPoolConnexion(), idTheso, idGroup, sKOSResource);
+                
+                concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, baseUrl, idGroup));
+            }            
+        }
         
         for (SKOSResource concept : concepts) {
             exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);

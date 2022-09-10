@@ -32,6 +32,10 @@ public class NodeUser implements Serializable {
     public String getName() {
         return name;
     }
+    
+    public String getFormatName() {
+        return name.substring(0, 1).toUpperCase() + name.substring(1);
+    }
 
     public void setName(String name) {
         this.name = name;
