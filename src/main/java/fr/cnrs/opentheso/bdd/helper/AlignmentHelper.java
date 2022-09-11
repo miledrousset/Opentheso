@@ -568,6 +568,43 @@ public class AlignmentHelper {
         }
         return status;
     }
+    
+    
+//        exactMatch   = 1;
+//        closeMatch   = 2;
+//        broadMatch   = 3;
+//        relatedMatch = 4;        
+//        narrowMatch  = 5;    
+    /**
+     * Cette fonction permet de supprimer tous les aligenements d'un concept par type
+     *
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param type
+     * @return
+     */
+    public boolean deleteAlignmentOfConceptByType(HikariDataSource ds,
+            String idConcept, String idThesaurus, int type) {
+
+        boolean status = false;
+        try (Connection conn = ds.getConnection()){
+            // Get connection from pool
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from alignement "
+                        + " where internal_id_concept = '" + idConcept + "'"
+                        + " and internal_id_thesaurus = '" + idThesaurus + "'"
+                        + " and alignement_id_type = " + type
+                );
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting alignment from thesaurus with idConcept : " + idConcept, sqle);
+        }
+        return status;
+    }    
 
     /**
      * Cette fonction permet de retourner la liste des alignements pour un

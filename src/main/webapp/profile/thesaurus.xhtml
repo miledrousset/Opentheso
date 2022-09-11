@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
     </h:head>
 
-    <h:body id="page-top" onload="initMenu()">
+    <h:body id="page-top" onload="initMenu()" style="margin:0; padding:0; height:100%;">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -39,12 +39,13 @@
 
             <div id="content-wrapper" style="width: 100%">
 
-                <h:form id="containerIndex">
-                    <div>
+                <h:form id="containerIndex" style="min-height:100%; position:relative;">
+                    
+                    <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
-                    </div>
+                    </h:panelGroup>
 
-                    <div class="container-fluid">
+                    <div class="container-fluid" style="padding-bottom: 70px">
 
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_thesauri')}</span></h1>
@@ -60,14 +61,7 @@
                                             <!-- Vue liste de tous les utilisateurs -->
                                             <p:dataTable id="tabThesoProject" rendered="#{superAdminBean.allThesoProject != null}"
                                                          value="#{superAdminBean.allThesoProject}" var="listTheso" scrollable="true" resizableColumns="true" scrollHeight="600">
-
-                                                <f:facet name="header">
-                                                    <center>
-                                                        <h:outputText value="#{langueBean.getMsg('profile.list_of_all_thesauri')}" style="font-size: 15px; color: #C63632" />
-                                                    </center>
-                                                </f:facet>
-
-                                                <p:column headerText="ID Thesaurus" sortBy="#{listTheso.idThesaurus}" >
+                                                <p:column width="100px" headerText="Id" sortBy="#{listTheso.idThesaurus}" >
                                                     <h:outputText value="#{listTheso.idThesaurus}"/>
                                                 </p:column>
 
@@ -75,11 +69,11 @@
                                                     <h:outputText value="#{listTheso.thesaurusName}"/>
                                                 </p:column>
 
-                                                <p:column headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
+                                                <p:column width="250px" headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
                                                     <h:outputText value="#{listTheso.groupName}"/>
                                                 </p:column>
 
-                                                <p:column headerText="Action"> 
+                                                <p:column width="60px" headerText="Action"> 
                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                      actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName,  listTheso.idGroup)}"
                                                                      update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();"

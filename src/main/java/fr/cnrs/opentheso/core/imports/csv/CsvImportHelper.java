@@ -15,14 +15,17 @@ import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GpsHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 
 /**
  *
@@ -133,9 +136,8 @@ public class CsvImportHelper {
     
     public void addLangsToThesaurus(HikariDataSource ds, ArrayList<String> langs, String idTheso) {
 
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         for (String idLang : langs) {
-            if (!thesaurusHelper.isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
+            if (!new ThesaurusHelper().isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
                 Thesaurus thesaurus1 = new Thesaurus();
                 thesaurus1.setId_thesaurus(idTheso);
                 thesaurus1.setContributor("");
@@ -151,7 +153,7 @@ public class CsvImportHelper {
                 thesaurus1.setSubject("");
                 thesaurus1.setTitle("theso_" + idTheso + "_" + idLang);
                 thesaurus1.setType("");
-                thesaurusHelper.addThesaurusTraduction(ds, thesaurus1);
+                new ThesaurusHelper().addThesaurusTraduction(ds, thesaurus1);
             }            
         }
     }    
@@ -169,7 +171,7 @@ public class CsvImportHelper {
         Concept concept = new Concept();
         TermHelper termHelper = new TermHelper();
 
-        // On vérifie si le conceptPere est un Groupe, alors il faut ajouter un TopTerm, sinon, c'est un concept avec des reraltions
+        // On vérifie si le conceptPere est un Groupe, alors il faut ajouter un TopTerm, sinon, c'est un concept avec des relations
         if (idConceptPere == null) {
             concept.setTopConcept(true);
         } else {
@@ -195,13 +197,12 @@ public class CsvImportHelper {
                 idConcept = conceptHelper.addConcept(ds, idConceptPere, "NT", concept, term, idUser);
                 if (idConcept == null) {
                     message = message + "\n" + "erreur dans l'intégration du concept " + prefLabel.getLabel();
+                    return;
                 } else {
                     conceptObject.setIdConcept(idConcept);
                     idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idTheso);
                     conceptObject.setIdTerm(idTerm);
-                    first = false;
-                }
-                if (idConcept != null) {
+
                     // synonymes et cachés
                     addAltLabels(ds, idTheso, conceptObject);
 
@@ -216,6 +217,8 @@ public class CsvImportHelper {
 
                     // géolocalisation
                     addGeoLocalisation(ds, idTheso, conceptObject);
+                    
+                    first = false;
                 }
 
             } // ajout des traductions
@@ -230,7 +233,7 @@ public class CsvImportHelper {
                     term.setSource("");
                     term.setStatus("");
                     if (!conceptHelper.addConceptTraduction(ds, term, idUser)) {
-                        message = message + "\n" + "erreur dans l'intégration du terme " + prefLabel.getLabel();
+                        message = message + "\n" + "erreur dans l'intégration de la traduction " + prefLabel.getLabel();
                     }
                 }
             }
@@ -365,7 +368,7 @@ public class CsvImportHelper {
 
     public boolean addConcept(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        conceptObject.setIdTerm(conceptObject.getIdConcept());
+        conceptObject.setIdTerm(new TermHelper().getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso));
 
         if (!addPrefLabel(ds, idTheso, conceptObject)) {
             return false;
@@ -678,4 +681,348 @@ public class CsvImportHelper {
         }
         return true;
     }
+    
+    
+    
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// mise à jour des concepts /////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////    
+    
+    public boolean updateConcept(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+
+        conceptObject.setIdTerm(new TermHelper().getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso));        
+        
+        if (!updatePrefLabel(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }
+        // synonymes et cachés
+        if (!updateAltLabel(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }
+        // notes
+        if (!updateNotes(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }
+        // alignements
+        if (!updateAlignments(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }
+        // géolocalisation
+        if (!updateGeoLocalisation(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }        
+
+        // images
+        if (!updateImages(ds, idTheso, conceptObject, idUser1)) {
+            return false;
+        }   
+
+        // ressources externes
+               
+        
+        
+/*      // relations
+        if (!addRelations(ds, idTheso, conceptObject)) {
+            return false;
+        }
+        
+        // Membres ou appartenance aux groupes
+        if (!addMembers(ds, idTheso, conceptObject)) {
+            return false;
+        }
+*/
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(ds, idTheso, conceptObject.getIdConcept(), idUser1);  
+        return true;
+    }    
+    
+    
+    private boolean updatePrefLabel(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+        if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
+            message = message + "\n" + "concept sans identifiant : " + conceptObject.getPrefLabels().toString();
+            return false;
+        }
+        TermHelper termHelper = new TermHelper();
+        String idTerm = termHelper.getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso);
+        if(idTerm == null || idTerm.isEmpty()) return false;
+        String oldLabel;
+        
+        for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
+            // on supprime les preflabels dans cette langue
+            oldLabel = termHelper.getLexicalValue(ds, idTerm, idTheso, prefLabel.getLang());
+            if(!oldLabel.isEmpty()) {
+                if(!termHelper.deleteTraductionOfTerm(ds, idTerm, oldLabel, prefLabel.getLang(), idTheso, idUser1)) 
+                    return false;
+            }
+            // on ajoute les nouveaux prefLabels dans cette langue
+            if(!prefLabel.getLabel().isEmpty()) {
+                if(!termHelper.addTraduction(ds, prefLabel.getLabel(), idTerm, prefLabel.getLang(), "import", "", idTheso, idUser1))
+                    return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean updateAltLabel(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+        if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
+            message = message + "\n" + "concept sans identifiant : " + conceptObject.getPrefLabels().toString();
+            return false;
+        }
+        TermHelper termHelper = new TermHelper();
+        String idTerm = termHelper.getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso);
+        if(idTerm == null || idTerm.isEmpty()) return false;
+        ArrayList<String> oldLabels;
+        
+        // suppression des altLabel par langue
+        ArrayList<String> langs = getLangs(conceptObject.getAltLabels()); 
+        for (String lang : langs) {
+            oldLabels = termHelper.getLexicalValueOfAltLabel(ds, idTerm, idTheso, lang);
+            for (String oldLabel : oldLabels) {
+                if(!termHelper.deleteNonPreferedTerm(ds, idTerm, lang, oldLabel, idTheso, "", idUser1))
+                    return false;
+            }
+        }
+        
+        for (CsvReadHelper.Label altLabel : conceptObject.getAltLabels()) {
+            // on ajoute les nouveaux prefLabels dans cette langue
+            if(!altLabel.getLabel().isEmpty()){
+                if(!termHelper.addNonPreferredTerm(ds, idTerm, altLabel.getLabel(), altLabel.getLang(), idTheso, "import", "", false, idUser))
+                    return false;
+            }
+        }
+        return true;
+    }
+    
+    private ArrayList<String> getLangs(ArrayList<CsvReadHelper.Label> labels) {
+        ArrayList<String> langs = new ArrayList<>();
+        for (CsvReadHelper.Label label : labels) {
+            if (!langs.contains(label.getLang())) {
+                langs.add(label.getLang());
+            }            
+        }
+        return langs;
+    }
+    
+    /**
+     * Intègre les notes
+     *
+     * @param ds
+     * @param idTheso
+     * @param conceptObject
+     * @return
+     */
+    private boolean updateNotes(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+
+        NoteHelper noteHelper = new NoteHelper();
+    //    ArrayList<NodeNote> oldNotes;     
+    
+        // suppression des Notes  par langue
+        ArrayList<String> langs = getLangs(conceptObject.getNote()); 
+        for (String lang : langs) {
+        //    oldNotes = noteHelper.getListNotesConcept(ds, conceptObject.getIdConcept(), idTheso, lang);
+            if(!noteHelper.deleteNoteOfConceptByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "note"))
+                return false;
+        }        
+        for (CsvReadHelper.Label note : conceptObject.getNote()) {
+            if(!note.getLabel().isEmpty())
+                noteHelper.addConceptNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "note", idUser1);
+        }
+        langs = getLangs(conceptObject.getScopeNotes()); 
+        for (String lang : langs) {
+            if(!noteHelper.deleteNoteOfConceptByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "scopeNote"))
+                return false;         
+        }         
+        for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
+            if(!note.getLabel().isEmpty())
+                noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
+                        "scopeNote", idUser1);
+        }        
+        
+        langs = getLangs(conceptObject.getDefinitions());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "definition"))
+                return false;            
+        }        
+        for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
+            if(!note.getLabel().isEmpty())
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "definition", idUser1);
+        }
+        
+        langs = getLangs(conceptObject.getChangeNotes());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "changeNote"))
+                return false;            
+        }           
+        for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
+            if(!note.getLabel().isEmpty())                
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "changeNote", idUser1);
+        }
+        
+        langs = getLangs(conceptObject.getEditorialNotes());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "editorialNote"))
+                return false;            
+        }          
+        for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
+            if(!note.getLabel().isEmpty())            
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "editorialNote", idUser1);
+        }
+        
+        langs = getLangs(conceptObject.getHistoryNotes());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "historyNote"))
+                return false;            
+        }          
+        for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
+            if(!note.getLabel().isEmpty())            
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "historyNote", idUser1);
+        }
+
+        langs = getLangs(conceptObject.getExamples());         
+        for (String lang : langs) {
+            if(!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "example"))
+                return false;            
+        }          
+        for (CsvReadHelper.Label note : conceptObject.getExamples()) {
+            if(!note.getLabel().isEmpty())
+                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                        "example", idUser1);
+        }
+        return true;
+    }    
+    
+    
+    private boolean updateAlignments(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+        NodeAlignment nodeAlignment = new NodeAlignment();
+        nodeAlignment.setId_author(idUser1);
+        nodeAlignment.setConcept_target("");
+        nodeAlignment.setThesaurus_target("");
+        nodeAlignment.setInternal_id_concept(conceptObject.getIdConcept());
+        nodeAlignment.setInternal_id_thesaurus(idTheso);
+
+//        exactMatch   = 1;
+//        closeMatch   = 2;
+//        broadMatch   = 3;
+//        relatedMatch = 4;        
+//        narrowMatch  = 5;
+
+        /// suppression des alignements 
+        if(!conceptObject.getExactMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 1);
+        }
+        for (String uri : conceptObject.getExactMatchs()) {
+            if(uri.isEmpty()) continue;
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(1);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+        
+        if(!conceptObject.getCloseMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 2);
+        }        
+        for (String uri : conceptObject.getCloseMatchs()) {
+            if(uri.isEmpty()) continue;
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(2);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+        
+        if(!conceptObject.getBroadMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 3);
+        }          
+        for (String uri : conceptObject.getBroadMatchs()) {
+            if(uri.isEmpty()) continue;
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(3);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+        
+        if(!conceptObject.getRelatedMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 4);
+        }         
+        for (String uri : conceptObject.getRelatedMatchs()) {
+            if(uri.isEmpty()) continue;            
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(4);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+        
+        if(!conceptObject.getNarrowMatchs().isEmpty()) {
+            alignmentHelper.deleteAlignmentOfConceptByType(ds, conceptObject.getIdConcept(), idTheso, 5);
+        }          
+        for (String uri : conceptObject.getNarrowMatchs()) {
+            if(uri.isEmpty()) continue;            
+            nodeAlignment.setUri_target(uri);
+            nodeAlignment.setAlignement_id_type(5);
+            if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
+                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+            }
+        }
+
+        return true;
+    }    
+    
+    private boolean updateGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+
+        Double latitude;
+        Double longitude;
+        
+        GpsHelper gpsHelper = new GpsHelper();
+        if (conceptObject.getLatitude() == null || conceptObject.getLongitude() == null) return true;
+        
+        gpsHelper.deleteGpsCoordinate(ds, conceptObject.getIdConcept(), idTheso);
+        if (conceptObject.getLatitude().isEmpty() || conceptObject.getLongitude().isEmpty()) {
+            return true;
+        }
+        try {
+            latitude = Double.parseDouble(conceptObject.getLatitude());
+            longitude = Double.parseDouble(conceptObject.getLongitude());
+        } catch (Exception e) {
+            return true;
+        }
+        gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
+        return true;
+    }    
+    
+    
+    private boolean updateImages(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1){
+        ImagesHelper imagesHelper = new ImagesHelper();
+        
+        if(conceptObject.getImages() == null) return true;
+
+        imagesHelper.deleteAllExternalImage(ds, conceptObject.getIdConcept(), idTheso);
+        
+        for (NodeImage nodeImage : conceptObject.getImages()) {
+            if(!nodeImage.getUri().isEmpty()) 
+                if(imagesHelper.addExternalImage(ds, conceptObject.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), idUser1)) {
+                    return false;
+                }
+        }
+        return true;
+    }
+    
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// Fin Mise à jour des concepts /////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////     
+    
+    
 }

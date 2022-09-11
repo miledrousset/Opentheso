@@ -43,7 +43,7 @@ import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
 import fr.cnrs.opentheso.ws.NodeDatas;
-import fr.cnrs.opentheso.ws.ark.ArkHelper;
+//import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.text.SimpleDateFormat;
@@ -182,7 +182,7 @@ public class ConceptHelper {
             nodeDatas.setName(label);
         nodeDatas.setUrl(getUri(idConcept, idTheso));
         nodeDatas.setDefinition(new NoteHelper().getDefinition(ds, idConcept, idTheso, idLang));
-        nodeDatas.setSynonym(new TermHelper().getNonPreferredTermsLabel(ds, idTheso, idTheso, idLang));
+        nodeDatas.setSynonym(new TermHelper().getNonPreferredTermsLabel(ds, idConcept, idTheso, idLang));
         return nodeDatas;        
     }
     /**
@@ -1922,7 +1922,7 @@ public class ConceptHelper {
      * @param idArk
      * @return 
      */
-    public boolean updateArkId(HikariDataSource ds, String idTheso, String idConcept, String idArk) {
+/*    public boolean updateArkId(HikariDataSource ds, String idTheso, String idConcept, String idArk) {
 
         ArkHelper arkHelper = new ArkHelper(nodePreference);
         if (!arkHelper.login()) {
@@ -1987,7 +1987,7 @@ public class ConceptHelper {
             }
         }
         return true;
-    }
+    }*/
 
     /**
      * Pour préparer les données pour la création d'un idArk
@@ -3980,7 +3980,10 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet de récupérer l'identifiant du Concept d'après
-     * l'idHandle
+     * l'idArk
+     * @param ds
+     * @param arkId
+     * @return 
      */
     public String getIdConceptFromArkId(HikariDataSource ds, String arkId) {
         String idConcept = null;
@@ -3989,7 +3992,7 @@ public class ConceptHelper {
                 stmt.executeQuery("select id_concept from concept where id_ark = '" + arkId + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
-                        idConcept = resultSet.getString("id_concept");
+                        idConcept = resultSet.getString("id_concept").trim();
                     }
                 }
             }

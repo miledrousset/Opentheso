@@ -224,7 +224,6 @@ public class SetAlignmentSourceBean implements Serializable {
 
         // Add selected Sources
         for (NodeSelectedAlignment nodeSelectedAlignment : nodeSelectedAlignmentsAll) {
-            System.out.print(">> "+ nodeSelectedAlignment.getSourceLabel() + " >> " + nodeSelectedAlignment.isIsSelected());
             if (nodeSelectedAlignment.isIsSelected()) {
                 System.out.print(" >>>>> IS SELECTED !!! " + nodeSelectedAlignment.getIdAlignmnetSource());
                 if (!alignmentHelper.addSourceAlignementToTheso(

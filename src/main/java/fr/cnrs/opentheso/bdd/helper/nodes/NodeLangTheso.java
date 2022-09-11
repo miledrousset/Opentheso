@@ -15,6 +15,7 @@ public class NodeLangTheso {
     private String code;
     private String value;
     private String labelTheso;
+    private String codeFlag;
 
     public String getCode() {
         return code;
@@ -25,7 +26,11 @@ public class NodeLangTheso {
     }
 
     public String getValue() {
-        return value;
+        if(value == null || value.isEmpty()) {
+            return value;
+        }
+
+        return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
 
     public void setValue(String value) {
@@ -46,6 +51,14 @@ public class NodeLangTheso {
 
     public void setLabelTheso(String labelTheso) {
         this.labelTheso = labelTheso;
+    }
+
+    public String getCodeFlag() {
+        return codeFlag;
+    }
+
+    public void setCodeFlag(String codeFlag) {
+        this.codeFlag = codeFlag;
     }
 
 }

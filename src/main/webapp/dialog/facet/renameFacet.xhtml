@@ -4,13 +4,13 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idRenameFacet" header="Renommer la facette" widgetVar="renameFacet" 
+    <p:dialog id="idRenameFacet" header="#{langueBean.getMsg('leftbody.renamefacet')}" widgetVar="renameFacet" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <h:form id="renameFacetForm">
             <p:defaultCommand target="validateRenameFacet" />        
             <div class="row">
                 <div class="col-4">
-                    <h:outputText value="Nom de la facette " style="font-weight: bold" /> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.facetdialog.facet_name')} " style="font-weight: bold" /> 
                 </div>
                 <div class="col-8">            
                     <h:outputText value="#{editFacet.facetSelected.lexicalValue}" />
@@ -19,7 +19,7 @@
 
             <div class="row" style="margin-top: 10px;">
                 <div class="col-4">
-                    <h:outputText value="Nouveau nom " style="font-weight: bold;" /> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')} " style="font-weight: bold;" /> 
                 </div>
                 <div class="col-8">
                     <p:inputText value="#{editFacet.newFacetName}" style="font-size: 12px; width: 100%; color: #000" />
@@ -27,11 +27,14 @@
             </div>   
             <p:spacer />
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary"
+                                 style="margin-right: 10px"
                                  actionListener="PF('renameFacet').hide();" update="containerIndex:idRenameFacet"/>
 
-                <p:commandButton id="validateRenameFacet" title="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('renameFacet').hide();"
+                <p:commandButton id="validateRenameFacet" 
+                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                                 update="containerIndex messageIndex"
+                                 oncomplete="PF('renameFacet').hide();"
                                  ajax="true" process="@form"
                                  actionListener="#{editFacet.updateLabelFacet()}" style="color: white;"/>
             </div>

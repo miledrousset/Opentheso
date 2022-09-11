@@ -489,7 +489,7 @@ public class EditFacet implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la création de la Facette !");
             return;
         }
-        showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec succès !");
 
         tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");
 

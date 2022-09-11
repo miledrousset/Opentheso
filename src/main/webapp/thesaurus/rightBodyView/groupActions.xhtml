@@ -11,13 +11,16 @@
                 <p:menuButton icon="pi pi-align-justify" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
 
-                    <p:menuitem disabled="true" id="newConcept1" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                            or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
-                                actionListener="#{addConcept.reset()}" oncomplete="PF('addNT').show();"
-                                update="containerIndex:idAddNT" value="#{langueBean.getMsg('rightbody.concept.new_concept')}"
+                    <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
+                                disabled="false" id="newArkIdGroup" 
+                                actionListener="#{editConcept.infosArk()}"
+                                oncomplete="PF('generateArkGroup').show();"
+                                update="containerIndex:idGenerateArkGroup containerIndex:generateArkGroupForm" 
+                                value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
                                 icon="fas fa-plus" />
                 </p:menuButton>
-                <p:tooltip for="newConcept1" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_concept')} #{conceptView.nodeConcept.term.lexical_value}" showDelay="1000" />                
+                <p:tooltip for="newArkIdGroup" value="#{langueBean.getMsg('rightbody.concept.tooltip_generate_ark')}" />
+                
             </h:panelGroup>
         </div>
     </div>

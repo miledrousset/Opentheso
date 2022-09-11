@@ -38,11 +38,11 @@
     </div>
     <p:separator style="color: #F47B2A"/>
     <p:tree id="treeGroups" value="#{treeGroups.root}" dynamic="true" var="node" selectionMode="single" selection="#{treeGroups.selectedNode}"
-            style="width: auto; border: none; font-size: 13px; min-height: 700px; max-height: 800px; overflow-y:scroll;"
+            style="width: auto; border: none; font-size: 13px; min-height: 700px; max-height: 925px; overflow-y:scroll;"
             widgetVar="groupWidget">
 
         <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
-        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formLeftTab:tabTree:menuCollection" />
+        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" />
 
         <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 13px; color: blue"/>

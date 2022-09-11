@@ -124,7 +124,7 @@
         body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item {
             font-size: 12px;
         }
-        
+
     </style>
 
     <div class="container" style="margin-top: -25px">
@@ -141,7 +141,9 @@
                                                          class="form-control" title="#{langueBean.getMsg('search.change_thesaurus_language')}"
                                                          style="background: transparent; border-color: transparent; background-color: transparent; font-size: 12px;
                                                          padding-top: 2px; width: 100%; padding-left: 5px;">
-                                            <p:ajax event="valueChange"  update="containerIndex" listener="#{selectedTheso.changeLang()}" />
+                                            <p:ajax event="valueChange" listener="#{selectedTheso.changeLang()}"
+                                                    update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp 
+                                                            containerIndex:notificationPanel"/>
                                             <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
                                             <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all"/>
                                         </p:selectOneMenu>
@@ -150,7 +152,7 @@
                                         <p:autoComplete class="form-control" value="#{searchBean.searchSelected}" var="values" placeholder="Rechercher..." 
                                                         completeMethod="#{searchBean.completTermFullText}" minQueryLength="1" itemLabel="#{values.prefLabel}" 
                                                         itemValue="#{values}" converter="searchConverterAdvanced" scrollHeight="600"
-                                                        inputStyle="font-size: 14px; width: 100%; height: 100%; box-shadow: none; padding-top: 10px"
+                                                        inputStyle="font-size: 16px; width: 100%; height: 100%; box-shadow: none; padding-top: 10px"
                                                         style="background-color: transparent; border-color: transparent; width: 100%; font-size: 12px;">
 
                                             <!-- Type prefLabel -->
@@ -193,7 +195,7 @@
                                     </div>
                                     <div class="col-1" style="text-align: right; ">
                                         <p:commandLink id="applySearch" class="btn btn-base" actionListener="#{searchBean.applySearch()}"
-                                                       update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();">
+                                                       update="containerIndex:notificationPanel messageIndex">
                                             <i class="fas fa-search fa-1x" style="color: #f47b2a; font-size: 14px;"/>
                                         </p:commandLink>
                                     </div>
@@ -235,37 +237,37 @@
                     <p:tooltip for="select4" value="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
-                <p:selectCheckboxMenu
-                    rendered="#{selectedTheso.currentIdTheso == null}"
-                    id="select5" value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}" style="color: #000; font-size: 12px;"
+                <p:selectCheckboxMenu rendered="#{selectedTheso.currentIdTheso == null}" id="select5" 
+                                      value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}" style="color: #000; font-size: 12px;"
                                       panelStyle="width: 15rem; font-size: 1rem" scrollHeight="250" >
                     <f:selectItems value="#{roleOnTheso.listTheso}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
                 </p:selectCheckboxMenu>
 
                 <p:menuButton rendered="#{currentUser.nodeUser != null and selectedTheso.currentIdTheso != null}"
-                              id="searchProgrammed" style="font-size: 12px;; margin-top: -0.33rem;" icon="pi pi-align-justify">
+                              id="searchProgrammed" style="font-size: 12px; margin-top: -0.33rem;" icon="pi pi-align-justify">
 
                     <p:menuitem value="#{langueBean.getMsg('search.deprecated')}" action="#{searchBean.getAllDeprecatedConcepts()}" 
-                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
-                                title="#{langueBean.getMsg('search.tooltip_deprecated')}"/>                    
+                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
+                                title="#{langueBean.getMsg('search.tooltip_deprecated')}"/>    
+                    
                     <p:menuitem value="#{langueBean.getMsg('search.polyhierarchy')}" action="#{searchBean.getAllPolyierarchy()}" 
-                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
+                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_polyhierarchy')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.multiGroups')}" action="#{searchBean.searchConceptWithMultiGroup()}" 
-                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
+                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_multiGroups')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.withoutGroups')}" action="#{searchBean.searchConceptWithoutGroup()}" 
-                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
+                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_withoutGroups')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.duplicates')}" action="#{searchBean.searchConceptDuplicated()}" 
-                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
+                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_duplicates')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.forbiddenRelationships')}" action="#{searchBean.searchConceptWithRTandBT()}" 
-                                update="containerIndex:sideBarSearch" oncomplete="PF('resultatRecherche').show();"
+                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_forbiddenRrelationships')}"/>
                 </p:menuButton>
                 <p:tooltip for="searchProgrammed" value="#{langueBean.getMsg('search.preprogrammedSearch')}" showDelay="1000" position="bottom"/>
@@ -273,11 +275,7 @@
         </div>
 
         <div class="col-1">
-            <div class="col-1" style="text-align: right; margin-left: 30px; margin-top: -10px">
-                <p:commandButton icon="pi pi-bookmark" styleClass="rounded-button ui-button-secondary ui-button-outlined"
-                                 actionListener="#{searchBean.afficherResultatRecherche()}"
-                                 update="messageIndex"/>
-            </div>
+            
         </div>
     </div>
     <h:form id="formSearch">

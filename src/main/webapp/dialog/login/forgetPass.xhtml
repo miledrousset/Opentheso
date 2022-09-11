@@ -15,12 +15,13 @@
                     <p:inputText placeholder="votre adresse mail" value="#{forgetPassBean.mail}" style="width: 100%" />
                 </div>
             </div>
-            
+            <p:spacer height="20px;"/>
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('forgetPass').hide();" update="forgetPassForm"/>
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" 
+                                 style="margin-right: 10px"
+                                 actionListener="PF('forgetPass').hide();" update="idForgetPass"/>
 
-                <p:commandButton class="btn btn-primary" title="Renvoyer"
+                <p:commandButton styleClass="ui-button-primary" value="#{langueBean.getMsg('candidat.send')}"
                                  oncomplete="PF('forgetPass').hide();"
                                  update="containerIndex messageIndex"
                                  actionListener="#{forgetPassBean.sendMail()}"/>
