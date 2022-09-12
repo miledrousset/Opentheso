@@ -451,12 +451,19 @@ public class StatisticHelper {
         return -1;
     }    
     
+    /**
+     * Retourne le nombre de concepts sans les candidtas ni les concepts dépréciés 
+     * 
+     * @param ds
+     * @param idThesaurus
+     * @return 
+     */
     public int getNbCpt(HikariDataSource ds, String idThesaurus) {
         int count = 0;
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery( "SELECT count(id_concept) FROM concept WHERE"
-                            + " id_thesaurus = '" + idThesaurus + "' and status != 'CA'");
+                            + " id_thesaurus = '" + idThesaurus + "' and status not in ('CA', 'DEP')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if(resultSet.next()) {
                         count = resultSet.getInt(1);

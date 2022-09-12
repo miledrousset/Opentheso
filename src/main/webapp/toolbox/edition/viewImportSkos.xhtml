@@ -35,7 +35,6 @@
                                 <f:selectItem itemLabel="Sans" itemValue="sans" />
                                 <f:selectItem itemLabel="Ark" itemValue="ark" />
                                 <f:selectItem itemLabel="Handle" itemValue="handle" />
-                                <f:selectItem itemLabel="Doi" itemValue="doi" />
                             </p:selectOneRadio>
                             <div class="row">
                                 <p:column class="col-1">
@@ -73,20 +72,6 @@
                                 <p:column  class="col-7">
                                     <p:inputText value="#{importFileBean.prefixHandle}" placeholder="22.600.12859" style="margin-left: 5px"
                                                  title="Exemple de préfixe: 22.600.12859, Permet de récupérer l'identifiant Handle automatiquement, un identifiant interne sera créé en plus !!"/>
-                                </p:column>
-                            </div>
-
-                            <div class="row" style="margin-top: 5px">
-                                <p:column class="col-1">
-                                    <p:radioButton id="opt4" for="customRadio" itemIndex="3" />
-                                </p:column>
-                                <p:column class="col-4">
-                                    <h:outputLabel for="opt4" value="Doi -> préfixe : " style="margin-left: 5px" />
-                                </p:column>
-                                <p:column class="col-7">
-                                    <p:inputText value="#{importFileBean.prefixDoi}" placeholder="10.1109" 
-                                                 style="margin-left: 5px"
-                                                 title="Exemple de préfixe: 10.1109, Permet de récupérer l'identifiant Doi automatiquement, un identifiant interne sera créé en plus !!"/>
                                 </p:column>
                             </div>
                         </div>
@@ -137,6 +122,8 @@
                         </div>
                     </div>
 
+                    <p:spacer height="10px"/>
+                    
                     <!-- Choix du fichier -->   
                     <div class="row" style="margin-top: 5px">
                         <div class="col-12" > 
