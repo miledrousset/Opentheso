@@ -18,8 +18,7 @@ import java.sql.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
+import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -29,7 +28,8 @@ public class ExportHelper {
     private final static String SEPERATEUR = "##";
     private final static String SUB_SEPERATEUR = "@";
 
-    public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso, String baseUrl, String idGroup) throws Exception {
+    public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso, 
+            String baseUrl, String idGroup, String originalUri) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
 
@@ -70,15 +70,19 @@ public class ExportHelper {
                         addAlignementGiven(resultSet.getString("relatedmatch"), sKOSResource, SKOSProperty.relatedMatch);
                         addAlignementGiven(resultSet.getString("narrowMatch"), sKOSResource, SKOSProperty.narrowMatch);
 
-                        addRelations(resultSet.getString("broader"), sKOSResource, SKOSProperty.topConceptOf, idTheso);
+                        if (resultSet.getString("broader") == null || resultSet.getString("broader").isEmpty()) {
+                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri), 
+                                    SKOSProperty.topConceptOf));
+                        } else {                           
+                            addRelationsGiven(resultSet.getString("broader"), sKOSResource);
+                        }
+                        
+                        addRelationsGiven(resultSet.getString("narrower"), sKOSResource);
+                        addRelationsGiven(resultSet.getString("related"), sKOSResource);
 
                         //addReplaced(resultSet.getString("replaces_by"), sKOSResource, SKOSProperty.isReplacedBy);
 
                         //addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
-                        
-                        addRelationsGiven(resultSet.getString("narrower"), sKOSResource);
-                        addRelationsGiven(resultSet.getString("broader"), sKOSResource);
-                        addRelationsGiven(resultSet.getString("related"), sKOSResource);
                         
                         if (!StringUtils.isEmpty(resultSet.getString("notation"))) {
                             sKOSResource.addNotation(resultSet.getString("notation"));
@@ -151,6 +155,25 @@ public class ExportHelper {
         return concepts;
     }
     
+    private String getUriFromId(String id, String originalUri) {
+        String uri;
+
+        if(originalUri != null && !originalUri.isEmpty()) {
+            uri = originalUri + "/" + id;
+        } else {
+            uri = getPath(originalUri) + "/" + id;
+        }
+        return uri;
+    }
+    
+    private String getPath(String originalUri){
+        if(FacesContext.getCurrentInstance() == null) {
+            return originalUri;
+        }
+        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        return path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+    }
+    
     private String getSQLRequest(String idTheso, String baseUrl, String idGroup) {
         String baseSQL = "SELECT * FROM ";
         if (StringUtils.isEmpty(idGroup)) {
@@ -165,18 +188,6 @@ public class ExportHelper {
                 + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, "
                 + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, "
                 + "date_candidat varchar, message_candidat varchar, vote_candidat text, messages_candidat text, creator text, contributor text);";
-    }
-
-    private void addMembres(SKOSResource resource, String textBrut) {
-        if (StringUtils.isNotEmpty(textBrut)) {
-            String[] tabs = textBrut.split(SEPERATEUR);
-
-            for (String tab : tabs) {
-                String[] element = tab.split(SUB_SEPERATEUR);
-
-
-            }
-        }
     }
 
     private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
@@ -300,34 +311,6 @@ public class ExportHelper {
         }
     }
 
-    private void addRelations(String textBrut, SKOSResource sKOSResource, int type, String thesoID)
-            throws SQLException, Exception {
-
-        if (StringUtils.isNotEmpty(textBrut)) {
-            String[] tabs = textBrut.split(SEPERATEUR);
-
-            for (String tab : tabs) {
-                SKOSRelation relation = new SKOSRelation(thesoID, tab, type);
-                if (CollectionUtils.isEmpty(sKOSResource.getRelationsList())) {
-                    sKOSResource.setRelationsList(new ArrayList<>());
-                }
-                sKOSResource.getRelationsList().add(relation);
-            }
-        }
-    }
-
-    private void addReplaced(String textBrut, SKOSResource sKOSResource, int type)
-            throws SQLException, Exception {
-
-        if (StringUtils.isNotEmpty(textBrut)) {
-            String[] tabs = textBrut.split(SEPERATEUR);
-
-            for (String tab : tabs) {
-                sKOSResource.addReplaces(tab, type);
-            }
-        }
-    }
-
     private void addAlignementGiven(String textBrut, SKOSResource sKOSResource, int type) throws SQLException {
 
         if (StringUtils.isNotEmpty(textBrut)) {
@@ -362,20 +345,5 @@ public class ExportHelper {
             }
         }
     }
-
-    /*
-        
-        sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.inScheme);
-
-        for (NodeUri nodeUri : nodeConcept.getNodeListIdsOfConceptGroup()) {
-            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.memberOf);
-        }
-
-        if(nodeConcept.getListFacetsOfConcept() != null) {
-            for (String idFacette : nodeConcept.getListFacetsOfConcept()) {
-                int prop = SKOSProperty.subordinateArray;
-                sKOSResource.addRelation(idFacette, getUriForFacette(idFacette, idTheso), prop);
-            }
-        }
-     */
+    
 }

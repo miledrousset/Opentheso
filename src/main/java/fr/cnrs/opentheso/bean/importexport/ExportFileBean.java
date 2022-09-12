@@ -642,7 +642,8 @@ public class ExportFileBean implements Serializable {
         
         if (!viewExportBean.isToogleFilterByGroup()) {
             exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);    
-            concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, baseUrl, null);
+            concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, 
+                    baseUrl, null, nodePreference.getOriginalUri());
         } else {
             for (String idGroup : viewExportBean.getSelectedIdGroups()) {
                 NodeGroupLabel nodeGroupLabel = new GroupHelper().getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
@@ -652,7 +653,8 @@ public class ExportFileBean implements Serializable {
                         exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
                 exportRdf4jHelperNew.addChildsGroupRecursive(connect.getPoolConnexion(), idTheso, idGroup, sKOSResource);
                 
-                concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso, baseUrl, idGroup));
+                concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(), 
+                        idTheso, baseUrl, idGroup, nodePreference.getOriginalUri()));
             }            
         }
         
