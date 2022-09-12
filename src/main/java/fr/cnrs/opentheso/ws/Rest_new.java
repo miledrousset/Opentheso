@@ -1574,6 +1574,69 @@ public class Rest_new {
         return groups;
     }    
 
+    
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //////////////Fonction qui permet de produire /////////////////////////////////////////  
+    //////////////des données Json pour le widget Aïoli////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Permet de rechercher une valeur en filtrant par theso, groupe et langue
+     *
+     * "http://193.48.140.131:8083/opentheso/api/searchwidgetbyark?q=77777/abcdddor,76767/oreijezrnh&lang=fr"
+     *
+     * @param uri JSON
+     * @return
+     */
+    @Path("/searchwidgetbyark")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response searchJsonForWidgetByArk(@Context UriInfo uri) {
+        String [] idArks = null;
+        String idLang = "";
+        String datas;
+
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("lang")) {
+                    idLang = valeur;
+                }
+                if (e.getKey().equalsIgnoreCase("q")) {
+                    idArks = valeur.split(",");
+                }
+            }
+        }
+        
+        if(idArks == null || idArks.length == 0)
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        
+        datas = getDatasForWidgetByArk(idLang, idArks);
+        if (datas == null) {
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        }
+        return Response
+                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+    }      
+    
+    private String getDatasForWidgetByArk(String idLang, String[] idArks) {
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.findDatasForWidgetByArk(ds,
+                    idLang, idArks);
+            ds.close();
+        }
+        if (datas == null) {
+            return null;
+        }
+        return datas;
+    }    
+    
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
     /*
