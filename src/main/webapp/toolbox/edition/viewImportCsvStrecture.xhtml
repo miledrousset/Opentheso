@@ -65,12 +65,12 @@
                                           label="parcourir" 
                                           mode="advanced" auto="true"
                                           allowTypes="/(\.|\/)(csv|txt)$/"
-                                          update="containerIndex" disabled="#{importFileBean.loadDone}"
+                                          update="resultImportCSVStructure"
                                           style="font-size: 12px;" />  
                         </div>
                     </div> 
-
-                    <h:panelGroup rendered="#{importFileBean.loadDone}">
+                    
+                    <h:panelGroup id="resultImportCSVStructure">
                         <div class="row" style="margin: 20px">
                             <div class="col-12">
                                 <h:outputText value="Total des concepts: " />
@@ -87,25 +87,24 @@
                         </div>                
                     </div>
 
-                    <div class="row" style="margin: 20px">
-                        <div class="col-6"> 
+                    <div class="row" style="margin: 20px; text-align: right">
+                        <div class="col-12"> 
                             <p:commandButton icon="fa fa-undo"  
                                              value="#{langueBean.getMsg('btnBack')}"
                                              class="btn btn-success"
-                                             style="width: 100%; background-color: #FFC107; color: black; border: none;"
+                                             style="background-color: #FFC107; color: black; border: none; margin-right: 10px"
                                              actionListener="#{viewEditionBean.init()}"
                                              action="#{importFileBean.init()}"
                                              update="containerIndex messageIndex" />
-                        </div>
-                        <div class="col-6"> 
+
                             <p:commandButton class="btn btn-success" widgetVar="buttonImportCsv"
                                              icon="fa fa-download" update="containerIndex messageIndex"
                                              onclick="PrimeFaces.monitorDownload(start, stop);"
-                                             style="width: 100%; background-color: #5CB85C; border: none;"
+                                             style="background-color: #5CB85C; border: none;"
                                              actionListener="#{importFileBean.addCsvStrucToDB()}"
                                              ajax="true" process="@form"
-                                             value="Importer" />               
-                        </div> 
+                                             value="Importer" />  
+                        </div>
                     </div>
                 </div>
             </div>

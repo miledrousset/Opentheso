@@ -35,7 +35,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-import fr.cnrs.opentheso.bean.concept.AddConcept;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -71,7 +70,6 @@ import org.primefaces.event.FileUploadEvent;
  */
 @Named(value = "importFileBean")
 @SessionScoped
-
 public class ImportFileBean implements Serializable {
 
     @Inject
@@ -90,8 +88,6 @@ public class ImportFileBean implements Serializable {
     private CandidatBean candidatBean;
     @Inject
     private SelectedTheso selectedTheso;
-    @Inject
-    private AddConcept addConcept;
 
     private double progress = 0;
     private double progressStep = 0;
@@ -613,13 +609,13 @@ public class ImportFileBean implements Serializable {
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
             // première lecrture pour charger les langues
-            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+            try ( Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.setLangs(reader1)) {
                     error.append(csvReadHelper.getMessage());
                 }
                 //deuxième lecture pour les données
-                try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
+                try ( Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
                     /// option true to read empty data
                     if (!csvReadHelper.readFile(reader2, true)) {
                         error.append(csvReadHelper.getMessage());
@@ -655,23 +651,38 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             DataInputStream myInput = new DataInputStream(event.getFile().getInputStream());
-            List<String[]> lines = new ArrayList<>();
-            String thisLine = myInput.readLine();
-            while (thisLine != null) {
-                lines.add(thisLine.split(";"));
-                thisLine = myInput.readLine();
+            
+            String delimiterChar;
+            switch(choiceDelimiter) {
+                case 0:
+                    delimiterChar = ",";
+                    break;
+                case 1:
+                    delimiterChar = ";";
+                    break;
+                default:
+                    delimiterChar = "\\t";
             }
-
-            int nbrMaxElement = lines.get(0).length;
-            if (lines.size() > 1) {
-                for (int i = 1; i < lines.size(); i++) {
-                    if (lines.get(i).length > nbrMaxElement) {
-                        nbrMaxElement = lines.get(i).length;
-                    }
+            
+            List<String[]> lines = new ArrayList<>();
+            String thisLine = new String(myInput.readLine().getBytes(), "UTF-8");
+            while (thisLine != null) {
+                lines.add(thisLine.split(delimiterChar));
+                if (myInput.readLine() != null) {
+                    thisLine = new String(myInput.readLine().getBytes(), "UTF-8");
+                } else {
+                    thisLine = null;
                 }
             }
 
-            String[][] matrix = new String[nbrMaxElement][lines.size()];
+            int nbrMaxElement = lines.get(0).length;
+            for (int i = 0; i < lines.size(); i++) {
+                if (lines.get(i).length > nbrMaxElement) {
+                    nbrMaxElement = lines.get(i).length;
+                }
+            }
+
+            String[][] matrix = new String[lines.size()][nbrMaxElement];
             for (int i = 0; i < lines.size(); i++) {
                 for (int j = 0; j < nbrMaxElement; j++) {
                     if (lines.get(i).length > j) {
@@ -693,6 +704,8 @@ public class ImportFileBean implements Serializable {
 
             PrimeFaces.current().executeScript("PF('waitDialog').hide()");
         }
+            
+        PrimeFaces.current().ajax().update("containerIndex:resultExportCsvStructre");
     }
 
     public void addCsvStrucToDB() {
@@ -935,7 +948,7 @@ public class ImportFileBean implements Serializable {
         // mise à jouor des concepts
         try {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
-                if(csvImportHelper.updateConcept(connect.getPoolConnexion(), idTheso, conceptObject, idUser1)) {
+                if (csvImportHelper.updateConcept(connect.getPoolConnexion(), idTheso, conceptObject, idUser1)) {
                     total++;
                 }
             }
@@ -970,7 +983,6 @@ public class ImportFileBean implements Serializable {
 
         onComplete();
     }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////// Fonctions pour importer des données en CSV //////////////////
@@ -1503,24 +1515,24 @@ public class ImportFileBean implements Serializable {
                 if (conceptObject.getLocalId() == null || conceptObject.getLocalId().isEmpty()) {
                     continue;
                 }
-                if("ark".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId());
                 }
-                if("handle".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getLocalId());
-                } 
-                if("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)){
+                }
+                if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptObject.getLocalId();
-                }  
+                }
                 if (idConcept == null || idConcept.isEmpty()) {
                     continue;
                 }
                 // controle pour vérifier l'existance de l'Id
-                if(!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())){
+                if (!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())) {
                     continue;
-                }                
+                }
                 for (NodeIdValue nodeIdValue : conceptObject.getAlignments()) {
-                    if(alignmentHelper.deleteAlignmentByUri(connect.getPoolConnexion(),
+                    if (alignmentHelper.deleteAlignmentByUri(connect.getPoolConnexion(),
                             nodeIdValue.getValue().trim(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso())) {
@@ -1533,7 +1545,7 @@ public class ImportFileBean implements Serializable {
             BDDinsertEnable = false;
             importInProgress = false;
             uri = null;
-            info = "Suppression réussi, alignements supprimés = " + (int)total;            
+            info = "Suppression réussi, alignements supprimés = " + (int) total;
             total = 0;
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
@@ -1541,7 +1553,7 @@ public class ImportFileBean implements Serializable {
         } finally {
             showError();
         }
-    }    
+    }
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////Fin Ajout des alignements de Wikidata////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
