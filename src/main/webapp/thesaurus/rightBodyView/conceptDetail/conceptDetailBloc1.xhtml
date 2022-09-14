@@ -178,7 +178,7 @@
                     
                     
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: left; ">
-                        <p:toggleSwitch value="#{conceptView.toggleSwitchAltLabelLang}" id="commandOtherLangAltLabel" style="font-size: 1rem;">
+                        <p:toggleSwitch value="#{conceptView.toggleSwitchAltLabelLang}" id="commandOtherLangAltLabel" style="font-size: 1rem;margin-left: -5px">
                             <p:ajax listener="#{conceptView.getAltLabelWithAllLanguages()}" update="containerIndex:formRightTab"/>
                         </p:toggleSwitch>      
                         <p:tooltip for="commandOtherLangAltLabel" value="#{langueBean.getMsg('concept.showEMOtherLang')}" showDelay="1000" />

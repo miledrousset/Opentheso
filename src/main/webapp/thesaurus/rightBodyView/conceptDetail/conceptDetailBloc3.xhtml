@@ -33,7 +33,7 @@
 
                         </div>
                         <div class="col-1 offset-8" style="margin-top: 0px">
-                            <p:toggleSwitch value="#{conceptView.toggleSwitchNotesLang}" id="commandOtherLang" style="font-size: 1rem;">
+                            <p:toggleSwitch value="#{conceptView.toggleSwitchNotesLang}" id="commandOtherLang" style="font-size: 1rem;margin-left: -12px">
                                 <p:ajax listener="#{conceptView.getNotesWithAllLanguages()}" update="containerIndex:formRightTab"/>
                             </p:toggleSwitch>                              
                             <p:tooltip for="commandOtherLang" value="#{langueBean.getMsg('concept.showNotesOtherLang')}" showDelay="1000" />
