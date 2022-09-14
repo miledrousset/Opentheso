@@ -48,10 +48,11 @@ import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.util.List;
 import javax.annotation.PreDestroy;
@@ -650,10 +651,8 @@ public class ImportFileBean implements Serializable {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
             event.queue();
         } else {
-            DataInputStream myInput = new DataInputStream(event.getFile().getInputStream());
-            
             String delimiterChar;
-            switch(choiceDelimiter) {
+            switch (choiceDelimiter) {
                 case 0:
                     delimiterChar = ",";
                     break;
@@ -663,16 +662,16 @@ public class ImportFileBean implements Serializable {
                 default:
                     delimiterChar = "\\t";
             }
-            
+
             List<String[]> lines = new ArrayList<>();
-            String thisLine = new String(myInput.readLine().getBytes(), "UTF-8");
-            while (thisLine != null) {
-                lines.add(thisLine.split(delimiterChar));
-                if (myInput.readLine() != null) {
-                    thisLine = new String(myInput.readLine().getBytes(), "UTF-8");
-                } else {
-                    thisLine = null;
+            try ( InputStreamReader isr = new InputStreamReader(event.getFile().getInputStream(), StandardCharsets.UTF_8);  BufferedReader reader = new BufferedReader(isr)) {
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line.split(delimiterChar));
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             int nbrMaxElement = lines.get(0).length;
@@ -687,7 +686,9 @@ public class ImportFileBean implements Serializable {
                 for (int j = 0; j < nbrMaxElement; j++) {
                     if (lines.get(i).length > j) {
                         matrix[i][j] = lines.get(i)[j];
-                        total++;
+                        if (!StringUtils.isEmpty(lines.get(i)[j])) {
+                            total++;
+                        }
                     }
                 }
             }
@@ -696,7 +697,7 @@ public class ImportFileBean implements Serializable {
 
             for (int i = 0; i < matrix.length; i++) {
                 if (!StringUtils.isEmpty(matrix[i][0])) {
-                    racine.getChildrens().add(createTree(matrix, i, 0));
+                    racine.getChildrens().add(createTree(matrix, i, 0, matrix[i][0]));
                 }
             }
 
@@ -704,7 +705,7 @@ public class ImportFileBean implements Serializable {
 
             PrimeFaces.current().executeScript("PF('waitDialog').hide()");
         }
-            
+
         PrimeFaces.current().ajax().update("containerIndex:resultExportCsvStructre");
     }
 
@@ -795,19 +796,24 @@ public class ImportFileBean implements Serializable {
         }
     }
 
-    private NodeTree createTree(String[][] matrix, int ligne, int colone) {
+    private NodeTree createTree(String[][] matrix, int ligne, int colone, String parent) {
 
         NodeTree element = new NodeTree();
         element.setPreferredTerm(matrix[ligne][colone]);
 
         colone++;
-        while (colone < matrix[ligne].length && ligne < matrix.length
-                && matrix[ligne][colone] != null && matrix[ligne][colone].length() > 0) {
-
-            element.getChildrens().add(createTree(matrix, ligne, colone));
-            ligne++;
+        if (ligne < matrix.length && colone < matrix[ligne].length) {
+            while (matrix[ligne][colone] != null) {
+                if (matrix[ligne][colone-1] != null && matrix[ligne][colone-1].length() > 0 && !matrix[ligne][colone-1].equals(element.getPreferredTerm())) {
+                    break;
+                }
+                if (matrix[ligne][colone].length() > 0) {
+                    element.getChildrens().add(createTree(matrix, ligne, colone, element.getPreferredTerm()));
+                }
+                ligne++;
+            }
         }
-
+        
         return element;
     }
 
