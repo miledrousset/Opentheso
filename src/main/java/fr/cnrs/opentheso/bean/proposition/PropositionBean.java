@@ -1,8 +1,6 @@
 package fr.cnrs.opentheso.bean.proposition;
 
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
 import fr.cnrs.opentheso.bean.proposition.model.Proposition;
