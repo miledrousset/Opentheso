@@ -1012,7 +1012,7 @@ public class SearchHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept from concept where status = 'DEP'"
-                        + " and id_thesaurus = '" + idTheso + "'");
+                        + " and id_thesaurus = '" + idTheso + "' limit 200");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         idConcepts.add(resultSet.getString("id_concept"));
@@ -1041,7 +1041,7 @@ public class SearchHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept1 from hierarchical_relationship where role = 'BT'"
                         + " and id_thesaurus = '" + idTheso + "'"
-                        + " group by id_concept1 having count(id_concept1) > 1;");
+                        + " group by id_concept1 having count(id_concept1) > 1 limit 200;");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         idConcepts.add(resultSet.getString("id_concept1"));
@@ -1068,7 +1068,7 @@ public class SearchHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select idconcept from concept_group_concept where idthesaurus = '" + idTheso + "'"
-                        + " group by idconcept having count(idconcept) > 1 limit 500");
+                        + " group by idconcept having count(idconcept) > 1 limit 200");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         idConcepts.add(resultSet.getString("idconcept"));
