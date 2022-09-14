@@ -337,20 +337,15 @@ DECLARE
 	relatedMatch text;
 	narrowMatch text;
 	img text;
-	status_candidat VARCHAR;
-	date_candidat VARCHAR;
-	message_candidat VARCHAR;
-	vote_candidat text;
-	messages_candidat text;
 	creator text;
 	contributor text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
-				 
-	
-	FOR con IN SELECT * FROM concept WHERE id_thesaurus = id_theso
-    LOOP		
+
+
+	FOR con IN SELECT * FROM concept WHERE id_thesaurus = id_theso AND status != 'CA'
+    LOOP
 		-- URI
 		uri = opentheso_get_uri(theso_rec.original_uri_is_ark, con.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
 					 con.id_handle, theso_rec.original_uri_is_doi, con.id_doi, con.id_concept, id_theso, path);
@@ -358,57 +353,27 @@ BEGIN
 		-- LocalUri
 		local_URI = path || '/?idc=' || con.id_concept || '&idt=' || id_theso;
 		prefLab = '';
-		
-		
-		vote_candidat = '';
-		messages_candidat = '';
-		status_candidat = '';
-		date_candidat = '';
-		message_candidat = '';
-		
-		IF (con.status = 'CA') THEN
-			-- Recherche des votes
-			FOR vote_record IN SELECT id_user, type_vote, id_note 
-						FROM candidat_vote WHERE id_concept::varchar(255) = con.id_concept AND id_thesaurus = id_theso
-			LOOP
-				vote_candidat = vote_candidat || vote_record.id_user || sous_seperateur || vote_record.type_vote || sous_seperateur || vote_record.id_note || seperateur; 
-			END LOOP;
-			
-			-- Recherche des messages
-			FOR message_record IN SELECT users.id_user, cand.value, cand.date FROM candidat_messages cand, users 
-						WHERE id_concept::varchar(255) = con.id_concept AND id_thesaurus = id_theso
-			LOOP
-				messages_candidat = messages_candidat || message_record.value || sous_seperateur || message_record.id_user || sous_seperateur || message_record.date || seperateur;
-			END LOOP;
-			
-			FOR cadidat_record IN SELECT * FROM candidat_status WHERE id_concept::varchar(255) = con.id_concept
-			LOOP
-				status_candidat = cadidat_record.id_status;
-				date_candidat = cadidat_record.date;
-				message_candidat = cadidat_record.message;
-			END LOOP;
-		END IF;
-		
+
 		-- PrefLab
 		FOR traduction_rec IN SELECT * FROM opentheso_get_traductions(id_theso, con.id_concept)
 		LOOP
 			prefLab = prefLab || traduction_rec.term_lexical_value || sous_seperateur || traduction_rec.term_lang || seperateur;
 		END LOOP;
-		
+
 		-- altLab
 		altLab = '';
 		FOR altLab_rec IN SELECT * FROM opentheso_get_alter_term(id_theso, con.id_concept, false)
 		LOOP
 			altLab = altLab || altLab_rec.alter_term_lexical_value || sous_seperateur || altLab_rec.alter_term_lang || seperateur;
 		END LOOP;
-		
+
 		-- altLab hiden
 		altLab_hiden = '';
 		FOR altLab_hiden_rec IN SELECT * FROM opentheso_get_alter_term(id_theso, con.id_concept, true)
 		LOOP
 			altLab_hiden = altLab_hiden || altLab_hiden_rec.alter_term_lexical_value || sous_seperateur || altLab_hiden_rec.alter_term_lang || seperateur;
 		END LOOP;
-		
+
 		-- Notes
 		note = '';
 		example = '';
@@ -435,7 +400,7 @@ BEGIN
 				editorialNote = editorialNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		FOR note_term_rec IN SELECT * FROM opentheso_get_note_term(id_theso, con.id_concept)
 		LOOP
 			IF (note_term_rec.note_notetypecode = 'note') THEN
@@ -454,29 +419,29 @@ BEGIN
 				editorialNote = editorialNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		-- Narrower
 		narrower = '';
 		broader = '';
 		related = '';
 		FOR relation_rec IN SELECT * FROM opentheso_get_relations(id_theso, con.id_concept)
 		LOOP
-			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri, 
-					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi, 
-					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, id_theso, path) 
+			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
+					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, id_theso, path)
 					|| '@' || relation_rec.relationship_role || '@' || relation_rec.relationship_id_concept || '@' ;
-					
-			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI' 
+
+			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI'
 					OR relation_rec.relationship_role = 'NTG') THEN
 				narrower = narrower || tmp || seperateur;
-			ELSIF (relation_rec.relationship_role = 'BT' OR relation_rec.relationship_role = 'BTP' OR relation_rec.relationship_role = 'BTI' 
+			ELSIF (relation_rec.relationship_role = 'BT' OR relation_rec.relationship_role = 'BTP' OR relation_rec.relationship_role = 'BTI'
 					OR relation_rec.relationship_role = 'BTG') THEN
 				broader = broader || tmp || seperateur;
 			ELSIF (relation_rec.relationship_role = 'RT' OR relation_rec.relationship_role = 'RHP' OR relation_rec.relationship_role = 'RPO') THEN
 				related = related || tmp || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		-- Alignement
 		exactMatch = '';
 		closeMatch = '';
@@ -497,10 +462,10 @@ BEGIN
 				narrowMatch = narrowMatch || alignement_rec.alig_uri_target || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		-- geo:alt && geo:long
 		SELECT * INTO geo_rec FROM opentheso_get_gps(id_theso, con.id_concept);
-		
+
 		-- membre
 		membre = '';
 		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
@@ -515,22 +480,22 @@ BEGIN
 				membre = membre || path || '/?idc=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		-- Images
 		img = '';
 		FOR img_rec IN SELECT * FROM opentheso_get_images(id_theso, con.id_concept)
 		LOOP
 			img = img || img_rec.url || seperateur;
 		END LOOP;
-		
+
 		SELECT username INTO creator FROM users WHERE id_user = con.creator;
 		SELECT username INTO contributor FROM users WHERE id_user = con.contributor;
-		
-		
-		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example, 
-				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch, 
-				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, 
-				membre, con.created, con.modified, img, status_candidat, date_candidat, message_candidat, vote_candidat, messages_candidat, creator, contributor INTO rec;
+
+
+		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
+				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
+				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude,
+				membre, con.created, con.modified, img, creator, contributor INTO rec;
 		
   		RETURN NEXT rec;
     END LOOP;
@@ -587,80 +552,45 @@ DECLARE
 	relatedMatch text;
 	narrowMatch text;
 	img text;
-	status_candidat VARCHAR;
-	date_candidat VARCHAR;
-	message_candidat VARCHAR;
-	vote_candidat text;
-	messages_candidat text;
 	creator text;
 	contributor text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
-				 
-	
+
+
 	FOR con IN SELECT concept.* FROM concept, concept_group_concept WHERE concept.id_concept = concept_group_concept.idconcept
-								AND concept.id_thesaurus = concept_group_concept.idthesaurus AND concept.id_thesaurus = id_theso 
-								AND concept_group_concept.idgroup = id_group
-    LOOP		
+								AND concept.id_thesaurus = concept_group_concept.idthesaurus AND concept.id_thesaurus = id_theso
+								AND concept_group_concept.idgroup = id_group AND concept.status != 'CA'
+    LOOP
 		-- URI
 		uri = opentheso_get_uri(theso_rec.original_uri_is_ark, con.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
 					 con.id_handle, theso_rec.original_uri_is_doi, con.id_doi, con.id_concept, id_theso, path);
-		
+
 		-- LocalUri
 		local_URI = path || '/?idc=' || con.id_concept || '&idt=' || id_theso;
 		prefLab = '';
-		
-		
-		vote_candidat = '';
-		messages_candidat = '';
-		status_candidat = '';
-		date_candidat = '';
-		message_candidat = '';
-		
-		IF (con.status = 'CA') THEN
-			-- Recherche des votes
-			FOR vote_record IN SELECT id_user, type_vote, id_note 
-						FROM candidat_vote WHERE id_concept::varchar(255) = con.id_concept AND id_thesaurus = id_theso
-			LOOP
-				vote_candidat = vote_candidat || vote_record.id_user || sous_seperateur || vote_record.type_vote || sous_seperateur || vote_record.id_note || seperateur; 
-			END LOOP;
-			
-			-- Recherche des messages
-			FOR message_record IN SELECT users.id_user, cand.value, cand.date FROM candidat_messages cand, users 
-						WHERE id_concept::varchar(255) = con.id_concept AND id_thesaurus = id_theso
-			LOOP
-				messages_candidat = messages_candidat || message_record.value || sous_seperateur || message_record.id_user || sous_seperateur || message_record.date || seperateur;
-			END LOOP;
-			
-			FOR cadidat_record IN SELECT * FROM candidat_status WHERE id_concept::varchar(255) = con.id_concept
-			LOOP
-				status_candidat = cadidat_record.id_status;
-				date_candidat = cadidat_record.date;
-				message_candidat = cadidat_record.message;
-			END LOOP;
-		END IF;
-		
+
 		-- PrefLab
 		FOR traduction_rec IN SELECT * FROM opentheso_get_traductions(id_theso, con.id_concept)
 		LOOP
 			prefLab = prefLab || traduction_rec.term_lexical_value || sous_seperateur || traduction_rec.term_lang || seperateur;
 		END LOOP;
-		
+
 		-- altLab
 		altLab = '';
 		FOR altLab_rec IN SELECT * FROM opentheso_get_alter_term(id_theso, con.id_concept, false)
 		LOOP
 			altLab = altLab || altLab_rec.alter_term_lexical_value || sous_seperateur || altLab_rec.alter_term_lang || seperateur;
 		END LOOP;
-		
+
 		-- altLab hiden
 		altLab_hiden = '';
 		FOR altLab_hiden_rec IN SELECT * FROM opentheso_get_alter_term(id_theso, con.id_concept, true)
 		LOOP
 			altLab_hiden = altLab_hiden || altLab_hiden_rec.alter_term_lexical_value || sous_seperateur || altLab_hiden_rec.alter_term_lang || seperateur;
 		END LOOP;
-		
+
 		-- Notes
 		note = '';
 		example = '';
@@ -687,7 +617,7 @@ BEGIN
 				editorialNote = editorialNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		FOR note_term_rec IN SELECT * FROM opentheso_get_note_term(id_theso, con.id_concept)
 		LOOP
 			IF (note_term_rec.note_notetypecode = 'note') THEN
@@ -706,29 +636,29 @@ BEGIN
 				editorialNote = editorialNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		-- Narrower
 		narrower = '';
 		broader = '';
 		related = '';
 		FOR relation_rec IN SELECT * FROM opentheso_get_relations(id_theso, con.id_concept)
 		LOOP
-			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri, 
-					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi, 
-					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, id_theso, path) 
+			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
+					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, id_theso, path)
 					|| '@' || relation_rec.relationship_role || '@' || relation_rec.relationship_id_concept || '@' ;
-					
-			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI' 
+
+			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI'
 					OR relation_rec.relationship_role = 'NTG') THEN
 				narrower = narrower || tmp || seperateur;
-			ELSIF (relation_rec.relationship_role = 'BT' OR relation_rec.relationship_role = 'BTP' OR relation_rec.relationship_role = 'BTI' 
+			ELSIF (relation_rec.relationship_role = 'BT' OR relation_rec.relationship_role = 'BTP' OR relation_rec.relationship_role = 'BTI'
 					OR relation_rec.relationship_role = 'BTG') THEN
 				broader = broader || tmp || seperateur;
 			ELSIF (relation_rec.relationship_role = 'RT' OR relation_rec.relationship_role = 'RHP' OR relation_rec.relationship_role = 'RPO') THEN
 				related = related || tmp || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		-- Alignement
 		exactMatch = '';
 		closeMatch = '';
@@ -749,10 +679,10 @@ BEGIN
 				narrowMatch = narrowMatch || alignement_rec.alig_uri_target || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		-- geo:alt && geo:long
 		SELECT * INTO geo_rec FROM opentheso_get_gps(id_theso, con.id_concept);
-		
+
 		-- membre
 		membre = '';
 		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
@@ -767,22 +697,22 @@ BEGIN
 				membre = membre || path || '/?idc=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			END IF;
 		END LOOP;
-		
+
 		-- Images
 		img = '';
 		FOR img_rec IN SELECT * FROM opentheso_get_images(id_theso, con.id_concept)
 		LOOP
 			img = img || img_rec.url || seperateur;
 		END LOOP;
-		
+
 		SELECT username INTO creator FROM users WHERE id_user = con.creator;
 		SELECT username INTO contributor FROM users WHERE id_user = con.contributor;
-		
-		
-		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example, 
-				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch, 
-				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, 
-				membre, con.created, con.modified, img, status_candidat, date_candidat, message_candidat, vote_candidat, messages_candidat, creator, contributor INTO rec;
+
+
+		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
+				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
+				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude,
+				membre, con.created, con.modified, img, creator, contributor INTO rec;
 		
   		RETURN NEXT rec;
     END LOOP;

@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.skosapi.SKOSDiscussion;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
@@ -21,6 +20,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 
+import static fr.cnrs.opentheso.bdd.helper.ConceptHelper.formatLinkTag;
 
 
 public class ExportHelper {
@@ -55,6 +55,13 @@ public class ExportHelper {
                         getLabels(resultSet.getString("prefLab"), sKOSResource, SKOSProperty.prefLabel);
                         getLabels(resultSet.getString("altLab"), sKOSResource, SKOSProperty.altLabel);
                         getLabels(resultSet.getString("altLab_hiden"), sKOSResource, SKOSProperty.hiddenLabel);
+                        
+                        if (resultSet.getString("broader") == null || resultSet.getString("broader").isEmpty()) {
+                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri), 
+                                    SKOSProperty.topConceptOf));
+                        }
+                        
+                        addRelationsGiven(resultSet.getString("related"), sKOSResource);
 
                         addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.note);
                         addDocumentation(resultSet.getString("definition"), sKOSResource, SKOSProperty.definition);
@@ -69,16 +76,14 @@ public class ExportHelper {
                         addAlignementGiven(resultSet.getString("broadMatch"), sKOSResource, SKOSProperty.broadMatch);
                         addAlignementGiven(resultSet.getString("relatedmatch"), sKOSResource, SKOSProperty.relatedMatch);
                         addAlignementGiven(resultSet.getString("narrowMatch"), sKOSResource, SKOSProperty.narrowMatch);
+                        
+                        addRelationsGiven(resultSet.getString("narrower"), sKOSResource);
 
-                        if (resultSet.getString("broader") == null || resultSet.getString("broader").isEmpty()) {
-                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri), 
-                                    SKOSProperty.topConceptOf));
-                        } else {                           
+                        if (resultSet.getString("broader") != null) {                         
                             addRelationsGiven(resultSet.getString("broader"), sKOSResource);
                         }
                         
-                        addRelationsGiven(resultSet.getString("narrower"), sKOSResource);
-                        addRelationsGiven(resultSet.getString("related"), sKOSResource);
+                        sKOSResource.addRelation(idTheso, getUriFromId(idTheso, originalUri), SKOSProperty.inScheme);
 
                         //addReplaced(resultSet.getString("replaces_by"), sKOSResource, SKOSProperty.isReplacedBy);
 
@@ -106,12 +111,14 @@ public class ExportHelper {
                             sKOSResource.addCreator(resultSet.getString("contributor"), SKOSProperty.contributor);
                         }
 
-                        if (StringUtils.isNotEmpty(resultSet.getString("created"))) {
-                            sKOSResource.addDate(resultSet.getString("created"), SKOSProperty.created);
+                        String created = resultSet.getString("created");
+                        if (StringUtils.isNotEmpty(created)) {;
+                            sKOSResource.addDate(created.substring(0, created.indexOf(" ")), SKOSProperty.created);
                         }
 
-                        if (StringUtils.isNotEmpty(resultSet.getString("modified"))) {
-                            sKOSResource.addDate(resultSet.getString("modified"), SKOSProperty.modified);
+                        String modified = resultSet.getString("modified");
+                        if (StringUtils.isNotEmpty(modified)) {
+                            sKOSResource.addDate(modified.substring(0, modified.indexOf(" ")), SKOSProperty.modified);
                         }
                         
                         
@@ -156,22 +163,21 @@ public class ExportHelper {
     }
     
     private String getUriFromId(String id, String originalUri) {
-        String uri;
-
+        
         if(originalUri != null && !originalUri.isEmpty()) {
-            uri = originalUri + "/" + id;
+            return originalUri + "/" + id;
         } else {
-            uri = getPath(originalUri) + "/" + id;
+            return getPath(originalUri) + "/" + id;
         }
-        return uri;
     }
     
     private String getPath(String originalUri){
         if(FacesContext.getCurrentInstance() == null) {
             return originalUri;
         }
-        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
-        return path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+        
+        return FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin") 
+                + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
     }
     
     private String getSQLRequest(String idTheso, String baseUrl, String idGroup) {
@@ -186,8 +192,7 @@ public class ExportHelper {
                 + "prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, editorialNote text, changeNote text, "
                 + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
                 + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, "
-                + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, status_candidat varchar, "
-                + "date_candidat varchar, message_candidat varchar, vote_candidat text, messages_candidat text, creator text, contributor text);";
+                + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text);";
     }
 
     private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
@@ -326,10 +331,13 @@ public class ExportHelper {
 
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPERATEUR);
-
+            
+            String htmlTagsRegEx = "<[^>]*>";
+            
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
-                sKOSResource.addDocumentation(element[0], element[1], type);
+                String str = formatLinkTag(element[0]);
+                sKOSResource.addDocumentation(str.replaceAll(htmlTagsRegEx, ""), element[1], type);
             }
         }
     }
