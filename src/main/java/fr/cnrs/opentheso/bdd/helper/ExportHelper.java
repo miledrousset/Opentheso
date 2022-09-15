@@ -22,13 +22,60 @@ import org.apache.commons.lang3.StringUtils;
 
 import static fr.cnrs.opentheso.bdd.helper.ConceptHelper.formatLinkTag;
 
-
 public class ExportHelper {
 
     private final static String SEPERATEUR = "##";
     private final static String SUB_SEPERATEUR = "@";
 
-    public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso, 
+    
+    public List<SKOSResource> getAllFacettes(HikariDataSource ds, String idTheso,
+            String baseUrl, String originalUri) throws Exception {
+
+        List<SKOSResource> facettes = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select * FROM opentheso_get_facettes('th20', 'test') as (id_facet VARCHAR, "
+                        + "lexical_value VARCHAR, created timestamp with time zone, modified timestamp with time zone, "
+                        + "lang VARCHAR, id_concept_parent VARCHAR, uri_value VARCHAR, membres TEXT)");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        SKOSResource sKOSResource = new SKOSResource(getUriForFacette(resultSet.getString("id_facet"), 
+                                idTheso, originalUri), SKOSProperty.FACET);
+                        sKOSResource.addRelation(resultSet.getString("id_facet"), resultSet.getString("uri_value"), SKOSProperty.superOrdinate);
+                        sKOSResource.addLabel(resultSet.getString("lexical_value"), resultSet.getString("lang"), SKOSProperty.prefLabel);
+                        sKOSResource.addDate(resultSet.getString("created"), SKOSProperty.created);
+                        sKOSResource.addDate(resultSet.getString("modified"), SKOSProperty.modified);
+
+                        String labelBrut = resultSet.getString("membres");
+                        if (StringUtils.isNotEmpty(labelBrut)) {
+                            String[] tabs = labelBrut.split(SEPERATEUR);
+                            for (String tab : tabs) {
+                                String[] element = tab.split(SUB_SEPERATEUR);
+                                sKOSResource.addRelation(element[0], element[1], SKOSProperty.member);
+                            }
+                        }
+                        
+                        facettes.add(sKOSResource);
+                    }
+                }
+            }
+        }
+
+        return facettes;
+    }
+    
+    private String getUriForFacette(String idFacet, String idTheso, String originalUri){
+        if(FacesContext.getCurrentInstance() == null) {
+            return originalUri;
+        }
+        String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+        
+        return path + "/?idf=" + idFacet + "&idt=" +idTheso;
+    }
+
+    public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso,
             String baseUrl, String idGroup, String originalUri) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
@@ -36,18 +83,17 @@ public class ExportHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
-
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         SKOSResource sKOSResource = new SKOSResource();
                         sKOSResource.setProperty(SKOSProperty.Concept);
                         sKOSResource.setUri(resultSet.getString("uri"));
                         sKOSResource.setLocalUri(resultSet.getString("local_uri"));
-                        
+
                         sKOSResource.addIdentifier(resultSet.getString("identifier"), SKOSProperty.identifier);
-                        
-                        if (!StringUtils.isEmpty(resultSet.getString("ark_id"))){
-                           sKOSResource.setArkId(resultSet.getString("ark_id"));
+
+                        if (!StringUtils.isEmpty(resultSet.getString("ark_id"))) {
+                            sKOSResource.setArkId(resultSet.getString("ark_id"));
                         }
 
                         setStatusOfConcept(resultSet.getString("type"), sKOSResource);
@@ -55,12 +101,12 @@ public class ExportHelper {
                         getLabels(resultSet.getString("prefLab"), sKOSResource, SKOSProperty.prefLabel);
                         getLabels(resultSet.getString("altLab"), sKOSResource, SKOSProperty.altLabel);
                         getLabels(resultSet.getString("altLab_hiden"), sKOSResource, SKOSProperty.hiddenLabel);
-                        
+
                         if (resultSet.getString("broader") == null || resultSet.getString("broader").isEmpty()) {
-                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri), 
+                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri),
                                     SKOSProperty.topConceptOf));
                         }
-                        
+
                         addRelationsGiven(resultSet.getString("related"), sKOSResource);
 
                         addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.note);
@@ -76,32 +122,29 @@ public class ExportHelper {
                         addAlignementGiven(resultSet.getString("broadMatch"), sKOSResource, SKOSProperty.broadMatch);
                         addAlignementGiven(resultSet.getString("relatedmatch"), sKOSResource, SKOSProperty.relatedMatch);
                         addAlignementGiven(resultSet.getString("narrowMatch"), sKOSResource, SKOSProperty.narrowMatch);
-                        
+
                         addRelationsGiven(resultSet.getString("narrower"), sKOSResource);
 
-                        if (resultSet.getString("broader") != null) {                         
+                        if (resultSet.getString("broader") != null) {
                             addRelationsGiven(resultSet.getString("broader"), sKOSResource);
                         }
-                        
+
                         sKOSResource.addRelation(idTheso, getUriFromId(idTheso, originalUri), SKOSProperty.inScheme);
 
                         //addReplaced(resultSet.getString("replaces_by"), sKOSResource, SKOSProperty.isReplacedBy);
-
                         //addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
-                        
                         if (!StringUtils.isEmpty(resultSet.getString("notation"))) {
                             sKOSResource.addNotation(resultSet.getString("notation"));
                         }
-                        
-                        addImages(sKOSResource, resultSet.getString("img"));
 
-                        //addMembres(sKOSResource, resultSet.getString("membre"));
+                        addImages(sKOSResource, resultSet.getString("img"));
+                        
+                        addMembres(sKOSResource, resultSet.getString("membre"), resultSet.getString("IDENTIFIER"));
 
                         if (resultSet.getString("latitude") != null || resultSet.getString("longitude") != null) {
                             sKOSResource.setGPSCoordinates(new SKOSGPSCoordinates(
                                     resultSet.getDouble("latitude"), resultSet.getDouble("longitude")));
                         }
-
 
                         // createur et contributeur
                         if (resultSet.getString("creator") != null) {
@@ -120,31 +163,12 @@ public class ExportHelper {
                         if (StringUtils.isNotEmpty(modified)) {
                             sKOSResource.addDate(modified.substring(0, modified.indexOf(" ")), SKOSProperty.modified);
                         }
-                        
-                        
-                        // pour l'export des données du module candidat
-                        if ("CA".equalsIgnoreCase(resultSet.getString("type"))) {
-                            
-                            SKOSStatus skosStatus = new SKOSStatus();
-                            skosStatus.setDate(resultSet.getString("date_candidat"));
-                            skosStatus.setIdConcept(resultSet.getString("identifier"));
-                            skosStatus.setIdStatus(resultSet.getString("status_candidat"));
-                            skosStatus.setMessage(resultSet.getString("message_candidat"));
-                            skosStatus.setIdThesaurus(idTheso);
-                            //skosStatus.setIdUser(nodeStatus.getIdUser());
-                            sKOSResource.setSkosStatus(skosStatus);
-                            
-                            addCandidatDiscussions(sKOSResource, resultSet.getString("messages_candidat"));
-                            
-                            addCandidatVote(ds, sKOSResource, resultSet.getString("vote_candidat"), 
-                                    idTheso, resultSet.getString("identifier"));
-                        }
 
                         ArrayList<String> first = new ArrayList<>();
                         first.add(resultSet.getString("identifier"));
                         ArrayList<ArrayList<String>> paths = new ArrayList<>();
 
-                        paths = new ConceptHelper().getPathOfConceptWithoutGroup(ds, 
+                        paths = new ConceptHelper().getPathOfConceptWithoutGroup(ds,
                                 resultSet.getString("identifier"), idTheso, first, paths);
                         ArrayList<String> pathFromArray = getPathFromArray(paths);
                         if (!pathFromArray.isEmpty()) {
@@ -161,33 +185,33 @@ public class ExportHelper {
 
         return concepts;
     }
-    
+
     private String getUriFromId(String id, String originalUri) {
-        
-        if(originalUri != null && !originalUri.isEmpty()) {
+
+        if (originalUri != null && !originalUri.isEmpty()) {
             return originalUri + "/" + id;
         } else {
             return getPath(originalUri) + "/" + id;
         }
     }
-    
-    private String getPath(String originalUri){
-        if(FacesContext.getCurrentInstance() == null) {
+
+    private String getPath(String originalUri) {
+        if (FacesContext.getCurrentInstance() == null) {
             return originalUri;
         }
-        
-        return FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin") 
+
+        return FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin")
                 + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
     }
-    
+
     private String getSQLRequest(String idTheso, String baseUrl, String idGroup) {
         String baseSQL = "SELECT * FROM ";
         if (StringUtils.isEmpty(idGroup)) {
-            baseSQL = baseSQL + "opentheso_get_concepts('" + idTheso + "', '" + baseUrl; 
+            baseSQL = baseSQL + "opentheso_get_concepts('" + idTheso + "', '" + baseUrl;
         } else {
-            baseSQL = baseSQL + "opentheso_get_concepts_by_group('" + idTheso + "', '" + baseUrl + "', '"+ idGroup;
+            baseSQL = baseSQL + "opentheso_get_concepts_by_group('" + idTheso + "', '" + baseUrl + "', '" + idGroup;
         }
-        
+
         return baseSQL + "') as x(URI text, TYPE varchar,  LOCAL_URI text, IDENTIFIER varchar, ARK_ID varchar, "
                 + "prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, editorialNote text, changeNote text, "
                 + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
@@ -200,19 +224,20 @@ public class ExportHelper {
         ArrayList<String> allPath = new ArrayList<>();
         for (ArrayList<String> path : paths) {
             for (String string1 : path) {
-                if(pathFromArray.isEmpty())
+                if (pathFromArray.isEmpty()) {
                     pathFromArray = string1;
-                else
+                } else {
                     pathFromArray = pathFromArray + SEPERATEUR + string1;
+                }
             }
             allPath.add(pathFromArray);
             pathFromArray = "";
         }
         return allPath;
     }
-    
+
     private void addCandidatDiscussions(SKOSResource resource, String textBrut) {
-        
+
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPERATEUR);
 
@@ -226,14 +251,14 @@ public class ExportHelper {
             }
         }
     }
-    
+
     private void addCandidatVote(HikariDataSource ds, SKOSResource resource, String textBrut, String idTheso, String idConcept) {
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
-                
+
                 SKOSVote skosVote = new SKOSVote();
                 skosVote.setIdNote(element[2]);
                 skosVote.setIdUser(Integer.parseInt(element[0]));
@@ -252,12 +277,12 @@ public class ExportHelper {
             }
         }
     }
-    
+
     private void addImages(SKOSResource resource, String textBrut) {
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] images = textBrut.split(SEPERATEUR);
             for (String image : images) {
-                 resource.addImageUri(image);
+                resource.addImageUri(image);
             }
         }
     }
@@ -331,9 +356,9 @@ public class ExportHelper {
 
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPERATEUR);
-            
+
             String htmlTagsRegEx = "<[^>]*>";
-            
+
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
                 String str = formatLinkTag(element[0]);
@@ -353,5 +378,15 @@ public class ExportHelper {
             }
         }
     }
-    
+
+    private void addMembres(SKOSResource sKOSResource, String textBrut, String idConcept) {
+        if (StringUtils.isNotEmpty(textBrut)) {
+            String[] tabs = textBrut.split(SEPERATEUR);
+
+            for (String tab : tabs) {
+                sKOSResource.addRelation(idConcept, tab, SKOSProperty.memberOf);
+            }
+        }
+    }
+
 }

@@ -470,12 +470,12 @@ BEGIN
 		membre = '';
 		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
 		LOOP
-			IF (group_rec.group_id_ark IS NOT NULL) THEN
+			IF (group_rec.group_id_ark IS NOT NULL AND group_rec.group_id_ark != '') THEN
 				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
-			ELSIF (group_rec.group_id_handle IS NOT NULL) THEN
+			ELSIF (group_rec.group_id_handle IS NOT NULL AND group_rec.group_id_handle != '') THEN
 				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
-			ELSIF (theso_rec.original_uri IS NOT NULL) THEN
-				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+			ELSIF (theso_rec.original_uri IS NOT NULL AND theso_rec.original_uri != '') THEN
+				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSE
 				membre = membre || path || '/?idc=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			END IF;
@@ -687,12 +687,12 @@ BEGIN
 		membre = '';
 		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
 		LOOP
-			IF (group_rec.group_id_ark IS NOT NULL) THEN
+			IF (group_rec.group_id_ark IS NOT NULL AND group_rec.group_id_ark != '') THEN
 				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
-			ELSIF (group_rec.group_id_handle IS NOT NULL) THEN
+			ELSIF (group_rec.group_id_handle IS NOT NULL AND group_rec.group_id_handle != '') THEN
 				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
-			ELSIF (theso_rec.original_uri IS NOT NULL) THEN
-				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+			ELSIF (theso_rec.original_uri IS NOT NULL AND theso_rec.original_uri != '') THEN
+				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSE
 				membre = membre || path || '/?idc=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			END IF;
@@ -714,6 +714,57 @@ BEGIN
 				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude,
 				membre, con.created, con.modified, img, creator, contributor INTO rec;
 		
+  		RETURN NEXT rec;
+    END LOOP;
+END;
+$$
+
+
+CREATE OR REPLACE FUNCTION opentheso_get_facettes (id_theso VARCHAR, path VARCHAR)
+	RETURNS SETOF RECORD
+	LANGUAGE plpgsql
+AS $$
+DECLARE
+	rec record;
+	facet_rec record;
+	theso_rec record;
+	concept_rec record;
+	membre_rec record;
+
+	uri_membre VARCHAR;
+	id_ark VARCHAR;
+	id_handle VARCHAR;
+	uri_value VARCHAR;
+	membres TEXT;
+BEGIN
+
+	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
+
+	FOR facet_rec IN SELECT node_label.*, thesaurus_array.id_concept_parent
+			   	 FROM node_label, thesaurus_array
+			   	 WHERE node_label.id_thesaurus = thesaurus_array.id_thesaurus
+			   	 AND node_label.id_facet = thesaurus_array.id_facet
+			   	 AND node_label.id_thesaurus = id_theso
+    LOOP
+
+		SELECT * INTO concept_rec FROM concept WHERE id_thesaurus = id_theso AND id_concept = facet_rec.id_concept_parent;
+
+		uri_value = opentheso_get_uri(theso_rec.original_uri_is_ark, concept_rec.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
+					 concept_rec.id_handle, theso_rec.original_uri_is_doi, concept_rec.id_doi, facet_rec.id_concept_parent, id_theso, path);
+
+		membres = '';
+
+		FOR membre_rec IN SELECT DISTINCT concept.* FROM concept_facet, concept WHERE concept_facet.id_concept = concept.id_concept
+				AND concept.id_thesaurus = id_theso and concept_facet.id_facet = facet_rec.id_facet
+		LOOP
+			uri_membre = opentheso_get_uri(theso_rec.original_uri_is_ark, membre_rec.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
+					 membre_rec.id_handle, theso_rec.original_uri_is_doi, membre_rec.id_doi, facet_rec.id_concept_parent, id_theso, path);
+			membres = membres || membre_rec.id_concept || '@' || uri_membre || '##';
+		END LOOP;
+
+		SELECT facet_rec.id_facet, facet_rec.lexical_value, facet_rec.created, facet_rec.modified, facet_rec.lang,
+				facet_rec.id_concept_parent, uri_value, membres INTO rec;
+
   		RETURN NEXT rec;
     END LOOP;
 END;

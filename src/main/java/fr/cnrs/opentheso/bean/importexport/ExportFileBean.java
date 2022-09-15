@@ -658,6 +658,12 @@ public class ExportFileBean implements Serializable {
             }            
         }
         
+         List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), 
+                        idTheso, baseUrl, nodePreference.getOriginalUri());
+        for (SKOSResource facette : facettes) {
+            exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+        }
+        
         for (SKOSResource concept : concepts) {
             exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
         }
