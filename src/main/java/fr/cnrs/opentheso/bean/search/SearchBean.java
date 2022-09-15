@@ -417,15 +417,15 @@ public class SearchBean implements Serializable {
                     connect.getPoolConnexion(), searchValue, idLang, idTheso);
             */
             
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchFullTextElastic(connect.getPoolConnexion(),
+            ArrayList<String> listIds = searchHelper.searchFullTextElasticId(connect.getPoolConnexion(),
                         searchValue,
                         idLang,
                         idTheso);                    
             
             
-            for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
+            for (String idConcept : listIds) {
                 nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
-                        nodeSearchMini.getIdConcept(), idTheso, idLang);
+                        idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
