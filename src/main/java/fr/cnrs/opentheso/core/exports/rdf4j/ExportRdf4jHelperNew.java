@@ -221,46 +221,35 @@ public class ExportRdf4jHelperNew {
     public void exportTheso(HikariDataSource ds, String idTheso, NodePreference nodePreference) {
         this.nodePreference = nodePreference;
         NodeThesaurus nodeThesaurus = new ThesaurusHelper().getNodeThesaurus(ds, idTheso);
-        String uri = getUriFromId(nodeThesaurus.getIdThesaurus());
-        SKOSResource conceptScheme = new SKOSResource(uri, SKOSProperty.ConceptScheme);
-        String creator;
-        String contributor;
-        String title;
-        String language;
-
+        
+        SKOSResource conceptScheme = new SKOSResource(getUriFromId(nodeThesaurus.getIdThesaurus()), SKOSProperty.ConceptScheme);
+        
         for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
-            creator = thesaurus.getCreator();
-            contributor = thesaurus.getContributor();
-            title = thesaurus.getTitle();
-            language = thesaurus.getLanguage();
-
-            if (creator != null && !creator.equalsIgnoreCase("null")) {
-                conceptScheme.addCreator(creator, SKOSProperty.creator);
+            
+            if (thesaurus.getCreator() != null && !thesaurus.getCreator().equalsIgnoreCase("null")) {
+                conceptScheme.addCreator(thesaurus.getCreator(), SKOSProperty.creator);
             }
-            if (contributor != null && !contributor.equalsIgnoreCase("null")) {
-                conceptScheme.addCreator(creator, SKOSProperty.contributor);
+            if (thesaurus.getContributor() != null && !thesaurus.getContributor().equalsIgnoreCase("null")) {
+                conceptScheme.addCreator(thesaurus.getContributor(), SKOSProperty.contributor);
             }
-            if (title != null && language != null) {
-                conceptScheme.addLabel(title, language, SKOSProperty.prefLabel);
+            if (thesaurus.getTitle() != null && thesaurus.getLanguage() != null) {
+                conceptScheme.addLabel(thesaurus.getTitle(), 
+                        thesaurus.getLanguage(), SKOSProperty.prefLabel);
             }
 
             //dates
-            String created = thesaurus.getCreated().toString();
-            String modified = thesaurus.getModified().toString();
-            if (created != null) {
-                conceptScheme.addDate(created, SKOSProperty.created);
+            if (thesaurus.getCreated().toString() != null) {
+                conceptScheme.addDate(thesaurus.getCreated().toString(), SKOSProperty.created);
             }
-            if (modified != null) {
-                conceptScheme.addDate(modified, SKOSProperty.modified);
+            if (thesaurus.getModified().toString() != null) {
+                conceptScheme.addDate(thesaurus.getModified().toString(), SKOSProperty.modified);
             }
             conceptScheme.setThesaurus(thesaurus);
         }
 
         //liste top concept
         ConceptHelper conceptHelper = new ConceptHelper();
-        nodeTTs = conceptHelper.getAllTopConcepts(
-                ds,
-                idTheso);
+        nodeTTs = conceptHelper.getAllTopConcepts(ds, idTheso);
 
         nodeTTs.forEach((nodeTT) -> {
             conceptScheme.addRelation(nodeTT.getIdConcept(), getUriFromNodeUri(nodeTT, idTheso), SKOSProperty.hasTopConcept);
@@ -734,14 +723,20 @@ public class ExportRdf4jHelperNew {
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////// 
     public String getUriFromId(String id) {
-        String uri;
-
+        
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
-            uri = nodePreference.getOriginalUri() + "/" + id;
+            return nodePreference.getOriginalUri() + "/" + id;
         } else {
-            uri = getPath() + "/" + id;
+            String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
+            String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
+            String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();        
+            String baseUrl = protocole + "://" + serverAdress + contextPath;
+            
+            System.out.println(">>> Version 1 : " + baseUrl + "/" + id);
+            System.out.println(">>> Version 2 : " + getPath() + "/" + id);
+            
+            return getPath() + "/" + id;
         }
-        return uri;
     }
 
     /**
@@ -1015,8 +1010,7 @@ public class ExportRdf4jHelperNew {
             return nodePreference.getOriginalUri();
         }
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
-        path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-        return path;
+        return path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
     }
 
     public SKOSXmlDocument getSkosXmlDocument() {

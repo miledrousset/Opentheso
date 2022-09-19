@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
-import fr.cnrs.opentheso.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.skosapi.SKOSVote;
 
 import java.sql.Connection;
@@ -109,19 +108,19 @@ public class ExportHelper {
 
                         addRelationsGiven(resultSet.getString("related"), sKOSResource);
 
-                        addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.note);
                         addDocumentation(resultSet.getString("definition"), sKOSResource, SKOSProperty.definition);
+                        addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.note);
+                        addDocumentation(resultSet.getString("editorialNote"), sKOSResource, SKOSProperty.editorialNote);
                         addDocumentation(resultSet.getString("secopeNote"), sKOSResource, SKOSProperty.scopeNote);
                         addDocumentation(resultSet.getString("historyNote"), sKOSResource, SKOSProperty.historyNote);
                         addDocumentation(resultSet.getString("example"), sKOSResource, SKOSProperty.example);
-                        addDocumentation(resultSet.getString("editorialNote"), sKOSResource, SKOSProperty.editorialNote);
                         addDocumentation(resultSet.getString("changeNote"), sKOSResource, SKOSProperty.changeNote);
 
-                        addAlignementGiven(resultSet.getString("exactMatch"), sKOSResource, SKOSProperty.exactMatch);
                         addAlignementGiven(resultSet.getString("closeMatch"), sKOSResource, SKOSProperty.closeMatch);
+                        addAlignementGiven(resultSet.getString("exactMatch"), sKOSResource, SKOSProperty.exactMatch);
+                        addAlignementGiven(resultSet.getString("narrowMatch"), sKOSResource, SKOSProperty.narrowMatch);
                         addAlignementGiven(resultSet.getString("broadMatch"), sKOSResource, SKOSProperty.broadMatch);
                         addAlignementGiven(resultSet.getString("relatedmatch"), sKOSResource, SKOSProperty.relatedMatch);
-                        addAlignementGiven(resultSet.getString("narrowMatch"), sKOSResource, SKOSProperty.narrowMatch);
 
                         addRelationsGiven(resultSet.getString("narrower"), sKOSResource);
 
@@ -130,9 +129,11 @@ public class ExportHelper {
                         }
 
                         sKOSResource.addRelation(idTheso, getUriFromId(idTheso, originalUri), SKOSProperty.inScheme);
-
-                        //addReplaced(resultSet.getString("replaces_by"), sKOSResource, SKOSProperty.isReplacedBy);
-                        //addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
+                        
+                        addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
+                        
+                        addReplaced(resultSet.getString("replaced_by"), sKOSResource, SKOSProperty.isReplacedBy);
+                        
                         if (!StringUtils.isEmpty(resultSet.getString("notation"))) {
                             sKOSResource.addNotation(resultSet.getString("notation"));
                         }
@@ -155,7 +156,7 @@ public class ExportHelper {
                         }
 
                         String created = resultSet.getString("created");
-                        if (StringUtils.isNotEmpty(created)) {;
+                        if (StringUtils.isNotEmpty(created)) {
                             sKOSResource.addDate(created.substring(0, created.indexOf(" ")), SKOSProperty.created);
                         }
 
@@ -216,7 +217,8 @@ public class ExportHelper {
                 + "prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, editorialNote text, changeNote text, "
                 + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
                 + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, "
-                + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text);";
+                + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
+                + "replaces text, replaced_by text);";
     }
 
     private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
@@ -338,6 +340,17 @@ public class ExportHelper {
                 return SKOSProperty.broaderInstantial;
             default:
                 return SKOSProperty.broader;
+        }
+    }
+
+    private void addReplaced(String textBrut, SKOSResource sKOSResource, int type) throws SQLException {
+
+        if (StringUtils.isNotEmpty(textBrut)) {
+            String[] tabs = textBrut.split(SEPERATEUR);
+
+            for (String tab : tabs) {
+                sKOSResource.addMatch(tab, type);
+            }
         }
     }
 
