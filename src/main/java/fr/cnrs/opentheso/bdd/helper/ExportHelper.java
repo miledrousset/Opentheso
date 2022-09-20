@@ -1,13 +1,10 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.skosapi.SKOSDiscussion;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
-import fr.cnrs.opentheso.skosapi.SKOSVote;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -142,12 +139,13 @@ public class ExportHelper {
                         
                         addMembres(sKOSResource, resultSet.getString("membre"), resultSet.getString("IDENTIFIER"));
 
+                        addFacets(sKOSResource, resultSet.getString("facets"), idTheso, originalUri);
+
                         if (resultSet.getString("latitude") != null || resultSet.getString("longitude") != null) {
                             sKOSResource.setGPSCoordinates(new SKOSGPSCoordinates(
                                     resultSet.getDouble("latitude"), resultSet.getDouble("longitude")));
                         }
-
-                        // createur et contributeur
+                        
                         if (resultSet.getString("creator") != null) {
                             sKOSResource.addCreator(resultSet.getString("creator"), SKOSProperty.creator);
                         }
@@ -218,7 +216,7 @@ public class ExportHelper {
                 + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
                 + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, "
                 + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
-                + "replaces text, replaced_by text);";
+                + "replaces text, replaced_by text, facets text);";
     }
 
     private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
@@ -238,53 +236,21 @@ public class ExportHelper {
         return allPath;
     }
 
-    private void addCandidatDiscussions(SKOSResource resource, String textBrut) {
-
-        if (StringUtils.isNotEmpty(textBrut)) {
-            String[] tabs = textBrut.split(SEPERATEUR);
-
-            for (String tab : tabs) {
-                String[] element = tab.split(SUB_SEPERATEUR);
-                SKOSDiscussion skosDiscussion = new SKOSDiscussion();
-                skosDiscussion.setMsg(element[0]);
-                skosDiscussion.setIdUser(Integer.valueOf(element[1]));
-                skosDiscussion.setDate(element[2]);
-                resource.addMessage(skosDiscussion);
-            }
-        }
-    }
-
-    private void addCandidatVote(HikariDataSource ds, SKOSResource resource, String textBrut, String idTheso, String idConcept) {
-        if (StringUtils.isNotEmpty(textBrut)) {
-            String[] tabs = textBrut.split(SEPERATEUR);
-
-            for (String tab : tabs) {
-                String[] element = tab.split(SUB_SEPERATEUR);
-
-                SKOSVote skosVote = new SKOSVote();
-                skosVote.setIdNote(element[2]);
-                skosVote.setIdUser(Integer.parseInt(element[0]));
-                skosVote.setIdThesaurus(idTheso);
-                skosVote.setIdConcept(idConcept);
-                skosVote.setTypeVote(element[1]);
-                if (!StringUtils.isEmpty(element[2]) && !"null".equalsIgnoreCase(element[2])) {
-                    String htmlTagsRegEx = "<[^>]*>";
-                    NodeNote nodeNote = new NoteHelper().getNoteByIdNote(ds, Integer.parseInt(element[2]));
-                    if (nodeNote != null) {
-                        String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalvalue());
-                        skosVote.setValueNote(str.replaceAll(htmlTagsRegEx, ""));
-                    }
-                }
-                resource.addVote(skosVote);
-            }
-        }
-    }
-
     private void addImages(SKOSResource resource, String textBrut) {
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] images = textBrut.split(SEPERATEUR);
             for (String image : images) {
                 resource.addImageUri(image);
+            }
+        }
+    }
+
+    private void addFacets(SKOSResource resource, String textBrut, String idTheso, String originalUri) {
+        if (StringUtils.isNotEmpty(textBrut)) {
+            String[] idFacettes = textBrut.split(SEPERATEUR);
+            for (String idFacette : idFacettes) {
+                String url = getPath(originalUri)+ "/?idf=" + idFacette + "&idt=" +idTheso;
+                resource.addRelation(idFacette, url, SKOSProperty.subordinateArray);
             }
         }
     }

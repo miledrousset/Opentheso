@@ -334,7 +334,6 @@ BEGIN
 END;
 $$
 
-
 CREATE OR REPLACE FUNCTION opentheso_get_concepts_by_group (id_theso VARCHAR, path VARCHAR, id_group VARCHAR)
 	RETURNS SETOF RECORD
 	LANGUAGE plpgsql
@@ -362,6 +361,7 @@ DECLARE
 	cadidat_record record;
 	replace_rec record;
 	replacedBy_rec record;
+	facet_rec record;
 
 	tmp text;
 	uri text;
@@ -390,6 +390,7 @@ DECLARE
 	contributor text;
 	replacedBy text;
 	replaces text;
+	facets text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -570,11 +571,19 @@ BEGIN
 					replacedBy.id_doi, replacedBy.id_concept2, id_theso, path) || seperateur;
 		END LOOP;
 
+		facets = '';
+		FOR facet_rec IN SELECT thesaurus_array.id_facet
+						 FROM thesaurus_array
+						 WHERE thesaurus_array.id_thesaurus = id_theso
+						 AND thesaurus_array.id_concept_parent = con.id_concept
+		LOOP
+			facets = facets || facet_rec.id_facet || seperateur;
+		END LOOP;
 
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
-				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude,
-				membre, con.created, con.modified, img, creator, contributor, replaces, replacedBy INTO rec;
+				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified, img,
+				creator, contributor, replaces, replacedBy, facets INTO rec;
 
   		RETURN NEXT rec;
     END LOOP;
@@ -609,6 +618,7 @@ DECLARE
 	cadidat_record record;
 	replace_rec record;
 	replacedBy_rec record;
+	facet_rec record;
 
 	tmp text;
 	uri text;
@@ -637,6 +647,7 @@ DECLARE
 	contributor text;
 	replaces text;
 	replacedBy text;
+	facets text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -815,10 +826,19 @@ BEGIN
 					replacedBy.id_doi, replacedBy.id_concept2, id_theso, path) || seperateur;
 		END LOOP;
 
+		facets = '';
+		FOR facet_rec IN SELECT thesaurus_array.id_facet
+						 FROM thesaurus_array
+						 WHERE thesaurus_array.id_thesaurus = id_theso
+						 AND thesaurus_array.id_concept_parent = con.id_concept
+		LOOP
+			facets = facets || facet_rec.id_facet || seperateur;
+		END LOOP;
+
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
-				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude,
-				membre, con.created, con.modified, img, creator, contributor, replaces, replacedBy INTO rec;
+				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified,
+				img, creator, contributor, replaces, replacedBy, facets INTO rec;
 
   		RETURN NEXT rec;
     END LOOP;
