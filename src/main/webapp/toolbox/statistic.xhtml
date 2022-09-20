@@ -115,11 +115,11 @@
                                         <p:tab title="#{langueBean.getMsg('statistique.filtre_modification_date')}">
                                             <h:panelGrid columns="2" cellpadding="5" style="margin-top: 10px">
                                                 <h:outputText style="font-size: 14px;" value="#{langueBean.getMsg('statistique.filtre_modification_date.start')}"/>
-                                                <p:datePicker value="#{statistiqueBean.dateDebut}" style="font-size: 13px; margin-left: 10px; 
+                                                <p:datePicker value="#{statistiqueBean.dateDebut}" style="font-size: 13px; margin-left: 10px;
                                                               background: white; border-color: #43B572"/>
 
                                                 <h:outputText style="font-size: 14px; margin-top: 10px" value="#{langueBean.getMsg('statistique.filtre_modification_date.end')}"/>
-                                                <p:datePicker value="#{statistiqueBean.dateFin}" style="font-size: 13px; margin-left: 10px; 
+                                                <p:datePicker value="#{statistiqueBean.dateFin}" style="font-size: 13px; margin-left: 10px;
                                                               margin-top: 10px;  background: white; border-color: #43B572"/>
 
                                             </h:panelGrid>
@@ -259,22 +259,21 @@
                                         <f:facet name="footer">
                                             <span class="p-text-bold">
                                                 <h:outputText value="Graphe : "/>
-                                                <p:commandLink process="@this" ajax="true" oncomplete="PF('conceptChart').show();" 
-                                                               style="color: #f47b2a; margin-left: 10px" update="conceptChartID containerIndex">
-                                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.concepts')}"/>
-                                                </p:commandLink>
+                                                <p:commandLink oncomplete="PF('conceptChart').show();" 
+                                                               value="#{langueBean.getMsg('statistique.concepts')}"
+                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
 
-                                                <p:commandLink oncomplete="PF('termChart').show();" style="color: #f47b2a; margin-left: 10px" update="termChartID">
-                                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.untranslated_terms')}"/>
-                                                </p:commandLink>
+                                                <p:commandLink oncomplete="PF('termChart').show();" 
+                                                               value="#{langueBean.getMsg('statistique.untranslated_terms')}"
+                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
 
-                                                <p:commandLink oncomplete="PF('synonymChart').show();" style="color: #f47b2a; margin-left: 10px" update="synonymChartID">
-                                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.synonyms')}"/>
-                                                </p:commandLink>
+                                                <p:commandLink oncomplete="PF('synonymChart').show();" 
+                                                               value="#{langueBean.getMsg('statistique.synonyms')}"
+                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
 
-                                                <p:commandLink oncomplete="PF('noteChart').show();" style="color: #f47b2a; margin-left: 10px" update="noteChartID">
-                                                    <h:outputText style="font-weight: bold;" value="#{langueBean.getMsg('statistique.notes')}"/>
-                                                </p:commandLink>
+                                                <p:commandLink oncomplete="PF('noteChart').show();" 
+                                                               value="#{langueBean.getMsg('statistique.notes')}"
+                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold;" />
                                             </span>
                                         </f:facet>
                                     </p:dataTable>
@@ -292,27 +291,43 @@
 
                 </h:form>
 
-                <p:dialog id="noteChartID" widgetVar="noteChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+                <p:dialog id="noteChartID" widgetVar="noteChart" modal="true" resizable="false" 
+                          position="top" width="600" style="margin-top: 50px" header="Diagramme des notes" >
                     <div class="card">
                         <p:donutChart widgetVar="chart" model="#{statistiqueBean.createChartModel(4)}" style="width: 100%; height: 500px;"/>
                     </div>
+                    <div style="text-align: right" >
+                        <p:commandLink update="containerIndex" onclick="PF('noteChart').hide();" value="Fermer" />
+                    </div>
                 </p:dialog>
 
-                <p:dialog id="termChartID" widgetVar="termChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+                <p:dialog id="termChartID" widgetVar="termChart" modal="true" resizable="false" 
+                          position="top" width="600" style="margin-top: 50px" header="Diagramme des termes non traduits" >
                     <div class="card">
                         <p:donutChart model="#{statistiqueBean.createChartModel(3)}" style="width: 100%; height: 500px;"/>
                     </div>
-                </p:dialog>
-
-                <p:dialog id="synonymChartID" widgetVar="synonymChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
-                    <div class="card">
-                        <p:donutChart model="#{statistiqueBean.createChartModel(2)}" style="width: 100%; height: 500px;"/>
+                    <div style="text-align: right" >
+                        <p:commandLink update="containerIndex" onclick="PF('termChart').hide();" value="Fermer" />
                     </div>
                 </p:dialog>
 
-                <p:dialog id="conceptChartID" widgetVar="conceptChart" modal="true" resizable="false" position="top" width="600" style="margin-top: 50px" >
+                <p:dialog id="synonymChartID" widgetVar="synonymChart" modal="true" resizable="false" 
+                          position="top" width="600" style="margin-top: 50px" header="Diagramme des synonymes" >
+                    <div class="card">
+                        <p:donutChart model="#{statistiqueBean.createChartModel(2)}" style="width: 100%; height: 500px;"/>
+                    </div>
+                    <div style="text-align: right" >
+                        <p:commandLink update="containerIndex" onclick="PF('synonymChart').hide();" value="Fermer" />
+                    </div>
+                </p:dialog>
+
+                <p:dialog id="conceptChartID" widgetVar="conceptChart" resizable="false" 
+                          position="top" width="600" style="margin-top: 50px" header="Diagramme des concepts"  >
                     <div class="card">
                         <p:donutChart model="#{statistiqueBean.createChartModel(1)}" style="width: 100%; height: 500px;"/>
+                    </div>
+                    <div style="text-align: right" >
+                        <p:commandLink update="containerIndex" onclick="PF('conceptChart').hide();" value="Fermer" />
                     </div>
                 </p:dialog>
 
